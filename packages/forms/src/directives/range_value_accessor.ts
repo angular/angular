@@ -24,6 +24,8 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
  *  ```
  *  <input type="range" [(ngModel)]="age" >
  *  ```
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:

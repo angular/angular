@@ -7,136 +7,142 @@
  */
 
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
-import {defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
-import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
-import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
-export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2} from './component_ref';
+export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, getFactoryOf, getInheritedFactory, injectAttribute, injectChangeDetectorRef, injectComponentFactoryResolver, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef, templateRefExtractor} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
-
-
-// Naming scheme:
-// - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),
-// C(Container), L(Listener)
-// - lower case letters are for binding: b(bind)
-// - lower case letters are for binding target: p(property), a(attribute), k(class), s(style),
-// i(input)
-// - lower case letters for guarding life cycle hooks: l(lifeCycle)
-// - lower case for closing: c(containerEnd), e(elementEnd), v(viewEnd)
 // clang-format off
 export {
 
-  NO_CHANGE as NC,
+  NO_CHANGE,
 
-  bind as b,
-  interpolation1 as i1,
-  interpolation2 as i2,
-  interpolation3 as i3,
-  interpolation4 as i4,
-  interpolation5 as i5,
-  interpolation6 as i6,
-  interpolation7 as i7,
-  interpolation8 as i8,
-  interpolationV as iV,
+  bind,
+  interpolation1,
+  interpolation2,
+  interpolation3,
+  interpolation4,
+  interpolation5,
+  interpolation6,
+  interpolation7,
+  interpolation8,
+  interpolationV,
 
-  container as C,
-  containerRefreshStart as cR,
-  containerRefreshEnd as cr,
+  container,
+  containerRefreshStart,
+  containerRefreshEnd,
 
-  element as Ee,
-  elementAttribute as a,
-  elementClassProp as cp,
-  elementEnd as e,
-  elementProperty as p,
-  elementStart as E,
+  nextContext,
 
-  elementStyling as s,
-  elementStylingMap as sm,
-  elementStyleProp as sp,
-  elementStylingApply as sa,
+  element,
+  elementAttribute,
+  elementClassProp,
+  elementEnd,
+  elementProperty,
+  elementStart,
 
-  listener as L,
-  store as st,
-  load as ld,
-  loadDirective as d,
+  elementContainerStart,
+  elementContainerEnd,
 
-  namespaceHTML as NH,
-  namespaceMathML as NM,
-  namespaceSVG as NS,
+  elementStyling,
+  elementStylingMap,
+  elementStyleProp,
+  elementStylingApply,
 
-  projection as P,
-  projectionDef as pD,
+  getCurrentView,
+  restoreView,
 
-  text as T,
-  textBinding as t,
+  listener,
+  store,
+  load,
+  loadDirective,
 
-  reserveSlots as rS,
+  namespaceHTML,
+  namespaceMathML,
+  namespaceSVG,
 
-  embeddedViewStart as V,
-  embeddedViewEnd as v,
+  projection,
+  projectionDef,
+
+  text,
+  textBinding,
+  template,
+
+  reference,
+
+  embeddedViewStart,
+  embeddedViewEnd,
   detectChanges,
   markDirty,
   tick,
 } from './instructions';
 
 export {
-  i18nApply as iA,
-  i18nMapping as iM,
-  i18nInterpolation as iI,
-  i18nInterpolationV as iIV,
-  i18nExpMapping as iEM,
+  i18nApply,
+  i18nMapping,
+  i18nInterpolation1,
+  i18nInterpolation2,
+  i18nInterpolation3,
+  i18nInterpolation4,
+  i18nInterpolation5,
+  i18nInterpolation6,
+  i18nInterpolation7,
+  i18nInterpolation8,
+  i18nInterpolationV,
+  i18nExpMapping,
   I18nInstruction,
   I18nExpInstruction
 } from './i18n';
 
-export {NgModuleDef, NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
     AttributeMarker
 } from './interfaces/node';
 
 export {
-  pipe as Pp,
-  pipeBind1 as pb1,
-  pipeBind2 as pb2,
-  pipeBind3 as pb3,
-  pipeBind4 as pb4,
-  pipeBindV as pbV,
+  pipe,
+  pipeBind1,
+  pipeBind2,
+  pipeBind3,
+  pipeBind4,
+  pipeBindV,
 } from './pipe';
 
 export {
   QueryList,
-  query as Q,
-  queryRefresh as qR,
+  query,
+  queryRefresh,
 } from './query';
 export  {
-  registerContentQuery as Qr,
-  loadQueryList as ql,
+  registerContentQuery,
+  loadQueryList,
 } from './instructions';
 
 export {
-  pureFunction0 as f0,
-  pureFunction1 as f1,
-  pureFunction2 as f2,
-  pureFunction3 as f3,
-  pureFunction4 as f4,
-  pureFunction5 as f5,
-  pureFunction6 as f6,
-  pureFunction7 as f7,
-  pureFunction8 as f8,
-  pureFunctionV as fV,
+  pureFunction0,
+  pureFunction1,
+  pureFunction2,
+  pureFunction3,
+  pureFunction4,
+  pureFunction5,
+  pureFunction6,
+  pureFunction7,
+  pureFunction8,
+  pureFunctionV,
 } from './pure_function';
 
 
 // clang-format on
 
 export {
+  BaseDef,
   ComponentDef,
   ComponentDefInternal,
   ComponentTemplate,
@@ -153,6 +159,7 @@ export {
   defineComponent,
   defineDirective,
   defineNgModule,
+  defineBase,
   definePipe,
   getHostElement,
   getRenderedText,

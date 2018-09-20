@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LElementNode, LViewNode} from './node';
+import {LElementNode} from './node';
 import {LQueries} from './query';
 import {LViewData, NEXT, PARENT, QUERIES} from './view';
 
@@ -64,7 +64,7 @@ export interface LContainer extends Array<any> {
    * (and don't need to be re-added) and so we can remove views from the DOM when they
    * are no longer required.
    */
-  [VIEWS]: LViewNode[];
+  [VIEWS]: LViewData[];
 
   /**
    * Parent Element which will contain the location where all of the Views will be

@@ -309,11 +309,10 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
 export interface ViewChildDecorator {
   /**
    * @description
-   * Configures a view query.
-   *
-   * You can use ViewChild to get the first element or the directive matching the selector from the
-   * view DOM. If the view DOM changes, and a new child matches the selector,
-   * the property will be updated.
+   * Property decorator that configures a view query.
+   * The change detector looks for the first element or the directive matching the selector
+   * in the view DOM. If the view DOM changes, and a new child matches the selector,
+   * the property is updated.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
@@ -322,7 +321,20 @@ export interface ViewChildDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
    *
+   * Supported selectors include:
+   *   * any class with the `@Component` or `@Directive` decorator
+   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>
+   * with `@ViewChild('cmp')`)
+   *   * any provider defined in the child component tree of the current component (e.g.
+   * `@ViewChild(SomeService) someService: SomeService`)
+   *   * any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
+   * any`)
+   *   * a `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
+   * template;`)
+   *
    * @usageNotes
+   *
+   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
    * ### Example
    *

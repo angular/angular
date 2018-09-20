@@ -10,10 +10,11 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
+import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {renderTemplate} from '../../src/render3/instructions';
+import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';
@@ -59,22 +60,27 @@ export class TemplateFixture extends BaseFixture {
    *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
   constructor(
-      private createBlock: () => void, private updateBlock: () => void = noop,
-      directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null,
-      sanitizer?: Sanitizer|null, rendererFactory?: RendererFactory3) {
+      private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
+      private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
+      pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
+      rendererFactory?: RendererFactory3) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
     this._sanitizer = sanitizer || null;
     this._rendererFactory = rendererFactory || domRendererFactory3;
-    this.hostNode = renderTemplate(this.hostElement, (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        this.createBlock();
-      }
-      if (rf & RenderFlags.Update) {
-        this.updateBlock();
-      }
-    }, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs, sanitizer);
+    this.hostNode = renderTemplate(
+        this.hostElement,
+        (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            this.createBlock();
+          }
+          if (rf & RenderFlags.Update) {
+            this.updateBlock();
+          }
+        },
+        consts, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
+        sanitizer);
   }
 
   /**
@@ -84,8 +90,8 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostNode.native, updateBlock || this.updateBlock, null !, this._rendererFactory,
-        this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this.hostNode.native, updateBlock || this.updateBlock, 0, this.vars, null !,
+        this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
 }
 
@@ -170,11 +176,12 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, directives?: DirectiveTypesOrFactory | null,
-    pipes?: PipeTypesOrFactory | null, providedRendererFactory?: RendererFactory3 | null) {
+    template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
+    directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
+    providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host,
-      toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
+      containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
+      host, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
   return toHtml(containerEl);
 }
 
@@ -213,28 +220,38 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function toHtml<T>(componentOrElement: T | RElement): string {
-  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElementNode;
-  if (node) {
-    return toHtml(node.native);
+  let element: any;
+  if (isComponentInstance(componentOrElement)) {
+    const context = getContext(componentOrElement);
+    element = context ? context.native : null;
   } else {
-    return stringifyElement(componentOrElement)
+    element = componentOrElement;
+  }
+
+  if (element) {
+    return stringifyElement(element)
         .replace(/^<div host="">/, '')
         .replace(/^<div fixture="mark">/, '')
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
-        .replace(/<!--container-->/g, '');
+        .replace(/<!--container-->/g, '')
+        .replace(/<!--ng-container-->/g, '');
+  } else {
+    return '';
   }
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>, directives: DirectiveTypesOrFactory = [],
-    pipes: PipeTypesOrFactory = [],
+    name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
+    directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
       type: Component,
       selectors: [[name]],
+      consts: consts,
+      vars: vars,
       factory: () => new Component,
       template: template,
       viewQuery: viewQuery,

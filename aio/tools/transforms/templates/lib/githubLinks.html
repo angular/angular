@@ -1,0 +1,31 @@
+{% macro projectRelativePath(fileInfo) -%}
+{$ fileInfo.realProjectRelativePath if fileInfo.realProjectRelativePath else fileInfo.projectRelativePath $}
+{%- endmacro %}
+
+{% macro githubViewHref(doc, versionInfo) -%}
+https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}/tree/{$ versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw $}/packages/{$ doc.fileInfo.realProjectRelativePath $}#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}
+{%- endmacro %}
+
+{% macro githubEditHref(doc, versionInfo) -%}
+https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}/edit/master{$ '/packages' if doc.docType !== 'content' $}/{$ projectRelativePath(doc.fileInfo) $}?message=docs
+  {%- if doc.moduleDoc %}({$ doc.moduleDoc.id.split('/')[0] $})
+  {%- elseif doc.docType === 'module' %}({$ doc.id.split('/')[0] $})
+  {%- elseif doc.docType === 'content' %}
+  {%- else %}(...){%- endif -%}
+%3A%20describe%20your%20change...{% if doc.docType !== 'content' %}#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}{% endif %}
+{%- endmacro %}
+
+{% macro githubEditLink(doc, versionInfo) -%}
+<a href="{$ githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+{%- endmacro %}
+
+{% macro githubViewLink(doc, versionInfo) -%}
+<a href="{$ githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
+{%- endmacro %}
+
+{% macro githubLinks(doc, versionInfo) -%}
+<div class="github-links">
+  {$ githubEditLink(doc, versionInfo) $}
+  {$ githubViewLink(doc, versionInfo) $}
+</div>
+{%- endmacro -%}

@@ -53,9 +53,9 @@ export enum ClassMemberKind {
  */
 export interface ClassMember {
   /**
-   * TypeScript reference to the class member itself.
+   * TypeScript reference to the class member itself, or null if it is not applicable.
    */
-  node: ts.Node;
+  node: ts.Node|null;
 
   /**
    * Indication of which type of member this is (property, method, etc).
@@ -83,10 +83,57 @@ export interface ClassMember {
   nameNode: ts.Identifier|null;
 
   /**
-   * TypeScript `ts.Expression` which initializes this member, if the member is a property, or
-   * `null` otherwise.
+   * TypeScript `ts.Expression` which represents the value of the member.
+   *
+   * If the member is a property, this will be the property initializer if there is one, or null
+   * otherwise.
    */
-  initializer: ts.Expression|null;
+  value: ts.Expression|null;
+
+  /**
+   * TypeScript `ts.Declaration` which represents the implementation of the member.
+   *
+   * In TypeScript code this is identical to the node, but in downleveled code this should always be
+   * the Declaration which actually represents the member's runtime value.
+   *
+   * For example, the TS code:
+   *
+   * ```
+   * class Clazz {
+   *   static get property(): string {
+   *     return 'value';
+   *   }
+   * }
+   * ```
+   *
+   * Downlevels to:
+   *
+   * ```
+   * var Clazz = (function () {
+   *   function Clazz() {
+   *   }
+   *   Object.defineProperty(Clazz, "property", {
+   *       get: function () {
+   *           return 'value';
+   *       },
+   *       enumerable: true,
+   *       configurable: true
+   *   });
+   *   return Clazz;
+   * }());
+   * ```
+   *
+   * In this example, for the property "property", the node would be the entire
+   * Object.defineProperty ExpressionStatement, but the implementation would be this
+   * FunctionDeclaration:
+   *
+   * ```
+   * function () {
+   *   return 'value';
+   * },
+   * ```
+   */
+  implementation: ts.Declaration|null;
 
   /**
    * Whether the member is static or not.
@@ -100,9 +147,9 @@ export interface ClassMember {
 }
 
 /**
- * A parameter to a function or constructor.
+ * A parameter to a constructor.
  */
-export interface Parameter {
+export interface CtorParameter {
   /**
    * Name of the parameter, if available.
    *
@@ -134,6 +181,54 @@ export interface Parameter {
 }
 
 /**
+ * Definition of a function or method, including its body if present and any parameters.
+ *
+ * In TypeScript code this metadata will be a simple reflection of the declarations in the node
+ * itself. In ES5 code this can be more complicated, as the default values for parameters may
+ * be extracted from certain body statements.
+ */
+export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
+                                    ts.FunctionExpression> {
+  /**
+   * A reference to the node which declares the function.
+   */
+  node: T;
+
+  /**
+   * Statements of the function body, if a body is present, or null if no body is present.
+   *
+   * This list may have been filtered to exclude statements which perform parameter default value
+   * initialization.
+   */
+  body: ts.Statement[]|null;
+
+  /**
+   * Metadata regarding the function's parameters, including possible default value expressions.
+   */
+  parameters: Parameter[];
+}
+
+/**
+ * A parameter to a function or method.
+ */
+export interface Parameter {
+  /**
+   * Name of the parameter, if available.
+   */
+  name: string|null;
+
+  /**
+   * Declaration which created this parameter.
+   */
+  node: ts.ParameterDeclaration;
+
+  /**
+   * Expression which represents the default value of the parameter, if any.
+   */
+  initializer: ts.Expression|null;
+}
+
+/**
  * The source of an imported symbol, including the original symbol name and the module from which it
  * was imported.
  */
@@ -149,6 +244,24 @@ export interface Import {
    * This could either be an absolute module name (@angular/core for example) or a relative path.
    */
   from: string;
+}
+
+/**
+ * The declaration of a symbol, along with information about how it was imported into the
+ * application.
+ */
+export interface Declaration {
+  /**
+   * TypeScript reference to the declaration itself.
+   */
+  node: ts.Declaration;
+
+  /**
+   * The absolute module path from which the symbol was imported into the application, if the symbol
+   * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
+   * of the application and was not imported from an absolute path, this will be `null`.
+   */
+  viaModule: string|null;
 }
 
 /**
@@ -208,7 +321,30 @@ export interface ReflectionHost {
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
    * If the class has no constructor, this method returns `null`.
    */
-  getConstructorParameters(declaration: ts.Declaration): Parameter[]|null;
+  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null;
+
+  /**
+   * Reflect over a function and return metadata about its parameters and body.
+   *
+   * Functions in TypeScript and ES5 code have different AST representations, in particular around
+   * default values for parameters. A TypeScript function has its default value as the initializer
+   * on the parameter declaration, whereas an ES5 function has its default value set in a statement
+   * of the form:
+   *
+   * if (param === void 0) { param = 3; }
+   *
+   * This method abstracts over these details, and interprets the function declaration and body to
+   * extract parameter default values and the "real" body.
+   *
+   * A current limitation is that this metadata has no representation for shorthand assignment of
+   * parameter objects in the function signature.
+   *
+   * @param fn a TypeScript `ts.Declaration` node representing the function over which to reflect.
+   *
+   * @returns a `FunctionDefinition` giving metadata about the function definition.
+   */
+  getDefinitionOfFunction<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
+                          ts.FunctionExpression>(fn: T): FunctionDefinition<T>;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata
@@ -220,4 +356,67 @@ export interface ReflectionHost {
    * `null` if the identifier doesn't resolve to an import but instead is locally defined.
    */
   getImportOfIdentifier(id: ts.Identifier): Import|null;
+
+  /**
+   * Trace an identifier to its declaration, if possible.
+   *
+   * This method attempts to resolve the declaration of the given identifier, tracing back through
+   * imports and re-exports until the original declaration statement is found. A `Declaration`
+   * object is returned if the original declaration is found, or `null` is returned otherwise.
+   *
+   * If the declaration is in a different module, and that module is imported via an absolute path,
+   * this method also returns the absolute path of the imported module. For example, if the code is:
+   *
+   * ```
+   * import {RouterModule} from '@angular/core';
+   *
+   * export const ROUTES = RouterModule.forRoot([...]);
+   * ```
+   *
+   * and if `getDeclarationOfIdentifier` is called on `RouterModule` in the `ROUTES` expression,
+   * then it would trace `RouterModule` via its import from `@angular/core`, and note that the
+   * definition was imported from `@angular/core` into the application where it was referenced.
+   *
+   * If the definition is re-exported several times from different absolute module names, only
+   * the first one (the one by which the application refers to the module) is returned.
+   *
+   * This module name is returned in the `viaModule` field of the `Declaration`. If The declaration
+   * is relative to the application itself and there was no import through an absolute path, then
+   * `viaModule` is `null`.
+   *
+   * @param id a TypeScript `ts.Identifier` to trace back to a declaration.
+   *
+   * @returns metadata about the `Declaration` if the original declaration is found, or `null`
+   * otherwise.
+   */
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null;
+
+  /**
+   * Collect the declarations exported from a module by name.
+   *
+   * Iterates over the exports of a module (including re-exports) and returns a map of export
+   * name to its `Declaration`. If an exported value is itself re-exported from another module,
+   * the `Declaration`'s `viaModule` will reflect that.
+   *
+   * @param node a TypeScript `ts.Node` representing the module (for example a `ts.SourceFile`) for
+   * which to collect exports.
+   *
+   * @returns a map of `Declaration`s for the module's exports, by name.
+   */
+  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null;
+
+  /**
+   * Check whether the given node actually represents a class.
+   */
+  isClass(node: ts.Node): boolean;
+
+  hasBaseClass(node: ts.Declaration): boolean;
+
+  /**
+   * Get the number of generic type parameters of a given class.
+   *
+   * @returns the number of type parameters of the class, if known, or `null` if the declaration
+   * is not a class or has an unknown number of type parameters.
+   */
+  getGenericArityOfClass(clazz: ts.Declaration): number|null;
 }

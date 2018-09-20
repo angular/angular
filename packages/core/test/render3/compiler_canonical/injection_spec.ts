@@ -34,12 +34,14 @@ describe('injection', () => {
           factory: function MyComp_Factory() {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
+          consts: 1,
+          vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
+              $r3$.ɵtext(0);
             }
             if (rf & 2) {
-              $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.value));
             }
           }
         });
@@ -51,10 +53,12 @@ describe('injection', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
+          vars: 0,
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp');
+              $r3$.ɵelement(0, 'my-comp');
             }
           },
           directives: () => [MyComp]
@@ -80,12 +84,14 @@ describe('injection', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
+          consts: 1,
+          vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
+              $r3$.ɵtext(0);
             }
             if (rf & 2) {
-              $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.title));
             }
           }
         });
@@ -97,10 +103,12 @@ describe('injection', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
+          vars: 0,
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp', e0_attrs);
+              $r3$.ɵelement(0, 'my-comp', e0_attrs);
             }
           },
           directives: () => [MyComp]
@@ -149,6 +157,8 @@ describe('injection', () => {
             return new MyApp(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
+          consts: 0,
+          vars: 0,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],

@@ -314,7 +314,7 @@ export class HttpXhrBackend implements HttpBackend {
       }
 
       // Fire the request, and notify the event stream that it was fired.
-      xhr.send(reqBody);
+      xhr.send(reqBody !);
       observer.next({type: HttpEventType.Sent});
 
       // This is the return from the Observable function, which is the

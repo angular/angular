@@ -70,7 +70,7 @@ export class ServiceWorkerModule {
    * workers are not supported by the browser, and the service worker will not be registered.
    */
   static register(script: string, opts: {scope?: string; enabled?: boolean;} = {}):
-      ModuleWithProviders {
+      ModuleWithProviders<ServiceWorkerModule> {
     return {
       ngModule: ServiceWorkerModule,
       providers: [

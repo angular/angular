@@ -76,7 +76,8 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
 export function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
   if (!filePath) return filePath;
   // NB: the rootDirs should have been sorted longest-first
-  for (const dir of rootDirs || []) {
+  for (let i = 0; i < rootDirs.length; i++) {
+    const dir = rootDirs[i];
     const rel = path.posix.relative(dir, filePath);
     if (rel.indexOf('.') != 0) return rel;
   }
@@ -106,7 +107,9 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
-    for (const key of Object.keys(inputs)) {
+    const inputKeys = Object.keys(inputs);
+    for (let i = 0; i < inputKeys.length; i++) {
+      const key = inputKeys[i];
       resolvedInputs[resolveNormalizedPath(key)] = inputs[key];
     }
     fileCache.updateCache(resolvedInputs);
@@ -124,7 +127,11 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {
-    compilerOpts.annotateForClosureCompiler = false;
+    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
+    // This causes ngc to be have exactly like tsc.
+    if (compilerOpts.enableIvy === 'tsc') {
+      compilerOpts.annotateForClosureCompiler = false;
+    }
     compilerOpts.annotationsAs = 'decorators';
   }
 
@@ -207,12 +214,40 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     if (fileName ===
         path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
       return true;
+    // Also handle the case when angular is built from source as an external repository
+    if (fileName ===
+        path.join(
+            compilerOpts.baseUrl, 'external/angular', bazelOpts.package,
+            compilerOpts.flatModuleOutFile + '.ts'))
+      return true;
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
   };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
-
+  const fileNameToModuleNameCache = new Map<string, string>();
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+    // Memoize this lookup to avoid expensive re-parses of the same file
+    // When run as a worker, the actual ts.SourceFile is cached
+    // but when we don't run as a worker, there is no cache.
+    // For one example target in g3, we saw a cache hit rate of 7590/7695
+    if (fileNameToModuleNameCache.has(importedFilePath)) {
+      return fileNameToModuleNameCache.get(importedFilePath);
+    }
+    const result = doFileNameToModuleName(importedFilePath);
+    fileNameToModuleNameCache.set(importedFilePath, result);
+    return result;
+  };
+
+  function doFileNameToModuleName(importedFilePath: string): string {
+    try {
+      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+      if (sourceFile && sourceFile.moduleName) {
+        return sourceFile.moduleName;
+      }
+    } catch (err) {
+      // File does not exist or parse error. Ignore this case and continue onto the
+      // other methods of resolving the module below.
+    }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
@@ -222,7 +257,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       return result.substr(NODE_MODULES.length);
     }
     return bazelOpts.workspaceName + '/' + result;
-  };
+  }
+
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
@@ -300,8 +336,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (const missing of writtenExpectedOuts) {
-    originalWriteFile(missing, '', false);
+  for (let i = 0; i < writtenExpectedOuts.length; i++) {
+    originalWriteFile(writtenExpectedOuts[i], '', false);
   }
 
   return {program, diagnostics};
@@ -317,7 +353,8 @@ function generateMetadataJson(
     program: ts.Program, files: string[], rootDirs: string[], bazelBin: string,
     tsHost: ts.CompilerHost) {
   const collector = new ng.MetadataCollector();
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     const sourceFile = program.getSourceFile(file);
     if (sourceFile) {
       const metadata = collector.getMetadata(sourceFile);
@@ -347,7 +384,9 @@ function gatherDiagnosticsForInputsOnly(
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
   diagnostics.push(...tsProgram.getOptionsDiagnostics());
   diagnostics.push(...tsProgram.getGlobalDiagnostics());
-  for (const sf of tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f))) {
+  const programFiles = tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f));
+  for (let i = 0; i < programFiles.length; i++) {
+    const sf = programFiles[i];
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));

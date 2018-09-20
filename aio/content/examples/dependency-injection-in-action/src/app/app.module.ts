@@ -1,7 +1,7 @@
 // #docregion
 import { BrowserModule }                from '@angular/platform-browser';
 import { FormsModule }                  from '@angular/forms';
-import { HttpModule }                   from '@angular/http';
+import { HttpClientModule }             from '@angular/common/http';
 
 // import { AppRoutingModule }             from './app-routing.module';
 import { LocationStrategy,
@@ -31,6 +31,7 @@ import { ParentFinderComponent,
          BarryComponent,
          BethComponent,
          BobComponent }                 from './parent-finder.component';
+import { StorageComponent }             from './storage.component';
 
 const declarations = [
     AppComponent,
@@ -54,7 +55,7 @@ const c_components = [
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     InMemoryWebApiModule.forRoot(HeroData)
     // AppRoutingModule TODO: add routes
   ],
@@ -63,6 +64,7 @@ const c_components = [
     a_components,
     b_components,
     c_components,
+    StorageComponent,
   ],
   bootstrap: [ AppComponent ],
   // #docregion providers

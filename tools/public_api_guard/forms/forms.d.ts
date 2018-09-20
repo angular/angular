@@ -330,6 +330,8 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
 }
 
 export declare class FormsModule {
+    static withConfig(opts: { warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always';
+    }): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
@@ -398,6 +400,11 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
     updateModel(dir: NgControl, value: any): void;
 }
 
+/** @deprecated */
+export declare class NgFormSelectorWarning {
+    constructor(ngFormWarning: string | null);
+}
+
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormControl;
@@ -458,7 +465,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
 
 export declare class ReactiveFormsModule {
     static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {

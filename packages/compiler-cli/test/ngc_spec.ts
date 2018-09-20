@@ -172,7 +172,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', 'not-exist'], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
-      expect(errorSpy.calls.mostRecent().args[0]).toContain('at Object.fs.lstatSync');
+      expect(errorSpy.calls.mostRecent().args[0]).toMatch(/at Object\.(fs\.)?lstatSync/);
       expect(exitCode).toEqual(2);
     });
 
@@ -554,10 +554,10 @@ describe('ngc transformer command-line', () => {
     });
 
     describe('closure', () => {
-      it('should not generate closure specific code by default', () => {
+      it('should not run tsickle by default', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"]
+          "files": ["mymodule.ts"],
         }`);
         write('mymodule.ts', `
         import {NgModule, Component} from '@angular/core';
@@ -575,7 +575,8 @@ describe('ngc transformer command-line', () => {
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).not.toContain('@fileoverview added by tsickle');
-        expect(mymoduleSource).toContain('MyComp.decorators = [');
+        expect(mymoduleSource).toContain('MyComp = __decorate');
+        expect(mymoduleSource).not.toContain('MyComp.decorators = [');
       });
 
       it('should add closure annotations', () => {
@@ -2362,36 +2363,6 @@ describe('ngc transformer command-line', () => {
       expect(moduleSource)
           .toContain(
               'Module.ngInjectorDef = i0.defineInjector({ factory: function Module_Factory() { return new Module(); }, providers: ɵ1, imports: [ɵ2, ɵ3] });');
-    });
-
-    it('strips decorator in ivy mode', () => {
-      writeConfig(`{
-        "extends": "./tsconfig-base.json",
-        "files": ["service.ts"],
-        "angularCompilerOptions": {
-          "enableIvy": true
-        }
-      }`);
-      write('service.ts', `
-        import {Injectable, Self} from '@angular/core';  
-
-        @Injectable()
-        export class ServiceA {}
-
-        @Injectable()
-        @Self()
-        export class ServiceB {}
-      `);
-
-      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
-      expect(exitCode).toEqual(0);
-
-      const modulePath = path.resolve(outDir, 'service.js');
-      const moduleSource = fs.readFileSync(modulePath, 'utf8');
-      expect(moduleSource).not.toMatch(/ServiceA\.decorators =/);
-      expect(moduleSource).toMatch(/ServiceB\.decorators =/);
-      expect(moduleSource).toMatch(/type: Self/);
-      expect(moduleSource).not.toMatch(/type: Injectable/);
     });
 
     it('rewrites Injector to INJECTOR in Ivy factory functions ', () => {

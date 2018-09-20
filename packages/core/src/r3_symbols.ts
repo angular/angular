@@ -19,11 +19,11 @@
  * The below symbols are used for @Injectable and @NgModule compilation.
  */
 
-export {InjectableDef, InjectorDef as ɵInjectorDef, defineInjectable, defineInjector} from './di/defs';
+export {InjectableDef as ɵInjectableDef, InjectorDef as ɵInjectorDef, defineInjectable, defineInjector} from './di/defs';
 export {inject} from './di/injector';
 export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
 export {defineNgModule as ɵdefineNgModule} from './render3/definition';
-
+export {NgModuleFactory as ɵNgModuleFactory} from './render3/ng_module_ref';
 
 /**
  * The existence of this constant (in this particular file) informs the Angular compiler that the

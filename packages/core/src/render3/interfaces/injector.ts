@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
 import {ElementRef} from '../../linker/element_ref';
 import {TemplateRef} from '../../linker/template_ref';
 import {ViewContainerRef} from '../../linker/view_container_ref';
 
-import {LContainerNode, LElementNode} from './node';
+import {TContainerNode, TElementContainerNode, TElementNode,} from './node';
+import {LViewData} from './view';
 
 export interface LInjector {
   /**
@@ -20,13 +22,14 @@ export interface LInjector {
    */
   readonly parent: LInjector|null;
 
+  /** Necessary to find directive indices for a particular node and look up the LNode. */
+  readonly tNode: TElementNode|TElementContainerNode|TContainerNode;
+
   /**
-   * Allows access to the directives array in that node's static data and to
-   * the node's flags (for starting directive index and directive size). Necessary
-   * for DI to retrieve a directive from the data array if injector indicates
-   * it is there.
+   * The view where the node is stored. Necessary because as we traverse up the injector
+   * tree the view where we search directives may change.
    */
-  readonly node: LElementNode|LContainerNode;
+  readonly view: LViewData;
 
   /**
    * The following bloom filter determines whether a directive is available

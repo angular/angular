@@ -157,9 +157,9 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div (bubble.click)>`                      |  ❌     |  ❌      |  ❌      |
 | `<div (keyup.enter)>`                       |  ❌     |  ❌      |  ❌      |
 | `<div (hammer.js)>`                         |  ❌     |  ❌      |  ❌      |
-| [`<div (directiveOut)>`][gh23560]           |  ✅     |  ❌      |  ❌      |
-| [`<ng-template (directiveOut)>`][gh23561]   |  ❌     |  ❌      |  ❌      |
-| [`<ng-container>`][gh24381]                 |  ❌     |  ❌      |  ❌      |
+| [`<div (directiveOut)>`][gh23560]           |  ✅     |  ✅      |  ✅     |
+| [`<ng-template (directiveOut)>`][gh23561]   |  ✅     |  ✅      |  ✅      |
+| [`<ng-container>`][gh24381]                 |  ✅     |  ✅      |  ✅      |
 
 [gh23560]: https://github.com/angular/angular/issues/23560
 [gh23561]: https://github.com/angular/angular/issues/23561
@@ -216,6 +216,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `injectElementRef()`                |  ✅     |  ✅      |  ✅      |
 | `injectViewContainerRef()`          |  ✅     |  ✅      |  ✅      |
 | `injectTemplateRef()`               |  ✅     |  ✅      |  ✅      |
+| `injectRenderer2()`                 |  ✅     |  ✅      |  ✅      |
 | default `inject()` with no injector |  ❌     |  ❌      |  ❌      |
 | sanitization with no injector       |  ✅     |  ✅      |  ❌      |
 
@@ -244,7 +245,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `clear()`              |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `get()`                |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `createEmbededView()`  |  ✅                | ✅           | n/a              | n/a      | n/a         | n/a                  |
-| `createComponent()`    |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `createComponent()`    |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `insert()`             |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `move()`               |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `indexOf()`            |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |

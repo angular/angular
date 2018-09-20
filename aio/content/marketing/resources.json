@@ -16,6 +16,12 @@
             "rev": true,
             "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
             "url": "https://angular-ru.github.io/"
+          },
+          "made-with-angular": {
+            "desc": "A showcase of web apps built with Angular.",
+            "rev": true,
+            "title": "Made with Angular",
+            "url": "https://www.madewithangular.com/"
           }
         }
       },
@@ -181,7 +187,7 @@
             "rev": true,
             "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
             "url": "https://amexio.tech/"
-          }	
+          }
         }
       },
       "Tooling": {
@@ -260,6 +266,13 @@
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
+          },
+          "uijar": {
+            "desc": "A drop in module to automatically create a living style guide based on the test you write for your components.",
+            "logo": "",
+            "rev": true,
+            "title": "UI-jar - Test Driven Style Guide Development",
+            "url": "https://github.com/ui-jar/ui-jar"
           }
         }
       },
@@ -317,7 +330,7 @@
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular",
+            "desc": "A professional grade library of Angular UI components written in TypeScript that includes our Data Grid, TreeView, Charts, Editors, DropDowns, DatePickers, and many more. Features include support for AOT compilation, Tree Shaking for high-performance, localization, and accessibility.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
@@ -395,6 +408,19 @@
             "rev": true,
             "title": "Essential JS 2",
             "url": "https://www.syncfusion.com/products/angular-js2"
+          },
+          "trulyui": {
+            "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
+            "rev": true,
+            "title": "Truly UI",
+            "url": "http://truly-ui.com"
+          },
+          "ngsqui": {
+            "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "logo": "https://sq-ui.github.io/ng-sq-ui/_media/sq-ui-logo.png",
+            "rev": true,
+            "title": "Simple Quality UI",
+            "url": "https://sq-ui.github.io/ng-sq-ui/#/"
           }
         }
       }
@@ -415,8 +441,8 @@
           "-KLIzGEp8Mh5W-FkiQnL": {
             "desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
             "rev": true,
-            "title": "Learning Angular",
-            "url": "https://www.packtpub.com/web-development/learning-angular-2"
+            "title": "Learning Angular - Second Edition",
+            "url": "https://www.packtpub.com/web-development/learning-angular-second-edition"
           },
           "3ab": {
             "desc": "More than 15 books from O'Reilly about Angular",
@@ -497,6 +523,13 @@
             "rev": true,
             "title": "The Angular Guide by Wishtack (Français)",
             "url": "https://guide-angular.wishtack.io/"
+          },
+          "ab5": {
+            "desc": "How to build Angular applications using NGRX",
+            "logo": "",
+            "rev": true,
+            "title": "Architecting Angular Applications with NGRX",
+            "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           }
         }
       },
@@ -623,12 +656,24 @@
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
+          },
+          "loiane-angulartraining": {
+            "desc": "Free Angular course in Portuguese.",
+            "rev": true,
+            "title": "Loiane Training (Português)",
+            "url": "https://loiane.training/course/angular/"
           }
         }
       },
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
+          "-acceleb": {
+            "desc": "Customized, Instructor-Led Angular Training",
+            "rev": true,
+            "title": "Accelebrate",
+            "url": "https://www.accelebrate.com/angular-training"
+          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,
@@ -730,6 +775,12 @@
             "rev": true,
             "title": "Angular.Schule (German)",
             "url": "https://angular.schule/"
+          },
+          "strbrw": {
+            "desc": "Angular and RxJS trainings, Code Reviews and consultancy. We help software engineers all over the world to create better web-applications...",
+            "rev": true,
+            "title": "StrongBrew",
+            "url": "https://strongbrew.io/"
           }
         }
       }

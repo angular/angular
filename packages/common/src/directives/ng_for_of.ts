@@ -27,6 +27,8 @@ export class NgForOfContext<T> {
  * for each instantiated template inherits from the outer context with the given loop variable
  * set to the current item from the iterable.
  *
+ * @usageNotes
+ *
  * ### Local Variables
  *
  * `NgForOf` provides several exported values that can be aliased to local variables:
@@ -90,7 +92,7 @@ export class NgForOfContext<T> {
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  *
- *
+ * @ngModule CommonModule
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck {

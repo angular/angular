@@ -12,12 +12,12 @@ import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
-import {LContainerNode, LElementNode, LViewNode, TNode} from './node';
+import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 16;
+export const HEADER_OFFSET = 17;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -38,6 +38,15 @@ export const SANITIZER = 12;
 export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
+export const DECLARATION_VIEW = 16;
+
+// This interface replaces the real LViewData interface if it is an arg or a
+// return value of a public instruction. This ensures we don't need to expose
+// the actual interface, which should be kept private.
+export interface OpaqueViewState {
+  '__brand__': 'Brand for OpaqueViewState that nothing will match';
+}
+
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -61,6 +70,9 @@ export interface LViewData extends Array<any> {
    * The parent view is needed when we exit the view and must restore the previous
    * `LViewData`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
+   *
+   * This is the "insertion" view for embedded views. This allows us to properly
+   * destroy embedded views.
    */
   [PARENT]: LViewData|null;
 
@@ -82,15 +94,16 @@ export interface LViewData extends Array<any> {
   [FLAGS]: LViewFlags;
 
   /**
-   * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
+   * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
    *
-   * If `LViewNode`, this is an embedded view of a container. We need this to be able to
+   * If `TViewNode`, this is an embedded view of a container. We need this to be able to
    * efficiently find the `LViewNode` when inserting the view into an anchor.
    *
-   * If `LElementNode`, this is the LView of a component.
+   * If `TElementNode`, this is the LView of a component.
+   *
+   * If null, this is the root view of an application (root component is in this view).
    */
-  // TODO(kara): Replace with index
-  [HOST_NODE]: LViewNode|LElementNode;
+  [HOST_NODE]: TViewNode|TElementNode|null;
 
   /**
    * The binding index we should access next.
@@ -122,9 +135,11 @@ export interface LViewData extends Array<any> {
   [CLEANUP]: any[]|null;
 
   /**
-   * - For embedded views, the context with which to render the template.
+   * - For dynamic views, this is the context with which to render the template (e.g.
+   *   `NgForContext`), or `{}` if not defined explicitly.
    * - For root view of the root component the context contains change detection data.
-   * - `null` otherwise.
+   * - For non-root components, the context is the component instance,
+   * - For inline views, the context is null.
    */
   [CONTEXT]: {}|RootContext|null;
 
@@ -143,7 +158,6 @@ export interface LViewData extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  // TODO: replace with global
   [TAIL]: LViewData|LContainer|null;
 
   /**
@@ -162,6 +176,32 @@ export interface LViewData extends Array<any> {
    * be refreshed.
    */
   [CONTENT_QUERIES]: QueryList<any>[]|null;
+
+  /**
+   * View where this view's template was declared.
+   *
+   * Only applicable for dynamically created views. Will be null for inline/component views.
+   *
+   * The template for a dynamically created view may be declared in a different view than
+   * it is inserted. We already track the "insertion view" (view where the template was
+   * inserted) in LViewData[PARENT], but we also need access to the "declaration view"
+   * (view where the template was declared). Otherwise, we wouldn't be able to call the
+   * view's template function with the proper contexts. Context should be inherited from
+   * the declaration view tree, not the insertion view tree.
+   *
+   * Example (AppComponent template):
+   *
+   * <ng-template #foo></ng-template>       <-- declared here -->
+   * <some-comp [tpl]="foo"></some-comp>    <-- inserted inside this component -->
+   *
+   * The <ng-template> above is declared in the AppComponent template, but it will be passed into
+   * SomeComp and inserted there. In this case, the declaration view would be the AppComponent,
+   * but the insertion view would be SomeComp. When we are removing views, we would want to
+   * traverse through the insertion view to clean up listeners. When we are calling the
+   * template function during change detection, we need the declaration view to get inherited
+   * context.
+   */
+  [DECLARATION_VIEW]: LViewData|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
@@ -174,16 +214,16 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b000001,
+  CreationMode = 0b0000001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b000010,
+  CheckAlways = 0b0000010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000100,
+  Dirty = 0b0000100,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b001000,
+  Attached = 0b0001000,
 
   /**
    *  Whether or not the init hooks have run.
@@ -192,10 +232,13 @@ export const enum LViewFlags {
    * runs OR the first cR() instruction that runs (so inits are run for the top level view before
    * any embedded views).
    */
-  RunInit = 0b010000,
+  RunInit = 0b0010000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b100000,
+  Destroyed = 0b0100000,
+
+  /** Whether or not this view is the root view */
+  IsRoot = 0b1000000,
 }
 
 /**
@@ -215,6 +258,12 @@ export interface TView {
   readonly id: number;
 
   /**
+   * This is a blueprint used to generate LViewData instances for this TView. Copying this
+   * blueprint is faster than creating a new LViewData from scratch.
+   */
+  blueprint: LViewData;
+
+  /**
    * The template function used to refresh the view of dynamically created views
    * and components. Will be null for inline views.
    */
@@ -232,9 +281,15 @@ export interface TView {
    * We need this pointer to be able to efficiently find this node when inserting the view
    * into an anchor.
    *
-   * If this is a `TNode` for an `LElementNode`, this is the TView of a component.
+   * If this is a `TElementNode`, this is the view of a root component. It has exactly one
+   * root TNode.
+   *
+   * If this is null, this is the view of a component that is not at root. We do not store
+   * the host TNodes for child component views because they can potentially have several
+   * different host TNodes, depending on where the component is being used. These host
+   * TNodes cannot be shared (due to different indices, etc).
    */
-  node: TNode;
+  node: TViewNode|TElementNode|null;
 
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
@@ -251,6 +306,13 @@ export interface TView {
   bindingStartIndex: number;
 
   /**
+   * The index at which the data array begins to store host bindings for components
+   * or directives in its template. Saving this value ensures that we can set the
+   * binding root and binding index correctly before checking host bindings.
+   */
+  hostBindingStartIndex: number;
+
+  /**
    * Index of the host node of the first LView or LContainer beneath this LView in
    * the hierarchy.
    *
@@ -261,6 +323,11 @@ export interface TView {
    * LView to avoid managing splicing when views are added/removed.
    */
   childIndex: number;
+
+  /**
+   * A reference to the first child node located in the view.
+   */
+  firstChild: TNode|null;
 
   /**
    * Selector matches for a node are temporarily cached on the TView so the
@@ -404,11 +471,10 @@ export interface TView {
   cleanup: any[]|null;
 
   /**
-   * A list of directive and element indices for child components that will need to be
-   * refreshed when the current view has finished its check.
+   * A list of element indices for child components that will need to be
+   * refreshed when the current view has finished its check. These indices have
+   * already been adjusted for the HEADER_OFFSET.
    *
-   * Even indices: Directive indices
-   * Odd indices: Element indices (adjusted for LViewData header offset)
    */
   components: number[]|null;
 

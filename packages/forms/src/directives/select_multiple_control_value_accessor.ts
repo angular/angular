@@ -68,7 +68,8 @@ abstract class HTMLCollection {
  * }
  * ```
  *
- *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
  */
 @Directive({
   selector:
@@ -175,6 +176,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
  *   <option *ngFor="let c of cities" [value]="c"></option>
  * </select>
  * ```
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({selector: 'option'})
 export class NgSelectMultipleOption implements OnDestroy {

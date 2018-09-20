@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// This file contains all ambient imports needed to compile the modules/ source code
+// This file contains all ambient imports needed to compile the packages/ source code
 
-/// <reference path="../node_modules/@types/hammerjs/index.d.ts" />
-/// <reference path="../node_modules/@types/jasmine/index.d.ts" />
-/// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/zone.js/dist/zone.js.d.ts" />
+/// <reference types="hammerjs" />
+/// <reference types="zone.js" />
 /// <reference path="./es6-subset.d.ts" />
 /// <reference path="./goog.d.ts" />
 /// <reference path="./system.d.ts" />
+
+// Do not included "node" and "jasmine" types here as we don't
+// want these ambient types to be included everywhere.
+// Tests will bring in ambient node & jasmine types with
+// /packages/tsconfig-test.json when `testonly = True` is set
+// and packages such as platform-server that need these types should
+// use `/// <reference types="x">` in their main entry points
 
 declare let isNode: boolean;
 declare let isBrowser: boolean;

@@ -13,11 +13,18 @@ When you're done with this page, the app should look like this <live-example></l
 
 `HttpClient` is Angular's mechanism for communicating with a remote server over HTTP. 
 
-To make `HttpClient` available everywhere in the app,
+To make `HttpClient` available everywhere in the app:
 
-* open the root `AppModule`, 
-* import the `HttpClientModule` symbol from `@angular/common/http`,
-* add it to the `@NgModule.imports` array.
+* open the root `AppModule` 
+* import the `HttpClientModule` symbol from `@angular/common/http`
+
+<code-example
+  path="toh-pt6/src/app/app.module.ts"
+  region="import-http-client"
+  title="src/app/app.module.ts (Http Client import)">
+</code-example>
+
+* add it to the `@NgModule.imports` array
 
 ## Simulate a data server
 
@@ -158,7 +165,7 @@ Applying the optional type specifier, `<Hero[]>` , gives you a typed result obje
 The shape of the JSON data is determined by the server's data API.
 The _Tour of Heroes_ data API returns the hero data as an array.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Other APIs may bury the data that you want within an object.
 You might have to dig that data out by processing the `Observable` result
@@ -250,7 +257,7 @@ There are three significant differences from  `getHeroes()`.
 
 ## Update heroes
 
-Editing a hero's name in the _hero detail_ view.
+Edit a hero's name in the _hero detail_ view.
 As you type, the hero name updates the heading at the top of the page.
 But when you click the "go back button", the changes are lost.
 
@@ -291,11 +298,11 @@ That header is in the `httpOptions` constant defined in the `HeroService`.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
-  region="http-options">
+  region="http-options"
+  title="src/app/hero.service.ts">
 </code-example>
 
-Refresh the browser, change a hero name, save your change,
-and click the "go back" button. 
+Refresh the browser, change a hero name and save your change. Navigating to the previous view is implemented in the `save()` method defined in `HeroDetailComponent`.
 The hero now appears in the list with the changed name.
 
 ## Add a new hero
@@ -440,7 +447,7 @@ Create a `HeroSearchComponent` with the CLI.
   ng generate component hero-search
 </code-example>
 
-The CLI generates the three `HeroSearchComponent` and adds the component to the `AppModule' declarations
+The CLI generates the three `HeroSearchComponent` files and adds the component to the `AppModule` declarations
 
 Replace the generated `HeroSearchComponent` _template_ with a text box and a list of matching search results like this.
 
@@ -536,7 +543,7 @@ before passing along the latest string. You'll never make requests more frequent
 It cancels and discards previous search observables, returning only the latest search service observable.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   With the [switchMap operator](http://www.learnrxjs.io/operators/transformation/switchmap.html),
   every qualifying key event can trigger an `HttpClient.get()` method call.

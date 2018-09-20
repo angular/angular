@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {InitialStylingFlags} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+
 
 /**
  * The styling context acts as a styling manifest (shaped as an array) for determining which
@@ -51,42 +53,44 @@ import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces
  *
  * ```
  * context = [
+ *   element,
+ *   styleSanitizer | null,
  *   [null, '100px', '200px', true],  // property names are not needed since they have already been
  * written to DOM.
  *
+ *   configMasterVal,
  *   1, // this instructs how many `style` values there are so that class index values can be
  * offsetted
- *
- *   configMasterVal,
- *
- *   // 3
- *   'width',
- *   pointers(1, 12);  // Point to static `width`: `100px` and multi `width`.
- *   null,
+ *   'last class string applied',
  *
  *   // 6
- *   'height',
- *   pointers(2, 15); // Point to static `height`: `200px` and multi `height`.
+ *   'width',
+ *   pointers(1, 15);  // Point to static `width`: `100px` and multi `width`.
  *   null,
  *
  *   // 9
- *   'foo',
- *   pointers(1, 18);  // Point to static `foo`: `true` and multi `foo`.
+ *   'height',
+ *   pointers(2, 18); // Point to static `height`: `200px` and multi `height`.
  *   null,
  *
  *   // 12
- *   'width',
- *   pointers(1, 3);  // Point to static `width`: `100px` and single `width`.
+ *   'foo',
+ *   pointers(1, 21);  // Point to static `foo`: `true` and multi `foo`.
  *   null,
  *
  *   // 15
- *   'height',
- *   pointers(2, 6);  // Point to static `height`: `200px` and single `height`.
+ *   'width',
+ *   pointers(1, 6);  // Point to static `width`: `100px` and single `width`.
  *   null,
  *
  *   // 18
+ *   'height',
+ *   pointers(2, 9);  // Point to static `height`: `200px` and single `height`.
+ *   null,
+ *
+ *   // 21
  *   'foo',
- *   pointers(3, 9);  // Point to static `foo`: `true` and single `foo`.
+ *   pointers(3, 12);  // Point to static `foo`: `true` and single `foo`.
  *   null,
  * ]
  *
@@ -111,36 +115,41 @@ import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces
  * `updateStylingMap` can include new CSS properties that will be added to the context).
  */
 export interface StylingContext extends
-    Array<InitialStyles|number|string|boolean|LElementNode|null> {
+    Array<InitialStyles|number|string|boolean|LElementNode|StyleSanitizeFn|null> {
   /**
    * Location of element that is used as a target for this context.
    */
   [0]: LElementNode|null;
 
   /**
+   * The style sanitizer that is used within this context
+   */
+  [1]: StyleSanitizeFn|null;
+
+  /**
    * Location of initial data shared by all instances of this style.
    */
-  [1]: InitialStyles;
+  [2]: InitialStyles;
 
   /**
    * A numeric value representing the configuration status (whether the context is dirty or not)
    * mixed together (using bit shifting) with a index value which tells the starting index value
    * of where the multi style entries begin.
    */
-  [2]: number;
+  [3]: number;
 
   /**
    * A numeric value representing the class index offset value. Whenever a single class is
    * applied (using `elementClassProp`) it should have an styling index value that doesn't
    * need to take into account any style values that exist in the context.
    */
-  [3]: number;
+  [4]: number;
 
   /**
    * The last CLASS STRING VALUE that was interpreted by elementStylingMap. This is cached
    * So that the algorithm can exit early incase the string has not changed.
    */
-  [4]: string|null;
+  [5]: string|null;
 }
 
 /**
@@ -159,31 +168,35 @@ export interface InitialStyles extends Array<string|null|boolean> { [0]: null; }
  */
 export const enum StylingFlags {
   // Implies no configurations
-  None = 0b00,
+  None = 0b000,
   // Whether or not the entry or context itself is dirty
-  Dirty = 0b01,
+  Dirty = 0b001,
   // Whether or not this is a class-based assignment
-  Class = 0b10,
+  Class = 0b010,
+  // Whether or not a sanitizer was applied to this property
+  Sanitize = 0b100,
   // The max amount of bits used to represent these configuration values
-  BitCountSize = 2,
-  // There are only two bits here
-  BitMask = 0b11
+  BitCountSize = 3,
+  // There are only three bits here
+  BitMask = 0b111
 }
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
 export const enum StylingIndex {
   // Position of where the initial styles are stored in the styling context
   ElementPosition = 0,
+  // Position of where the style sanitizer is stored within the styling context
+  StyleSanitizerPosition = 1,
   // Position of where the initial styles are stored in the styling context
-  InitialStylesPosition = 1,
+  InitialStylesPosition = 2,
   // Index of location where the start of single properties are stored. (`updateStyleProp`)
-  MasterFlagPosition = 2,
+  MasterFlagPosition = 3,
   // Index of location where the class index offset value is located
-  ClassOffsetPosition = 3,
+  ClassOffsetPosition = 4,
   // Position of where the last string-based CSS class value was stored
-  CachedCssClassString = 4,
+  CachedCssClassString = 5,
   // Location of single (prop) value entries are stored within the context
-  SingleStylesStartPosition = 5,
+  SingleStylesStartPosition = 6,
   // Multi and single entries are stored in `StylingContext` as: Flag; PropertyName;  PropertyValue
   FlagsOffset = 0,
   PropertyOffset = 1,
@@ -191,9 +204,9 @@ export const enum StylingIndex {
   // Size of each multi or single entry (flag + prop + value)
   Size = 3,
   // Each flag has a binary digit length of this value
-  BitCountSize = 15,  // (32 - 1) / 2 = ~15
+  BitCountSize = 14,  // (32 - 3) / 2 = ~14
   // The binary digit value as a mask
-  BitMask = 0b111111111111111  // 15 bits
+  BitMask = 0b11111111111111  // 14 bits
 }
 
 /**
@@ -233,10 +246,11 @@ export function allocStylingContext(
  *       class will be applied to the element as an initial class since it's true
  */
 export function createStylingContextTemplate(
+    initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null): StylingContext {
+    styleSanitizer?: StyleSanitizeFn | null): StylingContext {
   const initialStylingValues: InitialStyles = [null];
-  const context: StylingContext = [null, initialStylingValues, 0, 0, null];
+  const context: StylingContext = [null, styleSanitizer || null, initialStylingValues, 0, 0, null];
 
   // we use two maps since a class name might collide with a CSS style prop
   const stylesLookup: {[key: string]: number} = {};
@@ -314,7 +328,7 @@ export function createStylingContextTemplate(
 
     const indexForMulti = i * StylingIndex.Size + multiStart;
     const indexForSingle = i * StylingIndex.Size + singleStart;
-    const initialFlag = isClassBased ? StylingFlags.Class : StylingFlags.None;
+    const initialFlag = prepareInitialFlag(prop, isClassBased, styleSanitizer || null);
 
     setFlag(context, indexForSingle, pointers(initialFlag, indexForInitial, indexForMulti));
     setProp(context, indexForSingle, prop);
@@ -347,12 +361,12 @@ const EMPTY_OBJ: {[key: string]: any} = {};
  *
  * @param context The styling context that will be updated with the
  *    newly provided style values.
- * @param styles The key/value map of CSS styles that will be used for the update.
  * @param classes The key/value map of CSS class names that will be used for the update.
+ * @param styles The key/value map of CSS styles that will be used for the update.
  */
 export function updateStylingMap(
-    context: StylingContext, styles: {[key: string]: any} | null,
-    classes?: {[key: string]: any} | string | null): void {
+    context: StylingContext, classes: {[key: string]: any} | string | null,
+    styles?: {[key: string]: any} | null): void {
   let classNames: string[] = EMPTY_ARR;
   let applyAllClasses = false;
   let ignoreAllClassUpdates = false;
@@ -407,10 +421,10 @@ export function updateStylingMap(
       const prop = getProp(context, ctxIndex);
       if (prop === newProp) {
         const value = getValue(context, ctxIndex);
-        if (value !== newValue) {
+        const flag = getPointers(context, ctxIndex);
+        if (hasValueChanged(flag, value, newValue)) {
           setValue(context, ctxIndex, newValue);
 
-          const flag = getPointers(context, ctxIndex);
           const initialValue = getInitialValue(context, flag);
 
           // there is no point in setting this to dirty if the previously
@@ -437,7 +451,8 @@ export function updateStylingMap(
           }
         } else {
           // we only care to do this if the insertion is in the middle
-          insertNewMultiProperty(context, ctxIndex, isClassBased, newProp, newValue);
+          const newFlag = prepareInitialFlag(newProp, isClassBased, getStyleSanitizer(context));
+          insertNewMultiProperty(context, ctxIndex, isClassBased, newProp, newFlag, newValue);
           dirty = true;
         }
       }
@@ -468,6 +483,7 @@ export function updateStylingMap(
   // this means that there are left-over properties in the context that
   // were not detected in the context during the loop above. In that
   // case we want to add the new entries into the list
+  const sanitizer = getStyleSanitizer(context);
   while (propIndex < propLimit) {
     const isClassBased = propIndex >= classesStartIndex;
     if (ignoreAllClassUpdates && isClassBased) break;
@@ -476,7 +492,7 @@ export function updateStylingMap(
     const prop = isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
     const value: string|boolean =
         isClassBased ? (applyAllClasses ? true : classes[prop]) : styles[prop];
-    const flag = StylingFlags.Dirty | (isClassBased ? StylingFlags.Class : StylingFlags.None);
+    const flag = prepareInitialFlag(prop, isClassBased, sanitizer) | StylingFlags.Dirty;
     context.push(flag, prop, value);
     propIndex++;
     dirty = true;
@@ -508,7 +524,7 @@ export function updateStyleProp(
   const currFlag = getPointers(context, singleIndex);
 
   // didn't change ... nothing to make a note of
-  if (currValue !== value) {
+  if (hasValueChanged(currFlag, currValue, value)) {
     // the value will always get updated (even if the dirty flag is skipped)
     setValue(context, singleIndex, value);
     const indexForMulti = getMultiOrSingleIndex(currFlag);
@@ -573,6 +589,7 @@ export function renderStyling(
   if (isContextDirty(context)) {
     const native = context[StylingIndex.ElementPosition] !.native;
     const multiStartIndex = getMultiStartIndex(context);
+    const styleSanitizer = getStyleSanitizer(context);
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;
          i += StylingIndex.Size) {
       // there is no point in rendering styles that have not changed on screen
@@ -607,7 +624,8 @@ export function renderStyling(
         if (isClassBased) {
           setClass(native, prop, valueToApply ? true : false, renderer, classStore);
         } else {
-          setStyle(native, prop, valueToApply as string | null, renderer, styleStore);
+          const sanitizer = (flag & StylingFlags.Sanitize) ? styleSanitizer : null;
+          setStyle(native, prop, valueToApply as string | null, renderer, sanitizer, styleStore);
         }
         setDirty(context, i, false);
       }
@@ -631,7 +649,8 @@ export function renderStyling(
  */
 function setStyle(
     native: any, prop: string, value: string | null, renderer: Renderer3,
-    store?: {[key: string]: any}) {
+    sanitizer: StyleSanitizeFn | null, store?: {[key: string]: any}) {
+  value = sanitizer && value ? sanitizer(prop, value) : value;
   if (store) {
     store[prop] = value;
   } else if (value) {
@@ -697,6 +716,12 @@ function isClassBased(context: StylingContext, index: number): boolean {
   return ((context[adjustedIndex] as number) & StylingFlags.Class) == StylingFlags.Class;
 }
 
+function isSanitizable(context: StylingContext, index: number): boolean {
+  const adjustedIndex =
+      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
+  return ((context[adjustedIndex] as number) & StylingFlags.Sanitize) == StylingFlags.Sanitize;
+}
+
 function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
   return (configFlag & StylingFlags.BitMask) | (staticIndex << StylingFlags.BitCountSize) |
       (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
@@ -719,6 +744,10 @@ function getMultiOrSingleIndex(flag: number): number {
 
 function getMultiStartIndex(context: StylingContext): number {
   return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
+}
+
+function getStyleSanitizer(context: StylingContext): StyleSanitizeFn|null {
+  return context[StylingIndex.StyleSanitizerPosition];
 }
 
 function setProp(context: StylingContext, index: number, prop: string) {
@@ -808,7 +837,8 @@ function updateSinglePointerValues(context: StylingContext, indexStartPosition: 
       const singleFlag = getPointers(context, singleIndex);
       const initialIndexForSingle = getInitialIndex(singleFlag);
       const flagValue = (isDirty(context, singleIndex) ? StylingFlags.Dirty : StylingFlags.None) |
-          (isClassBased(context, singleIndex) ? StylingFlags.Class : StylingFlags.None);
+          (isClassBased(context, singleIndex) ? StylingFlags.Class : StylingFlags.None) |
+          (isSanitizable(context, singleIndex) ? StylingFlags.Sanitize : StylingFlags.None);
       const updatedFlag = pointers(flagValue, initialIndexForSingle, i);
       setFlag(context, singleIndex, updatedFlag);
     }
@@ -816,14 +846,14 @@ function updateSinglePointerValues(context: StylingContext, indexStartPosition: 
 }
 
 function insertNewMultiProperty(
-    context: StylingContext, index: number, classBased: boolean, name: string,
+    context: StylingContext, index: number, classBased: boolean, name: string, flag: number,
     value: string | boolean): void {
   const doShift = index < context.length;
 
   // prop does not exist in the list, add it in
   context.splice(
-      index, 0, StylingFlags.Dirty | (classBased ? StylingFlags.Class : StylingFlags.None), name,
-      value);
+      index, 0, flag | StylingFlags.Dirty | (classBased ? StylingFlags.Class : StylingFlags.None),
+      name, value);
 
   if (doShift) {
     // because the value was inserted midway into the array then we
@@ -838,4 +868,31 @@ function valueExists(value: string | null | boolean, isClassBased?: boolean) {
     return value ? true : false;
   }
   return value !== null;
+}
+
+function prepareInitialFlag(
+    name: string, isClassBased: boolean, sanitizer?: StyleSanitizeFn | null) {
+  if (isClassBased) {
+    return StylingFlags.Class;
+  } else if (sanitizer && sanitizer(name)) {
+    return StylingFlags.Sanitize;
+  }
+  return StylingFlags.None;
+}
+
+function hasValueChanged(
+    flag: number, a: string | boolean | null, b: string | boolean | null): boolean {
+  const isClassBased = flag & StylingFlags.Class;
+  const hasValues = a && b;
+  const usesSanitizer = flag & StylingFlags.Sanitize;
+  // the toString() comparison ensures that a value is checked
+  // ... otherwise (during sanitization bypassing) the === comparsion
+  // would fail since a new String() instance is created
+  if (!isClassBased && hasValues && usesSanitizer) {
+    // we know for sure we're dealing with strings at this point
+    return (a as string).toString() !== (b as string).toString();
+  }
+
+  // everything else is safe to check with a normal equality check
+  return a !== b;
 }

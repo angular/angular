@@ -75,7 +75,7 @@ Import what you need from it as you would from any other Angular package.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -336,7 +336,7 @@ It has a great deal of useful information including:
   </tr>
 </table>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Two older properties are still available. They are less capable than their replacements, discouraged, and may be deprecated in a future Angular version.
 
@@ -756,7 +756,7 @@ Modern HTML5 browsers were the first to support `pushState` which is why many pe
 "HTML5 style" URLs.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -866,7 +866,7 @@ Once the application is bootstrapped, the `Router` performs the initial navigati
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -919,7 +919,7 @@ The `RouterOutlet` is a directive from the router library that marks
 the spot in the template where the router should display the views for that outlet.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -949,7 +949,7 @@ or a URL fragment for jumping to different areas on the page. Query string param
 are provided through the `[queryParams]` binding which takes an object (e.g. `{ name: 'value' }`), while the URL fragment
 takes a single value bound to the `[fragment]` input binding.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1010,7 +1010,7 @@ The router will select _this_ route if it can't match a route earlier in the con
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](#redirect) to an existing route.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1096,7 +1096,7 @@ In this app, the router should select the route to the `HeroListComponent` only 
 so set the `pathMatch` value to `'full'`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1313,7 +1313,7 @@ then replacing `RouterModule.forRoot` in the `imports` array with the `AppRoutin
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1482,7 +1482,7 @@ using the same techniques you learned while creating the `AppRoutingModule`.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1509,7 +1509,7 @@ In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method
 In a feature module you use the static **`forChild`** method.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1622,7 +1622,7 @@ _before_ the hero routes.
 The wildcard route&mdash;which matches _every_ URL&mdash;will intercept the attempt to navigate to a hero route.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1712,7 +1712,7 @@ The router composes the destination URL from the array like this:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1864,7 +1864,7 @@ You need a way to detect when the route parameters change from _within the same 
 The observable `paramMap` property handles that beautifully.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1907,7 +1907,7 @@ It's much simpler to write and read:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2062,7 +2062,7 @@ They are **separated by semicolons ";"**
 This is *matrix URL* notation&mdash;something you may not have seen before.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2090,7 +2090,7 @@ as this one can.
 The list of heroes is unchanged. No hero row is highlighted.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2227,7 +2227,7 @@ The other two `@HostBinding` properties style the display and position of the co
 The `HeroDetailComponent` will ease in from the left when routed to and will slide down when navigating away.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2597,7 +2597,7 @@ Navigation _within_ the feature area remains intact even if you change the paren
 Here's an example:
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2623,7 +2623,7 @@ After the _link parameters array_, add an object with a `relativeTo` property se
 The router then calculates the target URL based on the active route's location.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2781,7 +2781,7 @@ In this case there is only the "popup" outlet property and its value is another 
 You are in effect saying, _when the user clicks this link, display the component associated with the `compose` route in the `popup` outlet_.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2898,7 +2898,7 @@ A guard's return value controls the router's behavior:
 * If it returns `false`, the navigation process stops and the user stays put.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3030,7 +3030,7 @@ feature module, a dashboard route and two unfinished components to manage crises
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3207,7 +3207,7 @@ Import and add the `LoginRoutingModule` to the `AppModule` imports as well.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3318,7 +3318,7 @@ This demo does neither. Instead, it asks the user to make that choice explicitly
 in a confirmation dialog box that *waits asynchronously for the user's
 answer*.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3596,7 +3596,7 @@ and fragment to the next route.
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 The `queryParamsHandling` feature also provides a `merge` option, which will preserve and combine the current query parameters with any provided query parameters
@@ -3630,7 +3630,7 @@ You can use these persistent bits of information for things that need to be prov
 authentication tokens or session ids.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3700,7 +3700,7 @@ The lazy loading and re-configuration happen just once, when the route is _first
 the module and routes are available immediately for subsequent requests.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3983,7 +3983,7 @@ Let's take the `Hero` routes and migrate them to new URLs. The `Router` checks f
 
 You'll notice two different types of redirects. The first change is from  `/heroes` to `/superheroes` without any parameters. This is a straightforward redirect, unlike the change from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter. Router redirects also use powerful pattern matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination. Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `Router` also supports [query parameters](#query-parameters) and the [fragment](#fragment) when using redirects.
 
@@ -4195,7 +4195,7 @@ making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

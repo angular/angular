@@ -384,6 +384,7 @@ export class AppComponent implements OnInit {
 
   hideSearchResults() {
     this.showSearchResults = false;
+    this.locationService.setSearch('', {});
   }
 
   focusSearchBox() {

@@ -66,7 +66,7 @@ export interface CanDeactivate<T> {
 }
 
 export interface CanLoad {
-    canLoad(route: Route): Observable<boolean> | Promise<boolean> | boolean;
+    canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
 }
 
 /** @experimental */
@@ -119,6 +119,7 @@ export interface ExtraOptions {
     onSameUrlNavigation?: 'reload' | 'ignore';
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     preloadingStrategy?: any;
+    relativeLinkResolution?: 'legacy' | 'corrected';
     scrollOffset?: [number, number] | (() => [number, number]);
     scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
     urlUpdateStrategy?: 'deferred' | 'eager';
@@ -320,6 +321,7 @@ export declare class Router {
     navigated: boolean;
     onSameUrlNavigation: 'reload' | 'ignore';
     paramsInheritanceStrategy: 'emptyOnly' | 'always';
+    relativeLinkResolution: 'legacy' | 'corrected';
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
     readonly url: string;
@@ -414,8 +416,8 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 export declare class RouterModule {
     constructor(guard: any, router: Router);
-    static forChild(routes: Routes): ModuleWithProviders;
-    static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
+    static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
+    static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
 }
 
 export declare class RouterOutlet implements OnDestroy, OnInit {

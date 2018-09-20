@@ -19,20 +19,20 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * formatted according to locale rules that determine group sizing and
  * separator, decimal-point character, and other locale-specific
  * configurations.
- * 
+ *
  * If no parameters are specified, the function rounds off to the nearest value using this
  * [rounding method](https://en.wikibooks.org/wiki/Arithmetic/Rounding).
  * The behavior differs from that of the JavaScript ```Math.round()``` function.
- * In the following case for example, the pipe rounds down where 
+ * In the following case for example, the pipe rounds down where
  * ```Math.round()``` rounds up:
- * 
+ *
  * ```html
  * -2.5 | number:'1.0-0'
  * > -3
  * Math.round(-2.5)
  * > -2
  * ```
- * 
+ *
  * @see `formatNumber()`
  *
  * @usageNotes
@@ -43,7 +43,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * ### Example
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
- *
  *
  */
 @Pipe({name: 'number'})
@@ -181,6 +180,9 @@ export class CurrencyPipe implements PipeTransform {
    * Default is `0`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
    * Default is `3`.
+   * If not provided, the number will be formatted with the proper amount of digits,
+   * depending on what the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) specifies.
+   * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).

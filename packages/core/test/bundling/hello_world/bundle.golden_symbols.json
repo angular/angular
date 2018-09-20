@@ -6,6 +6,9 @@
     "name": "BINDING_INDEX"
   },
   {
+    "name": "BLOOM_MASK"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -24,7 +27,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_RENDERER_TYPE_ID"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "FLAGS"
@@ -42,13 +45,34 @@
     "name": "INJECTOR$1"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "NEXT"
   },
   {
-    "name": "NG_HOST_SYMBOL"
+    "name": "NG_COMPONENT_DEF"
+  },
+  {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "PARENT"
+  },
+  {
+    "name": "PublicFeature"
   },
   {
     "name": "QUERIES"
@@ -60,13 +84,10 @@
     "name": "RENDER_PARENT"
   },
   {
-    "name": "ROOT_DIRECTIVE_INDICES"
+    "name": "SANITIZER"
   },
   {
     "name": "TVIEW"
-  },
-  {
-    "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
     "name": "VIEWS"
@@ -78,7 +99,7 @@
     "name": "_CLEAN_PROMISE"
   },
   {
-    "name": "_ROOT_DIRECTIVE_INDICES"
+    "name": "_getViewData"
   },
   {
     "name": "_renderCompCount"
@@ -87,10 +108,25 @@
     "name": "appendChild"
   },
   {
+    "name": "attachPatchData"
+  },
+  {
     "name": "baseDirectiveCreate"
   },
   {
+    "name": "bindingRootIndex"
+  },
+  {
+    "name": "bloomAdd"
+  },
+  {
     "name": "callHooks"
+  },
+  {
+    "name": "canInsertNativeChildOfElement"
+  },
+  {
+    "name": "canInsertNativeChildOfView"
   },
   {
     "name": "canInsertNativeNode"
@@ -102,13 +138,16 @@
     "name": "componentRefresh"
   },
   {
-    "name": "createLNode"
-  },
-  {
     "name": "createLNodeObject"
   },
   {
     "name": "createLViewData"
+  },
+  {
+    "name": "createNodeAtIndex"
+  },
+  {
+    "name": "createRootComponent"
   },
   {
     "name": "createRootContext"
@@ -123,6 +162,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewBlueprint"
+  },
+  {
     "name": "createViewQuery"
   },
   {
@@ -130,6 +172,12 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "domRendererFactory3"
@@ -156,10 +204,40 @@
     "name": "firstTemplatePass"
   },
   {
-    "name": "getChildLNode"
+    "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
+    "name": "getContainerNode"
+  },
+  {
+    "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getDirectiveDef"
+  },
+  {
+    "name": "getHighestElementContainer"
+  },
+  {
+    "name": "getHostElementNode"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"
+  },
+  {
+    "name": "getOrCreateNodeInjector"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
   },
   {
     "name": "getOrCreateTView"
@@ -168,7 +246,22 @@
     "name": "getParentLNode"
   },
   {
+    "name": "getParentOrContainerNode"
+  },
+  {
+    "name": "getPipeDef"
+  },
+  {
+    "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getPreviousOrParentTNode"
+  },
+  {
     "name": "getRenderFlags"
+  },
+  {
+    "name": "getRenderParent"
   },
   {
     "name": "hostElement"
@@ -192,7 +285,22 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
     "name": "readElementValue"
+  },
+  {
+    "name": "readPatchedData"
+  },
+  {
+    "name": "readPatchedLViewData"
   },
   {
     "name": "refreshChildComponents"
@@ -201,22 +309,22 @@
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshDescendantViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "renderComponent"
   },
   {
+    "name": "renderComponentOrTemplate"
+  },
+  {
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "resetApplicationState"
-  },
-  {
-    "name": "resolveRendererType2"
+    "name": "resetComponentState"
   },
   {
     "name": "setHostBindings"
@@ -229,6 +337,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "tickRootContext"
   },
   {
     "name": "updateViewQuery"

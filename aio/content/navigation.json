@@ -202,14 +202,10 @@
               "url": "guide/pipes",
               "title": "Pipes",
               "tooltip": "Pipes transform displayed values within a template."
-            },
-            {
-              "url": "guide/animations",
-              "title": "Animations",
-              "tooltip": "A guide to Angular's animation system."
             }
           ]
         },
+
         {
           "title": "Forms",
           "tooltip": "Angular Forms",
@@ -350,11 +346,6 @@
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
             {
-              "url": "guide/dependency-injection-pattern",
-              "title": "The Dependency Injection pattern",
-              "tooltip": "Learn about the dependency injection pattern behind the Angular DI system."
-            },
-            {
               "url": "guide/dependency-injection",
               "title": "Angular Dependency Injection",
               "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
@@ -362,12 +353,22 @@
             {
               "url": "guide/hierarchical-dependency-injection",
               "title": "Hierarchical Injectors",
-              "tooltip": "Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree."
+              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
+            },
+            {
+              "url": "guide/dependency-injection-providers",
+              "title": "DI Providers",
+              "tooltip": "More about the different kinds of providers."
             },
             {
               "url": "guide/dependency-injection-in-action",
               "title": "DI in Action",
-              "tooltip": "Techniques for Dependency Injection."
+              "tooltip": "Techniques for dependency injection."
+            },
+            {
+              "url": "guide/dependency-injection-navtree",
+              "title": "Navigate the Component Tree",
+              "tooltip": "Use the injection tree to find parent components."
             }
           ]
         },
@@ -382,6 +383,38 @@
           "title": "Routing & Navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
+        {
+          "title": "Animations",
+          "tooltip": "A guide to Angular's animation system.",
+          "children": [
+            {
+              "url": "guide/animations",
+              "title": "Introduction",
+              "tooltip": "Basic techniques in Angular animations."
+            },
+            {
+              "url": "guide/transition-and-triggers",
+              "title": "Transition and Triggers",
+              "tooltip": "Advanced techniques in transition and triggers."
+            },
+            {
+              "url": "guide/complex-animation-sequences",
+              "title": "Complex Sequences",
+              "tooltip": "Complex Angular animation sequences."
+            },
+            {
+              "url": "guide/reusable-animations",
+              "title": "Reusable Animations",
+              "tooltip": "Creating reusable animations."
+            },
+            {
+              "url": "guide/route-animations",
+              "title": "Route Transition Animations",
+              "tooltip": "Animate route transitions."
+            }
+          ]
+        },
+
         {
           "url": "guide/testing",
           "title": "Testing",

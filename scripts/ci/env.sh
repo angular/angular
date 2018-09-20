@@ -34,12 +34,12 @@ fi
 #    CUSTOM GLOBALS   #
 #######################
 
-setEnvVar NODE_VERSION 8.9.1
-setEnvVar YARN_VERSION 1.3.2
+setEnvVar NODE_VERSION 10.9.0
+setEnvVar YARN_VERSION 1.9.2
 # Pin to a Chromium version that does not cause the aio e2e tests to flake. (See https://github.com/angular/angular/pull/20403.)
 # Revision 494239 (which was part of Chrome 62.0.3186.0) is the last version that does not cause flakes. (Latest revision checked: 508578)
-setEnvVar CHROMIUM_VERSION 494239 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
-setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
+setEnvVar CHROMIUM_VERSION 561733 # Chrome 68 linux stable, see https://www.chromium.org/developers/calendar
+setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
@@ -82,24 +82,17 @@ if [[ ${TRAVIS:-} ]]; then
   # more info: https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
   setEnvVar CXX g++-4.8
 
-  # If NGBUILDS_IO_KEY not set yet, export the NGBUILDS_IO_KEY using the JWT token that Travis generated and exported for SAUCE_ACCESS_KEY.
-  # This is a workaround for travis-ci/travis-ci#7223
-  # WARNING: NGBUILDS_IO_KEY should NOT be printed
-  export NGBUILDS_IO_KEY=${NGBUILDS_IO_KEY:-$SAUCE_ACCESS_KEY}
-
   # Used by karma and karma-chrome-launcher
   # In order to have a meaningful SauceLabs badge on the repo page,
   # the angular2-ci account is used only when pushing commits to master;
   # in all other cases, the regular angular-ci account is used.
   if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
     setEnvVar SAUCE_USERNAME angular2-ci
-    # - not using use setEnvVar so that we don't print the key
-    # - we overwrite the value set by Travis JWT addon here to work around travis-ci/travis-ci#7223 for NGBUILDS_IO_KEY
+    # Not using use `setEnvVar` so that we don't print the key.
     export SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
   else
     setEnvVar SAUCE_USERNAME angular-ci
-    # - not using use setEnvVar so that we don't print the key
-    # - we overwrite the value set by Travis JWT addon here to work around travis-ci/travis-ci#7223 for NGBUILDS_IO_KEY
+    # Not using use `setEnvVar` so that we don't print the key.
     export SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   fi
 

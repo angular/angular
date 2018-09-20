@@ -183,6 +183,9 @@
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
+    "name": "APP_INITIALIZER"
+  },
+  {
     "name": "APP_ROOT"
   },
   {
@@ -366,7 +369,7 @@
     "name": "CSS_STRIPPABLE_COMMENT_REGEXP"
   },
   {
-    "name": "CUSTOM_ELEMENTS_SCHEMA$1"
+    "name": "CUSTOM_ELEMENTS_SCHEMA"
   },
   {
     "name": "CastExpr"
@@ -570,10 +573,10 @@
     "name": "EMPTY"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_ARRAY$4"
   },
   {
-    "name": "EMPTY_ARRAY$2"
+    "name": "EMPTY_ARRAY$5"
   },
   {
     "name": "EMPTY_CONTEXT"
@@ -706,12 +709,6 @@
   },
   {
     "name": "FunctionExpr"
-  },
-  {
-    "name": "GET_PROPERTY_NAME"
-  },
-  {
-    "name": "GET_PROPERTY_NAME$1"
   },
   {
     "name": "GOOG_GET_MSG"
@@ -999,6 +996,9 @@
     "name": "NG_CONTENT_SELECT_ATTR"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_NON_BINDABLE_ATTR"
   },
   {
@@ -1020,7 +1020,7 @@
     "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
   },
   {
-    "name": "NO_ERRORS_SCHEMA$1"
+    "name": "NO_ERRORS_SCHEMA"
   },
   {
     "name": "NO_NEW_LINE"
@@ -1233,10 +1233,13 @@
     "name": "QUOTED_KEYS"
   },
   {
-    "name": "QueryList"
+    "name": "QueryList$1"
   },
   {
     "name": "Quote"
+  },
+  {
+    "name": "R3_COMPILE_INJECTABLE$1"
   },
   {
     "name": "ReadKeyExpr"
@@ -1434,9 +1437,6 @@
     "name": "SyncAsync"
   },
   {
-    "name": "TAG_DEFINITIONS"
-  },
-  {
     "name": "TAG_TO_PLACEHOLDER_NAMES"
   },
   {
@@ -1560,6 +1560,9 @@
     "name": "TypeModifier"
   },
   {
+    "name": "TypeofExpr"
+  },
+  {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
@@ -1572,7 +1575,7 @@
     "name": "USE_VALUE"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE$3"
   },
   {
     "name": "UnsubscriptionError"
@@ -1581,7 +1584,7 @@
     "name": "UrlResolver"
   },
   {
-    "name": "VERSION"
+    "name": "VERSION$1"
   },
   {
     "name": "VERSION$2"
@@ -1596,7 +1599,7 @@
     "name": "VariableAst"
   },
   {
-    "name": "Version"
+    "name": "Version$1"
   },
   {
     "name": "ViewAction"
@@ -1722,9 +1725,6 @@
     "name": "_DEFAULT_SOURCE_LANG$1"
   },
   {
-    "name": "_DEFAULT_TAG_DEFINITION"
-  },
-  {
     "name": "_DOCTYPE"
   },
   {
@@ -1734,7 +1734,7 @@
     "name": "_ESCAPED_CHARS"
   },
   {
-    "name": "_EXEMPLE_TAG"
+    "name": "_EXAMPLE_TAG"
   },
   {
     "name": "_EmittedLine"
@@ -1905,6 +1905,9 @@
     "name": "__assign"
   },
   {
+    "name": "__decorate"
+  },
+  {
     "name": "__extends"
   },
   {
@@ -1939,6 +1942,12 @@
   },
   {
     "name": "__extends$u"
+  },
+  {
+    "name": "__metadata"
+  },
+  {
+    "name": "__param"
   },
   {
     "name": "__read"
@@ -2142,7 +2151,7 @@
     "name": "_removeDotSegments"
   },
   {
-    "name": "_renderCompCount"
+    "name": "_renderCompCount$1"
   },
   {
     "name": "_resolveProviders"
@@ -2412,10 +2421,19 @@
     "name": "checkStable"
   },
   {
+    "name": "cloneNgModuleDefinition"
+  },
+  {
     "name": "collectReferences"
   },
   {
     "name": "compareCharCodeCaseInsensitive"
+  },
+  {
+    "name": "compileNgModuleFactory"
+  },
+  {
+    "name": "compileNgModuleFactory__PRE_NGCC__"
   },
   {
     "name": "componentFactoryName"
@@ -2562,7 +2580,7 @@
     "name": "createOptional"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createOutputContext"
@@ -2595,7 +2613,7 @@
     "name": "createPureExpression"
   },
   {
-    "name": "createQuery"
+    "name": "createQuery$1"
   },
   {
     "name": "createRendererType2"
@@ -2868,7 +2886,7 @@
     "name": "flatten"
   },
   {
-    "name": "flatten$2"
+    "name": "flatten$3"
   },
   {
     "name": "flattenAndDedupeArray"
@@ -2919,9 +2937,6 @@
     "name": "getClosureSafeProperty"
   },
   {
-    "name": "getClosureSafeProperty$1"
-  },
-  {
     "name": "getComponentViewDefinitionFactory"
   },
   {
@@ -2947,6 +2962,9 @@
   },
   {
     "name": "getHtmlTagDefinition"
+  },
+  {
+    "name": "getInjectableDef"
   },
   {
     "name": "getNgZone"
@@ -3057,7 +3075,7 @@
     "name": "inlineInterpolate"
   },
   {
-    "name": "interpolate"
+    "name": "interpolate$1"
   },
   {
     "name": "interpretStatements"
@@ -3163,6 +3181,9 @@
   },
   {
     "name": "isObservable"
+  },
+  {
+    "name": "isObservable$1"
   },
   {
     "name": "isPrefixEnd"
@@ -3363,10 +3384,10 @@
     "name": "nodeValue"
   },
   {
-    "name": "noop"
+    "name": "noop$1"
   },
   {
-    "name": "noop$1"
+    "name": "noop$3"
   },
   {
     "name": "noopScope"
@@ -3384,7 +3405,7 @@
     "name": "normalizeNgContentSelect"
   },
   {
-    "name": "not$1"
+    "name": "not"
   },
   {
     "name": "nullSafeIsEquivalent"
@@ -3478,6 +3499,9 @@
   },
   {
     "name": "refCount"
+  },
+  {
+    "name": "registerContext"
   },
   {
     "name": "registerModuleFactory"
@@ -3654,7 +3678,7 @@
     "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "stringifyType"

@@ -19,7 +19,7 @@ Create a new project named `angular-tour-of-heroes` with this CLI command.
 The Angular CLI generated a new project with a default application and supporting files. 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -41,7 +41,7 @@ Go to the project directory and launch the application.
   ng serve --open
 </code-example>
  
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `ng serve` command builds the app, starts the development server,
 watches the source files, and rebuilds the app as you make changes to those files.

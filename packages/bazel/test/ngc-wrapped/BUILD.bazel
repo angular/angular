@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "ngc_test_lib",
@@ -30,6 +29,6 @@ jasmine_node_test(
         ":angular_core",
         "//packages/bazel/test/ngc-wrapped/empty:empty_tsconfig.json",
         "//packages/bazel/test/ngc-wrapped/empty:tsconfig.json",
-        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
+        "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
 )

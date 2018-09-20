@@ -62,6 +62,7 @@ System.config({
     '@angular/platform-server': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-webworker-dynamic': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/private/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/elements': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
     'rxjs/operators': {main: 'index.js', defaultExtension: 'js'},

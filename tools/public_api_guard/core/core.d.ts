@@ -23,10 +23,8 @@ export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: Component
 /** @experimental */
 export declare const APP_ID: InjectionToken<string>;
 
-/** @experimental */
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
-/** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
@@ -269,6 +267,10 @@ export interface DirectiveDecorator {
     new (obj: Directive): Directive;
 }
 
+export interface DoBootstrap {
+    ngDoBootstrap(appRef: ApplicationRef): void;
+}
+
 export interface DoCheck {
     ngDoCheck(): void;
 }
@@ -408,12 +410,6 @@ export declare abstract class Injector {
 /** @experimental */
 export declare const INJECTOR: InjectionToken<Injector>;
 
-export interface InjectorDef<T> {
-    factory: () => T;
-    imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
-    providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
-}
-
 /** @experimental */
 export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;
@@ -510,8 +506,8 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-export interface ModuleWithProviders {
-    ngModule: Type<any>;
+export interface ModuleWithProviders<T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
+    ngModule: Type<T>;
     providers?: Provider[];
 }
 
@@ -554,7 +550,7 @@ export declare class NgZone {
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
     constructor({ enableLongStackTrace }: {
-        enableLongStackTrace?: boolean;
+        enableLongStackTrace?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
@@ -723,7 +719,7 @@ export declare abstract class Renderer2 {
     abstract removeChild(parent: any, oldChild: any): void;
     abstract removeClass(el: any, name: string): void;
     abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
-    abstract selectRootElement(selectorOrNode: string | any): any;
+    abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string | null): void;
     abstract setProperty(el: any, name: string, value: any): void;
     abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
@@ -928,7 +924,7 @@ export declare abstract class ViewContainerRef {
     abstract readonly element: ElementRef;
     abstract readonly injector: Injector;
     abstract readonly length: number;
-    abstract readonly parentInjector: Injector;
+    /** @deprecated */ abstract readonly parentInjector: Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;

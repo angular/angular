@@ -1,0 +1,77 @@
+# These options are enabled when running on CI with Remote Build Execution.
+
+################################################################
+# Toolchain related flags for remote build execution.          #
+################################################################
+# Remote Build Execution requires a strong hash function, such as SHA256.
+startup --host_jvm_args=-Dbazel.DigestFunction=SHA256
+
+# Depending on how many machines are in the remote execution instance, setting
+# this higher can make builds faster by allowing more jobs to run in parallel.
+# Setting it too high can result in jobs that timeout, however, while waiting
+# for a remote machine to execute them.
+build --jobs=150
+
+# Set several flags related to specifying the platform, toolchain and java
+# properties.
+# These flags are duplicated rather than imported from (for example)
+# %workspace%/configs/ubuntu16_04_clang/1.0/toolchain.bazelrc to make this
+# bazelrc a standalone file that can be copied more easily.
+# These flags should only be used as is for the rbe-ubuntu16-04 container
+# and need to be adapted to work with other toolchain containers.
+build --host_javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.0:jdk8
+build --javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.0:jdk8
+build --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build --crosstool_top=@bazel_toolchains//configs/ubuntu16_04_clang/1.0/bazel_0.15.0/default:toolchain
+build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+# Platform flags:
+# The toolchain container used for execution is defined in the target indicated
+# by "extra_execution_platforms", "host_platform" and "platforms".
+# If you are using your own toolchain container, you need to create a platform
+# target with "constraint_values" that allow for the toolchain specified with
+# "extra_toolchains" to be selected (given constraints defined in
+# "exec_compatible_with").
+# More about platforms: https://docs.bazel.build/versions/master/platforms.html
+build --extra_toolchains=@bazel_toolchains//configs/ubuntu16_04_clang/1.0/bazel_0.15.0/cpp:cc-toolchain-clang-x86_64-default
+build --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
+build --host_platform=//tools:rbe_ubuntu1604-angular
+build --platforms=//tools:rbe_ubuntu1604-angular
+
+# Set various strategies so that all actions execute remotely. Mixing remote
+# and local execution will lead to errors unless the toolchain and remote
+# machine exactly match the host machine.
+build --spawn_strategy=remote
+build --strategy=Javac=remote
+build --strategy=Closure=remote
+build --genrule_strategy=remote
+build --define=EXECUTOR=remote
+
+# Enable the remote cache so action results can be shared across machines,
+# developers, and workspaces.
+build --remote_cache=remotebuildexecution.googleapis.com
+
+# Enable remote execution so actions are performed on the remote systems.
+build --remote_executor=remotebuildexecution.googleapis.com
+
+# Remote instance.
+build --remote_instance_name=projects/internal-200822/instances/default_instance
+
+# Enable encryption.
+build --tls_enabled=true
+
+# Enforce stricter environment rules, which eliminates some non-hermetic
+# behavior and therefore improves both the remote cache hit rate and the
+# correctness and repeatability of the build.
+build --experimental_strict_action_env=true
+
+# Set a higher timeout value, just in case.
+build --remote_timeout=3600
+
+# Enable authentication. This will pick up application default credentials by
+# default. You can use --auth_credentials=some_file.json to use a service
+# account credential instead.
+build --auth_enabled=true
+
+# Do not accept remote cache.
+build --remote_accept_cached=false

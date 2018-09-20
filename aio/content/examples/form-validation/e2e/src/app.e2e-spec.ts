@@ -16,6 +16,7 @@ describe('Form Validation Tests', function () {
 
     tests('Template-Driven Form');
     bobTests();
+    asyncValidationTests();
     crossValidationTests();
   });
 
@@ -26,6 +27,7 @@ describe('Form Validation Tests', function () {
 
     tests('Reactive Form');
     bobTests();
+    asyncValidationTests();
     crossValidationTests();
   });
 });
@@ -45,6 +47,7 @@ let page: {
   errorMessages: ElementArrayFinder,
   heroFormButtons: ElementArrayFinder,
   heroSubmitted: ElementFinder,
+  alterEgoErrors: ElementFinder,
   crossValidationErrorMessage: ElementFinder,
 };
 
@@ -63,6 +66,7 @@ function getPage(sectionTag: string) {
     errorMessages: section.all(by.css('div.alert')),
     heroFormButtons: buttons,
     heroSubmitted: section.element(by.css('.submitted-message')),
+    alterEgoErrors: section.element(by.css('.alter-ego-errors')),
     crossValidationErrorMessage: section.element(by.css('.cross-validation-error-message')),
   };
 }
@@ -156,6 +160,16 @@ function expectFormIsInvalid() {
     expect(page.form.getAttribute('class')).toMatch('ng-invalid');
 }
 
+function triggerAlterEgoValidation() {
+  // alterEgo has updateOn set to 'blur', click outside of the input to trigger the blur event
+  element(by.css('app-root')).click()
+}
+
+function waitForAlterEgoValidation() {
+  // alterEgo async validation will be performed in 400ms
+  browser.sleep(400);
+}
+
 function bobTests() {
   const emsg = 'Name cannot be Bob.';
 
@@ -177,6 +191,32 @@ function bobTests() {
   });
 }
 
+function asyncValidationTests() {
+  const emsg = 'Alter ego is already taken.';
+
+  it(`should produce "${emsg}" error after setting alterEgo to Eric`, function () {
+    page.alterEgoInput.clear();
+    page.alterEgoInput.sendKeys('Eric');
+
+    triggerAlterEgoValidation();
+    waitForAlterEgoValidation();
+
+    expectFormIsInvalid();
+    expect(page.alterEgoErrors.getText()).toBe(emsg);
+  });
+
+  it('should be ok again with different values', function () {
+    page.alterEgoInput.clear();
+    page.alterEgoInput.sendKeys('John');
+
+    triggerAlterEgoValidation();
+    waitForAlterEgoValidation();
+
+    expectFormIsValid();
+    expect(page.alterEgoErrors.isPresent()).toBe(false);
+  });
+}
+
 function crossValidationTests() {
   const emsg = 'Name cannot match alter ego.';
 
@@ -186,6 +226,9 @@ function crossValidationTests() {
 
     page.alterEgoInput.clear();
     page.alterEgoInput.sendKeys('Batman');
+
+    triggerAlterEgoValidation();
+    waitForAlterEgoValidation();
 
     expectFormIsInvalid();
     expect(page.crossValidationErrorMessage.getText()).toBe(emsg);
@@ -197,6 +240,9 @@ function crossValidationTests() {
 
     page.alterEgoInput.clear();
     page.alterEgoInput.sendKeys('Superman');
+
+    triggerAlterEgoValidation();
+    waitForAlterEgoValidation();
 
     expectFormIsValid();
     expect(page.crossValidationErrorMessage.isPresent()).toBe(false);

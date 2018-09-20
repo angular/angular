@@ -68,13 +68,33 @@ new as of May 2017 and not very stable yet.
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
 
+### Various Flags Used For Tests
+
+If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
+
+See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/tools/bazel.rc) where `--define=ivy=false` is defined as default.
+
+- `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
+- `--test_arg=--node_options=--inspect=9228`: change the inspector port.
+- `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This is done by generating the [`src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) file from [`ivy_switch_legacy.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_legacy.ts) (default), [`ivy_switch_jit.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_jit.ts), or [`ivy_switch_local.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_local.ts).
+    - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
+    - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
+    - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`
+- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config
+of your rules in any given `BUILD.bazel`.
+    - `ivy-jit`: This flag should be set for tests that should be excuted with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
+    - `ivy-local`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=local`, e.g. `--test_tag_filters=ivy-local`..
+    - `ivy-only`: Only run ivy related tests, e.g. `--test_tag_filters=ivy-only`.
+
+
 ### Debugging a Node Test
+<a id="debugging"></a>
 
 - Open chrome at: [chrome://inspect](chrome://inspect)
 - Click on  `Open dedicated DevTools for Node` to launch a debugger.
 - Run test: `bazel test packages/core/test:test --config=debug`
 
-The process should automatically connect to the debugger.
+The process should automatically connect to the debugger. For additional info and testing options, see the [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/node/node.html#nodejs_test).
 
 ### Debugging a Node Test in VSCode
 
@@ -82,7 +102,7 @@ First time setup:
 - Go to Debug > Add configuration (in the menu bar) to open `launch.json`
 - Add the following to the `configurations` array:
 
-```
+```json
         {
             "name": "Attach (inspect)",
             "type": "node",
@@ -107,6 +127,7 @@ First time setup:
         },
 ```
 
+**Setting breakpoints directly in your code files may not work in VSCode**. This is because the files you're actually debugging are built files that exist in a `./private/...` folder.
 The easiest way to debug a test for now is to add a `debugger` statement in the code
 and launch the bazel corresponding test (`bazel test <target> --config=debug`).
 
@@ -153,7 +174,7 @@ Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effec
 Bazel supports fetching action results from a cache, allowing a clean build to pick up artifacts from prior builds.
 This makes builds incremental, even on CI.
 It works because Bazel assigns a content-based hash to all action inputs, which is used as the cache key for the action outputs.
-Thanks the the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
+Thanks to the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
 
 Of course, non-hermeticity in an action can cause problems.
 At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.

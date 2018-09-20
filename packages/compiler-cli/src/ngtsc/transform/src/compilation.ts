@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
@@ -18,10 +20,10 @@ import {DtsFileTransformer} from './declaration';
  * Record of an adapter which decided to emit a static field, and the analysis it performed to
  * prepare for that operation.
  */
-interface EmitFieldOperation<T> {
-  adapter: DecoratorHandler<T>;
-  analysis: AnalysisOutput<T>;
-  decorator: Decorator;
+interface EmitFieldOperation<A, M> {
+  adapter: DecoratorHandler<A, M>;
+  analysis: AnalysisOutput<A>;
+  metadata: M;
 }
 
 /**
@@ -35,7 +37,11 @@ export class IvyCompilation {
    * Tracks classes which have been analyzed and found to have an Ivy decorator, and the
    * information recorded about them for later compilation.
    */
-  private analysis = new Map<ts.Declaration, EmitFieldOperation<any>>();
+  private analysis = new Map<ts.Declaration, EmitFieldOperation<any, any>>();
+
+  /**
+   * Tracks factory information which needs to be generated.
+   */
 
   /**
    * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
@@ -54,8 +60,9 @@ export class IvyCompilation {
    * `null` in most cases.
    */
   constructor(
-      private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null) {}
+      private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
+      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null,
+      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
   analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
@@ -72,15 +79,14 @@ export class IvyCompilation {
 
     const analyzeClass = (node: ts.Declaration): void => {
       // The first step is to reflect the decorators.
-      const decorators = this.reflector.getDecoratorsOfDeclaration(node);
-      if (decorators === null) {
-        return;
-      }
+      const classDecorators = this.reflector.getDecoratorsOfDeclaration(node);
+
       // Look through the DecoratorHandlers to see if any are relevant.
       this.handlers.forEach(adapter => {
+
         // An adapter is relevant if it matches one of the decorators on the class.
-        const decorator = adapter.detect(decorators);
-        if (decorator === undefined) {
+        const metadata = adapter.detect(node, classDecorators);
+        if (metadata === undefined) {
           return;
         }
 
@@ -91,24 +97,37 @@ export class IvyCompilation {
             throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
           }
 
-          // Run analysis on the decorator. This will produce either diagnostics, an
+          // Run analysis on the metadata. This will produce either diagnostics, an
           // analysis result, or both.
-          const analysis = adapter.analyze(node, decorator);
+          try {
+            const analysis = adapter.analyze(node, metadata);
+            if (analysis.analysis !== undefined) {
+              this.analysis.set(node, {
+                adapter,
+                analysis: analysis.analysis,
+                metadata: metadata,
+              });
+            }
 
-          if (analysis.analysis !== undefined) {
-            this.analysis.set(node, {
-              adapter,
-              analysis: analysis.analysis, decorator,
-            });
-          }
+            if (analysis.diagnostics !== undefined) {
+              this._diagnostics.push(...analysis.diagnostics);
+            }
 
-          if (analysis.diagnostics !== undefined) {
-            this._diagnostics.push(...analysis.diagnostics);
+            if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
+                this.sourceToFactorySymbols.has(sf.fileName)) {
+              this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
+            }
+          } catch (err) {
+            if (err instanceof FatalDiagnosticError) {
+              this._diagnostics.push(err.toDiagnostic());
+            } else {
+              throw err;
+            }
           }
         };
 
         if (preanalyze && adapter.preanalyze !== undefined) {
-          const preanalysis = adapter.preanalyze(node, decorator);
+          const preanalysis = adapter.preanalyze(node, metadata);
           if (preanalysis !== undefined) {
             promises.push(preanalysis.then(() => completeAnalysis()));
           } else {
@@ -141,7 +160,7 @@ export class IvyCompilation {
    * Perform a compilation operation on the given class declaration and return instructions to an
    * AST transformer if any are available.
    */
-  compileIvyFieldFor(node: ts.Declaration): CompileResult[]|undefined {
+  compileIvyFieldFor(node: ts.Declaration, constantPool: ConstantPool): CompileResult[]|undefined {
     // Look to see whether the original node was analyzed. If not, there's nothing to do.
     const original = ts.getOriginalNode(node) as ts.Declaration;
     if (!this.analysis.has(original)) {
@@ -150,7 +169,7 @@ export class IvyCompilation {
     const op = this.analysis.get(original) !;
 
     // Run the actual compilation, which generates an Expression for the Ivy field.
-    let res: CompileResult|CompileResult[] = op.adapter.compile(node, op.analysis);
+    let res: CompileResult|CompileResult[] = op.adapter.compile(node, op.analysis, constantPool);
     if (!Array.isArray(res)) {
       res = [res];
     }
@@ -174,14 +193,14 @@ export class IvyCompilation {
       return undefined;
     }
 
-    return this.analysis.get(original) !.decorator;
+    return this.analysis.get(original) !.metadata;
   }
 
   /**
    * Process a .d.ts source string and return a transformed version that incorporates the changes
    * made to the source file.
    */
-  transformedDtsFor(tsFileName: string, dtsOriginalSource: string, dtsPath: string): string {
+  transformedDtsFor(tsFileName: string, dtsOriginalSource: string): string {
     // No need to transform if no changes have been requested to the input file.
     if (!this.dtsMap.has(tsFileName)) {
       return dtsOriginalSource;

@@ -116,7 +116,7 @@ export interface Program {
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ReadonlyArray<ts.Diagnostic>;
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<Diagnostic>;
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
   loadNgStructureAsync(): Promise<void>;
   listLazyRoutes(entryRoute?: string): LazyRoute[];
   emit({emitFlags, cancellationToken, customTransformers, emitCallback}: {

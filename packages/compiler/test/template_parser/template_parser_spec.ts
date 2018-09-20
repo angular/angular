@@ -1137,8 +1137,8 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         function createDir(
             selector: string, {providers = null, viewProviders = null, deps = [], queries = []}: {
-              providers?: CompileProviderMetadata[],
-              viewProviders?: CompileProviderMetadata[],
+              providers?: CompileProviderMetadata[] | null,
+              viewProviders?: CompileProviderMetadata[] | null,
               deps?: string[],
               queries?: string[]
             } = {}): CompileDirectiveSummary {

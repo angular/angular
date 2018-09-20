@@ -180,7 +180,8 @@ export function setupTestingRouter(
   ]
 })
 export class RouterTestingModule {
-  static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+  static withRoutes(routes: Routes, config?: ExtraOptions):
+      ModuleWithProviders<RouterTestingModule> {
     return {
       ngModule: RouterTestingModule,
       providers: [

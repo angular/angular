@@ -45,7 +45,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
     // TODO(tbosch): find or file a bug against TypeScript for this.
     const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
 
-    @Directive(directive)
+    @Directive({jit: true, ...directive})
     class MyClass {
       // TODO(issue/24571): remove '!'.
       directive !: angular.IDirective;
@@ -262,13 +262,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngOnDestroy() {
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
-      this.controllerInstance.$onDestroy();
-    }
-
-    this.componentScope.$destroy();
-  }
+  ngOnDestroy() { this.helper.onDestroy(this.componentScope, this.controllerInstance); }
 
   setComponentProperty(name: string, value: any) {
     this.destinationObj ![this.propertyMap[name]] = value;

@@ -87,17 +87,10 @@ If you look at the `@Injectable()` statement right before the `HeroService` clas
 When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it. 
 Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-If you need to, you can register providers at different levels: 
-in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`. 
-For instance, you could have told the CLI to provide the service at the module level automatically by appending `--module=app`.
-
-<code-example language="sh" class="code-shell">
-  ng generate service hero --module=app
-</code-example>
-
-To learn more about providers and injectors, see the [Dependency Injection guide](guide/dependency-injection).
+To learn more about providers, see the [Providers section](guide/providers).
+To learn more about injectors, see the [Dependency Injection guide](guide/dependency-injection).
 
 </div>
 
@@ -213,7 +206,7 @@ Replace the `getHeroes` method with this one.
 
 `of(HEROES)` returns an `Observable<Hero[]>` that emits  _a single value_, the array of mock heroes.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()` which also returns an `Observable<Hero[]>` that emits  _a single value_, an array of heroes from the body of the HTTP response.
 
@@ -320,7 +313,7 @@ when it creates the `HeroService`.
   path="toh-pt4/src/app/hero.service.ts" region="ctor">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 This is a typical "*service-in-service*" scenario:
 you inject the `MessageService` into the `HeroService` which is injected into the `HeroesComponent`.

@@ -67,4 +67,4 @@ export interface LocationChangeEvent {
 /**
  * @experimental
  */
-export interface LocationChangeListener { (e: LocationChangeEvent): any; }
+export interface LocationChangeListener { (event: LocationChangeEvent): any; }

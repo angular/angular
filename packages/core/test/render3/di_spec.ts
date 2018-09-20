@@ -6,19 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
+import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
+
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
-import {ComponentFixture, createComponent, createDirective, renderComponent, renderToHtml, toHtml} from './render_util';
+import {getRendererFactory2} from './imported_renderer2';
+import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -34,20 +37,20 @@ describe('di', () => {
       }
 
       /** <div dir #dir="dir"> {{ dir.value }}  </div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', ''], ['dir', 'dir']);
           { text(2); }
           elementEnd();
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(1);
+          const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
-      }
+      }, 3, 1, [Directive]);
 
-      expect(renderToHtml(Template, {}, [Directive])).toEqual('<div dir="">Created</div>');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div dir="">Created</div>');
     });
   });
 
@@ -95,7 +98,7 @@ describe('di', () => {
        *  <span dirB dirC #dir="dirC"> {{ dir.value }} </span>
        * </div>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dirA', '']);
           {
@@ -105,19 +108,17 @@ describe('di', () => {
           }
           elementEnd();
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(2);
+          const tmp = reference(2) as any;
           textBinding(3, bind(tmp.value));
         }
-      }
+      }, 4, 1, [DirA, DirB, DirC]);
 
-      const defs = [DirA, DirB, DirC];
-      expect(renderToHtml(Template, {}, defs))
-          .toEqual('<div dira=""><span dirb="" dirc="">DirADirB</span></div>');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div dira=""><span dirb="" dirc="">DirADirB</span></div>');
     });
 
-    it('should instantiate injected directives first', () => {
+    it('should instantiate injected directives in dependency order', () => {
       class DirA {
         constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
 
@@ -131,13 +132,45 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirA (dep: DirB)']);
+    });
+
+    it('should fallback to the module injector', () => {
+      class DirA {
+        constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB)),
+        });
+      }
+
+      // `<div dirB></div><div dirA></div>`
+      // - dirB is know to the node injectors (it uses the diPublic feature)
+      // - then when dirA tries to inject dirB, it will check the node injector first tree
+      // - if not found, it will check the module injector tree
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'div', ['dirB', '']);
+          element(1, 'div', ['dirA', '']);
+        }
+      }, 2, 0, [DirA, DirB]);
+
+      const fakeModuleInjector: any = {
+        get: function(token: any) {
+          const value = token === DirB ? 'module' : 'fail';
+          return {value: value};
+        }
+      };
+
+      new ComponentFixture(App, {injector: fakeModuleInjector});
+      expect(log).toEqual(['DirB', 'DirA (dep: module)']);
     });
 
     it('should instantiate injected directives before components', () => {
@@ -147,6 +180,8 @@ describe('di', () => {
         static ngComponentDef = defineComponent({
           selectors: [['comp']],
           type: Comp,
+          consts: 0,
+          vars: 0,
           factory: () => new Comp(directiveInject(DirB)),
           template: (ctx: any, fm: boolean) => {}
         });
@@ -155,12 +190,11 @@ describe('di', () => {
       /** <comp dirB></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dirB', '']);
-          elementEnd();
+          element(0, 'comp', ['dirB', '']);
         }
-      }, [Comp, DirB]);
+      }, 1, 0, [Comp, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'Comp (dep: DirB)']);
     });
 
@@ -184,20 +218,21 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           container(0);
         }
-        containerRefreshStart(0);
-        {
-          for (let i = 0; i < 3; i++) {
-            if (embeddedViewStart(0)) {
-              elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-              elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            for (let i = 0; i < 3; i++) {
+              if (embeddedViewStart(0, 1, 0)) {
+                element(0, 'div', ['dirA', '', 'dirB', '']);
+              }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
-      }, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(
           ['DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)']);
     });
@@ -242,12 +277,11 @@ describe('di', () => {
       /** <div dirA dirB dirC></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
         }
-      }, [DirA, DirB, DirC]);
+      }, 1, 0, [DirA, DirB, DirC]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirA', 'DirC', 'DirB (deps: DirA and DirC)']);
     });
 
@@ -258,6 +292,8 @@ describe('di', () => {
         static ngComponentDef = defineComponent({
           selectors: [['comp']],
           type: Comp,
+          consts: 0,
+          vars: 0,
           factory: () => new Comp(directiveInject(DirD)),
           template: (ctx: any, fm: boolean) => {}
         });
@@ -302,12 +338,11 @@ describe('di', () => {
       /** <comp dirA dirB dirC dirD></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
-          elementEnd();
+          element(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
         }
-      }, [Comp, DirA, DirB, DirC, DirD]);
+      }, 1, 0, [Comp, DirA, DirB, DirC, DirD]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(
           ['DirB', 'DirC (dep: DirB)', 'DirA (dep: DirC)', 'DirD (dep: DirA)', 'Comp (dep: DirD)']);
     });
@@ -332,11 +367,12 @@ describe('di', () => {
           selectors: [['app']],
           type: App,
           factory: () => new App(),
+          consts: 1,
+          vars: 0,
           /** <div dirA dirB dirC></div> */
           template: (rf: RenderFlags, ctx: any) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
-              elementEnd();
+              element(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
             }
           },
           directives: [DirA, DirB],
@@ -344,7 +380,7 @@ describe('di', () => {
         });
       }
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirA (deps: DirB and App)']);
     });
 
@@ -380,20 +416,18 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       /** <parent dirB></parent> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent', ['dirB', '']);
-          elementEnd();
+          element(0, 'parent', ['dirB', '']);
         }
-      }, [Parent, DirB]);
+      }, 1, 0, [Parent, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
     });
 
@@ -409,6 +443,8 @@ describe('di', () => {
         static ngComponentDef = defineComponent({
           type: MyComponent,
           selectors: [['my-component']],
+          consts: 1,
+          vars: 1,
           factory: () => new MyComponent(directiveInject(MyService)),
           template: function(rf: RenderFlags, ctx: MyComponent) {
             if (rf & RenderFlags.Create) {
@@ -450,10 +486,9 @@ describe('di', () => {
       /** <div dir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
-      }, [Dir, OtherDir]);
+      }, 1, 0, [Dir, OtherDir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Injector: NOT_FOUND \[OtherDir\]/);
     });
@@ -485,12 +520,10 @@ describe('di', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['other', '']);
-          elementEnd();
-          elementStart(1, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['other', '']);
+          element(1, 'div', ['dir', '']);
         }
-      }, [Dir, OtherDir]);
+      }, 2, 0, [Dir, OtherDir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Injector: NOT_FOUND \[OtherDir\]/);
     });
@@ -522,10 +555,9 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
     });
@@ -545,10 +577,9 @@ describe('di', () => {
       /** <div dir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
-      }, [Dir]);
+      }, 1, 0, [Dir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
     });
@@ -584,13 +615,12 @@ describe('di', () => {
         /** <div dirA></div> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirA', '']);
           }
-        }, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         expect(() => {
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
           expect(dirA !.dirB).toEqual(null);
         }).not.toThrow();
       });
@@ -614,15 +644,13 @@ describe('di', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirB', '']);
-            elementEnd();
-            elementStart(1, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirB', '']);
+            element(1, 'div', ['dirA', '']);
           }
-        }, [DirA, DirB]);
+        }, 2, 0, [DirA, DirB]);
 
         expect(() => {
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
           expect(dirA !.dirB).toEqual(null);
         }).not.toThrow();
       });
@@ -643,20 +671,18 @@ describe('di', () => {
         /** <div dirA dirB="self"></div> */
         const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '', 'dirB', 'self']);
-            elementEnd();
+            element(0, 'div', ['dirA', '', 'dirB', 'self']);
           }
-        }, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         /* <comp dirB="parent"></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dirB', 'parent']);
-            elementEnd();
+            element(0, 'comp', ['dirB', 'parent']);
           }
-        }, [Comp, DirB]);
+        }, 1, 0, [Comp, DirB]);
 
-        const fixture = new ComponentFixture(App);
+        new ComponentFixture(App);
         expect(dirA !.dirB.value).toEqual('parent');
       });
 
@@ -681,15 +707,12 @@ describe('di', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            elementStart(1, 'div', ['dirA', '']);
-            elementEnd();
+            element(1, 'div', ['dirA', '']);
             elementEnd();
           }
-        }, [DirA, DirB]);
+        }, 2, 0, [DirA, DirB]);
 
-        expect(() => {
-          const fixture = new ComponentFixture(App);
-        }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
+        expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
       });
 
       it('should check only the current node with @Self even with false positive', () => {
@@ -715,16 +738,15 @@ describe('di', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            elementStart(1, 'div', ['dirA', '', 'dirC', '']);
-            elementEnd();
+            element(1, 'div', ['dirA', '', 'dirC', '']);
             elementEnd();
           }
-        }, [DirA, DirB, DirC]);
+        }, 2, 0, [DirA, DirB, DirC]);
 
         expect(() => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
           (DirC as any)['__NG_ELEMENT_ID__'] = 257;
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
         }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
       });
 
@@ -744,22 +766,18 @@ describe('di', () => {
         /** <div dirA></div> */
         const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirA', '']);
           }
-        }, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         /* <comp dirB></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dirB', '']);
-            elementEnd();
+            element(0, 'comp', ['dirB', '']);
           }
-        }, [Comp, DirB]);
+        }, 1, 0, [Comp, DirB]);
 
-        expect(() => {
-          const fixture = new ComponentFixture(App);
-        }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
+        expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
 
       });
 
@@ -786,7 +804,7 @@ describe('di', () => {
       class DirectiveSameInstance {
         value: boolean;
         constructor(elementRef: ElementRef, directive: Directive) {
-          this.value = elementRef === directive.elementRef;
+          this.value = (elementRef === directive.elementRef) && elementRef instanceof ElementRef;
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
@@ -801,25 +819,22 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </div>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dirSame', 'dirSame', 'dir', 'dir']);
           { text(3); }
           elementEnd();
         }
 
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
         }
-      }
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
-      const defs = [Directive, DirectiveSameInstance];
-      expect(renderToHtml(Template, {}, defs))
-          .toEqual('<div dir="" dirsame="">ElementRef-true</div>');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div dir="" dirsame="">ElementRef-true</div>');
     });
   });
 
@@ -857,23 +872,21 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </ng-template>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          container(0, function() {
-          }, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
+          template(0, function() {
+          }, 0, 0, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           text(3);
         }
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
-      const defs = [Directive, DirectiveSameInstance];
-      expect(renderToHtml(Template, {}, defs)).toEqual('TemplateRef-true');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('TemplateRef-true');
     });
   });
 
@@ -912,24 +925,21 @@ describe('di', () => {
        *   {{ dir.value }} - {{ dirSame.value }}
        * </div>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           { text(3); }
           elementEnd();
         }
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
-      const defs = [Directive, DirectiveSameInstance];
-      expect(renderToHtml(Template, {}, defs))
-          .toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
     });
   });
 
@@ -945,6 +955,8 @@ describe('di', () => {
         type: MyComp,
         selectors: [['my-comp']],
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
+        consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {
             projectionDef();
@@ -1006,16 +1018,14 @@ describe('di', () => {
       /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-          elementEnd();
+          element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
           text(2);
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(1);
+          const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
-      }, directives);
+      }, 3, 1, directives);
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef has historically been the constructor
@@ -1034,6 +1044,8 @@ describe('di', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           selectors: [['my-app']],
+          consts: 3,
+          vars: 1,
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: any) {
@@ -1042,9 +1054,8 @@ describe('di', () => {
               { text(2); }
               elementEnd();
             }
-            let tmp: any;
             if (rf & RenderFlags.Update) {
-              tmp = load(1);
+              const tmp = reference(1) as any;
               textBinding(2, bind(tmp.value));
             }
           },
@@ -1067,6 +1078,8 @@ describe('di', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           selectors: [['my-app']],
+          consts: 4,
+          vars: 1,
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * <my-comp>
@@ -1077,15 +1090,12 @@ describe('di', () => {
           template: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'my-comp');
-              {
-                elementStart(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-                elementEnd();
-              }
+              { element(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']); }
               elementEnd();
               text(3);
             }
-            const tmp = load(2) as any;
             if (rf & RenderFlags.Update) {
+              const tmp = reference(2) as any;
               textBinding(3, bind(tmp.value));
             }
           },
@@ -1112,6 +1122,8 @@ describe('di', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
+          consts: 1,
+          vars: 0,
           /**
            * % if (showing) {
            *   <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div>
@@ -1125,15 +1137,14 @@ describe('di', () => {
               containerRefreshStart(0);
               {
                 if (ctx.showing) {
-                  let rf1 = embeddedViewStart(0);
+                  let rf1 = embeddedViewStart(0, 3, 1);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                     { text(2); }
                     elementEnd();
                   }
-                  let tmp: any;
                   if (rf1 & RenderFlags.Update) {
-                    tmp = load(1);
+                    const tmp = reference(1) as any;
                     textBinding(2, bind(tmp.value));
                   }
                 }
@@ -1155,6 +1166,18 @@ describe('di', () => {
     });
 
     it('should inject host component ChangeDetectorRef into directives on containers', () => {
+      function C1(rf1: RenderFlags, ctx1: any) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
+          { text(2); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const tmp = reference(1) as any;
+          textBinding(2, bind(tmp.value));
+        }
+      }
+
       class MyApp {
         showing = true;
 
@@ -1164,27 +1187,12 @@ describe('di', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
+          consts: 1,
+          vars: 0,
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: MyApp) {
             if (rf & RenderFlags.Create) {
-              container(0, C1, undefined, ['myIf', 'showing']);
-            }
-            if (rf & RenderFlags.Update) {
-              containerRefreshStart(0);
-              containerRefreshEnd();
-            }
-
-            function C1(rf1: RenderFlags, ctx1: any) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-                { text(2); }
-                elementEnd();
-              }
-              let tmp: any;
-              if (rf1 & RenderFlags.Update) {
-                tmp = load(1);
-                textBinding(2, bind(tmp.value));
-              }
+              template(0, C1, 3, 1, null, ['myIf', 'showing']);
             }
           },
           directives: directives
@@ -1200,7 +1208,54 @@ describe('di', () => {
     });
   });
 
+  describe('Renderer2', () => {
+    let comp: MyComp;
+
+    class MyComp {
+      constructor(public renderer: Renderer2) {}
+
+      static ngComponentDef = defineComponent({
+        type: MyComp,
+        selectors: [['my-comp']],
+        factory: () => comp = new MyComp(injectRenderer2()),
+        consts: 1,
+        vars: 0,
+        template: function(rf: RenderFlags, ctx: MyComp) {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Foo');
+          }
+        }
+      });
+    }
+
+    it('should inject the Renderer2 used by the application', () => {
+      const rendererFactory = getRendererFactory2(document);
+      new ComponentFixture(MyComp, {rendererFactory: rendererFactory});
+      expect(isProceduralRenderer(comp.renderer)).toBeTruthy();
+    });
+
+    it('should throw when injecting Renderer2 but the application is using Renderer3',
+       () => { expect(() => new ComponentFixture(MyComp)).toThrow(); });
+  });
+
   describe('@Attribute', () => {
+
+    class MyDirective {
+      exists = 'wrong' as string | undefined;
+      myDirective = 'wrong' as string | undefined;
+      constructor(
+          @Attribute('exist') existAttrValue: string|undefined,
+          @Attribute('myDirective') myDirectiveAttrValue: string|undefined) {
+        this.exists = existAttrValue;
+        this.myDirective = myDirectiveAttrValue;
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: MyDirective,
+        selectors: [['', 'myDirective', '']],
+        factory: () => new MyDirective(injectAttribute('exist'), injectAttribute('myDirective'))
+      });
+    }
 
     it('should inject attribute', () => {
       let exist = 'wrong' as string | undefined;
@@ -1212,11 +1267,53 @@ describe('di', () => {
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
-      });
+      }, 1);
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
+    });
+
+    // https://stackblitz.com/edit/angular-scawyi?file=src%2Fapp%2Fapp.component.ts
+    it('should inject attributes on <ng-template>', () => {
+      let myDirectiveInstance: MyDirective;
+
+      /* <ng-template myDirective="initial" exist="existValue" other="ignore"></ng-template>*/
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          template(
+              0, null, 0, 0, null,
+              ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
+        }
+        if (rf & RenderFlags.Update) {
+          myDirectiveInstance = loadDirective(0);
+        }
+      }, 1, 0, [MyDirective]);
+
+      new ComponentFixture(MyApp);
+      expect(myDirectiveInstance !.exists).toEqual('existValue');
+      expect(myDirectiveInstance !.myDirective).toEqual('initial');
+    });
+
+    // https://stackblitz.com/edit/angular-scawyi?file=src%2Fapp%2Fapp.component.ts
+    it('should inject attributes on <ng-container>', () => {
+      let myDirectiveInstance: MyDirective;
+
+      /* <ng-container myDirective="initial" exist="existValue" other="ignore"></ng-container>*/
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(
+              0, ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
+          elementContainerEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          myDirectiveInstance = loadDirective(0);
+        }
+      }, 1, 0, [MyDirective]);
+
+      new ComponentFixture(MyApp);
+      expect(myDirectiveInstance !.exists).toEqual('existValue');
+      expect(myDirectiveInstance !.myDirective).toEqual('initial');
     });
 
     // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
@@ -1230,9 +1327,9 @@ describe('di', () => {
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
-      });
+      }, 1);
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
     });
@@ -1249,9 +1346,9 @@ describe('di', () => {
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
-      });
+      }, 1);
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
     });
@@ -1362,7 +1459,7 @@ describe('di', () => {
        *    </span>
        * </div>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['parentDir', '']);
           { container(1); }
@@ -1371,7 +1468,7 @@ describe('di', () => {
         if (rf & RenderFlags.Update) {
           containerRefreshStart(1);
           {
-            let rf1 = embeddedViewStart(0);
+            let rf1 = embeddedViewStart(0, 4, 2);
             if (rf1 & RenderFlags.Create) {
               elementStart(
                   0, 'span', ['childDir', '', 'child2Dir', ''],
@@ -1379,21 +1476,19 @@ describe('di', () => {
               { text(3); }
               elementEnd();
             }
-            let tmp1: any;
-            let tmp2: any;
             if (rf & RenderFlags.Update) {
-              tmp1 = load(1);
-              tmp2 = load(2);
+              const tmp1 = reference(1) as any;
+              const tmp2 = reference(2) as any;
               textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
             }
             embeddedViewEnd();
           }
           containerRefreshEnd();
         }
-      }
+      }, 2, 0, [ChildDirective, Child2Directive, ParentDirective]);
 
-      const defs = [ChildDirective, Child2Directive, ParentDirective];
-      expect(renderToHtml(Template, {}, defs))
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html)
           .toEqual('<div parentdir=""><span child2dir="" childdir="">Directive-true</span></div>');
     });
 
@@ -1405,15 +1500,14 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLViewData(
-          null !, createTView(-1, null, null, null, null), null, LViewFlags.CheckAlways);
-      const oldView = enterView(contentView, null !);
+          null !, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways);
+      const oldView = enterView(contentView, null);
       try {
-        const parent = createLNode(0, TNodeType.Element, null, null, null, null);
-
+        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
-        (parent.tNode as{parent: any}).parent = undefined;
+        (parentTNode as{parent: any}).parent = undefined;
 
         const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
         expect(injector).not.toBe(null);

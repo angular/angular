@@ -7,20 +7,17 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ClassProvider, ConstructorSansProvider, ErrorHandler, ExistingProvider, FactoryProvider, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
-import {Meta} from './browser/meta';
 import {SERVER_TRANSITION_PROVIDERS, TRANSITION_ID} from './browser/server-transition';
 import {BrowserGetTestability} from './browser/testability';
-import {Title} from './browser/title';
 import {ELEMENT_PROBE_PROVIDERS} from './dom/debug/ng_probe';
-import {getDOM} from './dom/dom_adapter';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
-import {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
+import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
@@ -92,7 +89,11 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
 ];
 
 /**
- * The ng module for the browser.
+ * Exports required infrastructure for all Angular apps.
+ * Included by defaults in all Angular apps created with the CLI
+ * `new` command.
+ * Re-exports `CommonModule` and `ApplicationModule`, making their
+ * exports and providers available to all apps.
  *
  *
  */
@@ -106,13 +107,16 @@ export class BrowserModule {
   }
 
   /**
-   * Configures a browser-based application to transition from a server-rendered app, if
-   * one is present on the page. The specified parameters must include an application id,
-   * which must match between the client and server applications.
+   * Configures a browser-based app to transition from a server-rendered app, if
+   * one is present on the page.
+   *
+   * @param params An object containing an identifier for the app to transition.
+   * The ID must match between the client and server versions of the app.
+   * @returns The reconfigured `BrowserModule` to import into the app's root `AppModule`.
    *
    * @experimental
    */
-  static withServerTransition(params: {appId: string}): ModuleWithProviders {
+  static withServerTransition(params: {appId: string}): ModuleWithProviders<BrowserModule> {
     return {
       ngModule: BrowserModule,
       providers: [

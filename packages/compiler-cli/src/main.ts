@@ -11,11 +11,10 @@
 import 'reflect-metadata';
 
 import * as ts from 'typescript';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as tsickle from 'tsickle';
+
+import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
-import * as ngc from './transformers/entry_points';
 import {GENERATED_FILES} from './transformers/util';
 
 import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
@@ -66,22 +65,37 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
   };
 
-  return ({
-           program,
-           targetSourceFile,
-           writeFile,
-           cancellationToken,
-           emitOnlyDtsFiles,
-           customTransformers = {},
-           host,
-           options
-         }) =>
-             tsickle.emitWithTsickle(
-                 program, {...tsickleHost, options, host}, host, options, targetSourceFile,
-                 writeFile, cancellationToken, emitOnlyDtsFiles, {
-                   beforeTs: customTransformers.before,
-                   afterTs: customTransformers.after,
-                 });
+  if (options.annotateForClosureCompiler || options.annotationsAs === 'static fields') {
+    return ({
+             program,
+             targetSourceFile,
+             writeFile,
+             cancellationToken,
+             emitOnlyDtsFiles,
+             customTransformers = {},
+             host,
+             options
+           }) =>
+               // tslint:disable-next-line:no-require-imports only depend on tsickle if requested
+        require('tsickle').emitWithTsickle(
+            program, {...tsickleHost, options, host}, host, options, targetSourceFile, writeFile,
+            cancellationToken, emitOnlyDtsFiles, {
+              beforeTs: customTransformers.before,
+              afterTs: customTransformers.after,
+            });
+  } else {
+    return ({
+             program,
+             targetSourceFile,
+             writeFile,
+             cancellationToken,
+             emitOnlyDtsFiles,
+             customTransformers = {},
+           }) =>
+               program.emit(
+                   targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
+                   {after: customTransformers.after, before: customTransformers.before});
+  }
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
@@ -148,7 +162,15 @@ function reportErrorsAndExit(
       getCanonicalFileName: fileName => fileName,
       getNewLine: () => ts.sys.newLine
     };
-    consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
+    if (options && (options.enableIvy === true || options.enableIvy === 'ngtsc')) {
+      const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
+      const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
+      consoleError(replaceTsWithNgInErrors(
+          ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
+      consoleError(formatDiagnostics(ngDiagnostics, formatHost));
+    } else {
+      consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
+    }
   }
   return exitCodeFromResult(allDiagnostics);
 }

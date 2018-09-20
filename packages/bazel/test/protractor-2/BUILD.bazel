@@ -6,6 +6,7 @@ load("//tools/http-server:http_server.bzl", "http_server")
 ts_library(
     name = "app",
     srcs = ["app.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 ts_devserver(
@@ -18,6 +19,7 @@ ts_devserver(
 rollup_bundle(
     name = "bundle",
     entry_point = "packages/bazel/test/protractor-2/app",
+    node_modules = "//:node_modules",
     deps = [":app"],
 )
 
@@ -33,6 +35,7 @@ ts_library(
     name = "ts_spec",
     testonly = True,
     srcs = ["test.spec.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 protractor_web_test_suite(
@@ -49,6 +52,6 @@ protractor_web_test_suite(
     configuration = ":conf.js",
     data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":on-prepare.js",
-    server = ":prodserver",
+    server = ":devserver",
     deps = [":ts_spec"],
 )

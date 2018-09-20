@@ -653,5 +653,15 @@
     "twitter": "elanathellama",
     "bio": "Elana is a Developer Relations intern on the Angular team at Google. She is working on migration paths from AngularJS to Angular and would love to chat about your experience with upgrading.",
     "group": "Angular"
+  },
+  
+   "kevinyang": {
+    "name": "Kevin Yang",
+    "picture": "kevinyang.jpg",
+    "twitter": "chgc",
+    "website": "https://blog.kevinyang.net/",
+    "bio":
+      "Kevin is a Angular Taiwan, Angular Girls Taiwan community organzier. He loves sharing knowledge with other developers through blogging, speaking, workshops.",
+    "group": "GDE"
   }
 }

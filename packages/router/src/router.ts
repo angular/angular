@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, Type, isDevMode} from '@angular/core';
+import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Optional, Type, isDevMode, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
@@ -224,6 +224,8 @@ export class Router {
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
+  private console: Console;
+  private isNgZoneEnabled: boolean = false;
 
   public readonly events: Observable<Event> = new Subject<Event>();
   public readonly routerState: RouterState;
@@ -298,6 +300,11 @@ export class Router {
   urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
 
   /**
+   * See {@link RouterModule} for more information.
+   */
+  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -309,6 +316,9 @@ export class Router {
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
 
     this.ngModule = injector.get(NgModuleRef);
+    this.console = injector.get(Console);
+    const ngZone = injector.get(NgZone);
+    this.isNgZoneEnabled = ngZone instanceof NgZone;
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
@@ -485,11 +495,18 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11", { skipLocationChange: true });
    * ```
    *
-   * In opposite to `navigate`, `navigateByUrl` takes a whole URL
-   * and does not apply any delta to the current one.
+   * Since `navigateByUrl()` takes an absolute URL as the first parameter,
+   * it will not apply any delta to the current URL and ignores any properties
+   * in the second parameter (the `NavigationExtras`) that would change the
+   * provided URL.
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
+    if (isDevMode() && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+      this.console.warn(
+          `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+    }
+
     const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
@@ -514,8 +531,9 @@ export class Router {
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true});
    * ```
    *
-   * In opposite to `navigateByUrl`, `navigate` always takes a delta that is applied to the current
-   * URL.
+   * The first parameter of `navigate()` is a delta to be applied to the current URL
+   * or the one provided in the `relativeTo` property of the second parameter (the
+   * `NavigationExtras`).
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
@@ -676,7 +694,7 @@ export class Router {
         urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap((appliedUrl: UrlTree) => {
           return recognize(
                      this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl),
-                     this.paramsInheritanceStrategy)
+                     this.paramsInheritanceStrategy, this.relativeLinkResolution)
               .pipe(map((snapshot: any) => {
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(
@@ -1025,6 +1043,7 @@ class ActivateRoutes {
           const config = parentLoadedConfig(future.snapshot);
           const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
 
+          context.attachRef = null;
           context.route = future;
           context.resolver = cmpFactoryResolver;
           if (context.outlet) {

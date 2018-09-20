@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Parameter} from '../../host';
+import {CtorParameter} from '../../host';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {TypeScriptReflectionHost} from '../src/reflector';
 
@@ -120,10 +120,52 @@ describe('reflector', () => {
       expectParameter(args[1], 'otherBar', 'star.Bar');
     });
   });
+
+  it('should reflect a re-export', () => {
+    const {program} = makeProgram([
+      {name: '/node_modules/absolute/index.ts', contents: 'export class Target {}'},
+      {name: 'local1.ts', contents: `export {Target as AliasTarget} from 'absolute';`},
+      {name: 'local2.ts', contents: `export {AliasTarget as Target} from './local1';`}, {
+        name: 'entry.ts',
+        contents: `
+          import {Target} from './local2';
+          import {Target as DirectTarget} from 'absolute';
+
+          const target = Target;
+          const directTarget = DirectTarget;
+      `
+      }
+    ]);
+    const target = getDeclaration(program, 'entry.ts', 'target', ts.isVariableDeclaration);
+    if (target.initializer === undefined || !ts.isIdentifier(target.initializer)) {
+      return fail('Unexpected initializer for target');
+    }
+    const directTarget =
+        getDeclaration(program, 'entry.ts', 'directTarget', ts.isVariableDeclaration);
+    if (directTarget.initializer === undefined || !ts.isIdentifier(directTarget.initializer)) {
+      return fail('Unexpected initializer for directTarget');
+    }
+    const Target = target.initializer;
+    const DirectTarget = directTarget.initializer;
+
+    const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
+    const targetDecl = host.getDeclarationOfIdentifier(Target);
+    const directTargetDecl = host.getDeclarationOfIdentifier(DirectTarget);
+    if (targetDecl === null) {
+      return fail('No declaration found for Target');
+    } else if (directTargetDecl === null) {
+      return fail('No declaration found for DirectTarget');
+    }
+    expect(targetDecl.node.getSourceFile().fileName).toBe('/node_modules/absolute/index.ts');
+    expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
+    expect(directTargetDecl.viaModule).toBe('absolute');
+    expect(directTargetDecl.node).toBe(targetDecl.node);
+  });
 });
 
 function expectParameter(
-    param: Parameter, name: string, type?: string, decorator?: string,
+    param: CtorParameter, name: string, type?: string, decorator?: string,
     decoratorFrom?: string): void {
   expect(param.name !).toEqual(name);
   if (type === undefined) {

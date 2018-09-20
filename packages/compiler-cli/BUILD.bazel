@@ -21,11 +21,13 @@ ts_library(
         ],
     ),
     module_name = "@angular/compiler-cli",
-    node_modules = "@//:node_modules",
+    node_modules = "@angular_deps//:node_modules",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/factories",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/transform",
     ],
@@ -41,5 +43,8 @@ npm_package(
         "ivy-local",
         "release-with-framework",
     ],
-    deps = [":compiler-cli"],
+    deps = [
+        ":compiler-cli",
+        "//packages/compiler-cli/src/ngcc",
+    ],
 )

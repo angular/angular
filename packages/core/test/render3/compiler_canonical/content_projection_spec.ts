@@ -25,11 +25,13 @@ describe('content projection', () => {
         type: SimpleComponent,
         selectors: [['simple']],
         factory: () => new SimpleComponent(),
+        consts: 1,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $SimpleComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD();
-            $r3$.ɵEe(0, 'div');
-            $r3$.ɵP(1);
+            $r3$.ɵprojectionDef();
+            $r3$.ɵelement(0, 'div');
+            $r3$.ɵprojection(1);
           }
         }
       });
@@ -54,13 +56,15 @@ describe('content projection', () => {
         type: ComplexComponent,
         selectors: [['complex']],
         factory: () => new ComplexComponent(),
+        consts: 4,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $ComplexComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD($pD_0P$, $pD_0R$);
-            $r3$.ɵEe(0, 'div', ['id', 'first']);
-            $r3$.ɵP(1, 1);
-            $r3$.ɵEe(2, 'div', ['id', 'second']);
-            $r3$.ɵP(3, 2);
+            $r3$.ɵprojectionDef($pD_0P$, $pD_0R$);
+            $r3$.ɵelement(0, 'div', ['id', 'first']);
+            $r3$.ɵprojection(1, 1);
+            $r3$.ɵelement(2, 'div', ['id', 'second']);
+            $r3$.ɵprojection(3, 2);
           }
         }
       });
@@ -77,11 +81,13 @@ describe('content projection', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'simple');
-            $r3$.ɵT(1, 'content');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'simple');
+            $r3$.ɵtext(1, 'content');
+            $r3$.ɵelementEnd();
           }
         },
         directives: () => [SimpleComponent]

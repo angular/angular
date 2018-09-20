@@ -10,6 +10,7 @@
   <aio-select (change)="setStatus($event.option)"
               [options]="statuses"
               [selected]="status"
+              [disabled]="type.value === 'package'"
               label="Status:">
   </aio-select>
 

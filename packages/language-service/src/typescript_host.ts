@@ -166,7 +166,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         };
       } else {
         const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-        const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
+        const programFiles = this.program !.getSourceFiles().map(sf => sf.fileName);
         analyzedModules =
             analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
       }
@@ -224,7 +224,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   }
 
   getSourceFile(fileName: string): ts.SourceFile|undefined {
-    return this.tsService.getProgram().getSourceFile(fileName);
+    return this.tsService.getProgram() !.getSourceFile(fileName);
   }
 
   updateAnalyzedModules() {
@@ -244,7 +244,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private get checker() {
     let checker = this._checker;
     if (!checker) {
-      checker = this._checker = this.program.getTypeChecker();
+      checker = this._checker = this.program !.getTypeChecker();
     }
     return checker;
   }
@@ -257,7 +257,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           this._staticSymbolResolver.invalidateFile(fileName);
       this.clearCaches();
       const seen = new Set<string>();
-      for (let sourceFile of this.program.getSourceFiles()) {
+      for (let sourceFile of this.program !.getSourceFiles()) {
         const fileName = sourceFile.fileName;
         seen.add(fileName);
         const version = this.host.getScriptVersion(fileName);
@@ -325,14 +325,14 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         span,
         type,
         get members() {
-          return getClassMembersFromDeclaration(t.program, t.checker, sourceFile, declaration);
+          return getClassMembersFromDeclaration(t.program !, t.checker, sourceFile, declaration);
         },
         get query() {
           if (!queryCache) {
             const pipes = t.service.getPipesAt(fileName, node.getStart());
             queryCache = getSymbolQuery(
-                t.program, t.checker, sourceFile,
-                () => getPipesTable(sourceFile, t.program, t.checker, pipes));
+                t.program !, t.checker, sourceFile,
+                () => getPipesTable(sourceFile, t.program !, t.checker, pipes));
           }
           return queryCache;
         }
@@ -394,7 +394,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       // The host's getCurrentDirectory() is not reliable as it is always "" in
       // tsserver. We don't need the exact base directory, just one that contains
       // a source file.
-      const source = this.tsService.getProgram().getSourceFile(this.context);
+      const source = this.tsService.getProgram() !.getSourceFile(this.context);
       if (!source) {
         throw new Error('Internal error: no context could be determined');
       }
@@ -410,7 +410,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
         options.paths = compilerOptions.paths;
       }
       result = this._reflectorHost =
-          new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
+          new ReflectorHost(() => this.tsService.getProgram() !, this.host, options);
     }
     return result;
   }

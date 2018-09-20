@@ -5,15 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {assertLessThan} from './assert';
-import {LElementNode} from './interfaces/node';
-import {HEADER_OFFSET, LViewData} from './interfaces/view';
 
+import {devModeEqual} from '../change_detection/change_detection_util';
+import {assertLessThan} from './assert';
+import {LContainerNode, LElementContainerNode, LElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {HEADER_OFFSET, LViewData, TData} from './interfaces/view';
 
 /**
-* Must use this method for CD (instead of === ) since NaN !== NaN
-*/
-export function isDifferent(a: any, b: any): boolean {
+ * Returns whether the values are different from a change detection stand point.
+ *
+ * Constraints are relaxed in checkNoChanges mode. See `devModeEqual` for details.
+ */
+export function isDifferent(a: any, b: any, checkNoChangesMode: boolean): boolean {
+  if (ngDevMode && checkNoChangesMode) {
+    return !devModeEqual(a, b);
+  }
   // NaN is the only value that is not equal to itself so the first
   // test checks if both a and b are not NaN
   return !(a !== a && b !== b) && a !== b;
@@ -61,8 +67,8 @@ export function flatten(list: any[]): any[] {
   return result;
 }
 
-/** Retrieves a value from any `LViewData`. */
-export function loadInternal<T>(index: number, arr: LViewData): T {
+/** Retrieves a value from any `LViewData` or `TData`. */
+export function loadInternal<T>(index: number, arr: LViewData | TData): T {
   ngDevMode && assertDataInRangeInternal(index + HEADER_OFFSET, arr);
   return arr[index + HEADER_OFFSET];
 }
@@ -83,4 +89,17 @@ export function loadElementInternal(index: number, arr: LViewData): LElementNode
 
 export function readElementValue(value: LElementNode | any[]): LElementNode {
   return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
+}
+
+export function getLNode(tNode: TNode, hostView: LViewData): LElementNode|LContainerNode|
+    LElementContainerNode {
+  return readElementValue(hostView[tNode.index]);
+}
+
+export function isContentQueryHost(tNode: TNode): boolean {
+  return (tNode.flags & TNodeFlags.hasContentQuery) !== 0;
+}
+
+export function isComponent(tNode: TNode): boolean {
+  return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }

@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {AttributeMarker} from '../../../src/render3';
 import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
@@ -37,15 +35,17 @@ describe('elements', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 5,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$);
-            $r3$.ɵT(1, 'Hello ');
-            $r3$.ɵE(2, 'b');
-            $r3$.ɵT(3, 'World');
-            $r3$.ɵe();
-            $r3$.ɵT(4, '!');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'div', $e0_attrs$);
+            $r3$.ɵtext(1, 'Hello ');
+            $r3$.ɵelementStart(2, 'b');
+            $r3$.ɵtext(3, 'World');
+            $r3$.ɵelementEnd();
+            $r3$.ɵtext(4, '!');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -88,17 +88,18 @@ describe('elements', () => {
         type: LocalRefComp,
         selectors: [['local-ref-comp']],
         factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
+        consts: 4,
+        vars: 2,
         template: function LocalRefComp_Template(rf: $RenderFlags$, ctx: $LocalRefComp$) {
-          let $tmp$: any;
-          let $tmp_2$: any;
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div', $e0_attrs$, $e0_locals$);
-            $r3$.ɵT(3);
+            $r3$.ɵelement(0, 'div', $e0_attrs$, $e0_locals$);
+            $r3$.ɵtext(3);
           }
           if (rf & 2) {
-            $tmp$ = $r3$.ɵld(1);
-            $tmp_2$ = $r3$.ɵld(2);
-            $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+            const $tmp$ = $r3$.ɵreference(1) as any;
+            const $tmp_2$ = $r3$.ɵreference(2) as any;
+            $r3$.ɵtextBinding(
+                3, $r3$.ɵinterpolation2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
           }
         }
       });
@@ -132,16 +133,19 @@ describe('elements', () => {
         type: ListenerComp,
         selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
+        consts: 2,
+        vars: 0,
         template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'button');
-            $r3$.ɵL('click', function ListenerComp_click_Handler() { return ctx.onClick(); });
-            $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($event: $any$) {
+            $r3$.ɵelementStart(0, 'button');
+            $r3$.ɵlistener(
+                'click', function ListenerComp_click_Handler() { return ctx.onClick(); });
+            $r3$.ɵlistener('keypress', function ListenerComp_keypress_Handler($event: $any$) {
               ctx.onPress($event);
               return ctx.onPress2($event);
             });
-            $r3$.ɵT(1, 'Click');
-            $r3$.ɵe();
+            $r3$.ɵtext(1, 'Click');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -186,15 +190,17 @@ describe('elements', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 5,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$);
-            $r3$.ɵT(1, 'Hello ');
-            $r3$.ɵE(2, 'b');
-            $r3$.ɵT(3, 'World');
-            $r3$.ɵe();
-            $r3$.ɵT(4, '!');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'div', $e0_attrs$);
+            $r3$.ɵtext(1, 'Hello ');
+            $r3$.ɵelementStart(2, 'b');
+            $r3$.ɵtext(3, 'World');
+            $r3$.ɵelementEnd();
+            $r3$.ɵtext(4, '!');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -218,12 +224,14 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
+          vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵelement(0, 'div');
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someProperty));
+              $r3$.ɵelementProperty(0, 'id', $r3$.ɵbind(ctx.someProperty));
             }
           }
         });
@@ -249,12 +257,14 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
+          vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵelement(0, 'div');
             }
             if (rf & 2) {
-              $r3$.ɵa(0, 'title', $r3$.ɵb(ctx.someAttribute));
+              $r3$.ɵelementAttribute(0, 'title', $r3$.ɵbind(ctx.someAttribute));
             }
           }
         });
@@ -281,15 +291,17 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
+          vars: 0,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(null, c1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(c1);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵcp(0, 0, ctx.someFlag);
-              $r3$.ɵsa(0);
+              $r3$.ɵelementClassProp(0, 0, ctx.someFlag);
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -297,7 +309,11 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      expect(toHtml(comp)).toEqual('<div></div>');
+
+      // This is a fix for a change in how Domino renders this on the server in v2.1.0
+      const source = toHtml(comp);
+      const matches = source === '<div></div>' || source === '<div class=""></div>';
+      expect(matches).toBeTruthy();
 
       comp.someFlag = true;
       $r3$.ɵdetectChanges(comp);
@@ -320,16 +336,18 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
+          vars: 0,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(c0);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(null, c0);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵsp(0, 0, ctx.someColor);
-              $r3$.ɵsp(0, 1, ctx.someWidth, 'px');
-              $r3$.ɵsa(0);
+              $r3$.ɵelementStylingProp(0, 0, ctx.someColor);
+              $r3$.ɵelementStylingProp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -337,27 +355,19 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      if (browserDetection.isIE) {
-        expect(toHtml(comp)).toEqual('<div style="width: 50px; color: red;"></div>');
-      } else {
-        expect(toHtml(comp)).toEqual('<div style="color: red; width: 50px;"></div>');
-      }
+      expect(toHtml(comp)).toEqual('<div style="color: red; width: 50px;"></div>');
 
       comp.someColor = 'blue';
       comp.someWidth = 100;
       $r3$.ɵdetectChanges(comp);
-      if (browserDetection.isIE) {
-        expect(toHtml(comp)).toEqual('<div style="width: 100px; color: blue;"></div>');
-      } else {
-        expect(toHtml(comp)).toEqual('<div style="color: blue; width: 100px;"></div>');
-      }
+      expect(toHtml(comp)).toEqual('<div style="color: blue; width: 100px;"></div>');
     });
 
     it('should bind to many and keep order', () => {
       type $MyComponent$ = MyComponent;
 
-      const c0 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
-      const c1 = ['foo'];
+      const c0 = ['foo'];
+      const c1 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
 
       @Component({
         selector: 'my-component',
@@ -371,16 +381,18 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
+          vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(c0, c1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(c0, c1);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-              $r3$.ɵcp(0, 0, ctx.someString == 'initial');
-              $r3$.ɵsa(0);
+              $r3$.ɵelementProperty(0, 'id', $r3$.ɵbind(ctx.someString + 1));
+              $r3$.ɵelementClassProp(0, 0, ctx.someString == 'initial');
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -409,15 +421,17 @@ describe('elements', () => {
           type: StyleComponent,
           selectors: [['style-comp']],
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
+          consts: 1,
+          vars: 0,
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs();
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0, ctx.styleExp, ctx.classExp);
-              $r3$.ɵsa(0);
+              $r3$.ɵelementStylingMap(0, ctx.classExp, ctx.styleExp);
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });

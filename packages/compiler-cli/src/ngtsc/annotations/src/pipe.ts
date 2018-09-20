@@ -9,52 +9,68 @@
 import {LiteralExpr, R3PipeMetadata, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore} from './util';
+import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
-export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
+export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
-  detect(decorator: Decorator[]): Decorator|undefined {
-    return decorator.find(
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
+    return decorators.find(
         decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
   }
 
   analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3PipeMetadata> {
     if (clazz.name === undefined) {
-      throw new Error(`@Pipes must have names`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, clazz, `@Pipes must have names`);
     }
     const name = clazz.name.text;
     const type = new WrappedNodeExpr(clazz.name);
     if (decorator.args === null) {
-      throw new Error(`@Pipe must be called`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_NOT_CALLED, decorator.node, `@Pipe must be called`);
     }
-    const meta = decorator.args[0];
+    if (decorator.args.length !== 1) {
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node, '@Pipe must have exactly one argument');
+    }
+    const meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {
-      throw new Error(`Decorator argument must be literal.`);
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARG_NOT_LITERAL, meta, '@Pipe must have a literal argument');
     }
     const pipe = reflectObjectLiteral(meta);
 
     if (!pipe.has('name')) {
-      throw new Error(`@Pipe decorator is missing name field`);
+      throw new FatalDiagnosticError(
+          ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
-    const pipeName = staticallyResolve(pipe.get('name') !, this.checker);
+    const pipeNameExpr = pipe.get('name') !;
+    const pipeName = staticallyResolve(pipeNameExpr, this.reflector, this.checker);
     if (typeof pipeName !== 'string') {
-      throw new Error(`@Pipe.name must be a string`);
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
     this.scopeRegistry.registerPipe(clazz, pipeName);
 
     let pure = true;
     if (pipe.has('pure')) {
-      const pureValue = staticallyResolve(pipe.get('pure') !, this.checker);
+      const expr = pipe.get('pure') !;
+      const pureValue = staticallyResolve(expr, this.reflector, this.checker);
       if (typeof pureValue !== 'boolean') {
-        throw new Error(`@Pipe.pure must be a boolean`);
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `@Pipe.pure must be a boolean`);
       }
       pure = pureValue;
     }

@@ -32,7 +32,7 @@ The service itself is a class that the CLI generated and that's decorated with `
 
 When you add a service provider to the root application injector, it’s available throughout the app. Additionally, these providers are also available to all the classes in the app as long they have the lookup token. 
 
-You should always provide your service in the root injector unless there is a case where you want the service to be available only if the consumer imports a particular `@NgModule)`.
+You should always provide your service in the root injector unless there is a case where you want the service to be available only if the consumer imports a particular `@NgModule`.
 
 ## providedIn and NgModules
 
@@ -88,5 +88,5 @@ Register a provider with a component when you must limit a service instance to a
 You may also be interested in:
 * [Singleton Services](guide/singleton-services), which elaborates on the concepts covered on this page.
 * [Lazy Loading Modules](guide/lazy-loading-ngmodules).
-* [Tree-shakable Providers](guide/dependency-injection#tree-shakable-providers).
+* [Tree-shakable Providers](guide/dependency-injection-providers#tree-shakable-providers).
 * [NgModule FAQ](guide/ngmodule-faq).

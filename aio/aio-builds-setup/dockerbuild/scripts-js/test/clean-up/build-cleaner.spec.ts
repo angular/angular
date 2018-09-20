@@ -1,35 +1,64 @@
 // Imports
 import * as fs from 'fs';
-import * as path from 'path';
+import {normalize} from 'path';
 import * as shell from 'shelljs';
 import {BuildCleaner} from '../../lib/clean-up/build-cleaner';
 import {HIDDEN_DIR_PREFIX} from '../../lib/common/constants';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
 
+const EXISTING_BUILDS = [10, 20, 30, 40];
+const EXISTING_DOWNLOADS = [
+  'downloads/10-ABCDEF0-build.zip',
+  'downloads/10-1234567-build.zip',
+  'downloads/20-ABCDEF0-build.zip',
+  'downloads/20-1234567-build.zip',
+];
+const OPEN_PRS = [10, 40];
+const ANY_DATE = jasmine.any(String);
+
 // Tests
 describe('BuildCleaner', () => {
   let cleaner: BuildCleaner;
 
-  beforeEach(() => cleaner = new BuildCleaner('/foo/bar', 'baz/qux', '12345'));
-
+  beforeEach(() => {
+    spyOn(console, 'error');
+    spyOn(console, 'log');
+    cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', 'build.zip');
+  });
 
   describe('constructor()', () => {
 
     it('should throw if \'buildsDir\' is empty', () => {
-      expect(() => new BuildCleaner('', '/baz/qux', '12345')).
+      expect(() => new BuildCleaner('', 'baz', 'qux', '12345', 'downloads', 'build.zip')).
         toThrowError('Missing or empty required parameter \'buildsDir\'!');
     });
 
 
-    it('should throw if \'repoSlug\' is empty', () => {
-      expect(() => new BuildCleaner('/foo/bar', '', '12345')).
-        toThrowError('Missing or empty required parameter \'repoSlug\'!');
+    it('should throw if \'githubOrg\' is empty', () => {
+      expect(() => new BuildCleaner('/foo/bar', '', 'qux', '12345', 'downloads', 'build.zip')).
+        toThrowError('Missing or empty required parameter \'githubOrg\'!');
+    });
+
+
+    it('should throw if \'githubRepo\' is empty', () => {
+      expect(() => new BuildCleaner('/foo/bar', 'baz', '', '12345', 'downloads', 'build.zip')).
+        toThrowError('Missing or empty required parameter \'githubRepo\'!');
     });
 
 
     it('should throw if \'githubToken\' is empty', () => {
-      expect(() => new BuildCleaner('/foo/bar', 'baz/qux', '')).
+      expect(() => new BuildCleaner('/foo/bar', 'baz', 'qux', '', 'downloads', 'build.zip')).
         toThrowError('Missing or empty required parameter \'githubToken\'!');
+    });
+
+    it('should throw if \'downloadsDir\' is empty', () => {
+      expect(() => new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', '', 'build.zip')).
+        toThrowError('Missing or empty required parameter \'downloadsDir\'!');
+    });
+
+    it('should throw if \'artifactPath\' is empty', () => {
+      expect(() => new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', '')).
+        toThrowError('Missing or empty required parameter \'artifactPath\'!');
     });
 
   });
@@ -38,97 +67,109 @@ describe('BuildCleaner', () => {
   describe('cleanUp()', () => {
     let cleanerGetExistingBuildNumbersSpy: jasmine.Spy;
     let cleanerGetOpenPrNumbersSpy: jasmine.Spy;
+    let cleanerGetExistingDownloadsSpy: jasmine.Spy;
     let cleanerRemoveUnnecessaryBuildsSpy: jasmine.Spy;
-    let existingBuildsDeferred: {resolve: (v?: any) => void, reject: (e?: any) => void};
-    let openPrsDeferred: {resolve: (v?: any) => void, reject: (e?: any) => void};
-    let promise: Promise<void>;
+    let cleanerRemoveUnnecessaryDownloadsSpy: jasmine.Spy;
 
     beforeEach(() => {
-      cleanerGetExistingBuildNumbersSpy = spyOn(cleaner as any, 'getExistingBuildNumbers').and.callFake(() => {
-        return new Promise((resolve, reject) => existingBuildsDeferred = {resolve, reject});
-      });
-      cleanerGetOpenPrNumbersSpy = spyOn(cleaner as any, 'getOpenPrNumbers').and.callFake(() => {
-        return new Promise((resolve, reject) => openPrsDeferred = {resolve, reject});
-      });
-      cleanerRemoveUnnecessaryBuildsSpy = spyOn(cleaner as any, 'removeUnnecessaryBuilds');
+      cleanerGetExistingBuildNumbersSpy = spyOn(cleaner, 'getExistingBuildNumbers')
+        .and.callFake(() => Promise.resolve(EXISTING_BUILDS));
+      cleanerGetOpenPrNumbersSpy = spyOn(cleaner, 'getOpenPrNumbers')
+        .and.callFake(() => Promise.resolve(OPEN_PRS));
+      cleanerGetExistingDownloadsSpy = spyOn(cleaner, 'getExistingDownloads')
+        .and.callFake(() => Promise.resolve(EXISTING_DOWNLOADS));
 
-      promise = cleaner.cleanUp();
+      cleanerRemoveUnnecessaryBuildsSpy = spyOn(cleaner, 'removeUnnecessaryBuilds');
+      cleanerRemoveUnnecessaryDownloadsSpy = spyOn(cleaner, 'removeUnnecessaryDownloads');
+
     });
 
 
     it('should return a promise', () => {
+      const promise = cleaner.cleanUp();
       expect(promise).toEqual(jasmine.any(Promise));
     });
 
 
-    it('should get the existing builds', () => {
-      expect(cleanerGetExistingBuildNumbersSpy).toHaveBeenCalled();
-    });
-
-
-    it('should get the open PRs', () => {
+    it('should get the open PRs', async () => {
+      await cleaner.cleanUp();
       expect(cleanerGetOpenPrNumbersSpy).toHaveBeenCalled();
     });
 
 
-    it('should reject if \'getExistingBuildNumbers()\' rejects', done => {
-      promise.catch(err => {
+    it('should get the existing builds', async () => {
+      await cleaner.cleanUp();
+      expect(cleanerGetExistingBuildNumbersSpy).toHaveBeenCalled();
+    });
+
+
+    it('should get the existing downloads', async () => {
+      await cleaner.cleanUp();
+      expect(cleanerGetExistingDownloadsSpy).toHaveBeenCalled();
+    });
+
+
+    it('should pass existing builds and open PRs to \'removeUnnecessaryBuilds()\'', async () => {
+      await cleaner.cleanUp();
+      expect(cleanerRemoveUnnecessaryBuildsSpy).toHaveBeenCalledWith(EXISTING_BUILDS, OPEN_PRS);
+    });
+
+
+    it('should pass existing downloads and open PRs to \'removeUnnecessaryDownloads()\'', async () => {
+      await cleaner.cleanUp();
+      expect(cleanerRemoveUnnecessaryDownloadsSpy).toHaveBeenCalledWith(EXISTING_DOWNLOADS, OPEN_PRS);
+    });
+
+
+    it('should reject if \'getOpenPrNumbers()\' rejects', async () => {
+      try {
+        cleanerGetOpenPrNumbersSpy.and.callFake(() => Promise.reject('Test'));
+        await cleaner.cleanUp();
+      } catch (err) {
         expect(err).toBe('Test');
-        done();
-      });
-
-      existingBuildsDeferred.reject('Test');
+      }
     });
 
 
-    it('should reject if \'getOpenPrNumbers()\' rejects', done => {
-      promise.catch(err => {
+    it('should reject if \'getExistingBuildNumbers()\' rejects', async () => {
+      try {
+        cleanerGetExistingBuildNumbersSpy.and.callFake(() => Promise.reject('Test'));
+        await cleaner.cleanUp();
+      } catch (err) {
         expect(err).toBe('Test');
-        done();
-      });
-
-      openPrsDeferred.reject('Test');
+      }
     });
 
 
-    it('should reject if \'removeUnnecessaryBuilds()\' rejects', done => {
-      promise.catch(err => {
+    it('should reject if \'getExistingDownloads()\' rejects', async () => {
+      try {
+        cleanerGetExistingDownloadsSpy.and.callFake(() => Promise.reject('Test'));
+        await cleaner.cleanUp();
+      } catch (err) {
         expect(err).toBe('Test');
-        done();
-      });
-
-      cleanerRemoveUnnecessaryBuildsSpy.and.returnValue(Promise.reject('Test'));
-      existingBuildsDeferred.resolve();
-      openPrsDeferred.resolve();
+      }
     });
 
 
-    it('should pass existing builds and open PRs to \'removeUnnecessaryBuilds()\'', done => {
-      promise.then(() => {
-        expect(cleanerRemoveUnnecessaryBuildsSpy).toHaveBeenCalledWith('foo', 'bar');
-        done();
-      });
-
-      existingBuildsDeferred.resolve('foo');
-      openPrsDeferred.resolve('bar');
+    it('should reject if \'removeUnnecessaryBuilds()\' rejects', async () => {
+      try {
+        cleanerRemoveUnnecessaryBuildsSpy.and.callFake(() => Promise.reject('Test'));
+        await cleaner.cleanUp();
+      } catch (err) {
+        expect(err).toBe('Test');
+      }
     });
 
-
-    it('should resolve with the value returned by \'removeUnnecessaryBuilds()\'', done => {
-      promise.then(result => {
-        expect(result as any).toBe('Test');
-        done();
-      });
-
-      cleanerRemoveUnnecessaryBuildsSpy.and.returnValue(Promise.resolve('Test'));
-      existingBuildsDeferred.resolve();
-      openPrsDeferred.resolve();
+    it('should reject if \'removeUnnecessaryDownloads()\' rejects', async () => {
+      try {
+        cleanerRemoveUnnecessaryDownloadsSpy.and.callFake(() => Promise.reject('Test'));
+        await cleaner.cleanUp();
+      } catch (err) {
+        expect(err).toBe('Test');
+      }
     });
-
   });
 
-
-  // Protected methods
 
   describe('getExistingBuildNumbers()', () => {
     let fsReaddirSpy: jasmine.Spy;
@@ -137,7 +178,7 @@ describe('BuildCleaner', () => {
 
     beforeEach(() => {
       fsReaddirSpy = spyOn(fs, 'readdir').and.callFake((_: string, cb: typeof readdirCb) => readdirCb = cb);
-      promise = (cleaner as any).getExistingBuildNumbers();
+      promise = cleaner.getExistingBuildNumbers();
     });
 
 
@@ -203,7 +244,7 @@ describe('BuildCleaner', () => {
         return new Promise((resolve, reject) => prDeferred = {resolve, reject});
       });
 
-      promise = (cleaner as any).getOpenPrNumbers();
+      promise = cleaner.getOpenPrNumbers();
     });
 
 
@@ -236,6 +277,65 @@ describe('BuildCleaner', () => {
       prDeferred.resolve([{id: 0, number: 1}, {id: 1, number: 2}, {id: 2, number: 3}]);
     });
 
+    it('should log the number of open PRs', () => {
+      promise.then(prNumbers => {
+        expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
+      });
+    });
+  });
+
+
+  describe('getExistingDownloads()', () => {
+    let fsReaddirSpy: jasmine.Spy;
+    let readdirCb: (err: any, files?: string[]) => void;
+    let promise: Promise<string[]>;
+
+    beforeEach(() => {
+      fsReaddirSpy = spyOn(fs, 'readdir').and.callFake((_: string, cb: typeof readdirCb) => readdirCb = cb);
+      promise = cleaner.getExistingDownloads();
+    });
+
+
+    it('should return a promise', () => {
+      expect(promise).toEqual(jasmine.any(Promise));
+    });
+
+
+    it('should get the contents of the builds directory', () => {
+      expect(fsReaddirSpy).toHaveBeenCalled();
+      expect(fsReaddirSpy.calls.argsFor(0)[0]).toBe('downloads');
+    });
+
+
+    it('should reject if an error occurs while getting the files', done => {
+      promise.catch(err => {
+        expect(err).toBe('Test');
+        done();
+      });
+
+      readdirCb('Test');
+    });
+
+
+    it('should resolve with the returned files (as numbers)', done => {
+      promise.then(result => {
+        expect(result).toEqual(EXISTING_DOWNLOADS);
+        done();
+      });
+
+      readdirCb(null, EXISTING_DOWNLOADS);
+    });
+
+
+    it('should ignore files that do not match the artifactPath', done => {
+      promise.then(result => {
+        expect(result).toEqual(['10-ABCDEF-build.zip', '30-FFFFFFF-build.zip']);
+        done();
+      });
+
+      readdirCb(null, ['10-ABCDEF-build.zip', '20-AAAAAAA-otherfile.zip', '30-FFFFFFF-build.zip']);
+    });
+
   });
 
 
@@ -253,7 +353,7 @@ describe('BuildCleaner', () => {
 
     it('should test if the directory exists (and return if is does not)', () => {
       shellTestSpy.and.returnValue(false);
-      (cleaner as any).removeDir('/foo/bar');
+      cleaner.removeDir('/foo/bar');
 
       expect(shellTestSpy).toHaveBeenCalledWith('-d', '/foo/bar');
       expect(shellChmodSpy).not.toHaveBeenCalled();
@@ -262,99 +362,117 @@ describe('BuildCleaner', () => {
 
 
     it('should remove the specified directory and its content', () => {
-      (cleaner as any).removeDir('/foo/bar');
+      cleaner.removeDir('/foo/bar');
       expect(shellRmSpy).toHaveBeenCalledWith('-rf', '/foo/bar');
     });
 
 
     it('should make the directory and its content writable before removing', () => {
       shellRmSpy.and.callFake(() => expect(shellChmodSpy).toHaveBeenCalledWith('-R', 'a+w', '/foo/bar'));
-      (cleaner as any).removeDir('/foo/bar');
+      cleaner.removeDir('/foo/bar');
 
       expect(shellRmSpy).toHaveBeenCalled();
     });
 
 
     it('should catch errors and log them', () => {
-      const consoleErrorSpy = spyOn(console, 'error');
       shellRmSpy.and.callFake(() => {
         // tslint:disable-next-line: no-string-throw
         throw 'Test';
       });
 
-      (cleaner as any).removeDir('/foo/bar');
+      cleaner.removeDir('/foo/bar');
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      expect(consoleErrorSpy.calls.argsFor(0)[0]).toContain('Unable to remove \'/foo/bar\'');
-      expect(consoleErrorSpy.calls.argsFor(0)[1]).toBe('Test');
+      expect(console.error).toHaveBeenCalledWith(
+        jasmine.any(String), 'BuildCleaner:        ', 'ERROR: Unable to remove \'/foo/bar\' due to:', 'Test');
     });
 
   });
 
 
   describe('removeUnnecessaryBuilds()', () => {
-    let consoleLogSpy: jasmine.Spy;
     let cleanerRemoveDirSpy: jasmine.Spy;
 
     beforeEach(() => {
-      consoleLogSpy = spyOn(console, 'log');
-      cleanerRemoveDirSpy = spyOn(cleaner as any, 'removeDir');
+      cleanerRemoveDirSpy = spyOn(cleaner, 'removeDir');
     });
 
 
-    it('should log the number of existing builds, open PRs and builds to be removed', () => {
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3], [3, 4, 5, 6]);
+    it('should log the number of existing builds and builds to be removed', () => {
+      cleaner.removeUnnecessaryBuilds([1, 2, 3], [3, 4, 5, 6]);
 
-      expect(console.log).toHaveBeenCalledWith('Existing builds: 3');
-      expect(console.log).toHaveBeenCalledWith('Open pull requests: 4');
-      expect(console.log).toHaveBeenCalledWith('Removing 2 build(s): 1, 2');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing builds: 3');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Removing 2 build(s): 1, 2');
     });
 
 
     it('should construct full paths to directories (by prepending \'buildsDir\')', () => {
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3], []);
+      cleaner.removeUnnecessaryBuilds([1, 2, 3], []);
 
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/2'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/1'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/2'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/3'));
     });
 
 
     it('should try removing hidden directories as well', () => {
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3], []);
+      cleaner.removeUnnecessaryBuilds([1, 2, 3], []);
 
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
     });
 
 
     it('should remove the builds that do not correspond to open PRs', () => {
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], [2, 4]);
+      cleaner.removeUnnecessaryBuilds([1, 2, 3, 4], [2, 4]);
       expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(4);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/1'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/3'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
       cleanerRemoveDirSpy.calls.reset();
 
-      (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], [1, 2, 3, 4]);
+      cleaner.removeUnnecessaryBuilds([1, 2, 3, 4], [1, 2, 3, 4]);
       expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(0);
       cleanerRemoveDirSpy.calls.reset();
 
       (cleaner as any).removeUnnecessaryBuilds([1, 2, 3, 4], []);
       expect(cleanerRemoveDirSpy).toHaveBeenCalledTimes(8);
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/1'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/2'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/3'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize('/foo/bar/4'));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
-      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(path.normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}4`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/1'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/2'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/3'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize('/foo/bar/4'));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}1`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}2`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}3`));
+      expect(cleanerRemoveDirSpy).toHaveBeenCalledWith(normalize(`/foo/bar/${HIDDEN_DIR_PREFIX}4`));
       cleanerRemoveDirSpy.calls.reset();
     });
 
   });
 
+
+  describe('removeUnnecessaryDownloads()', () => {
+    beforeEach(() => {
+      spyOn(shell, 'rm');
+    });
+
+
+    it('should remove the downloads that do not correspond to open PRs', () => {
+      cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
+      expect(shell.rm).toHaveBeenCalledTimes(2);
+      expect(shell.rm).toHaveBeenCalledWith('downloads/20-ABCDEF0-build.zip');
+      expect(shell.rm).toHaveBeenCalledWith('downloads/20-1234567-build.zip');
+    });
+
+
+    it('should log the number of existing builds and builds to be removed', () => {
+      cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
+
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing downloads: 4');
+      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ',
+        'Removing 2 download(s): downloads/20-ABCDEF0-build.zip, downloads/20-1234567-build.zip');
+    });
+  });
 });

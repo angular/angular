@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, WrappedNodeExpr, compilePipeFromMetadata, jitExpression} from '@angular/compiler';
+import {WrappedNodeExpr, compilePipeFromMetadata, jitExpression} from '@angular/compiler';
 
 import {Pipe} from '../../metadata/directives';
 import {Type} from '../../type';
+import {NG_PIPE_DEF} from '../fields';
 import {stringify} from '../util';
 
 import {angularCoreEnv} from './environment';
-import {NG_PIPE_DEF} from './fields';
 import {reflectDependencies} from './util';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
-  let def: any = null;
+  let ngPipeDef: any = null;
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
-      if (def === null) {
+      if (ngPipeDef === null) {
         const sourceMapUrl = `ng://${stringify(type)}/ngPipeDef.js`;
 
         const name = type.name;
@@ -32,9 +32,11 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
           pure: meta.pure !== undefined ? meta.pure : true,
         });
 
-        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl);
+        ngPipeDef = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
       }
-      return def;
-    }
+      return ngPipeDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
   });
 }
