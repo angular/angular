@@ -10,7 +10,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
-import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
+import {createTemplateRef, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';

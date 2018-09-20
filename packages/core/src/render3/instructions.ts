@@ -899,12 +899,18 @@ function findDirectiveMatches(tNode: TNode): CurrentMatchesList|null {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i];
       if (isNodeMatchingSelectorList(tNode, def.selectors !)) {
+        matches || (matches = []);
         if ((def as ComponentDefInternal<any>).template) {
           if (tNode.flags & TNodeFlags.isComponent) throwMultipleComponentError(tNode);
+          addComponentLogic(def as ComponentDefInternal<any>);
           tNode.flags = TNodeFlags.isComponent;
+
+          // The component is always stored first with directives after.
+          matches.unshift(def, null);
+        } else {
+          matches.push(def, null);
         }
         if (def.diPublic) def.diPublic(def);
-        (matches || (matches = [])).push(def, null);
       }
     }
   }
@@ -948,14 +954,6 @@ export function queueHostBindingForCheck(dirIndex: number, hostVars: number): vo
    ])).push(dirIndex, previousOrParentTNode.index - HEADER_OFFSET);
 }
 
-/** Sets the context for a ChangeDetectorRef to the given instance. */
-export function initChangeDetectorIfExisting(
-    injector: LInjector | null, instance: any, view: LViewData): void {
-  if (injector && injector.changeDetectorRef != null) {
-    (injector.changeDetectorRef as ViewRef<any>)._setComponentContext(view, instance);
-  }
-}
-
 /**
  * This function instantiates the given directives.
  */
@@ -976,6 +974,12 @@ function instantiateDirectivesDirectly() {
 
     for (let i = start; i < end; i++) {
       const def: DirectiveDefInternal<any> = tDirectives[i];
+
+      // Component view must be set on node before the factory is created so
+      // ChangeDetectorRefs have a way to store component view on creation.
+      if ((def as ComponentDefInternal<any>).template) {
+        addComponentLogic(def as ComponentDefInternal<any>);
+      }
       directiveCreate(i, def.factory(), def);
     }
   }
@@ -1698,13 +1702,11 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 export function directiveCreate<T>(
     directiveDefIdx: number, directive: T,
     directiveDef: DirectiveDefInternal<T>| ComponentDefInternal<T>): T {
-  const hostNode = getPreviousOrParentNode() !;
+  const hostNode = getLNode(previousOrParentTNode, viewData);
   const instance = baseDirectiveCreate(directiveDefIdx, directive, directiveDef, hostNode);
 
-  const isComponent = (directiveDef as ComponentDefInternal<T>).template;
-  if (isComponent) {
-    addComponentLogic(
-        directiveDefIdx, directive, directiveDef as ComponentDefInternal<T>, hostNode);
+  if ((directiveDef as ComponentDefInternal<T>).template) {
+    hostNode.data ![CONTEXT] = directive;
   }
 
   if (firstTemplatePass) {
@@ -1727,8 +1729,9 @@ export function directiveCreate<T>(
   return instance;
 }
 
-function addComponentLogic<T>(
-    directiveIndex: number, instance: T, def: ComponentDefInternal<T>, hostNode: LNode): void {
+function addComponentLogic<T>(def: ComponentDefInternal<T>): void {
+  const hostNode = getLNode(previousOrParentTNode, viewData);
+
   const tView = getOrCreateTView(
       def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery);
 
@@ -1737,15 +1740,13 @@ function addComponentLogic<T>(
   const componentView = addToViewTree(
       viewData, previousOrParentTNode.index as number,
       createLViewData(
-          rendererFactory.createRenderer(hostNode.native as RElement, def), tView, instance,
+          rendererFactory.createRenderer(hostNode.native as RElement, def), tView, null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, getCurrentSanitizer()));
 
   // We need to set the host node/data here because when the component LNode was created,
   // we didn't yet know it was a component (just an element).
   (hostNode as{data: LViewData}).data = componentView;
-  (componentView as LViewData)[HOST_NODE] = getPreviousOrParentTNode() as TElementNode;
-
-  initChangeDetectorIfExisting(hostNode.nodeInjector, instance, componentView);
+  (componentView as LViewData)[HOST_NODE] = previousOrParentTNode as TElementNode;
 
   if (firstTemplatePass) queueComponentIndexForCheck();
 }

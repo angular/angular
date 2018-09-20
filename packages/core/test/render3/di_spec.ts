@@ -11,17 +11,18 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef, load} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
-import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
+import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
 
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
+import {NgIf} from './common_with_def';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -787,6 +788,10 @@ describe('di', () => {
 
   describe('ElementRef', () => {
     it('should create directive with ElementRef dependencies', () => {
+      let dir !: Directive;
+      let dirSameInstance !: DirectiveSameInstance;
+      let divNode !: LElementNode;
+
       class Directive {
         value: string;
         constructor(public elementRef: ElementRef) {
@@ -795,47 +800,75 @@ describe('di', () => {
         static ngDirectiveDef = defineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory: () => new Directive(injectElementRef()),
+          factory: () => dir = new Directive(injectElementRef()),
           features: [PublicFeature],
           exportAs: 'dir'
         });
       }
 
       class DirectiveSameInstance {
-        value: boolean;
-        constructor(elementRef: ElementRef, directive: Directive) {
-          this.value = (elementRef === directive.elementRef) && elementRef instanceof ElementRef;
+        isSameInstance: boolean;
+        constructor(public elementRef: ElementRef, directive: Directive) {
+          this.isSameInstance = elementRef === directive.elementRef;
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
           selectors: [['', 'dirSame', '']],
-          factory: () => new DirectiveSameInstance(injectElementRef(), directiveInject(Directive)),
+          factory: () => dirSameInstance =
+                       new DirectiveSameInstance(injectElementRef(), directiveInject(Directive)),
           exportAs: 'dirSame'
         });
       }
 
-      /**
-       * <div dir dirSame #dirSame="dirSame" #dir="dir">
-       *   {{ dir.value }} - {{ dirSame.value }}
-       * </div>
-       */
+      /** <div dir dirSame></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dirSame', 'dirSame', 'dir', 'dir']);
-          { text(3); }
+          elementStart(0, 'div', ['dir', '', 'dirSame', '']);
           elementEnd();
+          divNode = load(0);
         }
-
-        if (rf & RenderFlags.Update) {
-          const tmp1 = reference(1) as any;
-          const tmp2 = reference(2) as any;
-          textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
-        }
-      }, 4, 2, [Directive, DirectiveSameInstance]);
+      }, 1, 0, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
-      expect(fixture.html).toEqual('<div dir="" dirsame="">ElementRef-true</div>');
+      expect(dir.value).toEqual('ElementRef');
+      expect(dir.elementRef.nativeElement).toEqual(divNode.native);
+      expect(dirSameInstance.elementRef.nativeElement).toEqual(divNode.native);
+
+      // Each ElementRef instance should be unique
+      expect(dirSameInstance.isSameInstance).toBe(false);
     });
+
+    it('should create ElementRef with comment if requesting directive is on <ng-template> node',
+       () => {
+         let dir !: Directive;
+         let commentNode !: LContainerNode;
+
+         class Directive {
+           value: string;
+           constructor(public elementRef: ElementRef) {
+             this.value = (elementRef.constructor as any).name;
+           }
+           static ngDirectiveDef = defineDirective({
+             type: Directive,
+             selectors: [['', 'dir', '']],
+             factory: () => dir = new Directive(injectElementRef()),
+             features: [PublicFeature],
+             exportAs: 'dir'
+           });
+         }
+
+         /** <ng-template dir></ng-template> */
+         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             template(0, () => {}, 0, 0, null, ['dir', '']);
+             commentNode = load(0);
+           }
+         }, 1, 0, [Directive]);
+
+         const fixture = new ComponentFixture(App);
+         expect(dir.value).toEqual('ElementRef');
+         expect(dir.elementRef.nativeElement).toEqual(commentNode.native);
+       });
   });
 
   describe('TemplateRef', () => {
@@ -855,9 +888,9 @@ describe('di', () => {
       }
 
       class DirectiveSameInstance {
-        value: boolean;
+        isSameInstance: boolean;
         constructor(templateRef: TemplateRef<any>, directive: Directive) {
-          this.value = templateRef === directive.templateRef;
+          this.isSameInstance = templateRef === directive.templateRef;
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
@@ -881,12 +914,13 @@ describe('di', () => {
         if (rf & RenderFlags.Update) {
           const tmp1 = reference(1) as any;
           const tmp2 = reference(2) as any;
-          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.isSameInstance, ''));
         }
       }, 4, 2, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
-      expect(fixture.html).toEqual('TemplateRef-true');
+      // Each TemplateRef instance should be unique
+      expect(fixture.html).toEqual('TemplateRef-false');
     });
   });
 
@@ -907,9 +941,9 @@ describe('di', () => {
       }
 
       class DirectiveSameInstance {
-        value: boolean;
+        isSameInstance: boolean;
         constructor(viewContainerRef: ViewContainerRef, directive: Directive) {
-          this.value = viewContainerRef === directive.viewContainerRef;
+          this.isSameInstance = viewContainerRef === directive.viewContainerRef;
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
@@ -934,12 +968,13 @@ describe('di', () => {
         if (rf & RenderFlags.Update) {
           const tmp1 = reference(1) as any;
           const tmp2 = reference(2) as any;
-          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
+          textBinding(3, interpolation2('', tmp1.value, '-', tmp2.isSameInstance, ''));
         }
       }, 4, 2, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
-      expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
+      // Each ViewContainerRef instance should be unique
+      expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-false</div>');
     });
   });
 
@@ -990,53 +1025,33 @@ describe('di', () => {
       });
     }
 
-    class IfDirective {
-      /* @Input */
-      myIf = true;
+    const directives = [MyComp, Directive, DirectiveSameInstance, NgIf];
 
-      constructor(public template: TemplateRef<any>, public vcr: ViewContainerRef) {}
+    it('should inject current component ChangeDetectorRef into directives on the same node as components',
+       () => {
+         /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
+         const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
+             text(2);
+           }
+           if (rf & RenderFlags.Update) {
+             const tmp = reference(1) as any;
+             textBinding(2, bind(tmp.value));
+           }
+         }, 3, 1, directives);
 
-      ngOnChanges() {
-        if (this.myIf) {
-          this.vcr.createEmbeddedView(this.template);
-        }
-      }
+         const app = renderComponent(MyApp);
+         // ChangeDetectorRef is the token, ViewRef has historically been the constructor
+         expect(toHtml(app)).toEqual('<my-comp dir="" dirsame=""></my-comp>ViewRef');
+         expect((comp !.cdr as ViewRef<MyComp>).context).toBe(comp);
 
-      static ngDirectiveDef = defineDirective({
-        type: IfDirective,
-        selectors: [['', 'myIf', '']],
-        factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
-        inputs: {myIf: 'myIf'},
-        features: [PublicFeature, NgOnChangesFeature]
-      });
-    }
+         // Each ChangeDetectorRef instance should be unique
+         expect(dir !.cdr).not.toBe(comp !.cdr);
+         expect(dir !.cdr).not.toBe(dirSameInstance !.cdr);
+       });
 
-
-    const directives = [MyComp, Directive, DirectiveSameInstance, IfDirective];
-
-    it('should inject current component ChangeDetectorRef into directives on components', () => {
-      /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
-      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-          text(2);
-        }
-        if (rf & RenderFlags.Update) {
-          const tmp = reference(1) as any;
-          textBinding(2, bind(tmp.value));
-        }
-      }, 3, 1, directives);
-
-      const app = renderComponent(MyApp);
-      // ChangeDetectorRef is the token, ViewRef has historically been the constructor
-      expect(toHtml(app)).toEqual('<my-comp dir="" dirsame=""></my-comp>ViewRef');
-      expect((comp !.cdr as ViewRef<MyComp>).context).toBe(comp);
-
-      expect(dir !.cdr).toBe(comp !.cdr);
-      expect(dir !.cdr).toBe(dirSameInstance !.cdr);
-    });
-
-    it('should inject host component ChangeDetectorRef into directives on elements', () => {
+    it('should inject host component ChangeDetectorRef into directives on normal elements', () => {
 
       class MyApp {
         constructor(public cdr: ChangeDetectorRef) {}
@@ -1067,49 +1082,52 @@ describe('di', () => {
       expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
-      expect(dir !.cdr).toBe(app.cdr);
-      expect(dir !.cdr).toBe(dirSameInstance !.cdr);
+      // Each ChangeDetectorRef instance should be unique
+      expect(dir !.cdr).not.toBe(app.cdr);
+      expect(dir !.cdr).not.toBe(dirSameInstance !.cdr);
     });
 
-    it('should inject host component ChangeDetectorRef into directives in ContentChildren', () => {
-      class MyApp {
-        constructor(public cdr: ChangeDetectorRef) {}
+    it('should inject host component ChangeDetectorRef into directives in a component\'s ContentChildren',
+       () => {
+         class MyApp {
+           constructor(public cdr: ChangeDetectorRef) {}
 
-        static ngComponentDef = defineComponent({
-          type: MyApp,
-          selectors: [['my-app']],
-          consts: 4,
-          vars: 1,
-          factory: () => new MyApp(injectChangeDetectorRef()),
-          /**
-           * <my-comp>
-           *   <div dir dirSameInstance #dir="dir"></div>
-           * </my-comp>
-           * {{ dir.value }}
-           */
-          template: function(rf: RenderFlags, ctx: any) {
-            if (rf & RenderFlags.Create) {
-              elementStart(0, 'my-comp');
-              { element(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']); }
-              elementEnd();
-              text(3);
-            }
-            if (rf & RenderFlags.Update) {
-              const tmp = reference(2) as any;
-              textBinding(3, bind(tmp.value));
-            }
-          },
-          directives: directives
-        });
-      }
+           static ngComponentDef = defineComponent({
+             type: MyApp,
+             selectors: [['my-app']],
+             consts: 4,
+             vars: 1,
+             factory: () => new MyApp(injectChangeDetectorRef()),
+             /**
+              * <my-comp>
+              *   <div dir dirSameInstance #dir="dir"></div>
+              * </my-comp>
+              * {{ dir.value }}
+              */
+             template: function(rf: RenderFlags, ctx: any) {
+               if (rf & RenderFlags.Create) {
+                 elementStart(0, 'my-comp');
+                 { element(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']); }
+                 elementEnd();
+                 text(3);
+               }
+               if (rf & RenderFlags.Update) {
+                 const tmp = reference(2) as any;
+                 textBinding(3, bind(tmp.value));
+               }
+             },
+             directives: directives
+           });
+         }
 
-      const app = renderComponent(MyApp);
-      expect(toHtml(app)).toEqual('<my-comp><div dir="" dirsame=""></div></my-comp>ViewRef');
-      expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
+         const app = renderComponent(MyApp);
+         expect(toHtml(app)).toEqual('<my-comp><div dir="" dirsame=""></div></my-comp>ViewRef');
+         expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
-      expect(dir !.cdr).toBe(app !.cdr);
-      expect(dir !.cdr).toBe(dirSameInstance !.cdr);
-    });
+         // Each ChangeDetectorRef instance should be unique
+         expect(dir !.cdr).not.toBe(app !.cdr);
+         expect(dir !.cdr).not.toBe(dirSameInstance !.cdr);
+       });
 
     it('should inject host component ChangeDetectorRef into directives in embedded views', () => {
 
@@ -1161,8 +1179,9 @@ describe('di', () => {
       expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
-      expect(dir !.cdr).toBe(app.cdr);
-      expect(dir !.cdr).toBe(dirSameInstance !.cdr);
+      // Each ChangeDetectorRef instance should be unique
+      expect(dir !.cdr).not.toBe(app.cdr);
+      expect(dir !.cdr).not.toBe(dirSameInstance !.cdr);
     });
 
     it('should inject host component ChangeDetectorRef into directives on containers', () => {
@@ -1189,10 +1208,10 @@ describe('di', () => {
           factory: () => new MyApp(injectChangeDetectorRef()),
           consts: 1,
           vars: 0,
-          /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
+          /** <div *ngIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: MyApp) {
             if (rf & RenderFlags.Create) {
-              template(0, C1, 3, 1, null, ['myIf', 'showing']);
+              template(0, C1, 3, 1, null, ['ngIf', 'showing']);
             }
           },
           directives: directives
@@ -1203,8 +1222,9 @@ describe('di', () => {
       expect(toHtml(app)).toEqual('<div dir="" dirsame="">ViewRef</div>');
       expect((app !.cdr as ViewRef<MyApp>).context).toBe(app);
 
-      expect(dir !.cdr).toBe(app.cdr);
-      expect(dir !.cdr).toBe(dirSameInstance !.cdr);
+      // Each ChangeDetectorRef instance should be unique
+      expect(dir !.cdr).not.toBe(app.cdr);
+      expect(dir !.cdr).not.toBe(dirSameInstance !.cdr);
     });
   });
 
