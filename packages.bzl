@@ -72,15 +72,11 @@ MATERIAL_PACKAGES = [
 MATERIAL_TARGETS = ["//src/lib:material"] + ["//src/lib/%s" % p for p in MATERIAL_PACKAGES]
 
 # Each individual package uses a placeholder for the version of Angular to ensure they're
-# all in-sync.
-ANGULAR_PACKAGE_VERSION = ">=6.0.0 <7.0.0"
-
-# This map is passed to each ng_package rule to stamp out the appropriate
+# all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
+ANGULAR_PACKAGE_VERSION = ">=6.0.0-beta.0 <7.0.0"
 VERSION_PLACEHOLDER_REPLACEMENTS = {
   "0.0.0-NG": ANGULAR_PACKAGE_VERSION,
-  # Note that the "0.0.0-PLACEHOLDER" for the project version is automatically being replaced.
-  # https://github.com/bazelbuild/rules_nodejs/blob/master/internal/npm_package/npm_package.bzl#L94
 }
 
 # Base rollup globals for everything in the repo.
