@@ -76,6 +76,11 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  * boolean, number, string, null and non-class objects will be serialized and deserialzied in a
  * non-lossy manner.
  *
+ * *Note:*
+ * *While using `TransferState` on the client, it may be necessary to update the client's*
+ * *bootstrap process (generally in `main.ts`) to wait for `DOMContentLoaded`. See angular repo*
+ * *issue [#20484](https://github.com/angular/angular/issues/20484) for more info.*
+ *
  * @experimental
  */
 @Injectable()
