@@ -139,9 +139,6 @@ Convert that method to use `HttpClient`
   region="getHeroes-1">
 </code-example>
 
-Refresh the browser. The hero data should successfully load from the
-mock server.
-
 You've swapped `of` for `http.get` and the app keeps working without any other changes
 because both functions return an `Observable<Hero[]>`.
 
@@ -247,6 +244,9 @@ Most web APIs support a _get by id_ request in the form `api/hero/:id`
 Add a `HeroService.getHero()` method to make that request:
 
 <code-example path="toh-pt6/src/app/hero.service.ts" region="getHero" title="src/app/hero.service.ts"></code-example>
+
+Refresh the browser. The hero data should successfully load from the mock server, along with the hero details when clicked.
+
 
 There are three significant differences from  `getHeroes()`.
 
