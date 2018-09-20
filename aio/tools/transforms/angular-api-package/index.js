@@ -253,7 +253,12 @@ function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
     const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
 
     const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
-    rules.push((doc, prop, value) => value && !isMethod(doc) &&
+    rules.push((doc, prop, value) =>
+      value &&
+      // methods are allowed to have usage notes
+      !isMethod(doc) &&
+      // options on decorators are allowed to ahve usage notes
+      !(doc.containerDoc && doc.containerDoc.docType === 'decorator') &&
       `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
   });
 }
