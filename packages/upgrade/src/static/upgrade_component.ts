@@ -32,11 +32,12 @@ class Bindings {
  * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
- * library for hybrid upgrade apps that support AoT compilation*
+ * library for hybrid upgrade apps that support AoT compilation.*
  *
  * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
  *
+ * @usageNotes
  * ### Examples
  *
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
