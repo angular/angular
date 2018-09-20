@@ -49,8 +49,10 @@ This also makes the rule walker API consistent with the handling of inline resou
 ```ts
 // PSEUDO CODE
 visitExternalTemplate(node: ts.SourceFile) {
- const parsed = parse5.parse(node.getFullText());   this._findOutdatedInputs()
- .forEach(offsetStart => this._addExternalFailure(offsetStart, 'Outdated input', _myFix);}
+  const parsedHtml = parse5.parse(node.getFullText());
+  
+  this._findOutdatedInputs(parsedHtml)
+   .forEach(offsetStart => this._addExternalFailure(offsetStart, 'Outdated input', _myFix);}
 ```
 
 ### Upgrade data for target versions
@@ -112,37 +114,47 @@ In the scenario where a property from `MatRipple` has been renamed in V7, we don
 _src/lib/schematics/update/test-cases/v7/property-names_input.ts_
 ```ts
 ...
+
 /**
- * Mock definitions. This test case does not have access to @angular/material. */
+ * Mock definitions. This test case does not have access to @angular/material.
+ */
 class MatRipple {
   color: string;
 }
- /*
+
+/*
  * Actual test cases using the previously defined definitions.
  */
- class A implements OnInit {
- constructor(private a: MatRipple) {}
+class A implements OnInit {
+  constructor(private a: MatRipple) {}
+
   ngOnInit() {
     this.a.color = 'primary';
- } }
+  }
+}
 ```
 
 _src/lib/schematics/update/test-cases/v7/property-names_expected_output.ts_  
 ```ts
 ...
+
 /**
- * Mock definitions. This test case does not have access to @angular/material. */   
+ * Mock definitions. This test case does not have access to @angular/material.
+ */
 class MatRipple {
   color: string;
 }
- /*
+
+/*
  * Actual test cases using the previously defined definitions.   
  */
- class A implements OnInit {
- constructor(private a: MatRipple) {}
+class A implements OnInit {
+  constructor(private a: MatRipple) {}
+
   ngOnInit() {
     this.a.newColor = 'primary';
- } }
+  }
+}
 ```
 
 **Note**: The `_input.ts` file will be just transformed by the V7 migrations and compared to the `_expected_output.ts` file. This means that it's necessary to also include the no longer valid mock declarations to the expected output file.
