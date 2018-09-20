@@ -62,7 +62,8 @@
     "~~check-env": "node scripts/check-environment",
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build",
-    "post~~build": "yarn build-404-page"
+    "post~~build": "yarn build-404-page && yarn ~~sw-kill-switch",
+    "~~sw-kill-switch": "cp node_modules/@angular/service-worker/safety-worker.js dist/ngsw-worker.js"
   },
   "engines": {
     "node": ">=10.9.0 <11.0.0",
