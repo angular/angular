@@ -43,6 +43,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
  *
+ * @usageNotes
  * ### Simple Configuration
  *
  * ```

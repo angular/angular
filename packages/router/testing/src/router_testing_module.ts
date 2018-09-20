@@ -147,6 +147,7 @@ export function setupTestingRouter(
  * It provides spy implementations of `Location`, `LocationStrategy`, and {@link
  * NgModuleFactoryLoader}.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
