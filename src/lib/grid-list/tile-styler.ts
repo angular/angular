@@ -178,10 +178,12 @@ export class FixedTileStyler extends TileStyler {
   reset(list: MatGridList) {
     list._setListStyle(['height', null]);
 
-    list._tiles.forEach(tile => {
-      tile._setStyle('top', null);
-      tile._setStyle('height', null);
-    });
+    if (list._tiles) {
+      list._tiles.forEach(tile => {
+        tile._setStyle('top', null);
+        tile._setStyle('height', null);
+      });
+    }
   }
 }
 
@@ -248,7 +250,6 @@ export class RatioTileStyler extends TileStyler {
  * @docs-private
  */
 export class FitTileStyler extends TileStyler {
-
   setRowStyles(tile: MatGridTile, rowIndex: number): void {
     // Percent of the available vertical space that one row takes up.
     let percentHeightPerTile = 100 / this._rowspan;
@@ -264,10 +265,12 @@ export class FitTileStyler extends TileStyler {
   }
 
   reset(list: MatGridList) {
-    list._tiles.forEach(tile => {
-      tile._setStyle('top', null);
-      tile._setStyle('height', null);
-    });
+    if (list._tiles) {
+      list._tiles.forEach(tile => {
+        tile._setStyle('top', null);
+        tile._setStyle('height', null);
+      });
+    }
   }
 }
 

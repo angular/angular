@@ -34,6 +34,18 @@ describe('MatGridList', () => {
     expect(() => fixture.detectChanges()).toThrowError(/tile with colspan 5 is wider than grid/);
   });
 
+  it('should not throw when setting the `rowHeight` programmatically before init', () => {
+    const fixture = createComponent(GridListWithUnspecifiedRowHeight);
+    const gridList = fixture.debugElement.query(By.directive(MatGridList));
+
+    expect(() => {
+      // Set the row height twice so the tile styler is initialized.
+      gridList.componentInstance.rowHeight = 12.3;
+      gridList.componentInstance.rowHeight = 32.1;
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
+
   it('should set the columns to zero if a negative number is passed in', () => {
     const fixture = createComponent(GridListWithDynamicCols);
     fixture.detectChanges();
