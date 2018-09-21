@@ -40,6 +40,12 @@ For more complex labels, add a template with the `matStepLabel` directive inside
 </mat-vertical-stepper>
 ```
 
+#### Label position
+For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the default value, while `bottom` will place it under the step icon instead of at its side.
+This behaviour is controlled by `labelPosition` property.
+
+<!-- example(stepper-label-position-bottom) -->
+
 ### Stepper buttons
 There are two button directives to support navigation between different steps:
 `matStepperPrevious` and `matStepperNext`.

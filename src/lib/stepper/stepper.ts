@@ -27,6 +27,7 @@ import {
   EventEmitter,
   forwardRef,
   Inject,
+  Input,
   Optional,
   Output,
   QueryList,
@@ -38,9 +39,10 @@ import {
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
 import {ErrorStateMatcher} from '@angular/material/core';
+import {takeUntil} from 'rxjs/operators';
+
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
-import {takeUntil} from 'rxjs/operators';
 import {matStepperAnimations} from './stepper-animations';
 import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
 
@@ -124,6 +126,8 @@ export class MatStepper extends _CdkStepper implements AfterContentInit {
   inputs: ['selectedIndex'],
   host: {
     'class': 'mat-stepper-horizontal',
+    '[class.mat-stepper-label-position-end]': 'labelPosition == "end"',
+    '[class.mat-stepper-label-position-bottom]': 'labelPosition == "bottom"',
     'aria-orientation': 'horizontal',
     'role': 'tablist',
   },
@@ -132,7 +136,11 @@ export class MatStepper extends _CdkStepper implements AfterContentInit {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatHorizontalStepper extends MatStepper { }
+export class MatHorizontalStepper extends MatStepper {
+  /** Whether the label should display in bottom or end position. */
+  @Input()
+  labelPosition: 'bottom' | 'end' = 'end';
+}
 
 @Component({
   moduleId: module.id,
