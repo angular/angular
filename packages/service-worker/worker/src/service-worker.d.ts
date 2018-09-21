@@ -72,7 +72,7 @@ interface ActivateEvent extends ExtendableEvent {}
 
 // Notification API
 
-interface NotificationEvent {
+interface NotificationEvent extends ExtendableEvent {
   action: string;
   notification: Notification;
 }
@@ -82,8 +82,6 @@ interface NotificationEvent {
 interface PushEvent extends ExtendableEvent {
   data: PushMessageData;
 }
-
-interface NotificationClickEvent extends NotificationEvent, ExtendableEvent {}
 
 interface PushMessageData {
   arrayBuffer(): ArrayBuffer;
@@ -116,7 +114,7 @@ interface ServiceWorkerGlobalScope {
   addEventListener(event: 'fetch', fn: (event?: FetchEvent) => any): void;
   addEventListener(event: 'install', fn: (event?: ExtendableEvent) => any): void;
   addEventListener(event: 'push', fn: (event?: PushEvent) => any): void;
-  addEventListener(event: 'notificationclick', fn: (event?: NotificationClickEvent) => any): void;
+  addEventListener(event: 'notificationclick', fn: (event?: NotificationEvent) => any): void;
   addEventListener(event: 'sync', fn: (event?: SyncEvent) => any): void;
 
   fetch(request: Request|string): Promise<Response>;

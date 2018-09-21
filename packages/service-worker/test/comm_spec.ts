@@ -313,7 +313,7 @@ import {async_fit, async_it} from './async';
               (msg: {message: string}) => receivedMessages.push(msg.message));
 
           sendMessage('NOTIFICATION_CLICK', 'this was a click');
-          sendMessage('NOT_OTIFICATION_CLICK', 'this was not a click');
+          sendMessage('NOT_IFICATION_CLICK', 'this was not a click');
           sendMessage('NOTIFICATION_CLICK', 'this was a click too');
           sendMessage('KCILC_NOITACIFITON', 'this was a KCILC_NOITACIFITON message');
 
