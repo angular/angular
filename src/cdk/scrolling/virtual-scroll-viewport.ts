@@ -24,7 +24,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {animationFrameScheduler, Observable, Subject} from 'rxjs';
-import {sampleTime, startWith, takeUntil} from 'rxjs/operators';
+import {auditTime, startWith, takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {CdkScrollable, ExtendedScrollToOptions} from './scrollable';
 import {CdkVirtualForOf} from './virtual-for-of';
@@ -144,9 +144,10 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
           .pipe(
               // Start off with a fake scroll event so we properly detect our initial position.
               startWith<Event | null>(null!),
-              // Sample the scroll stream at every animation frame. This way if there are multiple
-              // scroll events in the same frame we only need to recheck our layout once.
-              sampleTime(0, animationFrameScheduler))
+              // Collect multiple events into one until the next animation frame. This way if
+              // there are multiple scroll events in the same frame we only need to recheck
+              // our layout once.
+              auditTime(0, animationFrameScheduler))
           .subscribe(() => this._scrollStrategy.onContentScrolled());
 
       this._markChangeDetectionNeeded();
