@@ -26,14 +26,14 @@ module.exports = function processPackages() {
 
           // Partition the exports into groups by type
           if (doc.exports) {
-            doc.ngmodules = doc.exports.filter(doc => doc.docType === 'ngmodule');
-            doc.classes = doc.exports.filter(doc => doc.docType === 'class');
-            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator');
-            doc.functions = doc.exports.filter(doc => doc.docType === 'function');
-            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface');
-            doc.directives = doc.exports.filter(doc => doc.docType === 'directive');
-            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe');
-            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const');
+            doc.ngmodules = doc.exports.filter(doc => doc.docType === 'ngmodule').sort(byId);
+            doc.classes = doc.exports.filter(doc => doc.docType === 'class').sort(byId);
+            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator').sort(byId);
+            doc.functions = doc.exports.filter(doc => doc.docType === 'function').sort(byId);
+            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface').sort(byId);
+            doc.directives = doc.exports.filter(doc => doc.docType === 'directive').sort(byId);
+            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe').sort(byId);
+            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
             if (doc.exports.every(doc => !!doc.deprecated)) {
               doc.deprecated = 'all exports of this entry point are deprecated.';
             }
@@ -71,3 +71,8 @@ module.exports = function processPackages() {
     }
   };
 };
+
+
+function byId(a, b) {
+  return a.id > b.id ? 1 : -1;
+}
