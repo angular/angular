@@ -33,6 +33,10 @@ const NOTIFICATION_OPTION_NAMES = [
   'actions', 'badge', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction', 'tag',
   'vibrate', 'data'
 ];
+const NOTIFICATION_CLICK_OPTION_NAMES = [
+  'actions', 'badge', 'title', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction',
+  'tag', 'vibrate', 'data'
+];
 
 interface LatestEntry {
   latest: string;
@@ -276,7 +280,7 @@ export class Driver implements Debuggable, UpdateSource {
     msg.waitUntil(this.handlePush(msg.data.json()));
   }
 
-  private onClick(event: NotificationClickEvent): void {
+  private onClick(event: NotificationEvent): void {
     // Handle the click event and keep the SW alive until it's handled.
     event.waitUntil(this.handleClick(event.notification, event.action));
   }
@@ -305,10 +309,17 @@ export class Driver implements Debuggable, UpdateSource {
     await this.scope.registration.showNotification(desc['title'] !, options);
   }
 
-  private async handleClick(notification: Notification, action?: string): Promise<void> {
-    await this.broadcast({
+  private async handleClick(notification: any, action?: string): Promise<void> {
+    (notification as Notification).close();
+
+    const desc = notification as{[key: string]: string | undefined};
+    let options: {[key: string]: string | undefined} = {};
+    NOTIFICATION_CLICK_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
+        .forEach(name => options[name] = desc[name]);
+
+    await this.broadcastAndFocus({
       type: 'NOTIFICATION_CLICK',
-      data: {action, notification},
+      data: {action, notification: options},
     });
   }
 
@@ -994,6 +1005,18 @@ export class Driver implements Debuggable, UpdateSource {
       client.postMessage(notice);
 
     }, Promise.resolve());
+  }
+
+  async broadcastAndFocus(msg: Object): Promise<void> {
+    const clients = await this.scope.clients.matchAll();
+    clients.forEach((client: any) => {
+      if ('focus' in client) {
+        if (!client.focused) {
+          client.focus();
+        }
+      }
+      client.postMessage(msg);
+    });
   }
 
   async broadcast(msg: Object): Promise<void> {
