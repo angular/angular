@@ -20,15 +20,11 @@ $mat-snack-bar-button-vertical-margin:
 }
 
 .mat-simple-snackbar-action {
-  display: flex;
-  flex-direction: column;
   flex-shrink: 0;
-  justify-content: space-around;
   margin: $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin * -1
           $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin;
 
   button {
-    flex: 1;
     max-height: $mat-snack-bar-button-height;
     min-width: 0;
   }
