@@ -30,7 +30,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -856,24 +856,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
     if (this.directiveMatcher) {
-      const selector = createCssSelector(tagName, this.getAttrsForDirectiveMatching(elOrTpl));
+      const selector = createCssSelector(tagName, getAttrsForDirectiveMatching(elOrTpl));
       this.directiveMatcher.match(
           selector, (cssSelector, staticType) => { this.directives.add(staticType); });
     }
-  }
-
-  private getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
-    const attributesMap: {[name: string]: string} = {};
-
-    elOrTpl.attributes.forEach(a => {
-      if (!isI18NAttribute(a.name)) {
-        attributesMap[a.name] = a.value;
-      }
-    });
-    elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
-    elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
-
-    return attributesMap;
   }
 
   private prepareSyntheticAndSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
