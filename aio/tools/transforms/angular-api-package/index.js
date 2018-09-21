@@ -151,40 +151,17 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     ];
   })
 
-  .config(function(checkContentRules, EXPORT_DOC_TYPES) {
-    // Min length rules
-    const createMinLengthRule = require('./content-rules/minLength');
-    const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
-    const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
-    paramRules.push(createMinLengthRule());
-
-    // Heading rules
-    const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
-    const noMarkdownHeadings = createNoMarkdownHeadingsRule();
-    const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
-    const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
-    const PROPS_TO_CHECK = ['description', 'shortDescription'];
-
-    DOC_TYPES_TO_CHECK.forEach(docType => {
-      const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
-      PROPS_TO_CHECK.forEach(prop => {
-        const rules = ruleSet[prop] = ruleSet[prop] || [];
-        rules.push(noMarkdownHeadings);
-      });
-      const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
-      rules.push(allowOnlyLevel3Headings);
-    });
+  .config(function(checkContentRules, API_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
+    addMinLengthRules(checkContentRules);
+    addHeadingRules(checkContentRules, API_DOC_TYPES);
+    addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES);
+    checkContentRules.failOnContentErrors = true;
   })
 
   .config(function(filterContainedDocs, API_CONTAINED_DOC_TYPES) {
     filterContainedDocs.docTypes = API_CONTAINED_DOC_TYPES;
   })
 
-  .config(function(checkContentRules, API_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
-    addMinLengthRules(checkContentRules);
-    addHeadingRules(checkContentRules, API_DOC_TYPES);
-    addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES);
-  })
 
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
 
