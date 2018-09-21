@@ -9,8 +9,8 @@
 import {Rule, SchematicContext, TaskId, Tree} from '@angular-devkit/schematics';
 import {RunSchematicTask, TslintFixTask} from '@angular-devkit/schematics/tasks';
 import {sync as globSync} from 'glob';
-import {TargetVersion} from './index';
 import {getProjectTsConfigPaths} from './project-tsconfig-paths';
+import {TargetVersion} from './target-version';
 import {createTslintConfig} from './tslint-config';
 
 /** Entry point for `ng update` from Angular CLI. */

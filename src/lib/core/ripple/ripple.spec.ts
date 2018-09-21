@@ -62,7 +62,7 @@ describe('MatRipple', () => {
       fixture = TestBed.createComponent(BasicRippleContainer);
       fixture.detectChanges();
 
-      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.nativeElement.querySelector('.mat-ripple');
       rippleDirective = fixture.componentInstance.ripple;
     });
 
@@ -262,7 +262,7 @@ describe('MatRipple', () => {
       fixture = TestBed.createComponent(RippleContainerWithNgIf);
       fixture.detectChanges();
 
-      rippleTarget = fixture.debugElement.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.debugElement.nativeElement.querySelector('.mat-ripple');
 
       fixture.componentInstance.isDestroyed = true;
       fixture.detectChanges();
@@ -377,7 +377,7 @@ describe('MatRipple', () => {
       fixture = TestBed.createComponent(BasicRippleContainer);
       fixture.detectChanges();
 
-      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.nativeElement.querySelector('.mat-ripple');
       rippleDirective = fixture.componentInstance.ripple;
     });
 
@@ -492,7 +492,7 @@ describe('MatRipple', () => {
       fixture = TestBed.createComponent(testComponent);
       fixture.detectChanges();
 
-      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.nativeElement.querySelector('.mat-ripple');
       rippleDirective = fixture.componentInstance.ripple;
     }
 
@@ -533,41 +533,6 @@ describe('MatRipple', () => {
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
     });
-
-    it('should support changing the baseSpeedFactor', fakeAsync(() => {
-      createTestComponent({ baseSpeedFactor: 0.5 });
-
-      dispatchMouseEvent(rippleTarget, 'mousedown');
-      dispatchMouseEvent(rippleTarget, 'mouseup');
-
-      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
-
-      // Calculates the speedFactor for the duration. Those factors needs to be inverted, because
-      // a lower speed factor, will make the duration longer. For example: 0.5 => 2x duration.
-      let fadeInFactor = 1 / 0.5;
-
-      // Calculates the duration for fading-in and fading-out the ripple.
-      tick(enterDuration * fadeInFactor + exitDuration);
-
-      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
-    }));
-
-    it('should combine individual speed factor with baseSpeedFactor', fakeAsync(() => {
-      createTestComponent({ baseSpeedFactor: 0.5 });
-
-      rippleDirective.launch(0, 0, { speedFactor: 1.5 });
-
-      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
-
-      // Calculates the speedFactor for the duration. Those factors needs to be inverted, because
-      // a lower speed factor, will make the duration longer. For example: 0.5 => 2x duration.
-      let fadeInFactor = 1 / (0.5 * 1.5);
-
-      // Calculates the duration for fading-in and fading-out the ripple.
-      tick(enterDuration * fadeInFactor + exitDuration);
-
-      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
-    }));
 
     it('should support changing the animation duration', fakeAsync(() => {
       createTestComponent({
@@ -619,7 +584,7 @@ describe('MatRipple', () => {
       fixture = TestBed.createComponent(BasicRippleContainer);
       fixture.detectChanges();
 
-      rippleTarget = fixture.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.nativeElement.querySelector('.mat-ripple');
       rippleDirective = fixture.componentInstance.ripple;
     });
 
@@ -637,7 +602,7 @@ describe('MatRipple', () => {
       fixture.detectChanges();
 
       controller = fixture.debugElement.componentInstance;
-      rippleTarget = fixture.debugElement.nativeElement.querySelector('[mat-ripple]');
+      rippleTarget = fixture.debugElement.nativeElement.querySelector('.mat-ripple');
     });
 
     it('sets ripple color', () => {
@@ -757,7 +722,7 @@ describe('MatRipple', () => {
 
 @Component({
   template: `
-    <div id="container" #ripple="matRipple" mat-ripple [matRippleSpeedFactor]="0"
+    <div id="container" #ripple="matRipple" matRipple
          style="position: relative; width:300px; height:200px;">
     </div>
   `,
@@ -769,8 +734,7 @@ class BasicRippleContainer {
 @Component({
   template: `
     <div id="container" style="position: relative; width:300px; height:200px;"
-      mat-ripple
-      [matRippleSpeedFactor]="0"
+      matRipple
       [matRippleTrigger]="trigger"
       [matRippleCentered]="centered"
       [matRippleRadius]="radius"
@@ -792,11 +756,11 @@ class RippleContainerWithInputBindings {
 }
 
 @Component({
-  template: `<div id="container" #ripple="matRipple" mat-ripple></div>`,
+  template: `<div id="container" #ripple="matRipple" matRipple></div>`,
 })
 class RippleContainerWithoutBindings {}
 
-@Component({ template: `<div id="container" mat-ripple [matRippleSpeedFactor]="0"
+@Component({ template: `<div id="container" matRipple
                              *ngIf="!isDestroyed"></div>` })
 class RippleContainerWithNgIf {
   @ViewChild(MatRipple) ripple: MatRipple;

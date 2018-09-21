@@ -10,7 +10,8 @@ describe('v7 upgrade test cases', () => {
    * a developers application.
    */
   const testCases = [
-    'v7/property-names'
+    'v7/property-names',
+    'v7/ripple-speed-factor',
   ];
 
   // Iterates through every test case directory and generates a jasmine test block that will

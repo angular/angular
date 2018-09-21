@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TargetVersion} from '../../index';
+import {TargetVersion} from '../../target-version';
 import {VersionChanges} from '../transform-change-data';
 
 /**

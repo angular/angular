@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TargetVersion} from '../../target-version';
 import {VersionChanges} from '../transform-change-data';
-import {TargetVersion} from '../../index';
 
 export interface MaterialAttributeSelectorData {
   /** The attribute name to replace. */

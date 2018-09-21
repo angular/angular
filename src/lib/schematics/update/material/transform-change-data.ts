@@ -5,7 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TargetVersion} from '../index';
+
+import {TargetVersion} from '../target-version';
 
 export type VersionChanges<T> = {
   [target in TargetVersion]?: ReadableChange<T>[];

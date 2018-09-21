@@ -17,11 +17,6 @@ export type RippleConfig = {
   persistent?: boolean;
   animation?: RippleAnimationConfig;
   terminateOnPointerUp?: boolean;
-  /**
-   * @deprecated Use the `animation` property instead.
-   * @breaking-change 7.0.0
-   */
-  speedFactor?: number;
 };
 
 /**
@@ -140,7 +135,7 @@ export class RippleRenderer {
     const radius = config.radius || distanceToFurthestCorner(x, y, containerRect);
     const offsetX = x - containerRect.left;
     const offsetY = y - containerRect.top;
-    const duration = animationConfig.enterDuration / (config.speedFactor || 1);
+    const duration = animationConfig.enterDuration;
 
     const ripple = document.createElement('div');
     ripple.classList.add('mat-ripple-element');
