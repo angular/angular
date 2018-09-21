@@ -98,7 +98,7 @@
 
   // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
   // order of the theme styles and the button reset may end up resetting this as well.
-  .mat-stroked-button:not(.mat-button-disabled) {
+  .mat-stroked-button:not([disabled]) {
     border-color: mat-color($foreground, divider);
   }
 
