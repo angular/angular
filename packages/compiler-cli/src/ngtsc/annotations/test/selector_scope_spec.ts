@@ -20,7 +20,7 @@ describe('SelectorScopeRegistry', () => {
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
-        export interface NgComponentDef<A, B> {}
+        export interface NgComponentDefWithMeta<A, B, C, D, E, F> {}
         export interface NgModuleDef<A, B, C, D> {}
       `
       },
@@ -38,10 +38,10 @@ describe('SelectorScopeRegistry', () => {
       {
         name: 'node_modules/some_library/component.d.ts',
         contents: `
-        import {NgComponentDef} from '@angular/core';
+        import {NgComponentDefWithMeta} from '@angular/core';
 
         export declare class SomeCmp {
-          static ngComponentDef: NgComponentDef<SomeCmp, 'some-cmp'>;
+          static ngComponentDef: NgComponentDefWithMeta<SomeCmp, 'some-cmp', never, {}, {}, never>;
         }
       `
       },
@@ -84,21 +84,21 @@ describe('SelectorScopeRegistry', () => {
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
-        export interface NgComponentDef<A, B> {}
+        export interface NgComponentDefWithMeta<A, B, C, D, E, F> {}
         export interface NgModuleDef<A, B, C, D> {}
       `
       },
       {
         name: 'node_modules/some_library/index.d.ts',
         contents: `
-        import {NgComponentDef, NgModuleDef} from '@angular/core';
+        import {NgComponentDefWithMeta, NgModuleDef} from '@angular/core';
         
         export declare class SomeModule {
           static ngModuleDef: NgModuleDef<SomeModule, [typeof SomeCmp], never, [typeof SomeCmp]>;
         }
 
         export declare class SomeCmp {
-          static ngComponentDef: NgComponentDef<SomeCmp, 'some-cmp'>;
+          static ngComponentDef: NgComponentDefWithMeta<SomeCmp, 'some-cmp', never, {}, {}, never>;
         }
       `
       },

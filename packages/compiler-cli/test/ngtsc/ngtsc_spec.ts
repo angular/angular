@@ -148,7 +148,9 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).not.toContain('__decorate');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ɵComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents)
+        .toContain(
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
   });
 
   it('should compile Components without errors', () => {
@@ -201,10 +203,12 @@ describe('ngtsc behavioral tests', () => {
             'declarations: [TestCmp], imports: [], exports: [] })');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ɵComponentDef<TestCmp, \'test-cmp\'>');
     expect(dtsContents)
         .toContain(
-            'static ngModuleDef: i0.ɵNgModuleDef<TestModule, [typeof TestCmp], never, never>');
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
+    expect(dtsContents)
+        .toContain(
+            'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>');
     expect(dtsContents).not.toContain('__decorate');
   });
 
@@ -247,7 +251,7 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
-            'static ngModuleDef: i0.ɵNgModuleDef<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+            'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
     expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
   });
 
@@ -333,7 +337,8 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: false })');
-    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents)
+        .toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, \'test-pipe\'>;');
   });
 
   it('should compile pure Pipes without errors', () => {
@@ -358,7 +363,8 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: true })');
-    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents)
+        .toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, \'test-pipe\'>;');
   });
 
   it('should compile Pipes with dependencies', () => {
@@ -409,7 +415,8 @@ describe('ngtsc behavioral tests', () => {
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
-        .toContain('i0.ɵNgModuleDef<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
+        .toContain(
+            'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
   it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
@@ -440,7 +447,7 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
     expect(dtsContents)
-        .toContain('i0.ɵNgModuleDef<TestModule, never, [typeof i1.RouterModule], never>');
+        .toContain('i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
   });
 
   it('should inject special types according to the metadata', () => {

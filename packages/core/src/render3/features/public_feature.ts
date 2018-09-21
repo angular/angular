@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {diPublic} from '../di';
-import {DirectiveDefInternal} from '../interfaces/definition';
+import {DirectiveDef} from '../interfaces/definition';
 
 /**
  * This feature publishes the directive (or component) into the DI system, making it visible to
@@ -14,6 +14,6 @@ import {DirectiveDefInternal} from '../interfaces/definition';
  *
  * @param definition
  */
-export function PublicFeature<T>(definition: DirectiveDefInternal<T>) {
+export function PublicFeature<T>(definition: DirectiveDef<T>) {
   definition.diPublic = diPublic;
 }

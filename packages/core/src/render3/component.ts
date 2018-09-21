@@ -19,7 +19,7 @@ import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {PlayerHandler} from './interfaces/player';
 
 import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
-import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
+import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
@@ -77,7 +77,7 @@ export interface CreateComponentOptions {
 }
 
 /** See CreateComponentOptions.hostFeatures */
-type HostFeature = (<T>(component: T, componentDef: ComponentDef<T, string>) => void);
+type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
@@ -149,7 +149,7 @@ export function renderComponent<T>(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    elementNode: LElementNode, componentDef: ComponentDef<T, string>, rootView: LViewData,
+    elementNode: LElementNode, componentDef: ComponentDef<T>, rootView: LViewData,
     rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
   // Create directive instance with factory() and store at index 0 in directives array
   const component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef, elementNode);
@@ -188,7 +188,7 @@ export function createRootContext(
  * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
  * ```
  */
-export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<any>): void {
+export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const rootTView = readPatchedLViewData(component) ![TVIEW];
 
   // Root component is always created at dir index 0

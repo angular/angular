@@ -965,7 +965,7 @@ describe('ViewContainerRef', () => {
               {provide: RendererFactory2, useValue: getRendererFactory2(document)}
             ]
           });
-          static ngModuleDef: NgModuleDef<any, any, any, any> = { bootstrap: [] } as any;
+          static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
         }
         const myAppModuleFactory = new NgModuleFactory(MyAppModule);
         const ngModuleRef = myAppModuleFactory.create(null);

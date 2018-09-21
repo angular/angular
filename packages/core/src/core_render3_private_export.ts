@@ -100,9 +100,11 @@ export {
   pipe as ɵpipe,
   BaseDef as ɵBaseDef,
   ComponentDef as ɵComponentDef,
-  ComponentDefInternal as ɵComponentDefInternal,
+  ComponentDefWithMeta as ɵComponentDefWithMeta,
   DirectiveDef as ɵDirectiveDef,
+  DirectiveDefWithMeta as ɵDirectiveDefWithMeta,
   PipeDef as ɵPipeDef,
+  PipeDefWithMeta as ɵPipeDefWithMeta,
   whenRendered as ɵwhenRendered,
   i18nApply as ɵi18nApply,
   i18nExpMapping as ɵi18nExpMapping,
@@ -134,7 +136,7 @@ export {
 
 export {
   NgModuleDef as ɵNgModuleDef,
-  NgModuleDefInternal as ɵNgModuleDefInternal,
+  NgModuleDefWithMeta as ɵNgModuleDefWithMeta,
   NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
 } from './metadata/ng_module';
 
