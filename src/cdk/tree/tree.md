@@ -62,7 +62,7 @@ A node definition is specified via any element with `cdkNodeDef`. This directive
 data to be used in any bindings in the node template.
 
 ```html
-<cdk-tree-node *cdkNodeDef=“let node”>
+<cdk-tree-node *cdkNodeDef="let node">
   {{node.key}}: {{node.value}}
 </cdk-tree-node>
 ```
@@ -80,7 +80,7 @@ When using nested tree nodes, the node template must contain a `cdkTreeNodeOutle
 where the children of the node will be rendered.
 
 ```html
-<cdk-nested-tree-node *cdkNodeDef=“let node”>
+<cdk-nested-tree-node *cdkNodeDef="let node">
   {{node.value}}
   <ng-container cdkTreeNodeOutlet></ng-container>
 </cdk-nested-tree-node>
@@ -94,7 +94,7 @@ The toggle toggles the expand/collapse functions in TreeControl and is able to e
 a tree node recursively by setting `[cdkTreeNodeToggleRecursive]` to true.
 
 ```html
-<cdk-tree-node *cdkNodeDef=“let node” cdkTreeNodeToggle [cdkTreeNodeToggleRecursive]="true">
+<cdk-tree-node *cdkNodeDef="let node" cdkTreeNodeToggle [cdkTreeNodeToggleRecursive]="true">
     {{node.value}}
 </cdk-tree-node>
 ```
@@ -104,7 +104,7 @@ For best accessibility, `cdkTreeNodeToggle` should be on a button element and ha
 `aria-label`.
 
 ```html
-<cdk-tree-node *cdkNodeDef=“let node”>
+<cdk-tree-node *cdkNodeDef="let node">
   <button cdkTreeNodeToggle aria-label="toggle tree node" [cdkTreeNodeToggleRecursive]="true">
     <mat-icon>expand</mat-icon>
   </button>
@@ -118,7 +118,7 @@ The cdkTreeNodePadding can be placed in a flat tree's node template to display t
 information of a flat tree node.
 
 ```html
-<cdk-tree-node *cdkNodeDef=“let node” cdkNodePadding>
+<cdk-tree-node *cdkNodeDef="let node" cdkNodePadding>
   {{node.value}}
 </cdk-tree-node>
 
@@ -134,10 +134,10 @@ for a particular data node via the `when` predicate of the template.
 
 
 ```html
-<cdk-tree-node *cdkNodeDef=“let node” cdkTreeNodePadding>
+<cdk-tree-node *cdkNodeDef="let node" cdkTreeNodePadding>
   {{node.value}}
 </cdk-tree-node>
-<cdk-tree-node *cdkNodeDef=“let node; when: isSpecial” cdkTreeNodePadding>
+<cdk-tree-node *cdkNodeDef="let node; when: isSpecial" cdkTreeNodePadding>
   [ A special node {{node.value}} ]
 </cdk-tree-node>
 ```

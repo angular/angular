@@ -13,6 +13,9 @@ import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {CdkTree, CdkTreeNode} from './tree';
 
+/** Regex used to split a string on its CSS units. */
+const cssUnitPattern = /([A-Za-z%]+)$/;
+
 /**
  * Indent for the children tree dataNodes.
  * This directive will add left-padding to the node to show hierarchy.
@@ -24,6 +27,9 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _destroyed = new Subject<void>();
 
+  /** CSS units used for the indentation value. */
+  indentUnits = 'px';
+
   /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
   @Input('cdkTreeNodePadding')
   get level(): number { return this._level; }
@@ -33,11 +39,23 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
   }
   _level: number;
 
-  /** The indent for each level. Default number 40px from material design menu sub-menu spec. */
-  // TODO(tinayuangao): Make indent working with a string with unit, e.g. 10em
+  /**
+   * The indent for each level. Can be a number or a CSS string.
+   * Default number 40px from material design menu sub-menu spec.
+   */
   @Input('cdkTreeNodePaddingIndent')
-  get indent(): number { return this._indent; }
-  set indent(value: number) {
+  get indent(): number | string { return this._indent; }
+  set indent(indent: number | string) {
+    let value = indent;
+    let units = 'px';
+
+    if (typeof indent === 'string') {
+      const parts = indent.split(cssUnitPattern);
+      value = parts[0];
+      units = parts[1] || units;
+    }
+
+    this.indentUnits = units;
     this._indent = coerceNumberProperty(value);
     this._setPadding();
   }
@@ -65,7 +83,7 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
       ? this._tree.treeControl.getLevel(this._treeNode.data)
       : null;
     const level = this._level || nodeLevel;
-    return level ? `${level * this._indent}px` : null;
+    return level ? `${level * this._indent}${this.indentUnits}` : null;
   }
 
   _setPadding() {
