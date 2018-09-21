@@ -16,6 +16,7 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/router",
+        "@ngdeps//reflect-metadata",
         "@rxjs",
     ],
 )

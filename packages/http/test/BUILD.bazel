@@ -28,5 +28,6 @@ ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
+        "@ngdeps//karma",
     ],
 )

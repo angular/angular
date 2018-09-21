@@ -17,7 +17,7 @@ load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es
 load(
     "@build_bazel_rules_nodejs//:internal/rollup/rollup_bundle.bzl",
     "ROLLUP_ATTRS",
-    "rollup_module_mappings_aspect",
+    "ROLLUP_DEPS_ASPECTS",
     "run_uglify",
     "write_rollup_config",
 )
@@ -28,6 +28,7 @@ load(
     "create_package",
 )
 load("@build_bazel_rules_nodejs//:internal/node.bzl", "sources_aspect")
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
 # Convert from some-dash-case to someCamelCase
@@ -160,6 +161,13 @@ def _filter_out_generated_files(files):
 def _esm2015_root_dir(ctx):
     return ctx.label.name + ".es6"
 
+def _filter_js_inputs(all_inputs):
+    return [
+        f
+        for f in all_inputs
+        if f.path.endswith(".js") or f.path.endswith(".json")
+    ]
+
 # ng_package produces package that is npm-ready.
 def _ng_package_impl(ctx):
     npm_package_directory = ctx.actions.declare_directory("%s.ng_pkg" % ctx.label.name)
@@ -235,11 +243,19 @@ def _ng_package_impl(ctx):
             umd_output = ctx.outputs.umd
             min_output = ctx.outputs.umd_min
 
+        node_modules_files = _filter_js_inputs(ctx.files.node_modules)
+
+        # Also include files from npm fine grained deps as inputs.
+        # These deps are identified by the NodeModuleInfo provider.
+        for d in ctx.attr.deps:
+            if NodeModuleInfo in d:
+                node_modules_files += _filter_js_inputs(d.files)
+
         esm2015_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, _esm2015_root_dir(ctx)]), filename = "_%s.rollup_esm2015.conf.js")
         esm5_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename = "_%s.rollup_esm5.conf.js")
 
-        fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files + ctx.files.node_modules, fesm2015_output))
-        fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources + ctx.files.node_modules, fesm5_output))
+        fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files + node_modules_files, fesm2015_output))
+        fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources + node_modules_files, fesm5_output))
 
         bundles.append(
             _rollup(
@@ -247,7 +263,7 @@ def _ng_package_impl(ctx):
                 "umd",
                 esm5_config,
                 es5_entry_point,
-                esm5_sources + ctx.files.node_modules,
+                esm5_sources + node_modules_files,
                 umd_output,
                 format = "umd",
                 package_name = package_name,
@@ -332,7 +348,8 @@ def _ng_package_impl(ctx):
     devfiles = depset()
     if ctx.attr.include_devmode_srcs:
         for d in ctx.attr.deps:
-            devfiles = depset(transitive = [devfiles, d.files, d.node_sources])
+            if not NodeModuleInfo in d:
+                devfiles = depset(transitive = [devfiles, d.files, d.node_sources])
 
     # Re-use the create_package function from the nodejs npm_package rule.
     package_dir = create_package(
@@ -344,13 +361,14 @@ def _ng_package_impl(ctx):
         files = depset([package_dir]),
     )]
 
+DEPS_ASPECTS = [esm5_outputs_aspect, sources_aspect]
+
+# Workaround skydoc bug which assumes ROLLUP_DEPS_ASPECTS is a str type
+[DEPS_ASPECTS.append(a) for a in ROLLUP_DEPS_ASPECTS]
+
 NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "srcs": attr.label_list(allow_files = True),
-    "deps": attr.label_list(aspects = [
-        rollup_module_mappings_aspect,
-        esm5_outputs_aspect,
-        sources_aspect,
-    ]),
+    "deps": attr.label_list(aspects = DEPS_ASPECTS),
     "data": attr.label_list(
         doc = "Additional, non-Angular files to be added to the package, e.g. global CSS assets.",
         allow_files = True,
