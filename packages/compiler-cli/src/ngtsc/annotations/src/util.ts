@@ -10,7 +10,7 @@ import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType,
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
+import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
 import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
@@ -175,4 +175,21 @@ export function forwardRefResolver(
     return null;
   }
   return expandForwardRef(args[0]);
+}
+
+export function extractDirectiveGuards(node: ts.Declaration, reflector: ReflectionHost): {
+  ngTemplateGuards: string[],
+  hasNgTemplateContextGuard: boolean,
+} {
+  const methods = nodeStaticMethodNames(node, reflector);
+  const ngTemplateGuards = methods.filter(method => method.startsWith('ngTemplateGuard_'))
+                               .map(method => method.split('_', 2)[1]);
+  const hasNgTemplateContextGuard = methods.some(name => name === 'ngTemplateContextGuard');
+  return {hasNgTemplateContextGuard, ngTemplateGuards};
+}
+
+function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost): string[] {
+  return reflector.getMembersOfClass(node)
+      .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
+      .map(member => member.name);
 }
