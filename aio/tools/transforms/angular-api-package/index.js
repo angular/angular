@@ -126,10 +126,12 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   })
 
   // Configure jsdoc-style tag parsing
-  .config(function(parseTagsProcessor, getInjectables) {
+  .config(function(parseTagsProcessor, getInjectables, tsHost) {
     // Load up all the tag definitions in the tag-defs folder
     parseTagsProcessor.tagDefinitions =
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
+    // We don't want license headers to be joined to the first API item's comment
+    tsHost.concatMultipleLeadingComments = false;
   })
 
   .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES) {
