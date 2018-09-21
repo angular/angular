@@ -63,6 +63,8 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
+    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+
     const registry = new SelectorScopeRegistry(checker, host);
 
     registry.registerModule(ProgramModule, {
@@ -71,7 +73,20 @@ describe('SelectorScopeRegistry', () => {
       imports: [new AbsoluteReference(SomeModule, SomeModule.name !, 'some_library', 'SomeModule')],
     });
 
-    registry.registerSelector(ProgramCmp, 'program-cmp');
+    const ref = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+    registry.registerDirective(ProgramCmp, {
+      name: 'ProgramCmp',
+      ref: ProgramCmpRef,
+      directive: ProgramCmpRef,
+      selector: 'program-cmp',
+      isComponent: true,
+      exportAs: null,
+      inputs: {},
+      outputs: {},
+      queries: [],
+      hasNgTemplateContextGuard: false,
+      ngTemplateGuards: [],
+    });
 
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
@@ -120,6 +135,8 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
+    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+
     const registry = new SelectorScopeRegistry(checker, host);
 
     registry.registerModule(ProgramModule, {
@@ -128,7 +145,19 @@ describe('SelectorScopeRegistry', () => {
       imports: [],
     });
 
-    registry.registerSelector(ProgramCmp, 'program-cmp');
+    registry.registerDirective(ProgramCmp, {
+      name: 'ProgramCmp',
+      ref: ProgramCmpRef,
+      directive: ProgramCmpRef,
+      selector: 'program-cmp',
+      isComponent: true,
+      exportAs: null,
+      inputs: {},
+      outputs: {},
+      queries: [],
+      hasNgTemplateContextGuard: false,
+      ngTemplateGuards: [],
+    });
 
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
