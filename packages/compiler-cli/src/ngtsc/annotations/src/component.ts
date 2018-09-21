@@ -134,7 +134,14 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
-      this.scopeRegistry.registerSelector(node, metadata.selector);
+      this.scopeRegistry.registerDirective(node, {
+        selector: metadata.selector,
+        exportAs: metadata.exportAs,
+        inputs: metadata.inputs,
+        outputs: metadata.outputs,
+        queries: metadata.queries.map(query => query.propertyName),
+        isComponent: true,
+      });
     }
 
     // Construct the list of view queries.
@@ -198,7 +205,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during compile() the whole compilation unit has been
       // fully analyzed.
-      const {directives, pipes, containsForwardDecls} = scope;
+      const {pipes, containsForwardDecls} = scope;
+      const directives = new Map<string, Expression>();
+      scope.directives.forEach((meta, selector) => directives.set(selector, meta.directive));
       const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
       analysis = {...analysis, directives, pipes, wrapDirectivesInClosure};
     }
