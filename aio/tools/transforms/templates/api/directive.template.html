@@ -1,37 +1,13 @@
 {% import "lib/memberHelpers.html" as memberHelpers -%}
 {% extends 'class.template.html' -%}
 
-{% macro renderAncestorMembers(doc, collectionName) %}
-{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
-{% set nonInternalMembers = ancestor.doc[collectionName] | filterByPropertyValue('internal', undefined) %}
-{% if nonInternalMembers.length -%}
-<section class="inherited-members-list">
-  <h3>Inherited from <code>{$ ancestor.doc.id $}</code></h3>
-  <ul>
-  {% for member in nonInternalMembers %}
-    <li>
-      <code><a class="code-anchor" href="{$ ancestor.doc.path $}#{$ member.anchor | urlencode $}">{$ memberHelpers.renderMemberSyntax(member, 1) $}</a></code>
-    </li>
-  {% endfor %}
-  </ul>
-</section>
-{% endif %}
-{$ renderAncestorMembers(ancestor.doc, collectionName) $}
-{% endif %}{% endfor -%}
-{% endmacro %}
-
-{% macro renderProperties(doc, heading) %}
-{$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', heading) $}
-{$ renderAncestorMembers(doc, 'properties') $}
-{% endmacro %}
-
 {% block overview %}{% endblock %}
 
 {% block details -%}
   {% include "includes/ngmodule.html" %}
   {% include "includes/selectors.html" %}
 
-  {$ renderProperties(doc, 'Properties') $}
+  {$ memberHelpers.renderDirectiveProperties(doc, 'Properties') $}
 
   {% include "includes/export-as.html" %}
 
@@ -46,7 +22,7 @@
   {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
   {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
   {$ memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
-  {$ renderAncestorMembers(doc, 'methods') $}
+  {$ memberHelpers.renderDirectiveAncestors(doc, 'methods') $}
   {% endblock %}
 
 {% block endNotes %}{% endblock %}
