@@ -9,7 +9,6 @@
 export * from './ast';
 export * from './build-component';
 export * from './get-project';
-export * from './package-json';
 export * from './parse5-element';
 export * from './project-main-file';
 export * from './project-style-file';

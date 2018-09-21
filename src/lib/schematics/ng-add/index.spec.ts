@@ -44,17 +44,6 @@ describe('ng-add schematic', () => {
     expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
   });
 
-  it('should not set up dependencies if skipPackageJson is specified', () => {
-    const tree = runner.runSchematic('ng-add', {skipPackageJson: true}, appTree);
-    const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
-    const dependencies = packageJson.dependencies;
-
-    expect(dependencies['@angular/material']).toBeUndefined();
-    expect(dependencies['@angular/cdk']).toBeUndefined();
-
-    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
-  });
-
   it('should add hammerjs import to project main file', () => {
     const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
     const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
