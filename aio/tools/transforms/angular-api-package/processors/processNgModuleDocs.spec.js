@@ -37,7 +37,7 @@ describe('processNgModuleDocs processor', () => {
     expect(docs[0].ngmoduleOptions.c).toEqual([42]);
   });
 
-  it('should link directive/pipe docs with their NgModule docs', () => {
+  it('should link directive/pipe docs with their NgModule docs (sorted by id)', () => {
     const aliasMap = injector.get('aliasMap');
     const ngModule1 = { docType: 'ngmodule', id: 'NgModule1', aliases: ['NgModule1'], ngmoduleOptions: {}};
     const ngModule2 = { docType: 'ngmodule', id: 'NgModule2', aliases: ['NgModule2'], ngmoduleOptions: {}};
@@ -50,7 +50,7 @@ describe('processNgModuleDocs processor', () => {
 
     aliasMap.addDoc(ngModule1);
     aliasMap.addDoc(ngModule2);
-    processor.$process([ngModule1, ngModule2, directive1, directive2, directive3, pipe1, pipe2, pipe3]);
+    processor.$process([ngModule1, pipe2, directive2, directive3, pipe1, ngModule2, directive1, pipe3]);
 
     expect(ngModule1.directives).toEqual([directive1, directive3]);
     expect(ngModule1.pipes).toEqual([pipe1, pipe3]);
