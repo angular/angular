@@ -127,26 +127,26 @@ describe('processPackages processor', () => {
     expect(newDocs[2].packageInfo.secondary).toEqual([newDocs[1], newDocs[2]]);
   });
 
-  it('should partition the exports of packages into groups', () => {
+  it('should partition the exports of packages into groups, sorted by id', () => {
     const docs = [
       {
         fileInfo: { filePath: 'some/x' },
         docType: 'module',
         id: 'x',
         exports: [
-          { docType: 'directive', id: 'directive-1' },
           { docType: 'function', id: 'function-1' },
           { docType: 'directive', id: 'directive-2' },
           { docType: 'decorator', id: 'decorator-1' },
           { docType: 'class', id: 'class-1' },
+          { docType: 'directive', id: 'directive-1' },
           { docType: 'type-alias', id: 'type-alias-1' },
           { docType: 'class', id: 'class-2' },
           { docType: 'pipe', id: 'pipe-1' },
           { docType: 'const', id: 'const-1' },
+          { docType: 'interface', id: 'interface-2' },
           { docType: 'const', id: 'const-2' },
           { docType: 'enum', id: 'enum-1' },
           { docType: 'interface', id: 'interface-1' },
-          { docType: 'interface', id: 'interface-2' },
         ]
       },
     ];
@@ -172,9 +172,9 @@ describe('processPackages processor', () => {
       { docType: 'pipe', id: 'pipe-1' },
     ]);
     expect(newDocs[0].types).toEqual([
-      { docType: 'type-alias', id: 'type-alias-1' },
       { docType: 'const', id: 'const-1' },
       { docType: 'const', id: 'const-2' },
+      { docType: 'type-alias', id: 'type-alias-1' },
     ]);
   });
 
