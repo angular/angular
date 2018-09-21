@@ -232,7 +232,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     if (!this.eventHandlers.has('notificationclick')) {
       throw new Error('No notificationclick handler registered');
     }
-    const event = new MockNotificationClickEvent(notification, action);
+    const event = new MockNotificationEvent(notification, action);
     this.eventHandlers.get('notificationclick') !.call(this, event);
     return event.ready;
   }
@@ -349,8 +349,9 @@ class MockPushEvent extends MockExtendableEvent {
     json: () => this._data,
   };
 }
-class MockNotificationClickEvent extends MockExtendableEvent {
-  constructor(readonly notification: Object, readonly action?: string) { super(); }
+class MockNotificationEvent extends MockExtendableEvent {
+  constructor(private _notification: any, readonly action?: string) { super(); }
+  readonly notification = {...this._notification, close: () => { return; }};
 }
 
 class MockInstallEvent extends MockExtendableEvent {}
