@@ -7,6 +7,7 @@
  */
 
 import {NgModule, InjectionToken, Optional, Inject, isDevMode} from '@angular/core';
+import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
 import {BidiModule} from '@angular/cdk/bidi';
 
 
@@ -44,7 +45,10 @@ export class MatCommonModule {
   /** Reference to the global 'window' object. */
   private _window = typeof window === 'object' && window ? window : null;
 
-  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) private _sanityChecksEnabled: boolean) {
+  constructor(
+    @Optional() @Inject(MATERIAL_SANITY_CHECKS) private _sanityChecksEnabled: boolean,
+    @Optional() @Inject(HAMMER_LOADER) private _hammerLoader?: HammerLoader) {
+
     if (this._areChecksEnabled() && !this._hasDoneGlobalChecks) {
       this._checkDoctypeIsDefined();
       this._checkThemeIsPresent();
@@ -74,27 +78,29 @@ export class MatCommonModule {
   private _checkThemeIsPresent(): void {
     // We need to assert that the `body` is defined, because these checks run very early
     // and the `body` won't be defined if the consumer put their scripts in the `head`.
-    if (this._document && this._document.body && typeof getComputedStyle === 'function') {
-      const testElement = this._document.createElement('div');
-
-      testElement.classList.add('mat-theme-loaded-marker');
-      this._document.body.appendChild(testElement);
-
-      const computedStyle = getComputedStyle(testElement);
-
-      // In some situations the computed style of the test element can be null. For example in
-      // Firefox, the computed style is null if an application is running inside of a hidden iframe.
-      // See: https://bugzilla.mozilla.org/show_bug.cgi?id=548397
-      if (computedStyle && computedStyle.display !== 'none') {
-        console.warn(
-          'Could not find Angular Material core theme. Most Material ' +
-          'components may not work as expected. For more info refer ' +
-          'to the theming guide: https://material.angular.io/guide/theming'
-        );
-      }
-
-      this._document.body.removeChild(testElement);
+    if (!this._document || !this._document.body || typeof getComputedStyle !== 'function') {
+      return;
     }
+
+    const testElement = this._document.createElement('div');
+
+    testElement.classList.add('mat-theme-loaded-marker');
+    this._document.body.appendChild(testElement);
+
+    const computedStyle = getComputedStyle(testElement);
+
+    // In some situations the computed style of the test element can be null. For example in
+    // Firefox, the computed style is null if an application is running inside of a hidden iframe.
+    // See: https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+    if (computedStyle && computedStyle.display !== 'none') {
+      console.warn(
+        'Could not find Angular Material core theme. Most Material ' +
+        'components may not work as expected. For more info refer ' +
+        'to the theming guide: https://material.angular.io/guide/theming'
+      );
+    }
+
+    this._document.body.removeChild(testElement);
   }
 
   /** Checks whether HammerJS is available. */
@@ -103,7 +109,7 @@ export class MatCommonModule {
       return;
     }
 
-    if (this._areChecksEnabled() && !this._window['Hammer']) {
+    if (this._areChecksEnabled() && !this._window['Hammer'] && !this._hammerLoader) {
       console.warn(
         'Could not find HammerJS. Certain Angular Material components may not work correctly.');
     }
