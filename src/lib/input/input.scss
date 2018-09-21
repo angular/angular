@@ -131,9 +131,6 @@ $mat-native-select-arrow-svg: '' +
 
 // Remove the native select down arrow and replace it with material design arrow
 select.mat-input-element {
-  &::-ms-expand {
-    display: none;
-  }
   -moz-appearance: none;
   -webkit-appearance: none;
   position: relative;
@@ -147,6 +144,17 @@ select.mat-input-element {
   // means that they shouldn't have a dropdown arrow.
   &:not([multiple]) {
     background-image: url($mat-native-select-arrow-svg);
+  }
+
+  &::-ms-expand {
+    display: none;
+  }
+
+  // The `outline: none` from `.mat-input-element` works on all browsers, however Firefox also
+  // adds a special `focus-inner` which we have to disable explicitly. See:
+  // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#Firefox
+  &::-moz-focus-inner {
+    border: 0;
   }
 
   [dir='rtl'] & {
