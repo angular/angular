@@ -1,5 +1,4 @@
 # Template-driven forms
-#### Forms
 
 Forms are the mainstay of business applications.
 You use forms to log in, submit a help request, place an order, book a flight,
@@ -7,6 +6,8 @@ schedule a meeting, and perform countless other data-entry tasks.
 
 In developing a form, it's important to create a data-entry experience that guides the
 user efficiently and effectively through the workflow.
+
+#### Introduction to Template-driven forms
 
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
 *two-way data binding, change tracking, validation, and error handling*,
@@ -24,8 +25,6 @@ This page shows you how to build a simple form from scratch. Along the way you'l
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 {@a template-driven}
-
-#### Template-driven forms
 
 You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
