@@ -45,7 +45,7 @@ const CORE_SUPPORTED_SYMBOLS = new Set<string>([
   'inject',
   'ɵInjectableDef',
   'ɵInjectorDef',
-  'ɵNgModuleDef',
+  'ɵNgModuleDefWithMeta',
   'ɵNgModuleFactory',
 ]);
 
@@ -416,7 +416,16 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   }
 
   visitLiteralMapExpr(ast: LiteralMapExpr, context: Context) {
-    throw new Error('Method not implemented.');
+    const entries = ast.entries.map(entry => {
+      const {key, quoted} = entry;
+      const value = entry.value.visitExpression(this, context);
+      if (quoted) {
+        return `'${key}': ${value}`;
+      } else {
+        return `${key}: ${value}`;
+      }
+    });
+    return `{${entries.join(', ')}}`;
   }
 
   visitCommaExpr(ast: CommaExpr, context: Context) { throw new Error('Method not implemented.'); }

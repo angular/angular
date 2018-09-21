@@ -9,7 +9,7 @@
 import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {AttributeMarker} from '../../../src/render3';
-import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
+import {ComponentDef, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 
@@ -107,8 +107,7 @@ describe('elements', () => {
     }
 
     // NON-NORMATIVE
-    (LocalRefComp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        () => [Dir.ngDirectiveDef];
+    (LocalRefComp.ngComponentDef as ComponentDef<any>).directiveDefs = () => [Dir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     const fixture = new ComponentFixture(LocalRefComp);

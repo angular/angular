@@ -9,7 +9,7 @@
 import {EventEmitter, Output} from '../../src/core';
 import {EMPTY} from '../../src/render3/definition';
 import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
-import {ComponentDefInternal, DirectiveDefInternal, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
+import {ComponentDef, DirectiveDef, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
 
 describe('InheritDefinitionFeature', () => {
   it('should inherit lifecycle hooks', () => {
@@ -36,7 +36,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const finalDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const finalDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
 
     expect(finalDef.onInit).toBe(SuperDirective.prototype.ngOnInit);
@@ -75,7 +75,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       foo: 'superFoo',
@@ -118,7 +118,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.outputs).toEqual({
       foo: 'superFoo',
@@ -152,7 +152,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       testIn: 'testIn',
@@ -216,7 +216,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = Class1.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = Class1.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       input1: 'input1',
@@ -288,7 +288,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = Class1.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = Class1.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.outputs).toEqual({
       alias1: 'output1',
@@ -325,7 +325,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     subDef.hostBindings !(1, 2);
 
@@ -364,7 +364,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubComponent.ngComponentDef as ComponentDefInternal<any>;
+    const subDef = SubComponent.ngComponentDef as ComponentDef<any>;
 
     const context = {foo: 'bar'};
 
@@ -395,7 +395,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     subDef.contentQueries !();
 
@@ -428,7 +428,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     subDef.contentQueriesRefresh !(1, 2);
 
@@ -487,8 +487,8 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const superDef = SuperDirective.ngDirectiveDef as DirectiveDefInternal<any>;
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const superDef = SuperDirective.ngDirectiveDef as DirectiveDef<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(log).toEqual([
       'super1',

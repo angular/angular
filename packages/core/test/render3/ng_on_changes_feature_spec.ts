@@ -8,7 +8,7 @@
 
 import {DoCheck, EventEmitter, Input, OnChanges, Output, SimpleChange, SimpleChanges} from '../../src/core';
 import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
-import {DirectiveDefInternal, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {DirectiveDef, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
 
 describe('NgOnChangesFeature', () => {
   it('should patch class', () => {
@@ -36,14 +36,14 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
     myDir.valB = 'second';
     expect(myDir.log).toEqual(['second']);
     expect(myDir.valB).toEqual('works');
     myDir.log.length = 0;
-    (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).doCheck !.call(myDir);
+    (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
     const changeA = new SimpleChange(undefined, 'first', true);
     const changeB = new SimpleChange(undefined, 'second', true);
     expect(myDir.log).toEqual(['ngOnChanges', 'valA', changeA, 'valB', changeB, 'ngDoCheck']);
@@ -88,8 +88,8 @@ describe('NgOnChangesFeature', () => {
       });
     }
 
-    const myDir = (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>)
-                      .factory() as SubDirective;
+    const myDir =
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
 
@@ -100,7 +100,7 @@ describe('NgOnChangesFeature', () => {
     expect(myDir.valC).toEqual('third');
 
     log.length = 0;
-    (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>).doCheck !.call(myDir);
+    (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).doCheck !.call(myDir);
     const changeA = new SimpleChange(undefined, 'first', true);
     const changeB = new SimpleChange(undefined, 'second', true);
     const changeC = new SimpleChange(undefined, 'third', true);
@@ -141,12 +141,12 @@ describe('NgOnChangesFeature', () => {
       });
     }
 
-    const myDir = (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>)
-                      .factory() as SubDirective;
+    const myDir =
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
 
-    (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>).doCheck !.call(myDir);
+    (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).doCheck !.call(myDir);
     const changeA = new SimpleChange(undefined, 'first', true);
     const changeB = new SimpleChange(undefined, 'second', true);
     expect(log).toEqual([changeA, changeB, 'sub ngDoCheck']);
@@ -182,12 +182,12 @@ describe('NgOnChangesFeature', () => {
       });
     }
 
-    const myDir = (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>)
-                      .factory() as SubDirective;
+    const myDir =
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
 
-    (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>).doCheck !.call(myDir);
+    (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).doCheck !.call(myDir);
     const changeA = new SimpleChange(undefined, 'first', true);
     const changeB = new SimpleChange(undefined, 'second', true);
     expect(log).toEqual([changeA, changeB, 'super ngDoCheck']);
@@ -236,8 +236,8 @@ describe('NgOnChangesFeature', () => {
       });
     }
 
-    const myDir = (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>)
-                      .factory() as SubDirective;
+    const myDir =
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
 
@@ -249,7 +249,7 @@ describe('NgOnChangesFeature', () => {
     expect(myDir.valC).toEqual('third');
 
     log.length = 0;
-    (SubDirective.ngDirectiveDef as DirectiveDefInternal<SubDirective>).doCheck !.call(myDir);
+    (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).doCheck !.call(myDir);
     const changeA = new SimpleChange(undefined, 'first', true);
     const changeB = new SimpleChange(undefined, 'second', true);
     const changeC = new SimpleChange(undefined, 'third', true);
@@ -279,17 +279,17 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
-    (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).doCheck !.call(myDir);
+    (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
     const changeA1 = new SimpleChange(undefined, 'first', true);
     const changeB1 = new SimpleChange(undefined, 'second', true);
     expect(myDir.log).toEqual(['valA', changeA1, 'valB', changeB1]);
 
     myDir.log.length = 0;
     myDir.valA = 'third';
-    (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).doCheck !.call(myDir);
+    (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
     const changeA2 = new SimpleChange('first', 'third', false);
     expect(myDir.log).toEqual(['valA', changeA2, 'valB', undefined]);
   });
@@ -315,10 +315,10 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
     myDir.onlySetter = 'someValue';
     expect(myDir.onlySetter).toBeUndefined();
-    (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).doCheck !.call(myDir);
+    (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
     const changeSetter = new SimpleChange(undefined, 'someValue', true);
     expect(myDir.log).toEqual(['someValue', 'ngOnChanges', 'onlySetter', changeSetter]);
   });
