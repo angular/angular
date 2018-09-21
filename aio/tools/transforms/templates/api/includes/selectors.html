@@ -6,7 +6,7 @@
   {% else %}
   <ul>
     {%- for selector in doc.selectorArray %}
-    <li><code>{$ selector $}</code></li>
+    <li><code>{$ selector | replace(r/(:not\([^()]+\))/g, '<i>$1</i>') $}</code></li>
     {% endfor %}
   </ul>
   {% endif %}
