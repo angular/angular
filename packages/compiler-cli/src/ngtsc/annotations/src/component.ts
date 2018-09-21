@@ -6,26 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3ComponentMetadata, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
-import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {AbsoluteReference, Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
-import {SelectorScopeRegistry} from './selector_scope';
-import {isAngularCore, unwrapExpression} from './util';
+import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
+import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
+
+export interface ComponentHandlerData {
+  meta: R3ComponentMetadata;
+  parsedTemplate: TmplAstNode[];
+}
 
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata, Decorator> {
+export class ComponentDecoratorHandler implements
+    DecoratorHandler<ComponentHandlerData, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
@@ -59,7 +66,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     return undefined;
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3ComponentMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
 
@@ -134,13 +141,17 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
+      const ref = new ResolvedReference(node, node.name !);
       this.scopeRegistry.registerDirective(node, {
+        ref,
+        name: node.name !.text,
+        directive: ref,
         selector: metadata.selector,
         exportAs: metadata.exportAs,
         inputs: metadata.inputs,
         outputs: metadata.outputs,
         queries: metadata.queries.map(query => query.propertyName),
-        isComponent: true,
+        isComponent: true, ...extractDirectiveGuards(node, this.reflector),
       });
     }
 
@@ -181,26 +192,41 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     return {
       analysis: {
-        ...metadata,
-        template,
-        viewQueries,
-        encapsulation,
-        styles: styles || [],
+        meta: {
+          ...metadata,
+          template,
+          viewQueries,
+          encapsulation,
+          styles: styles || [],
 
-        // These will be replaced during the compilation step, after all `NgModule`s have been
-        // analyzed and the full compilation scope for the component can be realized.
-        pipes: EMPTY_MAP,
-        directives: EMPTY_MAP,
-        wrapDirectivesInClosure: false, animations,
-      }
+          // These will be replaced during the compilation step, after all `NgModule`s have been
+          // analyzed and the full compilation scope for the component can be realized.
+          pipes: EMPTY_MAP,
+          directives: EMPTY_MAP,
+          wrapDirectivesInClosure: false, animations,
+        },
+        parsedTemplate: template.nodes,
+      },
+      typeCheck: true,
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata, pool: ConstantPool):
+  typeCheck(ctx: TypeCheckContext, node: ts.Declaration, meta: ComponentHandlerData): void {
+    const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(node);
+    const matcher = new SelectorMatcher<ScopeDirective<any>>();
+    if (scope !== null) {
+      scope.directives.forEach(
+          (meta, selector) => { matcher.addSelectables(CssSelector.parse(selector), meta); });
+      ctx.addTemplate(node as ts.ClassDeclaration, meta.parsedTemplate, matcher);
+    }
+  }
+
+  compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
       CompileResult {
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeRegistry.lookupCompilationScope(node);
+    let metadata = analysis.meta;
     if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during compile() the whole compilation unit has been
@@ -209,10 +235,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       const directives = new Map<string, Expression>();
       scope.directives.forEach((meta, selector) => directives.set(selector, meta.directive));
       const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
-      analysis = {...analysis, directives, pipes, wrapDirectivesInClosure};
+      metadata = {...metadata, directives, pipes, wrapDirectivesInClosure};
     }
 
-    const res = compileComponentFromMetadata(analysis, pool, makeBindingParser());
+    const res = compileComponentFromMetadata(metadata, pool, makeBindingParser());
     return {
       name: 'ngComponentDef',
       initializer: res.expression,
