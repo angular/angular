@@ -18,6 +18,7 @@ export const _filter = (opt: string[], value: string): string[] => {
  * @title Option groups autocomplete
  */
 @Component({
+  selector: 'autocomplete-optgroup-example',
   templateUrl: './autocomplete-optgroup-example.html',
   styleUrls: ['./autocomplete-optgroup-example.css'],
 })
