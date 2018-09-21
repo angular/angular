@@ -1,0 +1,45 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# File lib/labels/.cla%3A%20yes, line 36
+def initialize(text, old_name, new_name, comment, anular = false)
+  super()
+
+  @text = text
+  @angular = angular
+  @old_name = old_name
+  @new_name = new_name
+  self.comment = comment
+end

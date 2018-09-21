@@ -1,0 +1,14 @@
+getCapitol(country){
+
+        //Can this be done differently?
+        if(this.pendingRequest){
+            this.pendingRequest.unsubscribe();
+            console.log('cancelled observable');
+        }
+
+        this.activeCountry = country;
+
+        this.pendingRequest = this.http.get('./country-info/' + country + '.json')
+                              .map((res: Response) => res.json())
+                              .subscribe(res => this.capitol = res.capitol);
+    }
