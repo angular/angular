@@ -116,7 +116,16 @@
     }
   }
 
-  .property-name {
+  .selector-list {
+    li, a {
+      font-weight: bold;
+      i {
+        font-weight: normal;
+      }
+    }
+  }
+
+  .member-name {
     font-weight: bold;
   }
 }
