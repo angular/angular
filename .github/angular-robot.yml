@@ -3,11 +3,8 @@
 #options for the size plugin
 size:
   disabled: false
-  maxSizeIncrease: 1000
-  circleCiStatusName: "ci/circleci: build-packages-dist"
-  status:
-    disabled: false
-    context: "ci/angular: size"
+  maxSizeIncrease: 2000
+  circleCiStatusName: "ci/circleci: test"
 
 # options for the merge plugin
 merge:
@@ -68,7 +65,7 @@ merge:
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
     # Rather than merging PRs with pending reviews, if all PullApprove requirements are satisfied and additional reviews are not needed pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
     requireReviews: true,
-  
+
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
