@@ -109,7 +109,7 @@ describe('styling', () => {
     describe('createStylingContextTemplate', () => {
       it('should initialize empty template', () => {
         const template = initContext();
-        expect(template).toEqual([element, null, [null], cleanStyle(0, 6), 0, null]);
+        expect(template).toEqual([element, null, null, [null], cleanStyle(0, 7), 0, null]);
       });
 
       it('should initialize static styles', () => {
@@ -118,28 +118,29 @@ describe('styling', () => {
         expect(template).toEqual([
           element,
           null,
+          null,
           [null, 'red', '10px'],
-          dirtyStyle(0, 12),  //
+          dirtyStyle(0, 13),  //
           0,
           null,
 
-          // #6
-          cleanStyle(1, 12),
+          // #7
+          cleanStyle(1, 13),
           'color',
           null,
 
-          // #9
-          cleanStyle(2, 15),
+          // #10
+          cleanStyle(2, 16),
           'width',
           null,
 
-          // #12
-          dirtyStyle(1, 6),
+          // #13
+          dirtyStyle(1, 7),
           'color',
           null,
 
-          // #15
-          dirtyStyle(2, 9),
+          // #16
+          dirtyStyle(2, 10),
           'width',
           null,
         ]);
@@ -320,28 +321,29 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          dirtyStyle(0, 12),  //
+          dirtyStyle(0, 13),  //
           2,
           null,
 
-          // #6
-          cleanStyle(0, 12),
+          // #7
+          cleanStyle(0, 13),
           'width',
           null,
 
-          // #9
-          cleanStyle(0, 15),
+          // #10
+          cleanStyle(0, 16),
           'height',
           null,
 
-          // #12
-          dirtyStyle(0, 6),
+          // #13
+          dirtyStyle(0, 7),
           'width',
           '100px',
 
-          // #15
-          dirtyStyle(0, 9),
+          // #16
+          dirtyStyle(0, 10),
           'height',
           '100px',
         ]);
@@ -352,33 +354,34 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          dirtyStyle(0, 12),  //
+          dirtyStyle(0, 13),  //
           2,
           null,
 
-          // #6
-          cleanStyle(0, 12),
+          // #7
+          cleanStyle(0, 13),
           'width',
           null,
 
-          // #9
-          cleanStyle(0, 18),
+          // #10
+          cleanStyle(0, 19),
           'height',
           null,
 
-          // #12
-          dirtyStyle(0, 6),
+          // #13
+          dirtyStyle(0, 7),
           'width',
           '200px',
 
-          // #15
+          // #16
           dirtyStyle(),
           'opacity',
           '0',
 
-          // #18
-          dirtyStyle(0, 9),
+          // #19
+          dirtyStyle(0, 10),
           'height',
           null,
         ]);
@@ -387,33 +390,34 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          cleanStyle(0, 12),  //
+          cleanStyle(0, 13),  //
           2,
           null,
 
-          // #6
-          cleanStyle(0, 12),
+          // #7
+          cleanStyle(0, 13),
           'width',
           null,
 
-          // #9
-          cleanStyle(0, 18),
+          // #10
+          cleanStyle(0, 19),
           'height',
           null,
 
-          // #12
-          cleanStyle(0, 6),
+          // #13
+          cleanStyle(0, 7),
           'width',
           '200px',
 
-          // #15
+          // #16
           cleanStyle(),
           'opacity',
           '0',
 
-          // #18
-          cleanStyle(0, 9),
+          // #19
+          cleanStyle(0, 10),
           'height',
           null,
         ]);
@@ -424,33 +428,34 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          dirtyStyle(0, 12),  //
+          dirtyStyle(0, 13),  //
           2,
           null,
 
-          // #6
-          dirtyStyle(0, 12),
+          // #7
+          dirtyStyle(0, 13),
           'width',
           '300px',
 
-          // #9
-          cleanStyle(0, 18),
+          // #10
+          cleanStyle(0, 19),
           'height',
           null,
 
-          // #12
-          cleanStyle(0, 6),
+          // #13
+          cleanStyle(0, 7),
           'width',
           null,
 
-          // #15
+          // #16
           dirtyStyle(),
           'opacity',
           null,
 
-          // #18
-          cleanStyle(0, 9),
+          // #19
+          cleanStyle(0, 10),
           'height',
           null,
         ]);
@@ -461,33 +466,34 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          dirtyStyle(0, 12),  //
+          dirtyStyle(0, 13),  //
           2,
           null,
 
-          // #6
-          dirtyStyle(0, 12),
+          // #7
+          dirtyStyle(0, 13),
           'width',
           null,
 
-          // #9
-          cleanStyle(0, 18),
+          // #10
+          cleanStyle(0, 19),
           'height',
           null,
 
-          // #12
-          cleanStyle(0, 6),
+          // #13
+          cleanStyle(0, 7),
           'width',
           null,
 
-          // #15
+          // #16
           cleanStyle(),
           'opacity',
           null,
 
-          // #18
-          cleanStyle(0, 9),
+          // #19
+          cleanStyle(0, 10),
           'height',
           null,
         ]);
@@ -503,33 +509,34 @@ describe('styling', () => {
            expect(stylingContext).toEqual([
              element,
              null,
+             null,
              [null],
-             dirtyStyle(0, 9),  //
+             dirtyStyle(0, 10),  //
              1,
              null,
 
-             // #6
-             cleanStyle(0, 18),
+             // #7
+             cleanStyle(0, 19),
              'lineHeight',
              null,
 
-             // #9
+             // #10
              dirtyStyle(),
              'width',
              '100px',
 
-             // #12
+             // #13
              dirtyStyle(),
              'height',
              '100px',
 
-             // #15
+             // #16
              dirtyStyle(),
              'opacity',
              '0.5',
 
-             // #18
-             cleanStyle(0, 6),
+             // #19
+             cleanStyle(0, 7),
              'lineHeight',
              null,
            ]);
@@ -540,33 +547,34 @@ describe('styling', () => {
            expect(stylingContext).toEqual([
              element,
              null,
+             null,
              [null],
-             dirtyStyle(0, 9),  //
+             dirtyStyle(0, 10),  //
              1,
              null,
 
-             // #6
-             cleanStyle(0, 18),
+             // #7
+             cleanStyle(0, 19),
              'lineHeight',
              null,
 
-             // #9
+             // #10
              dirtyStyle(),
              'width',
              null,
 
-             // #12
+             // #13
              dirtyStyle(),
              'height',
              null,
 
-             // #15
+             // #16
              dirtyStyle(),
              'opacity',
              null,
 
-             // #18
-             cleanStyle(0, 6),
+             // #19
+             cleanStyle(0, 7),
              'lineHeight',
              null,
            ]);
@@ -579,38 +587,39 @@ describe('styling', () => {
            expect(stylingContext).toEqual([
              element,
              null,
+             null,
              [null],
-             dirtyStyle(0, 9),  //
+             dirtyStyle(0, 10),  //
              1,
              null,
 
-             // #6
-             cleanStyle(0, 21),
+             // #7
+             cleanStyle(0, 22),
              'lineHeight',
              null,
 
-             // #9
+             // #10
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #12
+             // #13
              cleanStyle(),
              'width',
              null,
 
-             // #15
+             // #16
              cleanStyle(),
              'height',
              null,
 
-             // #18
+             // #19
              cleanStyle(),
              'opacity',
              null,
 
-             // #21
-             cleanStyle(0, 6),
+             // #22
+             cleanStyle(0, 7),
              'lineHeight',
              null,
            ]);
@@ -620,38 +629,39 @@ describe('styling', () => {
            expect(stylingContext).toEqual([
              element,
              null,
+             null,
              [null],
-             dirtyStyle(0, 9),  //
+             dirtyStyle(0, 10),  //
              1,
              null,
 
-             // #6
-             dirtyStyle(0, 21),
+             // #7
+             dirtyStyle(0, 22),
              'lineHeight',
              '200px',
 
-             // #9
+             // #10
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #12
+             // #13
              cleanStyle(),
              'width',
              null,
 
-             // #15
+             // #16
              cleanStyle(),
              'height',
              null,
 
-             // #18
+             // #19
              cleanStyle(),
              'opacity',
              null,
 
-             // #21
-             cleanStyle(0, 6),
+             // #22
+             cleanStyle(0, 7),
              'lineHeight',
              null,
            ]);
@@ -661,43 +671,44 @@ describe('styling', () => {
            expect(stylingContext).toEqual([
              element,
              null,
+             null,
              [null],
-             dirtyStyle(0, 9),  //
+             dirtyStyle(0, 10),  //
              1,
              null,
 
-             // #6
-             dirtyStyle(0, 24),
+             // #7
+             dirtyStyle(0, 25),
              'lineHeight',
              '200px',
 
-             // #9
+             // #10
              dirtyStyle(),
              'borderWidth',
              '15px',
 
-             // #12
+             // #13
              dirtyStyle(),
              'borderColor',
              'red',
 
-             // #15
+             // #16
              cleanStyle(),
              'width',
              null,
 
-             // #18
+             // #19
              cleanStyle(),
              'height',
              null,
 
-             // #21
+             // #22
              cleanStyle(),
              'opacity',
              null,
 
-             // #24
-             cleanStyle(0, 6),
+             // #25
+             cleanStyle(0, 7),
              'lineHeight',
              null,
            ]);
@@ -716,23 +727,24 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          dirtyStyle(0, 9),  //
+          dirtyStyle(0, 10),  //
           1,
           null,
 
-          // #6
-          dirtyStyle(0, 12),
+          // #7
+          dirtyStyle(0, 13),
           'height',
           '200px',
 
-          // #6
+          // #7
           dirtyStyle(),
           'width',
           '100px',
 
-          // #12
-          cleanStyle(0, 6),
+          // #13
+          cleanStyle(0, 7),
           'height',
           null,
         ]);
@@ -742,23 +754,24 @@ describe('styling', () => {
         expect(stylingContext).toEqual([
           element,
           null,
+          null,
           [null],
-          cleanStyle(0, 9),  //
+          cleanStyle(0, 10),  //
           1,
           null,
 
-          // #6
-          cleanStyle(0, 12),
+          // #7
+          cleanStyle(0, 13),
           'height',
           '200px',
 
-          // #6
+          // #7
           cleanStyle(),
           'width',
           '100px',
 
-          // #12
-          cleanStyle(0, 6),
+          // #13
+          cleanStyle(0, 7),
           'height',
           null,
         ]);
@@ -776,29 +789,30 @@ describe('styling', () => {
 
            expect(stylingContext).toEqual([
              element,
+             null,
              styleSanitizer,
              [null],
-             dirtyStyle(0, 12),  //
+             dirtyStyle(0, 13),  //
              2,
              null,
 
-             // #6
-             dirtyStyleWithSanitization(0, 12),
+             // #7
+             dirtyStyleWithSanitization(0, 13),
              'border-image',
              'url(foo.jpg)',
 
-             // #9
-             dirtyStyle(0, 15),
+             // #10
+             dirtyStyle(0, 16),
              'border-width',
              '100px',
 
-             // #12
-             cleanStyleWithSanitization(0, 6),
+             // #13
+             cleanStyleWithSanitization(0, 7),
              'border-image',
              null,
 
-             // #15
-             cleanStyle(0, 9),
+             // #16
+             cleanStyle(0, 10),
              'border-width',
              null,
            ]);
@@ -807,34 +821,35 @@ describe('styling', () => {
 
            expect(stylingContext).toEqual([
              element,
+             null,
              styleSanitizer,
              [null],
-             dirtyStyle(0, 12),  //
+             dirtyStyle(0, 13),  //
              2,
              null,
 
-             // #6
-             dirtyStyleWithSanitization(0, 15),
+             // #7
+             dirtyStyleWithSanitization(0, 16),
              'border-image',
              'url(foo.jpg)',
 
-             // #9
-             dirtyStyle(0, 18),
+             // #10
+             dirtyStyle(0, 19),
              'border-width',
              '100px',
 
-             // #12
+             // #13
              dirtyStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
 
-             // #15
-             cleanStyleWithSanitization(0, 6),
+             // #16
+             cleanStyleWithSanitization(0, 7),
              'border-image',
              null,
 
-             // #18
-             cleanStyle(0, 9),
+             // #19
+             cleanStyle(0, 10),
              'border-width',
              null,
            ]);
@@ -843,34 +858,35 @@ describe('styling', () => {
 
            expect(stylingContext).toEqual([
              element,
+             null,
              styleSanitizer,
              [null],
-             cleanStyle(0, 12),  //
+             cleanStyle(0, 13),  //
              2,
              null,
 
-             // #6
-             cleanStyleWithSanitization(0, 15),
+             // #7
+             cleanStyleWithSanitization(0, 16),
              'border-image',
              'url(foo.jpg)',
 
-             // #9
-             cleanStyle(0, 18),
+             // #10
+             cleanStyle(0, 19),
              'border-width',
              '100px',
 
-             // #12
+             // #13
              cleanStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
 
-             // #15
-             cleanStyleWithSanitization(0, 6),
+             // #16
+             cleanStyleWithSanitization(0, 7),
              'border-image',
              null,
 
-             // #18
-             cleanStyle(0, 9),
+             // #19
+             cleanStyle(0, 10),
              'border-width',
              null,
            ]);
@@ -883,20 +899,20 @@ describe('styling', () => {
       const template =
           initContext(null, [InitialStylingFlags.VALUES_MODE, 'one', true, 'two', true]);
       expect(template).toEqual([
-        element, null, [null, true, true], dirtyStyle(0, 12),  //
+        element, null, null, [null, true, true], dirtyStyle(0, 13),  //
         0, null,
 
-        // #6
-        cleanClass(1, 12), 'one', null,
+        // #7
+        cleanClass(1, 13), 'one', null,
 
-        // #9
-        cleanClass(2, 15), 'two', null,
+        // #10
+        cleanClass(2, 16), 'two', null,
 
-        // #12
-        dirtyClass(1, 6), 'one', null,
+        // #13
+        dirtyClass(1, 7), 'one', null,
 
-        // #15
-        dirtyClass(2, 9), 'two', null
+        // #16
+        dirtyClass(2, 10), 'two', null
       ]);
     });
 
@@ -948,48 +964,49 @@ describe('styling', () => {
       expect(stylingContext).toEqual([
         element,
         null,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 18),  //
+        dirtyStyle(0, 19),  //
         2,
         null,
 
-        // #6
-        cleanStyle(1, 18),
+        // #7
+        cleanStyle(1, 19),
         'width',
         null,
 
-        // #9
-        cleanStyle(0, 21),
+        // #10
+        cleanStyle(0, 22),
         'height',
         null,
 
-        // #12
-        cleanClass(2, 24),
+        // #13
+        cleanClass(2, 25),
         'wide',
         null,
 
-        // #15
-        cleanClass(0, 27),
+        // #16
+        cleanClass(0, 28),
         'tall',
         null,
 
-        // #18
-        dirtyStyle(1, 6),
+        // #19
+        dirtyStyle(1, 7),
         'width',
         null,
 
-        // #21
-        cleanStyle(0, 9),
+        // #22
+        cleanStyle(0, 10),
         'height',
         null,
 
-        // #24
-        dirtyClass(2, 12),
+        // #25
+        dirtyClass(2, 13),
         'wide',
         null,
 
-        // #27
-        cleanClass(0, 15),
+        // #28
+        cleanClass(0, 16),
         'tall',
         null,
       ]);
@@ -1000,58 +1017,59 @@ describe('styling', () => {
       expect(stylingContext).toEqual([
         element,
         null,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 18),  //
+        dirtyStyle(0, 19),  //
         2,
         'tall round',
 
-        // #6
-        cleanStyle(1, 18),
+        // #7
+        cleanStyle(1, 19),
         'width',
         null,
 
-        // #9
-        cleanStyle(0, 33),
+        // #10
+        cleanStyle(0, 34),
         'height',
         null,
 
-        // #12
-        cleanClass(2, 30),
+        // #13
+        cleanClass(2, 31),
         'wide',
         null,
 
-        // #15
-        cleanClass(0, 24),
+        // #16
+        cleanClass(0, 25),
         'tall',
         null,
 
-        // #18
-        dirtyStyle(1, 6),
+        // #19
+        dirtyStyle(1, 7),
         'width',
         '200px',
 
-        // #21
+        // #22
         dirtyStyle(0, 0),
         'opacity',
         '0.5',
 
-        // #24
-        dirtyClass(0, 15),
+        // #25
+        dirtyClass(0, 16),
         'tall',
         true,
 
-        // #27
+        // #28
         dirtyClass(0, 0),
         'round',
         true,
 
-        // #30
-        cleanClass(2, 12),
+        // #31
+        cleanClass(2, 13),
         'wide',
         null,
 
-        // #33
-        cleanStyle(0, 9),
+        // #34
+        cleanStyle(0, 10),
         'height',
         null,
       ]);
@@ -1066,58 +1084,59 @@ describe('styling', () => {
       expect(stylingContext).toEqual([
         element,
         null,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 18),  //
+        dirtyStyle(0, 19),  //
         2,
         null,
 
-        // #6
-        dirtyStyle(1, 18),
+        // #7
+        dirtyStyle(1, 19),
         'width',
         '300px',
 
-        // #9
-        cleanStyle(0, 33),
+        // #10
+        cleanStyle(0, 34),
         'height',
         null,
 
-        // #12
-        cleanClass(2, 24),
+        // #13
+        cleanClass(2, 25),
         'wide',
         null,
 
-        // #15
-        cleanClass(0, 21),
+        // #16
+        cleanClass(0, 22),
         'tall',
         null,
 
-        // #18
-        cleanStyle(1, 6),
+        // #19
+        cleanStyle(1, 7),
         'width',
         '500px',
 
-        // #21
-        cleanClass(0, 15),
+        // #22
+        cleanClass(0, 16),
         'tall',
         true,
 
-        // #24
-        cleanClass(2, 12),
+        // #25
+        cleanClass(2, 13),
         'wide',
         true,
 
-        // #27
+        // #28
         dirtyClass(0, 0),
         'round',
         null,
 
-        // #30
+        // #31
         dirtyStyle(0, 0),
         'opacity',
         null,
 
-        // #33
-        cleanStyle(0, 9),
+        // #34
+        cleanStyle(0, 10),
         'height',
         null,
       ]);

@@ -7,10 +7,10 @@
  */
 
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
+import {AnimationContext} from './animations/interfaces';
 import {InitialStylingFlags} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-
 
 /**
  * The styling context acts as a styling manifest (shaped as an array) for determining which
@@ -115,41 +115,47 @@ import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces
  * `updateStylingMap` can include new CSS properties that will be added to the context).
  */
 export interface StylingContext extends
-    Array<InitialStyles|number|string|boolean|LElementNode|StyleSanitizeFn|null> {
+    Array<InitialStyles|number|string|boolean|LElementNode|StyleSanitizeFn|AnimationContext|null> {
   /**
    * Location of element that is used as a target for this context.
    */
-  [0]: LElementNode|null;
+  [StylingIndex.ElementPosition]: LElementNode|null;
+
+  /**
+   * Location of animation context (which contains the active players) for this element styling
+   * context.
+   */
+  [StylingIndex.AnimationContext]: AnimationContext|null;
 
   /**
    * The style sanitizer that is used within this context
    */
-  [1]: StyleSanitizeFn|null;
+  [StylingIndex.StyleSanitizerPosition]: StyleSanitizeFn|null;
 
   /**
    * Location of initial data shared by all instances of this style.
    */
-  [2]: InitialStyles;
+  [StylingIndex.InitialStylesPosition]: InitialStyles;
 
   /**
    * A numeric value representing the configuration status (whether the context is dirty or not)
    * mixed together (using bit shifting) with a index value which tells the starting index value
    * of where the multi style entries begin.
    */
-  [3]: number;
+  [StylingIndex.MasterFlagPosition]: number;
 
   /**
    * A numeric value representing the class index offset value. Whenever a single class is
    * applied (using `elementClassProp`) it should have an styling index value that doesn't
    * need to take into account any style values that exist in the context.
    */
-  [4]: number;
+  [StylingIndex.ClassOffsetPosition]: number;
 
   /**
    * The last CLASS STRING VALUE that was interpreted by elementStylingMap. This is cached
    * So that the algorithm can exit early incase the string has not changed.
    */
-  [5]: string|null;
+  [StylingIndex.CachedCssClassString]: string|null;
 }
 
 /**
@@ -185,18 +191,20 @@ export const enum StylingFlags {
 export const enum StylingIndex {
   // Position of where the initial styles are stored in the styling context
   ElementPosition = 0,
-  // Position of where the style sanitizer is stored within the styling context
-  StyleSanitizerPosition = 1,
   // Position of where the initial styles are stored in the styling context
-  InitialStylesPosition = 2,
+  AnimationContext = 1,
+  // Position of where the style sanitizer is stored within the styling context
+  StyleSanitizerPosition = 2,
+  // Position of where the initial styles are stored in the styling context
+  InitialStylesPosition = 3,
   // Index of location where the start of single properties are stored. (`updateStyleProp`)
-  MasterFlagPosition = 3,
+  MasterFlagPosition = 4,
   // Index of location where the class index offset value is located
-  ClassOffsetPosition = 4,
+  ClassOffsetPosition = 5,
   // Position of where the last string-based CSS class value was stored
-  CachedCssClassString = 5,
+  CachedCssClassString = 6,
   // Location of single (prop) value entries are stored within the context
-  SingleStylesStartPosition = 6,
+  SingleStylesStartPosition = 7,
   // Multi and single entries are stored in `StylingContext` as: Flag; PropertyName;  PropertyValue
   FlagsOffset = 0,
   PropertyOffset = 1,
@@ -221,6 +229,12 @@ export function allocStylingContext(
   const context = templateStyleContext.slice() as any as StylingContext;
   context[StylingIndex.ElementPosition] = lElement;
   return context;
+}
+
+export function createEmptyStylingContext(
+    element?: LElementNode | null, sanitizer?: StyleSanitizeFn | null,
+    initialStylingValues?: InitialStyles): StylingContext {
+  return [element || null, null, sanitizer || null, initialStylingValues || [null], 0, 0, null];
 }
 
 /**
@@ -250,7 +264,8 @@ export function createStylingContextTemplate(
     initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): StylingContext {
   const initialStylingValues: InitialStyles = [null];
-  const context: StylingContext = [null, styleSanitizer || null, initialStylingValues, 0, 0, null];
+  const context: StylingContext =
+      createEmptyStylingContext(null, styleSanitizer, initialStylingValues);
 
   // we use two maps since a class name might collide with a CSS style prop
   const stylesLookup: {[key: string]: number} = {};
