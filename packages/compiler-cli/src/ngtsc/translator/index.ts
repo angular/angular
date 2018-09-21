@@ -6,7 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/api';
-export {IvyCompilation} from './src/compilation';
-export {DtsFileTransformer} from './src/declaration';
-export {ivyTransformFactory} from './src/transform';
+export {ImportManager, translateExpression, translateStatement, translateType} from './src/translator';
