@@ -26,6 +26,9 @@ import {OverlayContainer} from '../overlay-container';
 // TODO: refactor clipping detection into a separate thing (part of scrolling module)
 // TODO: doesn't handle both flexible width and height when it has to scroll along both axis.
 
+/** Class to be added to the overlay bounding box. */
+const boundingBoxClass = 'cdk-overlay-connected-position-bounding-box';
+
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
  * implicit position relative some origin element. The relative position is defined in terms of
@@ -38,7 +41,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _overlayRef: OverlayReference;
 
   /** Whether we're performing the very first positioning of the overlay. */
-  private _isInitialRender = true;
+  private _isInitialRender: boolean;
 
   /** Last size used for the bounding box. Used to avoid resizing the overlay after open. */
   private _lastBoundingBoxSize = {width: 0, height: 0};
@@ -152,11 +155,14 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
     this._validatePositions();
 
-    overlayRef.hostElement.classList.add('cdk-overlay-connected-position-bounding-box');
+    overlayRef.hostElement.classList.add(boundingBoxClass);
 
     this._overlayRef = overlayRef;
     this._boundingBox = overlayRef.hostElement;
     this._pane = overlayRef.overlayElement;
+    this._isDisposed = false;
+    this._isInitialRender = true;
+    this._lastPosition = null;
     this._resizeSubscription.unsubscribe();
     this._resizeSubscription = this._viewportRuler.change().subscribe(() => {
       // When the window is resized, we want to trigger the next reposition as if it
@@ -303,12 +309,37 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /** Cleanup after the element gets destroyed. */
   dispose() {
-    if (!this._isDisposed) {
-      this.detach();
-      this._boundingBox = null;
-      this._positionChanges.complete();
-      this._isDisposed = true;
+    if (this._isDisposed) {
+      return;
     }
+
+    // We can't use `_resetBoundingBoxStyles` here, because it resets
+    // some properties to zero, rather than removing them.
+    if (this._boundingBox) {
+      extendStyles(this._boundingBox.style, {
+        top: '',
+        left: '',
+        right: '',
+        bottom: '',
+        height: '',
+        width: '',
+        alignItems: '',
+        justifyContent: '',
+      } as CSSStyleDeclaration);
+    }
+
+    if (this._pane) {
+      this._resetOverlayElementStyles();
+    }
+
+    if (this._overlayRef) {
+      this._overlayRef.hostElement.classList.remove(boundingBoxClass);
+    }
+
+    this.detach();
+    this._positionChanges.complete();
+    this._overlayRef = this._boundingBox = null!;
+    this._isDisposed = true;
   }
 
   /**

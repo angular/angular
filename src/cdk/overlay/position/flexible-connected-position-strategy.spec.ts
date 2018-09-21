@@ -150,6 +150,46 @@ describe('FlexibleConnectedPositionStrategy', () => {
     document.body.removeChild(originElement);
   });
 
+  it('should clean up after itself when disposed', () => {
+    const origin = document.createElement('div');
+    const positionStrategy = overlay.position()
+        .flexibleConnectedTo(origin)
+        .withPositions([{
+          overlayX: 'start',
+          overlayY: 'top',
+          originX: 'start',
+          originY: 'bottom'
+        }]);
+
+    // Needs to be in the DOM for IE not to throw an "Unspecified error".
+    document.body.appendChild(origin);
+    attachOverlay({positionStrategy});
+
+    const boundingBox = overlayRef.hostElement;
+    const pane = overlayRef.overlayElement;
+
+    positionStrategy.dispose();
+
+    expect(boundingBox.style.top).toBeFalsy();
+    expect(boundingBox.style.bottom).toBeFalsy();
+    expect(boundingBox.style.left).toBeFalsy();
+    expect(boundingBox.style.right).toBeFalsy();
+    expect(boundingBox.style.width).toBeFalsy();
+    expect(boundingBox.style.height).toBeFalsy();
+    expect(boundingBox.style.alignItems).toBeFalsy();
+    expect(boundingBox.style.justifyContent).toBeFalsy();
+    expect(boundingBox.classList).not.toContain('cdk-overlay-connected-position-bounding-box');
+
+    expect(pane.style.top).toBeFalsy();
+    expect(pane.style.bottom).toBeFalsy();
+    expect(pane.style.left).toBeFalsy();
+    expect(pane.style.right).toBeFalsy();
+    expect(pane.style.position).toBeFalsy();
+
+    overlayRef.dispose();
+    document.body.removeChild(origin);
+  });
+
   describe('without flexible dimensions and pushing', () => {
     const ORIGIN_HEIGHT = DEFAULT_HEIGHT;
     const ORIGIN_WIDTH = DEFAULT_WIDTH;

@@ -303,6 +303,27 @@ describe('GlobalPositonStrategy', () => {
     const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
     expect(parentStyle.justifyContent).toBe('flex-start');
   });
+
+  it('should clean up after itself when it has been disposed', () => {
+    const positionStrategy = overlay.position().global().top('10px').left('40px');
+
+    attachOverlay({positionStrategy});
+
+    const elementStyle = overlayRef.overlayElement.style;
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+
+    positionStrategy.dispose();
+
+    expect(elementStyle.marginTop).toBeFalsy();
+    expect(elementStyle.marginLeft).toBeFalsy();
+    expect(elementStyle.marginBottom).toBeFalsy();
+    expect(elementStyle.marginBottom).toBeFalsy();
+    expect(elementStyle.position).toBeFalsy();
+
+    expect(parentStyle.justifyContent).toBeFalsy();
+    expect(parentStyle.alignItems).toBeFalsy();
+  });
+
 });
 
 

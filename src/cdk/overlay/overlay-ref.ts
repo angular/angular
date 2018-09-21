@@ -15,6 +15,7 @@ import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher'
 import {OverlayConfig} from './overlay-config';
 import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 import {OverlayReference} from './overlay-reference';
+import {PositionStrategy} from './position/position-strategy';
 
 
 /** An object where all of its properties cannot be written. */
@@ -31,12 +32,14 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   private _backdropClick: Subject<MouseEvent> = new Subject();
   private _attachments = new Subject<void>();
   private _detachments = new Subject<void>();
+  private _positionStrategy: PositionStrategy | undefined;
 
   /**
    * Reference to the parent of the `_host` at the time it was detached. Used to restore
    * the `_host` to its original position in the DOM when it gets re-attached.
    */
   private _previousHostParent: HTMLElement;
+
   private _keydownEventsObservable: Observable<KeyboardEvent> = Observable.create(observer => {
     const subscription = this._keydownEvents.subscribe(observer);
     this._keydownEventSubscriptions++;
@@ -65,6 +68,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     if (_config.scrollStrategy) {
       _config.scrollStrategy.attach(this);
     }
+
+    this._positionStrategy = _config.positionStrategy;
   }
 
   /** The overlay's HTML element */
@@ -100,8 +105,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   attach(portal: Portal<any>): any {
     let attachResult = this._portalOutlet.attach(portal);
 
-    if (this._config.positionStrategy) {
-      this._config.positionStrategy.attach(this);
+    if (this._positionStrategy) {
+      this._positionStrategy.attach(this);
     }
 
     // Update the pane element with the given configuration.
@@ -166,8 +171,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // pointer events therefore. Depends on the position strategy and the applied pane boundaries.
     this._togglePointerEvents(false);
 
-    if (this._config.positionStrategy && this._config.positionStrategy.detach) {
-      this._config.positionStrategy.detach();
+    if (this._positionStrategy && this._positionStrategy.detach) {
+      this._positionStrategy.detach();
     }
 
     if (this._config.scrollStrategy) {
@@ -197,8 +202,8 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   dispose(): void {
     const isAttached = this.hasAttached();
 
-    if (this._config.positionStrategy) {
-      this._config.positionStrategy.dispose();
+    if (this._positionStrategy) {
+      this._positionStrategy.dispose();
     }
 
     if (this._config.scrollStrategy) {
@@ -258,8 +263,26 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Updates the position of the overlay based on the position strategy. */
   updatePosition() {
-    if (this._config.positionStrategy) {
-      this._config.positionStrategy.apply();
+    if (this._positionStrategy) {
+      this._positionStrategy.apply();
+    }
+  }
+
+  /** Switches to a new position strategy and updates the overlay position. */
+  updatePositionStrategy(strategy: PositionStrategy) {
+    if (strategy === this._positionStrategy) {
+      return;
+    }
+
+    if (this._positionStrategy) {
+      this._positionStrategy.dispose();
+    }
+
+    this._positionStrategy = strategy;
+
+    if (this.hasAttached()) {
+      strategy.attach(this);
+      this.updatePosition();
     }
   }
 

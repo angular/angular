@@ -9,6 +9,8 @@
 import {PositionStrategy} from './position-strategy';
 import {OverlayReference} from '../overlay-reference';
 
+/** Class to be added to the overlay pane wrapper. */
+const wrapperClass = 'cdk-global-overlay-wrapper';
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
@@ -28,6 +30,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   private _justifyContent: string = '';
   private _width: string = '';
   private _height: string = '';
+  private _isDisposed: boolean;
 
   attach(overlayRef: OverlayReference): void {
     const config = overlayRef.getConfig();
@@ -42,7 +45,8 @@ export class GlobalPositionStrategy implements PositionStrategy {
       overlayRef.updateSize({height: this._height});
     }
 
-    overlayRef.hostElement.classList.add('cdk-global-overlay-wrapper');
+    overlayRef.hostElement.classList.add(wrapperClass);
+    this._isDisposed = false;
   }
 
   /**
@@ -153,7 +157,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
     // Since the overlay ref applies the strategy asynchronously, it could
     // have been disposed before it ends up being applied. If that is the
     // case, we shouldn't do anything.
-    if (!this._overlayRef.hasAttached()) {
+    if (!this._overlayRef || !this._overlayRef.hasAttached()) {
       return;
     }
 
@@ -170,7 +174,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
     if (config.width === '100%') {
       parentStyles.justifyContent = 'flex-start';
     } else if (this._justifyContent === 'center') {
-        parentStyles.justifyContent = 'center';
+      parentStyles.justifyContent = 'center';
     } else if (this._overlayRef.getConfig().direction === 'rtl') {
       // In RTL the browser will invert `flex-start` and `flex-end` automatically, but we
       // don't want that because our positioning is explicitly `left` and `right`, hence
@@ -189,8 +193,23 @@ export class GlobalPositionStrategy implements PositionStrategy {
   }
 
   /**
-   * Noop implemented as a part of the PositionStrategy interface.
+   * Cleans up the DOM changes from the position strategy.
    * @docs-private
    */
-  dispose(): void { }
+  dispose(): void {
+    if (this._isDisposed || !this._overlayRef) {
+      return;
+    }
+
+    const styles = this._overlayRef.overlayElement.style;
+    const parent = this._overlayRef.hostElement;
+    const parentStyles = parent.style;
+
+    parent.classList.remove(wrapperClass);
+    parentStyles.justifyContent = parentStyles.alignItems = styles.marginTop =
+      styles.marginBottom = styles.marginLeft = styles.marginRight = styles.position = '';
+
+    this._overlayRef = null!;
+    this._isDisposed = true;
+  }
 }

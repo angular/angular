@@ -411,6 +411,70 @@ describe('Overlay', () => {
       expect(config.positionStrategy.apply).not.toHaveBeenCalled();
     }));
 
+    it('should be able to swap position strategies', fakeAsync(() => {
+      const firstStrategy = new FakePositionStrategy();
+      const secondStrategy = new FakePositionStrategy();
+
+      [firstStrategy, secondStrategy].forEach(strategy => {
+        spyOn(strategy, 'attach');
+        spyOn(strategy, 'apply');
+        spyOn(strategy, 'dispose');
+      });
+
+      config.positionStrategy = firstStrategy;
+
+      const overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+      zone.simulateZoneExit();
+      tick();
+
+      expect(firstStrategy.attach).toHaveBeenCalledTimes(1);
+      expect(firstStrategy.apply).toHaveBeenCalledTimes(1);
+
+      expect(secondStrategy.attach).not.toHaveBeenCalled();
+      expect(secondStrategy.apply).not.toHaveBeenCalled();
+
+      overlayRef.updatePositionStrategy(secondStrategy);
+      viewContainerFixture.detectChanges();
+      tick();
+
+      expect(firstStrategy.attach).toHaveBeenCalledTimes(1);
+      expect(firstStrategy.apply).toHaveBeenCalledTimes(1);
+      expect(firstStrategy.dispose).toHaveBeenCalledTimes(1);
+
+      expect(secondStrategy.attach).toHaveBeenCalledTimes(1);
+      expect(secondStrategy.apply).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should not do anything when trying to swap a strategy with itself', fakeAsync(() => {
+      const strategy = new FakePositionStrategy();
+
+      spyOn(strategy, 'attach');
+      spyOn(strategy, 'apply');
+      spyOn(strategy, 'dispose');
+
+      config.positionStrategy = strategy;
+
+      const overlayRef = overlay.create(config);
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+      zone.simulateZoneExit();
+      tick();
+
+      expect(strategy.attach).toHaveBeenCalledTimes(1);
+      expect(strategy.apply).toHaveBeenCalledTimes(1);
+      expect(strategy.dispose).not.toHaveBeenCalled();
+
+      overlayRef.updatePositionStrategy(strategy);
+      viewContainerFixture.detectChanges();
+      tick();
+
+      expect(strategy.attach).toHaveBeenCalledTimes(1);
+      expect(strategy.apply).toHaveBeenCalledTimes(1);
+      expect(strategy.dispose).not.toHaveBeenCalled();
+    }));
+
   });
 
   describe('size', () => {
