@@ -18,7 +18,7 @@ module.exports = new Package('cli-docs', [basePackage, contentPackage])
 
 // Configure file reading
 .config(function(readFilesProcessor, cliCommandFileReader) {
-  const CLI_SOURCE_PATH = resolve(CONTENTS_PATH, 'cli/tmp/node_modules/@angular/cli/help');
+  const CLI_SOURCE_PATH = resolve(CONTENTS_PATH, 'cli-src/node_modules/@angular/cli/help');
   readFilesProcessor.fileReaders.push(cliCommandFileReader);
   readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
     {
