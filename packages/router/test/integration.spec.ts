@@ -14,7 +14,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, Subscription, of } from 'rxjs';
-import {filter, first, map, tap} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -291,7 +291,7 @@ describe('Integration', () => {
 
     });
 
-    it('should not wait for prior navigations to start a new navigation',
+    it('should execute navigations serialy',
        fakeAsync(inject([Router, Location], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -308,17 +308,23 @@ describe('Integration', () => {
          tick(100);  // 200
          fixture.detectChanges();
 
-         expect(log).toEqual(
-             ['trueRightAway', 'trueIn2Seconds-start', 'trueRightAway', 'trueIn2Seconds-start']);
+         expect(log).toEqual(['trueRightAway', 'trueIn2Seconds-start']);
 
          tick(2000);  // 2200
          fixture.detectChanges();
 
          expect(log).toEqual([
-           'trueRightAway', 'trueIn2Seconds-start', 'trueRightAway', 'trueIn2Seconds-start',
-           'trueIn2Seconds-end', 'trueIn2Seconds-end'
+           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
+           'trueIn2Seconds-start'
          ]);
 
+         tick(2000);  // 4200
+         fixture.detectChanges();
+
+         expect(log).toEqual([
+           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
+           'trueIn2Seconds-start', 'trueIn2Seconds-end'
+         ]);
        })));
   });
 
@@ -956,6 +962,7 @@ describe('Integration', () => {
              locationUrlBeforeEmittingError = location.path();
            }
          });
+
          router.navigateByUrl('/throwing').catch(() => null);
          advance(fixture);
 
@@ -2955,34 +2962,6 @@ describe('Integration', () => {
            [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
            [NavigationEnd, '/user/fedor']
          ]);
-       })));
-
-    it('should allow redirection in NavigationStart',
-       fakeAsync(inject([Router], (router: Router) => {
-         const fixture = createRoot(router, RootCmp);
-
-         router.resetConfig([
-           {path: 'blank', component: UserCmp},
-           {path: 'user/:name', component: BlankCmp},
-         ]);
-
-         const navigateSpy = spyOn(router, 'navigate').and.callThrough();
-         const recordedEvents: any[] = [];
-
-         const navStart$ = router.events.pipe(
-             tap(e => recordedEvents.push(e)), filter(e => e instanceof NavigationStart), first());
-
-         navStart$.subscribe((e: NavigationStart | NavigationError) => {
-           router.navigate(
-               ['/blank'], {queryParams: {state: 'redirected'}, queryParamsHandling: 'merge'});
-           advance(fixture);
-         });
-
-         router.navigate(['/user/:fedor']);
-         advance(fixture);
-
-         expect(navigateSpy.calls.mostRecent().args[1].queryParams);
-
        })));
   });
 
