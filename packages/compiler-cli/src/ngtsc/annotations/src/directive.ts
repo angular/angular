@@ -40,7 +40,14 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
-      this.scopeRegistry.registerSelector(node, analysis.selector);
+      this.scopeRegistry.registerDirective(node, {
+        selector: analysis.selector,
+        exportAs: analysis.exportAs,
+        inputs: analysis.inputs,
+        outputs: analysis.outputs,
+        queries: analysis.queries.map(query => query.propertyName),
+        isComponent: false,
+      });
     }
 
     return {analysis};

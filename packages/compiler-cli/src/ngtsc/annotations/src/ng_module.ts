@@ -65,13 +65,13 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
 
     // Extract the module declarations, imports, and exports.
-    let declarations: Reference[] = [];
+    let declarations: Reference<ts.Declaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
       const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
     }
-    let imports: Reference[] = [];
+    let imports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('imports')) {
       const expr = ngModule.get('imports') !;
       const importsMeta = staticallyResolve(
@@ -79,7 +79,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = this.resolveTypeList(expr, importsMeta, 'imports');
     }
-    let exports: Reference[] = [];
+    let exports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('exports')) {
       const expr = ngModule.get('exports') !;
       const exportsMeta = staticallyResolve(
@@ -87,7 +87,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
     }
-    let bootstrap: Reference[] = [];
+    let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
@@ -198,8 +198,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   /**
    * Compute a list of `Reference`s from a resolved metadata value.
    */
-  private resolveTypeList(expr: ts.Node, resolvedList: ResolvedValue, name: string): Reference[] {
-    const refList: Reference[] = [];
+  private resolveTypeList(expr: ts.Node, resolvedList: ResolvedValue, name: string):
+      Reference<ts.Declaration>[] {
+    const refList: Reference<ts.Declaration>[] = [];
     if (!Array.isArray(resolvedList)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Expected array when reading property ${name}`);
@@ -215,7 +216,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       if (Array.isArray(entry)) {
         // Recurse into nested arrays.
         refList.push(...this.resolveTypeList(expr, entry, name));
-      } else if (entry instanceof Reference) {
+      } else if (isDeclarationReference(entry)) {
         if (!entry.expressable) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `One entry in ${name} is not a type`);
@@ -233,4 +234,10 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return refList;
   }
+}
+
+function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
+  return ref instanceof Reference &&
+      (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
+       ts.isVariableDeclaration(ref.node));
 }
