@@ -64,7 +64,7 @@ If the translation is: `start {$START_P} middle {$END_P} end` then the translati
 It would be represented by the following array:
 ```typescript
 const instructions = [
-  1 | I18nInstructions.Select,       // Select element at position 0 (<p>)
+  1 | I18nInstructions.Select,       // Select element at position 1 (<p>)
   I18nInstructions.InsertBeforeText, // Insert a child text node ...
   "start ",                          //                          ... with the following text.
   I18nInstructions.AppendChildText,  // Append a child text node ...
