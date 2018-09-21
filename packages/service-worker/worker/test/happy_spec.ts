@@ -593,10 +593,12 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
       await scope.handleClick({title: 'This is a test', body: 'Test body'}, 'button');
-      expect(scope.clients.getMock('default') !.messages).toEqual([{
-        type: 'NOTIFICATION_CLICK',
-        data: {action: 'button', notification: {title: 'This is a test', body: 'Test body'}}
-      }]);
+      const message: any = scope.clients.getMock('default') !.messages[0];
+
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toEqual('button');
+      expect(message.data.notification.title).toEqual('This is a test');
+      expect(message.data.notification.body).toEqual('Test body');
     });
 
     async_it('prefetches updates to lazy cache when set', async() => {

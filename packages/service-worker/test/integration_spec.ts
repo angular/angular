@@ -135,11 +135,12 @@ const serverUpdate =
       scope.updateServerState(serverUpdate);
 
       const gotNotificationClick = (async() => {
-        const event = await obsToSinglePromise(push.messagesClicked);
-        expect(event).toEqual({action: 'clicked', notification: {clicked: true}});
+        const event: any = await obsToSinglePromise(push.messagesClicked);
+        expect(event.action).toEqual('clicked');
+        expect(event.notification.title).toEqual('This is a test');
       })();
 
-      await scope.handleClick({clicked: true}, 'clicked');
+      await scope.handleClick({title: 'This is a test'}, 'clicked');
       await gotNotificationClick;
     });
   });
