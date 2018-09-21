@@ -19,7 +19,7 @@ import {assertDefined} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {_getViewData, assertPreviousIsParent, getPreviousOrParentTNode, resolveDirective, setEnvironment} from './instructions';
-import {DirectiveDefInternal} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {INJECTOR_SIZE, InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {isProceduralRenderer} from './interfaces/renderer';
@@ -196,7 +196,7 @@ export function getParentInjectorView(location: number, startView: LViewData): L
  * @param def The definition of the directive to be made public
  */
 export function diPublicInInjector(
-    injectorIndex: number, view: LViewData, def: DirectiveDefInternal<any>): void {
+    injectorIndex: number, view: LViewData, def: DirectiveDef<any>): void {
   bloomAdd(injectorIndex, view[TVIEW], def.type);
 }
 
@@ -205,7 +205,7 @@ export function diPublicInInjector(
  *
  * @param def The definition of the directive to be made public
  */
-export function diPublic(def: DirectiveDefInternal<any>): void {
+export function diPublic(def: DirectiveDef<any>): void {
   diPublicInInjector(getOrCreateNodeInjector(), _getViewData(), def);
 }
 
@@ -399,7 +399,7 @@ function searchMatchesQueuedForCreation<T>(token: any, hostTView: TView): T|null
   const matches = hostTView.currentMatches;
   if (matches) {
     for (let i = 0; i < matches.length; i += 2) {
-      const def = matches[i] as DirectiveDefInternal<any>;
+      const def = matches[i] as DirectiveDef<any>;
       if (def.type === token) {
         return resolveDirective(def, i + 1, matches, hostTView);
       }
@@ -422,7 +422,7 @@ function searchDirectivesOnInjector<T>(
     for (let i = start; i < end; i++) {
       // Get the definition for the directive at this index and, if it is injectable (diPublic),
       // and matches the given token, return the directive instance.
-      const directiveDef = defs[i] as DirectiveDefInternal<any>;
+      const directiveDef = defs[i] as DirectiveDef<any>;
       if (directiveDef.type === token && directiveDef.diPublic) {
         return injectorView[DIRECTIVES] ![i];
       }

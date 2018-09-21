@@ -10,12 +10,12 @@ import './ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/provider';
-import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
+import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
 import {Type} from '../type';
 
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 export const EMPTY: {} = {};
@@ -280,7 +280,7 @@ export function defineComponent<T>(componentDefinition: {
   if (animations) {
     data.animations = animations;
   }
-  const def: ComponentDefInternal<any> = {
+  const def: ComponentDef<any> = {
     type: type,
     diPublic: null,
     consts: componentDefinition.consts,
@@ -328,7 +328,7 @@ export function defineComponent<T>(componentDefinition: {
 }
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
-    DirectiveDefInternal<any>|ComponentDefInternal<any> {
+    DirectiveDef<any>|ComponentDef<any> {
   const def = getComponentDef(type) || getDirectiveDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
@@ -336,7 +336,7 @@ export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>
   return def !;
 }
 
-export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
+export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
   const def = getPipeDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
@@ -344,8 +344,8 @@ export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
   return def !;
 }
 
-export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
-  const res: NgModuleDefInternal<T> = {
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): never {
+  const res: NgModuleDef<T> = {
     type: def.type,
     bootstrap: def.bootstrap || EMPTY_ARRAY,
     declarations: def.declarations || EMPTY_ARRAY,
@@ -656,7 +656,7 @@ export function definePipe<T>(pipeDef: {
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
-  return (<PipeDefInternal<T>>{
+  return (<PipeDef<T>>{
     name: pipeDef.name,
     factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
@@ -670,18 +670,18 @@ export function definePipe<T>(pipeDef: {
  * explicit. This would require some sort of migration strategy.
  */
 
-export function getComponentDef<T>(type: any): ComponentDefInternal<T>|null {
+export function getComponentDef<T>(type: any): ComponentDef<T>|null {
   return (type as any)[NG_COMPONENT_DEF] || null;
 }
 
-export function getDirectiveDef<T>(type: any): DirectiveDefInternal<T>|null {
+export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
   return (type as any)[NG_DIRECTIVE_DEF] || null;
 }
 
-export function getPipeDef<T>(type: any): PipeDefInternal<T>|null {
+export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return (type as any)[NG_PIPE_DEF] || null;
 }
 
-export function getNgModuleDef<T>(type: any): NgModuleDefInternal<T>|null {
+export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null {
   return (type as any)[NG_MODULE_DEF] || null;
 }

@@ -313,7 +313,7 @@ export class SelectorScopeRegistry {
       return null;
     } else if (
         def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length !== 2) {
+        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
       // The type metadata was the wrong shape.
       return null;
     }
@@ -337,7 +337,7 @@ export class SelectorScopeRegistry {
       return null;
     } else if (
         def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length !== 2) {
+        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
       // The type metadata was the wrong shape.
       return null;
     }

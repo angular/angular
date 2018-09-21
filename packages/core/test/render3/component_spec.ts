@@ -11,7 +11,7 @@ import {DoCheck, Input, TemplateRef, ViewContainerRef, ViewEncapsulation, create
 import {getRenderedText} from '../../src/render3/component';
 import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
-import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
+import {ComponentDef, DirectiveDef, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {NgIf} from './common_with_def';
@@ -386,7 +386,7 @@ describe('recursive components', () => {
     });
   }
 
-  (TreeComponent.ngComponentDef as ComponentDefInternal<TreeComponent>).directiveDefs =
+  (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
       () => [TreeComponent.ngComponentDef];
 
   /**
@@ -446,7 +446,7 @@ describe('recursive components', () => {
     }
   }
 
-  (NgIfTree.ngComponentDef as ComponentDefInternal<NgIfTree>).directiveDefs =
+  (NgIfTree.ngComponentDef as ComponentDef<NgIfTree>).directiveDefs =
       () => [NgIfTree.ngComponentDef, NgIf.ngDirectiveDef];
 
   function _buildTree(currDepth: number): TreeNode {

@@ -7,7 +7,7 @@
  */
 
 import {assertEqual} from './assert';
-import {DirectiveDefInternal} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
 import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
 
@@ -52,7 +52,7 @@ export function queueLifecycleHooks(flags: number, tView: TView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start; i < end; i++) {
-      const def: DirectiveDefInternal<any> = tView.directives ![i];
+      const def: DirectiveDef<any> = tView.directives ![i];
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -61,7 +61,7 @@ export function queueLifecycleHooks(flags: number, tView: TView): void {
 }
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterContentInit) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
   }
@@ -73,7 +73,7 @@ function queueContentHooks(def: DirectiveDefInternal<any>, tView: TView, i: numb
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterViewInit) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
   }
@@ -85,7 +85,7 @@ function queueViewHooks(def: DirectiveDefInternal<any>, tView: TView, i: number)
 }
 
 /** Queues onDestroy hooks on TView */
-function queueDestroyHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.onDestroy != null) {
     (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
   }

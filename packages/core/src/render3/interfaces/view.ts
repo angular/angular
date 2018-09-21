@@ -12,7 +12,7 @@ import {Sanitizer} from '../../sanitization/security';
 import {PlayerHandler} from '../interfaces/player';
 
 import {LContainer} from './container';
-import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
+import {ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -558,10 +558,10 @@ export type HookData = (number | (() => void))[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData = (TNode | PipeDefInternal<any>| number | null)[];
+export type TData = (TNode | PipeDef<any>| number | null)[];
 
 /** Type for TView.currentMatches */
-export type CurrentMatchesList = [DirectiveDefInternal<any>, (string | number | null)];
+export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
