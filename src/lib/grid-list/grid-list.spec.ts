@@ -246,6 +246,65 @@ describe('MatGridList', () => {
     expect(getStyle(tiles[3], 'top')).toBe('101px');
   });
 
+  it('should lay out tiles correctly', () => {
+    const fixture = createComponent(GridListWithLayout);
+
+    fixture.detectChanges();
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+
+    expect(getStyle(tiles[0], 'width')).toBe('40px');
+    expect(getStyle(tiles[0], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[0])).toBe(0);
+    expect(getStyle(tiles[0], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[1], 'width')).toBe('20px');
+    expect(getStyle(tiles[1], 'height')).toBe('20px');
+    expect(getComputedLeft(tiles[1])).toBe(40);
+    expect(getStyle(tiles[1], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[2], 'width')).toBe('40px');
+    expect(getStyle(tiles[2], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[2])).toBe(60);
+    expect(getStyle(tiles[2], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[3], 'width')).toBe('40px');
+    expect(getStyle(tiles[3], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[3])).toBe(0);
+    expect(getStyle(tiles[3], 'top')).toBe('40px');
+
+    expect(getStyle(tiles[4], 'width')).toBe('40px');
+    expect(getStyle(tiles[4], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[4])).toBe(40);
+    expect(getStyle(tiles[4], 'top')).toBe('40px');
+  });
+
+  it('should lay out tiles correctly when single cell to be placed at the beginning',
+        () => {
+    const fixture = createComponent(GridListWithSingleCellAtBeginning);
+
+    fixture.detectChanges();
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+
+    expect(getStyle(tiles[0], 'width')).toBe('40px');
+    expect(getStyle(tiles[0], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[0])).toBe(0);
+    expect(getStyle(tiles[0], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[1], 'width')).toBe('20px');
+    expect(getStyle(tiles[1], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[1])).toBe(40);
+    expect(getStyle(tiles[1], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[2], 'width')).toBe('40px');
+    expect(getStyle(tiles[2], 'height')).toBe('40px');
+    expect(getComputedLeft(tiles[2])).toBe(60);
+    expect(getStyle(tiles[2], 'top')).toBe('0px');
+
+    expect(getStyle(tiles[3], 'height')).toBe('20px');
+    expect(getComputedLeft(tiles[3])).toBe(0);
+    expect(getStyle(tiles[3], 'top')).toBe('40px');
+  });
+
   it('should add not add any classes to footers without lines', () => {
     const fixture = createComponent(GridListWithFootersWithoutLines);
     fixture.detectChanges();
@@ -485,6 +544,29 @@ class GridListWithRowspanBinding {
 class GridListWithComplexLayout {
   tiles: any[];
 }
+
+@Component({template: `
+  <div style="width:100px">
+    <mat-grid-list [cols]="10" gutterSize="0px" rowHeight="10px">
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="2" [rowspan]="2"></mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+    </mat-grid-list>
+  </div>`})
+class GridListWithLayout {}
+
+@Component({template: `
+  <div style="width:100px">
+    <mat-grid-list [cols]="10" gutterSize="0px" rowHeight="10px">
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="2" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="4" [rowspan]="4"></mat-grid-tile>
+      <mat-grid-tile [colspan]="1" [rowspan]="2"></mat-grid-tile>
+    </mat-grid-list>
+  </div>`})
+class GridListWithSingleCellAtBeginning {}
 
 @Component({template: `
     <mat-grid-list cols="1">

@@ -12,6 +12,46 @@
   </mat-card>
 
   <mat-card>
+    <mat-card-title>Grid with 1 cell at the beginning of a new row</mat-card-title>
+    <mat-card-content class="demo-basic-list">
+      <mat-grid-list [cols]="6" gutterSize="20px" rowHeight="20px">
+        <mat-grid-tile [colspan]="3" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="3" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="2"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title>Grid with col-span</mat-card-title>
+    <mat-card-content class="demo-basic-list">
+      <mat-grid-list [cols]="10" gutterSize="20px" rowHeight="20px">
+        <mat-grid-tile [colspan]="4" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="2" [rowspan]="2"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="4" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="4" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="4" [rowspan]="4"
+                       class="mat-elevation-z15">
+        </mat-grid-tile>
+      </mat-grid-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
     <mat-card-title>Fixed-height grid list</mat-card-title>
     <mat-card-content>
       <mat-grid-list [cols]="fixedCols" [rowHeight]="fixedRowHeight">
