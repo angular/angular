@@ -14,7 +14,7 @@ import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
-import {ImportManager, translateStatement} from '../../../ngtsc/transform';
+import {ImportManager, translateStatement} from '../../../ngtsc/translator';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
