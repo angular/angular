@@ -654,14 +654,22 @@
     "bio": "Elana is a Developer Relations intern on the Angular team at Google. She is working on migration paths from AngularJS to Angular and would love to chat about your experience with upgrading.",
     "group": "Angular"
   },
-  
-   "kevinyang": {
+
+  "kevinyang": {
     "name": "Kevin Yang",
     "picture": "kevinyang.jpg",
     "twitter": "chgc",
     "website": "https://blog.kevinyang.net/",
-    "bio":
-      "Kevin is a Angular Taiwan, Angular Girls Taiwan community organzier. He loves sharing knowledge with other developers through blogging, speaking, workshops.",
+    "bio": "Kevin is a Angular Taiwan, Angular Girls Taiwan community organzier. He loves sharing knowledge with other developers through blogging, speaking, workshops.",
+    "group": "GDE"
+  },
+
+  "sajee": {
+    "name": "Sajeetharan Sinnathurai",
+    "picture": "sajee.jpg",
+    "twitter": "https://twitter.com/kokkisajee",
+    "website": "https://sajeetharan.herokuapp.com/",
+    "bio": "Sajeetharan is a Developer, Top contributor on stackoverflow for #Angular, ng-SriLanka organizer. He makes use of his extensive knowledge over the past years to contribute to community to make the world a better place.",
     "group": "GDE"
   }
 }
