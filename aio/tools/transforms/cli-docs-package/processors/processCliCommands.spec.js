@@ -247,18 +247,18 @@ describe('processCliCommands processor', () => {
       data: {
         SideNav: [
           { url: 'some/page', title: 'Some Page' },
-          { url: 'cli', title: 'CLI', children: [
-            { url: 'cli', title: 'Overview' },
+          { url: 'cli', title: 'CLI Commands', children: [
+            { url: 'cli', title: 'Using the CLI' },
           ]},
           { url: 'other/page', title: 'Other Page' },
         ]
       }
     };
     processor.$process([command, navigation]);
-    expect(navigation.data.SideNav[1].title).toEqual('CLI');
+    expect(navigation.data.SideNav[1].title).toEqual('CLI Commands');
     expect(navigation.data.SideNav[1].children).toEqual([
-      { url: 'cli', title: 'Overview' },
-      { url: 'cli/command1', title: 'command1' },
+      { url: 'cli', title: 'Using the CLI' },
+      { url: 'cli/command1', title: 'ng command1' },
     ]);
   });
 });

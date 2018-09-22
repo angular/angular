@@ -4,7 +4,7 @@ module.exports = function processCliCommands() {
     $runBefore: ['rendering-docs'],
     $process(docs) {
       const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
-      const navigationNode = navigationDoc && navigationDoc.data['SideNav'].find(node => node.title === 'CLI');
+      const navigationNode = navigationDoc && navigationDoc.data['SideNav'].find(node => node.title === 'CLI Commands');
 
       docs.forEach(doc => {
         if (doc.docType === 'cli-command') {
@@ -23,12 +23,15 @@ module.exports = function processCliCommands() {
   };
 };
 
-
 function processOptions(container, options) {
   container.positionalOptions = [];
   container.namedOptions = [];
 
   options.forEach(option => {
+
+    if (option.type === 'boolean' && option.default === undefined) {
+      option.default = false;
+    }
 
     // Ignore any hidden options
     if (option.hidden) { return; }
