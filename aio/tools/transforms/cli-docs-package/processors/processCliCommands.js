@@ -15,7 +15,7 @@ module.exports = function processCliCommands() {
 
           // Add to navigation doc
           if (navigationNode) {
-            navigationNode.children.push({ url: doc.path, title: doc.name });
+            navigationNode.children.push({ url: doc.path, title: `ng ${doc.name}` });
           }
         }
       });
@@ -46,7 +46,10 @@ function processOptions(container, options) {
     // Recurse if there are subcommands
     if (option.subcommands) {
       option.subcommands = getValues(option.subcommands);
-      option.subcommands.forEach(subcommand => processOptions(subcommand, subcommand.options));
+      option.subcommands.forEach(subcommand => {
+        subcommand.names = collectNames(subcommand.name, subcommand.aliases);
+        processOptions(subcommand, subcommand.options);
+      });
     }
   });
 

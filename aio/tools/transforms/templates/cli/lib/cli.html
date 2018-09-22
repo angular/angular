@@ -1,8 +1,8 @@
 {% macro renderSyntax(container, prefix) %}
 {% for name in container.names %}
-<code-example hideCopy="true" class="no-box api-heading">ng {%if prefix %}{$ prefix $} {% endif %}<span class="cli-name">{$ container.name $}</span>
-  {%- for arg in container.positionalArguments %} &lt;{$ arg.name $}&gt;{% endfor %}
-  {%- if container.namedOptions.length %} [options]{% endif -%}
+<code-example hideCopy="true" class="no-box api-heading">ng {%if prefix %}{$ prefix $} {% endif %}<span class="cli-name">{$ name $}</span>
+  {%- for arg in container.positionalOptions %} &lt;<var>{$ arg.name $}</var>&gt;{% endfor %}
+  {%- if container.namedOptions.length %} [<var>options</var>]{% endif -%}
 </code-example>
 {% endfor %}
 {% endmacro %}
@@ -89,7 +89,9 @@
 <h2><a id="{$ command.name $}-commands"></a>{$ command.name | title $} commands</h2>
 {% for subcommand in command.subcommands %}
 <h3><code><a id="{$ subcommand.name $}-command"></a>{$ subcommand.name $}</code></h3>
-{$ renderSyntax(subcommand, container.name) $}
+{% for name in container.names %}
+{$ renderSyntax(subcommand, name) $}
+{% endfor %}
 {$ subcommand.description | marked $}
 {# for now we assume that commands do not have further sub-commands #}
 {$ renderArguments(subcommand.positionalOptions, 4) $}

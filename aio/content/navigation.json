@@ -588,7 +588,7 @@
       "url": "api"
     },
     {
-      "title": "CLI",
+      "title": "CLI Commands",
       "tooltip": "Angular CLI command reference.",
       "children": [
         {
