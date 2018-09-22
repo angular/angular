@@ -15,7 +15,7 @@ There is actually a tree of injectors that parallel an application's component t
 You can reconfigure the injectors at any level of that component tree.
 -->
 Angular의 인젝터는 _계층_ 체계를 갖추고 있습니다.
-쉽게 말하면, 인젝터는 트리로 구성되며, 애플리케이션의 컴포넌트 트리 계층에서는 병렬로 존재하기도 합니다.
+쉽게 말하면, 인젝터는 트리로 구성되며 애플리케이션의 컴포넌트 트리 계층에서는 병렬로 존재하기도 합니다.
 컴포넌트 트리에 생성된 인젝터는 개발자가 원하는 대로 다시 설정할 수도 있습니다.
 
 <!--
@@ -26,7 +26,7 @@ This guide explores this system and how to use it to your advantage.
 <!--
 Try the <live-example></live-example>.
 -->
-이 문서에서 설명하는 예제는 <live-example></live-example>에서 다운받아 확인하거나 직접 실행해서 확인할 수 있습니다.
+이 문서에서 설명하는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 
 <!--
@@ -100,7 +100,7 @@ The requests keep bubbling up until Angular finds an injector that can handle th
 If it runs out of ancestors, Angular throws an error.
 -->
 어떤 컴포넌트가 의존성 객체를 주입해달라고 Angular에 요청하면, Angular는 먼저 그 컴포넌트에 있는 인젝터에 프로바이더가 등록되어 있는지 확인합니다.
-그리고 컴포넌트 인젝터에 프로바이더가 없으면, 부모 컴포넌트 인젝터를 찾아 같은 과정을 반복합니다.
+그리고 컴포넌트 인젝터에 프로바이더가 없으면 부모 컴포넌트 인젝터를 찾아 같은 과정을 반복합니다.
 즉, 인젝터가 직접 처리할 수 없는 것은 *부모 인젝터*가 처리하도록 넘긴다는 것입니다.
 의존성 주입 요청은 원하는 프로바이더를 찾을 때까지 위쪽으로 버블링되며, 애플리케이션 최상위 인젝터도 이 대상에 포함됩니다.
 만약 애플리케이션 최상위 인젝터에서도 프로바이더를 찾지 못하면 Angular가 에러를 발생시킵니다.
@@ -113,7 +113,7 @@ You can cap the bubbling. An intermediate component can declare that it is the "
 The hunt for providers will climb no higher than the injector for that host component.
 This is a topic for another day.
 -->
-이 버블링은 중단시킬 수 있습니다. 중간에 있는 컴포넌트에서 버블링을 막도록 설정하면, 이 컴포넌트를 "호스트" 컴포넌트라고 합니다. 그러면 인젝터가 프로바이더를 찾는 과정이 호스트 컴포넌트 위쪽으로는 수행되지 않습니다. 이 내용은 이후에 다시 다룹니다.
+이 버블링은 중단시킬 수 있습니다. 중간에 있는 컴포넌트에서 인젝터 버블링을 막도록 설정할 수 있는데, 이 컴포넌트를 "호스트" 컴포넌트라고 합니다. 그러면 인젝터가 프로바이더를 찾는 과정이 호스트 컴포넌트 위쪽으로는 수행되지 않습니다. 이 내용은 이후에 다시 다룹니다.
 
 </div>
 
@@ -129,7 +129,7 @@ You don't *have* to re-register providers. You shouldn't do so unless you have a
 But you *can*.
 -->
 서비스 프로바이더는 서로 다른 의존성 토큰을 사용해서 인젝터 트리의 여러 계층에 등록할 수도 있습니다.
-물론 잘 등록되어 있는 서비스 프로바이더를 일부러 재등록할 필요는 없겠지만, 일단은 *할 수 있습니다*.
+물론 잘 등록되어 있는 서비스 프로바이더를 일부러 재등록할 필요는 없겠지만, *활용할 수 있는 가능성은 열려있습니다*.
 
 <!--
 As the resolution logic works upwards, the first provider encountered wins.
@@ -137,8 +137,8 @@ Thus, a provider in an intermediate injector intercepts a request for a service 
 It effectively "reconfigures" and "shadows" a provider at a higher level in the tree.
 -->
 그리고 인젝터 버블링은 위쪽으로 전파되기 때문에, 이 과정에 먼저 만나는 프로바이더가 사용됩니다.
-그래서 인젝터가 요청하는 버블링 과정 중간에 다른 프로바이더가 등록되면, 인젝터 버블링은 이 단계에서 끝나고 서비스 인스턴스가 생성됩니다.
-이 방법은 서비스 프로바이더를 "재설정"하는 방법이며, 트리의 상위 계층을 "가리는(shadow)" 방법이기도 합니다.
+그래서 인젝터가 요청하는 버블링 과정 중간에 다른 프로바이더가 등록되면, 이 단계에서 서비스 인스턴스가 생성되고 인젝터 버블링이 종료됩니다.
+이 과정은 서비스 프로바이더를 "재설정"한다고도 할 수 있으며, 트리의 상위 계층을 "가리는(shadow)" 방법이기도 합니다.
 
 <!--
 If you only specify providers at the top level (typically the root `AppModule`), the tree of injectors appears to be flat.
@@ -156,7 +156,7 @@ All requests bubble up to the root <code>NgModule</code> injector that you confi
 <!--
 The ability to configure one or more providers at different levels opens up interesting and useful possibilities.
 -->
-서비스 프로바이더를 여러 계층에 등록할 수 있다는 것을 활용하면, 의존성 주입을 좀 더 다양하게 사용할 수 있습니다.
+서비스 프로바이더를 여러 계층에 등록할 수 있다는 것을 활용하면 의존성 주입을 좀 더 다양하게 사용할 수 있습니다.
 
 <!--
 ### Scenario: service isolation
@@ -166,7 +166,7 @@ The ability to configure one or more providers at different levels opens up inte
 <!--
 Architectural reasons may lead you to restrict access to a service to the application domain where it belongs.
 -->
-아키텍처상 어떤 서비스는 그 서비스가 속한 도메인에서만 동작해야 하는 경우가 생길 수 있습니다.
+아키텍처상 어떤 서비스는 그 서비스가 속한 도메인에서만 동작해야 한다고 합시다.
 
 <!--
 The guide sample includes a `VillainsListComponent` that displays a list of villains.
@@ -184,13 +184,13 @@ that would make the `VillainsService` available everywhere in the application, i
 If you later modified the `VillainsService`, you could break something in a hero component somewhere.
 That's not supposed to happen but providing the service in the root `AppModule` creates that risk.
 -->
-그래서 나중에 `VillainsService`를 수정하게 되면, 히어로와 관련된 컴포넌트 어딘가에서 문제가 생길 수도 있습니다.
-물론 코드를 작성하면서 충분히 주의할 수는 있겠지만, 서비스를 `AppModule`에 등록하는 것은 이렇게 될 가능성을 열어두는 것과 같습니다.
+그래서 나중에 `VillainsService`를 수정할 때 히어로와 관련된 컴포넌트 어딘가에서 문제가 생길 수도 있습니다.
+물론 코드를 작성하면서 충분히 주의할 수는 있겠지만 서비스를 `AppModule`에 등록하는 것은 문제가 생길 가능성을 열어두는 것과 같습니다.
 
 <!--
 Instead, provide the `VillainsService` in the `providers` metadata of the `VillainsListComponent` like this:
 -->
-그렇다면 `VillainsService`를 `VillainsListComponent`의 `providers` 메타데이터에 다음과 같이 등록하는 방법을 사용할 수 있습니다.
+이런 상황을 방지하려면 `VillainsService`를 `VillainsListComponent`의 `providers` 메타데이터를 다음과 같이 지정하면 됩니다.
 
 <code-example path="hierarchical-dependency-injection/src/app/villains-list.component.ts" linenums="false" title="src/app/villains-list.component.ts (metadata)" region="metadata">
 
@@ -221,13 +221,13 @@ For example, in a tax preparation application, the preparer could be working on 
 switching from one to the other throughout the day.
 -->
 애플리케이션은 보통 동시에 여러 작업을 처리할 수 있는 UX를 제공합니다.
-예를 들면, 세금 환급 애플리케이션이 있다면 이 애플리케이션은 여러 환급건을 동시에 처리할 수 있어야 사용자가 편할 것입니다.
+예를 들어 세금 환급 애플리케이션이 있다면 이 애플리케이션은 여러 환급건을 동시에 처리할 수 있어야 사용자가 편할 것입니다.
 
 <!--
 This guide demonstrates that scenario with an example in the Tour of Heroes theme.
 Imagine an outer `HeroListComponent` that displays a list of super heroes.
 -->
-이번 섹션에서는 이 시나리오를 어떻게 처리할 수 있는지 알아봅시다.
+이번에는 이 시나리오를 어떻게 처리할 수 있는지 알아봅시다.
 먼저, 히어로의 목록을 표시하는 `HeroListComponent`가 있다고 합시다.
 
 <!--
@@ -264,7 +264,7 @@ You might delegate that management to a helper service, as this example does.
 -->
 이 시나리오를 만족시키기 위해, `HeroTaxReturnComponent`에 변경사항을 저장했다가 필요할 때마다 복원하는 로직을 작성할 수도 있습니다.
 로직이 간단하다면 이 방식이 가장 쉬울 수도 있습니다.
-하지만 실제로 사용되는 애플리케이션에서는 데이터 모델이 훨씬 복잡하기 때문에, 이런 로직을 작성하는 것이 그렇게 쉽지는 않습니다.
+하지만 실제로 사용되는 애플리케이션에서는 데이터 모델이 훨씬 복잡하기 때문에 이런 로직을 작성하는 것이 그렇게 쉽지는 않습니다.
 그래서 이 경우에는 헬퍼 서비스를 사용하는 것이 좋습니다.
 
 <!--
@@ -272,7 +272,7 @@ Here is the `HeroTaxReturnService`.
 It caches a single `HeroTaxReturn`, tracks changes to that return, and can save or restore it.
 It also delegates to the application-wide singleton `HeroService`, which it gets by injection.
 -->
-이 예제에서는 `HeroTaxReturnService`가 이 역할을 합시다.
+이 예제에서는 `HeroTaxReturnService`가 이 역할을 합니다.
 이 서비스는 `HeroTaxReturn` 객체를 캐싱해뒀다가 이 객체의 값을 새로운 내용으로 변경하거나 컴포넌트의 내용을 원복할 때 사용합니다.
 그리고 저장된 값을 반영할 때는 애플리케이션 전역에 있는 `HeroService` 싱글턴 서비스를 사용합니다.
 
@@ -301,7 +301,7 @@ The component also asks the service to save and restore this tax return.
 컴포넌트에 입력되는 `HeroTaxReturn` 객체를 서비스에 저장하기 위해 게터와 세터 함수를 사용했습니다.
 세터 함수는 컴포넌트와 연결된 `HeroTaxReturnService`에 값을 저장합니다.
 그리고 게터 함수는 서비스에 있는 값을 가져와서 반환합니다.
-`HeroTaxReturn` 객체를 저장하거나 원복하는 데에도 서비스 인스턴스를 사용합니다.
+`HeroTaxReturn` 객체를 저장하거나 원복할 때도 서비스 인스턴스를 사용합니다.
 
 <!--
 There'd be big trouble if _this_ service were an application-wide singleton.
@@ -332,7 +332,7 @@ No tax return overwriting. No mess.
 -->
 `HeroTaxReturnComponent`에는 `HeroTaxReturnService`의 프로바이더가 등록되어 있습니다.
 그리고 모든 컴포넌트 _인스턴스_ 마다 독자적인 인젝터가 존재한다는 것을 떠올려 봅시다.
-서비스 프로바이더를 컴포넌트 계층에 등록하면 _모든_ 컴포넌트 인스턴스마다 독립적인 서비스 인스턴스를 갖습니다.
+서비스 프로바이더를 컴포넌트 계층에 등록하면 _모든_ 컴포넌트 인스턴스마다 독립적인 서비스 인스턴스가 생성됩니다.
 다른 컴포넌트와 섞일 일도 없습니다. 아무 문제 없죠.
 
 <div class="alert is-helpful">
@@ -348,8 +348,10 @@ You can review it and download it from the <live-example></live-example>.
 </div>
 
 
-
+<!--
 ### Scenario: specialized providers
+-->
+###시나리오: 프로바이더 대체하기
 
 <!--
 Another reason to re-provide a service is to substitute a _more specialized_ implementation of that service,
@@ -393,7 +395,7 @@ Component (B) is the parent of another component (C) that defines its own, even 
 <!--
 Behind the scenes, each component sets up its own injector with zero, one, or more providers defined for that component itself.
 -->
-이 예제에서 보듯이, 각각의 컴포넌트는 서비스 프로바이더를 자유롭게 등록해서 사용할 수 있습니다.
+이 예제에서 보듯이, 각각의 컴포넌트에는 서비스 프로바이더를 자유롭게 등록해서 사용할 수 있습니다.
 
 <!--
 When you resolve an instance of `Car` at the deepest component (C),
