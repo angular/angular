@@ -1,60 +1,100 @@
+<!--
 # Dependency Injection
+-->
+# 의존성 주입
 
-
+<!--
 Dependency Injection is a powerful pattern for managing code dependencies.
 This cookbook explores many of the features of Dependency Injection (DI) in Angular.
+-->
+의존성 주입은 코드의 의존성을 관리할 때 아주 유용하게 사용할 수 있는 패턴입니다.
+이 문서에서는 Angular에서 활용할 수 있는 여러가지 의존성 주입 패턴을 안내합니다.
+
 {@a toc}
 
+<!--
 See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
+-->
+이 문서에서 다루는 예제는 <live-example name="dependency-injection-in-action"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 {@a app-wide-dependencies}
 
+<!--
 ## Application-wide dependencies
+-->
+## 애플리케이션 전역에 사용되는 의존성
+
+<!--
 Register providers for dependencies used throughout the application 
 in the `@Injectable()` decorator of the service itself. 
+-->
+서비스 클래스에 `@Injectable()` 데코레이터를 사용하면 이 서비스를 애플리케이션 전역에 사용되는 의존성으로 등록할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts" linenums="false">
 </code-example>
 
+<!--
 `providedIn` here tells Angular that the root injector is responsible for creating an instance of the `HeroService`.
 Services that are provided this way are automatically made available to the entire 
 application and don't need to be listed in any module.
+-->
+이 코드에 사용된 `providedIn`은 `HeroService`의 인스턴스가 애플리케이션 최상위 인젝터에서 관리된다는 것을 의미합니다.
+그리고 이렇게 등록된 서비스는 다른 모듈에 다시 등록되지 않아도 애플리케이션 전역에 사용할 수 있습니다.
 
-
+<!--
 Service classes can act as their own providers which is why defining them in the `@Injectable` decorator
 is all the registration you need.
+-->
+`@Injectable` 데코레이터를 사용하면 서비스 클래스는 그 자체로 서비스 프로바이더의 역할을 합니다.
+서비스를 인젝터에 등록하려면 이 데코레이터를 지정하기만 하면 됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 A *provider* is something that can create or deliver a service.
 Angular creates a service instance from a class provider by using `new`.
 Read more about providers in the [Dependency Injection](guide/dependency-injection#register-providers-ngmodule)
 guide.
+-->
+*프로바이더* 는 서비스와 같은 객체를 전달하는 무언가를 의미합니다.
+그리고 내부적으로도 Angular는 `new` 키워드를 사용해서 클래스 인스턴스를 만들듯이 서비스의 인스턴스를 생성합니다.
+프로바이더에 대해서는 [의존성 주입](guide/dependency-injection#register-providers-ngmodule) 문서를 참고하세요.
 
 </div>
 
-
+<!--
 Now that you've registered these services,
 Angular can inject them into the constructor of *any* component or service, *anywhere* in the application.
-
+-->
+이제 인젝터에 서비스 프로바이더를 등록했기 때문에 Angular는 애플리케이션에 있는 *모든* 컴포넌트나 서비스 생성자를 통해 의존성을 주입할 수 있습니다.
 
 {@a external-module-configuration}
 
-
+<!--
 ## External module configuration
-If a provider cannot be configured in the `@Injectable` decorator of the service, then register application-wide providers in the root `AppModule`, not in the `AppComponent`. Generally, register providers in the `NgModule` rather than in the root application component.
+-->
+## 모듈에 설정하는 경우
 
+<!--
+If a provider cannot be configured in the `@Injectable` decorator of the service, then register application-wide providers in the root `AppModule`, not in the `AppComponent`. Generally, register providers in the `NgModule` rather than in the root application component.
+-->
+애플리케이션 전역에 사용되는 서비스에 `@Injectable` 데코레이터를 사용할 수 없다면, 최상위 `AppModule`에 이 설정을 대신할 수 있습니다. 이 때 주의할 것은 `AppComponent`가 아니라 `AppModule`이라는 것입니다. 일반적으로 서비스 프로바이더는 최상위 컴포넌트가 아니라 최상위 `NgModule`에 등록합니다.
+
+<!--
 Do this when users should explicitly opt-in to use a service, or the service should be 
 provided in a lazily-loaded context, 
 or when you are configuring another application global service _before the application starts_.
+-->
+이 방법은 서비스를 사용하기 위해 사용자에게 승인을 받아야 하거나, 지연로딩되는 모듈에 서비스가 등록되는 경우, _애플리케이션이 시작되기 전에_ 전역 서비스 설정을 따로 해야하는 경우에 사용합니다.
 
+<!--
 Here is an example of the case where the component router configuration includes a non-default
 [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
-
+-->
+다음 코드는 `AppModule`의 `providers`에서 컴포넌트 라우팅에 사용하는 [로케이션 정책](guide/router#location-strategy)을 변경하는 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)" linenums="false">
 
@@ -68,46 +108,74 @@ in the `providers` list of the `AppModule`.
 {@a nested-dependencies}
 
 
-
+<!--
 ## _@Injectable()_ and nested service dependencies
+-->
+## _@Injectable()_ 과 중첩 의존성
+
+<!--
 The consumer of an injected service does not know how to create that service.
 It shouldn't care.
 It's the dependency injection's job to create and cache that service.
+-->
+의존성으로 주입되는 서비스를 활용하는 쪽에서는 이 서비스가 어떻게 만들어지는지 신경쓰지 않습니다.
+신경쓸 필요도 없습니다.
+이 서비스의 인스턴스는 의존성 주입 시스템이 생성하고 필요한 곳에 전달하기만 하면 됩니다.
 
+<!--
 Sometimes a service depends on other services, which may depend on yet other services.
 Resolving these nested dependencies in the correct order is also the framework's job.
 At each step, the consumer of dependencies simply declares what it requires in its
 constructor and the framework takes over.
+-->
+어떤 경우에는 서비스가 다른 서비스를 의존성으로 참조하는 경우가 있을 수 있습니다.
+하지만 이렇게 의존성이 중첩된 경우에도 의존성이 연결된 순서에 맞게 인스턴스를 생성하는 것은 프레임워크가 해야할 역할입니다.
+의존성 객체를 사용하는 쪽에서는 생성자에 어떤 타입의 의존성 객체가 필요한지 선언하기만 하면 프레임워크가 모두 처리할 것입니다.
 
+<!--
 The following example shows injecting both the `LoggerService` and the `UserContext` in the `AppComponent`.
+-->
+다음 코드는 `AppComponent`에 `LoggerService`와 `UserContextService`를 동시에 의존성으로 주입하는 예제 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `UserContext` in turn has its own dependencies on both the `LoggerService` and
 a `UserService` that gathers information about a particular user.
-
+-->
+그리고 `UserContextService`에서 `LoggerService`와 `UserService`를 주입받는다고 합시다.
 
 <code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" title="user-context.service.ts (injection)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 When Angular creates the `AppComponent`, the dependency injection framework creates an instance of the `LoggerService` and
 starts to create the `UserContextService`.
 The `UserContextService` needs the `LoggerService`, which the framework already has, and the `UserService`, which it has yet to create.
 The `UserService` has no dependencies so the dependency injection framework can just
 use `new` to instantiate one.
+-->
+이제 Angular가 `AppComponent`를 생성할 때 의존성 주입 프레임워크가 `LoggerService`의 인스턴스를 생성하며, 그 이후에 `UserContextService` 인스턴스를 생성합니다.
+이 때 `UserContextService`에서는 `LoggerService`를 의존성으로 요청하는데, 이 서비스의 인스턴스는 프레임워크가 이미 만들었기 때문에 있던 것을 그대로 활용할 수 있으며, `UserService`는 아직 생성하지 않았기 때문에 이 서비스의 인스턴스를 찾습니다.
+그리고 `UserService`는 따로 의존성이 없기 때문에 의존성 주입 프레임워크가 `new` 키워드를 사용해서 새로운 인스턴스를 생성합니다.
 
+<!--
 The beauty of dependency injection is that `AppComponent` doesn't care about any of this.
 You simply declare what is needed in the constructor (`LoggerService` and `UserContextService`)
 and the framework does the rest.
+-->
+이 과정에서 `AppComponent`는 서비스의 인스턴스가 어떻게 생성되는지 신경쓸 필요가 전혀 없습니다.
+단순하게 생성자에서 `LoggerService`와 `UserContextService`가 필요하다고 선언만 하면 프레임워크가 모든 것을 처리합니다.
 
+<!--
 Once all the dependencies are in place, the `AppComponent` displays the user information:
+-->
+의존성 객체가 모두 준비되면 `AppComponent`는 다음과 같이 표시될 것입니다.
 
 
 <figure>
@@ -120,61 +188,100 @@ Once all the dependencies are in place, the `AppComponent` displays the user inf
 
 
 ### *@Injectable()*
+
+<!--
 Notice the `@Injectable()`decorator on the `UserContextService` class.
+-->
+`UserContextService` 클래스에 사용된 `@Injectable()` 데코레이터를 다시 한 번 봅시다.
 
 <code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectable" title="user-context.service.ts (@Injectable)" linenums="false">
 
 </code-example>
 
-
+<!--
 The `@Injectable` decorator indicates that the Angular DI system is used to create one or more instances of `UserContextService`.
+-->
+`UserContextService`에 `@Injectable` 데코레이터를 사용하면 이 서비스의 인스턴스가 Angular 의존성 주입 시스템에 의해 생성된다는 것을 지정할 수 있습니다.
 
 {@a service-scope}
 
 
+<!--
 ## Limit service scope to a component subtree
+-->
+## 서비스가 주입되는 범위를 특정 컴포넌트로 제한하기
 
+<!--
 All injected service dependencies are singletons meaning that,
 for a given dependency injector, there is only one instance of service.
+-->
+모든 서비스 인스턴스는 인젝터마다 하나씩만 존재하는 싱글턴입니다.
 
+<!--
 But an Angular application has multiple dependency injectors, arranged in a tree hierarchy that parallels the component tree.
 So a particular service can be *provided* and created at any component level and multiple times
 if provided in multiple components.
+-->
+하지만 Angular 애플리케이션에는 인젝터가 여러개 존재할 수 있으며, 컴포넌트 트리의 모양에 따라서 계층을 이루거나 병렬로 존재할 수도 있습니다.
+그래서 서비스 프로바이더는 특정 컴포넌트에 등록할 수도 있으며, 이 때 이 컴포넌트의 인스턴스가 여러개라면 서비스의 인스턴스도 여러개 생성됩니다.
 
+<!--
 By default, a service dependency provided in one component is visible to all of its child components and
 Angular injects the same service instance into all child components that ask for that service.
+-->
+기본적으로 컴포넌트에 등록된 서비스는 해당 컴포넌트의 자식 컴포넌트에서도 모두 접근할 수 있으며, 이 때 모두 같은 인스턴스를 공유합니다.
 
+<!--
 Accordingly, dependencies provided in the root `AppComponent` can be injected into *any* component *anywhere* in the application.
+-->
+그래서 `AppComponent`에 등록된 서비스 프로바이더도 애플리케이션 *전역*에 *어떠한* 컴포넌트에도 의존성으로 주입될 수 있습니다.
 
+<!--
 That isn't always desirable.
 Sometimes you want to restrict service availability to a particular region of the application.
+-->
+어떤 경우에는 이 방식을 다르게 사용하고 싶을 수도 있습니다.
+어떤 서비스는 애플리케이션의 특정 범위 안에서만 사용할 수 있도록 제한하고 싶을 수도 있습니다.
 
+<!--
 You can limit the scope of an injected service to a *branch* of the application hierarchy
 by providing that service *at the sub-root component for that branch*.
 This example shows how similar providing a service to a sub-root component is
 to providing a service in the root `AppComponent`. The syntax is the same.
 Here, the `HeroService` is available to the `HeroesBaseComponent` because it is in the `providers` array:
+-->
+서비스가 주입되는 범위는 특정 컴포넌트 트리로 제한할 수 있으며, 결과적으로 애플리케이션의 특정 계층으로 제한할 수 있다는 것을 의미합니다.
+다음 예제는 최상위 컴포넌트 `AppComponent`가 아닌 컴포넌트에 특정 서비스 프로바이더를 등록하는 예제 코드입니다. 문법은 기존에 사용하던 방식과 같습니다.
+이 코드에서 `HeroService`는 `HeroesBaseComponent`의 `providers`에 등록되었기 때문에 이 컴포넌트 범위에서만 사용할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 
 </code-example>
 
 
-
+<!--
 When Angular creates the `HeroesBaseComponent`, it also creates a new instance of `HeroService`
 that is visible only to the component and its children, if any.
+-->
+이제 Angular가 `HeroesBaseComponent`의 인스턴스를 생성하면 `HeroService`의 인스턴스도 함께 생성하며, 이 서비스의 인스턴스는 `HeroesBaseComponent` 아래 계층에서 공유됩니다.
 
+<!--
 You could also provide the `HeroService` to a *different* component elsewhere in the application.
 That would result in a *different* instance of the service, living in a *different* injector.
+-->
+`HeroService`는 물론 *다른* 컴포넌트에 등록해서 사용할 수도 있습니다.
+이 경우에는 *다른* 인젝터가 인스턴스를 생성하기 때문에 이전과는 *다른* 인스턴스가 사용됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Examples of such scoped `HeroService` singletons appear throughout the accompanying sample code,
 including the `HeroBiosComponent`, `HeroOfTheMonthComponent`, and `HeroesBaseComponent`.
 Each of these components has its own `HeroService` instance managing its own independent collection of heroes.
-
+-->
+예제 코드에서 `HeroService`는 사용범위가 제한되어 있으며, 이 서비스는 `HeroBiosComponent`, `HeroOfTheMonthComponent`, `HeroesBaseComponent`에서만 사용할 수 있습니다.
+그리고 각각의 컴포넌트는 독립적인 `HeroService` 인스턴스를 관리합니다.
 
 </div>
 
@@ -184,11 +291,16 @@ Each of these components has its own `HeroService` instance managing its own ind
 <div class="alert is-helpful">
 
 
-
+<!--
 ### Take a break!
+-->
+### 잠시 쉬어가세요!
+
+<!--
 This much Dependency Injection knowledge may be all that many Angular developers
 ever need to build their applications. It doesn't always have to be more complicated.
-
+-->
+Angular 애플리케이션을 개발하면서 알아야 하는 의존성 주입에 대한 내용은 이정도면 충분합니다. 의존성 주입을 좀 더 활용할 수 있는 내용을 알아보기 전에 잠시 쉬어가세요.
 
 </div>
 
