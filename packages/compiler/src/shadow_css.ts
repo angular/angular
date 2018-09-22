@@ -565,19 +565,24 @@ export class CssRule {
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
   const inputWithEscapedBlocks = escapeBlocks(input);
   let nextBlockIndex = 0;
-  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
-    const selector = m[2];
-    let content = '';
-    let suffix = m[4];
-    let contentPrefix = '';
-    if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
-      contentPrefix = '{';
-    }
-    const rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  // NOTE: Collapsing extra whitespace from escaped CSS to avoid a whitespace
+  // backtracking issue in `_ruleRe`.
+  //  See https://github.com/angular/angular/issues/20105#issuecomment-368368216
+  //  See http://stackstatus.net/post/147710624694/outage-postmortem-july-20-2016
+  return inputWithEscapedBlocks.escapedString.replace(/\s+/g, ' ')
+      .replace(_ruleRe, function(...m: string[]) {
+        const selector = m[2];
+        let content = '';
+        let suffix = m[4];
+        let contentPrefix = '';
+        if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
+          content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+          suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
+          contentPrefix = '{';
+        }
+        const rule = ruleCallback(new CssRule(selector, content));
+        return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+      });
 }
 
 class StringWithEscapedBlocks {
