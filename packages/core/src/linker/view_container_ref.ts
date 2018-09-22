@@ -7,12 +7,18 @@
  */
 
 import {Injector} from '../di/injector';
+
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
 import {TemplateRef} from './template_ref';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
+
+// This symbol is necessary so we can switch between Render2 version of ViewContainerRef
+// and the Ivy version of ViewContainerRef (the latter of which brings in injectViewContainerRef(),
+// etc). See the POST_NGCC symbol in di.ts.
+const VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__ = null;
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -139,4 +145,7 @@ export abstract class ViewContainerRef {
    * If not specified, the last view in the container is detached.
    */
   abstract detach(index?: number): ViewRef|null;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__: (() => ViewContainerRef)|null = VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__;
 }

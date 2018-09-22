@@ -21,10 +21,6 @@ export {
   DirectiveType as ɵDirectiveType,
   RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
-  injectElementRef as ɵinjectElementRef,
-  injectTemplateRef as ɵinjectTemplateRef,
-  injectViewContainerRef as ɵinjectViewContainerRef,
-  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectRenderer2 as ɵinjectRenderer2,
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
@@ -189,4 +185,10 @@ export {
   R3_COMPILE_PIPE__POST_NGCC__ as ɵR3_COMPILE_PIPE__POST_NGCC__,
   ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__
 } from './ivy_switch_legacy';
+
+export {
+  enableIvyInjectableFactories as ɵenableIvyInjectableFactories
+} from './render3/di';
+
+
 // clang-format on

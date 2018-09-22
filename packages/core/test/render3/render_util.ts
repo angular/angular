@@ -13,6 +13,7 @@ import {PlayerHandler} from '../../src/render3/animations/interfaces';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
+import {enableIvyInjectableFactories} from '../../src/render3/di';
 import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
@@ -207,6 +208,7 @@ function toDefs(
 }
 
 beforeEach(resetDOM);
+beforeEach(enableIvyInjectableFactories);
 
 /**
  * @deprecated use `TemplateFixture` or `ComponentFixture`

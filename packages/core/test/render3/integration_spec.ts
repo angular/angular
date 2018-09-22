@@ -10,8 +10,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
-import {createTemplateRef, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
-import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
@@ -21,9 +20,10 @@ import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, TemplateFixture, containerEl, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
 import {MONKEY_PATCH_KEY_NAME, getContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/styling';
+import {directiveInject} from '../../src/render3/di';
 
 describe('render3 integration test', () => {
 
@@ -649,7 +649,9 @@ describe('render3 integration test', () => {
            static ngDirectiveDef = defineDirective({
              type: TestDirective,
              selectors: [['', 'testDirective', '']],
-             factory: () => new TestDirective(injectTemplateRef(), injectViewContainerRef()),
+             factory:
+                 () => new TestDirective(
+                     directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
            });
          }
 
@@ -754,7 +756,9 @@ describe('render3 integration test', () => {
         static ngDirectiveDef = defineDirective({
           type: TestDirective,
           selectors: [['', 'testDirective', '']],
-          factory: () => new TestDirective(injectTemplateRef(), injectViewContainerRef()),
+          factory:
+              () => new TestDirective(
+                  directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
         });
       }
 
@@ -822,7 +826,7 @@ describe('render3 integration test', () => {
         static ngDirectiveDef = defineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory: () => new Directive(injectElementRef()),
+          factory: () => new Directive(directiveInject(ElementRef)),
         });
       }
 

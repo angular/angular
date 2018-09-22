@@ -10,16 +10,21 @@ import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 
 
+// This symbol is necessary so we can switch between Render2 version of TemplateRef
+// and the Ivy version of TemplateRef (the latter of which brings in injectTemplateRef(), etc)
+// See the POST_NGCC symbol in di.ts.
+const TEMPLATE_REF_FACTORY__PRE_NGCC__ = null;
+
 /**
  * Represents an embedded template that can be used to instantiate embedded views.
  * To instantiate embedded views based on a template, use the `ViewContainerRef`
  * method `createEmbeddedView()`.
- * 
+ *
  * Access a `TemplateRef` instance by placing a directive on an `<ng-template>`
  * element (or directive prefixed with `*`). The `TemplateRef` for the embedded view
  * is injected into the constructor of the directive,
  * using the `TemplateRef` token.
- * 
+ *
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
@@ -48,4 +53,7 @@ export abstract class TemplateRef<C> {
    * @returns The new view object.
    */
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__: (() => TemplateRef<any>)|null = TEMPLATE_REF_FACTORY__PRE_NGCC__;
 }

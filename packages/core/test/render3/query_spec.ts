@@ -10,8 +10,9 @@ import {NgForOfContext} from '@angular/common';
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, templateRefExtractor} from '../../src/render3/di';
-import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, templateRefExtractor} from '../../src/render3/di';
+import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
+
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
@@ -993,7 +994,7 @@ describe('query', () => {
           selectors: [['', 'vc', '']],
           factory: () => {
             const directiveInstance =
-                new ViewContainerManipulatorDirective(injectViewContainerRef());
+                new ViewContainerManipulatorDirective(directiveInject(ViewContainerRef as any));
             directiveInstances.push(directiveInstance);
             return directiveInstance;
           }
@@ -1844,7 +1845,8 @@ describe('query', () => {
       static ngDirectiveDef = defineDirective({
         type: SomeDir,
         selectors: [['', 'someDir', '']],
-        factory: () => new SomeDir(injectViewContainerRef(), injectTemplateRef())
+        factory: () => new SomeDir(
+                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any))
       });
     }
 

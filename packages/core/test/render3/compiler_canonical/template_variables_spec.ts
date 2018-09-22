@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component, Directive, Input, SimpleChanges, TemplateRef, ViewContainerRef, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
+
 
 
 /// See: `normative.md`
@@ -69,7 +70,9 @@ describe('template variables', () => {
       type: ForOfDirective,
       selectors: [['', 'forOf', '']],
       factory: function ForOfDirective_Factory() {
-        return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+        return new ForOfDirective(
+            $r3$.ɵdirectiveInject(ViewContainerRef as any),
+            $r3$.ɵdirectiveInject(TemplateRef as any));
       },
       // TODO(chuckj): Enable when ngForOf enabling lands.
       // features: [NgOnChangesFeature],

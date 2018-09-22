@@ -3,6 +3,9 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "AnimationDebugger"
+  },
+  {
     "name": "AnimationWorldComponent"
   },
   {
@@ -13,6 +16,12 @@
   },
   {
     "name": "BLOOM_MASK"
+  },
+  {
+    "name": "CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__"
+  },
+  {
+    "name": "CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__"
   },
   {
     "name": "CIRCULAR$1"
@@ -49,6 +58,12 @@
   },
   {
     "name": "DefaultIterableDifferFactory"
+  },
+  {
+    "name": "ELEMENT_REF_FACTORY__POST_NGCC__"
+  },
+  {
+    "name": "ELEMENT_REF_FACTORY__PRE_NGCC__"
   },
   {
     "name": "EMPTY$1"
@@ -174,6 +189,12 @@
     "name": "TAIL"
   },
   {
+    "name": "TEMPLATE_REF_FACTORY__POST_NGCC__"
+  },
+  {
+    "name": "TEMPLATE_REF_FACTORY__PRE_NGCC__"
+  },
+  {
     "name": "TVIEW"
   },
   {
@@ -184,6 +205,12 @@
   },
   {
     "name": "VIEWS"
+  },
+  {
+    "name": "VIEW_CONTAINER_REF_FACTORY__POST_NGCC__"
+  },
+  {
+    "name": "VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__"
   },
   {
     "name": "ViewContainerRef"
@@ -471,6 +498,9 @@
     "name": "elementStylingMap"
   },
   {
+    "name": "enableIvyInjectableFactories"
+  },
+  {
     "name": "enterView"
   },
   {
@@ -691,6 +721,9 @@
   },
   {
     "name": "inject"
+  },
+  {
+    "name": "injectChangeDetectorRef"
   },
   {
     "name": "injectElementRef"

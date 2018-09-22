@@ -342,7 +342,15 @@ function getOrCreateRenderer2(di: LInjector): Renderer2 {
 export function getOrCreateInjectable<T>(
     nodeInjector: LInjector, token: Type<T>| InjectionToken<T>,
     flags: InjectFlags = InjectFlags.Default): T|null {
-  const bloomHash = bloomHashBit(token);
+  const tokenId = (token as any)[NG_ELEMENT_ID] || null;
+
+  // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
+  // so just call the factory function to create it.
+  if (typeof tokenId === 'function') {
+    return tokenId();
+  }
+
+  const bloomHash = bloomHashBit(tokenId);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
   // (diPublic) otherwise fall back to the module injector.
@@ -433,8 +441,7 @@ function searchMatchesQueuedForCreation<T>(token: any, hostTView: TView): T|null
  * @param token the injection token
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  */
-function bloomHashBit(token: Type<any>| InjectionToken<any>): number|null {
-  let id: number|undefined = (token as any)[NG_ELEMENT_ID];
+function bloomHashBit(id: number | null): number|null {
   return typeof id === 'number' ? id & BLOOM_MASK : null;
 }
 
@@ -829,4 +836,25 @@ class TemplateRef<T> extends viewEngine_TemplateRef<T> {
  */
 export function templateRefExtractor(tNode: TContainerNode, currentView: LViewData) {
   return createTemplateRef(tNode, currentView);
+}
+
+// These symbols are necessary so we can switch between Render2 version and the Ivy version
+// of special objects like ElementRef. They must live here rather than in the ElementRef, etc files
+// to avoid a circular dependency.
+const ELEMENT_REF_FACTORY__POST_NGCC__ = () => injectElementRef();
+const TEMPLATE_REF_FACTORY__POST_NGCC__ = () => injectTemplateRef();
+const CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ = () => injectChangeDetectorRef();
+const VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ = () => injectViewContainerRef();
+
+
+/**
+ *  Switches between Render2 version of special objects like ElementRef and the Ivy version
+ *  of these objects. It's necessary to keep them separate so that we don't pull in fns
+ *  like injectElementRef() prematurely.
+ */
+export function enableIvyInjectableFactories() {
+  viewEngine_ElementRef[NG_ELEMENT_ID] = ELEMENT_REF_FACTORY__POST_NGCC__;
+  viewEngine_TemplateRef[NG_ELEMENT_ID] = TEMPLATE_REF_FACTORY__POST_NGCC__;
+  viewEngine_ViewContainerRef[NG_ELEMENT_ID] = VIEW_CONTAINER_REF_FACTORY__POST_NGCC__;
+  viewEngine_ChangeDetectorRef[NG_ELEMENT_ID] = CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__;
 }

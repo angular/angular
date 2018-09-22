@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, ElementRef, NgModule, ɵPlayState as PlayState, ɵPlayer as Player, ɵPlayerHandler as PlayerHandler, ɵaddPlayer as addPlayer, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, ElementRef, NgModule, ɵPlayState as PlayState, ɵPlayer as Player, ɵPlayerHandler as PlayerHandler, ɵaddPlayer as addPlayer, ɵenableIvyInjectableFactories as enableIvyInjectableFactories, ɵrenderComponent as renderComponent} from '@angular/core';
 
 @Component({
   selector: 'animation-world',
@@ -131,6 +131,9 @@ class AnimationDebugger implements PlayerHandler {
 
   queuePlayer(player: Player): void { this._players.push(player); }
 }
+
+// Ivy injectable factories must be enabled for ViewContainerRef to work
+enableIvyInjectableFactories();
 
 const playerHandler = new AnimationDebugger();
 renderComponent(AnimationWorldComponent, {playerHandler});
