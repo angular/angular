@@ -282,9 +282,6 @@
     "name": "ElementRef"
   },
   {
-    "name": "ElementRef$1"
-  },
-  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -663,6 +660,18 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
     "name": "REMOVE_EVENT_LISTENER"
   },
   {
@@ -810,9 +819,6 @@
     "name": "TemplateRef"
   },
   {
-    "name": "TemplateRef$1"
-  },
-  {
     "name": "Testability"
   },
   {
@@ -889,9 +895,6 @@
   },
   {
     "name": "ViewContainerRef"
-  },
-  {
-    "name": "ViewContainerRef$1"
   },
   {
     "name": "ViewEncapsulation$1"
@@ -1200,7 +1203,7 @@
     "name": "bloomFindPossibleInjector"
   },
   {
-    "name": "bloomHashBit"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -2287,6 +2290,9 @@
   },
   {
     "name": "setDirty"
+  },
+  {
+    "name": "setEnvironment"
   },
   {
     "name": "setFlag"

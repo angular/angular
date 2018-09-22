@@ -1239,7 +1239,19 @@
     "name": "Quote"
   },
   {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY$1"
+  },
+  {
     "name": "R3_COMPILE_INJECTABLE$1"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY$1"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY$1"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY$1"
   },
   {
     "name": "ReadKeyExpr"
@@ -3388,6 +3400,9 @@
   },
   {
     "name": "noop$3"
+  },
+  {
+    "name": "noopFactory"
   },
   {
     "name": "noopScope"

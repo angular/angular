@@ -382,17 +382,19 @@ NOTE:
 An interesting thing about these objects is that they are not memoized `injector.get(ElementRef) !== injector.get(ElementRef)`.
 This could be considered a bug, it means that we don't have to allocate storage space for them.
 
+We should treat these special objects like any other token. `directiveInject()` already reads a special `NG_ELEMENT_ID`
+property set on directives to locate their bit in the bloom filter. We can set this same property on special objects, 
+but point to a factory function rather than an element ID number. When we check that property in `directiveInject()` 
+and see that it's a function, we know to invoke the factory function directly instead of searching the node tree.
+
 ```typescript
-@Injectable({
-  provideIn: '__node__' as any // Special token not available to the developer
-  useFactory: injectElementRef // existing function which generates ElementRef
-})
 class ElementRef {
   ...
+  static __NG_ELEMENT_ID__ = () => injectElementRef();
 }
 ```
 
-Consequence of the above is that `injector.get(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
+Consequence of the above is that `directiveInject(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
 
 # `EXPANDO` and Injecting the `Injector`.
 
@@ -421,10 +423,7 @@ function inject(token: any): any {
   let injectableDef;
   if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
     const provideIn = injectableDef.provideIn;
-    if (provideIn === '__node__') {
-      // if it is a special object just call its factory
-      return injectableDef.useFactory();
-    } else if (provideIn === '__node_injector__') {
+   if (provideIn === '__node_injector__') {
       // if we are injecting `Injector` than create a wrapper object around the inject but which 
       // is bound to the current node.
       return createInjector();
