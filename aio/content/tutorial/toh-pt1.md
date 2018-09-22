@@ -254,3 +254,5 @@ Your app should look like this <live-example></live-example>. Here are the code 
 * You imported the `FormsModule` in the `AppModule` so that Angular would recognize and apply the `ngModel` directive. 
 * You learned the importance of declaring components in the `AppModule`
 and appreciated that the CLI declared it for you.
+
+Next: [Displaying a List](https://angular.io/tutorial/toh-pt2)

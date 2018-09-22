@@ -436,3 +436,5 @@ Here are the code files discussed on this page and your app should look like thi
 * You created a `MessageService` for loosely-coupled communication between classes.
 * The `HeroService` injected into a component is created with another injected service,
  `MessageService`.
+
+Next: [Routing](https://angular.io/tutorial/toh-pt5)

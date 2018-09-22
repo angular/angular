@@ -254,3 +254,5 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 * You used `*ngFor` to display a list.
 * You used `*ngIf` to conditionally include or exclude a block of HTML.
 * You can toggle a CSS style class with a `class` binding.
+
+Next: [Master/Detail Components](https://angular.io/tutorial/toh-pt3)

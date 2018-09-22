@@ -612,3 +612,5 @@ Here are the code files discussed on this page and your app should look like thi
 * You refactored a tightly-coupled master/detail view into a routed detail view.
 * You used router link parameters to navigate to the detail view of a user-selected hero.
 * You shared the `HeroService` among multiple components.
+
+Next: [HTTP](https://angular.io/tutorial/toh-pt6)

@@ -158,3 +158,5 @@ Here are the code files discussed on this page and your app should look like thi
 * You used the [`@Input` decorator](guide/template-syntax#inputs-outputs) 
 to make the `hero` property available for binding
 by the external `HeroesComponent`.
+
+Next: [Services](https://angular.io/tutorial/toh-pt4)
