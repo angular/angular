@@ -8,7 +8,7 @@
 
 import {ApplicationRef} from '../application_ref';
 import {Provider} from '../di/provider';
-import {R3_COMPILE_NGMODULE} from '../ivy_switch';
+import {R3_COMPILE_NGMODULE} from '../ivy_switch/compiler/index';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 

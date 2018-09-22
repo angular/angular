@@ -21,10 +21,6 @@ export {
   DirectiveType as ɵDirectiveType,
   RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
-  injectElementRef as ɵinjectElementRef,
-  injectTemplateRef as ɵinjectTemplateRef,
-  injectViewContainerRef as ɵinjectViewContainerRef,
-  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectRenderer2 as ɵinjectRenderer2,
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
@@ -187,6 +183,15 @@ export {
   R3_COMPILE_INJECTABLE__POST_NGCC__ as ɵR3_COMPILE_INJECTABLE__POST_NGCC__,
   R3_COMPILE_NGMODULE__POST_NGCC__ as ɵR3_COMPILE_NGMODULE__POST_NGCC__,
   R3_COMPILE_PIPE__POST_NGCC__ as ɵR3_COMPILE_PIPE__POST_NGCC__,
-  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__
-} from './ivy_switch_legacy';
+  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__,
+} from './ivy_switch/compiler/legacy';
+
+export {
+  R3_ELEMENT_REF_FACTORY__POST_NGCC__ as ɵR3_ELEMENT_REF_FACTORY__POST_NGCC__,
+  R3_TEMPLATE_REF_FACTORY__POST_NGCC__ as ɵR3_TEMPLATE_REF_FACTORY__POST_NGCC__,
+  R3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ as ɵR3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__,
+  R3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ as ɵR3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__,
+} from './ivy_switch/runtime/legacy';
+
+
 // clang-format on

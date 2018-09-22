@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component, Directive, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {containerEl, renderComponent, toHtml} from '../render_util';
+
 
 
 /// See: `normative.md`
@@ -145,7 +146,9 @@ describe('pipes', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: OneTimeIf,
         selectors: [['', 'oneTimeIf', '']],
-        factory: () => new OneTimeIf($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef()),
+        factory: () => new OneTimeIf(
+                     $r3$.ɵdirectiveInject(ViewContainerRef as any),
+                     $r3$.ɵdirectiveInject(TemplateRef as any)),
         inputs: {oneTimeIf: 'oneTimeIf'}
       });
       // /NORMATIVE

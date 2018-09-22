@@ -7,6 +7,7 @@
  */
 
 import {NgForOfContext} from '@angular/common';
+import {ElementRef, TemplateRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
 import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
@@ -896,11 +897,15 @@ describe('@angular/common integration', () => {
            */
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, (rf1: RenderFlags) => {
-                if (rf1 & RenderFlags.Create) {
-                  text(0, 'from tpl');
-                }
-              }, 1, 0, undefined, undefined, ['tpl', ''], templateRefExtractor);
+              template(
+                  0,
+                  (rf1: RenderFlags) => {
+                    if (rf1 & RenderFlags.Create) {
+                      text(0, 'from tpl');
+                    }
+                  },
+                  1, 0, undefined, undefined, ['tpl', ''],
+                  templateRefExtractor(TemplateRef, ElementRef));
               template(2, null, 0, 0, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
@@ -939,11 +944,15 @@ describe('@angular/common integration', () => {
            */
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, (rf1: RenderFlags) => {
-                if (rf1 & RenderFlags.Create) {
-                  text(0, 'from tpl');
-                }
-              }, 1, 0, undefined, undefined, ['tpl', ''], templateRefExtractor);
+              template(
+                  0,
+                  (rf1: RenderFlags) => {
+                    if (rf1 & RenderFlags.Create) {
+                      text(0, 'from tpl');
+                    }
+                  },
+                  1, 0, undefined, undefined, ['tpl', ''],
+                  templateRefExtractor(TemplateRef, ElementRef));
               elementContainerStart(2, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               elementContainerEnd();
             }

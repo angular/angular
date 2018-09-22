@@ -68,20 +68,8 @@ export function getConstructorDependencies(
       const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
       if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
         switch (importedSymbol.name) {
-          case 'ChangeDetectorRef':
-            resolved = R3ResolvedDependencyType.ChangeDetectorRef;
-            break;
-          case 'ElementRef':
-            resolved = R3ResolvedDependencyType.ElementRef;
-            break;
           case 'Injector':
             resolved = R3ResolvedDependencyType.Injector;
-            break;
-          case 'TemplateRef':
-            resolved = R3ResolvedDependencyType.TemplateRef;
-            break;
-          case 'ViewContainerRef':
-            resolved = R3ResolvedDependencyType.ViewContainerRef;
             break;
           case 'Renderer2':
             resolved = R3ResolvedDependencyType.Renderer2;

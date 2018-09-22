@@ -30,7 +30,6 @@ import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, getLNode, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 
-
 /**
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
@@ -138,6 +137,10 @@ export function getPreviousOrParentTNode(): TNode {
   return previousOrParentTNode;
 }
 
+export function setEnvironment(tNode: TNode, view: LViewData) {
+  previousOrParentTNode = tNode;
+  viewData = view;
+}
 
 /**
  * If `isParent` is:

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_COMPILE_INJECTABLE} from '../ivy_switch';
+import {R3_COMPILE_INJECTABLE} from '../ivy_switch/compiler/index';
 import {Type} from '../type';
 import {makeDecorator} from '../util/decorators';
 

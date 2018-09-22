@@ -27,9 +27,6 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-    "name": "ChangeDetectorRef"
-  },
-  {
     "name": "DECLARATION_VIEW"
   },
   {
@@ -49,9 +46,6 @@
   },
   {
     "name": "ElementRef"
-  },
-  {
-    "name": "ElementRef$1"
   },
   {
     "name": "FLAGS"
@@ -138,6 +132,15 @@
     "name": "QUERIES"
   },
   {
+    "name": "R3_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
     "name": "RENDERER"
   },
   {
@@ -168,9 +171,6 @@
     "name": "TemplateRef"
   },
   {
-    "name": "TemplateRef$1"
-  },
-  {
     "name": "ToDoAppComponent_footer_Template_6"
   },
   {
@@ -199,9 +199,6 @@
   },
   {
     "name": "ViewContainerRef"
-  },
-  {
-    "name": "ViewContainerRef$1"
   },
   {
     "name": "ViewEncapsulation$1"
@@ -366,7 +363,7 @@
     "name": "bloomFindPossibleInjector"
   },
   {
-    "name": "bloomHashBit"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -463,9 +460,6 @@
   },
   {
     "name": "createViewQuery"
-  },
-  {
-    "name": "createViewRef"
   },
   {
     "name": "defineComponent"
@@ -723,6 +717,9 @@
     "name": "inject"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectTemplateRef"
   },
   {
@@ -739,9 +736,6 @@
   },
   {
     "name": "invertObject"
-  },
-  {
-    "name": "isComponent"
   },
   {
     "name": "isContentQueryHost"
@@ -943,6 +937,9 @@
   },
   {
     "name": "setDirty"
+  },
+  {
+    "name": "setEnvironment"
   },
   {
     "name": "setFlag"

@@ -648,6 +648,49 @@ describe('compiler compliance', () => {
       expectEmit(source, HostBindingCompDeclaration, 'Invalid host binding code');
     });
 
+    it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component, NgModule, ElementRef, ChangeDetectorRef, ViewContainerRef} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: ''
+            })
+            export class MyComponent {
+              constructor(public el: ElementRef, public vcr: ViewContainerRef, public cdr: ChangeDetectorRef) {}
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+            `
+           }
+         };
+
+         const MyComponentDefinition = `
+        …
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors: [["my-component"]],
+          factory: function MyComponent_Factory(t) { 
+             return new (t || MyComponent)(
+                $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef), 
+                $r3$.ɵdirectiveInject(ChangeDetectorRef)); 
+          },
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template:  function MyComponent_Template(rf, ctx) {}
+        });`;
+
+         const result = compile(files, angularFiles);
+         const source = result.source;
+
+         expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
+       });
+
     it('should support structural directives', () => {
       const files = {
         app: {
@@ -677,7 +720,7 @@ describe('compiler compliance', () => {
         IfDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]],
-          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵinjectTemplateRef()); },
+          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef)); },
           features: [$r3$.ɵPublicFeature]
         });`;
       const MyComponentDefinition = `
@@ -1703,7 +1746,7 @@ describe('compiler compliance', () => {
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
                 factory: function ForOfDirective_Factory(t) {
-                  return new (t || ForOfDirective)($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+                  return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
                 },
                 features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
@@ -1779,7 +1822,7 @@ describe('compiler compliance', () => {
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
             factory: function ForOfDirective_Factory(t) {
-              return new (t || ForOfDirective)($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+              return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
             },
             features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}

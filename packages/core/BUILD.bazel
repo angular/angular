@@ -9,9 +9,13 @@ ng_module(
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = ["src/ivy_switch.ts"],
+        exclude = [
+            "src/ivy_switch/compiler/index.ts",
+            "src/ivy_switch/runtime/index.ts",
+        ],
     ) + [
-        ":ivy_switch",
+        ":ivy_switch_compiler",
+        ":ivy_switch_runtime",
     ],
     module_name = "@angular/core",
     deps = [
@@ -42,19 +46,27 @@ ng_package(
 
 ## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
 ##
-## This file generates `src/ivy_switch.ts` file which reexports symbols for `ViewEngine` or `Ivy.`
-## - append `--define=compile=legacy` (default) to `bazel` command to reexport `./ivy_switch_legacy`
-##   and use `ViewEngine`
-## - append `--define=compile=jit` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
-## - append `--define=compile=local` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
+## This file generates the `src/ivy_switch/compiler/index.ts` and `src/ivy_switch/runtime/index.ts` files which
+## reexport symbols for `ViewEngine` or `Ivy.`
+## - append `--define=compile=legacy` (default) to `bazel` command to reexport `./legacy` from each folder
+##   in the 'ivy_switch' directory and use `ViewEngine`
+## - append `--define=compile=jit` to `bazel` command to rexport `./jit` from each folder in the `ivy_switch`
+##  directory and use `Ivy`
+## - append `--define=compile=local` to `bazel` command to rexport `./ivy_switch/compiler/jit` and use `Ivy`
 ##   in the local analysis mode. (run as part of `ngtsc`)
 ##
 ## NOTE: `--define=compile=jit` works with any `bazel` command or target across the repo.
 ##
 ## See: `//tools/bazel.rc` where `--define=ivy=false` is defined as default.
-## See: `./src/ivy_switch.ts` for more details.
+## See: `./src/ivy_switch/compiler/index.ts` for more details.
 genrule(
-    name = "ivy_switch",
-    outs = ["src/ivy_switch.ts"],
-    cmd = "echo export '*' from \"'./ivy_switch_$(compile)';\" > $@",
+    name = "ivy_switch_compiler",
+    outs = ["src/ivy_switch/compiler/index.ts"],
+    cmd = "echo export '*' from \"'./$(compile)';\" > $@",
+)
+
+genrule(
+    name = "ivy_switch_runtime",
+    outs = ["src/ivy_switch/runtime/index.ts"],
+    cmd = "echo export '*' from \"'./$(compile)';\" > $@",
 )

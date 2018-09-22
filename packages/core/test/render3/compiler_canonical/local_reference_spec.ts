@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementRef, TemplateRef} from '@angular/core';
+
 import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentFixture} from '../render_util';
+
 
 /// See: `normative.md`
 describe('local references', () => {
@@ -69,7 +72,7 @@ describe('local references', () => {
           if (rf & 1) {
             $r3$.ɵtemplate(
                 0, MyComponent_Template_0, 0, 0, null, null, ['tpl', ''],
-                $r3$.ɵtemplateRefExtractor);
+                $r3$.ɵtemplateRefExtractor(TemplateRef, ElementRef));
             $r3$.ɵtext(2);
           }
           if (rf & 2) {
