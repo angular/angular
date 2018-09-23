@@ -15,12 +15,9 @@ import {FileParser} from './file_parser';
 import {ParsedClass} from './parsed_class';
 import {ParsedFile} from './parsed_file';
 
-
-
 /**
- * Parses ESM5 package files for decoratrs classes.
- * ESM5 "classes" are actually functions wrapped by and returned
- * from an IFEE.
+ * Parses ESM5 package files for decorated classes.
+ * ESM5 "classes" are actually functions wrapped by and returned from an IIFE.
  */
 export class Esm5FileParser implements FileParser {
   checker = this.program.getTypeChecker();

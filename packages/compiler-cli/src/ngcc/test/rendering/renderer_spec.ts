@@ -11,7 +11,8 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
-import {AnalyzedClass, Analyzer} from '../../src/analyzer';
+import {Analyzer} from '../../src/analyzer';
+import {DecoratedClass, DecoratorAnalyzer} from '../../src/decorator_analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Renderer} from '../../src/rendering/renderer';
@@ -23,14 +24,11 @@ class TestRenderer extends Renderer {
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     output.prepend('\n// ADD CONSTANTS\n');
   }
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string) {
+  addDefinitions(output: MagicString, analyzedClass: DecoratedClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
   removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>) {
     output.prepend('\n// REMOVE DECORATORS\n');
-  }
-  rewriteSwitchableDeclarations(output: MagicString, sourceFile: ts.SourceFile): void {
-    output.prepend('\n// REWRITTEN DECLARATIONS\n');
   }
 }
 
@@ -46,10 +44,10 @@ function analyze(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
+  const decoratorAnalyzer = new DecoratorAnalyzer(program.getTypeChecker(), host, ['']);
+  const analyzer = new Analyzer(program, host, parser, decoratorAnalyzer);
 
-  const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
-  return parsedFiles.map(file => analyzer.analyzeFile(file));
+  return analyzer.analyzeEntryPoint(file.name);
 }
 
 describe('Renderer', () => {
@@ -71,7 +69,7 @@ describe('Renderer', () => {
     ]
   });
   const RENDERED_CONTENTS =
-      `\n// REWRITTEN DECLARATIONS\n\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
+      `\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
       INPUT_PROGRAM.contents;
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
@@ -81,14 +79,14 @@ describe('Renderer', () => {
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: \'[a]\' }] }\n];\n'
     ],
     'names': [],
-    'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
+    'mappings': ';;;;;;;;AAAA;;;;;;;;;'
   });
 
   const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'sources': ['/file.ts'],
     'names': [],
-    'mappings': ';;;;;;;;;;AAAA',
+    'mappings': ';;;;;;;;AAAA',
     'file': '/output_file.js',
     'sourcesContent': [
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x: string): string {\n        return x;\n    }\n    static decorators = [\n        { type: Directive, args: [{ selector: \'[a]\' }] }\n    ];\n}'
@@ -127,7 +125,7 @@ describe('Renderer', () => {
          expect(renderer.addDefinitions.calls.first().args[0].toString())
              .toEqual(RENDERED_CONTENTS);
          expect(renderer.addDefinitions.calls.first().args[1])
-             .toBe(analyzedFile.analyzedClasses[0]);
+             .toBe(analyzedFile.decorated !.decoratedClasses[0]);
          expect(renderer.addDefinitions.calls.first().args[2])
              .toEqual(
                  `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); }, features: [ɵngcc0.ɵPublicFeature] });`);

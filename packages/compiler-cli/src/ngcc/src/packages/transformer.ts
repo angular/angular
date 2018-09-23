@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import {DtsFileTransformer} from '../../../ngtsc/transform';
 import {AnalyzedFile, Analyzer} from '../analyzer';
 import {IMPORT_PREFIX} from '../constants';
+import {DecoratorAnalyzer} from '../decorator_analyzer';
 import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
@@ -24,8 +25,11 @@ import {FileParser} from '../parsing/file_parser';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
+import {isDefined} from '../utils';
+
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
 import {EntryPoint, EntryPointFormat} from './entry_point';
+
 
 
 /**
@@ -84,13 +88,11 @@ export class Transformer {
     const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
 
     const parser = this.getFileParser(format, packageProgram, reflectionHost);
-    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
+    const decoratorAnalyzer = new DecoratorAnalyzer(typeChecker, reflectionHost, rootDirs);
+    const analyzer = new Analyzer(packageProgram, reflectionHost, parser, decoratorAnalyzer);
     const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
-    // Parse and analyze the files.
-    const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
-    const parsedFiles = parser.parseFile(entryPointFile);
-    const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
+    const analyzedFiles = analyzer.analyzeEntryPoint(entryPointFilePath);
 
     // Transform the source files and source maps.
     outputFiles.push(
@@ -121,7 +123,7 @@ export class Transformer {
       case 'fesm5':
         return new Esm5ReflectionHost(program.getTypeChecker());
       default:
-        throw new Error(`Relection host for "${format}" not yet implemented.`);
+        throw new Error(`Reflection host for "${format}" not yet implemented.`);
     }
   }
 
@@ -156,27 +158,31 @@ export class Transformer {
       dtsMapper: DtsMapper): FileInfo[] {
     const outputFiles: FileInfo[] = [];
 
-    analyzedFiles.forEach(analyzedFile => {
-      // Create a `DtsFileTransformer` for the source file and record the generated fields, which
-      // will allow the corresponding `.d.ts` file to be transformed later.
-      const dtsTransformer = new DtsFileTransformer(null, IMPORT_PREFIX);
-      analyzedFile.analyzedClasses.forEach(
-          analyzedClass =>
-              dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
+    analyzedFiles.map(analyzedFile => analyzedFile.decorated)
+        .filter(isDefined)
+        .forEach(decoratedFile => {
+          // Create a `DtsFileTransformer` for the source file and record the generated fields,
+          // which
+          // will allow the corresponding `.d.ts` file to be transformed later.
+          const dtsTransformer = new DtsFileTransformer(null, IMPORT_PREFIX);
+          decoratedFile.decoratedClasses.forEach(
+              analyzedClass =>
+                  dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
 
-      // Find the corresponding `.d.ts` file.
-      const sourceFileName = analyzedFile.sourceFile.fileName;
-      const originalDtsFileName = dtsMapper.getDtsFileNameFor(sourceFileName);
-      const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
+          // Find the corresponding `.d.ts` file.
+          const sourceFileName = decoratedFile.sourceFile.fileName;
+          const originalDtsFileName = dtsMapper.getDtsFileNameFor(sourceFileName);
+          const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
 
-      // Transform the `.d.ts` file based on the recorded source file changes.
-      const transformedDtsFileName =
-          resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
-      const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
+          // Transform the `.d.ts` file based on the recorded source file changes.
+          const transformedDtsFileName =
+              resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
+          const transformedDtsContents =
+              dtsTransformer.transform(originalDtsContents, sourceFileName);
 
-      // Add the transformed `.d.ts` file to the list of output files.
-      outputFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
-    });
+          // Add the transformed `.d.ts` file to the list of output files.
+          outputFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
+        });
 
     return outputFiles;
   }

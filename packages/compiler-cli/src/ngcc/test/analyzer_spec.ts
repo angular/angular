@@ -5,109 +5,105 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import * as ts from 'typescript';
-import {Decorator} from '../../ngtsc/host';
-import {DecoratorHandler} from '../../ngtsc/transform';
-import {AnalyzedFile, Analyzer} from '../src/analyzer';
-import {Fesm2015ReflectionHost} from '../src/host/fesm2015_host';
-import {ParsedClass} from '../src/parsing/parsed_class';
-import {ParsedFile} from '../src/parsing/parsed_file';
-import {getDeclaration, makeProgram} from './helpers/utils';
 
-const TEST_PROGRAM = {
-  name: 'test.js',
+import {Analyzer} from '../src/analyzer';
+import {DecoratedFile, DecoratorAnalyzer} from '../src/decorator_analyzer';
+import {Esm2015ReflectionHost} from '../src/host/esm2015_host';
+import {Esm2015FileParser} from '../src/parsing/esm2015_parser';
+
+import {makeProgram} from './helpers/utils';
+
+const ONLY_DECORATORS_FILE = {
+  name: 'only_decorators.js',
   contents: `
-  import {Component, Injectable} from '@angular/core';
+  import {Component} from '@angular/core';
 
-  @Component()
-  export class MyComponent {}
-
-  @Injectable()
-  export class MyService {}
+  export class A {}
+  A.decorators = [
+    { type: Component, args: [{ selector: 'a' }] }
+  ];
   `
 };
 
-function createTestHandler() {
-  const handler = jasmine.createSpyObj<DecoratorHandler<any, any>>('TestDecoratorHandler', [
-    'detect',
-    'analyze',
-    'compile',
-  ]);
-  // Only detect the Component decorator
-  handler.detect.and.callFake((node: ts.Declaration, decorators: Decorator[]) => {
-    if (!decorators) {
-      return undefined;
-    }
-    return decorators.find(d => d.name === 'Component');
-  });
-  // The "test" analysis is just the name of the decorator being analyzed
-  handler.analyze.and.callFake(
-      ((decl: ts.Declaration, dec: Decorator) => ({analysis: dec.name, diagnostics: null})));
-  // The "test" compilation result is just the name of the decorator being compiled
-  handler.compile.and.callFake(((decl: ts.Declaration, analysis: any) => ({analysis})));
-  return handler;
+const ONLY_SWITCHES_FILE = {
+  name: 'only_switches.js',
+  contents: `
+  let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+
+  function compileNgModuleFactory__PRE_NGCC__() {}
+  function compileNgModuleFactory__POST_NGCC__() {}
+  `
+};
+
+const SWITCHES_AND_DECORATORS_FILE = {
+  name: 'switches_and_decorators.js',
+  contents: `
+  import {Component} from '@angular/core';
+
+  export class B {}
+  B.decorators = [
+    { type: Component, args: [{ selector: 'b' }] }
+  ];
+
+  let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+
+  function compileNgModuleFactory__PRE_NGCC__() {}
+  function compileNgModuleFactory__POST_NGCC__() {}
+  `
+};
+
+function setup(program: ts.Program) {
+  const host = new Esm2015ReflectionHost(program.getTypeChecker(), null as any);
+  const parser = new Esm2015FileParser(program, host);
+  const decoratorAnalyzer =
+      jasmine.createSpyObj<DecoratorAnalyzer>('MockDecoratorAnalyzer', ['analyzeFile']);
+  const analyzer = new Analyzer(program, host, parser, decoratorAnalyzer);
+
+  return {analyzer, decoratorAnalyzer};
 }
 
-function createParsedFile(program: ts.Program) {
-  const file = new ParsedFile(program.getSourceFile('test.js') !);
-
-  const componentClass = getDeclaration(program, 'test.js', 'MyComponent', ts.isClassDeclaration);
-  file.decoratedClasses.push(new ParsedClass('MyComponent', {} as any, [{
-                                               name: 'Component',
-                                               import: {from: '@angular/core', name: 'Component'},
-                                               node: null as any,
-                                               args: null
-                                             }]));
-
-  const serviceClass = getDeclaration(program, 'test.js', 'MyService', ts.isClassDeclaration);
-  file.decoratedClasses.push(new ParsedClass('MyService', {} as any, [{
-                                               name: 'Injectable',
-                                               import: {from: '@angular/core', name: 'Injectable'},
-                                               node: null as any,
-                                               args: null
-                                             }]));
-
-  return file;
+function createDecoratedFile(sourceFile: ts.SourceFile): DecoratedFile {
+  return {sourceFile, decoratedClasses: [], constantPool: null as any};
 }
 
 describe('Analyzer', () => {
-  describe('analyzeFile()', () => {
-    let program: ts.Program;
-    let testHandler: jasmine.SpyObj<DecoratorHandler<any, any>>;
-    let result: AnalyzedFile;
 
-    beforeEach(() => {
-      program = makeProgram(TEST_PROGRAM);
-      const file = createParsedFile(program);
-      const analyzer = new Analyzer(
-          program.getTypeChecker(), new Fesm2015ReflectionHost(program.getTypeChecker()), ['']);
-      testHandler = createTestHandler();
-      analyzer.handlers = [testHandler];
-      result = analyzer.analyzeFile(file);
-    });
+  it('finds decorators', () => {
+    const program = makeProgram(ONLY_DECORATORS_FILE);
+    const {analyzer, decoratorAnalyzer} = setup(program);
+    const decoratedFile = createDecoratedFile(program.getSourceFile(ONLY_DECORATORS_FILE.name) !);
+    decoratorAnalyzer.analyzeFile.and.returnValue(decoratedFile);
 
-    it('should return an object containing a reference to the original source file',
-       () => { expect(result.sourceFile).toBe(program.getSourceFile('test.js') !); });
-
-    it('should call detect on the decorator handlers with each class from the parsed file', () => {
-      expect(testHandler.detect).toHaveBeenCalledTimes(2);
-      expect(testHandler.detect.calls.allArgs()[0][1]).toEqual([jasmine.objectContaining(
-          {name: 'Component'})]);
-      expect(testHandler.detect.calls.allArgs()[1][1]).toEqual([jasmine.objectContaining(
-          {name: 'Injectable'})]);
-    });
-
-    it('should return an object containing the classes that were analyzed', () => {
-      expect(result.analyzedClasses.length).toEqual(1);
-      expect(result.analyzedClasses[0].name).toEqual('MyComponent');
-    });
-
-    it('should analyze and compile the classes that are detected', () => {
-      expect(testHandler.analyze).toHaveBeenCalledTimes(1);
-      expect(testHandler.analyze.calls.allArgs()[0][1].name).toEqual('Component');
-
-      expect(testHandler.compile).toHaveBeenCalledTimes(1);
-      expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
-    });
+    const analyzedFiles = analyzer.analyzeEntryPoint(ONLY_DECORATORS_FILE.name);
+    expect(analyzedFiles.length).toBe(1);
+    expect(analyzedFiles[0].decorated).toBe(decoratedFile);
+    expect(analyzedFiles[0].switchable).toBeUndefined();
   });
+
+  it('finds switchable declarations', () => {
+    const program = makeProgram(ONLY_SWITCHES_FILE);
+    const {analyzer, decoratorAnalyzer} = setup(program);
+    decoratorAnalyzer.analyzeFile.and.returnValue([]);
+
+    const analyzedFiles = analyzer.analyzeEntryPoint(ONLY_SWITCHES_FILE.name);
+    expect(analyzedFiles.length).toBe(1);
+    expect(analyzedFiles[0].decorated).toBeUndefined();
+    expect(analyzedFiles[0].switchable !.declarations.length).toBe(1);
+  });
+
+  it('combines decorators with switchable declarations', () => {
+    const program = makeProgram(SWITCHES_AND_DECORATORS_FILE);
+    const {analyzer, decoratorAnalyzer} = setup(program);
+    const decoratedFile =
+        createDecoratedFile(program.getSourceFile(SWITCHES_AND_DECORATORS_FILE.name) !);
+    decoratorAnalyzer.analyzeFile.and.returnValue(decoratedFile);
+
+    const analyzedFiles = analyzer.analyzeEntryPoint(SWITCHES_AND_DECORATORS_FILE.name);
+    expect(analyzedFiles.length).toBe(1);
+    expect(analyzedFiles[0].decorated).toBe(decoratedFile);
+    expect(analyzedFiles[0].switchable !.declarations.length).toBe(1);
+  });
+
 });
