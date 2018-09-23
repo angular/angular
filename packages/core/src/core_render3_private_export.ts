@@ -176,6 +176,9 @@ export {
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
+  compileNgModuleFactory__POST_NGCC__ as ɵcompileNgModuleFactory__POST_NGCC__
+} from './application_ref';
+export {
   R3_COMPILE_COMPONENT__POST_NGCC__ as ɵR3_COMPILE_COMPONENT__POST_NGCC__,
   R3_COMPILE_DIRECTIVE__POST_NGCC__ as ɵR3_COMPILE_DIRECTIVE__POST_NGCC__,
   R3_COMPILE_INJECTABLE__POST_NGCC__ as ɵR3_COMPILE_INJECTABLE__POST_NGCC__,
