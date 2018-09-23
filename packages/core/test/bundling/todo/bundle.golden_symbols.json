@@ -9,12 +9,6 @@
     "name": "BLOOM_MASK"
   },
   {
-    "name": "CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "CIRCULAR$1"
   },
   {
@@ -48,16 +42,10 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "ELEMENT_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "ELEMENT_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "ElementRef"
@@ -150,6 +138,18 @@
     "name": "QUERIES"
   },
   {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
     "name": "RENDERER"
   },
   {
@@ -174,12 +174,6 @@
     "name": "TAIL"
   },
   {
-    "name": "TEMPLATE_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "TEMPLATE_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "TVIEW"
   },
   {
@@ -187,9 +181,6 @@
   },
   {
     "name": "TemplateRef$1"
-  },
-  {
-    "name": "ToDoAppComponent"
   },
   {
     "name": "ToDoAppComponent_footer_Template_6"
@@ -219,19 +210,13 @@
     "name": "VIEWS"
   },
   {
-    "name": "VIEW_CONTAINER_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "ViewContainerRef"
   },
   {
     "name": "ViewContainerRef$1"
   },
   {
-    "name": "ViewEncapsulation$1"
+    "name": "ViewEncapsulation"
   },
   {
     "name": "ViewRef"
@@ -393,7 +378,7 @@
     "name": "bloomFindPossibleInjector"
   },
   {
-    "name": "bloomHashBit"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -462,7 +447,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createRootComponent"
@@ -553,9 +538,6 @@
   },
   {
     "name": "elementStylingApply"
-  },
-  {
-    "name": "enableIvyInjectableFactories"
   },
   {
     "name": "enterView"
@@ -1011,10 +993,10 @@
     "name": "storeCleanupWithContext"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "template"

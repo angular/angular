@@ -321,9 +321,6 @@
     "name": "CATCH_STACK_VAR$2"
   },
   {
-    "name": "CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "CHECK_VAR"
   },
   {
@@ -571,9 +568,6 @@
   },
   {
     "name": "DomElementSchemaRegistry"
-  },
-  {
-    "name": "ELEMENT_REF_FACTORY__PRE_NGCC__"
   },
   {
     "name": "EMPTY"
@@ -1245,7 +1239,19 @@
     "name": "Quote"
   },
   {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY$1"
+  },
+  {
     "name": "R3_COMPILE_INJECTABLE$1"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY$1"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY$1"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY$1"
   },
   {
     "name": "ReadKeyExpr"
@@ -1449,9 +1455,6 @@
     "name": "TEMPLATE_ATTR_PREFIX"
   },
   {
-    "name": "TEMPLATE_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "TEXT_CSS_SELECTOR"
   },
   {
@@ -1597,9 +1600,6 @@
   },
   {
     "name": "VERSION$2"
-  },
-  {
-    "name": "VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__"
   },
   {
     "name": "VIEW_VAR"
@@ -2592,7 +2592,7 @@
     "name": "createOptional"
   },
   {
-    "name": "createOutput"
+    "name": "createOutput$1"
   },
   {
     "name": "createOutputContext"
@@ -2895,7 +2895,7 @@
     "name": "fk"
   },
   {
-    "name": "flatten"
+    "name": "flatten$1"
   },
   {
     "name": "flatten$3"
@@ -3399,6 +3399,9 @@
     "name": "noop$1"
   },
   {
+    "name": "noop$2"
+  },
+  {
     "name": "noop$3"
   },
   {
@@ -3690,7 +3693,7 @@
     "name": "stringify"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify$2"
   },
   {
     "name": "stringifyType"

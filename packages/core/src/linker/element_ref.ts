@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// This symbol is necessary so we can switch between Render2 version of ElementRef
-// and the Ivy version of ElementRef (the latter of which brings in injectElementRef(), etc)
-// See the POST_NGCC symbol in di.ts.
-const ELEMENT_REF_FACTORY__PRE_NGCC__ = null;
+import {R3_ELEMENT_REF_FACTORY} from '../ivy_switch';
 
 /**
  * A wrapper around a native element inside of a View.
@@ -53,5 +50,5 @@ export class ElementRef<T = any> {
   constructor(nativeElement: T) { this.nativeElement = nativeElement; }
 
   /** @internal */
-  static __NG_ELEMENT_ID__: (() => ElementRef)|null = ELEMENT_REF_FACTORY__PRE_NGCC__;
+  static __NG_ELEMENT_ID__ = () => R3_ELEMENT_REF_FACTORY();
 }

@@ -26,6 +26,7 @@ import {Type} from '../type';
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
+import {NG_ELEMENT_ID} from './fields';
 import {_getViewData, addToViewTree, assertPreviousIsParent, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, loadElement, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
@@ -39,14 +40,6 @@ import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, 
 import {getLNode, isComponent} from './util';
 import {ViewRef} from './view_ref';
 
-
-
-/**
- * If a directive is diPublic, bloomAdd sets a property on the type with this constant as
- * the key and the directive's unique ID as the value. This allows us to map directives to their
- * bloom filter bit for DI.
- */
-const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
 
 /**
  * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
@@ -342,19 +335,14 @@ function getOrCreateRenderer2(di: LInjector): Renderer2 {
 export function getOrCreateInjectable<T>(
     nodeInjector: LInjector, token: Type<T>| InjectionToken<T>,
     flags: InjectFlags = InjectFlags.Default): T|null {
-  const tokenId = (token as any)[NG_ELEMENT_ID] || null;
-
+  const bloomHash = bloomHashBitOrFactory(token);
   // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
   // so just call the factory function to create it.
-  if (typeof tokenId === 'function') {
-    return tokenId();
-  }
-
-  const bloomHash = bloomHashBit(tokenId);
+  if (typeof bloomHash === 'function') return bloomHash();
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
   // (diPublic) otherwise fall back to the module injector.
-  if (bloomHash !== null) {
+  if (bloomHash != null) {
     let injector: LInjector|null = nodeInjector;
 
     while (injector) {
@@ -441,8 +429,9 @@ function searchMatchesQueuedForCreation<T>(token: any, hostTView: TView): T|null
  * @param token the injection token
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  */
-function bloomHashBit(id: number | null): number|null {
-  return typeof id === 'number' ? id & BLOOM_MASK : null;
+function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>): number|Function|undefined {
+  const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID] || null;
+  return typeof tokenId === 'number' ? tokenId & BLOOM_MASK : tokenId;
 }
 
 /**
@@ -836,25 +825,4 @@ class TemplateRef<T> extends viewEngine_TemplateRef<T> {
  */
 export function templateRefExtractor(tNode: TContainerNode, currentView: LViewData) {
   return createTemplateRef(tNode, currentView);
-}
-
-// These symbols are necessary so we can switch between Render2 version and the Ivy version
-// of special objects like ElementRef. They must live here rather than in the ElementRef, etc files
-// to avoid a circular dependency.
-const ELEMENT_REF_FACTORY__POST_NGCC__ = () => injectElementRef();
-const TEMPLATE_REF_FACTORY__POST_NGCC__ = () => injectTemplateRef();
-const CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ = () => injectChangeDetectorRef();
-const VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ = () => injectViewContainerRef();
-
-
-/**
- *  Switches between Render2 version of special objects like ElementRef and the Ivy version
- *  of these objects. It's necessary to keep them separate so that we don't pull in fns
- *  like injectElementRef() prematurely.
- */
-export function enableIvyInjectableFactories() {
-  viewEngine_ElementRef[NG_ELEMENT_ID] = ELEMENT_REF_FACTORY__POST_NGCC__;
-  viewEngine_TemplateRef[NG_ELEMENT_ID] = TEMPLATE_REF_FACTORY__POST_NGCC__;
-  viewEngine_ViewContainerRef[NG_ELEMENT_ID] = VIEW_CONTAINER_REF_FACTORY__POST_NGCC__;
-  viewEngine_ChangeDetectorRef[NG_ELEMENT_ID] = CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__;
 }

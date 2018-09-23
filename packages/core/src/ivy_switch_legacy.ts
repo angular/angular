@@ -25,6 +25,12 @@ export const R3_COMPILE_DIRECTIVE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COM
 export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_INJECTABLE;
 export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
+
+export const R3_ELEMENT_REF_FACTORY__POST_NGCC__ = ivyOn.R3_ELEMENT_REF_FACTORY;
+export const R3_TEMPLATE_REF_FACTORY__POST_NGCC__ = ivyOn.R3_TEMPLATE_REF_FACTORY;
+export const R3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ = ivyOn.R3_CHANGE_DETECTOR_REF_FACTORY;
+export const R3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ = ivyOn.R3_VIEW_CONTAINER_REF_FACTORY;
+
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
 const R3_COMPILE_COMPONENT__PRE_NGCC__: DirectiveCompiler = noop;
@@ -32,6 +38,12 @@ const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
 const R3_COMPILE_NGMODULE__PRE_NGCC__: DirectiveCompiler = preR3NgModuleCompile;
 const R3_COMPILE_PIPE__PRE_NGCC__: DirectiveCompiler = noop;
+
+export const R3_ELEMENT_REF_FACTORY__PRE_NGCC__ = noop;
+export const R3_TEMPLATE_REF_FACTORY__PRE_NGCC__ = noop;
+export const R3_CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__ = noop;
+export const R3_VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__ = noop;
+
 const ivyEnable__PRE_NGCC__ = false;
 
 export const ivyEnabled = ivyEnable__PRE_NGCC__;
@@ -41,6 +53,10 @@ export let R3_COMPILE_INJECTABLE: DirectiveCompiler = R3_COMPILE_INJECTABLE__PRE
 export let R3_COMPILE_NGMODULE: DirectiveCompiler = R3_COMPILE_NGMODULE__PRE_NGCC__;
 export let R3_COMPILE_PIPE: DirectiveCompiler = R3_COMPILE_PIPE__PRE_NGCC__;
 
+export let R3_ELEMENT_REF_FACTORY = R3_ELEMENT_REF_FACTORY__PRE_NGCC__;
+export let R3_TEMPLATE_REF_FACTORY = R3_TEMPLATE_REF_FACTORY__PRE_NGCC__;
+export let R3_CHANGE_DETECTOR_REF_FACTORY = R3_CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__;
+export let R3_VIEW_CONTAINER_REF_FACTORY = R3_VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__;
 
 ////////////////////////////////////////////////////////////
 // Glue code which should be removed after Ivy is default //

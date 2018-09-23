@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory, ɵenableIvyInjectableFactories as enableIvyInjectableFactories} from '@angular/core';
+import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
@@ -160,9 +160,6 @@ class ToDoAppComponent {
 class ToDoAppModule {
   ngDoBootstrap(app: any) { app.bootstrap(ToDoAppComponent); }
 }
-
-// Ivy injectable factories must be enabled for ViewContainerRef to work
-enableIvyInjectableFactories();
 
 (window as any).waitForApp =
     platformBrowser().bootstrapModuleFactory(new NgModuleFactory(ToDoAppModule), {ngZone: 'noop'});

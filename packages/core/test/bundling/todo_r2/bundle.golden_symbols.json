@@ -72,12 +72,6 @@
     "name": "BrowserPlatformLocation"
   },
   {
-    "name": "CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "CIRCULAR"
   },
   {
@@ -252,19 +246,13 @@
     "name": "ELEMENT_PROBE_PROVIDERS"
   },
   {
-    "name": "ELEMENT_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "ELEMENT_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "EMPTY"
   },
   {
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "EMPTY_ARRAY$2"
@@ -675,6 +663,18 @@
     "name": "R3Injector"
   },
   {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
     "name": "REMOVE_EVENT_LISTENER"
   },
   {
@@ -807,12 +807,6 @@
     "name": "TAIL"
   },
   {
-    "name": "TEMPLATE_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "TEMPLATE_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "THROW_IF_NOT_FOUND"
   },
   {
@@ -882,7 +876,7 @@
     "name": "URL_RE"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE"
   },
   {
     "name": "UnsubscriptionError"
@@ -900,12 +894,6 @@
     "name": "VIEWS"
   },
   {
-    "name": "VIEW_CONTAINER_REF_FACTORY__POST_NGCC__"
-  },
-  {
-    "name": "VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__"
-  },
-  {
     "name": "VOID_ELEMENTS"
   },
   {
@@ -918,7 +906,7 @@
     "name": "ViewContainerRef$1"
   },
   {
-    "name": "ViewEncapsulation$1"
+    "name": "ViewEncapsulation"
   },
   {
     "name": "ViewRef"
@@ -1224,7 +1212,7 @@
     "name": "bloomFindPossibleInjector"
   },
   {
-    "name": "bloomHashBit"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -1332,7 +1320,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createPlatform"
@@ -1474,9 +1462,6 @@
   },
   {
     "name": "empty"
-  },
-  {
-    "name": "enableIvyInjectableFactories"
   },
   {
     "name": "encodeEntities"
@@ -2265,7 +2250,7 @@
     "name": "resolveDirective"
   },
   {
-    "name": "resolveForwardRef$1"
+    "name": "resolveForwardRef"
   },
   {
     "name": "resolveProvider"
@@ -2376,10 +2361,10 @@
     "name": "strToNumber"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "subscribeTo"

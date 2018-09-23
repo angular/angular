@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3_TEMPLATE_REF_FACTORY} from '../ivy_switch';
+
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 
-
-// This symbol is necessary so we can switch between Render2 version of TemplateRef
-// and the Ivy version of TemplateRef (the latter of which brings in injectTemplateRef(), etc)
-// See the POST_NGCC symbol in di.ts.
-const TEMPLATE_REF_FACTORY__PRE_NGCC__ = null;
 
 /**
  * Represents an embedded template that can be used to instantiate embedded views.
@@ -55,5 +52,5 @@ export abstract class TemplateRef<C> {
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 
   /** @internal */
-  static __NG_ELEMENT_ID__: (() => TemplateRef<any>)|null = TEMPLATE_REF_FACTORY__PRE_NGCC__;
+  static __NG_ELEMENT_ID__ = () => R3_TEMPLATE_REF_FACTORY();
 }

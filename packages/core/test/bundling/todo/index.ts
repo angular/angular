@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵenableIvyInjectableFactories as enableIvyInjectableFactories, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
@@ -178,9 +178,6 @@ class ToDoAppComponent {
 @NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
 class ToDoAppModule {
 }
-
-// Ivy injectable factories must be enabled for ViewContainerRef to work
-enableIvyInjectableFactories();
 
 // TODO(misko): create cleaner way to publish component into global location for tests.
 (window as any).toDoAppComponent = renderComponent(ToDoAppComponent);

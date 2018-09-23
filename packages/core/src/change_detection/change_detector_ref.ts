@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-// This symbol is necessary so we can switch between Render2 version of ChangeDetectorRef
-// and the Ivy version of ChangeDetectorRef (the latter of which brings in
-// injectChangeDetectorRef(), etc). See the POST_NGCC symbol in di.ts.
-const CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__ = null;
+import {R3_CHANGE_DETECTOR_REF_FACTORY} from '../ivy_switch';
 
 /**
  * Base class for Angular Views, provides change detection functionality.
@@ -111,6 +107,5 @@ export abstract class ChangeDetectorRef {
   abstract reattach(): void;
 
   /** @internal */
-  static __NG_ELEMENT_ID__:
-      (() => ChangeDetectorRef)|null = CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__;
+  static __NG_ELEMENT_ID__ = () => R3_CHANGE_DETECTOR_REF_FACTORY();
 }
