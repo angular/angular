@@ -75,8 +75,8 @@ const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 const EMPTY_ARRAY: any[] = [];
 
-function convertInjectableProviderToFactory(type: Type<any>, provider?: InjectableProvider): () =>
-    any {
+function convertInjectableProviderToFactory(
+    type: Constructor<any>, provider?: InjectableProvider): () => any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);

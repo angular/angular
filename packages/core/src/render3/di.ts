@@ -13,7 +13,7 @@ import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import {Renderer2} from '../render';
-import {Type} from '../type';
+import {Constructor, Type} from '../type';
 
 import {assertDefined} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
@@ -485,7 +485,7 @@ export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   return def.factory;
 }
 
-export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
+export function getInheritedFactory<T>(type: Type<any>): (type: Constructor<T>) => T {
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
   const factory = getFactoryOf<T>(proto);
   if (factory !== null) {

@@ -7,9 +7,10 @@
  */
 
 import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
-import {Type} from '../type';
+import {Constructor, Type} from '../type';
 
 import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+
 
 /**
  * Information about how a type or `InjectionToken` interfaces with the DI system.
@@ -74,7 +75,7 @@ export interface InjectorDef<T> {
  *
  * @experimental
  */
-export interface InjectableType<T> extends Type<T> {
+export interface InjectableType<T> extends Constructor<T> {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
@@ -88,7 +89,7 @@ export interface InjectableType<T> extends Type<T> {
  *
  * @experimental
  */
-export interface InjectorType<T> extends Type<T> {
+export interface InjectorType<T> extends Constructor<T> {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */

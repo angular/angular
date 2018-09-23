@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Constructor, Type} from '../type';
+
 
 /**
  * Configures the `Injector` to return a value for a token.
@@ -71,7 +72,7 @@ export interface StaticClassSansProvider {
    * An optional class to instantiate for the `token`. (If not provided `provide` is assumed to be a
    * class to instantiate)
    */
-  useClass: Type<any>;
+  useClass: Constructor<any>;
 
   /**
    * A list of `token`s which need to be resolved by the injector. The list of values is then
@@ -306,7 +307,7 @@ export interface ClassSansProvider {
   /**
    * Class to instantiate for the `token`.
    */
-  useClass: Type<any>;
+  useClass: Constructor<any>;
 }
 
 /**
