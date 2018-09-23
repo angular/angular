@@ -306,53 +306,83 @@ Angular 애플리케이션을 개발하면서 알아야 하는 의존성 주입�
 
 {@a multiple-service-instances}
 
-
+<!--
 ## Multiple service instances (sandboxing)
+-->
+## 다중 서비스 인스턴스 (샌드박싱, sandboxing)
 
+<!--
 Sometimes you want multiple instances of a service at *the same level of the component hierarchy*.
+-->
+어떤 경우에는 *같은 계층에 있는 컴포넌트라면* 서로 다른 서비스 인스턴스를 사용해야 할 때가 있습니다.
 
+<!--
 A good example is a service that holds state for its companion component instance.
 You need a separate instance of the service for each component.
 Each service has its own work-state, isolated from the service-and-state of a different component.
 This is called *sandboxing* because each service and component instance has its own sandbox to play in.
+-->
+컴포넌트의 상태를 서비스가 관리하는 경우가 이런 경우에 해당되며, 컴포넌트의 상태를 관리하려면 컴포넌트마다 독립된 서비스 인스턴스가 있어야 합니다.
+그러면 각 서비스 인스턴스는 해당 인스턴스에 연결된 컴포넌트에 대해서만 동작하며, 다른 컴포넌트의 영향을 배제할 수 있습니다.
+결국 컴포넌트와 서비스는 서로 연결된 인스턴스끼리 상호작용하며, 이런 관계를 *샌드박싱(sandboxing)*이라고 합니다.
+
 
 {@a hero-bios-component}
+<!--
 Imagine a `HeroBiosComponent` that presents three instances of the `HeroBioComponent`.
+-->
+`HeroBioComponent` 인스턴스 3개로 구성된 `HeroBiosComponent`가 있다고 합시다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple" title="ap/hero-bios.component.ts">
 
 </code-example>
 
 
-
+<!--
 Each `HeroBioComponent` can edit a single hero's biography.
 A `HeroBioComponent` relies on a `HeroCacheService` to fetch, cache, and perform other persistence operations on that hero.
+-->
+개별 `HeroBioComponent`에서는 히어로 한 명의 신상정보를 수정할 수 있습니다.
+그리고 이 때 히어로에 대한 정보를 가져오고, 캐싱하는 등의 작업은 `HeroCacheService`를 사용합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-cache.service.ts" region="service" title="src/app/hero-cache.service.ts">
 
 </code-example>
 
 
-
+<!--
 Clearly the three instances of the `HeroBioComponent` can't share the same `HeroCacheService`.
 They'd be competing with each other to determine which hero to cache.
+-->
+그러면 각각의 `HeroBioComponent`는 서로 다른 `HeroCacheService` 인스턴스를 사용합니다.
+캐싱하는 정보도 서로 다를 것입니다.
 
+<!--
 Each `HeroBioComponent` gets its *own* `HeroCacheService` instance
 by listing the `HeroCacheService` in its metadata `providers` array.
+-->
+`HeroBioComponent`마다 서로 다른 `HeroCacheService` 인스턴스를 사용하려면 컴포넌트 `providers` 배열에 `HeroCacheService`를 등록해야 합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="component" title="src/app/hero-bio.component.ts">
 
 </code-example>
 
 
-
+<!--
 The parent `HeroBiosComponent` binds a value to the `heroId`.
 The `ngOnInit` passes that `id` to the service, which fetches and caches the hero.
 The getter for the `hero` property pulls the cached hero from the service.
 And the template displays this data-bound property.
+-->
+부모 컴포넌트인 `HeroBiosComponent`와는 `heroId`로 연결됩니다.
+그리고 `HeroBioComponent`의 `ngOnInit`에서 서비스로 이 `id`를 보내서 히어로의 정보를 가져와서 캐싱합니다.
+`hero` 프로퍼티에 연결된 게터 함수는 서비스에서 가져온 히어로의 정보를 반환하며, 이 게터 함수는 템플릿과 데이터 바인딩되어 표시됩니다.
 
+<!--
 Find this example in <live-example name="dependency-injection-in-action">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
+-->
+`HeroBioComponent`가 히어로 정보를 캐싱하는 예제는 <live-example name="dependency-injection-in-action">live code</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">
@@ -366,117 +396,178 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 {@a qualify-dependency-lookup}
 
 
-
+<!--
 ## Qualify dependency lookup with _@Optional()_ and `@Host()`
-As you now know, dependencies can be registered at any level in the component hierarchy.
+-->
+## _@Optional()_ 과 `Host()`
 
+<!--
+As you now know, dependencies can be registered at any level in the component hierarchy.
+-->
+이미 알고 있듯이, 프로바이더는 컴포넌트 계층 어디에라도 자유롭게 등록할 수 있습니다.
+
+<!--
 When a component requests a dependency, Angular starts with that component's injector and walks up the injector tree
 until it finds the first suitable provider.  Angular throws an error if it can't find the dependency during that walk.
+-->
+컴포넌트에서 의존성 객체를 요구하면 Angular는 해당 컴포넌트의 인젝터부터 상위 인젝터로 올라가면서 의존성 객체에 해당하는 프로바이더를 찾습니다. 그리고 이 과정이 실패하면 에러를 발생시킵니다.
 
+<!--
 You *want* this behavior most of the time.
 But sometimes you need to limit the search and/or accommodate a missing dependency.
 You can modify Angular's search behavior with the `@Host` and `@Optional` qualifying decorators,
 used individually or together.
+-->
+이 과정은 Angular 애플리케이션을 개발하면서 가장 많이 사용하게 될 것입니다.
+하지만 때로는 의존성 객체를 찾는 과정을 제어해야 하는 경우가 있습니다.
+`@Host`와 `@Optional` 데코레이터는 이 때 사용됩니다. 두 데코레이터는 따로 사용할 수도 있고 함께 사용할 수도 있습니다.
 
+<!--
 The `@Optional` decorator tells Angular to continue when it can't find the dependency.
 Angular sets the injection parameter to `null` instead.
+-->
+`@Optional` 데코레이터를 사용하면 Angular가 프로바이더를 찾지 못하더라도 에러를 발생시키지 않습니다.  이 경우에는 의존성 객체 대신 `null` 객체를 주입합니다.
 
+<!--
 The `@Host` decorator stops the upward search at the *host component*.
+-->
+그리고 `@Host` 데코레이터는 *호스트 컴포넌트* 위쪽으로 수행할 의존성 탐색을 중단시킵니다.
 
+<!--
 The host component is typically the component requesting the dependency.
 But when this component is projected into a *parent* component, that parent component becomes the host.
 The next example covers this second case.
-
+-->
+호스트 컴포넌트는 보통 의존성 객체를 요구한 컴포넌트입니다.
+하지만 컴포넌트가 *부모* 컴포넌트에 표시되기 시작하면, 부모 컴포넌트가 호스트가 됩니다.
+예제와 함께 자세하게 알아봅시다.
 
 {@a demonstration}
 
-
+<!--
 ### Demonstration
+-->
+### 데모
+
+<!--
 The `HeroBiosAndContactsComponent` is a revision of the `HeroBiosComponent` that you looked at [above](guide/dependency-injection-in-action#hero-bios-component).
+-->
+`HeroBiosAndContactsComponent`는 [위](guide/dependency-injection-in-action#hero-bios-component)에서 다룬 `HeroBiosComponent`를 조금 수정한 컴포넌트입니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" title="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
 
 </code-example>
 
 
-
+<!--
 Focus on the template:
+-->
+템플릿을 자세히 봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" title="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Now there is a new `<hero-contact>` element between the `<hero-bio>` tags.
 Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` into the `HeroBioComponent` view,
 placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
+-->
+템플릿을 보면 `<hero-bio>` 태그 안에 `<hero-contact>` 엘리먼트가 추가되었습니다.
+그러면 Angular는 `HeroBioComponent` 템플릿에 정의된 `<ng-content>`에 `HeroContactComponent`를 표시하는데, 이것을 *프로젝션(projects)*이라고 하거나 *트랜스클루전(transcludes)*한다고 합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (template)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 It looks like this, with the hero's telephone number from `HeroContactComponent` projected above the hero description:
+-->
+그래서 이 템플릿은 다음과 같이 표시됩니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-and-content.png" alt="bio and contact">
 </figure>
 
 
-
+<!--
 Here's the `HeroContactComponent` which demonstrates the qualifying decorators:
+-->
+그리고 데코레이터는 `HeroContactComponent`에 이렇게 사용되었습니다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" title="src/app/hero-contact.component.ts">
 
 </code-example>
 
 
-
+<!--
 Focus on the constructor parameters:
+-->
+생성자에 사용된 인자를 자세히 봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" title="src/app/hero-contact.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `@Host()` function decorating the  `heroCache` property ensures that
 you get a reference to the cache service from the parent `HeroBioComponent`.
 Angular throws an error if the parent lacks that service, even if a component higher
 in the component tree happens to have it.
+-->
+`@Host()` 함수는 `heroCache` 프로퍼티에 주입되는 서비스의 인스턴스를 찾을 때 사용하는 인젝터의 범위를 `HeroBioComponent`까지로 제한합니다.
+그리고 호스트 컴포넌트에서 서비스를 찾지 못하면 에러를 발생시킵니다.
+호스트 컴포넌트 위쪽에 서비스 인스턴스가 존재하더라도 이 인스턴스는 사용하지 않습니다.
 
+<!--
 A second `@Host()` function decorates the `loggerService` property.
 The only `LoggerService` instance in the app is provided at the `AppComponent` level.
 The host `HeroBioComponent` doesn't have its own `LoggerService` provider.
+-->
+두 번째 `@Host()` 함수는 `loggerService` 프로퍼티에 사용되었습니다.
+이 예제에서 `LoggerService`는 `AppComponent`에만 등록되어 있으며, `HeroBioComponent`에는 `LoggerService` 프로바이더가 등록되어 있지 않습니다.
 
+<!--
 Angular would throw an error if you hadn't also decorated the property with the `@Optional()` function.
 Thanks to `@Optional()`, Angular sets the `loggerService` to null and the rest of the component adapts.
+-->
+그러면 Angular가 의존성을 찾을 수 없기 때문에 에러를 발생시키지만, `@Optional()` 함수를 사용하면 에러가 발생하지 않습니다.
+`@Optional()` 데코레이터를 사용하면 Angular가 `LoggerService`를 찾지 못하더라도 에러를 발생시키지 않으며, `loggerService`에 `null` 값을 주입합니다.
 
-
+<!--
 Here's the `HeroBiosAndContactsComponent` in action.
+-->
+그래서 `HeroBiosAndContactsComponent`는 다음과 같이 동작합니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into">
 </figure>
 
 
-
+<!--
 If you comment out the `@Host()` decorator, Angular now walks up the injector ancestor tree
 until it finds the logger at the `AppComponent` level. The logger logic kicks in and the hero display updates
 with the gratuitous "!!!", indicating that the logger was found.
+-->
+`@Host()` 데코레이터를 사용하지 않으면 Angular는 의존성 객체를 찾기 위해 `AppComponent` 계층까지 인젝터를 따라 올라갑니다. 그리고 최종적으로 서비스 인스턴스를 찾을 수 있기 때문에  템플릿에 "!!!"를 표시합니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-contact-no-host.png" alt="Without @Host">
 </figure>
 
 
-
+<!--
 On the other hand, if you restore the `@Host()` decorator and comment out `@Optional`,
 the application fails for lack of the required logger at the host component level.
+-->
+하지만 `@Host()` 데코레이터를 `@Optional` 데코레이터 없이 사용하면 호스트 컴포넌트 계층에서 서비스 인스턴스를 찾지 못하기 때문에 다음과 같은 에러가 발생합니다.
 <br>
 `EXCEPTION: No provider for LoggerService! (HeroContactComponent -> LoggerService)`
+
+
 {@a component-element}
 
 ## Inject the component's DOM element
