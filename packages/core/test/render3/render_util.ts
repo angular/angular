@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {ElementRef} from '@angular/core/src/linker/element_ref';
+import {TemplateRef} from '@angular/core/src/linker/template_ref';
+import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {Injector} from '../../src/di/injector';
-import {enableIvyInjectableFactories} from '../../src/ivy_switch_on';
+import {R3_CHANGE_DETECTOR_REF_FACTORY, R3_ELEMENT_REF_FACTORY, R3_TEMPLATE_REF_FACTORY, R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/ivy_switch_on';
 import {PlayerHandler} from '../../src/render3/animations/interfaces';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
+import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
@@ -290,3 +295,16 @@ export function createDirective(
 export const renderer: Renderer3 = null as any as Document;
 export const element: RElement = null as any as HTMLElement;
 export const text: RText = null as any as Text;
+
+
+/**
+ *  Switches between Render2 version of special objects like ElementRef and the Ivy version
+ *  of these objects. It's necessary to keep them separate so that we don't pull in fns
+ *  like injectElementRef() prematurely.
+ */
+export function enableIvyInjectableFactories() {
+  (ElementRef as any)[NG_ELEMENT_ID] = R3_ELEMENT_REF_FACTORY;
+  (TemplateRef as any)[NG_ELEMENT_ID] = R3_TEMPLATE_REF_FACTORY;
+  (ViewContainerRef as any)[NG_ELEMENT_ID] = R3_VIEW_CONTAINER_REF_FACTORY;
+  (ChangeDetectorRef as any)[NG_ELEMENT_ID] = R3_CHANGE_DETECTOR_REF_FACTORY;
+}
