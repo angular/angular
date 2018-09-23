@@ -338,6 +338,23 @@ describe('MatPaginator', () => {
     }));
   });
 
+  it('should keep track of the right number of pages', () => {
+    component.pageSize = 10;
+    component.length = 100;
+    fixture.detectChanges();
+    expect(paginator.getNumberOfPages()).toBe(10);
+
+    component.pageSize = 10;
+    component.length = 0;
+    fixture.detectChanges();
+    expect(paginator.getNumberOfPages()).toBe(0);
+
+    component.pageSize = 10;
+    component.length = 10;
+    fixture.detectChanges();
+    expect(paginator.getNumberOfPages()).toBe(1);
+  });
+
   it('should show a select only if there are multiple options', () => {
     expect(paginator._displayedPageSizeOptions).toEqual([5, 10, 25, 100]);
     expect(fixture.nativeElement.querySelector('.mat-select')).not.toBeNull();

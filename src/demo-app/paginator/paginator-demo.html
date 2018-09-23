@@ -22,7 +22,8 @@
     <mat-slide-toggle [(ngModel)]="showFirstLastButtons">Show first/last buttons</mat-slide-toggle>
   </div>
 
-  <mat-paginator (page)="handlePageEvent($event)"
+  <mat-paginator #paginator
+                 (page)="handlePageEvent($event)"
                  [length]="length"
                  [pageSize]="pageSize"
                  [showFirstLastButtons]="showFirstLastButtons"
@@ -32,4 +33,5 @@
   </mat-paginator>
 
   <div> Output event: {{pageEvent | json}} </div>
+  <div> getNumberOfPages: {{paginator.getNumberOfPages()}} </div>
 </mat-card>
