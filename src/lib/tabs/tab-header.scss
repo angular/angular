@@ -82,4 +82,12 @@
 
 .mat-tab-labels {
   display: flex;
+
+  [mat-align-tabs='center'] & {
+    justify-content: center;
+  }
+
+  [mat-align-tabs='end'] & {
+    justify-content: flex-end;
+  }
 }

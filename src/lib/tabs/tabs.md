@@ -83,7 +83,7 @@ the `active` property to determine which tab is currently active. The correspond
 ### Lazy Loading
 By default, the tab contents are eagerly loaded. Eagerly loaded tabs
 will initalize the child components but not inject them into the DOM
-until the tab is activated. 
+until the tab is activated.
 
 
 If the tab contains several complex child components or the tab's contents
@@ -107,6 +107,12 @@ with the `matTabContent` attribute.
   </mat-tab>
 </mat-tab-group>
 ```
+
+### Label alignment
+If you want to align the tab labels in the center or towards the end of the container, you can
+do so using the `[mat-align-tabs]` attribute.
+
+<!-- example(tab-group-align) -->
 
 ### Accessibility
 Tabs without text or labels should be given a meaningful label via `aria-label` or
