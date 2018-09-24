@@ -133,9 +133,15 @@ task(':watch:devapp', () => {
   // CDK package watchers.
   watchFiles(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
 
+  const materialCoreThemingGlob = join(materialPackage.sourceDir, '**/core/theming/**/*.scss');
+
   // Material package watchers.
-  watchFiles(join(materialPackage.sourceDir, '**/!(*-theme.scss)'), ['material:build-no-bundles']);
-  watchFiles(join(materialPackage.sourceDir, '**/*-theme.scss'), [':build:devapp:scss']);
+  watchFiles([
+    join(materialPackage.sourceDir, '**/!(*-theme.scss)'), `!${materialCoreThemingGlob}`
+  ], ['material:build-no-bundles']);
+  watchFiles([
+    join(materialPackage.sourceDir, '**/*-theme.scss'), materialCoreThemingGlob
+  ], [':build:devapp:scss']);
 
   // Moment adapter package watchers
   watchFiles(join(momentAdapterPackage.sourceDir, '**/*'),
