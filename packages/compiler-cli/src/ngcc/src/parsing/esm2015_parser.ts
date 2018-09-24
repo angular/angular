@@ -24,20 +24,24 @@ export class Esm2015FileParser implements FileParser {
     const moduleSymbol = this.checker.getSymbolAtLocation(file);
     const map = new Map<ts.SourceFile, ParsedFile>();
     if (moduleSymbol) {
-      const exportClasses = this.checker.getExportsOfModule(moduleSymbol)
-                                .map(getOriginalSymbol(this.checker))
-                                .filter(exportSymbol => exportSymbol.flags & ts.SymbolFlags.Class);
-
-      const classDeclarations = exportClasses.map(exportSymbol => exportSymbol.valueDeclaration)
-                                    .filter(isDefined)
-                                    .filter(ts.isClassDeclaration);
+      const exportedSymbols =
+          this.checker.getExportsOfModule(moduleSymbol).map(getOriginalSymbol(this.checker));
+      const exportedDeclarations =
+          exportedSymbols.map(exportSymbol => exportSymbol.valueDeclaration).filter(isDefined);
 
       const decoratedClasses =
-          classDeclarations
+          exportedDeclarations
               .map(declaration => {
-                const decorators = this.host.getDecoratorsOfDeclaration(declaration);
-                return decorators && declaration.name &&
-                    new ParsedClass(declaration.name.text, declaration, decorators);
+                if (ts.isClassDeclaration(declaration) || ts.isVariableDeclaration(declaration)) {
+                  const name = declaration.name && ts.isIdentifier(declaration.name) ?
+                      declaration.name.text :
+                      undefined;
+                  const decorators = this.host.getDecoratorsOfDeclaration(declaration);
+                  return decorators && isDefined(name) ?
+                      new ParsedClass(name, declaration, decorators) :
+                      undefined;
+                }
+                return undefined;
               })
               .filter(isDefined);
 
