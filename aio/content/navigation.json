@@ -60,56 +60,29 @@
       "tooltip": "Style guide for documentation authors",
       "hidden": true
     },
-
     {
-      "url": "guide/quickstart",
       "title": "Getting Started",
-      "tooltip": "A gentle introduction to Angular."
-    },
-
-    {
-      "title": "Tutorial",
-      "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
+      "tooltip": "Learn the basics needed to build your first Angular application",
       "children": [
         {
-          "url": "tutorial",
-          "title": "1. Introduction",
-          "tooltip": "Part 1: Introduction to the Tour of Heroes tutorial"
+          "url": "tutorial/getting-started",
+          "title": "Getting Started",
+          "tooltip": "Learn Angular's component model, template syntax, component communication, and services"
         },
         {
-          "url": "tutorial/toh-pt0",
-          "title": "2. The Application Shell",
-          "tooltip": "Part 2: Creating the application shell"
+          "url": "tutorial/getting-started-data",
+          "title": "Data",
+          "tooltip": "Learn about fetching and managing data from remote API and from users with Forms"
         },
         {
-          "url": "tutorial/toh-pt1",
-          "title": "3. The Hero Editor",
+          "url": "tutorial/getting-started-architecture",
+          "title": "Architecture",
           "tooltip": "Part 3: Build a simple hero editor"
         },
         {
-          "url": "tutorial/toh-pt2",
-          "title": "4. Displaying a List",
-          "tooltip": "Part 4: Build a master/detail page with a list of heroes."
-        },
-        {
-          "url": "tutorial/toh-pt3",
-          "title": "5. Master/Detail Components",
-          "tooltip": "Part 5: Refactor the master/detail view into separate components."
-        },
-        {
-          "url": "tutorial/toh-pt4",
-          "title": "6. Services",
-          "tooltip": "Part 6: Create a reusable service to manage hero data."
-        },
-        {
-          "url": "tutorial/toh-pt5",
-          "title": "7. Routing",
-          "tooltip": "Part 7: Add the Angular router and navigate among the views."
-        },
-        {
-          "url": "tutorial/toh-pt6",
-          "title": "8. HTTP",
-          "tooltip": "Part 8: Use HTTP to retrieve and save hero data."
+          "url": "tutorial/getting-started-deployment",
+          "title": "Deployment",
+          "tooltip": "Share your application with the world by hosting it on Firebase or your own server"
         }
       ]
     },

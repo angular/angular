@@ -21,6 +21,7 @@ We can think of this as an application made up of a tree of components.
   * app-top-bar
   * app-side-nav
   * app-product-list
+    * app-product-carousel
     * app-product-preview
     * app-product-preview
     * app-product-preview
@@ -33,7 +34,7 @@ Each component in Angular has a template and a class. The template determines wh
 ## Live Editing with StackBlitz
 To demonstrate the use of Angular, we'll open an empty application using StackBlitz. StackBlitz allows us to get started building an Angular application without needing any local tooling or installs. Once you are comfortable with the basics, we recommend downloading and installing the [Angular CLI](https://cli.angular.io) for local development.
 
-We can see an example template.
+[Get your own environment](https://stackblitz.com/fork/angular)
 
 
 ## Template Syntax
@@ -96,23 +97,38 @@ We can listen of standard HTML events, or custom events that we will create late
 
 
 ### Summary
-At this point you should be able to create your first Angular template, try to play around with these 5 techniques to create HTML. You could create an entire application inside of a single component, but we recommend breaking down an application into smaller components that have fewer responsibilities.
+At this point you should be able to create your first Angular template, try to play around with these techniques to create HTML. You could create an entire application inside of a single component, but we recommend breaking down an application into smaller components that have fewer responsibilities.
 
-The Angular template syntax is very powerful. To learn about more of the things it can do, see the full Template Syntax documentation.
+The Angular template syntax is very powerful. To learn about more of the things it can do, see the full [Template Syntax documentation](/guide/template-syntax).
+
+
 
 ### Task
 In our template, now create the scaffolding for a shopping cart.
 
-* Create a top bar for your app.
-* Create a list of product categories as a side nav.
+* Create a top bar for your app
+* Create a list of product categories as a side nav
 * Create a container for our list of products
 
+#### Create a top bar
+In Stackblitz in a brand new project, right click on the `app` folder and create a new component. Give this component a name like `top-bar` and then add it to the template of your app component, found in `app.component.html`.
 
+```
+<app-top-bar></app-top-bar>
+```
+
+You can put any HTML you want for the header of your store in the `top-bar.component.html`.
+
+#### Create a list of product categories as a side nav
+Create another new component called `side-nav`. Reference it in your `app.component.html` with `<app-side-nav></app-side-nav>` and then add any HTML you would like for your side nav into `side-nav.component.html`
+
+#### Create a container for our list of products
+Create one more component called `product-list`. We can reference it temporarily in our `app.component.html`.
 
 
 
 ## Component Communication
-Just like HTML, Angular components can take state, and can emit events. We achieve these by creating Inputs and Outputs as properties on our component
+Just like any element in HTML, Angular components can take state, and can emit events. We achieve these by creating Inputs and Outputs as properties on our component's TypeScript file.
 
 ```
 @Component({
@@ -127,28 +143,55 @@ export class EditableNameComponent {
 ```
 
 ### @Input()
-Inputs define what data can be passed INTO your component. Whenever a parent component's property binding is updated, the property you mark with @Input will also be updated as a part of Angular's change detection.
+Inputs define what data can be passed INTO your component. Whenever a parent component's property binding is updated, the property you mark with `@Input` will also be updated as a part of Angular's change detection.
 
 ### @Output()
-Outputs are used to create custom events in your component. We create a new EventEmitter and store it as a @Output() property of our component. This newly created EventEmitter has a method 'emit' that you can call whenever your custom event has occurred, in response to some action from the template, or based on some asynchronous process.
+Outputs are used to create custom events in your component. We create a new EventEmitter and store it as an `@Output()` property of our component. This newly created `EventEmitter` has a method `emit` that you can call whenever your custom event has occurred, in response to some action from the template, or based on some asynchronous process.
 
 By property binding and event binding with a nested component we can build elaborate structures of components that take in state, and give back events.
 
 
 
 ### Task
-Use StackBlitz's right click menu to create a new component called 'product-preview'. ProductPreviewComponent will be used to render a preview of our product on the home page.
+Use StackBlitz's right click menu to create a new component called `product-preview`. This will generate a `ProductPreviewComponent` which will be used to render a preview of our product on the home page.
+
 In the ProductPreviewComponent's Class file (.ts), add an input for the product name and the product price. Add an Output that will be used whenever the user attempts to purchase the product.
-Back in our app component's template, we can now use app-product-preview, and provide a list of products, binding their names and prices.
+
+```
+  @Input() product;
+  @Output() buy = new EventEmitter();
+```
+
+You'll need to update the imports at the top of the file to include `Input` and `Output` from `@angular/core`.
+
+```
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+```
+
+In the component's template `product-preview.component.html`, we will render the data we received from our `Input`.
+
+```
+<h3>{{product.name}}</h3>
+<p>{{product.price}}</p>
+<button>Buy</button>
+```
+
+
+Anywhere in our app, we can now test our `app-product-preview`, and provide a list of products, binding their names and prices.
+
+```
+<app-product-preview [product]="{product: 'Pixel 2 XL', description: 'A great phone with one of the best cameras'}"></app-product-preview>
+```
+
 
 
 ## Services
-Services are an important part of Angular applications. Services in Angular are just a Singleton of a class that is provided to any part of your application that asks for it using the dependency injection system.
+Services are an important part of Angular applications. Services in Angular are a shared instance of a class that can be made available to any part of your applicatoin using the [dependency injection system](/guide/dependency-injection).
 
 Services are used to encapsulate data and functionality.
 
 ### Creating
-To create a service, simply create a class and decorate it with @Injectable({provideIn: 'root'}.
+To create a service, simply create a class and decorate it with `@Injectable({provideIn: 'root'}`.
 
 ```
 @Injectable({provideIn: 'root'})
@@ -160,7 +203,7 @@ export class MyDataService {
 ### Providing
 Before you can use a service, you must make sure it is provided in your application. 
 
-1st party services can often be provided automatically via the provideIn part of the @Injectable decorator. 
+1st party services can often be provided automatically via the `provideIn` part of the `@Injectable` decorator. 
 
 3rd party services are typically provided by importing a 3rd party Module as part of your NgModule definition. 
 
@@ -174,7 +217,7 @@ import { HttpClientModule } from '@angular/common/http';
 ```
 
 ### Accessing
-To access a service, you ask for it in a Compoennt, Service, or NgModule constructor by annotating an argument with its type.
+To access a service, you ask for it in a Component, Service, or NgModule constructor by supplying it's type on an argument.
 
 ```
 import { MyDataService } from './my-data.service';
