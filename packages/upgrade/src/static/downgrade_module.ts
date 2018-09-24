@@ -17,6 +17,8 @@ import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 
 
+let moduleUid = 0;
+
 /**
  * @description
  *
@@ -46,6 +48,14 @@ import {NgAdapterInjector} from './util';
  * declare a dependency in your main AngularJS module.
  *
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
+ *
+ * <div class="alert is-important">
+ *
+ *   You can only call `downgradeModule()` once per AngularJS application.<br />
+ *   If you want to downgrade multiple modules, create and downgrade a new Angular module that
+ *   imports all the rest.
+ *
+ * </div>
  *
  * For more details on how to use `downgradeModule()` see
  * [Upgrading for Performance](guide/upgrade-performance).
@@ -104,7 +114,7 @@ import {NgAdapterInjector} from './util';
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
     ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
-  const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy';
+  const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy' + (++moduleUid);
   const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
       moduleFactoryOrBootstrapFn :
       (extraProviders: StaticProvider[]) =>
@@ -123,21 +133,38 @@ export function downgradeModule<T>(
             }
             return injector;
           })
-      .factory(LAZY_MODULE_REF, [
+      .provider(LAZY_MODULE_REF, [
         $INJECTOR,
-        ($injector: angular.IInjectorService) => {
-          setTempInjectorRef($injector);
-          const result: LazyModuleRef = {
-            needsNgZone: true,
-            promise: bootstrapFn(angular1Providers).then(ref => {
-              injector = result.injector = new NgAdapterInjector(ref.injector);
-              injector.get($INJECTOR);
+        class LazyModuleRefProvider {
+          $get = [
+            $INJECTOR,
+            ($injector: angular.IInjectorService) => {
+              setTempInjectorRef($injector);
+              const result: LazyModuleRef = {
+                needsNgZone: true,
+                promise: bootstrapFn(angular1Providers).then(ref => {
+                  injector = result.injector = new NgAdapterInjector(ref.injector);
+                  injector.get($INJECTOR);
 
-              return injector;
-            })
-          };
-          return result;
-        }
+                  return injector;
+                }),
+              };
+              return result;
+            },
+          ];
+
+          constructor($providerInjector: angular.IInjectorService) {
+            // This is the provider injector (not the instance injector used at runtime).
+            // If it already has `LAZY_MODULE_REF` defined, then it has been declared by a previous
+            // lazy module, meaning `downgradeModule()` has been called before.
+            if ($providerInjector.has(LAZY_MODULE_REF)) {
+              throw new Error(
+                  'Calling `downgradeModule()` more than once is not supported. If you want to ' +
+                  'downgrade multiple modules, create and downgrade a new Angular module that ' +
+                  'imports all the rest.');
+            }
+          }
+        },
       ]);
 
   return LAZY_MODULE_NAME;

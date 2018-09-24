@@ -12,6 +12,12 @@ export type Ng1Expression = string | Function;
 
 export interface IAnnotatedFunction extends Function { $inject?: ReadonlyArray<Ng1Token>; }
 
+export interface IServiceFactory { (...args: any[]): any; }
+
+export interface IServiceProvider { $get: IServiceFactory|(Ng1Token|IServiceFactory)[]; }
+
+export interface IServiceProviderFactory { new (...args: any[]): IServiceProvider; }
+
 export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
 
 export type SingleOrListOrMap<T> = T | T[] | {[key: string]: T};
@@ -26,6 +32,9 @@ export interface IModule {
   factory(key: Ng1Token, factoryFn: IInjectable): IModule;
   value(key: Ng1Token, value: any): IModule;
   constant(token: Ng1Token, value: any): IModule;
+  provider(key: Ng1Token, provider: IServiceProvider): IModule;
+  provider(key: Ng1Token, provider: IServiceProviderFactory): IModule;
+  provider(key: Ng1Token, provider: (Ng1Token|IServiceProviderFactory)[]): IModule;
   run(a: IInjectable): IModule;
 }
 export interface ICompileService {

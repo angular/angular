@@ -25,6 +25,65 @@ withEachNg1Version(() => {
 
       beforeEach(() => destroyPlatform());
 
+      it('should throw if called for more than one Angular modules', async(() => {
+           @Component({selector: 'ng2A', template: 'a'})
+           class Ng2ComponentA {
+           }
+
+           @Component({selector: 'ng2B', template: 'b'})
+           class Ng2ComponentB {
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentA],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleA {
+             ngDoBootstrap() {}
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentB],
+             entryComponents: [Ng2ComponentB],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleΒ {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFnA = () => platformBrowserDynamic().bootstrapModule(Ng2ModuleA);
+           const bootstrapFnΒ = () => platformBrowserDynamic().bootstrapModule(Ng2ModuleΒ);
+
+           const ng1Module =
+               angular.module('ng1', [downgradeModule(bootstrapFnA), downgradeModule(bootstrapFnΒ)])
+                   .directive(
+                       'ng2Α', downgradeComponent({component: Ng2ComponentA, propagateDigest}))
+                   .directive(
+                       'ng2B', downgradeComponent({component: Ng2ComponentB, propagateDigest}));
+
+           const testTemplate = (tmpl: string) => {
+             let errorMessage = '';
+
+             try {
+               const element = html(tmpl);
+               angular.bootstrap(element, [ng1Module.name]);
+             } catch (err) {
+               errorMessage = err.message;
+             }
+
+             expect(errorMessage)
+                 .toContain(
+                     'Calling `downgradeModule()` more than once is not supported. If you want ' +
+                     'to downgrade multiple modules, create and downgrade a new Angular module ' +
+                     'that imports all the rest.');
+           };
+
+           testTemplate('<ng2-a></ng2-a>');
+           testTemplate('<ng2-b></ng2-b>');
+           testTemplate('<div></div>');
+         }));
+
       it('should support downgrading a component and propagate inputs', async(() => {
            @Component(
                {selector: 'ng2A', template: 'a({{ value }}) | <ng2B [value]="value"></ng2B>'})
