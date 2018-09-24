@@ -99,13 +99,17 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
 
       it('should defer registering an event until Hammer is loaded', fakeAsync(() => {
            plugin.addEventListener(someElement, 'swipe', someListener);
+           plugin.addEventListener(someElement, 'swipe', someListener);
            expect(fakeHammerInstance.on).not.toHaveBeenCalled();
+           expect((plugin as any).registerCallbacks.length).toBe(2);
 
            (window as any).Hammer = {};
            resolveLoader();
            tick();
 
            expect(fakeHammerInstance.on).toHaveBeenCalledWith('swipe', jasmine.any(Function));
+           expect(fakeHammerInstance.on).toHaveBeenCalledTimes(2);
+           expect((plugin as any).registerCallbacks.length).toBe(0);
          }));
 
       it('should cancel registration if an event is removed before being added', fakeAsync(() => {
@@ -132,12 +136,17 @@ import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-brow
 
       it('should log a warning when the loader fails', fakeAsync(() => {
            plugin.addEventListener(someElement, 'swipe', () => {});
+           plugin.addEventListener(someElement, 'swipe', () => {});
+           expect((plugin as any).registerCallbacks.length).toBe(2);
+
            failLoader();
            tick();
 
            expect(fakeConsole.warn)
                .toHaveBeenCalledWith(
                    `The "swipe" event cannot be bound because the custom Hammer.JS loader failed.`);
+           expect(fakeConsole.warn).toHaveBeenCalledTimes(2);
+           expect((plugin as any).registerCallbacks.length).toBe(0);
          }));
 
       it('should load a warning if the loader resolves and Hammer is not present', fakeAsync(() => {

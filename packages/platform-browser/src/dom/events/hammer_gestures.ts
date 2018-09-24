@@ -150,12 +150,18 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     super(doc);
   }
 
+  loading = false;
+  registerCallbacks: Array<{resolve: () => void, reject: () => void, cancelRegistration: boolean}> =
+      [];
+
+  isHammerMissing() { return !(window as any).Hammer; }
+
   supports(eventName: string): boolean {
     if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
       return false;
     }
 
-    if (!(window as any).Hammer && !this.loader) {
+    if (this.isHammerMissing() && !this.loader) {
       this.console.warn(
           `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
           `loaded and no custom loader has been specified.`);
@@ -171,35 +177,53 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 
     // If Hammer is not present but a loader is specified, we defer adding the event listener
     // until Hammer is loaded.
-    if (!(window as any).Hammer && this.loader) {
+    if (this.isHammerMissing() && this.loader) {
       // This `addEventListener` method returns a function to remove the added listener.
       // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
       // than remove anything.
-      let cancelRegistration = false;
-      let deregister: Function = () => { cancelRegistration = true; };
-
-      this.loader()
-          .then(() => {
-            // If Hammer isn't actually loaded when the custom loader resolves, give up.
-            if (!(window as any).Hammer) {
-              this.console.warn(
-                  `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
-              deregister = () => {};
-              return;
-            }
-
-            if (!cancelRegistration) {
-              // Now that Hammer is loaded and the listener is being loaded for real,
-              // the deregistration function changes from canceling registration to removal.
-              deregister = this.addEventListener(element, eventName, handler);
-            }
-          })
-          .catch(() => {
-            this.console.warn(
-                `The "${eventName}" event cannot be bound because the custom ` +
-                `Hammer.JS loader failed.`);
+      let deregister: Function = () => { registerCallback.cancelRegistration = true; };
+      let registerCallback = {
+        cancelRegistration: false,
+        resolve: () => {
+          // If Hammer isn't actually loaded when the custom loader resolves, give up.
+          if (this.isHammerMissing()) {
+            this.console.warn(`The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
             deregister = () => {};
-          });
+            return;
+          }
+
+          if (!registerCallback.cancelRegistration) {
+            // Now that Hammer is loaded and the listener is being loaded for real,
+            // the deregistration function changes from canceling registration to removal.
+            deregister = this.addEventListener(element, eventName, handler);
+          }
+        },
+        reject: () => {
+          this.console.warn(
+              `The "${eventName}" event cannot be bound because the custom ` +
+              `Hammer.JS loader failed.`);
+          deregister = () => {};
+        }
+      };
+
+      this.registerCallbacks.push(registerCallback);
+
+      if (!this.loading) {
+        this.loading = true;
+        this.loader().then(
+            () => {
+              this.registerCallbacks.forEach(({cancelRegistration, resolve}) => {
+                if (!cancelRegistration) {
+                  resolve();
+                }
+              });
+              this.registerCallbacks = [];
+            },
+            () => {
+              this.registerCallbacks.forEach(({reject}) => reject());
+              this.registerCallbacks = [];
+            });
+      }
 
       // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
       // can change the behavior of `deregister` once the listener is added. Using a closure in
