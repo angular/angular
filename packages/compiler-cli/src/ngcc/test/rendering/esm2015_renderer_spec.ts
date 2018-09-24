@@ -62,6 +62,44 @@ function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
 // Some other content`
 };
 
+const PROGRAM_DECORATE_HELPER = {
+  name: 'some/file.js',
+  contents: `
+import * as tslib_1 from "tslib";
+var D_1;
+/* A copyright notice */
+import { Directive } from '@angular/core';
+const OtherA = () => (node) => { };
+const OtherB = () => (node) => { };
+let A = class A {
+};
+A = tslib_1.__decorate([
+    Directive({ selector: '[a]' }),
+    OtherA()
+], A);
+export { A };
+let B = class B {
+};
+B = tslib_1.__decorate([
+    OtherB(),
+    Directive({ selector: '[b]' })
+], B);
+export { B };
+let C = class C {
+};
+C = tslib_1.__decorate([
+    Directive({ selector: '[c]' })
+], C);
+export { C };
+let D = D_1 = class D {
+};
+D = D_1 = tslib_1.__decorate([
+    Directive({ selector: '[d]', providers: [D_1] })
+], D);
+export { D };
+// Some other content`
+};
+
 describe('Esm2015Renderer', () => {
 
   describe('addImports', () => {
@@ -136,61 +174,121 @@ A.decorators = [
 
 
   describe('removeDecorators', () => {
+    describe('[static property declaration]', () => {
+      it('should delete the decorator (and following comma) that was matched in the analysis',
+         () => {
+           const {analyzer, parser, program, renderer} = setup(PROGRAM);
+           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const output = new MagicString(PROGRAM.contents);
+           const analyzedClass = analyzedFile.analyzedClasses[0];
+           const decorator = analyzedClass.decorators[0];
+           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           renderer.removeDecorators(output, decoratorsToRemove);
+           expect(output.toString())
+               .not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+           expect(output.toString()).toContain(`{ type: OtherA }`);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+           expect(output.toString()).toContain(`{ type: OtherB }`);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+         });
 
+
+      it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
+         () => {
+           const {analyzer, parser, program, renderer} = setup(PROGRAM);
+           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const output = new MagicString(PROGRAM.contents);
+           const analyzedClass = analyzedFile.analyzedClasses[1];
+           const decorator = analyzedClass.decorators[1];
+           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           renderer.removeDecorators(output, decoratorsToRemove);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+           expect(output.toString()).toContain(`{ type: OtherA }`);
+           expect(output.toString())
+               .not.toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+           expect(output.toString()).toContain(`{ type: OtherB }`);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+         });
+
+
+      it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
+         () => {
+           const {analyzer, parser, program, renderer} = setup(PROGRAM);
+           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const output = new MagicString(PROGRAM.contents);
+           const analyzedClass = analyzedFile.analyzedClasses[2];
+           const decorator = analyzedClass.decorators[0];
+           const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+           decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
+           renderer.removeDecorators(output, decoratorsToRemove);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+           expect(output.toString()).toContain(`{ type: OtherA }`);
+           expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+           expect(output.toString()).toContain(`{ type: OtherB }`);
+           expect(output.toString())
+               .not.toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+           expect(output.toString()).not.toContain(`C.decorators = [`);
+         });
+    });
+  });
+
+  describe('[__decorate declarations]', () => {
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
-      const output = new MagicString(PROGRAM.contents);
-      const analyzedClass = analyzedFile.analyzedClasses[0];
-      const decorator = analyzedClass.decorators[0];
+      const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+      const analyzedFile =
+          analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+      const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+      const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'A') !;
+      const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
-      expect(output.toString()).not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-      expect(output.toString()).toContain(`{ type: OtherA }`);
-      expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-      expect(output.toString()).toContain(`{ type: OtherB }`);
-      expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+      expect(output.toString()).not.toContain(`Directive({ selector: '[a]' }),`);
+      expect(output.toString()).toContain(`OtherA()`);
+      expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
+      expect(output.toString()).toContain(`OtherB()`);
+      expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
     });
-
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
-         const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[1];
-         const decorator = analyzedClass.decorators[1];
+         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+         const analyzedFile =
+             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'B') !;
+         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
-         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-         expect(output.toString()).toContain(`{ type: OtherA }`);
-         expect(output.toString())
-             .not.toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-         expect(output.toString()).toContain(`{ type: OtherB }`);
-         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
+         expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
+         expect(output.toString()).toContain(`OtherA()`);
+         expect(output.toString()).not.toContain(`Directive({ selector: '[b]' })`);
+         expect(output.toString()).toContain(`OtherB()`);
+         expect(output.toString()).toContain(`Directive({ selector: '[c]' })`);
        });
 
 
     it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
-         const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[2];
-         const decorator = analyzedClass.decorators[0];
+         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+         const analyzedFile =
+             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
+         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'C') !;
+         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
-         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
-         expect(output.toString()).toContain(`{ type: OtherA }`);
-         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
-         expect(output.toString()).toContain(`{ type: OtherB }`);
-         expect(output.toString()).not.toContain(`C.decorators = [
-  { type: Directive, args: [{ selector: '[c]' }] },
-];`);
+         expect(output.toString()).toContain(`Directive({ selector: '[a]' }),`);
+         expect(output.toString()).toContain(`OtherA()`);
+         expect(output.toString()).toContain(`Directive({ selector: '[b]' })`);
+         expect(output.toString()).toContain(`OtherB()`);
+         expect(output.toString()).not.toContain(`Directive({ selector: '[c]' })`);
+         expect(output.toString()).not.toContain(`C = tslib_1.__decorate([`);
+         expect(output.toString()).toContain(`let C = class C {\n};\nexport { C };`);
        });
-
   });
 });
