@@ -62,14 +62,7 @@ export class Transformer {
     // Create the TS program and necessary helpers.
     // TODO : create a custom compiler host that reads from .bak files if available.
     const host = ts.createCompilerHost(options);
-    let rootDirs: string[]|undefined = undefined;
-    if (options.rootDirs !== undefined) {
-      rootDirs = options.rootDirs;
-    } else if (options.rootDir !== undefined) {
-      rootDirs = [options.rootDir];
-    } else {
-      rootDirs = [host.getCurrentDirectory()];
-    }
+    const rootDirs = this.getRootDirs(host, options);
     const entryPointFilePath = entryPoint[format];
     if (!entryPointFilePath) {
       throw new Error(
@@ -111,6 +104,16 @@ export class Transformer {
 
     // Write the built-with-ngcc marker
     writeMarkerFile(entryPoint, format);
+  }
+
+  getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions) {
+    if (options.rootDirs !== undefined) {
+      return options.rootDirs;
+    } else if (options.rootDir !== undefined) {
+      return [options.rootDir];
+    } else {
+      return [host.getCurrentDirectory()];
+    }
   }
 
   getHost(isCore: boolean, format: string, program: ts.Program, dtsMapper: DtsMapper):
