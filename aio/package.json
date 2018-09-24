@@ -86,7 +86,7 @@
     "@webcomponents/custom-elements": "^1.2.0",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
-    "rxjs": "6.2.2",
+    "rxjs": "^6.3.0",
     "tslib": "^1.9.0",
     "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.26"

@@ -30,6 +30,9 @@
     "name": "EMPTY_ARRAY$1"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "FLAGS"
   },
   {
@@ -69,6 +72,9 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "ObjectUnsubscribedErrorImpl"
+  },
+  {
     "name": "PARENT"
   },
   {
@@ -88,6 +94,9 @@
   },
   {
     "name": "TVIEW"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "VIEWS"
