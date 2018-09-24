@@ -116,7 +116,7 @@ Most apps strive for a consistent look across the application.
 The CLI generated an empty `styles.css` for this purpose.
 Put your application-wide styles there.
 
-Here's an excerpt from the `styles.css` for the _Tour of Heroes_ sample app.
+Open `src/styles.css` and add the code below to the file.
 
 <code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
 </code-example>
