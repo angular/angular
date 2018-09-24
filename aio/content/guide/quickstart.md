@@ -1,46 +1,46 @@
-# Getting Started
+# Getting started 
 
-Good tools make application development quicker and easier to maintain than
-if you did everything by hand.
+Welcome to Angular! Angular makes it easy to build modern applications for the web, mobile, or desktop.  
 
-The [**Angular CLI**](https://cli.angular.io/) is a **_command line interface_** tool
-that can create a project, add files, and perform a variety of ongoing development tasks such
-as testing, bundling, and deployment.
-
-The goal in this guide is to build and run a simple Angular
-application in TypeScript, using the Angular CLI
+This guide shows you how to build and run a simple Angular
+app, using the Angular CLI to accelerate development, 
 while adhering to the [Style Guide](guide/styleguide) recommendations that
 benefit _every_ Angular project.
 
-By the end of the chapter, you'll have a basic understanding of development with the CLI
-and a foundation for both these documentation samples and for real world applications.
-
-And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
-
-<h2 id='devenv'>
-  Step 1. Set up the Development Environment
-</h2>
+The end of this guide includes a link to download the solution and recommended next steps. 
 
 
+{@a devenv}
 
-You need to set up your development environment before you can do anything.
+## Prerequisites 
 
-Install **[Node.js® and npm](https://nodejs.org/en/download/)**
-if they are not already on your machine.
+Before you begin, make sure your development environment includes `Node.js®` and an npm package manager. 
 
-<div class="alert is-helpful">
+### Node.js
 
+Angular requires `Node.js` version 8.x or 10.x.
 
+* To check your version, run `node -v` in a terminal/console window.
 
-**Verify that you are running at least Node.js version `8.x` or greater and npm version `5.x` or greater**
-by running `node -v` and `npm -v` in a terminal/console window.
-Older versions produce errors, but newer versions are fine.
+* To install Node.js, go to [nodejs.org](https://nodejs.org/en//) to download the installation package.
 
-</div>
+### npm package manager
 
+Angular, the Angular CLI, and Angular apps depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
 
+You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which is installed with Node.js by default.
 
-Then install the [Angular CLI](https://github.com/angular/angular-cli) globally.
+The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for downloading and installing npm packages.
+The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
+
+{@a install-cli}
+
+## Step 1: Install the Angular CLI
+
+The [**Angular CLI**](https://cli.angular.io/) is a **_command line interface_** tool
+that makes it easy to create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+
+Install the Angular CLI globally. The following command shows how to install the CLI using the `npm` package manager.
 
 
 <code-example language="sh" class="code-shell">
@@ -51,9 +51,9 @@ Then install the [Angular CLI](https://github.com/angular/angular-cli) globally.
 
 
 
-<h2 id='create-proj'>
-  Step 2. Create a new project
-</h2>
+{@a create-proj}
+
+## Step 2: Create a new project
 
 
 
@@ -69,7 +69,7 @@ Generate a new project and default app by running the following command:
 </code-example>
 
 
-The Angular CLI installs the necessary npm packages, creates the project files, and populates the project with a simple default app. This can take some time.
+The Angular CLI installs the necessary `npm` packages, creates the project files, and populates the project with a simple default app. This can take a few minutes.
 
 
 
@@ -87,10 +87,9 @@ See the [Angular Material documentation](https://material.angular.io/guides "Ang
 </div>
 
 
-<h2 id='serve'>
-  Step 3: Serve the application
-</h2>
+{@a serve}
 
+## Step 3: Serve the application
 
 
 Go to the project directory and launch the server.
@@ -118,15 +117,14 @@ Your app greets you with a message:
 
 
 
+{@a first-component}
 
-<h2 id='first-component'>
-  Step 4: Edit your first Angular component
-</h2>
+## Step 4: Edit your first Angular component
 
 
 
 The CLI created the first Angular component for you.
-This is the _root component_ and it is named `app-root`.
+This is the _root component_, and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
 
 
@@ -152,490 +150,39 @@ Open `src/app/app.component.css` and give the component some style.
 
 
 
-Looking good!
+That's all you need to do. You've created your first Angular app!
 
 
+## Solution and project file review
 
-## What's next?
-That's about all you'd expect to do in a "Hello, World" app.
+You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a> Most Angular guides contain links to an associated example app, so that you can see Angular concepts and code in action. 
 
-You're ready to take the [Tour of Heroes Tutorial](tutorial) and build
-a small application that demonstrates the great things you can build with Angular.
-
-Or you can stick around a bit longer to learn about the files in your brand new project.
-
-
-
-## Project file review
-
-An Angular CLI project is the foundation for both quick experiments and enterprise solutions.
-
-The first file you should check out is `README.md`.
-It has some basic information on how to use CLI commands.
-Whenever you want to know more about how Angular CLI works make sure to visit
-[the Angular CLI repository](https://github.com/angular/angular-cli) and
-[Wiki](https://github.com/angular/angular-cli/wiki).
-
-Some of the generated files might be unfamiliar to you.
-
-
-
-### The `src` folder
-Your app lives in the `src` folder.
+Your app resides in the `src` folder.
 All Angular components, templates, styles, images, and anything else your app needs go here.
 Any files outside of this folder are meant to support building your app.
 
-
-<div class='filetree'>
-  <div class='file'>src</div>
-  <div class='children'>
-    <div class='file'>app</div>
-    <div class='children'>
-      <div class='file'>app.component.css</div>
-      <div class='file'>app.component.html</div>
-      <div class="file">app.component.spec.ts</div>
-      <div class="file">app.component.ts</div>
-      <div class="file">app.module.ts</div>
-    </div>
-    <div class="file">assets</div>
-    <div class='children'>
-      <div class="file">.gitkeep</div>
-    </div>
-    <div class="file">environments</div>
-    <div class='children'>
-      <div class="file">environment.prod.ts</div>
-      <div class="file">environment.ts</div>
-    </div>
-    <div class="file">browserslist</div>
-    <div class="file">favicon.ico</div>
-    <div class="file">index.html</div>
-    <div class="file">karma.conf.js</div>
-    <div class="file">main.ts</div>
-    <div class="file">polyfills.ts</div>
-    <div class="file">styles.css</div>
-    <div class="file">test.ts</div>
-    <div class="file">tsconfig.app.json</div>
-    <div class="file">tsconfig.spec.json</div>
-    <div class="file">tslint.json</div>
-  </div>
-</div>
-
-
-
-<style>
-  td, th {vertical-align: top}
-</style>
-
-
-
-<table width="100%">
-  <col width="20%">
-  </col>
-  <col width="80%">
-  </col>
-  <tr>
-    <th>
-      File
-    </th>
-    <th>
-      Purpose
-    </th>
-  </tr>
-  <tr>
-    <td>
-
-      `app/app.component.{ts,html,css,spec.ts}`
-
-    </td>
-    <td>
-
-      Defines the `AppComponent` along with an HTML template, CSS stylesheet, and a unit test.
-      It is the **root** component of what will become a tree of nested components
-      as the application evolves.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `app/app.module.ts`
-
-    </td>
-    <td>
-
-      Defines `AppModule`, the [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
-      Right now it declares only the `AppComponent`.
-      Soon there will be more components to declare.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `assets/*`
-
-    </td>
-    <td>
-
-      A folder where you can put images and anything else to be copied wholesale
-      when you build your application.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `environments/*`
-
-    </td>
-    <td>
-
-      This folder contains one file for each of your destination environments,
-      each exporting simple configuration variables to use in your application.
-      The files are replaced on-the-fly when you build your app.
-      You might use a different API endpoint for development than you do for production
-      or maybe different analytics tokens.
-      You might even use some mock services.
-      Either way, the CLI has you covered.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `browserslist`
-
-    </td>
-    <td>
-
-      A configuration file to share [target browsers](https://github.com/browserslist/browserslist) between different front-end tools.
-
-    </td>
-  </tr>  
-  <tr>
-    <td>
-
-      `favicon.ico`
-
-    </td>
-    <td>
-
-      Every site wants to look good on the bookmark bar.
-      Get started with your very own Angular icon.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `index.html`
-
-    </td>
-    <td>
-
-      The main HTML page that is served when someone visits your site.
-      Most of the time you'll never need to edit it.
-      The CLI automatically adds all `js` and `css` files when building your app so you
-      never need to add any `<script>` or `<link>` tags here manually.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `karma.conf.js`
-
-    </td>
-    <td>
-
-      Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
-      used when running `ng test`.
-
-    </td>
-  </tr>  
-  <tr>
-    <td>
-
-      `main.ts`
-
-    </td>
-    <td>
-
-      The main entry point for your app.
-      Compiles the application with the [JIT compiler](guide/glossary#jit)
-      and bootstraps the application's root module (`AppModule`) to run in the browser.
-      You can also use the [AOT compiler](guide/aot-compiler)
-      without changing any code by appending the`--aot` flag to the `ng build` and `ng serve` commands.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `polyfills.ts`
-
-    </td>
-    <td>
-
-      Different browsers have different levels of support of the web standards.
-      Polyfills help normalize those differences.
-      You should be pretty safe with `core-js` and `zone.js`, but be sure to check out
-      the [Browser Support guide](guide/browser-support) for more information.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `styles.css`
-
-    </td>
-    <td>
-
-      Your global styles go here.
-      Most of the time you'll want to have local styles in your components for easier maintenance,
-      but styles that affect all of your app need to be in a central place.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `test.ts`
-
-    </td>
-    <td>
-
-      This is the main entry point for your unit tests.
-      It has some custom configuration that might be unfamiliar, but it's not something you'll
-      need to edit.
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `tsconfig.{app|spec}.json`
-    </td>
-    <td>
-
-      TypeScript compiler configuration for the Angular app (`tsconfig.app.json`)
-      and for the unit tests (`tsconfig.spec.json`).
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `tslint.json`
-
-    </td>
-    <td>
-
-      Additional Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
-      [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
-      Linting helps keep your code style consistent.
-
-    </td>
-  </tr>  
-</table>
-
-### The root folder
-
-The `src/` folder is just one of the items inside the project's root folder.
 Other files help you build, test, maintain, document, and deploy the app.
-These files go in the root folder next to `src/`.
+These files go in the `root` folder next to `src/`.
+
+For more details about Angular project files and the file structure, see [Anatomy of the setup](guide/setup-systemjs-anatomy).
 
 
-<div class='filetree'>
-  <div class="file">my-app</div>
-  <div class='children'>
-    <div class="file">e2e</div>
-    <div class='children'>
-      <div class="file">src</div>
-      <div class='children'>
-        <div class="file">app.e2e-spec.ts</div>
-        <div class="file">app.po.ts</div>
-      </div>      
-      <div class="file">tsconfig.e2e.json</div>
-      <div class="file">protractor.conf.js</div>
-    </div>
-    <div class="file">node_modules/...</div>
-    <div class="file">src/...</div>
-    <div class='children'>
-      <div class="file">karma.conf.js</div>
-    </div>    
-    <div class="file">.editorconfig</div>
-    <div class="file">.gitignore</div>
-    <div class="file">angular.json</div>
-    <div class="file">package.json</div>
-    <div class="file">README.md</div>
-    <div class="file">tsconfig.json</div>
-    <div class="file">tslint.json</div>
-  </div>
-</div>
+## Next steps
 
-<style>
-  td, th {vertical-align: top}
-</style>
+Now that you've seen the essentials of an Angular app and the Angular CLI, continue with these introductory materials: 
+
+* The [Tour of Heroes tutorial](tutorial "Tour of Heroes tutorial") provides additional hands-on learning. It walks you through the steps to build an app that helps a staffing agency manage its stable of heroes. 
+It has many of the features you'd expect to find in a data-driven application: 
+
+        - Acquiring and displaying a list of items (heroes)
+
+        - Editing a selected item's detail
+
+        - Navigating among different views of the data
 
 
+* The [Architecture guide](guide/architecture "Architecture guide")  describes key concepts such as modules, components, services, dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
 
-<table width="100%">
-  <col width="20%">
-  </col>
-  <col width="80%">
-  </col>
-  <tr>
-    <th>
-      File
-    </th>
-    <th>
-      Purpose
-    </th>
-  </tr>
-  <tr>
-    <td>
+Both the Tutorial and Architecture guide are intended to give you the foundation to continue exploring Angular on your own, focusing on the features most important for your apps. 
 
-      `e2e/`
 
-    </td>
-    <td>
-
-      Inside `e2e/` live the end-to-end tests.
-      They shouldn't be inside `src/` because e2e tests are really a separate app that
-      just so happens to test your main app.
-      That's also why they have their own `tsconfig.e2e.json`.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `node_modules/`
-
-    </td>
-    <td>
-
-      `Node.js` creates this folder and puts all third party modules listed in
-      `package.json` inside of it.
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `.editorconfig`
-
-    </td>
-    <td>
-
-      Simple configuration for your editor to make sure everyone that uses your project
-      has the same basic configuration.
-      Most editors support an `.editorconfig` file.
-      See http://editorconfig.org for more information.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `.gitignore`
-
-    </td>
-    <td>
-
-      Git configuration to make sure autogenerated files are not committed to source control.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `angular.json`
-
-    </td>
-    <td>
-
-      Configuration for Angular CLI.
-      In this file you can set several defaults and also configure what files are included
-      when your project is built.
-      Check out the official documentation if you want to know more.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `package.json`
-
-    </td>
-    <td>
-
-      `npm` configuration listing the third party packages your project uses.
-      You can also add your own [custom scripts](https://docs.npmjs.com/misc/scripts) here.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `protractor.conf.js`
-
-    </td>
-    <td>
-
-      End-to-end test configuration for [Protractor](http://www.protractortest.org/),
-      used when running `ng e2e`.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `README.md`
-
-    </td>
-    <td>
-
-      Basic documentation for your project, pre-filled with CLI command information.
-      Make sure to enhance it with project documentation so that anyone
-      checking out the repo can build your app!
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `tsconfig.json`
-
-    </td>
-    <td>
-
-      TypeScript compiler configuration for your IDE to pick up and give you helpful tooling.
-
-    </td>
-  </tr>
-  <tr>
-    <td>
-
-      `tslint.json`
-
-    </td>
-    <td>
-
-      Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
-      [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
-      Linting helps keep your code style consistent.
-
-    </td>
-  </tr>
-</table>
-
-<div class="alert is-helpful">
-
-### Next Step
-
-If you're new to Angular, continue with the
-[tutorial](tutorial "Tour of Heroes tutorial").
-You can skip the "Setup" step since you're already using the Angular CLI setup.
-
-</div>
