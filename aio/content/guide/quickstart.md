@@ -365,7 +365,7 @@ Any files outside of this folder are meant to support building your app.
       Compiles the application with the [JIT compiler](guide/glossary#jit)
       and bootstraps the application's root module (`AppModule`) to run in the browser.
       You can also use the [AOT compiler](guide/aot-compiler)
-      without changing any code by appending the`--aot` flag to the `ng build` and `ng serve` commands.
+      without changing any code by appending the `--aot` flag to the `ng build` and `ng serve` commands.
 
     </td>
   </tr>
