@@ -352,7 +352,8 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
  * Returns a collection of directive index values that are used on the element
  * (which is referenced by the lNodeIndex)
  */
-function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): number[]|null {
+export function discoverDirectiveIndices(
+    lViewData: LViewData, lNodeIndex: number, includeComponents?: boolean): number[]|null {
   const directivesAcrossView = lViewData[DIRECTIVES];
   const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
   if (directivesAcrossView && directivesAcrossView.length) {
@@ -373,12 +374,20 @@ function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): num
   return null;
 }
 
-function discoverDirectives(lViewData: LViewData, directiveIndices: number[]): number[]|null {
+/**
+ * Returns a list of directives extracted from the given view based on the
+ * provided list of directive index values.
+ *
+ * @param lViewData The target view data
+ * @param indices A collection of directive index values which will be used to
+ *    figure out the directive instances
+ */
+export function discoverDirectives(lViewData: LViewData, indices: number[]): number[]|null {
   const directives: any[] = [];
   const directiveInstances = lViewData[DIRECTIVES];
   if (directiveInstances) {
-    for (let i = 0; i < directiveIndices.length; i++) {
-      const directiveIndex = directiveIndices[i];
+    for (let i = 0; i < indices.length; i++) {
+      const directiveIndex = indices[i];
       const directive = directiveInstances[directiveIndex];
       directives.push(directive);
     }

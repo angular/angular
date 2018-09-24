@@ -654,10 +654,10 @@
     "name": "getRendererFactory"
   },
   {
-    "name": "getRootContext"
+    "name": "getRootContext$1"
   },
   {
-    "name": "getRootView"
+    "name": "getRootView$1"
   },
   {
     "name": "getStyleSanitizer"
