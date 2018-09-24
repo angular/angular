@@ -13,6 +13,7 @@ import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {TestInjector} from './test_injector';
 
 let _nextRootElementId = 0;
 
@@ -378,8 +379,8 @@ export class TestBedRender3 implements Injector, TestBed {
     compileNgModule(testModuleType, resolvers);
 
     const parentInjector = this.platform.injector;
-    this._moduleRef = new NgModuleRef(testModuleType, parentInjector);
-
+    this._moduleRef = new NgModuleRef(testModuleType, new TestInjector(parentInjector));
+    TestInjector.patchModuleRef(this._moduleRef);
     this._instantiated = true;
   }
 

@@ -14,6 +14,7 @@ import {MetadataOverride} from './metadata_override';
 import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
+import {TestInjector} from './test_injector';
 
 const UNDEFINED = new Object();
 
@@ -417,10 +418,11 @@ export class TestBedViewEngine implements Injector, TestBed {
     const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     const ngZoneInjector = Injector.create({
       providers: providers,
-      parent: this.platform.injector,
+      parent: new TestInjector(this.platform.injector),
       name: this._moduleFactory.moduleType.name
     });
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
+    TestInjector.patchModuleRef(this._moduleRef);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.
     (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();

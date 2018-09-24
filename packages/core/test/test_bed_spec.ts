@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, InjectionToken, NgModule, Optional} from '@angular/core';
+import {Component, Inject, Injectable, InjectionToken, NgModule, Optional} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 const NAME = new InjectionToken<string>('name');
+
+@Injectable({providedIn: 'root'})
+export class TestService {
+  test = 1;
+}
 
 // -- module: HWModule
 @Component({
@@ -146,4 +151,13 @@ describe('TestBed', () => {
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
+
+  it('should not provide test service and fallback to not found value', () => {
+    const notFound = {test: 2};
+    const hello = TestBed.createComponent(HelloWorld);
+    expect(hello.componentRef.injector.get(TestService, notFound)).toBe(notFound);
+  });
+
+  it('should throw when getting the test service',
+     () => { expect(() => { TestBed.get(TestService); }).toThrow(); });
 });
