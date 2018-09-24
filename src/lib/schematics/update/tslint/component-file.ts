@@ -16,12 +16,20 @@ export type ExternalResource = ts.SourceFile;
  */
 export function createComponentFile(filePath: string, content: string): ExternalResource {
   const sourceFile = ts.createSourceFile(filePath, `\`${content}\``, ts.ScriptTarget.ES5);
-  const _getFullText = sourceFile.getFullText;
 
+  // Subtract two characters because the string literal quotes are only needed for parsing
+  // and are not part of the actual source file.
+  sourceFile.end = sourceFile.end - 2;
+
+  // Note: This does not affect the way TSLint applies replacements for external resource files.
+  // At the time of writing, TSLint loads files manually if the actual rule source file is not
+  // equal to the source file of the replacement. This means that the replacements need proper
+  // offsets without the string literal quote symbols.
   sourceFile.getFullText = function() {
-    const text = _getFullText.apply(sourceFile);
-    return text.substring(1, text.length - 1);
-  }.bind(sourceFile);
+    return sourceFile.text.substring(1, sourceFile.text.length - 1);
+  };
+
+  sourceFile.getText = sourceFile.getFullText;
 
   return sourceFile;
 }

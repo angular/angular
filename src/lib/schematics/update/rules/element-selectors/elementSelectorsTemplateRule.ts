@@ -13,10 +13,6 @@ import {elementSelectors} from '../../material/data/element-selectors';
 import {getChangesForTarget} from '../../material/transform-change-data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
-import {
-  addFailureAtReplacement,
-  createExternalReplacementFailure,
-} from '../../tslint/rule-failures';
 import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
@@ -34,16 +30,16 @@ export class Walker extends ComponentWalker {
   /** Change data that upgrades to the specified target version. */
   data = getChangesForTarget(this.getOptions()[0], elementSelectors);
 
-  visitInlineTemplate(template: ts.StringLiteralLike) {
-    this._createReplacementsForContent(template, template.getText())
-      .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
+  visitInlineTemplate(node: ts.StringLiteralLike) {
+    this._createReplacementsForContent(node, node.getText()).forEach(data => {
+      this.addFailureAtReplacement(data.failureMessage, data.replacement);
+    });
   }
 
-  visitExternalTemplate(template: ExternalResource) {
-    this._createReplacementsForContent(template, template.getFullText())
-      .map(data => createExternalReplacementFailure(template, data.failureMessage,
-          this.getRuleName(), data.replacement))
-      .forEach(failure => this.addFailure(failure));
+  visitExternalTemplate(node: ExternalResource) {
+    this._createReplacementsForContent(node, node.getText()).forEach(data => {
+      this.addExternalFailureAtReplacement(node, data.failureMessage, data.replacement);
+    });
   }
 
   /**

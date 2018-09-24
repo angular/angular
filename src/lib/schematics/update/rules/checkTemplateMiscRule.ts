@@ -26,15 +26,15 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends ComponentWalker {
 
-  visitInlineTemplate(template: ts.StringLiteralLike) {
-    this._createFailuresForContent(template, template.getText())
-      .forEach(data => this.addFailureFromStartToEnd(data.start, data.end, data.message));
+  visitInlineTemplate(node: ts.StringLiteralLike) {
+    this._createFailuresForContent(node, node.getText()).forEach(data => {
+      this.addFailureFromStartToEnd(data.start, data.end, data.message);
+    });
   }
 
-  visitExternalTemplate(template: ExternalResource) {
-    this._createFailuresForContent(template, template.getFullText()).forEach(data => {
-      this.addFailure(new RuleFailure(
-          template, data.start, data.end, data.message, this.getRuleName()));
+  visitExternalTemplate(node: ExternalResource) {
+    this._createFailuresForContent(node, node.getText()).forEach(data => {
+      this.addExternalFailureFromStartToEnd(node, data.start, data.end, data.message);
     });
   }
 

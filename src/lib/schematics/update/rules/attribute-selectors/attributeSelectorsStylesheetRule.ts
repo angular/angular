@@ -13,10 +13,6 @@ import {attributeSelectors} from '../../material/data/attribute-selectors';
 import {getChangesForTarget} from '../../material/transform-change-data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
-import {
-  addFailureAtReplacement,
-  createExternalReplacementFailure,
-} from '../../tslint/rule-failures';
 import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
@@ -41,15 +37,15 @@ export class Walker extends ComponentWalker {
   }
 
   visitInlineStylesheet(literal: ts.StringLiteralLike) {
-    this._createReplacementsForContent(literal, literal.getText())
-      .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
+    this._createReplacementsForContent(literal, literal.getText()).forEach(data => {
+      this.addFailureAtReplacement(data.failureMessage, data.replacement);
+    });
   }
 
   visitExternalStylesheet(node: ExternalResource) {
-    this._createReplacementsForContent(node, node.getFullText())
-      .map(data => createExternalReplacementFailure(node, data.failureMessage,
-          this.getRuleName(), data.replacement))
-      .forEach(failure => this.addFailure(failure));
+    this._createReplacementsForContent(node, node.getText()).forEach(data => {
+      this.addExternalFailureAtReplacement(node, data.failureMessage, data.replacement);
+    });
   }
 
   /**

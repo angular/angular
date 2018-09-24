@@ -36,7 +36,7 @@ class Walker extends RuleWalker {
       return;
     }
 
-    const literalText = literal.getFullText();
+    const literalText = literal.getText();
 
     this.data.forEach(selector => {
       findAllSubstringIndices(literalText, selector.replace)

@@ -11,10 +11,6 @@ import * as ts from 'typescript';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
-  addFailureAtReplacement,
-  createExternalReplacementFailure,
-} from '../../tslint/rule-failures';
-import {
   convertSpeedFactorToDuration,
   createSpeedFactorConvertExpression,
 } from './ripple-speed-factor';
@@ -45,16 +41,16 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends ComponentWalker {
 
-  visitInlineTemplate(template: ts.StringLiteralLike) {
-    this._createReplacementsForContent(template, template.getText())
-      .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
+  visitInlineTemplate(node: ts.StringLiteralLike) {
+    this._createReplacementsForContent(node, node.getText()).forEach(data => {
+      this.addFailureAtReplacement(data.failureMessage, data.replacement);
+    });
   }
 
-  visitExternalTemplate(template: ExternalResource) {
-    this._createReplacementsForContent(template, template.getFullText())
-      .map(data => createExternalReplacementFailure(template, data.failureMessage,
-          this.getRuleName(), data.replacement))
-      .forEach(failure => this.addFailure(failure));
+  visitExternalTemplate(node: ExternalResource) {
+    this._createReplacementsForContent(node, node.getText()).forEach(data => {
+      this.addExternalFailureAtReplacement(node, data.failureMessage, data.replacement);
+    });
   }
 
   private _createReplacementsForContent(node: ts.Node, templateText: string) {

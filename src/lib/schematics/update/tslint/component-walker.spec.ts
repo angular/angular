@@ -125,7 +125,7 @@ describe('ComponentWalker', () => {
     const stylesheetPath = './shared-styles/global.css';
 
     spyOn(walker, 'visitExternalStylesheet').and.callFake(node => {
-      expect(node.getFullText()).toBe('external');
+      expect(node.getText()).toBe('external');
     });
 
     mockFs({[stylesheetPath]: 'external'});
@@ -146,12 +146,43 @@ describe('ComponentWalker', () => {
     const stylePath = join(dirname(sourceFile.fileName), 'my-component.css');
 
     spyOn(walker, 'visitExternalStylesheet').and.callFake(node => {
-      expect(node.getFullText()).toBe('external');
+      expect(node.getText()).toBe('external');
     });
 
     mockFs({[stylePath]: 'external'});
 
     walker._reportExtraStylesheetFiles([stylePath]);
+    walker.walk(sourceFile);
+
+    expect(walker.visitExternalStylesheet).toHaveBeenCalledTimes(1);
+  });
+
+  it('should create external source files with proper offsets', () => {
+    const sourceFile = createSourceFile(`
+      @Component({
+        styleUrls: ['./my-component.css']
+      })
+      export class MyComponent {}
+    `);
+    const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
+    const stylePath = join(dirname(sourceFile.fileName), 'my-component.css');
+    const styleContent = 'external stylesheet';
+
+    // Since the component walker is an enhanced TSLint rule walker and needs to report
+    // the external styles and templates as a TypeScript source file in order to apply
+    // replacements, the offsets of the fake TypeScript source file should not differentiate
+    // from the original source file. Meaning that the string literal quotes, which are needed to
+    // parse the resource file content as TypeScript node, should not invalidate the `width` and
+    // `end` offsets of the source file.
+    spyOn(walker, 'visitExternalStylesheet').and.callFake(node => {
+      expect(node.getStart()).toBe(0);
+      expect(node.getEnd()).toBe(styleContent.length);
+      expect(node.getWidth()).toBe(styleContent.length);
+      expect(node.getFullWidth()).toBe(styleContent.length);
+    });
+
+    mockFs({[stylePath]: styleContent});
+
     walker.walk(sourceFile);
 
     expect(walker.visitExternalStylesheet).toHaveBeenCalledTimes(1);

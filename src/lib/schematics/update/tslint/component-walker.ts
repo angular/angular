@@ -8,15 +8,15 @@
 
 import {existsSync, readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
-import {RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {createComponentFile, ExternalResource} from './component-file';
+import {ExternalFailureWalker} from './external-failure-walker';
 
 /**
  * Custom TSLint rule walker that identifies Angular components and visits specific parts of
  * the component metadata.
  */
-export class ComponentWalker extends RuleWalker {
+export class ComponentWalker extends ExternalFailureWalker {
 
   visitInlineTemplate(_template: ts.StringLiteralLike) {}
   visitInlineStylesheet(_stylesheet: ts.StringLiteralLike) {}

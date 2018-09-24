@@ -33,7 +33,7 @@ export class Walker extends RuleWalker {
       return;
     }
 
-    const textContent = node.getFullText();
+    const textContent = node.getText();
 
     this.data.forEach(data => {
       if (data.whitelist && !data.whitelist.strings) {
