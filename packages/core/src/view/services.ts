@@ -12,6 +12,7 @@ import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {isDevMode} from '../is_dev_mode';
+import {ivyEnabled} from '../ivy_switch/compiler/index';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
@@ -694,6 +695,8 @@ export class DebugRendererFactory2 implements RendererFactory2 {
 export class DebugRenderer2 implements Renderer2 {
   readonly data: {[key: string]: any};
 
+  private createDebugContext(nativeElement: any) { return this.debugContextFactory(nativeElement); }
+
   /**
    * Factory function used to create a `DebugContext` when a node is created.
    *
@@ -702,9 +705,7 @@ export class DebugRenderer2 implements Renderer2 {
    * The factory is configurable so that the `DebugRenderer2` could instantiate either a View Engine
    * or a Render context.
    */
-  debugContextFactory: () => DebugContext | null = getCurrentDebugContext;
-
-  private get debugContext() { return this.debugContextFactory(); }
+  debugContextFactory: (nativeElement?: any) => DebugContext | null = getCurrentDebugContext;
 
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
@@ -719,7 +720,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(el);
     if (debugCtx) {
       const debugEl = new DebugElement(el, null, debugCtx);
       debugEl.name = name;
@@ -730,7 +731,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(comment);
     if (debugCtx) {
       indexDebugNode(new DebugNode(comment, null, debugCtx));
     }
@@ -739,7 +740,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(text);
     if (debugCtx) {
       indexDebugNode(new DebugNode(text, null, debugCtx));
     }
@@ -777,7 +778,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
     const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = getCurrentDebugContext() || (ivyEnabled ? this.createDebugContext(el) : null);
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));
     }
