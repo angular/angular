@@ -63,6 +63,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "FLAGS"
   },
   {
@@ -126,6 +129,9 @@
     "name": "NullInjector"
   },
   {
+    "name": "ObjectUnsubscribedErrorImpl"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -181,6 +187,9 @@
   },
   {
     "name": "TemplateRef"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "VIEWS"

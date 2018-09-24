@@ -48,6 +48,9 @@
     "name": "ElementRef"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "FLAGS"
   },
   {
@@ -115,6 +118,9 @@
   },
   {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Optional"
@@ -193,6 +199,9 @@
   },
   {
     "name": "TodoStore"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "VIEWS"
