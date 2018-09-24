@@ -54,11 +54,11 @@ export class Esm2015Renderer extends Renderer {
       if (ts.isArrayLiteralExpression(containerNode)) {
         const items = containerNode.elements;
         if (items.length === nodesToRemove.length) {
-          // remove any trailing semi-colon
-          const end = (output.slice(containerNode.getEnd(), containerNode.getEnd() + 1) === ';') ?
-              containerNode.getEnd() + 1 :
-              containerNode.getEnd();
-          output.remove(containerNode.parent !.getFullStart(), end);
+          // Remove the entire statement
+          const statement = findStatement(containerNode);
+          if (statement) {
+            output.remove(statement.getFullStart(), statement.getEnd());
+          }
         } else {
           nodesToRemove.forEach(node => {
             // remove any trailing comma
@@ -81,4 +81,14 @@ export class Esm2015Renderer extends Renderer {
       outputText.overwrite(start, end, replacement);
     });
   }
+}
+
+function findStatement(node: ts.Node) {
+  while (node) {
+    if (ts.isExpressionStatement(node)) {
+      return node;
+    }
+    node = node.parent;
+  }
+  return undefined;
 }
