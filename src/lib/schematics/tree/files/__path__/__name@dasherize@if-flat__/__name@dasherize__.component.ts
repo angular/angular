@@ -76,7 +76,7 @@ export class <%= classify(name) %>Component {
   /** Get whether the node is expanded or not. */
   isExpandable(node: FlatTreeNode) {
     return node.expandable;
-  };
+  }
 
   /** Get whether the node has children or not. */
   hasChild(index: number, node: FlatTreeNode) {
