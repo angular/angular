@@ -27,6 +27,7 @@
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
       {"type": 301, "source": "/guide/webpack", "destination": "https://v5.angular.io/guide/webpack"},
       {"type": 301, "source": "/guide/setup-systemjs-anatomy", "destination": "/guide/file-structure"},
+      {"type": 301, "source": "/guide/change-log", "destination": "https://github.com/angular/angular/blob/master/CHANGELOG.md"},
 
       // some top level guide pages on old site were moved below the guide folder
       {"type": 301, "source": "/styleguide", "destination": "/guide/styleguide"},
@@ -39,7 +40,7 @@
       {"type": 301, "source": "/docs/*/latest/cookbook", "destination": "/docs"},
       {"type": 301, "source": "/docs/*/latest/cookbook/", "destination": "/docs"},
       {"type": 301, "source": "/docs/*/latest/cookbook/index.html", "destination": "/docs"},
-      {"type": 301, "source": "/**/cookbook/ts-to-js*", "destination": "https://github.com/angular/angular/blob/master/aio/content/guide/change-log.md#es6--described-in-typescript-to-javascript-2016-11-14"},
+      {"type": 301, "source": "/**/cookbook/ts-to-js*", "destination": "https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html"},
       {"type": 301, "source": "/docs/*/latest/cookbook/a1-a2-quick-reference.html", "destination": "/guide/ajs-quick-reference"},
       {"type": 301, "source": "/docs/*/latest/cookbook/component-communication.html", "destination": "/guide/component-interaction"},
       {"type": 301, "source": "/docs/*/latest/cookbook/dependency-injection.html", "destination": "/guide/dependency-injection-in-action"},
