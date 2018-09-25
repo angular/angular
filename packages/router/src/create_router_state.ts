@@ -65,7 +65,7 @@ function createOrReuseChildren(
     prevState: TreeNode<ActivatedRoute>) {
   return curr.children.map(child => {
     for (const p of prevState.children) {
-      if (routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
+      if (routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
         return createNode(routeReuseStrategy, child, p);
       }
     }

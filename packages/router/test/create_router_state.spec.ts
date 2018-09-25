@@ -16,7 +16,10 @@ import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', () => {
-  const reuseStrategy = new DefaultRouteReuseStrategy();
+  let reuseStrategy: DefaultRouteReuseStrategy;
+  beforeEach(() => {
+    reuseStrategy = new DefaultRouteReuseStrategy();
+  });
 
   const emptyState = () =>
       createEmptyState(new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null!), RootComponent);
@@ -108,6 +111,33 @@ describe('create router state', () => {
 
     // Verify the retrieve method has been called one more time
     expect(reuseStrategy.retrieve).toHaveBeenCalledTimes(3);
+  });
+
+  it('should consistently represent future and current state', () => {
+    const config = [
+      {path: '', pathMatch: 'full', component: ComponentA},
+      {path: 'product/:id', component: ComponentB}
+    ];
+    spyOn(reuseStrategy, 'shouldReuseRoute').and.callThrough();
+    const previousState = createRouterState(reuseStrategy, createState(config, ''), emptyState());
+    advanceState(previousState);
+    (reuseStrategy.shouldReuseRoute as jasmine.Spy).calls.reset();
+
+    createRouterState(reuseStrategy, createState(config, 'product/30'), previousState);
+
+    // One call for the root and one call for each of the children
+    expect(reuseStrategy.shouldReuseRoute).toHaveBeenCalledTimes(2);
+    const reuseCalls = (reuseStrategy.shouldReuseRoute as jasmine.Spy).calls;
+    const future1 = reuseCalls.argsFor(0)[0];
+    const current1 = reuseCalls.argsFor(0)[1];
+    const future2 = reuseCalls.argsFor(1)[0];
+    const current2 = reuseCalls.argsFor(1)[1];
+
+    // Routing from '' to 'product/30'
+    expect(current1._routerState.url).toEqual('');
+    expect(future1._routerState.url).toEqual('product/30');
+    expect(current2._routerState.url).toEqual('');
+    expect(future2._routerState.url).toEqual('product/30');
   });
 });
 
