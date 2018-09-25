@@ -91,6 +91,7 @@
     "!/api/testing/**",
     "!/docs/?*",
     "!/docs/*/**",
+    "!/guide/change-log",
     "!/guide/cli-quickstart",
     "!/guide/cli-quickstart.html",
     "!/guide/cli-quickstart/",
