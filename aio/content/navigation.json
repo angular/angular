@@ -433,12 +433,12 @@
           "tooltip": "Developing for content security in Angular applications."
         },
         {
-          "url": "guide/library-create.md",
+          "url": "guide/library-create",
           "title": "Creating Libraries",
           "tooltip": "Create and publish new libraries to extend Angular functionality."
         },
         {
-          "url": "guide/library-use.md",
+          "url": "guide/library-use",
           "title": "Using Libraries",
           "tooltip": "Integrating libraries to extend Angular functionality."
         },
@@ -525,7 +525,7 @@
         },
 
         {
-          "url": "guide/file-structure.md",
+          "url": "guide/file-structure",
           "title": "Project File Structure",
           "tooltip": "Inside the local development environment for SystemJS."
         },
