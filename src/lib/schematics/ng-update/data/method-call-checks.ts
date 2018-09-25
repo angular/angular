@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './utils';
-export * from './ng-update/public-api';
+import {MethodCallUpgradeData, VersionChanges} from '@angular/cdk/schematics';
+
+export const methodCallChecks: VersionChanges<MethodCallUpgradeData> = {};

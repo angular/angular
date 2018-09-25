@@ -135,7 +135,7 @@
     "exclude": [
       // Exclude schematic template files and test cases that can't be linted.
       "src/lib/schematics/**/files/**/*",
-      "src/lib/schematics/update/test-cases/**/*"
+      "src/lib/schematics/ng-update/test-cases/**/*"
     ]
   }
 }

@@ -1,4 +1,20 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
-  "schematics": {}
+  "schematics": {
+    "migration-v6": {
+      "version": "6",
+      "description": "Updates the Angular CDK to v6",
+      "factory": "./ng-update/index#updateToV6"
+    },
+    "migration-v7": {
+      "version": "7",
+      "description": "Updates the Angular CDK to v7",
+      "factory": "./ng-update/index#updateToV7"
+    },
+    "ng-post-update": {
+      "description": "Prints out results after ng-update.",
+      "factory": "./ng-update/index#postUpdate",
+      "private": true
+    }
+  }
 }

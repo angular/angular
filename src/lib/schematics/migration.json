@@ -4,16 +4,16 @@
     "migration-01": {
       "version": "6",
       "description": "Updates Angular Material to v6",
-      "factory": "./update/index#updateToV6"
+      "factory": "./ng-update/index#updateToV6"
     },
     "migration-02": {
       "version": "7",
       "description": "Updates Angular Material to v7",
-      "factory": "./update/index#updateToV7"
+      "factory": "./ng-update/index#updateToV7"
     },
     "ng-post-update": {
-      "description": "Performs cleanup after ng-update.",
-      "factory": "./update/index#postUpdate",
+      "description": "Prints out results after ng-update.",
+      "factory": "./ng-update/index#postUpdate",
       "private": true
     }
   }

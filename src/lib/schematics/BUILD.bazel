@@ -16,7 +16,7 @@ ts_library(
     "**/*.spec.ts",
     "**/files/**/*",
     "test-setup/**/*",
-    "update/test-cases/**/*",
+    "ng-update/test-cases/**/*",
   ]),
   deps = ["//src/cdk/schematics"],
   tsconfig = ":tsconfig.json",
@@ -48,6 +48,9 @@ ts_library(
 
 filegroup(
   name = "schematics_test_cases",
-  srcs = glob(["update/test-cases/**/*_input.ts", "update/test-cases/**/*_expected_output.ts"]),
+  srcs = glob([
+    "ng-update/test-cases/**/*_input.ts",
+    "ng-update/test-cases/**/*_expected_output.ts"
+  ]),
   testonly = True,
 )

@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './utils';
-export * from './ng-update/public-api';
+import {AttributeSelectorUpgradeData, VersionChanges} from '@angular/cdk/schematics';
+
+export const attributeSelectors: VersionChanges<AttributeSelectorUpgradeData> = {};
