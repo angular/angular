@@ -421,7 +421,6 @@
     ]
   },
 
-
     {
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
@@ -546,7 +545,28 @@
            }
           ]
         },
+        {
+          "url": "guide/visual-studio-2015",
+          "title": "Visual Studio 2015 QuickStart",
+          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+        }
+      ]
+    },
 
+    {
+      "title": "Release Information",
+      "tooltip": "Angular release practices, updating, and upgrading.",
+      "children": [
+        {
+          "url": "guide/releases",
+          "title": "Angular Releases",
+          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+        },
+        {
+           "url": "guide/updating",
+            "title": "Keeping Up-to-Date",
+            "tooltip": "Information about updating Angular applications and libraries to the latest version."
+        },       
         {
           "url": "guide/setup-systemjs-anatomy",
           "title": "Anatomy of the Setup",
