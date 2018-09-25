@@ -145,7 +145,7 @@
 /docs/js/latest/api/upgrade/index/UpgradeAdapter-class.html	/api/upgrade/UpgradeAdapter
 /docs/js/latest/api/upgrade/static/UpgradeModule-class	/api/upgrade/static/UpgradeModule
 /docs/js/latest/api/upgrade/static/UpgradeModule-class.html	/api/upgrade/static/UpgradeModule
-/docs/js/latest/cookbook/ts-to-js.html	https://github.com/angular/angular/blob/master/aio/content/guide/change-log.md#es6--described-in-typescript-to-javascript-2016-11-14
+/docs/js/latest/cookbook/ts-to-js.html	https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html
 /docs/js/latest/glossary	/guide/glossary
 /docs/js/latest/guide/	/docs
 /docs/js/latest/guide/lifecycle-hooks	/guide/lifecycle-hooks
@@ -170,7 +170,7 @@
 /docs/ts/latest/api/http/testing/index/MockConnection-class.html	/api/http/testing/MockConnection
 /docs/ts/latest/api/platform-browser-dynamic/index/workerAppDynamicPlatform-let.html	/api/platform-browser-dynamic/workerAppDynamicPlatform
 /docs/ts/latest/api/testing/fakeAsync-function.html	/api/core/testing/fakeAsync
-/docs/ts/latest/cookbook/ts-to-js.html	https://github.com/angular/angular/blob/master/aio/content/guide/change-log.md#es6--described-in-typescript-to-javascript-2016-11-14
+/docs/ts/latest/cookbook/ts-to-js.html	https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html
 /guide/cli-quickstart	/guide/quickstart
 /guide/learning-angular	/guide/quickstart
 /guide/learning-angular.html	/guide/quickstart
