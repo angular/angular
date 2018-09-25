@@ -57,14 +57,14 @@
     {
       "url": "guide/docs-style-guide",
       "title": "Doc authors style guide",
-      "tooltip": "Style guide for documentation authors",
+      "tooltip": "Style guide for documentation authors.",
       "hidden": true
     },
 
     {
       "url": "guide/quickstart",
       "title": "Getting Started",
-      "tooltip": "A brief introduction to Angular essentials"
+      "tooltip": "A brief introduction to Angular and Angular CLI essentials."
     },
 
     {
@@ -421,6 +421,7 @@
     ]
   },
 
+
     {
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
@@ -430,6 +431,16 @@
           "url": "guide/security",
           "title": "Security",
           "tooltip": "Developing for content security in Angular applications."
+        },
+        {
+          "url": "guide/library-create.md",
+          "title": "Creating Libraries",
+          "tooltip": "Create and publish new libraries to extend Angular functionality."
+        },
+        {
+          "url": "guide/library-use.md",
+          "title": "Using Libraries",
+          "tooltip": "Integrating libraries to extend Angular functionality."
         },
 
         {
@@ -481,46 +492,62 @@
       "title": "Setup & Deployment",
       "tooltip": "Setup, build, testing, and deployment environment and tool information.",
       "children": [
+
         {
           "url": "guide/setup",
           "title": "Setup for local development",
-          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine.",
+          "hidden": true
         },
+
+        { 
+          "title": "Development Tool Integration",
+          "tooltip": "Integration with your development environment and tool information.",
+          "children": [
+           {
+             "url": "guide/language-service",
+             "title": "Language Service",
+             "tooltip": "Use Angular Language Service to speed up dev time."
+           },
+           {
+             "url": "guide/visual-studio-2015",
+             "title": "Visual Studio 2015 QuickStart",
+             "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+           }
+          ]
+        },
+
         {
           "url": "guide/setup-systemjs-anatomy",
           "title": "Anatomy of the Setup",
+          "tooltip": "Inside the local development environment for SystemJS.",
+          "hidden": true
+        },
+
+        {
+          "url": "guide/file-structure.md",
+          "title": "Project File Structure",
           "tooltip": "Inside the local development environment for SystemJS."
         },
         {
           "url": "guide/npm-packages",
-          "title": "Npm Packages",
-          "tooltip": "Recommended npm packages, and how to specify package dependencies."
-        },
-        {
-          "url": "guide/language-service",
-          "title": "Language Service",
-          "tooltip": "Use Angular Language Service to speed up dev time."
-        },
-        {
-          "url": "guide/visual-studio-2015",
-          "title": "Visual Studio 2015 QuickStart",
-          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
-        },
-
-        {
-          "url": "guide/browser-support",
-          "title": "Browser Support",
-          "tooltip": "Browser support and polyfills guide."
+          "title": "Packages",
+          "tooltip": "Explanation of npm packages installed into a project by default."
         },
         {
           "url": "guide/typescript-configuration",
           "title": "TypeScript Configuration",
           "tooltip": "TypeScript configuration for Angular developers."
-        },
+        }, 
         {
           "url": "guide/aot-compiler",
           "title": "Ahead-of-Time Compilation",
           "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+        },
+        {
+          "url": "guide/build",
+          "title": "Building & Serving",
+          "tooltip": "Building and serving Angular apps."
         },
         {
           "url": "guide/testing",
@@ -531,9 +558,15 @@
           "url": "guide/deployment",
           "title": "Deployment",
           "tooltip": "Learn how to deploy your Angular app."
+        }, 
+        {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
         }
      ]
     },
+
 
     {
       "title": "Release Information",
