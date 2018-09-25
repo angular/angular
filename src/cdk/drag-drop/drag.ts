@@ -670,10 +670,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   /** Gets the root draggable element, based on the `rootElementSelector`. */
   private _getRootElement(): HTMLElement {
     if (this.rootElementSelector) {
+      const selector = this.rootElementSelector;
       let currentElement = this.element.nativeElement.parentElement as HTMLElement | null;
 
       while (currentElement) {
-        if (currentElement.matches(this.rootElementSelector)) {
+        // IE doesn't support `matches` so we have to fall back to `msMatchesSelector`.
+        if (currentElement.matches ? currentElement.matches(selector) :
+            currentElement.msMatchesSelector(selector)) {
           return currentElement;
         }
 
