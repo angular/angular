@@ -22,7 +22,7 @@ export class <%= classify(name) %>Component {
     .pipe(
       map(result => result.matches)
     );
-    
+
   constructor(private breakpointObserver: BreakpointObserver) {}
-  
-  }
+
+}
