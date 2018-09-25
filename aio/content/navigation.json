@@ -708,12 +708,6 @@
       "title": "API",
       "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
       "url": "api"
-    },
-    {
-      "url": "guide/change-log",
-      "title": "Change Log",
-      "tooltip": "Angular Documentation Change Log",
-      "hidden": true
     }
   ],
   "Footer": [
