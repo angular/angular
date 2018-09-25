@@ -64,7 +64,7 @@
     {
       "url": "guide/quickstart",
       "title": "Getting Started",
-      "tooltip": "A gentle introduction to Angular."
+      "tooltip": "A brief introduction to Angular essentials"
     },
 
     {
@@ -73,43 +73,43 @@
       "children": [
         {
           "url": "tutorial",
-          "title": "1. Introduction",
-          "tooltip": "Part 1: Introduction to the Tour of Heroes tutorial"
+          "title": "Introduction",
+          "tooltip": "Introduction to the Tour of Heroes tutorial"
         },
         {
           "url": "tutorial/toh-pt0",
-          "title": "2. The Application Shell",
-          "tooltip": "Part 2: Creating the application shell"
+          "title": "The Application Shell",
+          "tooltip": "Creating the application shell"
         },
         {
           "url": "tutorial/toh-pt1",
-          "title": "3. The Hero Editor",
-          "tooltip": "Part 3: Build a simple hero editor"
+          "title": "1. The Hero Editor",
+          "tooltip": "Part 1: Build a simple hero editor"
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "4. Displaying a List",
-          "tooltip": "Part 4: Build a master/detail page with a list of heroes."
+          "title": "2. Displaying a List",
+          "tooltip": "Part 2: Build a master/detail page with a list of heroes."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "5. Master/Detail Components",
-          "tooltip": "Part 5: Refactor the master/detail view into separate components."
+          "title": "3. Master/Detail Components",
+          "tooltip": "Part 3: Refactor the master/detail view into separate components."
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "6. Services",
-          "tooltip": "Part 6: Create a reusable service to manage hero data."
+          "title": "4. Services",
+          "tooltip": "Part 4: Create a reusable service to manage hero data."
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "7. Routing",
-          "tooltip": "Part 7: Add the Angular router and navigate among the views."
+          "title": "5. Routing",
+          "tooltip": "Part 5: Add the Angular router and navigate among the views."
         },
         {
           "url": "tutorial/toh-pt6",
-          "title": "8. HTTP",
-          "tooltip": "Part 8: Use HTTP to retrieve and save hero data."
+          "title": "6. HTTP",
+          "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
         }
       ]
     },
@@ -210,7 +210,6 @@
             }
           ]
         },
-
         {
           "title": "Forms",
           "tooltip": "Angular Forms",
@@ -418,24 +417,20 @@
               "tooltip": "Animate route transitions."
             }
           ]
-        },
-
-        {
-          "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
-        },
-        {
-          "url": "guide/cheatsheet",
-          "title": "Cheat Sheet",
-          "tooltip": "A quick guide to common Angular coding techniques."
         }
-    ]},
+    ]
+  },
 
     {
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
       "children": [
+
+        {
+          "url": "guide/security",
+          "title": "Security",
+          "tooltip": "Developing for content security in Angular applications."
+        },
 
         {
           "url": "guide/i18n",
@@ -447,11 +442,12 @@
           "title": "Language Service",
           "tooltip": "Use Angular Language Service to speed up dev time."
         },
+
         {
-          "url": "guide/security",
-          "title": "Security",
-          "tooltip": "Developing for content security in Angular applications."
-        },
+          "url": "guide/testing",
+          "title": "Testing",
+          "tooltip": "Techniques and practices for testing an Angular app."
+        }
         {
           "title": "Setup & Deployment",
           "tooltip": "Setup and Deployment",
@@ -525,24 +521,33 @@
             }
           ]
         },
-
         {
-          "title": "Keeping Up-to-Date",
-          "tooltip": "Angular release practices, planning for updates, and update resources.",
-          "children": [
-            {
-              "url": "guide/updating",
-              "title": "Updating Your Projects",
-              "tooltip": "Information about updating Angular applications and libraries to the latest version."
-            },
-            {
-              "url": "guide/releases",
-              "title": "Angular Releases",
-              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
-            }
-          ]
+          "url": "guide/universal",
+          "title": "Server-side Rendering",
+          "tooltip": "Render HTML server-side with Angular Universal."
         },
+        {
+          "url": "guide/visual-studio-2015",
+          "title": "Visual Studio 2015 QuickStart",
+          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+        }
+      ]
+    },
 
+    {
+      "title": "Release Information",
+      "tooltip": "Angular release practices, updating, and upgrading.",
+      "children": [
+        {
+          "url": "guide/releases",
+          "title": "Angular Releases",
+          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+        },
+        {
+           "url": "guide/updating",
+            "title": "Keeping Up-to-Date",
+            "tooltip": "Information about updating Angular applications and libraries to the latest version."
+        },       
         {
           "title": "Upgrading from AngularJS",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
@@ -553,26 +558,24 @@
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
             },
             {
-              "url": "guide/upgrade-performance",
-              "title": "Upgrading for Performance",
-              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
-            },
-            {
               "url": "guide/ajs-quick-reference",
               "title": "AngularJS-Angular Concepts",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
-        },
+        }
+      ]
+    },
+
+    {
+      "title": "Quick Reference",
+      "tooltip": "Summaries of Angular syntax, coding, and terminology.",
+      "children": [
+
         {
-          "url": "guide/universal",
-          "title": "Server-side Rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
-        },
-        {
-          "url": "guide/visual-studio-2015",
-          "title": "Visual Studio 2015 QuickStart",
-          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+          "url": "guide/cheatsheet",
+          "title": "Cheat Sheet",
+          "tooltip": "A quick guide to common Angular coding techniques."
         },
         {
           "url": "guide/styleguide",
@@ -589,7 +592,7 @@
 
     {
       "title": "API",
-      "tooltip": "Details of the Angular classes and values.",
+      "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
       "url": "api"
     },
     {
