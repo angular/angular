@@ -14,7 +14,6 @@ import { TemplateModule } from './template/template.module';
     ReactiveModule,
     TemplateModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

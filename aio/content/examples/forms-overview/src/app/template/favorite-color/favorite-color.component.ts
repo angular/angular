@@ -4,8 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-template-favorite-color',
   template: `
     Favorite Color: <input type="text" [(ngModel)]="favoriteColor">
-  `,
-  styles: []
+  `
 })
 export class FavoriteColorComponent {
   favoriteColor = '';
