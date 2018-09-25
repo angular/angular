@@ -30,7 +30,7 @@ The table below summarizes the key differences between reactive and template-dri
 
 ||Reactive|Template-driven|
 |--- |--- |--- |
-|Setup (form model)|More explicit created in the component class.|Less explicit, created by the directives.|
+|Setup (form model)|More explicit, created in the component class.|Less explicit, created by the directives.|
 |Data model|Structured|Unstructured|
 |Predictability|Synchronous|Asynchronous|
 |Form validation|Functions|Directives|
@@ -88,7 +88,7 @@ When building forms in Angular, it's important to understand how the the framewo
 
 ### Data flow in reactive forms
 
-As described above, in reactive forms each form element in the view is directly linked to a form model (FormControl instance). Updates from the view to model and model to view are synchronous and not dependent on the UI rendered. The diagrams below uses the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
+As described above, in reactive forms each form element in the view is directly linked to a form model (`FormControl` instance). Updates from the view to model and model to view are synchronous and not dependent on the UI rendered. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms data flow - view to model" width="100%">
@@ -97,7 +97,7 @@ As described above, in reactive forms each form element in the view is directly 
 The steps below outline the view to model data flow.
 
 1. The end user types a value into the input element, in this case the favorite color "Blue".
-1. The form input element emits an input event with the latest value.
+1. The form input element emits an "input" event with the latest value.
 1. The control value accessor listening for events on the form input element immediately relays the new value to the `FormControl` instance.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
@@ -115,7 +115,7 @@ The steps below outline the model to view data flow.
 
 ### Data flow in template-driven forms
 
-In template-driven forms each form element in the linked to a directive that manages the form model internally. The diagrams below uses the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
+In template-driven forms, each form element is linked to a directive that manages the form model internally. The diagrams below uses the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms view to model data flow" width="100%">
@@ -171,8 +171,8 @@ The following test verifies the view to model data flow:
 
 The steps performed in the view to model test.
 
-1. Query the view for the form input element, and create a custom input event for the test.
-1. Set the new value for the input is set to *Red*, and dispatch the input event on the form input element.
+1. Query the view for the form input element, and create a custom "input" event for the test.
+1. Set the new value for the input is set to *Red*, and dispatch the "input" event on the form input element.
 1. Assert that the `favoriteColor` form control instance value matches in value from the input.
 
 The following test verifies the model to view data flow:
@@ -199,8 +199,8 @@ The following test verifies the view to model data flow:
 
 The steps performed in the view to model test.
 
-1. Query the view for the form input element, and create a custom input event for the test.
-1. Set the new value for the input is set to *Red*, and dispatch the input event on the form input element.
+1. Query the view for the form input element, and create a custom "input" event for the test.
+1. Set the new value for the input is set to *Red*, and dispatch the "input" event on the form input element.
 1. Run change detection through the test fixture.
 1. Assert that the component `favoriteColor` property value matches the value from the input.
 
