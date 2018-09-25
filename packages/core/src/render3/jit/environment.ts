@@ -10,7 +10,8 @@ import {defineInjectable, defineInjector,} from '../../di/defs';
 import {inject} from '../../di/injector';
 import * as r3 from '../index';
 import * as sanitization from '../../sanitization/sanitization';
-
+import {ElementRef} from '../../linker/element_ref';
+import {TemplateRef} from '../../linker/template_ref';
 
 /**
  * A mapping of the @angular/core API surface used in generated expressions to the actual symbols.
@@ -103,5 +104,8 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵdefaultStyleSanitizer': sanitization.defaultStyleSanitizer,
   'ɵsanitizeResourceUrl': sanitization.sanitizeResourceUrl,
   'ɵsanitizeScript': sanitization.sanitizeScript,
-  'ɵsanitizeUrl': sanitization.sanitizeUrl
+  'ɵsanitizeUrl': sanitization.sanitizeUrl,
+
+  'ElementRef': ElementRef,
+  'TemplateRef': TemplateRef
 };
