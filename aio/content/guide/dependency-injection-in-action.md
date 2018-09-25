@@ -570,38 +570,58 @@ the application fails for lack of the required logger at the host component leve
 
 {@a component-element}
 
+<!--
 ## Inject the component's DOM element
+-->
+## 컴포넌트 DOM 엘리먼트 주입하기
 
+<!--
 On occasion you might need to access a component's corresponding DOM element.
 Although developers strive to avoid it, many visual effects and 3rd party tools, such as jQuery,
 require DOM access.
+-->
+때로는 컴포넌트의 DOM 엘리먼트에 접근해야 하는 경우가 있습니다. 개발자들이 원하는 것은 아니지만, 시각 효과를 주거나 jQuery와 같은 서드파티 라이브러리를 사용해야만 하는 때가 있다면 DOM에 접근해야 합니다.
 
+<!--
 To illustrate, here's a simplified version of the `HighlightDirective` from
 the [Attribute Directives](guide/attribute-directives) page.
+-->
+이 내용은 [어트리뷰트 디렉티브](guide/attribute-directives) 문서에서 다뤘던 `HighlightDirective` 예제를 변형한 예제와 함께 알아봅시다.
 
 <code-example path="dependency-injection-in-action/src/app/highlight.directive.ts" title="src/app/highlight.directive.ts">
 
 </code-example>
 
 
-
+<!--
 The directive sets the background to a highlight color when the user mouses over the
 DOM element to which it is applied.
+-->
+이 코드에 정의된 디렉티브는 사용자가 DOM 엘리먼트 위에 마우스를 옮겼을 때 배경에 하이라이트 색상을 표시합니다.
 
+<!--
 Angular sets the constructor's `el` parameter to the injected `ElementRef`, which is
 a wrapper around that DOM element.
 Its `nativeElement` property exposes the DOM element for the directive to manipulate.
+-->
+그리고 이 디렉티브의 생성자에는 `ElementRef`가 주입되어 `el` 프로퍼티에 할당되는데, 이것은 DOM 엘리먼트를 랩핑한 객체입니다.
+이 객체의 `nativeElement` 프로퍼티를 사용하면 디렉티브에서 DOM 엘리먼트를 조작할 수 있습니다.
 
+<!--
 The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
 first without a value (yielding the default color) and then with an assigned color value.
+-->
+아래 예제 코드에서는 `myHighlight`가 지정된 두 개의 `<div>` 태그에 디렉티브가 적용되었습니다. 이 중 첫번째에는 색상을 따로 지정하지 않았기 때문에 기본 색상이 사용되며, 두 번째는 지정된 색상이 사용됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" title="src/app/app.component.html (highlight)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
+-->
+이제 `<hero-bios-and-contacts>` 위로 마우스가 이동하면 다음 그림과 같이 표시됩니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/highlight.png" alt="Highlighted bios">
