@@ -834,7 +834,7 @@ describe('di', () => {
         }, 1, 0, [Directive, DirectiveSameInstance]);
 
         const fixture = new ComponentFixture(App);
-        expect(dir.value).toEqual('ElementRef');
+        expect(dir.value).toContain('ElementRef');
         expect(dir.elementRef.nativeElement).toEqual(divNode.native);
         expect(dirSameInstance.elementRef.nativeElement).toEqual(divNode.native);
 
@@ -870,7 +870,7 @@ describe('di', () => {
            }, 1, 0, [Directive]);
 
            const fixture = new ComponentFixture(App);
-           expect(dir.value).toEqual('ElementRef');
+           expect(dir.value).toContain('ElementRef');
            expect(dir.elementRef.nativeElement).toEqual(commentNode.native);
          });
     });
@@ -926,7 +926,8 @@ describe('di', () => {
 
         const fixture = new ComponentFixture(App);
         // Each TemplateRef instance should be unique
-        expect(fixture.html).toEqual('TemplateRef-false');
+        expect(fixture.html).toContain('TemplateRef');
+        expect(fixture.html).toContain('false');
       });
     });
 
@@ -981,7 +982,8 @@ describe('di', () => {
 
         const fixture = new ComponentFixture(App);
         // Each ViewContainerRef instance should be unique
-        expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-false</div>');
+        expect(fixture.html).toContain('ViewContainerRef');
+        expect(fixture.html).toContain('false');
       });
     });
 

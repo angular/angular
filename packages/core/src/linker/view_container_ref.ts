@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {R3_VIEW_CONTAINER_REF_FACTORY} from '../ivy_switch';
+import {R3_VIEW_CONTAINER_REF_FACTORY} from '../ivy_switch/runtime/index';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
@@ -143,5 +143,6 @@ export abstract class ViewContainerRef {
   abstract detach(index?: number): ViewRef|null;
 
   /** @internal */
-  static __NG_ELEMENT_ID__ = () => R3_VIEW_CONTAINER_REF_FACTORY();
+  static __NG_ELEMENT_ID__:
+      () => ViewContainerRef = () => R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
 }

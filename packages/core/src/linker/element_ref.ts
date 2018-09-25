@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_ELEMENT_REF_FACTORY} from '../ivy_switch';
+import {R3_ELEMENT_REF_FACTORY} from '../ivy_switch/runtime/index';
 
 /**
  * A wrapper around a native element inside of a View.
@@ -50,5 +50,5 @@ export class ElementRef<T = any> {
   constructor(nativeElement: T) { this.nativeElement = nativeElement; }
 
   /** @internal */
-  static __NG_ELEMENT_ID__ = () => R3_ELEMENT_REF_FACTORY();
+  static __NG_ELEMENT_ID__: () => ElementRef = () => R3_ELEMENT_REF_FACTORY(ElementRef);
 }

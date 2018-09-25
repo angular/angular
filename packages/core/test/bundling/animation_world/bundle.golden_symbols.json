@@ -33,9 +33,6 @@
     "name": "ChangeDetectionStrategy"
   },
   {
-    "name": "ChangeDetectorRef"
-  },
-  {
     "name": "CorePlayerHandler"
   },
   {
@@ -57,16 +54,13 @@
     "name": "EMPTY_ARR"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "EMPTY_OBJ"
   },
   {
     "name": "ElementRef"
-  },
-  {
-    "name": "ElementRef$1"
   },
   {
     "name": "FLAGS"
@@ -147,9 +141,6 @@
     "name": "QUERIES"
   },
   {
-    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
-  },
-  {
     "name": "R3_ELEMENT_REF_FACTORY"
   },
   {
@@ -192,19 +183,13 @@
     "name": "TemplateRef"
   },
   {
-    "name": "TemplateRef$1"
-  },
-  {
     "name": "VIEWS"
   },
   {
     "name": "ViewContainerRef"
   },
   {
-    "name": "ViewContainerRef$1"
-  },
-  {
-    "name": "ViewEncapsulation"
+    "name": "ViewEncapsulation$1"
   },
   {
     "name": "ViewRef"
@@ -384,7 +369,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput"
+    "name": "createOutput$1"
   },
   {
     "name": "createRootComponent"
@@ -412,9 +397,6 @@
   },
   {
     "name": "createViewQuery"
-  },
-  {
-    "name": "createViewRef"
   },
   {
     "name": "defineComponent"
@@ -705,9 +687,6 @@
     "name": "inject"
   },
   {
-    "name": "injectChangeDetectorRef"
-  },
-  {
     "name": "injectElementRef"
   },
   {
@@ -733,9 +712,6 @@
   },
   {
     "name": "isClassBased"
-  },
-  {
-    "name": "isComponent"
   },
   {
     "name": "isComponentInstance"
@@ -942,6 +918,9 @@
     "name": "setDirty"
   },
   {
+    "name": "setEnvironment"
+  },
+  {
     "name": "setFlag"
   },
   {
@@ -972,10 +951,10 @@
     "name": "storeCleanupWithContext"
   },
   {
-    "name": "stringify"
+    "name": "stringify$1"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify$2"
   },
   {
     "name": "swapMultiContextEntries"

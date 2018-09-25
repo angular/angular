@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableType, InjectorType, defineInjectable, defineInjector, getInjectableDef} from './di/defs';
-import {InjectableProvider} from './di/injectable';
-import {inject, injectArgs} from './di/injector';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './di/provider';
+import {InjectableType, InjectorType, defineInjectable, defineInjector, getInjectableDef} from '../../di/defs';
+import {InjectableProvider} from '../../di/injectable';
+import {inject, injectArgs} from '../../di/injector';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
+import {NgModule} from '../../metadata';
+import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
+import {Type} from '../../type';
+import {getClosureSafeProperty} from '../../util/property';
+
 import * as ivyOn from './ivy_switch_on';
-import {NgModule} from './metadata';
-import {ReflectionCapabilities} from './reflection/reflection_capabilities';
-import {Type} from './type';
-import {getClosureSafeProperty} from './util/property';
 
 function noop() {}
 
@@ -26,11 +27,6 @@ export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_CO
 export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
 
-export const R3_ELEMENT_REF_FACTORY__POST_NGCC__ = ivyOn.R3_ELEMENT_REF_FACTORY;
-export const R3_TEMPLATE_REF_FACTORY__POST_NGCC__ = ivyOn.R3_TEMPLATE_REF_FACTORY;
-export const R3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ = ivyOn.R3_CHANGE_DETECTOR_REF_FACTORY;
-export const R3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ = ivyOn.R3_VIEW_CONTAINER_REF_FACTORY;
-
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
 const R3_COMPILE_COMPONENT__PRE_NGCC__: DirectiveCompiler = noop;
@@ -38,11 +34,6 @@ const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
 const R3_COMPILE_NGMODULE__PRE_NGCC__: DirectiveCompiler = preR3NgModuleCompile;
 const R3_COMPILE_PIPE__PRE_NGCC__: DirectiveCompiler = noop;
-
-export const R3_ELEMENT_REF_FACTORY__PRE_NGCC__ = noop;
-export const R3_TEMPLATE_REF_FACTORY__PRE_NGCC__ = noop;
-export const R3_CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__ = noop;
-export const R3_VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__ = noop;
 
 const ivyEnable__PRE_NGCC__ = false;
 
@@ -53,10 +44,6 @@ export let R3_COMPILE_INJECTABLE: DirectiveCompiler = R3_COMPILE_INJECTABLE__PRE
 export let R3_COMPILE_NGMODULE: DirectiveCompiler = R3_COMPILE_NGMODULE__PRE_NGCC__;
 export let R3_COMPILE_PIPE: DirectiveCompiler = R3_COMPILE_PIPE__PRE_NGCC__;
 
-export let R3_ELEMENT_REF_FACTORY = R3_ELEMENT_REF_FACTORY__PRE_NGCC__;
-export let R3_TEMPLATE_REF_FACTORY = R3_TEMPLATE_REF_FACTORY__PRE_NGCC__;
-export let R3_CHANGE_DETECTOR_REF_FACTORY = R3_CHANGE_DETECTOR_REF_FACTORY__PRE_NGCC__;
-export let R3_VIEW_CONTAINER_REF_FACTORY = R3_VIEW_CONTAINER_REF_FACTORY__PRE_NGCC__;
 
 ////////////////////////////////////////////////////////////
 // Glue code which should be removed after Ivy is default //

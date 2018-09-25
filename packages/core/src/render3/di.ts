@@ -9,37 +9,23 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
-import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
-import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
-import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
-import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
-import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Renderer2} from '../render';
 import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {ComponentFactoryResolver} from './component_ref';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
-import {_getViewData, addToViewTree, assertPreviousIsParent, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, loadElement, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
+import {_getViewData, addToViewTree, assertPreviousIsParent, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, loadElement, renderEmbeddedTemplate, resolveDirective, setEnvironment} from './instructions';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
-import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getHostElementNode, getParentLNode, getParentOrContainerNode, getRenderParent, insertView, removeView} from './node_manipulation';
-import {getLNode, isComponent} from './util';
-import {ViewRef} from './view_ref';
-
 
 /**
  * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
@@ -189,56 +175,6 @@ export function directiveInject<T>(
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
 
-/**
- * Creates an ElementRef and stores it on the injector.
- * Or, if the ElementRef already exists, retrieves the existing ElementRef.
- *
- * @returns The ElementRef instance to use
- */
-export function injectElementRef(): viewEngine_ElementRef {
-  return createElementRef(getPreviousOrParentTNode(), _getViewData());
-}
-
-/**
- * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
- * exists, retrieves the existing TemplateRef.
- *
- * @returns The TemplateRef instance to use
- */
-export function injectTemplateRef<T>(): viewEngine_TemplateRef<T> {
-  return createTemplateRef<T>(getPreviousOrParentTNode(), _getViewData());
-}
-
-/**
- * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
- * already exists, retrieves the existing ViewContainerRef.
- *
- * @returns The ViewContainerRef instance to use
- */
-export function injectViewContainerRef(): viewEngine_ViewContainerRef {
-  const previousTNode =
-      getPreviousOrParentTNode() as TElementNode | TElementContainerNode | TContainerNode;
-  return createContainerRef(previousTNode, _getViewData());
-}
-
-/** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
-export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode(), _getViewData(), null);
-}
-
-/**
- * Creates a ComponentFactoryResolver and stores it on the injector. Or, if the
- * ComponentFactoryResolver
- * already exists, retrieves the existing ComponentFactoryResolver.
- *
- * @returns The ComponentFactoryResolver instance to use
- */
-export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryResolver {
-  return componentFactoryResolver;
-}
-const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
-
-
 export function injectRenderer2(): Renderer2 {
   return getOrCreateRenderer2(getOrCreateNodeInjector());
 }
@@ -289,27 +225,6 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
     }
   }
   return undefined;
-}
-
-/**
- * Creates a ViewRef and stores it on the injector as ChangeDetectorRef (public alias).
- *
- * @param hostTNode The node that is requesting a ChangeDetectorRef
- * @param hostView The view to which the node belongs
- * @param context The context for this change detector ref
- * @returns The ChangeDetectorRef to use
- */
-export function createViewRef(
-    hostTNode: TNode, hostView: LViewData, context: any): viewEngine_ChangeDetectorRef {
-  if (isComponent(hostTNode)) {
-    const componentIndex = hostTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
-    const componentView = getLNode(hostTNode, hostView).data as LViewData;
-    return new ViewRef(componentView, context, componentIndex);
-  } else if (hostTNode.type === TNodeType.Element) {
-    const hostComponentView = findComponentView(hostView);
-    return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
-  }
-  return null !;
 }
 
 function getOrCreateRenderer2(di: LInjector): Renderer2 {
@@ -521,258 +436,18 @@ function sameHostView(injector: LInjector): boolean {
   return !!injector.parent && injector.parent.view === injector.view;
 }
 
-export class ReadFromInjectorFn<T> {
-  constructor(readonly read: (tNode: TNode, view: LViewData, directiveIndex?: number) => T) {}
-}
-
-/**
- * Creates an ElementRef for a given node injector and stores it on the injector.
- *
- * @param di The node injector where we should store a created ElementRef
- * @returns The ElementRef instance to use
- */
-export function createElementRef(tNode: TNode, view: LViewData): viewEngine_ElementRef {
-  return new ElementRef(getLNode(tNode, view).native);
-}
-
-export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
-    new ReadFromInjectorFn<viewEngine_TemplateRef<any>>(
-        (tNode: TNode, view: LViewData) => { return createTemplateRef(tNode, view);}) as any);
-
-export const QUERY_READ_CONTAINER_REF = <QueryReadType<viewEngine_ViewContainerRef>>(
-    new ReadFromInjectorFn<viewEngine_ViewContainerRef>(
-        (tNode: TNode, view: LViewData) => createContainerRef(
-            tNode as TElementNode | TContainerNode | TElementContainerNode, view)) as any);
-
-export const QUERY_READ_ELEMENT_REF =
-    <QueryReadType<viewEngine_ElementRef>>(new ReadFromInjectorFn<viewEngine_ElementRef>(
-        (tNode: TNode, view: LViewData) => createElementRef(tNode, view)) as any);
-
-export const QUERY_READ_FROM_NODE =
-    (new ReadFromInjectorFn<any>((tNode: TNode, view: LViewData, directiveIdx: number) => {
-      ngDevMode && assertNodeOfPossibleTypes(
-                       tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
-      if (directiveIdx > -1) {
-        return view[DIRECTIVES] ![directiveIdx];
-      }
-      if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
-        return createElementRef(tNode, view);
-      }
-      if (tNode.type === TNodeType.Container) {
-        return createTemplateRef(tNode, view);
-      }
-      if (ngDevMode) {
-        // should never happen
-        throw new Error(`Unexpected node type: ${tNode.type}`);
-      }
-    }) as any as QueryReadType<any>);
-
-/** A ref to a node's native element. */
-class ElementRef extends viewEngine_ElementRef {}
-
-/**
- * Creates a ViewContainerRef and stores it on the injector.
- *
- * @param hostTNode The node that is requesting a ViewContainerRef
- * @param hostView The view to which the node belongs
- * @returns The ViewContainerRef instance to use
- */
-export function createContainerRef(
-    hostTNode: TElementNode | TContainerNode | TElementContainerNode,
-    hostView: LViewData): viewEngine_ViewContainerRef {
-  const hostLNode = getLNode(hostTNode, hostView);
-  ngDevMode && assertNodeOfPossibleTypes(
-                   hostTNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
-
-  const lContainer = createLContainer(hostView, true);
-  const comment = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  const lContainerNode: LContainerNode =
-      createLNodeObject(TNodeType.Container, hostLNode.nodeInjector, comment, lContainer);
-
-  lContainer[RENDER_PARENT] = getRenderParent(hostTNode, hostView);
-
-  appendChild(comment, hostTNode, hostView);
-
-  if (!hostTNode.dynamicContainerNode) {
-    hostTNode.dynamicContainerNode =
-        createTNode(TNodeType.Container, -1, null, null, hostTNode, null);
-  }
-
-  hostLNode.dynamicLContainerNode = lContainerNode;
-  addToViewTree(hostView, hostTNode.index as number, lContainer);
-
-  return new ViewContainerRef(
-      lContainer, hostTNode.dynamicContainerNode as TContainerNode, hostTNode, hostView);
-}
-
 export class NodeInjector implements Injector {
   constructor(private _lInjector: LInjector) {}
 
   get(token: any): any {
-    if (token === viewEngine_TemplateRef) {
-      return createTemplateRef(this._lInjector.tNode, this._lInjector.view);
-    }
-    if (token === viewEngine_ViewContainerRef) {
-      return createContainerRef(this._lInjector.tNode, this._lInjector.view);
-    }
-    if (token === viewEngine_ElementRef) {
-      return createElementRef(this._lInjector.tNode, this._lInjector.view);
-    }
-    if (token === viewEngine_ChangeDetectorRef) {
-      return createViewRef(this._lInjector.tNode, this._lInjector.view, null);
-    }
     if (token === Renderer2) {
       return getOrCreateRenderer2(this._lInjector);
     }
 
+    setEnvironment(this._lInjector.tNode, this._lInjector.view);
     return getOrCreateInjectable(this._lInjector, token);
   }
 }
-
-/**
- * A ref to a container that enables adding and removing views from that container
- * imperatively.
- */
-class ViewContainerRef extends viewEngine_ViewContainerRef {
-  private _viewRefs: viewEngine_ViewRef[] = [];
-
-  constructor(
-      private _lContainer: LContainer, private _tContainerNode: TContainerNode,
-      private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
-      private _hostView: LViewData) {
-    super();
-  }
-
-  get element(): ElementRef {
-    // TODO: Remove LNode lookup when removing LNode.nodeInjector
-    const injector =
-        getOrCreateNodeInjectorForNode(this._getHostNode(), this._hostTNode, this._hostView);
-    return createElementRef(injector.tNode, injector.view);
-  }
-
-  get injector(): Injector {
-    // TODO: Remove LNode lookup when removing LNode.nodeInjector
-    const injector =
-        getOrCreateNodeInjectorForNode(this._getHostNode(), this._hostTNode, this._hostView);
-    return new NodeInjector(injector);
-  }
-
-  /** @deprecated No replacement */
-  get parentInjector(): Injector {
-    const parentLInjector = getParentLNode(this._hostTNode, this._hostView) !.nodeInjector;
-    return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
-  }
-
-  clear(): void {
-    while (this._lContainer[VIEWS].length) {
-      this.remove(0);
-    }
-  }
-
-  get(index: number): viewEngine_ViewRef|null { return this._viewRefs[index] || null; }
-
-  get length(): number { return this._lContainer[VIEWS].length; }
-
-  createEmbeddedView<C>(templateRef: viewEngine_TemplateRef<C>, context?: C, index?: number):
-      viewEngine_EmbeddedViewRef<C> {
-    const adjustedIdx = this._adjustIndex(index);
-    const viewRef = (templateRef as TemplateRef<C>)
-                        .createEmbeddedView(
-                            context || <any>{}, this._lContainer, this._tContainerNode,
-                            this._hostView, adjustedIdx);
-    (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-    this._viewRefs.splice(adjustedIdx, 0, viewRef);
-    return viewRef;
-  }
-
-  createComponent<C>(
-      componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
-      injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
-      ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
-    const contextInjector = injector || this.parentInjector;
-    if (!ngModuleRef && contextInjector) {
-      ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
-    }
-
-    const componentRef =
-        componentFactory.create(contextInjector, projectableNodes, undefined, ngModuleRef);
-    this.insert(componentRef.hostView, index);
-    return componentRef;
-  }
-
-  insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
-    if (viewRef.destroyed) {
-      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
-    }
-    const lView = (viewRef as ViewRef<any>)._view !;
-    const adjustedIdx = this._adjustIndex(index);
-
-    insertView(
-        lView, this._lContainer, this._hostView, adjustedIdx, this._tContainerNode.parent !.index);
-
-    const container = this._getHostNode().dynamicLContainerNode !;
-    const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], container);
-    addRemoveViewFromContainer(lView, true, beforeNode);
-
-    (viewRef as ViewRef<any>).attachToViewContainerRef(this);
-    this._viewRefs.splice(adjustedIdx, 0, viewRef);
-
-    return viewRef;
-  }
-
-  move(viewRef: viewEngine_ViewRef, newIndex: number): viewEngine_ViewRef {
-    const index = this.indexOf(viewRef);
-    this.detach(index);
-    this.insert(viewRef, this._adjustIndex(newIndex));
-    return viewRef;
-  }
-
-  indexOf(viewRef: viewEngine_ViewRef): number { return this._viewRefs.indexOf(viewRef); }
-
-  remove(index?: number): void {
-    const adjustedIdx = this._adjustIndex(index, -1);
-    removeView(this._lContainer, this._tContainerNode as TContainerNode, adjustedIdx);
-    this._viewRefs.splice(adjustedIdx, 1);
-  }
-
-  detach(index?: number): viewEngine_ViewRef|null {
-    const adjustedIdx = this._adjustIndex(index, -1);
-    detachView(this._lContainer, adjustedIdx, !!this._tContainerNode.detached);
-    return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
-  }
-
-  private _adjustIndex(index?: number, shift: number = 0) {
-    if (index == null) {
-      return this._lContainer[VIEWS].length + shift;
-    }
-    if (ngDevMode) {
-      assertGreaterThan(index, -1, 'index must be positive');
-      // +1 because it's legal to insert at the end.
-      assertLessThan(index, this._lContainer[VIEWS].length + 1 + shift, 'index');
-    }
-    return index;
-  }
-
-  private _getHostNode() { return getLNode(this._hostTNode, this._hostView); }
-}
-
-/**
- * Creates a TemplateRef and stores it on the injector.
- *
- * @param hostTNode The node that is requesting a TemplateRef
- * @param hostView The view to which the node belongs
- * @returns The TemplateRef instance to use
- */
-export function createTemplateRef<T>(
-    hostTNode: TNode, hostView: LViewData): viewEngine_TemplateRef<T> {
-  const hostNode = getLNode(hostTNode, hostView);
-  ngDevMode && assertNodeType(hostTNode, TNodeType.Container);
-  ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
-  return new TemplateRef<any>(
-      hostView, createElementRef(hostTNode, hostView), hostTNode.tViews as TView, getRenderer(),
-      hostNode.data ![QUERIES]);
-}
-
 export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   const typeAny = type as any;
   const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
@@ -795,34 +470,4 @@ export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
     // latter has to be assumed.
     return (t) => new t();
   }
-}
-
-class TemplateRef<T> extends viewEngine_TemplateRef<T> {
-  constructor(
-      private _declarationParentView: LViewData, readonly elementRef: viewEngine_ElementRef,
-      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {
-    super();
-  }
-
-  createEmbeddedView(
-      context: T, container?: LContainer, tContainerNode?: TContainerNode, hostView?: LViewData,
-      index?: number): viewEngine_EmbeddedViewRef<T> {
-    const lView = createEmbeddedViewAndNode(
-        this._tView, context, this._declarationParentView, this._renderer, this._queries);
-    if (container) {
-      insertView(lView, container, hostView !, index !, tContainerNode !.parent !.index);
-    }
-    renderEmbeddedTemplate(lView, this._tView, context, RenderFlags.Create);
-    const viewRef = new ViewRef(lView, context, -1);
-    viewRef._tViewNode = lView[HOST_NODE] as TViewNode;
-    return viewRef;
-  }
-}
-
-/**
- * Retrieves `TemplateRef` instance from `Injector` when a local reference is placed on the
- * `<ng-template>` element.
- */
-export function templateRefExtractor(tNode: TContainerNode, currentView: LViewData) {
-  return createTemplateRef(tNode, currentView);
 }

@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ElementRef, TemplateRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
+
 import {AnimationContext, PlayState, Player, PlayerHandler} from '../../../src/render3/animations/interfaces';
 import {addPlayer, getOrCreateAnimationContext, getPlayers} from '../../../src/render3/animations/players';
 import {QUERY_READ_FROM_NODE, defineComponent, getHostElement} from '../../../src/render3/index';
@@ -13,6 +15,7 @@ import {element, elementEnd, elementStart, elementStyling, elementStylingApply, 
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {QueryList, query, queryRefresh} from '../../../src/render3/query';
 import {ComponentFixture} from '../render_util';
+
 import {MockPlayer} from './mock_player';
 
 describe('animation player access', () => {
@@ -286,7 +289,7 @@ class SuperComp {
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        query(0, ['child'], true, QUERY_READ_FROM_NODE);
+        query(0, ['child'], true, QUERY_READ_FROM_NODE(TemplateRef, ElementRef));
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;

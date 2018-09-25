@@ -24,6 +24,7 @@ import {ComponentDefInternal, RenderFlags} from './interfaces/definition';
 import {LElementNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
@@ -176,14 +177,29 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       if (rendererFactory.end) rendererFactory.end();
     }
 
-    const componentRef =
-        new ComponentRef(this.componentType, component, rootView, injector, hostNode !);
+    const componentRef = new ComponentRef(
+        this.componentType, component, rootView, injector,
+        createElementRef(viewEngine_ElementRef, tElementNode, rootView));
+
     if (isInternalRootView) {
       // The host element of the internal root view is attached to the component's host view node
       componentRef.hostView._tViewNode !.child = tElementNode;
     }
     return componentRef;
   }
+}
+
+const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
+
+/**
+ * Creates a ComponentFactoryResolver and stores it on the injector. Or, if the
+ * ComponentFactoryResolver
+ * already exists, retrieves the existing ComponentFactoryResolver.
+ *
+ * @returns The ComponentFactoryResolver instance to use
+ */
+export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryResolver {
+  return componentFactoryResolver;
 }
 
 /**
@@ -196,7 +212,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
  */
 export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   destroyCbs: (() => void)[]|null = [];
-  location: viewEngine_ElementRef<any>;
   injector: Injector;
   instance: T;
   hostView: ViewRef<T>;
@@ -205,13 +220,12 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
 
   constructor(
       componentType: Type<T>, instance: T, rootView: LViewData, injector: Injector,
-      hostNode: RElement) {
+      public location: viewEngine_ElementRef) {
     super();
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(rootView);
     this.hostView._tViewNode = createNodeAtIndex(-1, TNodeType.View, null, null, null, rootView);
     this.injector = injector;
-    this.location = new viewEngine_ElementRef(hostNode);
     this.componentType = componentType;
   }
 

@@ -252,7 +252,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "EMPTY_ARRAY$2"
@@ -280,9 +280,6 @@
   },
   {
     "name": "ElementRef"
-  },
-  {
-    "name": "ElementRef$1"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"
@@ -822,9 +819,6 @@
     "name": "TemplateRef"
   },
   {
-    "name": "TemplateRef$1"
-  },
-  {
     "name": "Testability"
   },
   {
@@ -876,7 +870,7 @@
     "name": "URL_RE"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$1"
   },
   {
     "name": "UnsubscriptionError"
@@ -903,10 +897,7 @@
     "name": "ViewContainerRef"
   },
   {
-    "name": "ViewContainerRef$1"
-  },
-  {
-    "name": "ViewEncapsulation"
+    "name": "ViewEncapsulation$1"
   },
   {
     "name": "ViewRef"
@@ -1320,7 +1311,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput"
+    "name": "createOutput$1"
   },
   {
     "name": "createPlatform"
@@ -2250,7 +2241,7 @@
     "name": "resolveDirective"
   },
   {
-    "name": "resolveForwardRef"
+    "name": "resolveForwardRef$1"
   },
   {
     "name": "resolveProvider"
@@ -2299,6 +2290,9 @@
   },
   {
     "name": "setDirty"
+  },
+  {
+    "name": "setEnvironment"
   },
   {
     "name": "setFlag"
@@ -2361,10 +2355,10 @@
     "name": "strToNumber"
   },
   {
-    "name": "stringify"
+    "name": "stringify$1"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify$2"
   },
   {
     "name": "subscribeTo"

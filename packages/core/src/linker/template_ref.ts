@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_TEMPLATE_REF_FACTORY} from '../ivy_switch';
+import {R3_TEMPLATE_REF_FACTORY} from '../ivy_switch/runtime/index';
 
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
@@ -52,5 +52,6 @@ export abstract class TemplateRef<C> {
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 
   /** @internal */
-  static __NG_ELEMENT_ID__ = () => R3_TEMPLATE_REF_FACTORY();
+  static __NG_ELEMENT_ID__:
+      () => TemplateRef<any> = () => R3_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
 }
