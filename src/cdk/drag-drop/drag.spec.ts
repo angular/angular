@@ -1507,6 +1507,49 @@ describe('CdkDrag', () => {
           'Expected CdkDrag to be returned to first container in memory');
     }));
 
+    it('should be able to return an element to its initial container in the same sequence, ' +
+      'even if it is not connected to the current container', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        const dropZones = dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const initialRect = item.element.nativeElement.getBoundingClientRect();
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        // Change the `connectedTo` so the containers are only connected one-way.
+        dropInstances[0].connectedTo = dropInstances[1];
+        dropInstances[1].connectedTo = [];
+
+        dispatchMouseEvent(item.element.nativeElement, 'mousedown');
+        fixture.detectChanges();
+
+        const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+        expect(placeholder).toBeTruthy();
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside the first container.');
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside second container.');
+
+        dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be back inside first container.');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
+    }));
+
   });
 
 });

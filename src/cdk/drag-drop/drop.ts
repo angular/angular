@@ -304,12 +304,21 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param y Position of the item along the Y axis.
    */
   _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDrop | null {
-    const result = this._positionCache.siblings.find(({clientRect}) => {
-      const {top, bottom, left, right} = clientRect;
-      return y >= top && y <= bottom && x >= left && x <= right;
-    });
+    const result = this._positionCache.siblings
+        .find(sibling => isInsideClientRect(sibling.clientRect, x, y));
 
     return result && result.drop.enterPredicate(item, this) ? result.drop : null;
+  }
+
+  /**
+   * Checks whether an item that started in this container can be returned to it,
+   * after it was moved out into another container.
+   * @param item Item that is being checked.
+   * @param x Position of the item along the X axis.
+   * @param y Position of the item along the Y axis.
+   */
+  _canReturnItem(item: CdkDrag, x: number, y: number): boolean {
+    return isInsideClientRect(this._positionCache.self, x, y) && this.enterPredicate(item, this);
   }
 
   /** Refreshes the position cache of the items and sibling containers. */
@@ -450,4 +459,16 @@ function findIndex<T>(array: T[],
   }
 
   return -1;
+}
+
+
+/**
+ * Checks whether some coordinates are within a `ClientRect`.
+ * @param clientRect ClientRect that is being checked.
+ * @param x Coordinates along the X axis.
+ * @param y Coordinates along the Y axis.
+ */
+function isInsideClientRect(clientRect: ClientRect, x: number, y: number) {
+  const {top, bottom, left, right} = clientRect;
+  return y >= top && y <= bottom && x >= left && x <= right;
 }
