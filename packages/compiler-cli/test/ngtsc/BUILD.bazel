@@ -3,9 +3,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "ngtsc_lib",
     testonly = 1,
-    srcs = [
-        "ngtsc_spec.ts",
-    ],
+    srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
