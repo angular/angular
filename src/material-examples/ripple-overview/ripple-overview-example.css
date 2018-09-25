@@ -5,6 +5,12 @@
   width: 300px;
   height: 300px;
   line-height: 300px;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: transparent;
 }

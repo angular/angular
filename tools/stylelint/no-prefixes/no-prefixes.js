@@ -1,6 +1,7 @@
 const stylelint = require('stylelint');
 const NeedsPrefix = require('./needs-prefix');
 const parseSelector = require('stylelint/lib/utils/parseSelector');
+const minimatch = require('minimatch');
 
 const ruleName = 'material/no-prefixes';
 const messages =  stylelint.utils.ruleMessages(ruleName, {
@@ -14,9 +15,17 @@ const messages =  stylelint.utils.ruleMessages(ruleName, {
 /**
  * Stylelint plugin that warns for unprefixed CSS.
  */
-const plugin = stylelint.createPlugin(ruleName, browsers => {
+const plugin = stylelint.createPlugin(ruleName, (isEnabled, options) => {
   return (root, result) => {
-    if (!stylelint.utils.validateOptions(result, ruleName, {})) return;
+    if (!isEnabled || !stylelint.utils.validateOptions(result, ruleName, {})) {
+      return;
+    }
+
+    const {browsers, filePattern} = options;
+
+    if (filePattern && !minimatch(root.source.input.file, filePattern)) {
+      return;
+    }
 
     const needsPrefix = new NeedsPrefix(browsers);
 
