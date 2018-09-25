@@ -17,6 +17,8 @@ import {
   TemplatePortal,
   CdkPortal
 } from '@angular/cdk/portal';
+import {Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {
   Overlay,
   OverlayContainer,
@@ -38,6 +40,7 @@ describe('Overlay', () => {
   let viewContainerFixture: ComponentFixture<TestComponentWithTemplatePortals>;
   let dir: Direction;
   let zone: MockNgZone;
+  let mockLocation: SpyLocation;
 
   beforeEach(async(() => {
     dir = 'ltr';
@@ -56,21 +59,27 @@ describe('Overlay', () => {
           provide: NgZone,
           useFactory: () => zone = new MockNgZone()
         },
+        {
+          provide: Location,
+          useClass: SpyLocation
+        },
       ],
     }).compileComponents();
   }));
 
-  beforeEach(inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
-    overlay = o;
-    overlayContainer = oc;
-    overlayContainerElement = oc.getContainerElement();
+  beforeEach(inject([Overlay, OverlayContainer, Location],
+    (o: Overlay, oc: OverlayContainer, l: Location) => {
+      overlay = o;
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
 
-    let fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
-    fixture.detectChanges();
-    templatePortal = fixture.componentInstance.templatePortal;
-    componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
-    viewContainerFixture = fixture;
-  }));
+      const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
+      fixture.detectChanges();
+      templatePortal = fixture.componentInstance.templatePortal;
+      componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
+      viewContainerFixture = fixture;
+      mockLocation = l as SpyLocation;
+    }));
 
   afterEach(() => {
     overlayContainer.ngOnDestroy();
@@ -376,6 +385,17 @@ describe('Overlay', () => {
 
     expect(overlayRef.hostElement.parentElement)
         .toBeTruthy('Expected host element to be back in the DOM.');
+  });
+
+  it('should be able to dispose an overlay on navigation', () => {
+    const overlayRef = overlay.create({disposeOnNavigation: true});
+    overlayRef.attach(componentPortal);
+
+    expect(overlayContainerElement.textContent).toContain('Pizza');
+
+    mockLocation.simulateUrlPop('');
+    expect(overlayContainerElement.childNodes.length).toBe(0);
+    expect(overlayContainerElement.textContent).toBe('');
   });
 
   describe('positioning', () => {

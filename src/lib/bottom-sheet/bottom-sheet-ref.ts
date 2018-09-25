@@ -9,7 +9,7 @@
 import {Location} from '@angular/common';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {OverlayRef} from '@angular/cdk/overlay';
-import {merge, Observable, Subject, SubscriptionLike, Subscription} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
 
@@ -36,13 +36,11 @@ export class MatBottomSheetRef<T = any, R = any> {
   /** Result to be passed down to the `afterDismissed` stream. */
   private _result: R | undefined;
 
-  /** Subscription to changes in the user's location. */
-  private _locationChanges: SubscriptionLike = Subscription.EMPTY;
-
   constructor(
     containerInstance: MatBottomSheetContainer,
     private _overlayRef: OverlayRef,
-    location?: Location) {
+    // @breaking-change 8.0.0 `_location` parameter to be removed.
+    _location?: Location) {
     this.containerInstance = containerInstance;
 
     // Emit when opening animation completes
@@ -61,7 +59,6 @@ export class MatBottomSheetRef<T = any, R = any> {
       take(1)
     )
     .subscribe(() => {
-      this._locationChanges.unsubscribe();
       this._overlayRef.dispose();
       this._afterDismissed.next(this._result);
       this._afterDismissed.complete();
@@ -72,14 +69,6 @@ export class MatBottomSheetRef<T = any, R = any> {
         _overlayRef.backdropClick(),
         _overlayRef.keydownEvents().pipe(filter(event => event.keyCode === ESCAPE))
       ).subscribe(() => this.dismiss());
-    }
-
-    if (location) {
-      this._locationChanges = location.subscribe(() => {
-        if (containerInstance.bottomSheetConfig.closeOnNavigation) {
-          this.dismiss();
-        }
-      });
     }
   }
 

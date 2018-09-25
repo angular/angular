@@ -9,7 +9,8 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal, Portal, PortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {ComponentRef, EmbeddedViewRef, NgZone} from '@angular/core';
-import {Observable, Subject, merge} from 'rxjs';
+import {Location} from '@angular/common';
+import {Observable, Subject, merge, SubscriptionLike, Subscription} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
@@ -33,6 +34,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   private _attachments = new Subject<void>();
   private _detachments = new Subject<void>();
   private _positionStrategy: PositionStrategy | undefined;
+  private _locationChanges: SubscriptionLike = Subscription.EMPTY;
 
   /**
    * Reference to the parent of the `_host` at the time it was detached. Used to restore
@@ -63,7 +65,9 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       private _config: ImmutableObject<OverlayConfig>,
       private _ngZone: NgZone,
       private _keyboardDispatcher: OverlayKeyboardDispatcher,
-      private _document: Document) {
+      private _document: Document,
+      // @breaking-change 8.0.0 `_location` parameter to be made required.
+      private _location?: Location) {
 
     if (_config.scrollStrategy) {
       _config.scrollStrategy.attach(this);
@@ -152,6 +156,12 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // Track this overlay by the keyboard dispatcher
     this._keyboardDispatcher.add(this);
 
+    // @breaking-change 8.0.0 remove the null check for `_location`
+    // once the constructor parameter is made required.
+    if (this._config.disposeOnNavigation && this._location) {
+      this._locationChanges = this._location.subscribe(() => this.dispose());
+    }
+
     return attachResult;
   }
 
@@ -195,6 +205,9 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     // rendered, even though it's transparent and unclickable which is why we remove it.
     this._detachContentWhenStable();
 
+    // Stop listening for location changes.
+    this._locationChanges.unsubscribe();
+
     return detachmentResult;
   }
 
@@ -211,6 +224,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     }
 
     this.detachBackdrop();
+    this._locationChanges.unsubscribe();
     this._keyboardDispatcher.remove(this);
     this._portalOutlet.dispose();
     this._attachments.complete();

@@ -127,6 +127,7 @@ export class MatBottomSheet {
     const overlayConfig = new OverlayConfig({
       direction: config.direction,
       hasBackdrop: config.hasBackdrop,
+      disposeOnNavigation: config.closeOnNavigation,
       maxWidth: '100%',
       scrollStrategy: this._overlay.scrollStrategies.block(),
       positionStrategy: this._overlay.position()

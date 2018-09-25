@@ -9,7 +9,7 @@
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
 import {Location} from '@angular/common';
-import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
@@ -42,13 +42,11 @@ export class MatDialogRef<T, R = any> {
   /** Result to be passed to afterClosed. */
   private _result: R | undefined;
 
-  /** Subscription to changes in the user's location. */
-  private _locationChanges: SubscriptionLike = Subscription.EMPTY;
-
   constructor(
     private _overlayRef: OverlayRef,
     public _containerInstance: MatDialogContainer,
-    location?: Location,
+    // @breaking-change 8.0.0 `_location` parameter to be removed.
+    _location?: Location,
     readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Pass the id along to the container.
@@ -73,7 +71,6 @@ export class MatDialogRef<T, R = any> {
     _overlayRef.detachments().subscribe(() => {
       this._beforeClosed.next(this._result);
       this._beforeClosed.complete();
-      this._locationChanges.unsubscribe();
       this._afterClosed.next(this._result);
       this._afterClosed.complete();
       this.componentInstance = null!;
@@ -83,17 +80,6 @@ export class MatDialogRef<T, R = any> {
     _overlayRef.keydownEvents()
       .pipe(filter(event => event.keyCode === ESCAPE && !this.disableClose))
       .subscribe(() => this.close());
-
-    if (location) {
-      // Close the dialog when the user goes forwards/backwards in history or when the location
-      // hash changes. Note that this usually doesn't include clicking on links (unless the user
-      // is using the `HashLocationStrategy`).
-      this._locationChanges = location.subscribe(() => {
-        if (this._containerInstance._config.closeOnNavigation) {
-          this.close();
-        }
-      });
-    }
   }
 
   /**

@@ -40,7 +40,11 @@ export class MatBottomSheetConfig<D = any> {
   /** Aria label to assign to the bottom sheet element. */
   ariaLabel?: string | null = null;
 
-  /** Whether the bottom sheet should close when the user goes backwards/forwards in history. */
+  /**
+   * Whether the bottom sheet should close when the user goes backwards/forwards in history.
+   * Note that this usually doesn't include clicking on links (unless the user is using
+   * the `HashLocationStrategy`).
+   */
   closeOnNavigation?: boolean = true;
 
   /** Whether the bottom sheet should focus the first focusable element on open. */

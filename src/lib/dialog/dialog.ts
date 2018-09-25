@@ -195,7 +195,8 @@ export class MatDialog implements OnDestroy {
       minWidth: dialogConfig.minWidth,
       minHeight: dialogConfig.minHeight,
       maxWidth: dialogConfig.maxWidth,
-      maxHeight: dialogConfig.maxHeight
+      maxHeight: dialogConfig.maxHeight,
+      disposeOnNavigation: dialogConfig.closeOnNavigation
     });
 
     if (dialogConfig.backdropClass) {
