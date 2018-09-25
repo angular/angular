@@ -39,6 +39,8 @@ export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
 export const HostBinding = callablePropDecorator();
 export const HostListener = callablePropDecorator();
+export const Input = callablePropDecorator();
+export const Output = callablePropDecorator();
 export const ViewChild = callablePropDecorator();
 export const ViewChildren = callablePropDecorator();
 
