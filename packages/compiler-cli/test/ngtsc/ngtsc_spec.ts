@@ -6,102 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as ts from 'typescript';
-
-import {main, readCommandLineAndConfiguration, watchMode} from '../../src/main';
-import {TestSupport, isInBazel, makeTempDir, setup} from '../test_support';
-
-function setupFakeCore(support: TestSupport): void {
-  if (!process.env.TEST_SRCDIR) {
-    throw new Error('`setupFakeCore` must be run within a Bazel test');
-  }
-  const fakeCore = path.join(
-      process.env.TEST_SRCDIR, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
-
-  const nodeModulesPath = path.join(support.basePath, 'node_modules');
-  const angularCoreDirectory = path.join(nodeModulesPath, '@angular/core');
-
-  fs.symlinkSync(fakeCore, angularCoreDirectory);
-}
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {NgtscTestEnvironment} from './env';
 
 describe('ngtsc behavioral tests', () => {
-  if (!isInBazel()) {
+  if (!NgtscTestEnvironment.supported) {
     // These tests should be excluded from the non-Bazel build.
     return;
   }
 
-  let basePath: string;
-  let outDir: string;
-  let write: (fileName: string, content: string) => void;
-  let errorSpy: jasmine.Spy&((s: string) => void);
+  let env !: NgtscTestEnvironment;
 
-  function shouldExist(fileName: string) {
-    if (!fs.existsSync(path.resolve(outDir, fileName))) {
-      throw new Error(`Expected ${fileName} to be emitted (outDir: ${outDir})`);
-    }
-  }
-
-  function shouldNotExist(fileName: string) {
-    if (fs.existsSync(path.resolve(outDir, fileName))) {
-      throw new Error(`Did not expect ${fileName} to be emitted (outDir: ${outDir})`);
-    }
-  }
-
-  function getContents(fileName: string): string {
-    shouldExist(fileName);
-    const modulePath = path.resolve(outDir, fileName);
-    return fs.readFileSync(modulePath, 'utf8');
-  }
-
-  function writeConfig(extraOpts: {[key: string]: string | boolean} = {}): void {
-    const opts = JSON.stringify({...extraOpts, 'enableIvy': 'ngtsc'});
-    const tsconfig: string =
-        `{"extends": "./tsconfig-base.json", "angularCompilerOptions": ${opts}}`;
-    write('tsconfig.json', tsconfig);
-  }
-
-  beforeEach(() => {
-    errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    const support = setup();
-    basePath = support.basePath;
-    outDir = path.join(basePath, 'built');
-    process.chdir(basePath);
-    write = (fileName: string, content: string) => { support.write(fileName, content); };
-
-    setupFakeCore(support);
-    write('tsconfig-base.json', `{
-      "compilerOptions": {
-        "experimentalDecorators": true,
-        "skipLibCheck": true,
-        "noImplicitAny": true,
-        "types": [],
-        "outDir": "built",
-        "rootDir": ".",
-        "baseUrl": ".",
-        "declaration": true,
-        "target": "es5",
-        "module": "es2015",
-        "moduleResolution": "node",
-        "lib": ["es6", "dom"],
-        "typeRoots": ["node_modules/@types"]
-      },
-      "angularCompilerOptions": {
-        "enableIvy": "ngtsc"
-      }
-    }`);
-  });
+  beforeEach(() => { env = NgtscTestEnvironment.setup(); });
 
   it('should compile Injectables without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Injectable} from '@angular/core';
 
         @Injectable()
@@ -113,23 +32,21 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('Dep.ngInjectableDef =');
     expect(jsContents).toContain('Service.ngInjectableDef =');
     expect(jsContents).not.toContain('__decorate');
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Dep>;');
     expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
   });
 
   it('should compile Components without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component} from '@angular/core';
 
         @Component({
@@ -139,23 +56,21 @@ describe('ngtsc behavioral tests', () => {
         export class TestCmp {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵdefineComponent');
     expect(jsContents).not.toContain('__decorate');
 
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
             'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
   });
 
   it('should compile Components without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component} from '@angular/core';
 
         @Component({
@@ -164,19 +79,17 @@ describe('ngtsc behavioral tests', () => {
         })
         export class TestCmp {}
     `);
-    write('dir/test.html', '<p>Hello World</p>');
+    env.write('dir/test.html', '<p>Hello World</p>');
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('Hello World');
   });
 
   it('should compile NgModules without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
 
         @Component({
@@ -192,17 +105,15 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents)
         .toContain(
             'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp], ' +
             'declarations: [TestCmp], imports: [], exports: [] })');
 
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
             'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
@@ -213,8 +124,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile NgModules with services without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
 
         export class Token {}
@@ -236,11 +147,9 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
     expect(jsContents)
         .toContain(
@@ -248,7 +157,7 @@ describe('ngtsc behavioral tests', () => {
             `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
             `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
 
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
             'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
@@ -256,8 +165,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile NgModules with references to local components', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
       import {NgModule} from '@angular/core';
       import {Foo} from './foo';
 
@@ -266,18 +175,16 @@ describe('ngtsc behavioral tests', () => {
       })
       export class FooModule {}
     `);
-    write('foo.ts', `
+    env.write('foo.ts', `
       import {Component} from '@angular/core';
       @Component({selector: 'foo', template: ''})
       export class Foo {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
-    const dtsContents = getContents('test.d.ts');
+    const jsContents = env.getContents('test.js');
+    const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents).toContain('import { Foo } from \'./foo\';');
     expect(jsContents).not.toMatch(/as i[0-9] from '.\/foo'/);
@@ -285,8 +192,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile NgModules with references to absolute components', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
       import {NgModule} from '@angular/core';
       import {Foo} from 'foo';
 
@@ -295,19 +202,17 @@ describe('ngtsc behavioral tests', () => {
       })
       export class FooModule {}
     `);
-    write('node_modules/foo/index.d.ts', `
+    env.write('node_modules/foo/index.d.ts', `
       import * as i0 from '@angular/core';
       export class Foo {
         static ngComponentDef: i0.ɵComponentDef<Foo, 'foo'>;
       }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
-    const dtsContents = getContents('test.d.ts');
+    const jsContents = env.getContents('test.js');
+    const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents).toContain('import { Foo } from \'foo\';');
     expect(jsContents).not.toMatch(/as i[0-9] from 'foo'/);
@@ -315,8 +220,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile Pipes without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Pipe} from '@angular/core';
 
         @Pipe({
@@ -326,12 +231,10 @@ describe('ngtsc behavioral tests', () => {
         export class TestPipe {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
-    const dtsContents = getContents('test.d.ts');
+    const jsContents = env.getContents('test.js');
+    const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents)
         .toContain(
@@ -342,8 +245,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile pure Pipes without errors', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Pipe} from '@angular/core';
 
         @Pipe({
@@ -352,12 +255,10 @@ describe('ngtsc behavioral tests', () => {
         export class TestPipe {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
-    const dtsContents = getContents('test.d.ts');
+    const jsContents = env.getContents('test.js');
+    const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents)
         .toContain(
@@ -368,8 +269,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should compile Pipes with dependencies', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Pipe} from '@angular/core';
 
         export class Dep {}
@@ -383,17 +284,15 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('return new (t || TestPipe)(i0.ɵdirectiveInject(Dep));');
   });
 
   it('should include @Pipes in @NgModule scopes', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component, NgModule, Pipe} from '@angular/core';
 
         @Pipe({name: 'test'})
@@ -406,22 +305,20 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('pipes: [TestPipe]');
 
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
   it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {NgModule} from '@angular/core';
         import {RouterModule} from 'router';
 
@@ -429,7 +326,7 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    write('node_modules/router/index.d.ts', `
+    env.write('node_modules/router/index.d.ts', `
         import {ModuleWithProviders} from '@angular/core';
 
         declare class RouterModule {
@@ -437,22 +334,20 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
 
-    const dtsContents = getContents('test.d.ts');
+    const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
     expect(dtsContents)
         .toContain('i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
   });
 
   it('should inject special types according to the metadata', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {
           Attribute,
           ChangeDetectorRef,
@@ -481,18 +376,16 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
     expect(jsContents)
         .toContain(
             `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(ChangeDetectorRef), i0.ɵdirectiveInject(ElementRef), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectRenderer2(), i0.ɵdirectiveInject(TemplateRef), i0.ɵdirectiveInject(ViewContainerRef)); }`);
   });
 
   it('should generate queries for components', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {Component, ContentChild, ContentChildren, TemplateRef, ViewChild} from '@angular/core';
 
         @Component({
@@ -511,10 +404,8 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain(`i0.ɵquery(null, ["bar"], true, TemplateRef)`);
     expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, false)`);
     expect(jsContents).toContain(`i0.ɵquery(null, ["test2"], true)`);
@@ -523,8 +414,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should handle queries that use forwardRef', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {Component, ContentChild, TemplateRef, ViewContainerRef, forwardRef} from '@angular/core';
 
         @Component({
@@ -538,17 +429,15 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, true)`);
     expect(jsContents).toContain(`i0.ɵquery(null, ViewContainerRef, true)`);
   });
 
   it('should generate host bindings for directives', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {Component, HostBinding, HostListener, TemplateRef} from '@angular/core';
 
         @Component({
@@ -571,10 +460,8 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
     expect(jsContents)
         .toContain(
             `i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵloadDirective(dirIndex).foo));`);
@@ -590,8 +477,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('should correctly recognize local symbols', () => {
-    writeConfig();
-    write('module.ts', `
+    env.tsconfig();
+    env.write('module.ts', `
         import {NgModule} from '@angular/core';
         import {Dir, Comp} from './test';
 
@@ -601,7 +488,7 @@ describe('ngtsc behavioral tests', () => {
         })
         class Module {}
     `);
-    write(`test.ts`, `
+    env.write(`test.ts`, `
         import {Component, Directive} from '@angular/core';
 
         @Directive({
@@ -616,16 +503,14 @@ describe('ngtsc behavioral tests', () => {
         export class Comp {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
     expect(jsContents).not.toMatch(/import \* as i[0-9] from ['"].\/test['"]/);
   });
 
   it('should generate exportAs declarations', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component, Directive} from '@angular/core';
 
         @Directive({
@@ -635,18 +520,16 @@ describe('ngtsc behavioral tests', () => {
         class Dir {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const jsContents = getContents('test.js');
+    const jsContents = env.getContents('test.js');
     expect(jsContents).toContain(`exportAs: "foo"`);
   });
 
   it('should generate correct factory stubs for a test module', () => {
-    writeConfig({'allowEmptyCodegenFiles': true});
+    env.tsconfig({'allowEmptyCodegenFiles': true});
 
-    write('test.ts', `
+    env.write('test.ts', `
         import {Injectable, NgModule} from '@angular/core';
 
         @Injectable()
@@ -656,18 +539,16 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    write('empty.ts', `
+    env.write('empty.ts', `
         import {Injectable} from '@angular/core';
 
         @Injectable()
         export class NotAModule {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
 
-    const factoryContents = getContents('test.ngfactory.js');
+    const factoryContents = env.getContents('test.ngfactory.js');
     expect(factoryContents).toContain(`import * as i0 from '@angular/core';`);
     expect(factoryContents).toContain(`import { NotAModule, TestModule } from './test';`);
     expect(factoryContents)
@@ -675,14 +556,14 @@ describe('ngtsc behavioral tests', () => {
     expect(factoryContents).not.toContain(`NotAModuleNgFactory`);
     expect(factoryContents).not.toContain('ɵNonEmptyModule');
 
-    const emptyFactory = getContents('empty.ngfactory.js');
+    const emptyFactory = env.getContents('empty.ngfactory.js');
     expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 
   it('should compile a banana-in-a-box inside of a template', () => {
-    writeConfig();
-    write('test.ts', `
+    env.tsconfig();
+    env.write('test.ts', `
         import {Component} from '@angular/core';
 
         @Component({
@@ -692,14 +573,12 @@ describe('ngtsc behavioral tests', () => {
         class TestCmp {}
     `);
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
+    env.driveMain();
   });
 
   it('generates inherited factory definitions', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {Injectable} from '@angular/core';
 
         class Dep {}
@@ -721,10 +600,8 @@ describe('ngtsc behavioral tests', () => {
     `);
 
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
 
     expect(jsContents)
         .toContain('function Base_Factory(t) { return new (t || Base)(i0.inject(Dep)); }');
@@ -736,8 +613,8 @@ describe('ngtsc behavioral tests', () => {
   });
 
   it('generates base factories for directives', () => {
-    writeConfig();
-    write(`test.ts`, `
+    env.tsconfig();
+    env.write(`test.ts`, `
         import {Directive} from '@angular/core';
 
         class Base {}
@@ -750,18 +627,16 @@ describe('ngtsc behavioral tests', () => {
     `);
 
 
-    const exitCode = main(['-p', basePath], errorSpy);
-    expect(errorSpy).not.toHaveBeenCalled();
-    expect(exitCode).toBe(0);
-    const jsContents = getContents('test.js');
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
 
     expect(jsContents).toContain('var ɵDir_BaseFactory = i0.ɵgetInheritedFactory(Dir)');
   });
 
   it('should wrap "directives" in component metadata in a closure when forward references are present',
      () => {
-       writeConfig();
-       write('test.ts', `
+       env.tsconfig();
+       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
 
         @Component({
@@ -782,11 +657,9 @@ describe('ngtsc behavioral tests', () => {
         class Module {}
     `);
 
-       const exitCode = main(['-p', basePath], errorSpy);
-       expect(errorSpy).not.toHaveBeenCalled();
-       expect(exitCode).toBe(0);
+       env.driveMain();
 
-       const jsContents = getContents('test.js');
+       const jsContents = env.getContents('test.js');
        expect(jsContents).toContain('directives: function () { return [CmpB]; }');
      });
 });
