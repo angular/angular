@@ -1,5 +1,4 @@
 @import '../../cdk/a11y/a11y';
-@import '../core/style/elevation';
 
 $mat-snack-bar-padding: 14px 16px !default;
 $mat-snack-bar-min-height: 48px !default;
@@ -10,7 +9,6 @@ $mat-snack-bar-spacing-margin-handset: 8px !default;
 
 
 .mat-snack-bar-container {
-  @include mat-elevation(6);
   border-radius: 4px;
   box-sizing: border-box;
   display: block;

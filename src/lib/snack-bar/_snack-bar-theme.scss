@@ -1,5 +1,6 @@
 @import '../core/typography/typography-utils';
 @import '../core/theming/palette';
+@import '../core/style/elevation';
 
 @mixin mat-snack-bar-theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
@@ -10,6 +11,8 @@
     // a secondary, because the contrast on the light primary text is poor.
     color: if($is-dark-theme, $dark-primary-text, $light-secondary-text);
     background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
+
+    @include _mat-theme-elevation(6, $theme);
   }
 
   .mat-simple-snackbar-action {
