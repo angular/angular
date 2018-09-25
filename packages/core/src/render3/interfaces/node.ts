@@ -7,13 +7,11 @@
  */
 
 import {StylingContext} from '../styling';
-
 import {LContainer} from './container';
+import {LIcuData} from './icu';
 import {LInjector} from './injector';
-import {LQueries} from './query';
 import {RComment, RElement, RText} from './renderer';
 import {LViewData, TView} from './view';
-
 
 
 /**
@@ -27,6 +25,7 @@ export const enum TNodeType {
   Element = 0b011,
   ViewOrElement = 0b010,
   ElementContainer = 0b100,
+  IcuExpression = 0b101,
 }
 
 /**
@@ -78,8 +77,9 @@ export interface LNode {
    * If LElementNode with component, then `data` contains LViewData.
    * If LViewNode, then `data` contains the LViewData.
    * If LContainerNode, then `data` contains LContainer.
+   * If LIcuNode, then `data` contains LIcuData.
    */
-  readonly data: LViewData|LContainer|null;
+  readonly data: LViewData|LContainer|LIcuData|null;
 
   /** The injector associated with this node. Necessary for DI. */
   nodeInjector: LInjector|null;
@@ -136,6 +136,12 @@ export interface LContainerNode extends LNode {
   readonly data: LContainer;
 }
 
+/** LNode representing an ICU expression. */
+export interface LIcuNode extends LNode {
+  native: RComment;
+  readonly data: LIcuData;
+  dynamicLContainerNode: null;
+}
 
 export interface LProjectionNode extends LNode {
   readonly native: null;
@@ -422,6 +428,15 @@ export interface TContainerNode extends TNode {
    */
   parent: TElementNode|TElementContainerNode|null;
   tViews: TView|TView[]|null;
+  projection: null;
+}
+
+export interface TIcuNode extends TNode {
+  /** Index in the LViewData[] array. */
+  index: number;
+  child: TElementNode|TTextNode|null;
+  parent: TElementNode|TElementContainerNode|null;
+  tViews: null;
   projection: null;
 }
 

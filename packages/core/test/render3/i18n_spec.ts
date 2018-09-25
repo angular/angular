@@ -9,7 +9,8 @@
 import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
+import {i18nApply, i18nAttrMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
+import {icuBinding1, icuBinding2, icuBindingApply} from '../../src/render3/icu';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, projection, projectionDef, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
@@ -21,7 +22,6 @@ describe('Runtime i18n', () => {
     // Open tag placeholders are never re-used (closing tag placeholders can be).
     const MSG_DIV_SECTION_1 =
         `{$START_C}trad 1{$END_C}{$START_A}trad 2{$START_B}trad 3{$END_B}{$END_A}`;
-    let i18n_1: I18nInstruction[][];
     // Initial template:
     // <div i18n>
     //  <a>
@@ -40,10 +40,8 @@ describe('Runtime i18n', () => {
     //  </a>
     // </div>
     function createTemplate() {
-      if (!i18n_1) {
-        i18n_1 = i18nMapping(
-            MSG_DIV_SECTION_1, [{'START_A': 1, 'START_B': 2, 'START_REMOVE_ME': 3, 'START_C': 4}]);
-      }
+      i18nMapping(
+          0, MSG_DIV_SECTION_1, [{'START_A': 1, 'START_B': 2, 'START_REMOVE_ME': 3, 'START_C': 4}]);
 
       elementStart(0, 'div');
       {  // Start of translated section 1
@@ -57,7 +55,7 @@ describe('Runtime i18n', () => {
         element(4, 'c');  // START_C
       }                   // End of translated section 1
       elementEnd();
-      i18nApply(1, i18n_1[0]);
+      i18nApply(1, 0, 0);
     }
 
     const fixture = new TemplateFixture(createTemplate, () => {}, 5);
@@ -66,7 +64,6 @@ describe('Runtime i18n', () => {
 
   it('should support expressions', () => {
     const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
 
     class MyApp {
       exp1 = '1';
@@ -89,9 +86,7 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1, 'EXP_2': 2}]);
-            }
+            i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 1, 'EXP_2': 2}]);
 
             elementStart(0, 'div');
             {
@@ -102,7 +97,7 @@ describe('Runtime i18n', () => {
               // End of translated section 1
             }
             elementEnd();
-            i18nApply(1, i18n_1[0]);
+            i18nApply(1, 0, 0);
           }
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.exp1));
@@ -128,7 +123,6 @@ describe('Runtime i18n', () => {
 
   it('should support expressions on removed nodes', () => {
     const MSG_DIV_SECTION_1 = `message`;
-    let i18n_1: I18nInstruction[][];
 
     class MyApp {
       exp1 = '1';
@@ -150,9 +144,7 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1}]);
-            }
+            i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 1}]);
 
             elementStart(0, 'div');
             {
@@ -161,7 +153,7 @@ describe('Runtime i18n', () => {
               // End of translated section 1
             }
             elementEnd();
-            i18nApply(1, i18n_1[0]);
+            i18nApply(1, 0, 0);
           }
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.exp1));
@@ -185,7 +177,6 @@ describe('Runtime i18n', () => {
 
   it('should support expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
 
     class MyApp {
       exp1: any = '1';
@@ -204,10 +195,11 @@ describe('Runtime i18n', () => {
         // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
+            i18nAttrMapping(0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2']);
             element(0, 'div');  // translated section 1
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'title', i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2));
+            elementProperty(0, 'title', i18nInterpolation2(0, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -230,8 +222,6 @@ describe('Runtime i18n', () => {
   it('should support both html elements, expressions and expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `{$EXP_1} {$START_P}trad {$EXP_2}{$END_P}`;
     const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
-    let i18n_2: I18nExpInstruction[];
 
     class MyApp {
       exp1 = '1';
@@ -266,19 +256,15 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(
-                  MSG_DIV_SECTION_1, [{
-                    'START_REMOVE_ME_1': 2,
-                    'START_REMOVE_ME_2': 3,
-                    'START_REMOVE_ME_3': 4,
-                    'START_P': 5
-                  }],
-                  [{'EXP_1': 1, 'EXP_2': 6, 'EXP_3': 7}]);
-            }
-            if (!i18n_2) {
-              i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
-            }
+            i18nMapping(
+                0, MSG_DIV_SECTION_1, [{
+                  'START_REMOVE_ME_1': 2,
+                  'START_REMOVE_ME_2': 3,
+                  'START_REMOVE_ME_3': 4,
+                  'START_P': 5
+                }],
+                [{'EXP_1': 1, 'EXP_2': 6, 'EXP_3': 7}]);
+            i18nAttrMapping(1, MSG_ATTR_1, ['EXP_1', 'EXP_2']);
 
             elementStart(0, 'div');
             {
@@ -297,13 +283,13 @@ describe('Runtime i18n', () => {
               // End of translated section 1
             }
             elementEnd();
-            i18nApply(1, i18n_1[0]);
+            i18nApply(1, 0, 0);
           }
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.exp1));
             textBinding(6, bind(ctx.exp2));
             textBinding(7, bind(ctx.exp3));
-            elementProperty(0, 'title', i18nInterpolation2(i18n_2, ctx.exp1, ctx.exp2));
+            elementProperty(0, 'title', i18nInterpolation2(1, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -328,9 +314,6 @@ describe('Runtime i18n', () => {
     const MSG_DIV_SECTION_1 = `trad {$EXP_1}`;
     const MSG_DIV_SECTION_2 = `{$START_C}trad{$END_C}`;
     const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    let i18n_1: I18nInstruction[][];
-    let i18n_2: I18nInstruction[][];
-    let i18n_3: I18nExpInstruction[];
 
     class MyApp {
       exp1 = '1';
@@ -365,15 +348,9 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            if (!i18n_1) {
-              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 2}]);
-            }
-            if (!i18n_2) {
-              i18n_2 = i18nMapping(MSG_DIV_SECTION_2, [{'START_C': 5}]);
-            }
-            if (!i18n_3) {
-              i18n_3 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
-            }
+            i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 2}]);
+            i18nMapping(1, MSG_DIV_SECTION_2, [{'START_C': 5}]);
+            i18nAttrMapping(2, MSG_ATTR_1, ['EXP_1', 'EXP_2']);
 
             elementStart(0, 'div');
             {
@@ -394,12 +371,12 @@ describe('Runtime i18n', () => {
               elementEnd();
             }
             elementEnd();
-            i18nApply(2, i18n_1[0]);
-            i18nApply(5, i18n_2[0]);
+            i18nApply(2, 0, 0);
+            i18nApply(5, 1, 0);
           }
           if (rf & RenderFlags.Update) {
             textBinding(2, bind(ctx.exp1));
-            elementProperty(4, 'title', i18nInterpolation2(i18n_3, ctx.exp1, ctx.exp2));
+            elementProperty(4, 'title', i18nInterpolation2(2, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -426,8 +403,6 @@ describe('Runtime i18n', () => {
   describe('view containers / embedded templates', () => {
     it('should support containers', () => {
       const MSG_DIV_SECTION_1 = `valeur: {$EXP_1}`;
-      // The indexes are based on the main template function
-      let i18n_1: I18nInstruction[][];
 
       class MyApp {
         exp1 = '1';
@@ -453,9 +428,8 @@ describe('Runtime i18n', () => {
           // ) after
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 0}]);
-              }
+              // The indexes are based on each template function
+              i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 0}]);
 
               text(0, 'before (');
               container(1);
@@ -469,7 +443,7 @@ describe('Runtime i18n', () => {
                   // Start of translated section 1
                   text(0);  // EXP_1
                   // End of translated section 1
-                  i18nApply(0, i18n_1[0]);
+                  i18nApply(0, 0, 0);
                 }
                 if (rf0 & RenderFlags.Update) {
                   textBinding(0, bind(myApp.exp1));
@@ -492,13 +466,9 @@ describe('Runtime i18n', () => {
 
     it('should support ng-container', () => {
       const MSG_DIV_SECTION_1 = `{$START_B}{$END_B}`;
-      // With ng-container the i18n node doesn't create any element at runtime which means that
-      // its children are not the only children of their parent, some nodes which are not
-      // translated might also be the children of the same parent.
-      // This is why we need to pass the `lastChildIndex` to `i18nMapping`
-      let i18n_1: I18nInstruction[][];
+
       // Initial template:
-      // <div i18n>
+      // <div>
       //  <a></a>
       //  <ng-container i18n>
       //    <b></b>
@@ -508,7 +478,7 @@ describe('Runtime i18n', () => {
       // </div>
 
       // Translated to:
-      // <div i18n>
+      // <div>
       //  <a></a>
       //  <ng-container i18n>
       //    <b></b>
@@ -516,9 +486,11 @@ describe('Runtime i18n', () => {
       //  <d></d>
       // </div>
       function createTemplate() {
-        if (!i18n_1) {
-          i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 2, 'START_C': 3}], null, null, 4);
-        }
+        // With ng-container the i18n node doesn't create any element at runtime which means that
+        // its children are not the only children of their parent, some nodes which are not
+        // translated might also be the children of the same parent.
+        // This is why we need to pass the `lastChildIndex` to `i18nMapping`
+        i18nMapping(0, MSG_DIV_SECTION_1, [{'START_B': 2, 'START_C': 3}], null, null, null, 4);
 
         elementStart(0, 'div');
         {
@@ -532,7 +504,7 @@ describe('Runtime i18n', () => {
           element(4, 'd');
         }
         elementEnd();
-        i18nApply(2, i18n_1[0]);
+        i18nApply(2, 0, 0);
       }
 
       const fixture = new TemplateFixture(createTemplate, () => {}, 5);
@@ -541,8 +513,6 @@ describe('Runtime i18n', () => {
 
     it('should support embedded templates', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}valeur: {$EXP_1}!{$END_LI}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
 
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
@@ -552,7 +522,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_1
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -579,11 +549,10 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
-                    ['START_LI']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
+                  null, ['START_LI']);
 
               elementStart(0, 'ul');
               {
@@ -592,7 +561,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -628,8 +597,6 @@ describe('Runtime i18n', () => {
     it('should support sibling embedded templates', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
 
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
@@ -639,7 +606,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_1
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -654,7 +621,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_2
           elementEnd();
           // End of translated section 3
-          i18nApply(0, i18n_1[2]);
+          i18nApply(0, 0, 2);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -683,12 +650,11 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1,
+                  [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
+                  [null, {'EXP_1': 1}, {'EXP_2': 1}], null, ['START_LI_0', 'START_LI_1']);
 
               elementStart(0, 'ul');
               {
@@ -698,7 +664,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -741,8 +707,6 @@ describe('Runtime i18n', () => {
     it('should support changing the order of multiple template roots in the same template', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
 
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
@@ -752,7 +716,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_1
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -767,7 +731,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_2
           elementEnd();
           // End of translated section 3
-          i18nApply(0, i18n_1[2]);
+          i18nApply(0, 0, 2);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -796,12 +760,11 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1,
+                  [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
+                  [null, {'EXP_1': 1}, {'EXP_2': 1}], null, ['START_LI_0', 'START_LI_1']);
 
               elementStart(0, 'ul');
               {
@@ -811,7 +774,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -853,8 +816,6 @@ describe('Runtime i18n', () => {
 
     it('should support nested embedded templates', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}{$START_SPAN}valeur: {$EXP_1}!{$END_SPAN}{$END_LI}`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
 
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
@@ -866,7 +827,7 @@ describe('Runtime i18n', () => {
           }
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           const myApp = nextContext();
@@ -882,7 +843,7 @@ describe('Runtime i18n', () => {
           { text(1); }              // EXP_1
           elementEnd();
           // End of translated section 3
-          i18nApply(0, i18n_1[2]);
+          i18nApply(0, 0, 2);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -913,12 +874,11 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI': 1}, {'START_LI': 0, 'START_SPAN': 1}, {'START_SPAN': 0}],
-                    [null, null, {'EXP_1': 1}], ['START_LI', 'START_SPAN']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1,
+                  [{'START_LI': 1}, {'START_LI': 0, 'START_SPAN': 1}, {'START_SPAN': 0}],
+                  [null, null, {'EXP_1': 1}], null, ['START_LI', 'START_SPAN']);
 
               elementStart(0, 'ul');
               {
@@ -927,7 +887,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -969,8 +929,6 @@ describe('Runtime i18n', () => {
     it('should be able to move template roots around', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_0}début{$END_LI_0}{$START_LI_1}valeur: {$EXP_1}{$END_LI_1}fin`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
 
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
@@ -980,7 +938,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_1
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -1011,12 +969,11 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1,
-                    [{'START_LI_0': 1, 'START_LI_1': 2, 'START_LI_2': 3}, {'START_LI_1': 0}],
-                    [null, {'EXP_1': 1}], ['START_LI_1']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1,
+                  [{'START_LI_0': 1, 'START_LI_1': 2, 'START_LI_2': 3}, {'START_LI_1': 0}],
+                  [null, {'EXP_1': 1}], null, ['START_LI_1']);
 
               elementStart(0, 'ul');
               {
@@ -1029,7 +986,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(2, 'ngForOf', bind(myApp.items));
@@ -1067,8 +1024,7 @@ describe('Runtime i18n', () => {
 
     it('should be able to remove template roots', () => {
       const MSG_DIV_SECTION_1 = `loop`;
-      // The indexes are based on each template function
-      let i18n_1: I18nInstruction[][];
+
       function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
         if (rf1 & RenderFlags.Create) {
           // This is a container so the whole template is a translated section
@@ -1077,7 +1033,7 @@ describe('Runtime i18n', () => {
           { text(1); }            // EXP_1
           elementEnd();
           // End of translated section 2
-          i18nApply(0, i18n_1[1]);
+          i18nApply(0, 0, 1);
         }
         if (rf1 & RenderFlags.Update) {
           textBinding(1, bind(row.$implicit));
@@ -1104,11 +1060,10 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
-                    ['START_LI']);
-              }
+              // The indexes are based on each template function
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
+                  null, ['START_LI']);
 
               elementStart(0, 'ul');
               {
@@ -1117,7 +1072,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
@@ -1174,9 +1129,9 @@ describe('Runtime i18n', () => {
 
       const MSG_DIV_SECTION_1 =
           `{$START_CHILD}Je suis projeté depuis {$START_B}{$EXP_1}{$END_B}{$END_CHILD}`;
-      let i18n_1: I18nInstruction[][];
+
       const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      let i18n_2: I18nExpInstruction[];
+
 
       @Component({
         selector: 'parent',
@@ -1203,20 +1158,17 @@ describe('Runtime i18n', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(
-                    MSG_DIV_SECTION_1, [{
-                      'START_CHILD': 1,
-                      'START_B': 2,
-                      'START_REMOVE_ME_1': 4,
-                      'START_REMOVE_ME_2': 5,
-                      'START_REMOVE_ME_3': 6
-                    }],
-                    [{'EXP_1': 3}]);
-              }
-              if (!i18n_2) {
-                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
-              }
+              i18nMapping(
+                  0, MSG_DIV_SECTION_1, [{
+                    'START_CHILD': 1,
+                    'START_B': 2,
+                    'START_REMOVE_ME_1': 4,
+                    'START_REMOVE_ME_2': 5,
+                    'START_REMOVE_ME_3': 6
+                  }],
+                  [{'EXP_1': 3}]);
+
+              i18nAttrMapping(1, MSG_ATTR_1, ['EXP_1']);
 
               elementStart(0, 'div');
               {
@@ -1236,10 +1188,10 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(2, 'title', i18nInterpolation1(i18n_2, cmp.name));
+              elementProperty(2, 'title', i18nInterpolation1(1, cmp.name));
               textBinding(3, bind(cmp.name));
             }
           }
@@ -1273,9 +1225,7 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `Je suis projeté depuis {$EXP_1}`;
-      let i18n_1: I18nInstruction[][];
       const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      let i18n_2: I18nExpInstruction[];
 
       @Component({
         selector: 'parent',
@@ -1303,12 +1253,8 @@ describe('Runtime i18n', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 4}]);
-              }
-              if (!i18n_2) {
-                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
-              }
+              i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 4}]);
+              i18nAttrMapping(1, MSG_ATTR_1, ['EXP_1']);
 
               elementStart(0, 'div');
               {
@@ -1327,10 +1273,10 @@ describe('Runtime i18n', () => {
                 elementEnd();
               }
               elementEnd();
-              i18nApply(4, i18n_1[0]);
+              i18nApply(4, 0, 0);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(3, 'title', i18nInterpolation1(i18n_2, cmp.name));
+              elementProperty(3, 'title', i18nInterpolation1(1, cmp.name));
               textBinding(4, bind(cmp.name));
             }
           }
@@ -1385,7 +1331,6 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `{$START_B}Bonjour{$END_B} Monde!`;
-      let i18n_1: I18nInstruction[][];
 
       @Component({
         selector: 'parent',
@@ -1404,9 +1349,7 @@ describe('Runtime i18n', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 1}]);
-              }
+              i18nMapping(0, MSG_DIV_SECTION_1, [{'START_B': 1}]);
 
               elementStart(0, 'child');
               {
@@ -1415,7 +1358,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
           }
         });
@@ -1450,7 +1393,6 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `{$START_SPAN_0}Contenu{$END_SPAN_0}`;
-      let i18n_1: I18nInstruction[][];
 
       @Component({
         selector: 'parent',
@@ -1473,9 +1415,7 @@ describe('Runtime i18n', () => {
           vars: 0,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              if (!i18n_1) {
-                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_SPAN_0': 1, 'START_SPAN_1': 2}]);
-              }
+              i18nMapping(0, MSG_DIV_SECTION_1, [{'START_SPAN_0': 1, 'START_SPAN_1': 2}]);
 
               elementStart(0, 'child');
               {
@@ -1485,7 +1425,7 @@ describe('Runtime i18n', () => {
                 // End of translated section 1
               }
               elementEnd();
-              i18nApply(1, i18n_1[0]);
+              i18nApply(1, 0, 0);
             }
           }
         });
@@ -1499,7 +1439,6 @@ describe('Runtime i18n', () => {
   describe('i18nInterpolation', () => {
     it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
       const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
       let interpolation;
       let interpolationV;
 
@@ -1520,11 +1459,12 @@ describe('Runtime i18n', () => {
           // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
-              interpolation = i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2);
-              interpolationV = i18nInterpolationV(i18n_1, [ctx.exp1, ctx.exp2]);
+              interpolation = i18nInterpolation2(0, ctx.exp1, ctx.exp2);
+              interpolationV = i18nInterpolationV(0, [ctx.exp1, ctx.exp2]);
               elementProperty(0, 'title', interpolation);
             }
           }
@@ -1538,7 +1478,6 @@ describe('Runtime i18n', () => {
 
     it('i18nInterpolation3 should work', () => {
       const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2});
 
       class MyApp {
         exp1: any = '1';
@@ -1558,10 +1497,11 @@ describe('Runtime i18n', () => {
           // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2', 'EXP_3']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(0, 'title', i18nInterpolation3(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3));
+              elementProperty(0, 'title', i18nInterpolation3(0, ctx.exp1, ctx.exp2, ctx.exp3));
             }
           }
         });
@@ -1573,8 +1513,6 @@ describe('Runtime i18n', () => {
 
     it('i18nInterpolation4 should work', () => {
       const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} end`;
-      const i18n_1 =
-          i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3});
 
       class MyApp {
         exp1: any = '1';
@@ -1595,11 +1533,12 @@ describe('Runtime i18n', () => {
           // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2', 'EXP_3', 'EXP_4']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
               elementProperty(
-                  0, 'title', i18nInterpolation4(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4));
+                  0, 'title', i18nInterpolation4(0, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4));
             }
           }
         });
@@ -1611,8 +1550,6 @@ describe('Runtime i18n', () => {
 
     it('i18nInterpolation5 should work', () => {
       const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4});
 
       class MyApp {
         exp1: any = '1';
@@ -1635,12 +1572,13 @@ describe('Runtime i18n', () => {
           // end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2', 'EXP_3', 'EXP_4', 'EXP_5']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
               elementProperty(
                   0, 'title',
-                  i18nInterpolation5(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5));
+                  i18nInterpolation5(0, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5));
             }
           }
         });
@@ -1653,9 +1591,6 @@ describe('Runtime i18n', () => {
     it('i18nInterpolation6 should work', () => {
       const MSG_DIV_SECTION_1 =
           `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1,
-          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5});
 
       class MyApp {
         exp1: any = '1';
@@ -1679,13 +1614,14 @@ describe('Runtime i18n', () => {
           // _ {{exp6}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(
+                  0, MSG_DIV_SECTION_1, ['EXP_1', 'EXP_2', 'EXP_3', 'EXP_4', 'EXP_5', 'EXP_6']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
               elementProperty(
-                  0, 'title',
-                  i18nInterpolation6(
-                      i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6));
+                  0, 'title', i18nInterpolation6(
+                                  0, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6));
             }
           }
         });
@@ -1698,9 +1634,6 @@ describe('Runtime i18n', () => {
     it('i18nInterpolation7 should work', () => {
       const MSG_DIV_SECTION_1 =
           `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} end`;
-      const i18n_1 = i18nExpMapping(
-          MSG_DIV_SECTION_1,
-          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5, 'EXP_7': 6});
 
       class MyApp {
         exp1: any = '1';
@@ -1726,13 +1659,16 @@ describe('Runtime i18n', () => {
           // _ {{exp6}} _ {{exp7}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(
+                  0, MSG_DIV_SECTION_1,
+                  ['EXP_1', 'EXP_2', 'EXP_3', 'EXP_4', 'EXP_5', 'EXP_6', 'EXP_7']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
               elementProperty(
-                  0, 'title', i18nInterpolation7(
-                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
-                                  ctx.exp6, ctx.exp7));
+                  0, 'title',
+                  i18nInterpolation7(
+                      0, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6, ctx.exp7));
             }
           }
         });
@@ -1745,16 +1681,6 @@ describe('Runtime i18n', () => {
     it('i18nInterpolation8 should work', () => {
       const MSG_DIV_SECTION_1 =
           `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} _ {$EXP_8} end`;
-      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {
-        'EXP_1': 0,
-        'EXP_2': 1,
-        'EXP_3': 2,
-        'EXP_4': 3,
-        'EXP_5': 4,
-        'EXP_6': 5,
-        'EXP_7': 6,
-        'EXP_8': 7
-      });
 
       class MyApp {
         exp1: any = '1';
@@ -1781,13 +1707,16 @@ describe('Runtime i18n', () => {
           // _ {{exp6}} _ {{exp7}} _ {{exp8}} end"></div>
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
+              i18nAttrMapping(
+                  0, MSG_DIV_SECTION_1,
+                  ['EXP_1', 'EXP_2', 'EXP_3', 'EXP_4', 'EXP_5', 'EXP_6', 'EXP_7', 'EXP_8']);
               element(0, 'div');  // translated section 1
             }
             if (rf & RenderFlags.Update) {
               elementProperty(
                   0, 'title', i18nInterpolation8(
-                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
-                                  ctx.exp6, ctx.exp7, ctx.exp8));
+                                  0, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6,
+                                  ctx.exp7, ctx.exp8));
             }
           }
         });
@@ -1797,5 +1726,107 @@ describe('Runtime i18n', () => {
       expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 _ 7 _ 8 end"></div>');
     });
 
+  });
+
+  describe('ICU expressions', () => {
+    it('should support ICU expressions', () => {
+      const MSG_DIV_SECTION_1 =
+          `start ({$EXP_1}) {EXP_2, select, app {hello} other {name is {$EXP_2}}} end`;
+
+      class MyApp {
+        name = 'my app';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          consts: 2,
+          vars: 1,
+
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              i18nMapping(0, MSG_DIV_SECTION_1, null, [{'EXP_1': 1}], ['EXP_2']);
+              elementStart(0, 'div');
+              {
+                // Start of translated section 1
+                // One text node is added per expression in the interpolation
+                text(1);  // EXP_1
+                // End of translated section 1
+              }
+              elementEnd();
+              i18nApply(1, 0, 0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(1, bind(ctx.name));
+              icuBinding1(ctx.name);
+              icuBindingApply(0);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div>start (my app) name is my app end</div>');
+
+      // Change detection cycle, no model changes
+      fixture.update();
+      expect(fixture.html).toEqual('<div>start (my app) name is my app end</div>');
+
+      // Change the expressions
+      fixture.component.name = 'my app 2';
+      fixture.update();
+      expect(fixture.html).toEqual('<div>start (my app 2) name is my app 2 end</div>');
+    });
+
+    it('should support multiple ICU expressions', () => {
+      const MSG_DIV_SECTION_1 =
+          `start {EXP_1, select, other {name is {$EXP_1}}} and {EXP_2, select, other {other name is {$EXP_2}}} end`;
+
+      class MyApp {
+        exp1 = 'exp 1';
+        exp2 = 'exp 2';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          consts: 2,
+          vars: 2,
+
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              i18nMapping(0, MSG_DIV_SECTION_1, null, null, ['EXP_1', 'EXP_2']);
+              elementStart(0, 'div');
+              {
+                // Start of translated section 1
+                text(1);
+                // End of translated section 1
+              }
+              elementEnd();
+              i18nApply(1, 0, 0);
+            }
+            if (rf & RenderFlags.Update) {
+              icuBinding2(ctx.exp1, ctx.exp2);
+              icuBindingApply(0);
+              icuBindingApply(1);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div>start name is exp 1 and other name is exp 2 end</div>');
+
+      // Change detection cycle, no model changes
+      fixture.update();
+      expect(fixture.html).toEqual('<div>start name is exp 1 and other name is exp 2 end</div>');
+
+      // Change the expressions
+      fixture.component.exp1 = 'exp one';
+      fixture.component.exp2 = 'exp two';
+      fixture.update();
+      expect(fixture.html)
+          .toEqual('<div>start name is exp one and other name is exp two end</div>');
+    });
   });
 });

@@ -10,9 +10,9 @@ import localeRo from '@angular/common/locales/ro';
 import localeSr from '@angular/common/locales/sr';
 import localeZgh from '@angular/common/locales/zgh';
 import localeFr from '@angular/common/locales/fr';
-import {LOCALE_ID} from '@angular/core';
+import {LOCALE_ID, NgLocalization} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-import {NgLocaleLocalization, NgLocalization, getPluralCategory, DEPRECATED_PLURAL_FN, getPluralCase} from '../../src/i18n/localization';
+import {NgLocaleLocalization, getPluralCategory, DEPRECATED_PLURAL_FN, getPluralCase} from '../../src/i18n/localization';
 import {Plural} from '../../src/i18n/locale_data_api';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 

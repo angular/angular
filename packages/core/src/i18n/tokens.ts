@@ -109,3 +109,12 @@ export enum MissingTranslationStrategy {
   Warning = 1,
   Ignore = 2,
 }
+
+/**
+ * Base class used to get the plural category matching the given value for a locale.
+ *
+ * @experimental
+ */
+export abstract class NgLocalization {
+  abstract getPluralCategory(value: any, locale?: string): string;
+}

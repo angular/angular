@@ -10,14 +10,15 @@ import {assertDefined} from './assert';
 import {attachPatchData, readElementValue} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementContainerNode, LElementNode, LTextNode, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {ICU_RENDER_PARENT, unusedValueExportToPlacateAjd as unused6} from './interfaces/icu';
+import {LContainerNode, LElementContainerNode, LElementNode, LIcuNode, LTextNode, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {getLNode, stringify} from './util';
 
-const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
+const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5 + unused6;
 
 /** Retrieves the parent LNode of a given node. */
 export function getParentLNode(tNode: TNode, currentView: LViewData): LElementNode|
@@ -99,6 +100,7 @@ const projectionNodeStack: (LViewData | TNode)[] = [];
  * one found, or on all of them.
  *
  * @param viewToWalk the view to walk
+ * @param rootTNode The root TNode for the view to walk
  * @param action identifies the action to be performed on the LElement nodes.
  * @param renderer the current renderer.
  * @param renderParentNode Optional the render parent node to be set in all LContainerNodes found,
@@ -107,9 +109,8 @@ const projectionNodeStack: (LViewData | TNode)[] = [];
  * Insert.
  */
 function walkTNodeTree(
-    viewToWalk: LViewData, action: WalkTNodeTreeAction, renderer: Renderer3,
+    viewToWalk: LViewData, rootTNode: TNode, action: WalkTNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
-  const rootTNode = viewToWalk[TVIEW].node as TViewNode;
   let projectionNodeIndex = -1;
   let currentView = viewToWalk;
   let tNode: TNode|null = rootTNode.child as TNode;
@@ -157,6 +158,11 @@ function walkTNodeTree(
         currentView = componentView[PARENT] !;
         nextTNode = currentView[TVIEW].data[head.index] as TNode;
       }
+    } else if (tNode.type === TNodeType.IcuExpression) {
+      const lIcuNode: LIcuNode = currentView ![tNode.index] as LIcuNode;
+      executeNodeAction(action, renderer, parent, lIcuNode.native !, beforeNode);
+      nextTNode = tNode.child;
+      beforeNode = lIcuNode.native;
     } else {
       // Otherwise, this is a View or an ElementContainer
       nextTNode = tNode.child;
@@ -181,7 +187,7 @@ function walkTNodeTree(
         // If parent is null, we're crossing the view boundary, so we should get the host TNode.
         tNode = tNode.parent || currentView[TVIEW].node;
 
-        if (tNode === null || tNode === rootTNode) return null;
+        if (!tNode || tNode === rootTNode) return null;
 
         // When exiting a container, the beforeNode must be restored to the previous value
         if (tNode.type === TNodeType.Container) {
@@ -266,9 +272,35 @@ export function addRemoveViewFromContainer(
   ngDevMode && assertNodeType(viewToWalk[TVIEW].node as TNode, TNodeType.View);
   if (parent) {
     const renderer = viewToWalk[RENDERER];
+    const rootNode = viewToWalk[TVIEW].node as TViewNode;
     walkTNodeTree(
-        viewToWalk, insertMode ? WalkTNodeTreeAction.Insert : WalkTNodeTreeAction.Detach, renderer,
-        parentNode, beforeNode);
+        viewToWalk, rootNode, insertMode ? WalkTNodeTreeAction.Insert : WalkTNodeTreeAction.Detach,
+        renderer, parentNode, beforeNode);
+  }
+}
+
+/**
+ * Adds or removes all DOM elements associated with an ICU expression.
+ *
+ * Because some root nodes of the view may be containers, we sometimes need
+ * to propagate deeply into the nested containers to remove all elements in the
+ * views beneath it.
+ *
+ * @param lIcuNode The `LIcuNode` that is used as an anchor for this ICU expression
+ * @param tIcuNode The `TIcuNode` for the lIcuNode
+ * @param currentView
+ * @param insertMode Whether or not elements should be added (if false, removing)
+ */
+export function addRemoveCaseFromICU(
+    lIcuNode: LIcuNode, tIcuNode: TNode, currentView: LViewData, insertMode: boolean): void {
+  const parentNode = lIcuNode.data[ICU_RENDER_PARENT];
+  const parent = parentNode ? parentNode.native : null;
+  if (parent) {
+    const renderer = currentView[RENDERER];
+    walkTNodeTree(
+        lIcuNode.data as any as LViewData, tIcuNode,
+        insertMode ? WalkTNodeTreeAction.Insert : WalkTNodeTreeAction.Detach, renderer, parentNode,
+        lIcuNode.native);
   }
 }
 
@@ -429,7 +461,8 @@ export function getLViewChild(viewData: LViewData): LViewData|LContainer|null {
 export function destroyLView(view: LViewData) {
   const renderer = view[RENDERER];
   if (isProceduralRenderer(renderer) && renderer.destroyNode) {
-    walkTNodeTree(view, WalkTNodeTreeAction.Destroy, renderer);
+    const rootTNode = view[TVIEW].node !;
+    walkTNodeTree(view, rootTNode, WalkTNodeTreeAction.Destroy, renderer);
   }
   destroyViewTree(view);
   // Sets the destroyed flag
@@ -465,7 +498,7 @@ export function getParentState(state: LViewData | LContainer, rootView: LViewDat
 /**
  * Removes all listeners and call all onDestroys in a given view.
  *
- * @param view The LViewData to clean up
+ * @param viewOrContainer The LViewData to clean up
  */
 function cleanUpView(viewOrContainer: LViewData | LContainer): void {
   if ((viewOrContainer as LViewData)[TVIEW]) {
@@ -711,14 +744,14 @@ export function removeChild(tNode: TNode, child: RNode | null, currentView: LVie
  * Appends a projected node to the DOM, or in the case of a projected container,
  * appends the nodes from all of the container's active views to the DOM.
  *
- * @param projectedLNode The node to process
- * @param parentNode The last parent element to be processed
+ * @param projectedLNode The LNode for the node to process
+ * @param projectedTNode The TNode for the node to process
  * @param tProjectionNode
  * @param currentView Current LView
  * @param projectionView Projection view
  */
 export function appendProjectedNode(
-    projectedLNode: LElementNode | LElementContainerNode | LTextNode | LContainerNode,
+    projectedLNode: LElementNode | LElementContainerNode | LTextNode | LContainerNode | LIcuNode,
     projectedTNode: TNode, tProjectionNode: TNode, currentView: LViewData,
     projectionView: LViewData): void {
   appendChild(projectedLNode.native, tProjectionNode, currentView);
@@ -751,6 +784,15 @@ export function appendProjectedNode(
           ngContainerChildTNode, tProjectionNode, currentView, projectionView);
       ngContainerChildTNode = ngContainerChildTNode.next;
     }
+  } else if (projectedTNode.type === TNodeType.IcuExpression) {
+    // The node we are adding is an ICU expression and we are adding it to an element which
+    // is not a component (no more re-projection).
+    // Alternatively an ICU expression is projected at the root of a component's template
+    // and can't be re-projected (as not content of any component).
+    // Assign the final projection location in those cases.
+    const lIcuNode = projectedLNode as LIcuNode;
+    lIcuNode.data[ICU_RENDER_PARENT] = renderParent;
+    addRemoveCaseFromICU(lIcuNode, projectedTNode, currentView, true);
   }
   if (projectedLNode.dynamicLContainerNode) {
     projectedLNode.dynamicLContainerNode.data[RENDER_PARENT] = renderParent;

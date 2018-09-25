@@ -95,10 +95,34 @@ export {
   i18nInterpolation7,
   i18nInterpolation8,
   i18nInterpolationV,
-  i18nExpMapping,
-  I18nInstruction,
-  I18nExpInstruction
+  i18nAttrMapping,
 } from './i18n';
+
+export {
+  I18nInstruction,
+  I18nAttrInstruction
+} from './interfaces/i18n';
+
+export {
+  icu,
+  icuBinding1,
+  icuBinding2,
+  icuBinding3,
+  icuBinding4,
+  icuBinding5,
+  icuBinding6,
+  icuBinding7,
+  icuBinding8,
+  icuBindingV,
+  icuBindingApply,
+  icuMapping,
+} from './icu';
+
+export {
+  IcuExpression,
+  IcuTemplate,
+  IcuType,
+} from './interfaces/icu';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
