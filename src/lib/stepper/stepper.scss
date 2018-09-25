@@ -107,7 +107,9 @@ $mat-stepper-line-gap: 8px !default;
   display: flex;
   align-items: center;
   padding: $mat-stepper-side-gap;
-  max-height: $mat-stepper-label-header-height;
+
+  // We can't use `max-height` here, because it breaks the flexbox centering in IE.
+  height: $mat-stepper-label-header-height;
 
   .mat-step-icon {
     margin-right: $mat-vertical-stepper-content-margin - $mat-stepper-side-gap;
