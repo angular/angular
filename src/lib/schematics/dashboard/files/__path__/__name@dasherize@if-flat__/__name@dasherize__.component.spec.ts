@@ -17,7 +17,7 @@ describe('<%= classify(name) %>Component', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [< %= classify(name) %> Component],
+      declarations: [<%= classify(name) %>Component],
       imports: [
         NoopAnimationsModule,
         LayoutModule,
