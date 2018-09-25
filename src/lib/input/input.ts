@@ -232,10 +232,14 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
     private _autofillMonitor: AutofillMonitor,
     ngZone: NgZone) {
+
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
+
+    const element = this._elementRef.nativeElement;
+
     // If no input value accessor was explicitly specified, use the element as the input value
     // accessor.
-    this._inputValueAccessor = inputValueAccessor || this._elementRef.nativeElement;
+    this._inputValueAccessor = inputValueAccessor || element;
 
     this._previousNativeValue = this.value;
 
@@ -262,7 +266,12 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     }
 
     this._isServer = !this._platform.isBrowser;
-    this._isNativeSelect = this._elementRef.nativeElement.nodeName.toLowerCase() === 'select';
+    this._isNativeSelect = element.nodeName.toLowerCase() === 'select';
+
+    if (this._isNativeSelect) {
+      this.controlType = (element as HTMLSelectElement).multiple ? 'mat-native-select-multiple' :
+                                                                   'mat-native-select';
+    }
   }
 
   ngOnInit() {

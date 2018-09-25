@@ -218,51 +218,51 @@ describe('MatInput without forms', () => {
     const labelElement: HTMLInputElement =
         fixture.debugElement.query(By.css('label')).nativeElement;
 
-        expect(inputElement.id).toBe('test-id');
-        expect(labelElement.getAttribute('for')).toBe('test-id');
-      }));
+    expect(inputElement.id).toBe('test-id');
+    expect(labelElement.getAttribute('for')).toBe('test-id');
+  }));
 
-      it('validates there\'s only one hint label per side', fakeAsync(() => {
-        let fixture = createComponent(MatInputInvalidHintTestController);
+  it('validates there\'s only one hint label per side', fakeAsync(() => {
+    let fixture = createComponent(MatInputInvalidHintTestController);
 
-        expect(() => {
-          try {
-            fixture.detectChanges();
-            flush();
-          } catch {
-            flush();
-          }
-        }).toThrowError(
-            wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
-      }));
+    expect(() => {
+      try {
+        fixture.detectChanges();
+        flush();
+      } catch {
+        flush();
+      }
+    }).toThrowError(
+        wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+  }));
 
-      it('validates there\'s only one hint label per side (attribute)', fakeAsync(() => {
-        let fixture = createComponent(MatInputInvalidHint2TestController);
+  it('validates there\'s only one hint label per side (attribute)', fakeAsync(() => {
+    let fixture = createComponent(MatInputInvalidHint2TestController);
 
-        expect(() => {
-          try {
-            fixture.detectChanges();
-            flush();
-          } catch {
-            flush();
-          }
-        }).toThrowError(
-            wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
-      }));
+    expect(() => {
+      try {
+        fixture.detectChanges();
+        flush();
+      } catch {
+        flush();
+      }
+    }).toThrowError(
+        wrappedErrorMessage(getMatFormFieldDuplicatedHintError('start')));
+  }));
 
-      it('validates there\'s only one placeholder', fakeAsync(() => {
-        let fixture = createComponent(MatInputInvalidPlaceholderTestController);
+  it('validates there\'s only one placeholder', fakeAsync(() => {
+    let fixture = createComponent(MatInputInvalidPlaceholderTestController);
 
-        expect(() => {
-          try {
-            fixture.detectChanges();
-            flush();
-          } catch {
-            flush();
-          }
-        }).toThrowError(
-            wrappedErrorMessage(getMatFormFieldPlaceholderConflictError()));
-      }));
+    expect(() => {
+      try {
+        fixture.detectChanges();
+        flush();
+      } catch {
+        flush();
+      }
+    }).toThrowError(
+        wrappedErrorMessage(getMatFormFieldPlaceholderConflictError()));
+  }));
 
   it('validates that matInput child is present', fakeAsync(() => {
     let fixture = createComponent(MatInputMissingMatInputTestController);
@@ -461,6 +461,15 @@ describe('MatInput without forms', () => {
     expect(formFieldEl.classList.contains('mat-form-field-disabled'))
         .toBe(true, `Expected form field to look disabled after property is set.`);
     expect(selectEl.disabled).toBe(true);
+  }));
+
+  it('should add a class to the form field if it has a native select', fakeAsync(() => {
+    const fixture = createComponent(MatInputSelect);
+    fixture.detectChanges();
+
+    const formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+
+    expect(formField.classList).toContain('mat-form-field-type-mat-native-select');
   }));
 
   it('supports the required attribute as binding', fakeAsync(() => {
@@ -870,6 +879,14 @@ describe('MatInput without forms', () => {
 
     expect(container.classList).toContain('mat-form-field-hide-placeholder');
     expect(container.classList).not.toContain('mat-form-field-should-float');
+  });
+
+  it('should not add the native select class if the control is not a native select', () => {
+    const fixture = createComponent(MatInputWithId);
+    fixture.detectChanges();
+    const formField = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+
+    expect(formField.classList).not.toContain('mat-form-field-type-mat-native-select');
   });
 
 });

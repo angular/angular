@@ -122,29 +122,14 @@ textarea.mat-input-element {
   margin: -2px 0;
 }
 
-// URL-encoded Material Design select arrow SVG.
-$mat-native-select-arrow-svg: '' +
-  'data:image/svg+xml;charset=utf8,%3Csvg%20width%3D%2210%22%20height%3D%225%22%20' +
-  'viewBox%3D%227%2010%2010%205%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fs' +
-  'vg%22%3E%3Cpath%20fill%3D%22%230%22%20fill-rule%3D%22evenodd%22%20opacity%3D%22' +
-  '.54%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E';
-
 // Remove the native select down arrow and replace it with material design arrow
 select.mat-input-element {
   -moz-appearance: none;
   -webkit-appearance: none;
   position: relative;
   background-color: transparent;
-  background-repeat: no-repeat;
   display: inline-flex;
   box-sizing: border-box;
-  background-position: right center;
-
-  // Native multi-selects are rendered inline which
-  // means that they shouldn't have a dropdown arrow.
-  &:not([multiple]) {
-    background-image: url($mat-native-select-arrow-svg);
-  }
 
   &::-ms-expand {
     display: none;
@@ -156,9 +141,34 @@ select.mat-input-element {
   &::-moz-focus-inner {
     border: 0;
   }
-
-  [dir='rtl'] & {
-    background-position: left center;
-  }
 }
 
+.mat-form-field-type-mat-native-select {
+  $arrow-size: 5px;
+
+  .mat-form-field-infix::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: $arrow-size solid transparent;
+    border-right: $arrow-size solid transparent;
+    border-top: $arrow-size solid;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -$arrow-size / 2;
+
+    [dir='rtl'] & {
+      right: auto;
+      left: 0;
+    }
+  }
+
+  &.mat-form-field-appearance-outline .mat-form-field-infix::after {
+    margin-top: -$arrow-size;
+  }
+
+  &.mat-form-field-appearance-fill .mat-form-field-infix::after {
+    margin-top: -$arrow-size * 2;
+  }
+}

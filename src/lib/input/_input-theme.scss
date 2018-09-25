@@ -11,7 +11,12 @@
   $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
 
-  .mat-input-element:disabled {
+  .mat-form-field-type-mat-native-select .mat-form-field-infix::after {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-input-element:disabled,
+  .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
     color: mat-color($foreground, disabled-text);
   }
 
@@ -30,6 +35,10 @@
   .mat-warn .mat-input-element,
   .mat-form-field-invalid .mat-input-element {
     caret-color: mat-color($warn);
+  }
+
+  .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
+    color: mat-color($warn);
   }
 }
 

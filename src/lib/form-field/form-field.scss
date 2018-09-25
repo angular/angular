@@ -217,6 +217,11 @@ $mat-form-field-default-infix-width: 180px !default;
   display: block;
 }
 
+// Element that can used to reliably align content in relation to the form field control.
+.mat-form-field-control-wrapper {
+  position: relative;
+}
+
 .mat-form-field._mat-animation-noopable {
   .mat-form-field-label,
   .mat-form-field-ripple {
