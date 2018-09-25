@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3_TEMPLATE_REF_FACTORY} from '../ivy_switch/runtime/index';
+
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 
@@ -14,12 +16,12 @@ import {EmbeddedViewRef} from './view_ref';
  * Represents an embedded template that can be used to instantiate embedded views.
  * To instantiate embedded views based on a template, use the `ViewContainerRef`
  * method `createEmbeddedView()`.
- * 
+ *
  * Access a `TemplateRef` instance by placing a directive on an `<ng-template>`
  * element (or directive prefixed with `*`). The `TemplateRef` for the embedded view
  * is injected into the constructor of the directive,
  * using the `TemplateRef` token.
- * 
+ *
  * You can also use a `Query` to find a `TemplateRef` associated with
  * a component or a directive.
  *
@@ -48,4 +50,8 @@ export abstract class TemplateRef<C> {
    * @returns The new view object.
    */
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__:
+      () => TemplateRef<any> = () => R3_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
 }

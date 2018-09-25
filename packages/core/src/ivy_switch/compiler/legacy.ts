@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableType, InjectorType, defineInjectable, defineInjector, getInjectableDef} from './di/defs';
-import {InjectableProvider} from './di/injectable';
-import {inject, injectArgs} from './di/injector';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './di/provider';
+import {InjectableType, InjectorType, defineInjectable, defineInjector, getInjectableDef} from '../../di/defs';
+import {InjectableProvider} from '../../di/injectable';
+import {inject, injectArgs} from '../../di/injector';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
+import {NgModule} from '../../metadata';
+import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
+import {Type} from '../../type';
+import {getClosureSafeProperty} from '../../util/property';
+
 import * as ivyOn from './ivy_switch_on';
-import {NgModule} from './metadata';
-import {ReflectionCapabilities} from './reflection/reflection_capabilities';
-import {Type} from './type';
-import {getClosureSafeProperty} from './util/property';
 
 function noop() {}
 
@@ -25,6 +26,7 @@ export const R3_COMPILE_DIRECTIVE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COM
 export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_INJECTABLE;
 export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
+
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
 const R3_COMPILE_COMPONENT__PRE_NGCC__: DirectiveCompiler = noop;
@@ -32,6 +34,7 @@ const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
 const R3_COMPILE_NGMODULE__PRE_NGCC__: DirectiveCompiler = preR3NgModuleCompile;
 const R3_COMPILE_PIPE__PRE_NGCC__: DirectiveCompiler = noop;
+
 const ivyEnable__PRE_NGCC__ = false;
 
 export const ivyEnabled = ivyEnable__PRE_NGCC__;

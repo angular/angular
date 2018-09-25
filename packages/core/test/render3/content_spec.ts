@@ -8,9 +8,6 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
-import {defineDirective} from '../../src/render3/definition';
-import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';

@@ -106,16 +106,6 @@ export class Identifiers {
 
   static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
 
-  static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
-
-  static injectTemplateRef: o.ExternalReference = {name: 'ɵinjectTemplateRef', moduleName: CORE};
-
-  static injectViewContainerRef:
-      o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
-
-  static injectChangeDetectorRef:
-      o.ExternalReference = {name: 'ɵinjectChangeDetectorRef', moduleName: CORE};
-
   static injectRenderer2: o.ExternalReference = {name: 'ɵinjectRenderer2', moduleName: CORE};
 
   static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};

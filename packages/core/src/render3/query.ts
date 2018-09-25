@@ -11,19 +11,23 @@
 import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
+import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
+import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
 import {assertDefined, assertEqual} from './assert';
-import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {_getViewData, assertPreviousIsParent, getOrCreateCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDefInternal, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {LContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {flatten, getLNode, isContentQueryHost} from './util';
+import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -467,3 +471,63 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
   }
   return false;
 }
+
+export class ReadFromInjectorFn<T> {
+  constructor(readonly read: (tNode: TNode, view: LViewData, directiveIndex?: number) => T) {}
+}
+
+// TODO: Remove wrapper function with TemplateRef when we turn on Ivy
+// Necessary for now to avoid a circular dependency
+export const QUERY_READ_TEMPLATE_REF =
+    (TemplateRefConstructor: typeof ViewEngine_TemplateRef,
+     ElementRefConstructor: typeof ViewEngine_ElementRef) => {
+      return new ReadFromInjectorFn<ViewEngine_TemplateRef<any>>(
+          (tNode: TNode, view: LViewData) => {
+            return createTemplateRef(TemplateRefConstructor, ElementRefConstructor, tNode, view);
+          }) as any;
+    };
+
+// TODO: Remove wrapper function with ViewContainerRef when we turn on Ivy
+// Necessary for now to avoid a circular dependency
+export const QUERY_READ_CONTAINER_REF =
+    (ViewContainerRefConstructor: typeof ViewEngine_ViewContainerRef,
+     ElementRefConstructor: typeof ViewEngine_ElementRef) => {
+      return <QueryReadType<ViewEngine_ViewContainerRef>>(
+          new ReadFromInjectorFn<ViewEngine_ViewContainerRef>(
+              (tNode: TNode, view: LViewData) => createContainerRef(
+                  ViewContainerRefConstructor, ElementRefConstructor,
+                  tNode as TElementNode | TContainerNode | TElementContainerNode, view)) as any);
+
+    };
+
+// TODO: Remove wrapper function with ElementRef when we turn on Ivy
+// Necessary for now to avoid a circular dependency
+export const QUERY_READ_ELEMENT_REF = (ElementRefConstructor: typeof ViewEngine_ElementRef) => {
+  return <QueryReadType<ViewEngine_ElementRef>>(
+      new ReadFromInjectorFn<ViewEngine_ElementRef>((tNode: TNode, view: LViewData) => {
+        return createElementRef(ElementRefConstructor, tNode, view);
+      }) as any);
+};
+
+// TODO: Remove wrapper function with TemplateRef when we turn on Ivy
+export const QUERY_READ_FROM_NODE =
+    (TemplateRefConstructor: typeof ViewEngine_TemplateRef,
+     ElementRefConstructor: typeof ViewEngine_ElementRef) => {
+      return new ReadFromInjectorFn<any>((tNode: TNode, view: LViewData, directiveIdx: number) => {
+        ngDevMode && assertNodeOfPossibleTypes(
+                         tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+        if (directiveIdx > -1) {
+          return view[DIRECTIVES] ![directiveIdx];
+        }
+        if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
+          return createElementRef(ElementRefConstructor, tNode, view);
+        }
+        if (tNode.type === TNodeType.Container) {
+          return createTemplateRef(TemplateRefConstructor, ElementRefConstructor, tNode, view);
+        }
+        if (ngDevMode) {
+          // should never happen
+          throw new Error(`Unexpected node type: ${tNode.type}`);
+        }
+      }) as any as QueryReadType<any>;
+    };

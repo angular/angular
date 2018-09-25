@@ -12,6 +12,4 @@
  * For more information on how to run and debug tests with either Ivy or View Engine (legacy),
  * please see [BAZEL.md](./docs/BAZEL.md).
  */
-export * from './ivy_switch_legacy';
-
-// TODO(alxhub): debug why metadata doesn't properly propagate through this file.
+export * from './legacy';

@@ -11,7 +11,7 @@ import 'reflect-metadata';
 import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
-import {ivyEnabled} from '@angular/core/src/ivy_switch';
+import {ivyEnabled} from '@angular/core/src/ivy_switch/compiler/index';
 import {Component, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDefInternal} from '@angular/core/src/metadata/ng_module';
 import {ComponentDefInternal, PipeDefInternal} from '@angular/core/src/render3/interfaces/definition';

@@ -8,11 +8,12 @@
 
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {templateRefExtractor} from '../../src/render3/di';
-import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {directiveInject} from '../../src/render3/di';
+import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {templateRefExtractor} from '../../src/render3/view_engine_compatibility';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {NgForOf} from '../../test/render3/common_with_def';
@@ -23,7 +24,7 @@ import {ComponentFixture, TemplateFixture, createComponent} from './render_util'
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
 
-  beforeEach(() => { directiveInstance = null; });
+  beforeEach(() => directiveInstance = null);
 
   class DirectiveWithVCRef {
     static ngDirectiveDef = defineDirective({
@@ -31,7 +32,7 @@ describe('ViewContainerRef', () => {
       selectors: [['', 'vcref', '']],
       factory: () => directiveInstance = new DirectiveWithVCRef(
 
-                   injectViewContainerRef(), injectComponentFactoryResolver()),
+                   directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
       inputs: {tplRef: 'tplRef'}
     });
 
@@ -66,7 +67,9 @@ describe('ViewContainerRef', () => {
      * <p vcref [tplRef]="tplRef"></p>
      */
     function createTemplate() {
-      template(0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''], templateRefExtractor);
+      template(
+          0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''],
+          templateRefExtractor(TemplateRef, ElementRef));
       element(2, 'p', ['vcref', '']);
     }
 
@@ -83,7 +86,9 @@ describe('ViewContainerRef', () => {
          * <footer></footer>
          */
         function createTemplate() {
-          template(0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''], templateRefExtractor);
+          template(
+              0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''],
+              templateRefExtractor(TemplateRef, ElementRef));
           element(2, 'header', ['vcref', '']);
           element(3, 'footer');
         }
@@ -119,7 +124,9 @@ describe('ViewContainerRef', () => {
          * <footer></footer>
          */
         function createTemplate() {
-          template(0, embeddedTemplate, 1, 1, null, [], ['tplRef', ''], templateRefExtractor);
+          template(
+              0, embeddedTemplate, 1, 1, null, [], ['tplRef', ''],
+              templateRefExtractor(TemplateRef, ElementRef));
           element(2, 'header-cmp', ['vcref', '']);
           element(3, 'footer');
         }
@@ -155,7 +162,9 @@ describe('ViewContainerRef', () => {
          * <div vcref [tplRef]="tplRef"></div>
          */
         function createTemplate() {
-          template(0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''], templateRefExtractor);
+          template(
+              0, embeddedTemplate, 1, 1, null, null, ['tplRef', ''],
+              templateRefExtractor(TemplateRef, ElementRef));
           element(2, 'div', ['vcref', '']);
           element(3, 'div', ['vcref', '']);
 
@@ -186,7 +195,8 @@ describe('ViewContainerRef', () => {
          */
         function createTemplate() {
           template(
-              0, embeddedTemplate, 1, 1, null, ['vcref', ''], ['tplRef', ''], templateRefExtractor);
+              0, embeddedTemplate, 1, 1, null, ['vcref', ''], ['tplRef', ''],
+              templateRefExtractor(TemplateRef, ElementRef));
           element(2, 'footer');
         }
 
@@ -225,7 +235,8 @@ describe('ViewContainerRef', () => {
                type: TestDirective,
                selectors: [['', 'testdir', '']],
                factory: () => {
-                 const instance = new TestDirective(injectViewContainerRef(), injectTemplateRef());
+                 const instance = new TestDirective(
+                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any));
 
                  directiveInstances.push(instance);
 
@@ -299,8 +310,9 @@ describe('ViewContainerRef', () => {
              static ngDirectiveDef = defineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
-               factory: () => directiveInstance =
-                            new TestDirective(injectViewContainerRef(), injectTemplateRef())
+               factory: () => directiveInstance = new TestDirective(
+                            directiveInject(ViewContainerRef as any),
+                            directiveInject(TemplateRef as any))
              });
 
              constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
@@ -455,7 +467,8 @@ describe('ViewContainerRef', () => {
             template: (rf: RenderFlags, cmp: SomeComponent) => {
               if (rf & RenderFlags.Create) {
                 template(
-                    0, SomeComponent_Template_0, 2, 3, null, [], ['foo', ''], templateRefExtractor);
+                    0, SomeComponent_Template_0, 2, 3, null, [], ['foo', ''],
+                    templateRefExtractor(TemplateRef, ElementRef));
                 pipe(2, 'starPipe');
                 element(3, 'child', ['vcref', '']);
                 pipe(4, 'starPipe');
@@ -495,7 +508,7 @@ describe('ViewContainerRef', () => {
         static ngDirectiveDef = defineDirective({
           type: InsertionDir,
           selectors: [['', 'tplDir', '']],
-          factory: () => new InsertionDir(injectViewContainerRef()),
+          factory: () => new InsertionDir(directiveInject(ViewContainerRef as any)),
           inputs: {tplDir: 'tplDir'}
         });
       }
@@ -546,7 +559,9 @@ describe('ViewContainerRef', () => {
             */
            const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
              if (rf & RenderFlags.Create) {
-               template(0, fooTemplate, 2, 1, null, null, ['foo', ''], templateRefExtractor);
+               template(
+                   0, fooTemplate, 2, 1, null, null, ['foo', ''],
+                   templateRefExtractor(TemplateRef, ElementRef));
                element(2, 'child');
              }
 
@@ -637,7 +652,9 @@ describe('ViewContainerRef', () => {
          */
         const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
           if (rf & RenderFlags.Create) {
-            template(0, rowTemplate, 3, 2, null, null, ['rowTemplate', ''], templateRefExtractor);
+            template(
+                0, rowTemplate, 3, 2, null, null, ['rowTemplate', ''],
+                templateRefExtractor(TemplateRef, ElementRef));
             element(2, 'loop-comp');
           }
 
@@ -651,7 +668,9 @@ describe('ViewContainerRef', () => {
 
         function rowTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, cellTemplate, 2, 3, null, null, ['cellTemplate', ''], templateRefExtractor);
+            template(
+                0, cellTemplate, 2, 3, null, null, ['cellTemplate', ''],
+                templateRefExtractor(TemplateRef, ElementRef));
             element(2, 'loop-comp');
           }
 
@@ -1196,7 +1215,9 @@ describe('ViewContainerRef', () => {
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              template(0, embeddedTemplate, 2, 1, null, null, ['foo', ''], templateRefExtractor);
+              template(
+                  0, embeddedTemplate, 2, 1, null, null, ['foo', ''],
+                  templateRefExtractor(TemplateRef, ElementRef));
               elementStart(2, 'child');
               {
                 elementStart(3, 'header', ['vcref', '']);
@@ -1291,7 +1312,8 @@ describe('ViewContainerRef', () => {
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               template(
-                  0, embeddedTemplate, 2, 1, null, undefined, ['foo', ''], templateRefExtractor);
+                  0, embeddedTemplate, 2, 1, null, undefined, ['foo', ''],
+                  templateRefExtractor(TemplateRef, ElementRef));
               elementStart(2, 'child-with-view');
               text(3, 'Before projected');
               elementStart(4, 'header', ['vcref', '']);
@@ -1375,7 +1397,8 @@ describe('ViewContainerRef', () => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
                    template(
-                       0, embeddedTemplate, 2, 1, null, null, ['foo', ''], templateRefExtractor);
+                       0, embeddedTemplate, 2, 1, null, null, ['foo', ''],
+                       templateRefExtractor(TemplateRef, ElementRef));
                    elementStart(2, 'child-with-selector');
                    elementStart(3, 'header', ['vcref', '']);
                    text(4, 'blah');
@@ -1428,7 +1451,8 @@ describe('ViewContainerRef', () => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
                    template(
-                       0, embeddedTemplate, 2, 1, null, null, ['foo', ''], templateRefExtractor);
+                       0, embeddedTemplate, 2, 1, null, null, ['foo', ''],
+                       templateRefExtractor(TemplateRef, ElementRef));
                    elementStart(2, 'child-with-selector');
                    elementStart(3, 'footer', ['vcref', '']);
                    text(4, 'blah');
@@ -1533,7 +1557,8 @@ describe('ViewContainerRef', () => {
           template: (rf: RenderFlags, cmp: SomeComponent) => {
             if (rf & RenderFlags.Create) {
               template(
-                  0, SomeComponent_Template_0, 1, 1, null, [], ['foo', ''], templateRefExtractor);
+                  0, SomeComponent_Template_0, 1, 1, null, [], ['foo', ''],
+                  templateRefExtractor(TemplateRef, ElementRef));
               element(2, 'hooks', ['vcref', '']);
               element(3, 'hooks');
             }

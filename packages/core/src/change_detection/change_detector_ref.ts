@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3_CHANGE_DETECTOR_REF_FACTORY} from '../ivy_switch/runtime/index';
+
 /**
  * Base class for Angular Views, provides change detection functionality.
  * A change-detection tree collects all views that are to be checked for changes.
@@ -103,4 +105,7 @@ export abstract class ChangeDetectorRef {
    *
    */
   abstract reattach(): void;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => R3_CHANGE_DETECTOR_REF_FACTORY();
 }
