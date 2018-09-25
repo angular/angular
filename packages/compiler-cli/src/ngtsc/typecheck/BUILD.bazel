@@ -10,6 +10,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/util",
     ],
 )
