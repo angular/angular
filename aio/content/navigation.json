@@ -421,6 +421,7 @@
     ]
   },
 
+
     {
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
@@ -545,26 +546,31 @@
            }
           ]
         },
-        {
-          "url": "guide/visual-studio-2015",
-          "title": "Visual Studio 2015 QuickStart",
-          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
-        },
 
         {
-          "url": "guide/browser-support",
-          "title": "Browser Support",
-          "tooltip": "Browser support and polyfills guide."
+          "url": "guide/file-structure.md",
+          "title": "Project File Structure",
+          "tooltip": "Inside the local development environment for SystemJS."
+        },
+        {
+          "url": "guide/npm-packages",
+          "title": "Packages",
+          "tooltip": "Explanation of npm packages installed into a project by default."
         },
         {
           "url": "guide/typescript-configuration",
           "title": "TypeScript Configuration",
           "tooltip": "TypeScript configuration for Angular developers."
-        },
+        }, 
         {
           "url": "guide/aot-compiler",
           "title": "Ahead-of-Time Compilation",
           "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+        },
+        {
+          "url": "guide/build",
+          "title": "Building & Serving",
+          "tooltip": "Building and serving Angular apps."
         },
         {
           "url": "guide/testing",
@@ -575,9 +581,15 @@
           "url": "guide/deployment",
           "title": "Deployment",
           "tooltip": "Learn how to deploy your Angular app."
+        }, 
+        {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
         }
      ]
     },
+
 
     {
       "title": "Release Information",
