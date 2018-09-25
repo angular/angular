@@ -5,8 +5,7 @@ import { FormControl } from '@angular/forms';
   selector: 'app-reactive-favorite-color',
   template: `
     Favorite Color: <input type="text" [formControl]="favoriteColorControl">
-  `,
-  styles: []
+  `
 })
 export class FavoriteColorComponent {
   favoriteColorControl = new FormControl('');
