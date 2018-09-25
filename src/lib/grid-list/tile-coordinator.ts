@@ -44,7 +44,7 @@ export class TileCoordinator {
    * Ex: A list with 1 row that contains a tile with rowspan 2 will have a total rowspan of 2.
    */
   get rowspan() {
-    let lastRowMax = Math.max(...this.tracker);
+    const lastRowMax = Math.max(...this.tracker);
     // if any of the tiles has a rowspan that pushes it beyond the total row count,
     // add the difference to the rowcount
     return lastRowMax > 1 ? this.rowCount + lastRowMax - 1 : this.rowCount;
@@ -53,17 +53,25 @@ export class TileCoordinator {
   /** The computed (row, col) position of each tile (the output). */
   positions: TilePosition[];
 
-  constructor(numColumns: number, tiles: QueryList<MatGridTile>) {
+  constructor(private _tiles: QueryList<MatGridTile>) {}
+
+  /**
+   * Updates the tile positions.
+   * @param numColumns Amount of columns in the grid.
+   */
+  update(numColumns: number) {
+    this.columnIndex = 0;
+    this.rowIndex = 0;
+
     this.tracker = new Array(numColumns);
     this.tracker.fill(0, 0, this.tracker.length);
-
-    this.positions = tiles.map(tile => this._trackTile(tile));
+    this.positions = this._tiles.map(tile => this._trackTile(tile));
   }
 
   /** Calculates the row and col position of a tile. */
   private _trackTile(tile: MatGridTile): TilePosition {
     // Find a gap large enough for this tile.
-    let gapStartIndex = this._findMatchingGap(tile.colspan);
+    const gapStartIndex = this._findMatchingGap(tile.colspan);
 
     // Place tile in the resulting gap.
     this._markTilePosition(gapStartIndex, tile);
