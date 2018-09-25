@@ -13,6 +13,7 @@ import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
+import {Identifiers as ViewEngine} from '../../identifiers';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
@@ -694,7 +695,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {
       parameters.push(this.prepareRefsParameter(template.references));
-      parameters.push(o.importExpr(R3.templateRefExtractor));
+      const templateRefExtractorExpr = o.importExpr(R3.templateRefExtractor).callFn([
+        o.importExpr(ViewEngine.TemplateRef), o.importExpr(ViewEngine.ElementRef)
+      ]);
+      parameters.push(templateRefExtractorExpr);
     }
 
     // handle property bindings e.g. p(1, 'forOf', ɵbind(ctx.items));

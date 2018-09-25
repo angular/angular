@@ -393,7 +393,8 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, Template_0, 1, 0, null, null, $t0_refs$, $i0$.ɵtemplateRefExtractor);
+          $i0$.ɵtemplate(0, Template_0, 1, 0, null, null, $t0_refs$, 
+          $i0$.ɵtemplateRefExtractor($i0$.TemplateRef, $i0$.ElementRef));
         }
       }`;
 
