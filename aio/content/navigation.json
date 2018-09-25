@@ -437,61 +437,9 @@
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."
         },
-        {
-          "url": "guide/language-service",
-          "title": "Language Service",
-          "tooltip": "Use Angular Language Service to speed up dev time."
-        },
 
         {
-          "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
-        }
-        {
-          "title": "Setup & Deployment",
-          "tooltip": "Setup and Deployment",
-          "children": [
-            {
-              "url": "guide/setup",
-              "title": "Setup for local development",
-              "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
-            },
-            {
-              "url": "guide/setup-systemjs-anatomy",
-              "title": "Anatomy of the Setup",
-              "tooltip": "Inside the local development environment for SystemJS."
-            },
-            {
-              "url": "guide/browser-support",
-              "title": "Browser Support",
-              "tooltip": "Browser support and polyfills guide."
-            },
-            {
-              "url": "guide/npm-packages",
-              "title": "Npm Packages",
-              "tooltip": "Recommended npm packages, and how to specify package dependencies."
-            },
-
-            {
-              "url": "guide/typescript-configuration",
-              "title": "TypeScript Configuration",
-              "tooltip": "TypeScript configuration for Angular developers."
-            },
-            {
-              "url": "guide/aot-compiler",
-              "title": "Ahead-of-Time Compilation",
-              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
-            },
-            {
-              "url": "guide/deployment",
-              "title": "Deployment",
-              "tooltip": "Learn how to deploy your Angular app."
-            }
-          ]
-        },
-        {
-          "title": "Service Workers",
+          "title": "Service Workers & PWA",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
           "children": [
             {
@@ -525,13 +473,66 @@
           "url": "guide/universal",
           "title": "Server-side Rendering",
           "tooltip": "Render HTML server-side with Angular Universal."
+        }
+      ]
+    },
+
+    {
+      "title": "Setup & Deployment",
+      "tooltip": "Setup, build, testing, and deployment environment and tool information.",
+      "children": [
+        {
+          "url": "guide/setup",
+          "title": "Setup for local development",
+          "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+        },
+        {
+          "url": "guide/setup-systemjs-anatomy",
+          "title": "Anatomy of the Setup",
+          "tooltip": "Inside the local development environment for SystemJS."
+        },
+        {
+          "url": "guide/npm-packages",
+          "title": "Npm Packages",
+          "tooltip": "Recommended npm packages, and how to specify package dependencies."
+        },
+        {
+          "url": "guide/language-service",
+          "title": "Language Service",
+          "tooltip": "Use Angular Language Service to speed up dev time."
         },
         {
           "url": "guide/visual-studio-2015",
           "title": "Visual Studio 2015 QuickStart",
           "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+        },
+
+        {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
+        },
+        {
+          "url": "guide/typescript-configuration",
+          "title": "TypeScript Configuration",
+          "tooltip": "TypeScript configuration for Angular developers."
+        },
+        {
+          "url": "guide/aot-compiler",
+          "title": "Ahead-of-Time Compilation",
+          "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+        },
+        {
+          "url": "guide/testing",
+          "title": "Testing",
+          "tooltip": "Techniques and practices for testing an Angular app."
+        },
+        {
+          "url": "guide/deployment",
+          "title": "Deployment",
+          "tooltip": "Learn how to deploy your Angular app."
         }
-      ]
+     ]
     },
 
     {
