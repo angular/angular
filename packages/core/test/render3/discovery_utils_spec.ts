@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {StaticInjector} from '../../src/di/injector';
-import {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from '../../src/render3/discovery_utils';
+import {getComponent, getDirectives, getHostComponent, getInjector, getLocalRefs, getRootComponents} from '../../src/render3/discovery_utils';
 import {RenderFlags, defineComponent, defineDirective} from '../../src/render3/index';
-import {element} from '../../src/render3/instructions';
+import {element, elementEnd, elementStart, elementStyling, elementStylingApply} from '../../src/render3/instructions';
 
 import {ComponentFixture} from './render_util';
 
@@ -264,6 +264,78 @@ describe('discovery utils', () => {
       fixture.update();
 
       expect(getInjector(fixture.hostElement)).toEqual(null);
+    });
+  });
+
+  describe('getLocalRefs', () => {
+    it('should return a map of local refs for an element', () => {
+
+      class MyDir {
+        static ngDirectiveDef = defineDirective({
+          type: MyDir,
+          selectors: [['', 'myDir', '']],
+          exportAs: 'myDir',
+          factory: () => new MyDir()
+        });
+      }
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          factory: () => new Comp(),
+          consts: 3,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: Comp) => {
+            if (rf & RenderFlags.Create) {
+              // <div myDir #elRef #dirRef="myDir">
+              element(0, 'div', ['myDir'], ['elRef', '', 'dirRef', 'myDir']);
+            }
+          },
+          directives: [MyDir]
+        });
+      }
+
+      const fixture = new ComponentFixture(Comp);
+      fixture.update();
+
+      const divEl = fixture.hostElement.querySelector('div') !;
+      const localRefs = getLocalRefs(divEl);
+
+      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
+      expect(localRefs.dirRef.constructor).toBe(MyDir);
+    });
+
+    it('should return a map of local refs for an element with styling context', () => {
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          factory: () => new Comp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: Comp) => {
+            if (rf & RenderFlags.Create) {
+              // <div #elRef class="fooClass">
+              elementStart(0, 'div', null, ['elRef', '']);
+              elementStyling(['fooClass']);
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementStylingApply(0);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(Comp);
+      fixture.update();
+
+      const divEl = fixture.hostElement.querySelector('div') !;
+      const localRefs = getLocalRefs(divEl);
+
+      expect(localRefs.elRef.tagName.toLowerCase()).toBe('div');
     });
   });
 });
