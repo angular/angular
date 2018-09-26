@@ -28,8 +28,9 @@
 {%- endmacro -%}
 
 {%- macro renderMemberSyntax(member, truncateLines) -%}
-    {%- if member.boundTo %}<span class="property-binding">@{$ member.boundTo.type $}({$ member.boundTo.bindingName $})</span>
-{% endif %}
+    {%- if member.boundTo %}<span class="property-binding">@{$ member.boundTo.type $}(
+    {%- if member.boundTo.propertyName != member.boundTo.bindingName %}'{$ member.boundTo.bindingName $}'{% endif -%}
+    )</span><br>{% endif -%}
     {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
     {%- if member.isAbstract %}abstract {% endif -%}
     {%- if member.isStatic %}static {% endif -%}
