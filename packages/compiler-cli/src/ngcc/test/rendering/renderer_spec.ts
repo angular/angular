@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
-import {AnalyzedClass, Analyzer} from '../../src/analyzer';
+import {AnalyzedClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
@@ -44,8 +44,7 @@ function createTestRenderer(host: Fesm2015ReflectionHost) {
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost('some-package', program.getTypeChecker());
-  const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
+  const analyzer = new DecorationAnalyzer(program.getTypeChecker(), host, ['']);
 
   const decoratedFiles = host.findDecoratedFiles(program.getSourceFile(file.name) !);
   const analyzedFiles = decoratedFiles.map(file => analyzer.analyzeFile(file));
