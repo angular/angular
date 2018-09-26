@@ -8,19 +8,19 @@
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
-import {Analyzer} from '../../src/analyzer';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
-  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
+  const analyzer = new DecorationAnalyzer(program.getTypeChecker(), host, [''], false);
   const renderer = new Esm2015Renderer(host, false, null);
   return {analyzer, host, program, renderer};
 }
 
-function analyze(host: Fesm2015ReflectionHost, analyzer: Analyzer, file: ts.SourceFile) {
+function analyze(host: Fesm2015ReflectionHost, analyzer: DecorationAnalyzer, file: ts.SourceFile) {
   const decoratedFiles = host.findDecoratedFiles(file);
   return Array.from(decoratedFiles.values()).map(file => analyzer.analyzeFile(file))[0];
 }

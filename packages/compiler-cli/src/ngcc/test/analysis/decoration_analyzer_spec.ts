@@ -7,14 +7,14 @@
  */
 import * as ts from 'typescript';
 
-import {Decorator} from '../../ngtsc/host';
-import {DecoratorHandler} from '../../ngtsc/transform';
-import {AnalyzedFile, Analyzer} from '../src/analyzer';
-import {DecoratedClass} from '../src/host/decorated_class';
-import {DecoratedFile} from '../src/host/decorated_file';
-import {Fesm2015ReflectionHost} from '../src/host/fesm2015_host';
+import {Decorator} from '../../../ngtsc/host';
+import {DecoratorHandler} from '../../../ngtsc/transform';
+import {DecorationAnalysis, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {DecoratedClass} from '../../src/host/decorated_class';
+import {DecoratedFile} from '../../src/host/decorated_file';
+import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 
-import {getDeclaration, makeProgram} from './helpers/utils';
+import {getDeclaration, makeProgram} from '../helpers/utils';
 
 const TEST_PROGRAM = {
   name: 'test.js',
@@ -74,16 +74,16 @@ function createParsedFile(program: ts.Program) {
   return file;
 }
 
-describe('Analyzer', () => {
+describe('DecorationAnalyzer', () => {
   describe('analyzeFile()', () => {
     let program: ts.Program;
     let testHandler: jasmine.SpyObj<DecoratorHandler<any, any>>;
-    let result: AnalyzedFile;
+    let result: DecorationAnalysis;
 
     beforeEach(() => {
       program = makeProgram(TEST_PROGRAM);
       const file = createParsedFile(program);
-      const analyzer = new Analyzer(
+      const analyzer = new DecorationAnalyzer(
           program.getTypeChecker(), new Fesm2015ReflectionHost(false, program.getTypeChecker()),
           [''], false);
       testHandler = createTestHandler();

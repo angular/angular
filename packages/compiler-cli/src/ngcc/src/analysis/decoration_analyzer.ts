@@ -9,13 +9,13 @@ import {ConstantPool} from '@angular/compiler';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
-import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
+import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
+import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
 
-import {DecoratedClass} from './host/decorated_class';
-import {DecoratedFile} from './host/decorated_file';
-import {NgccReflectionHost} from './host/ngcc_host';
-import {isDefined} from './utils';
+import {DecoratedClass} from '../host/decorated_class';
+import {DecoratedFile} from '../host/decorated_file';
+import {NgccReflectionHost} from '../host/ngcc_host';
+import {isDefined} from '../utils';
 
 export interface AnalyzedClass<A = any, M = any> extends DecoratedClass {
   handler: DecoratorHandler<A, M>;
@@ -24,7 +24,7 @@ export interface AnalyzedClass<A = any, M = any> extends DecoratedClass {
   compilation: CompileResult[];
 }
 
-export interface AnalyzedFile {
+export interface DecorationAnalysis {
   analyzedClasses: AnalyzedClass[];
   sourceFile: ts.SourceFile;
   constantPool: ConstantPool;
@@ -42,7 +42,10 @@ export class FileResourceLoader implements ResourceLoader {
   load(url: string): string { return fs.readFileSync(url, 'utf8'); }
 }
 
-export class Analyzer {
+/**
+ * This Analyzer will analyze the files that have decorated classes that need to be transformed.
+ */
+export class DecorationAnalyzer {
   resourceLoader = new FileResourceLoader();
   scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.host);
   handlers: DecoratorHandler<any, any>[] = [
@@ -65,7 +68,7 @@ export class Analyzer {
    * should be converted to use ivy definitions.
    * @param file The file to be analysed for decorated classes.
    */
-  analyzeFile(file: DecoratedFile): AnalyzedFile {
+  analyzeFile(file: DecoratedFile): DecorationAnalysis {
     const constantPool = new ConstantPool();
     const analyzedClasses =
         file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
