@@ -171,8 +171,7 @@ describe('compiler compliance: bindings', () => {
         }
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template,
-        'Incorrect handling of local refs for host element');
+      expectEmit(result.source, template, 'Incorrect handling of local refs for host element');
     });
 
     it('should not have local refs for nested elements', () => {
@@ -196,8 +195,7 @@ describe('compiler compliance: bindings', () => {
         }
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template,
-        'Incorrect handling of local refs for nested elements');
+      expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
     });
   });
 

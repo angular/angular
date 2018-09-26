@@ -62,7 +62,8 @@ export class Identifiers {
 
   static setBindingsEnabled: o.ExternalReference = {name: 'ɵsetBindingsEnabled', moduleName: CORE};
 
-  static setBindingsDisabled: o.ExternalReference = {name: 'ɵsetBindingsDisabled', moduleName: CORE};
+  static setBindingsDisabled:
+      o.ExternalReference = {name: 'ɵsetBindingsDisabled', moduleName: CORE};
 
   static getCurrentView: o.ExternalReference = {name: 'ɵgetCurrentView', moduleName: CORE};
 
