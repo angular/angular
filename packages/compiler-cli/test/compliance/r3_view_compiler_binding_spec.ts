@@ -122,7 +122,7 @@ describe('compiler compliance: bindings', () => {
     });
   });
 
-  describe('non bindable behaviour', () => {
+  describe('non bindable behavior', () => {
     const getAppFiles = (template: string = ''): MockDirectory => ({
       app: {
         'example.ts': `
