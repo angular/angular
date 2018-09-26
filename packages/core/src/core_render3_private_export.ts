@@ -84,6 +84,8 @@ export {
   elementProperty as ɵelementProperty,
   projectionDef as ɵprojectionDef,
   reference as ɵreference,
+  setBindingsEnabled as ɵsetBindingsEnabled,
+  setBindingsDisabled as ɵsetBindingsDisabled,
   elementAttribute as ɵelementAttribute,
   elementStyling as ɵelementStyling,
   elementStylingMap as ɵelementStylingMap,

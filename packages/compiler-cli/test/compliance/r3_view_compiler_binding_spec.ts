@@ -122,4 +122,83 @@ describe('compiler compliance: bindings', () => {
     });
   });
 
+  describe('non bindable behaviour', () => {
+    const getAppFiles = (template: string = ''): MockDirectory => ({
+      app: {
+        'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: \`${template}\`
+          })
+          export class MyComponent {
+            name = 'John Doe';
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}`
+      }
+    });
+
+    it('should keep local ref for host element', () => {
+      const files: MockDirectory = getAppFiles(`
+        <b ngNonBindable #myRef id="my-id">
+          <i>Hello {{ name }}!</i>
+        </b>
+        {{ myRef.id }}
+      `);
+
+      const template = `
+        const $_c0$ = ["id", "my-id"];
+        const $_c1$ = ["myRef", ""];
+        …
+        template:function MyComponent_Template(rf, $ctx$){
+          if (rf & 1) {
+            $i0$.ɵelementStart(0, "b", $_c0$, $_c1$);
+            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵelementStart(2, "i");
+            $i0$.ɵtext(3, "Hello {{ name }}!");
+            $i0$.ɵelementEnd();
+            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵelementEnd();
+            $i0$.ɵtext(4);
+          }
+          if (rf & 2) {
+            const $_r0$ = $i0$.ɵreference(1);
+            $i0$.ɵtextBinding(4, $i0$.ɵinterpolation1(" ", $_r0$.id, " "));
+          }
+        }
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template,
+        'Incorrect handling of local refs for host element');
+    });
+
+    it('should not have local refs for nested elements', () => {
+      const files: MockDirectory = getAppFiles(`
+       <div ngNonBindable>
+         <input value="one" #myInput> {{ myInput.value }}
+       </div>
+      `);
+
+      const template = `
+        const $_c0$ = ["value", "one", "#myInput", ""];
+        …
+        template:function MyComponent_Template(rf, $ctx$){
+          if (rf & 1) {
+            $i0$.ɵelementStart(0, "div");
+            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵelement(1, "input", $_c0$);
+            $i0$.ɵtext(2, " {{ myInput.value }} ");
+            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵelementEnd();
+        }
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template,
+        'Incorrect handling of local refs for nested elements');
+    });
+  });
+
 });

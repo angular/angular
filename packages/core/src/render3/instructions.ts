@@ -99,6 +99,8 @@ export function getCurrentSanitizer(): Sanitizer|null {
  */
 let elementDepthCount !: number;
 
+let bindingsEnabled !: boolean;
+
 /**
  * Returns the current OpaqueViewState instance.
  *
@@ -538,6 +540,7 @@ export function resetComponentState() {
   isParent = false;
   previousOrParentTNode = null !;
   elementDepthCount = 0;
+  bindingsEnabled = true;
 }
 
 /**
@@ -862,6 +865,7 @@ function nativeNodeLocalRefExtractor(tNode: TNode, currentView: LViewData): RNod
 function createDirectivesAndLocals(
     localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = nativeNodeLocalRefExtractor) {
+  if (!bindingsEnabled) return;
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
     cacheMatchingDirectivesForNode(previousOrParentTNode, tView, localRefs || null);
@@ -1392,6 +1396,22 @@ export function elementProperty<T>(
                                      (native.setProperty ? native.setProperty(propName, value) :
                                                            (native as any)[propName] = value);
   }
+}
+
+/**
+ * Enables bindings processing for further instructions
+ * (used while processing "ngNonBindable" element's attribute).
+ */
+export function setBindingsEnabled(): void {
+  bindingsEnabled = true;
+}
+
+/**
+ * Disables bindings processing for further instructions
+ * (used while processing "ngNonBindable" element's attribute).
+ */
+export function setBindingsDisabled(): void {
+  bindingsEnabled = false;
 }
 
 /**
