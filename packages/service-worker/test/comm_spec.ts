@@ -9,7 +9,7 @@
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {NgswCommChannel} from '@angular/service-worker/src/low_level';
-import {ServiceWorkerModule, SwRegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
+import {SwRegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
 import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
@@ -44,45 +44,6 @@ import {async_fit, async_it} from './async';
         (comm as any).registration.subscribe((reg: any) => { done(); });
 
         mock.setupSw();
-      });
-    });
-
-    describe('ServiceWorkerModule config', () => {
-      it('SwUpdate isEnabled is false when configuring via static method', () => {
-        TestBed.configureTestingModule(
-            {imports: [ServiceWorkerModule.register('', {enabled: false})]});
-
-        expect(TestBed.get(SwUpdate).isEnabled).toEqual(false);
-      });
-
-      it('SwUpdate isEnabled is true when configuring via static method', () => {
-        TestBed.configureTestingModule({
-          imports: [ServiceWorkerModule.register('', {enabled: true})],
-          providers: [{provide: NgswCommChannel, useValue: comm}]
-        });
-
-        expect(TestBed.get(SwUpdate).isEnabled).toEqual(true);
-      });
-
-      it('SwUpdate isEnabled is false when configuring directly via token', () => {
-        TestBed.configureTestingModule({
-          imports: [ServiceWorkerModule.register('')],
-          providers: [{provide: SwRegistrationOptions, useFactory: () => ({enabled: false})}]
-        });
-
-        expect(TestBed.get(SwUpdate).isEnabled).toEqual(false);
-      });
-
-      it('SwUpdate isEnabled is true when configuring directly via token', () => {
-        TestBed.configureTestingModule({
-          imports: [ServiceWorkerModule.register('')],
-          providers: [
-            {provide: NgswCommChannel, useValue: comm},
-            {provide: SwRegistrationOptions, useFactory: () => ({enabled: true})}
-          ]
-        });
-
-        expect(TestBed.get(SwUpdate).isEnabled).toEqual(true);
       });
     });
 
