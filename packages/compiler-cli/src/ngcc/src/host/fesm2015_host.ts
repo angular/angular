@@ -11,8 +11,10 @@ import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {findAll, getNameText, isDefined} from '../utils';
+import {findAll, getNameText, getOriginalSymbol, isDefined} from '../utils';
 
+import {DecoratedClass} from './decorated_class';
+import {DecoratedFile} from './decorated_file';
 import {NgccReflectionHost, PRE_NGCC_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -292,6 +294,48 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    */
   getImportOfIdentifier(id: ts.Identifier): Import|null {
     return super.getImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
+  }
+
+  /*
+   * Find all the files accessible via an entry-point, that contain decorated classes.
+   * @param entryPoint The starting point file for finding files that contain decorated classes.
+   * @returns A collection of files objects that hold info about the decorated classes and import
+   * information.
+   */
+  findDecoratedFiles(entryPoint: ts.SourceFile): DecoratedFile[] {
+    const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
+    const map = new Map<ts.SourceFile, DecoratedFile>();
+    if (moduleSymbol) {
+      const exportedSymbols =
+          this.checker.getExportsOfModule(moduleSymbol).map(getOriginalSymbol(this.checker));
+      const exportedDeclarations =
+          exportedSymbols.map(exportSymbol => exportSymbol.valueDeclaration).filter(isDefined);
+
+      const decoratedClasses =
+          exportedDeclarations
+              .map(declaration => {
+                if (ts.isClassDeclaration(declaration) || ts.isVariableDeclaration(declaration)) {
+                  const name = declaration.name && ts.isIdentifier(declaration.name) ?
+                      declaration.name.text :
+                      undefined;
+                  const decorators = this.getDecoratorsOfDeclaration(declaration);
+                  return decorators && isDefined(name) ?
+                      new DecoratedClass(name, declaration, decorators) :
+                      undefined;
+                }
+                return undefined;
+              })
+              .filter(isDefined);
+
+      decoratedClasses.forEach(clazz => {
+        const file = clazz.declaration.getSourceFile();
+        if (!map.has(file)) {
+          map.set(file, new DecoratedFile(file));
+        }
+        map.get(file) !.decoratedClasses.push(clazz);
+      });
+    }
+    return Array.from(map.values());
   }
 
   ///////////// Protected Helpers /////////////

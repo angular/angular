@@ -392,6 +392,37 @@ const MARKER_FILE = {
   `
 };
 
+const DECORATED_FILE = {
+  name: '/primary.js',
+  contents: `
+  import {Directive} from '@angular/core';
+  class A {}
+  A.decorators = [
+    { type: Directive, args: [{ selector: '[a]' }] }
+  ];
+
+  class B {}
+  B.decorators = [
+    { type: Directive, args: [{ selector: '[b]' }] }
+  ];
+
+  function x() {}
+
+  function y() {}
+
+  class C {}
+
+  let D = class D {}
+  D = tslib_1.__decorate([
+    Directive({ selector: '[d]' }),
+    OtherD()
+  ], D);
+  export {D};
+
+  export { A, x, C };
+  `
+};
+
 describe('Fesm2015ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -1150,6 +1181,31 @@ describe('Fesm2015ReflectionHost', () => {
          expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
            ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_NGCC__']
          ]);
+       });
+  });
+
+  describe('findDecoratedFiles()', () => {
+    it('should return an array of objects for each file that has exported and decorated classes',
+       () => {
+         const program = makeProgram(DECORATED_FILE);
+         const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
+         const decoratedFiles =
+             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILE.name) !);
+         expect(decoratedFiles.length).toEqual(1);
+         const decoratedClasses = decoratedFiles[0].decoratedClasses;
+         expect(decoratedClasses.length).toEqual(2);
+
+         const decoratedClassA = decoratedClasses.find(c => c.name === 'A') !;
+         expect(decoratedClassA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+         expect(decoratedClassA.decorators.map(
+                    decorator => decorator.args && decorator.args.map(arg => arg.getText())))
+             .toEqual([[`{ selector: '[a]' }`]]);
+
+         const decoratedClassD = decoratedClasses.find(c => c.name === 'D') !;
+         expect(decoratedClassD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+         expect(decoratedClassD.decorators.map(
+                    decorator => decorator.args && decorator.args.map(arg => arg.getText())))
+             .toEqual([[`{ selector: '[d]' }`]]);
        });
   });
 });
