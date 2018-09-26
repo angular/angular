@@ -34,8 +34,6 @@
     {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
     {%- if member.isAbstract %}abstract {% endif -%}
     {%- if member.isStatic %}static {% endif -%}
-    {%- if (member.isGetAccessor or member.isReadonly) and not member.isSetAccessor %}get {% endif -%}
-    {%- if member.isSetAccessor and not member.isGetAccessor %}set {% endif -%}
     <span class="member-name">{$ member.name $}</span>{$ member.typeParameters | escape $}{% if not member.isGetAccessor %}{$ params.paramList(member.parameters, truncateLines) | trim $}{% endif %}
     {%- if member.isOptional  %}?{% endif -%}
     {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
@@ -192,6 +190,7 @@
         </td>
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
+          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-only.</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
