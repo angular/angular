@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {POST_NGCC_MARKER, PRE_NGCC_MARKER} from '../host/ngcc_host';
-import {AnalyzedClass} from '../analyzer';
+import {AnalyzedClass} from '../analysis/decoration_analyzer';
 import {Renderer} from './renderer';
 
 export class Esm2015Renderer extends Renderer {
