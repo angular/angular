@@ -1164,18 +1164,20 @@ describe('Esm5ReflectionHost', () => {
       expect(host.getClassSymbol(innerNode)).toBeDefined();
     });
 
-    it('should return the same class symbol for outer and inner declarations', () => {
-      const program = makeProgram(SIMPLE_CLASS_FILE);
-      const host = new Esm5ReflectionHost(program.getTypeChecker());
-      const outerNode =
-          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-      const innerNode =
-          (((outerNode.initializer as ts.ParenthesizedExpression).expression as ts.CallExpression)
-               .expression as ts.FunctionExpression)
-              .body.statements.find(ts.isFunctionDeclaration) !;
+    it('should return the same class symbol (of the inner declaration) for outer and inner declarations',
+       () => {
+         const program = makeProgram(SIMPLE_CLASS_FILE);
+         const host = new Esm5ReflectionHost(program.getTypeChecker());
+         const outerNode = getDeclaration(
+             program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+         const innerNode = (((outerNode.initializer as ts.ParenthesizedExpression)
+                                 .expression as ts.CallExpression)
+                                .expression as ts.FunctionExpression)
+                               .body.statements.find(ts.isFunctionDeclaration) !;
 
-      expect(host.getClassSymbol(innerNode)).toBe(host.getClassSymbol(outerNode));
-    });
+         expect(host.getClassSymbol(innerNode)).toBe(host.getClassSymbol(outerNode));
+         expect(host.getClassSymbol(innerNode) !.valueDeclaration).toBe(innerNode);
+       });
 
     it('should return undefined if node is not an ES5 class', () => {
       const program = makeProgram(FOO_FUNCTION_FILE);
