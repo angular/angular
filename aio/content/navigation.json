@@ -164,6 +164,11 @@
               "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
             },
             {
+              "url": "guide/user-input",
+              "title": "User Input",
+              "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
+            },
+            {
               "url": "guide/lifecycle-hooks",
               "title": "Lifecycle Hooks",
               "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
@@ -211,19 +216,9 @@
           "tooltip": "Angular Forms",
           "children": [
             {
-              "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
-            },
-            {
-              "url": "guide/forms",
-              "title": "Template-driven Forms",
+              "url": "guide/forms-overview",
+              "title": "Forms Overview",
               "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
-            },
-            {
-              "url": "guide/form-validation",
-              "title": "Form Validation",
-              "tooltip": "Validate user's form entries."
             },
             {
               "url": "guide/reactive-forms",
@@ -231,8 +226,18 @@
               "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
+              "url": "guide/forms",
+              "title": "Template-driven Forms",
+              "tooltip": "Create a template-driven form using directives and Angular template syntax."
+            },
+            {
+              "url": "guide/form-validation",
+              "title": "Form Validation",
+              "tooltip": "Validate user's form entries."
+            },
+            {
               "url": "guide/dynamic-form",
-              "title": "Dynamic forms",
+              "title": "Dynamic Forms",
               "tooltip": "Render dynamic forms with FormGroup."
             }
           ]
