@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
+
 import {Decorator} from '../../ngtsc/host';
 import {DecoratorHandler} from '../../ngtsc/transform';
 import {AnalyzedFile, Analyzer} from '../src/analyzer';
-import {Fesm2015ReflectionHost} from '../src/host/fesm2015_host';
 import {DecoratedClass} from '../src/host/decorated_class';
 import {DecoratedFile} from '../src/host/decorated_file';
+import {Fesm2015ReflectionHost} from '../src/host/fesm2015_host';
+
 import {getDeclaration, makeProgram} from './helpers/utils';
 
 const TEST_PROGRAM = {
