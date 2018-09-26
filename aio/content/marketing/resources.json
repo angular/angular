@@ -149,6 +149,13 @@
             "rev": true,
             "title": "AngularCommerce",
             "url": "https://github.com/NodeArt/angular-commerce"
+          },
+          "ngx-api-utils": {
+            "desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "ngx-api-utils",
+            "url": "https://github.com/ngx-api-utils/ngx-api-utils"
           }
         }
       },
