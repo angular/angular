@@ -16,7 +16,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/schematics": ["../../../dist/packages/cdk/schematics/"]
+      "@angular/cdk/schematics": ["../../cdk/schematics/"]
     }
   },
   "exclude": [
@@ -26,7 +26,7 @@
     // Exclude template files that will be copied by the schematics. Those are not valid TS.
     "*/files/**/*",
     // Exclude all test-case files because those should not be included in the schematics output.
-    "update/test-cases/**/*"
+    "ng-update/test-cases/**/*"
   ],
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
