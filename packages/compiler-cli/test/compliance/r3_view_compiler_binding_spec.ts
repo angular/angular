@@ -218,8 +218,25 @@ describe('compiler compliance: bindings', () => {
         }
       `;
       const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
+      expectEmit(result.source, template, 'Incorrect handling of property bindings and listeners');
     });
+
+    it('should not generate extra instructions for elements with no children', () => {
+      const files: MockDirectory = getAppFiles(`
+        <div ngNonBindable></div>
+      `);
+
+      const template = `
+        template:function MyComponent_Template(rf, $ctx$){
+          if (rf & 1) {
+            $i0$.ɵelement(0, "div");
+          }
+        }
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect handling of elements with no children');
+    });
+
   });
 
 });

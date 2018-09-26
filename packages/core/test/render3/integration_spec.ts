@@ -7,13 +7,12 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-import {RenderFlags} from '@angular/core/src/render3';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, setBindingsEnabled, setBindingsDisabled, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
-import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
+import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT, DIRECTIVES} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
