@@ -9,11 +9,11 @@
 import * as ts from 'typescript';
 
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {DecoratedClass} from '../host/decorated_class';
+import {DecoratedFile} from '../host/decorated_file';
 import {getNameText, getOriginalSymbol, isDefined} from '../utils';
 
 import {FileParser} from './file_parser';
-import {ParsedClass} from './parsed_class';
-import {ParsedFile} from './parsed_file';
 
 
 
@@ -27,13 +27,13 @@ export class Esm5FileParser implements FileParser {
 
   constructor(protected program: ts.Program, protected host: NgccReflectionHost) {}
 
-  parseFile(file: ts.SourceFile): ParsedFile[] {
+  parseFile(file: ts.SourceFile): DecoratedFile[] {
     const moduleSymbol = this.checker.getSymbolAtLocation(file);
-    const map = new Map<ts.SourceFile, ParsedFile>();
+    const map = new Map<ts.SourceFile, DecoratedFile>();
     const getParsedClass = (declaration: ts.VariableDeclaration) => {
       const decorators = this.host.getDecoratorsOfDeclaration(declaration);
       if (decorators) {
-        return new ParsedClass(getNameText(declaration.name), declaration, decorators);
+        return new DecoratedClass(getNameText(declaration.name), declaration, decorators);
       }
     };
 
@@ -49,7 +49,7 @@ export class Esm5FileParser implements FileParser {
       decoratedClasses.forEach(clazz => {
         const file = clazz.declaration.getSourceFile();
         if (!map.has(file)) {
-          map.set(file, new ParsedFile(file));
+          map.set(file, new DecoratedFile(file));
         }
         map.get(file) !.decoratedClasses.push(clazz);
       });
