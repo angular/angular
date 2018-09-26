@@ -711,35 +711,56 @@ usually in the `@Injectable` decorator of the service, `providers` array of the 
 
 {@a defining-providers}
 
-
+<!--
 ### Defining providers
+-->
+### 프로바이더 등록하기
 
+<!--
 The simple way of defining providers in the `@Injectable` decorator of the class is recommended.
+-->
+프로바이더를 등록할 때 가장 권장하는 방법은 클래스에 `@Injectable` 데코레이터를 사용하는 것입니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.0.ts" linenums="false">
 </code-example>
 
+<!--
 Another alternative is to mention the class in the providers array of the `@NgModule` and you're done.
+-->
+이 방법이 아니라면 `@NgModule`의 프로바이더 목록에 클래스를 등록할 수도 있습니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="class-provider" title="src/app/hero-bios.component.ts (class provider)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="class-provider" title="src/app/hero-bios.component.ts (클래스 프로바이더)" linenums="false">
 
 </code-example>
 
-
+<!--
 It's that simple because the most common injected service is an instance of a class.
 But not every dependency can be satisfied by creating a new instance of a class.
 You need other ways to deliver dependency values and that means you need other ways to specify a provider.
+-->
+의존성으로 주입하는 서비스는 대부분 클래스로 정의되기 때문에 이렇게만 사용해도 간단합니다.
+하지만 모든 의존성 객체를 클래스로 생성하지는 않습니다.
+클래스를 사용하지 않는 프로바이더는 조금 다른 방식을 사용해야 합니다.
 
+<!--
 The `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why you need them.
 It's visually simple: a few properties and the logs produced by a logger.
+-->
+`HeroOfTheMonthComponent` 예제를 살펴보면서 이 내용에 대해 알아봅시다.
+이 컴포넌트는 간단합니다. 프로퍼티 몇개와 로그를 화면에 출력합니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month">
 </figure>
 
 
-
+<!--
 The code behind it gives you plenty to think about.
+-->
+하지만 코드를 보며 생각해볼 내용은 많습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" title="hero-of-the-month.component.ts">
 
@@ -750,97 +771,157 @@ The code behind it gives you plenty to think about.
 
 {@a provide}
 
-
+<!--
 #### The *provide* object literal
+-->
+#### *provide* 오브젝트 리터럴
 
+<!--
 The `provide` object literal takes a *token* and a *definition object*.
 The *token* is usually a class but [it doesn't have to be](guide/dependency-injection-in-action#tokens).
+-->
+`provide` 오브젝트 리터럴에는 *토큰(token)*과 *객체 정의(definition object)*를 지정합니다.
+일반적으로 *토큰*은 클래스지만 [꼭 클래스일 필요는 없습니다](guide/dependency-injection-in-action#tokens).
 
+<!--
 The *definition* object has a required property that specifies how to create the singleton instance of the service. In this case, the property.
-
+-->
+그리고 인젝터가 싱글턴 서비스의 인스턴스를 생성할 때 사용하는 *객체 정의*를 프로퍼티로 지정합니다.
 
 
 {@a usevalue}
 
-
+<!--
 #### useValue&mdash;the *value provider*
+-->
+#### useValue&mdash;*값 프로바이더*
 
+<!--
 Set the `useValue` property to a ***fixed value*** that the provider can return as the service instance (AKA, the "dependency object").
+-->
+`useValue` 프로퍼티를 사용하면 ***고정된 값***을 프로바이더에 등록할 수 있습니다.
 
+<!--
 Use this technique to provide *runtime configuration constants* such as website base addresses and feature flags.
 You can use a *value provider* in a unit test to replace a production service with a fake or mock.
+-->
+이 프로퍼티는 웹사이트 주소나 플래그값과 같이 *실행 시점에 필요한 상수*를 정의할 때 주로 사용합니다.
+그리고 서비스 클래스를 유닛 테스트할 때 목 로직을 적용할 때도 사용합니다.
 
+<!--
 The `HeroOfTheMonthComponent` example has two *value providers*.
 The first provides an instance of the `Hero` class;
 the second specifies a literal string resource:
+-->
+`HeroOfTheMonthComponent` 예제에는 2개의 *값 프로바이더*가 사용되었습니다.
+첫 번째는 `Hero` 클래스에 인스턴스를 등록하기 위해 사용되었으며, 두 번째는 `TITLE`에 문자열을 등록하기 위해 사용되었습니다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `Hero` provider token is a class which makes sense because the value is a `Hero`
 and the consumer of the injected hero would want the type information.
+-->
+`Hero` 프로바이더 토큰에는 클래스가 사용되었습니다. 그래서 생성자의 `Hero` 타입이 지정된 곳에 이 클래스가 사용되는 것이 자연스럽습니다.
 
+<!--
 The `TITLE` provider token is *not a class*.
 It's a special kind of provider lookup key called an [InjectionToken](guide/dependency-injection-in-action#injection-token).
 You can use an `InjectionToken` for any kind of provider but it's particular
 helpful when the dependency is a simple value like a string, a number, or a function.
+-->
+그런데 `TITLE` 프로바이더 토큰에 사용된 것은 *클래스가 아닙니다*.
+이 토큰처럼 클래스가 아닌 객체가 토큰으로 사용된 것을 [InjectionToken](guide/dependency-injection-in-action#injection-token)이라고 합니다.
+`InjectionToken`은 문자열이나 숫자, 함수와 같이 간단한 값을 의존성으로 주입할 때 사용합니다.
 
+<!--
 The value of a *value provider* must be defined *now*. You can't create the value later.
 Obviously the title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file:
+-->
+*값 프로바이더*의 값은 *이 시점에* 지정되어야 하며, 프로바이더가 등록된 이후에 지정될 수 없습니다.
+물론 이 예제처럼 문자열 리터럴을 직접 지정할 수도 있습니다.
+그리고 `someHero`와 같이 다른 파일에서 생성한 객체를 사용할 수도 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
 
-
+<!--
 The other providers create their values *lazily* when they're needed for injection.
-
+-->
+이런 경우가 아니라면 의존성 객체는 *필요한 시점에* 생성됩니다.
 
 
 {@a useclass}
 
 
+<!--
 #### useClass&mdash;the *class provider*
+-->
+### useClass&mdash;*클래스 프로바이더*
 
+<!--
 The `useClass` provider creates and returns new instance of the specified class.
+-->
+`useClass`를 사용하면 인젝터가 클래스의 인스턴스를 직접 생성해서 반환합니다.
 
+<!--
 Use this technique to ***substitute an alternative implementation*** for a common or default class.
 The alternative could implement a different strategy, extend the default class,
 or fake the behavior of the real class in a test case.
+-->
+이 방식은 클래스를 의존성으로 주입할 때 일반적으로 사용하는 방식입니다.
+그리고 특정 서비스 클래스를 다른 클래스로 대체하거나, 테스트할 때 목업 클래스로 대체할 때도 사용합니다.
 
+<!--
 Here are two examples in the `HeroOfTheMonthComponent`:
+-->
+`HeroOfTheMonthComponent`에 사용된 방식을 봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The first provider is the *de-sugared*, expanded form of the most typical case in which the
 class to be created (`HeroService`) is also the provider's dependency injection token.
 It's in this long form to de-mystify the preferred short form.
+-->
+첫번째 프로바이더는 의존성 주입 토큰을 사용하는 일반적인 방식이며, 단축 표현을 사용하지 않고 원래 문법을 그대로 사용한 표현입니다.
+하지만 이 표현을 매번 사용하는 것은 번거롭기 때문에 간단한 표현을 사용하는 것이 더 좋습니다.
 
+<!--
 The second provider substitutes the `DateLoggerService` for the `LoggerService`.
 The `LoggerService` is already registered at the `AppComponent` level.
 When _this component_ requests the `LoggerService`, it receives the `DateLoggerService` instead.
+-->
+두번째 프로바이더는 `LoggerService`를 `DateLoggerService`로 대체하는 표현입니다.
+`LoggerService`의 프로바이더는 `AppComponent` 계층에 이미 등록되어 있습니다.
+하지만 _이 컴포넌트_ 에서 `LoggerService`를 요청하면 `DateLoggerService`를 대신 주입받게 됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 This component and its tree of child components receive the `DateLoggerService` instance.
 Components outside the tree continue to receive the original `LoggerService` instance.
+-->
+이 컴포넌트를 포함한 하위 컴포넌트들은 `DateLoggerService` 인스턴스를 주입받습니다.
+그리고 이 컴포넌트 밖에 있는 다른 컴포넌트는 `LoggerService` 인스턴스를 여전히 주입받습니다.
 
 </div>
 
 
-
+<!--
 The `DateLoggerService` inherits from `LoggerService`; it appends the current date/time to each message:
+-->
+`DateLoggerService`는 `LoggerService`를 상속한 클래스입니다. 이 클래스는 로그 메시지에 현재 날짜와 시간을 함께 표시합니다:
 
 <code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" title="src/app/date-logger.service.ts" linenums="false">
 
@@ -851,57 +932,82 @@ The `DateLoggerService` inherits from `LoggerService`; it appends the current da
 
 {@a useexisting}
 
-
+<!--
 #### _useExisting_&mdash;the *alias provider*
+-->
+### _useExisting_&mdash;*별칭(alias) 프로바이더*
 
+<!--
 The `useExisting` provider maps one token to another.
 In effect, the first token is an ***alias*** for the service associated with the second token,
 creating ***two ways to access the same service object***.
+-->
+`useExisting` 프로바이더는 토큰을 다른 토큰과 연결합니다.
+그래서 다음과 같이 등록된 `MinimalLogger` 토큰은 `LoggerService`의 다른 이름인 것처럼 동작합니다.
+결과적으로 `MinimalLogger` 토큰과 `LoggerService` 토큰은 같은 서비스 객체를 가리킵니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
 
-
+<!--
 Narrowing an API through an aliasing interface is _one_ important use case for this technique.
 The following example shows aliasing for that purpose.
+-->
+이 방식은 API의 범위를 제한하는 용도로 사용할 수 있습니다.
+다음 예제를 봅시다.
 
+<!--
 Imagine that the `LoggerService` had a large API, much larger than the actual three methods and a property.
 You might want to shrink that API surface to just the members you actually need.
 Here the `MinimalLogger` [*class-interface*](guide/dependency-injection-in-action#class-interface) reduces the API to two members:
-
+-->
+`LoggerService`에는 수많은 API가 있다고 합시다.
+그런데 이 API 중에서 실제로 필요한 몇가지 API만 사용하려고 합니다.
+그러면 다음과 같은 `MinimalLogger` [*클래스 인터페이스*](guide/dependency-injection-in-action#class-interface)를 사용해서 API를 2개만 사용하도록 정의할 수 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Now put it to use in a simplified version of the `HeroOfTheMonthComponent`.
+-->
+그리고 `HeroOfTheMonthComponent`에는 이렇게 만든 클래스를 의존성으로 주입합니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" title="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" title="src/app/hero-of-the-month.component.ts (간략화된 버전)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger` so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor:
+-->
+이제 `HeroOfTheMonthComponent` 생성자의 `logger` 인자는 `MinimalLogger` 타입으로 지정되었기 때문에, TypeScript를 지원하는 에디터에서는 `logs`  메소드와 `logInfo` 메소드만 사용할 수 있습니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
 </figure>
 
 
-
+<!--
 Behind the scenes, Angular actually sets the `logger` parameter to the full service registered under the `LoggingService` token which happens to be the `DateLoggerService` that was [provided above](guide/dependency-injection-in-action#useclass).
+-->
+사실 Angular는 `logger` 인자에 `LoggerService` 토큰 전체를 할당하는 것이며, 이 때 사용하는 `LoggerService`는 [위에서 등록한](guide/dependency-injection-in-action#useclass) `DateLoggerService`가 됩니다.
 
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The following image, which displays the logging date, confirms the point:
+-->
+이 서비스의 메소드는 다음과 같이 실행됩니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry">
@@ -916,58 +1022,85 @@ The following image, which displays the logging date, confirms the point:
 
 {@a usefactory}
 
-
+<!--
 #### _useFactory_&mdash;the *factory provider*
+-->
+### _useFactory_&mdash;*팩토리 프로바이더*
 
+<!--
 The `useFactory` provider creates a dependency object by calling a factory function
 as in this example.
+-->
+`useFactory`를 사용하면 팩토리 함수를 실행한 결과를 의존성으로 주입할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
 
-
+<!--
 Use this technique to ***create a dependency object***
 with a factory function whose inputs are some ***combination of injected services and local state***.
+-->
+이 방식은 어떤 입력값에 따라 팩토리 함수를 실행해서 **서비스를 조합하거나 현재 상태를 바탕으로** ***의존성 객체를*** 생성해야 할 때 사용합니다.
 
+<!--
 The *dependency object* doesn't have to be a class instance. It could be anything.
 In this example, the *dependency object* is a string of the names of the runners-up
 to the "Hero of the Month" contest.
+-->
+이 때 *객체 정의*가 꼭 클래스 인스턴스일 필요는 없습니다. 어떠한 형태라도 가능합니다. 그래서 "이달의 히어로"로 주입되는 객체처럼 히어로의 이름을 표현하는 문자열일 수도 있습니다.
 
+<!--
 The local state is the number `2`, the number of runners-up this component should show.
 It executes `runnersUpFactory` immediately with `2`.
+-->
+현재 상태는 숫자 `2`이며, 이 숫자는 컴포넌트가 화면에 표시된 이후에 할당된다고 합시다.
+그러면 `runnersUpFactory`가 실행될 때 `2`라는 값이 사용됩니다.
 
+<!--
 The `runnersUpFactory` itself isn't the provider factory function.
 The true provider factory function is the function that `runnersUpFactory` returns.
-
+-->
+이 때 `runnersUpFactory` 자체는 프로바이더 팩토리 함수가 아닙니다.
+실제로 사용되는 프로바이더 팩토리 함수는 `runnersUpFactory`가 실행된 결과로 반환되는 함수입니다.
 
 <code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" title="runners-up.ts (excerpt)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 That returned function takes a winning `Hero` and a `HeroService` as arguments.
+-->
+이 함수는 이달의 우승자 `Hero`와 `HeroService`를 참고해서 함수를 반환합니다.
 
+<!--
 Angular supplies these arguments from injected values identified by
 the two *tokens* in the `deps` array.
 The two `deps` values are *tokens* that the injector uses
 to provide these factory function dependencies.
+-->
+그러면 Angular는 이 함수를 실행하기 위해 두 개의 *토큰*이 더 필요하며, 이 토큰들은 `deps` 배열에 지정합니다.
+`deps` 배열에 지정하는 두 토큰은 인젝터가 팩토리 함수를 실행하기 위해 필요한 의존성 객체입니다.
 
+<!--
 After some undisclosed work, the function returns the string of names
 and Angular injects it into the `runnersUp` parameter of the `HeroOfTheMonthComponent`.
-
+-->
+겉으로 드러나지 않는 동작이 수행되고 나면 이 팩토리 함수는 히어로의 이름을 반환합니다. 그리고 이 값이 `HeroOfTheMonthComponent`의 `runnersUp` 프로퍼티에 할당됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The function retrieves candidate heroes from the `HeroService`,
 takes `2` of them to be the runners-up, and returns their concatenated names.
 Look at the <live-example name="dependency-injection-in-action"></live-example>
 for the full source code.
-
+-->
+이 팩토리 함수는 `HeroService`에서 히어로의 목록을 가져오며, 이 목록 중에서 `2`회차 우승자에 해당하는 히어로의 이름을 최종 선택합니다.
+전체 코드는 <live-example name="dependency-injection-in-action"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 </div>
 

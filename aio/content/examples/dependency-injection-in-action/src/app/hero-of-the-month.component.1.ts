@@ -8,7 +8,7 @@ import { MinimalLogger }       from './minimal-logger.service';
 @Component({
   selector: 'app-hero-of-the-month',
   templateUrl: './hero-of-the-month.component.html',
-  // TODO: move this aliasing, `useExisting` provider to the AppModule
+  // TODO: 이 컴포넌트에 등록하는 것보다 AppModule에 `useExisting`으로 등록하는 것이 더 좋습니다.
   providers: [{ provide: MinimalLogger, useExisting: LoggerService }]
 })
 export class HeroOfTheMonthComponent {
