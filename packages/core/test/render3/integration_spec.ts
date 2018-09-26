@@ -162,27 +162,6 @@ describe('render3 integration test', () => {
       expect(fixture.html).toEqual('<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ');
     });
 
-    it('should not have local refs for nested elements', () => {
-      /**
-       * <div ngNonBindable>
-       *   <input value="one" #myInput> {{ myInput.value }}
-       * </div>
-       */
-      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          setBindingsDisabled();
-          element(1, 'input', ['value', 'one']);
-          text(2, '{{ myInput.value }}');
-          setBindingsEnabled();
-          elementEnd();
-        }
-      }, 3, 0);
-
-      const fixture = new ComponentFixture(App);
-      expect(fixture.html).toEqual('<div><input value="one">{{ myInput.value }}</div>');
-    });
-
     it('should invoke directives for host element', () => {
       let directiveInvoked: boolean = false;
 
