@@ -1,3 +1,20 @@
+<a name="7.0.0-beta.7"></a>
+# [7.0.0-beta.7](https://github.com/angular/angular/compare/7.0.0-beta.6...7.0.0-beta.7) (2018-09-26)
+
+
+### Bug Fixes
+
+* **core:** add missing `peerDependency ` to `[@angular](https://github.com/angular)/compiler` ([#26033](https://github.com/angular/angular/issues/26033)) ([549de1e](https://github.com/angular/angular/commit/549de1e)), closes [/github.com/angular/angular/commit/919f42fea1df4b9e38b7d688aef5f2de668e9d3e#diff-58563046c4439699f2e6a89187099a54](https://github.com//github.com/angular/angular/commit/919f42fea1df4b9e38b7d688aef5f2de668e9d3e/issues/diff-58563046c4439699f2e6a89187099a54)
+* **service-worker:** do not blow up when caches are unwritable ([#26042](https://github.com/angular/angular/issues/26042)) ([2bd767c](https://github.com/angular/angular/commit/2bd767c))
+
+
+### Features
+
+* **compiler-cli:** add support to extend `angularCompilerOptions` ([#22717](https://github.com/angular/angular/issues/22717)) ([d7e5bbf](https://github.com/angular/angular/commit/d7e5bbf)), closes [#22684](https://github.com/angular/angular/issues/22684)
+* **platform-server:** update domino to v2.1.0 ([#25564](https://github.com/angular/angular/issues/25564)) ([3fb0da2](https://github.com/angular/angular/commit/3fb0da2))
+
+
+
 <a name="6.1.9"></a>
 ## [6.1.9](https://github.com/angular/angular/compare/6.1.8...6.1.9) (2018-09-26)
 
