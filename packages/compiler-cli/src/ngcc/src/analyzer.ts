@@ -12,9 +12,9 @@ import * as ts from 'typescript';
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 
-import {NgccReflectionHost} from './host/ngcc_host';
 import {DecoratedClass} from './host/decorated_class';
 import {DecoratedFile} from './host/decorated_file';
+import {NgccReflectionHost} from './host/ngcc_host';
 import {isDefined} from './utils';
 
 export interface AnalyzedClass<A = any, M = any> extends DecoratedClass {
