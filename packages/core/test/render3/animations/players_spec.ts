@@ -289,7 +289,7 @@ class SuperComp {
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        query(0, ['child'], true, QUERY_READ_FROM_NODE(TemplateRef, ElementRef));
+        query(0, ['child'], true, QUERY_READ_FROM_NODE);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;
