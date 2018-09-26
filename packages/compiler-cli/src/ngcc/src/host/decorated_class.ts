@@ -11,11 +11,11 @@ import {Decorator} from '../../../ngtsc/host';
 
 /**
  * A simple container that holds the details of a decorated class that has been
- * parsed out of a package.
+ * found in a `DecoratedFile`.
  */
-export class ParsedClass {
+export class DecoratedClass {
   /**
-   * Initialize a `DecoratedClass` that was found by parsing a package.
+   * Initialize a `DecoratedClass` that was found in a `DecoratedFile`.
    * @param name The name of the class that has been found. This is mostly used
    * for informational purposes.
    * @param declaration The TypeScript AST node where this class is declared

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {ParsedFile} from './parsed_file';
+import {DecoratedFile} from '../host/decorated_file';
 
 /**
  * Classes that implement this interface can parse a file in a package to
@@ -31,5 +31,5 @@ export interface FileParser {
    * @param file The the entry point file for identifying classes to process.
    * @returns A `ParsedFiles` collection that holds the decorated classes and import information.
    */
-  parseFile(file: ts.SourceFile): ParsedFile[];
+  parseFile(file: ts.SourceFile): DecoratedFile[];
 }

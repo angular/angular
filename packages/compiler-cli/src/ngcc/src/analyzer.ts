@@ -13,11 +13,11 @@ import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHa
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 
 import {NgccReflectionHost} from './host/ngcc_host';
-import {ParsedClass} from './parsing/parsed_class';
-import {ParsedFile} from './parsing/parsed_file';
+import {DecoratedClass} from './host/decorated_class';
+import {DecoratedFile} from './host/decorated_file';
 import {isDefined} from './utils';
 
-export interface AnalyzedClass<A = any, M = any> extends ParsedClass {
+export interface AnalyzedClass<A = any, M = any> extends DecoratedClass {
   handler: DecoratorHandler<A, M>;
   analysis: any;
   diagnostics?: ts.Diagnostic[];
@@ -61,11 +61,11 @@ export class Analyzer {
       private rootDirs: string[], private isCore: boolean) {}
 
   /**
-   * Analyize a parsed file to generate the information about decorated classes that
+   * Analyze a decorated file to generate the information about decorated classes that
    * should be converted to use ivy definitions.
    * @param file The file to be analysed for decorated classes.
    */
-  analyzeFile(file: ParsedFile): AnalyzedFile {
+  analyzeFile(file: DecoratedFile): AnalyzedFile {
     const constantPool = new ConstantPool();
     const analyzedClasses =
         file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
@@ -77,7 +77,7 @@ export class Analyzer {
     };
   }
 
-  protected analyzeClass(pool: ConstantPool, clazz: ParsedClass): AnalyzedClass|undefined {
+  protected analyzeClass(pool: ConstantPool, clazz: DecoratedClass): AnalyzedClass|undefined {
     const matchingHandlers = this.handlers
                                  .map(handler => ({
                                         handler,

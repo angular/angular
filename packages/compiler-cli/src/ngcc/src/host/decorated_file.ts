@@ -7,17 +7,15 @@
  */
 
 import * as ts from 'typescript';
-import {ParsedClass} from './parsed_class';
+import {DecoratedClass} from './decorated_class';
 
 /**
- * Information about a source file that has been parsed to
- * extract all the decorated exported classes.
+ * Information about a source file that contains decorated exported classes.
  */
-export class ParsedFile {
+export class DecoratedFile {
   /**
-   * The decorated exported classes that have been parsed out
-   * from the file.
+   * The decorated exported classes that have been found in the file.
    */
-  public decoratedClasses: ParsedClass[] = [];
+  public decoratedClasses: DecoratedClass[] = [];
   constructor(public sourceFile: ts.SourceFile) {}
 }
