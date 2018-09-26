@@ -8,9 +8,9 @@
 
 import * as ts from 'typescript';
 
-import {NgccReflectionHost} from '../host/ngcc_host';
 import {DecoratedClass} from '../host/decorated_class';
 import {DecoratedFile} from '../host/decorated_file';
+import {NgccReflectionHost} from '../host/ngcc_host';
 import {getOriginalSymbol, isDefined} from '../utils';
 
 import {FileParser} from './file_parser';

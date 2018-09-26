@@ -427,6 +427,51 @@ const FUNCTION_BODY_FILE = {
   `
 };
 
+const DECORATED_FILES = [
+  {
+    name: '/primary.js',
+    contents: `
+    import {Directive} from '@angular/core';
+    var A = (function() {
+      function A() {}
+      A.decorators = [
+        { type: Directive, args: [{ selector: '[a]' }] }
+      ];
+      return A;
+    }());
+     var B = (function() {
+      function B() {}
+      B.decorators = [
+        { type: Directive, args: [{ selector: '[b]' }] }
+      ];
+      return B;
+    }());
+     function x() {}
+     function y() {}
+     var C = (function() {
+      function C() {}
+      return C;
+    });
+     export { A, x, C };
+    export { D } from '/secondary';
+    `
+  },
+  {
+    name: '/secondary.js',
+    contents: `
+    import {Directive} from '@angular/core';
+    var D = (function() {
+      function D() {}
+      D.decorators = [
+        { type: Directive, args: [{ selector: '[d]' }] }
+      ];
+      return D;
+    }());
+     export { D };
+    `
+  }
+];
+
 describe('Esm5ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -1205,5 +1250,26 @@ describe('Esm5ReflectionHost', () => {
       expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
       expect(getClassSymbolSpy).toHaveBeenCalledWith(mockNode);
     });
+  });
+
+  describe('fileDecoratedFiles()', () => {
+    it('should return an array of objects for each file that has exported and decorated classes',
+       () => {
+         const program = makeProgram(...DECORATED_FILES);
+         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const decoratedFiles =
+             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILES[0].name) !);
+         expect(decoratedFiles.length).toEqual(2);
+         const primary = decoratedFiles[0];
+         expect(primary.decoratedClasses.length).toEqual(1);
+         const classA = primary.decoratedClasses[0];
+         expect(classA.name).toEqual('A');
+         expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+         const secondary = decoratedFiles[1];
+         expect(secondary.decoratedClasses.length).toEqual(1);
+         const classD = secondary.decoratedClasses[0];
+         expect(classD.name).toEqual('D');
+         expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+       });
   });
 });
