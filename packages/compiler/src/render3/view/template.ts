@@ -30,7 +30,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, NON_BINDABLE_ATTR, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -662,8 +662,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Finish element construction mode.
       if (isNonBindableMode) {
         this.creationInstruction(
-           element.endSourceSpan || element.sourceSpan,
-           R3.setBindingsEnabled);
+            element.endSourceSpan || element.sourceSpan, R3.setBindingsEnabled);
       }
       this.creationInstruction(
           element.endSourceSpan || element.sourceSpan,
