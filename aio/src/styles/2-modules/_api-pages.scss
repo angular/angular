@@ -96,7 +96,7 @@
     }
   }
 
-  .from-constructor, .read-only-property {
+  .from-constructor, .read-only-property, .write-only-property {
     font-style: italic;
     color: $blue;
   }
