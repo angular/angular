@@ -660,10 +660,10 @@
     "name": "getRendererFactory"
   },
   {
-    "name": "getRootContext$1"
+    "name": "getRootContext"
   },
   {
-    "name": "getRootView$1"
+    "name": "getRootView"
   },
   {
     "name": "getStyleSanitizer"
@@ -724,6 +724,9 @@
   },
   {
     "name": "isClassBased"
+  },
+  {
+    "name": "isComponent"
   },
   {
     "name": "isComponentInstance"

@@ -11,6 +11,7 @@ import {assertEqual} from './assert';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, DIRECTIVES, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
+import {isComponent} from './util';
 
 /**
  * This property will be monkey-patched on elements, components and directives
@@ -107,6 +108,10 @@ export function getContext(target: any): LContext|null {
         }
         directiveIndices = discoverDirectiveIndices(lViewData, lNodeIndex);
         directives = directiveIndices ? discoverDirectives(lViewData, directiveIndices) : null;
+        const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
+        if (directives && directives.length && isComponent(tNode)) {
+          component = directives[0];
+        }
       } else {
         lNodeIndex = findViaNativeElement(lViewData, target as RElement);
         if (lNodeIndex == -1) {
@@ -114,8 +119,8 @@ export function getContext(target: any): LContext|null {
         }
       }
 
-      // the goal is not to fill the entire context full of data because the lookups
-      // are expensive. Instead, only the target data (the element, compontent or
+      // The goal is not to fill the entire context full of data because the lookups
+      // are expensive. Instead, only the target data (the element, component or
       // directive details) are filled into the context. If called multiple times
       // with different target values then the missing target data will be filled in.
       const lNode = getLNodeFromViewData(lViewData, lNodeIndex) !;
@@ -356,7 +361,7 @@ function assertDomElement(element: any) {
 }
 
 /**
- * Retruns the instance of the LElementNode at the given index in the LViewData.
+ * Returns the instance of the LElementNode at the given index in the LViewData.
  *
  * This function will also unwrap the inner value incase it's stuffed into an
  * array (which is what happens when [style] and [class] bindings are present
@@ -371,26 +376,14 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
  * Returns a collection of directive index values that are used on the element
  * (which is referenced by the lNodeIndex)
  */
-export function discoverDirectiveIndices(
-    lViewData: LViewData, lNodeIndex: number, includeComponents?: boolean): number[]|null {
-  const directivesAcrossView = lViewData[DIRECTIVES];
+export function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): number[]|null {
   const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
-  if (directivesAcrossView && directivesAcrossView.length) {
-    // this check for tNode is to determine if the value is a LElementNode instance
-    const directiveIndexStart = getDirectiveStartIndex(tNode);
-    const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
-    const directiveIndices: number[] = [];
-    for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-      // special case since the instance of the component (if it exists)
-      // is stored in the directives array.
-      if (i > directiveIndexStart ||
-          !isComponentInstance(directivesAcrossView[directiveIndexStart])) {
-        directiveIndices.push(i);
-      }
-    }
-    return directiveIndices.length ? directiveIndices : null;
-  }
-  return null;
+  const idxStart = getDirectiveStartIndex(tNode);
+  const idxEnd = getDirectiveEndIndex(tNode, idxStart);
+
+  const result = Array.from({length: idxEnd - idxStart}, (v, k) => idxStart + k);
+
+  return result && result.length ? result : null;
 }
 
 /**
@@ -401,8 +394,8 @@ export function discoverDirectiveIndices(
  * @param indices A collection of directive index values which will be used to
  *    figure out the directive instances
  */
-export function discoverDirectives(lViewData: LViewData, indices: number[]): number[]|null {
-  const directives: any[] = [];
+export function discoverDirectives(lViewData: LViewData, indices: number[]): Array<{}> {
+  const directives: {}[] = [];
   const directiveInstances = lViewData[DIRECTIVES];
   if (directiveInstances) {
     for (let i = 0; i < indices.length; i++) {

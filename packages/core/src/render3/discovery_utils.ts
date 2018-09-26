@@ -95,10 +95,11 @@ export function getInjector(target: {}): Injector|null {
 }
 
 /**
- * Returns a list of all the directives that are associated
- * with the underlying target element.
+ * Returns a list of all the directives that are associated with the underlying target element.
+ * Accepts an optional argument to indicate if component instances should be returned as well (false
+ * by default).
  */
-export function getDirectives(target: {}): Array<{}> {
+export function getDirectives(target: {}, includeComponents?: boolean): Array<{}> {
   const context = loadContext(target) !;
 
   if (context.directives === undefined) {
@@ -108,7 +109,14 @@ export function getDirectives(target: {}): Array<{}> {
         null;
   }
 
-  return context.directives || [];
+  const result = context.directives || [];
+
+  // discard first directive if it is a component and we should not include components
+  if (!includeComponents && result.length && isComponentInstance(result[0])) {
+    return result.slice(1);
+  }
+
+  return result;
 }
 
 function loadContext(target: {}): LContext {
