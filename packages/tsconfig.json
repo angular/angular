@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
