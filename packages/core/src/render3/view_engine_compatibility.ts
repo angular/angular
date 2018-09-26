@@ -125,19 +125,6 @@ export function createTemplateRef<T>(
       getRenderer(), hostNode.data ![QUERIES]);
 }
 
-/**
- * Retrieves `TemplateRef` instance from `Injector` when a local reference is placed on the
- * `<ng-template>` element.
- */
-export function templateRefExtractor(
-    TemplateRefToken: typeof ViewEngine_TemplateRef,
-    ElementRefToken: typeof ViewEngine_ElementRef) {
-  return (tNode: TNode, currentView: LViewData) => {
-    return createTemplateRef(TemplateRefToken, ElementRefToken, tNode, currentView);
-  };
-}
-
-
 let R3ViewContainerRef: {
   new (
       lContainer: LContainer, tContainerNode: TContainerNode,

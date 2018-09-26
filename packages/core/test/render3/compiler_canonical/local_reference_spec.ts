@@ -72,7 +72,7 @@ describe('local references', () => {
           if (rf & 1) {
             $r3$.ɵtemplate(
                 0, MyComponent_Template_0, 0, 0, null, null, ['tpl', ''],
-                $r3$.ɵtemplateRefExtractor(TemplateRef, ElementRef));
+                $r3$.ɵtemplateRefExtractor);
             $r3$.ɵtext(2);
           }
           if (rf & 2) {
