@@ -16,6 +16,8 @@ export function tsCompile(binary: 'tsc' | 'ngc', flags: string[]) {
     // Pipe stdout and stderr from the child process.
     childProcess.stdout.on('data', (data: string|Buffer) => console.log(`${data}`));
     childProcess.stderr.on('data', (data: string|Buffer) => console.error(red(`${data}`)));
-    childProcess.on('exit', (exitCode: number) => exitCode === 0 ? resolve() : reject());
+    childProcess.on('exit', (exitCode: number) => {
+      exitCode === 0 ? resolve() : reject(`${binary} compilation failure`);
+    });
   });
 }
