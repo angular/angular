@@ -11,7 +11,7 @@ import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
 import {DtsFileTransformer} from '../../../ngtsc/transform';
-import {AnalyzedFile, Analyzer} from '../analyzer';
+import {DecorationAnalysis, DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
@@ -77,7 +77,7 @@ export class Transformer {
     const reflectionHost = this.getHost(isCore, format, packageProgram, dtsMapper);
     const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
 
-    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs, isCore);
+    const analyzer = new DecorationAnalyzer(typeChecker, reflectionHost, rootDirs, isCore);
     const renderer =
         this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile);
 
@@ -147,7 +147,7 @@ export class Transformer {
   }
 
   transformDtsFiles(
-      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
+      analyzedFiles: DecorationAnalysis[], sourceNodeModules: string, targetNodeModules: string,
       dtsMapper: DtsMapper): FileInfo[] {
     const outputFiles: FileInfo[] = [];
 
@@ -177,7 +177,7 @@ export class Transformer {
   }
 
   transformSourceFiles(
-      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
+      analyzedFiles: DecorationAnalysis[], sourceNodeModules: string, targetNodeModules: string,
       renderer: Renderer): FileInfo[] {
     const outputFiles: FileInfo[] = [];
 

@@ -8,19 +8,19 @@
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
-import {Analyzer} from '../../src/analyzer';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Esm5ReflectionHost(false, program.getTypeChecker());
-  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
+  const analyzer = new DecorationAnalyzer(program.getTypeChecker(), host, [''], false);
   const renderer = new Esm5Renderer(host, false, null);
   return {analyzer, host, program, renderer};
 }
 
-function analyze(host: Esm5ReflectionHost, analyzer: Analyzer, file: ts.SourceFile) {
+function analyze(host: Esm5ReflectionHost, analyzer: DecorationAnalyzer, file: ts.SourceFile) {
   const decoratedFiles = host.findDecoratedFiles(file);
   return Array.from(decoratedFiles.values()).map(file => analyzer.analyzeFile(file))[0];
 }

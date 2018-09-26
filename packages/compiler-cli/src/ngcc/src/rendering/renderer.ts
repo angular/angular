@@ -15,10 +15,10 @@ import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
 import {translateStatement} from '../../../ngtsc/translator';
-import {NgccImportManager} from './ngcc_import_manager';
-import {AnalyzedClass, AnalyzedFile} from '../analyzer';
+import {AnalyzedClass, DecorationAnalysis} from '../analysis/decoration_analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {NgccImportManager} from './ngcc_import_manager';
 
 interface SourceMapInfo {
   source: string;
@@ -33,7 +33,7 @@ export interface RenderResult {
   /**
    * The file that has been rendered.
    */
-  file: AnalyzedFile;
+  file: DecorationAnalysis;
   /**
    * The rendered source file.
    */
@@ -74,7 +74,7 @@ export abstract class Renderer {
    * @param file The analyzed file to render.
    * @param targetPath The absolute path where the rendered file will be written.
    */
-  renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
+  renderFile(file: DecorationAnalysis, targetPath: string): RenderResult {
     const importManager =
         new NgccImportManager(!this.rewriteCoreImportsTo, this.isCore, IMPORT_PREFIX);
     const input = this.extractSourceMap(file.sourceFile);
@@ -180,7 +180,7 @@ export abstract class Renderer {
    * with an appropriate source-map comment pointing to the merged source-map.
    */
   protected renderSourceAndMap(
-      file: AnalyzedFile, input: SourceMapInfo, output: MagicString,
+      file: DecorationAnalysis, input: SourceMapInfo, output: MagicString,
       outputPath: string): RenderResult {
     const outputMapPath = `${outputPath}.map`;
     const outputMap = output.generateMap({
