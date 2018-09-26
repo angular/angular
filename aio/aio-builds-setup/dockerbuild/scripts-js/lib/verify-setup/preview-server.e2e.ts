@@ -18,6 +18,92 @@ describe('preview-server', () => {
   afterEach(() => h.cleanUp());
 
 
+  describe(`${host}/can-have-public-preview`, () => {
+    const curl = makeCurl(`${host}/can-have-public-preview`, {
+      defaultData: null,
+      defaultExtraPath: `/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`,
+      defaultHeaders: [],
+      defaultMethod: 'GET',
+    });
+
+
+    it('should disallow non-GET requests', async () => {
+      const bodyRegex = /^Unknown resource in request/;
+
+      await Promise.all([
+        curl({method: 'POST'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PUT'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'PATCH'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({method: 'DELETE'}).then(h.verifyResponse(404, bodyRegex)),
+      ]);
+    });
+
+
+    it('should respond with 404 for unknown paths', async () => {
+      const bodyRegex = /^Unknown resource in request/;
+
+      await Promise.all([
+        curl({extraPath: `/foo/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`}).then(h.verifyResponse(404, bodyRegex)),
+        curl({extraPath: `-foo/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`}).then(h.verifyResponse(404, bodyRegex)),
+        curl({extraPath: `nfoo/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`}).then(h.verifyResponse(404, bodyRegex)),
+        curl({extraPath: `/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}/foo`}).then(h.verifyResponse(404, bodyRegex)),
+        curl({extraPath: '/f00'}).then(h.verifyResponse(404, bodyRegex)),
+        curl({extraPath: '/'}).then(h.verifyResponse(404, bodyRegex)),
+      ]);
+    });
+
+
+    it('should respond with 500 if checking for significant file changes fails', async () => {
+      await Promise.all([
+        curl({extraPath: `/${PrNums.CHANGED_FILES_404}`}).then(h.verifyResponse(500, /CHANGED_FILES_404/)),
+        curl({extraPath: `/${PrNums.CHANGED_FILES_ERROR}`}).then(h.verifyResponse(500, /CHANGED_FILES_ERROR/)),
+      ]);
+    });
+
+
+    it('should respond with 200 (false) if no significant files were touched', async () => {
+      const expectedResponse = JSON.stringify({
+        canHavePublicPreview: false,
+        reason: 'No significant files touched.',
+      });
+
+      await curl({extraPath: `/${PrNums.CHANGED_FILES_NONE}`}).then(h.verifyResponse(200, expectedResponse));
+    });
+
+
+    it('should respond with 500 if checking "trusted" status fails', async () => {
+      await curl({extraPath: `/${PrNums.TRUST_CHECK_ERROR}`}).then(h.verifyResponse(500, 'TRUST_CHECK_ERROR'));
+    });
+
+
+    it('should respond with 200 (false) if the PR is not automatically verifiable as "trusted"', async () => {
+      const expectedResponse = JSON.stringify({
+        canHavePublicPreview: false,
+        reason: 'Not automatically verifiable as \\"trusted\\".',
+      });
+
+      await Promise.all([
+        curl({extraPath: `/${PrNums.TRUST_CHECK_INACTIVE_TRUSTED_USER}`}).then(h.verifyResponse(200, expectedResponse)),
+        curl({extraPath: `/${PrNums.TRUST_CHECK_UNTRUSTED}`}).then(h.verifyResponse(200, expectedResponse)),
+      ]);
+    });
+
+
+    it('should respond with 200 (true) if the PR can have a public preview', async () => {
+      const expectedResponse = JSON.stringify({
+        canHavePublicPreview: true,
+        reason: null,
+      });
+
+      await Promise.all([
+        curl({extraPath: `/${PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER}`}).then(h.verifyResponse(200, expectedResponse)),
+        curl({extraPath: `/${PrNums.TRUST_CHECK_TRUSTED_LABEL}`}).then(h.verifyResponse(200, expectedResponse)),
+      ]);
+    });
+
+  });
+
+
   describe(`${host}/circle-build`, () => {
 
     const curl = makeCurl(`${host}/circle-build`);

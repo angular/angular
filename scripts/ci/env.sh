@@ -40,6 +40,7 @@ setEnvVar CHROMIUM_VERSION 561733  # Chrome 68 linux stable, see https://www.chr
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
+setEnvVar AIO_MIN_PWA_SCORE 95
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
@@ -63,8 +64,6 @@ if [[ ${TRAVIS:-} ]]; then
       # Determine the current stable branch.
       readonly versionRe="^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$"
       setEnvVar STABLE_BRANCH `npm info @angular/core dist-tags.latest | sed -r "s/$versionRe/\1.x/"`
-
-      setEnvVar MIN_PWA_SCORE 95
       ;;
   esac
 else

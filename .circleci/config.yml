@@ -158,6 +158,21 @@ jobs:
           # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
           destination: aio/dist/aio-snapshot.tgz
 
+  # This job should only be run on PR builds, where `CIRCLE_PR_NUMBER` is defined.
+  test_aio_preview:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: yarn install --cwd aio --frozen-lockfile --non-interactive
+      - run:
+          name: Wait for preview and run tests
+          command: |
+            source "./scripts/ci/env.sh" print
+            xvfb-run --auto-servernum node scripts/test-preview.js $CIRCLE_PR_NUMBER $CIRCLE_SHA1 $AIO_MIN_PWA_SCORE
+
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
   # It duplicates some work with the job above: we build the bazel packages
@@ -257,6 +272,9 @@ workflows:
           filters:
             branches:
               only: /pull\/\d+/
+      - test_aio_preview:
+          requires:
+            - aio_preview
       - integration_test:
           requires:
             - build-packages-dist

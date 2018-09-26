@@ -5,12 +5,12 @@ import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {assertNotMissingOrEmpty, createLogger, getPrInfoFromDownloadPath} from '../common/utils';
+import {assertNotMissingOrEmpty, getPrInfoFromDownloadPath, Logger} from '../common/utils';
 
 // Classes
 export class BuildCleaner {
 
-  private logger = createLogger('BuildCleaner');
+  private logger = new Logger('BuildCleaner');
 
   // Constructor
   constructor(protected buildsDir: string, protected githubOrg: string, protected githubRepo: string,
@@ -122,6 +122,6 @@ export class BuildCleaner {
     this.logger.log(`Existing downloads: ${existingDownloads.length}`);
     this.logger.log(`Removing ${toRemove.length} download(s): ${toRemove.join(', ')}`);
 
-    toRemove.forEach(filePath => shell.rm(filePath));
+    toRemove.forEach(filePath => shell.rm(path.join(this.downloadsDir, filePath)));
   }
 }

@@ -1,8 +1,8 @@
 # Overview - HTTP Status Codes
 
 
-This is a list of all the possible HTTP status codes returned by the nginx and preview servers, along
-with a brief explanation of what they mean:
+This is a list of all the possible HTTP status codes returned by the nginx and preview servers,
+along with a brief explanation of what they mean:
 
 
 ## `http://*.ngbuilds.io/*`
@@ -23,6 +23,23 @@ with a brief explanation of what they mean:
 
 - **404 (Not Found)**:
   File not found.
+
+
+## `https://ngbuilds.io/can-have-public-preview/<pr>`
+
+- **200 (OK)**:
+  Whether the PR can have a public preview (based on its author, label, changed files).
+  _Response type:_ JSON
+  _Response format:_
+  ```ts
+  {
+    canHavePublicPreview: boolean,
+    reason: string | null,
+  }
+  ```
+
+- **405 (Method Not Allowed)**:
+  Request method other than GET.
 
 
 ## `https://ngbuilds.io/circle-build`

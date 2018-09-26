@@ -126,8 +126,8 @@ describe('GithubApi', () => {
       (api as any).getPaginated('/foo/bar');
       (api as any).getPaginated('/foo/bar', {baz: 'qux'});
 
-      expect(api.get).toHaveBeenCalledWith('/foo/bar', {page: 0, per_page: 100});
-      expect(api.get).toHaveBeenCalledWith('/foo/bar', {baz: 'qux', page: 0, per_page: 100});
+      expect(api.get).toHaveBeenCalledWith('/foo/bar', {page: 1, per_page: 100});
+      expect(api.get).toHaveBeenCalledWith('/foo/bar', {baz: 'qux', page: 1, per_page: 100});
     });
 
 
@@ -162,9 +162,9 @@ describe('GithubApi', () => {
         const paramsForPage = (page: number) => ({baz: 'qux', page, per_page: 100});
 
         expect(apiGetSpy).toHaveBeenCalledTimes(3);
-        expect(apiGetSpy.calls.argsFor(0)).toEqual(['/foo/bar', paramsForPage(0)]);
-        expect(apiGetSpy.calls.argsFor(1)).toEqual(['/foo/bar', paramsForPage(1)]);
-        expect(apiGetSpy.calls.argsFor(2)).toEqual(['/foo/bar', paramsForPage(2)]);
+        expect(apiGetSpy.calls.argsFor(0)).toEqual(['/foo/bar', paramsForPage(1)]);
+        expect(apiGetSpy.calls.argsFor(1)).toEqual(['/foo/bar', paramsForPage(2)]);
+        expect(apiGetSpy.calls.argsFor(2)).toEqual(['/foo/bar', paramsForPage(3)]);
 
         expect(data).toEqual(allItems);
 
