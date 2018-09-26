@@ -1,3 +1,13 @@
+<a name="6.1.9"></a>
+## [6.1.9](https://github.com/angular/angular/compare/6.1.8...6.1.9) (2018-09-26)
+
+
+### Bug Fixes
+
+* **service-worker:** do not blow up when caches are unwritable ([#26042](https://github.com/angular/angular/issues/26042)) ([a169743](https://github.com/angular/angular/commit/a169743))
+
+
+
 <a name="7.0.0-beta.6"></a>
 # [7.0.0-beta.6](https://github.com/angular/angular/compare/7.0.0-beta.5...7.0.0-beta.6) (2018-09-19)
 
