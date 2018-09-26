@@ -11,7 +11,7 @@
 {% endif %}
 {% endmacro -%}
 
-{%- macro renderDescendants(doc, descendantType, title='', recursed=true, docTypeMatcher = descendantType) %}
+{%- macro renderDescendants(doc, descendantType, title='', recursed=true, docTypeMatcher=descendantType) %}
   {% set descendants = doc.descendants | filterByPropertyValue('docType', docTypeMatcher) %}
   {% if descendants.length %}
   <div class="descendants {$ descendantType $}">
