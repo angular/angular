@@ -139,7 +139,10 @@ is updated to the value emitted  by the `ngModelChange` event ("Blue").
 The steps below outline the model to view data flow.
 
 1. The `favoriteColor` value is updated in the component.
-1. Change detection calls the `ngOnChanges` method on the `NgModel` directive instance, updates the `NgModel` instance model value, and queues an async task to set the value for the internal `FormControl` instance.
+1. Change detection begins.
+1. During change detection, the `ngOnChanges` lifecycle hook is called on the `NgModel` directive instance because the value of one of its inputs has changed.
+1. The `ngOnChanges()` method queues an async task to set the value for the internal `FormControl` instance.
+1. Change detection completes.
 1. On the next tick, the task to set the `FormControl` instance value is executed.
 1. The `FormControl` instance emits the latest value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
@@ -173,7 +176,7 @@ The steps performed in the view to model test.
 
 1. Query the view for the form input element, and create a custom "input" event for the test.
 1. Set the new value for the input is set to *Red*, and dispatch the "input" event on the form input element.
-1. Assert that the `favoriteColor` form control instance value matches in value from the input.
+1. Assert that the `favoriteColor` `FormControl` instance value matches the value from the input.
 
 The following test verifies the model to view data flow:
 
@@ -182,7 +185,7 @@ The following test verifies the model to view data flow:
 
 The steps performed in the model to view test.
 
-1. Use the `favoriteColor` form control instance to set the new value.
+1. Use the `favoriteColor` `FormControl` instance to set the new value.
 1. Query the view for the form input element.
 1. Assert that the new value set on the control matches the value in the input.
 
@@ -221,12 +224,12 @@ The steps performed in the model to view test.
 
 How changes are tracked plays a role in the efficiency of your application.
 
-- **Reactive forms** keep the data model pure by providing it as an immutable data structure. Each time a change is triggered on the data model, the form control instance returns a new data model rather than updating the data model directly. This gives you the ability track unique changes to the data model through the control's observable. This allows change detection to be more efficient because it only needs to update on unique changes. It also follows reactive patterns that integrate with observable operators to transform data.
+- **Reactive forms** keep the data model pure by providing it as an immutable data structure. Each time a change is triggered on the data model, the `FormControl` instance returns a new data model rather than updating the data model directly. This gives you the ability track unique changes to the data model through the control's observable. This allows change detection to be more efficient because it only needs to update on unique changes. It also follows reactive patterns that integrate with observable operators to transform data.
 - **Template-driven** forms rely on mutability with two-way data binding to update the data model in the component as changes are made in the template. Because there are no unique changes to track on the data model when using two-way data binding, change detection is less efficient at determining when updates are required.
 
 The difference is demonstrated in the examples above using the **favorite color** input element. 
 
-- With reactive forms, the **form control instance** always returns a new value when the control's value is updated.
+- With reactive forms, the **`FormControl` instance** always returns a new value when the control's value is updated.
 - With template-driven forms, the **favorite color property** is always modified to its new value.
 
 ## Scalability
@@ -234,7 +237,7 @@ The difference is demonstrated in the examples above using the **favorite color*
 If forms are a central part of your application, scalability is very important. Being able to reuse form models across components is critical.
 
 - **Reactive forms** make creating large scale forms easier by providing access to low-level APIs and synchronous access to the form model.
-- **Template-driven** forms focus on simple scenarios, are not as reusable, abstract away the low-level APIs and access to the form model is  provided asynchronously. The abstraction with template-driven forms surfaces in testing also, where testing reactive forms requires less setup and no dependance on the change detection cycle when updating and validating the form and data models during testing.
+- **Template-driven** forms focus on simple scenarios, are not as reusable, abstract away the low-level APIs and access to the form model is  provided asynchronously. The abstraction with template-driven forms surfaces in testing also, where testing reactive forms requires less setup and no dependence on the change detection cycle when updating and validating the form and data models during testing.
 
 ## Final Thoughts
 
