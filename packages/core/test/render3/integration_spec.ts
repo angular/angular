@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-import {reference, RenderFlags} from '@angular/core/src/render3';
+import {RenderFlags, reference} from '@angular/core/src/render3';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
@@ -144,17 +144,17 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b', ['id', 'my-id'], ['myRef', '']);
-            setBindingsDisabled();
-              elementStart(2, 'i');
-                text(3, 'Hello {{ name }}!');
-              elementEnd();
-            setBindingsEnabled();
+          setBindingsDisabled();
+          elementStart(2, 'i');
+          text(3, 'Hello {{ name }}!');
+          elementEnd();
+          setBindingsEnabled();
           elementEnd();
           text(4);
         }
         if (rf & RenderFlags.Update) {
           const ref = reference(1) as any;
-          textBinding(4, interpolation1(" ", ref.id, " "));
+          textBinding(4, interpolation1(' ', ref.id, ' '));
         }
       }, 5, 1);
 
@@ -171,10 +171,10 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-            setBindingsDisabled();
-              element(1, 'input', ['value', 'one']);
-              text(2, '{{ myInput.value }}');
-            setBindingsEnabled();
+          setBindingsDisabled();
+          element(1, 'input', ['value', 'one']);
+          text(2, '{{ myInput.value }}');
+          setBindingsEnabled();
           elementEnd();
         }
       }, 3, 0);
@@ -187,9 +187,7 @@ describe('render3 integration test', () => {
       let directiveInvoked: boolean = false;
 
       class TestDirective {
-        ngOnInit() {
-          directiveInvoked = true;
-        }
+        ngOnInit() { directiveInvoked = true; }
 
         static ngDirectiveDef = defineDirective({
           type: TestDirective,
@@ -206,11 +204,11 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b', ['directive', '']);
-            setBindingsDisabled();
-              elementStart(1, 'i');
-                text(2, 'Hello {{ name }}!');
-              elementEnd();
-            setBindingsEnabled();
+          setBindingsDisabled();
+          elementStart(1, 'i');
+          text(2, 'Hello {{ name }}!');
+          elementEnd();
+          setBindingsEnabled();
           elementEnd();
         }
       }, 3, 0, [TestDirective]);
@@ -224,9 +222,7 @@ describe('render3 integration test', () => {
       let directiveInvoked: boolean = false;
 
       class TestDirective {
-        ngOnInit() {
-          directiveInvoked = true;
-        }
+        ngOnInit() { directiveInvoked = true; }
 
         static ngDirectiveDef = defineDirective({
           type: TestDirective,
@@ -243,11 +239,11 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b');
-            setBindingsDisabled();
-              elementStart(1, 'i', ['directive', '']);
-                text(2, 'Hello {{ name }}!');
-              elementEnd();
-            setBindingsEnabled();
+          setBindingsDisabled();
+          elementStart(1, 'i', ['directive', '']);
+          text(2, 'Hello {{ name }}!');
+          elementEnd();
+          setBindingsEnabled();
           elementEnd();
         }
       }, 3, 0, [TestDirective]);
