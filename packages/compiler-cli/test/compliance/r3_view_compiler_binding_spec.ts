@@ -197,6 +197,29 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
     });
+
+    it('should not process property bindings and listeners', () => {
+      const files: MockDirectory = getAppFiles(`
+        <div ngNonBindable>
+          <div [id]="my-id" (click)="onclick"></div>
+        </div>
+      `);
+
+      const template = `
+        const $_c0$ = ["[id]", "my-id", "(click)", "onclick"];
+        …
+        template:function MyComponent_Template(rf, $ctx$){
+          if (rf & 1) {
+            $i0$.ɵelementStart(0, "div");
+            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵelement(1, "div", $_c0$);
+            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵelementEnd();
+        }
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect handling of local refs for nested elements');
+    });
   });
 
 });
