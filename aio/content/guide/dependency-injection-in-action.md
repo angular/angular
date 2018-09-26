@@ -629,50 +629,79 @@ The following image shows the effect of mousing over the `<hero-bios-and-contact
 
 {@a providers}
 
-
+<!--
 ## Define dependencies with providers
+-->
+## 프로바이더로 의존성 정의하기
 
+<!--
 This section demonstrates how to write providers that deliver dependent services.
+-->
+이번 섹션에서는 의존성으로 주입될 서비스를 프로바이더로 어떻게 등록하는지 알아봅시다.
 
+<!--
 Get a service from a dependency injector by giving it a ***token***.
+-->
+의존성 객체는 ***토큰***으로 참조합니다.
 
+<!--
 You usually let Angular handle this transaction by specifying a constructor parameter and its type.
 The parameter type serves as the injector lookup *token*.
 Angular passes this token to the injector and assigns the result to the parameter.
 Here's a typical example:
+-->
+좀 더 자세하게 이야기하면, 의존성으로 받을 객체는 생성자 인자에 타입을 지정하면 의존성 객체를 주입받을 수 있습니다.
+이 때 생성자에 지정하는 타입이 인젝터가 참조하는 *토큰* 입니다.
+Angular는 이 토큰에 해당하는 의존성 객체를 인젝터에서 찾아 반환합니다.
+예제와 함께 알아봅시다:
 
-
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (컴포넌트 생성자로 의존성 주입하기)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Angular asks the injector for the service associated with the `LoggerService`
 and assigns the returned value to the `logger` parameter.
+-->
+Angular는 인젝터에게 `LoggerService`가 등록되어 있는지 확인하고, 프로바이더를 찾으면 인스턴스를 반환해서 `logger` 프로퍼티에 할당합니다.
 
+<!--
 Where did the injector get that value?
 It may already have that value in its internal container.
 If it doesn't, it may be able to make one with the help of a ***provider***.
 A *provider* is a recipe for delivering a service associated with a *token*.
+-->
+이때 인젝터는 어디에서 인스턴스를 가져올까요?
+인스턴스는 이전에 생성되어 이미 인젝터가 갖고 있을 수도 있습니다.
+그리고 인스턴스가 아직 없다면 ***프로바이더***를 사용해서 인스턴스를 새로 생성합니다.
+그래서 *프로바이더*는 *토큰*으로 구분하는 서비스를 만드는 조립설명서라고 볼 수 있습니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 If the injector doesn't have a provider for the requested *token*, it delegates the request
 to its parent injector, where the process repeats until there are no more injectors.
 If the search is futile, the injector throws an error&mdash;unless the request was [optional](guide/dependency-injection-in-action#optional).
-
+-->
+인젝터에서 *토큰*에 해당하는 프로바이더를 찾지 못하면 의존성 주입 요청은 부모 인젝터에게 전달되며, 이 과정은 애플리케이션 최상위 인젝터까지 반복됩니다.
+그리고 [optional](guide/dependency-injection-in-action#optional) 데코레이터가 지정되지 않은 상태로 마지막까지 토큰을 찾지 못하면 에러가 발생합니다.
 
 </div>
 
 
-
+<!--
 A new injector has no providers.
 Angular initializes the injectors it creates with some providers it cares about.
 You have to register your _own_ application providers manually,
 usually in the `@Injectable` decorator of the service, `providers` array of the `NgModule` or `Directive` metadata:
+-->
+새로 생성된 인젝터에는 프로바이더가 없으며, 인젝터에 프로바이더를 등록하면 Angular가 인젝터를 생성하면서 프로바이더를 함께 연결합니다.
+프로바이더를 등록하려면 서비스에 `@Injectable` 데코레이터를 사용하거나 `NgModule`이나 `Directive`와 같은 메타데이터에 `providers` 배열을 사용하면 됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.ts" region="providers" title="src/app/app.component.ts (providers)">
 
