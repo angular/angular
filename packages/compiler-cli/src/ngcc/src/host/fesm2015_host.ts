@@ -211,6 +211,52 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
         [];
   }
 
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|undefined {
+    const value = super.getVariableValue(declaration);
+    if (value) {
+      return value;
+    }
+
+    // We have a variable declaration that has no initializer so we need to find a suitable
+    // assignment in a nearby statement.
+    //
+    // For example:
+    //
+    // ```
+    // var myVar;
+    // myVar = 10;
+    // ```
+    const block = declaration.parent.parent.parent;
+    const symbol = this.checker.getSymbolAtLocation(declaration.name);
+    if (symbol && (ts.isBlock(block) || ts.isSourceFile(block))) {
+      return this.findVariableValue(block, symbol);
+    }
+    return undefined;
+  }
+
+  ///////////// Protected Helpers /////////////
+
+  /**
+   * Walk the AST looking for an assignment to the specified symbol.
+   * @param node The current node we are searching.
+   * @returns an expression that represents the value of the variable, or undefined if none can be
+   * found.
+   */
+  protected findVariableValue(node: ts.Node|undefined, symbol: ts.Symbol): ts.Expression|undefined {
+    if (!node) {
+      return node;
+    }
+    if (ts.isBinaryExpression(node)) {
+      const left = node.left;
+      const right = node.right;
+      if (ts.isIdentifier(left) && this.checker.getSymbolAtLocation(left) === symbol) {
+        return right;
+      }
+      return this.findVariableValue(right, symbol);
+    }
+    return node.forEachChild(node => this.findVariableValue(node, symbol));
+  }
+
   /**
    * Member decorators are declared as static properties of the class in ES2015:
    *
