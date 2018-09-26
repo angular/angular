@@ -8,7 +8,7 @@
 
 import {compileComponent, compileDirective} from '../../render3/jit/directive';
 import {compileInjectable} from '../../render3/jit/injectable';
-import {compileNgModule} from '../../render3/jit/module';
+import {compileNgModule, compileNgModuleDefs, patchComponentDefWithScope} from '../../render3/jit/module';
 import {compilePipe} from '../../render3/jit/pipe';
 
 export const ivyEnabled = true;
@@ -17,3 +17,5 @@ export const R3_COMPILE_DIRECTIVE = compileDirective;
 export const R3_COMPILE_INJECTABLE = compileInjectable;
 export const R3_COMPILE_NGMODULE = compileNgModule;
 export const R3_COMPILE_PIPE = compilePipe;
+export const R3_COMPILE_NGMODULE_DEFS = compileNgModuleDefs;
+export const R3_PATCH_COMPONENT_DEF_WTIH_SCOPE = patchComponentDefWithScope;
