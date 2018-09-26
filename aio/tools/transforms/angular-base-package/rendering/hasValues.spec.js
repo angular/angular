@@ -7,13 +7,24 @@ describe('hasValues filter', () => {
 
   it('should be called "hasValues"', function() { expect(filter.name).toEqual('hasValues'); });
 
-  it('should return true if the specified property is truthy on any item in the list', function() {
-    expect(filter.process([], 'a')).toEqual(false);
-    expect(filter.process(0, 'a')).toEqual(false);
-    expect(filter.process({}, 'a')).toEqual(false);
+  it('should return true if the specified property path is truthy on any item in the list', function() {
     expect(filter.process([{a: 1}], 'a')).toEqual(true);
-    expect(filter.process([{b: 2}], 'a')).toEqual(false);
     expect(filter.process([{a: 1, b: 2}], 'a')).toEqual(true);
     expect(filter.process([{b: 2}, {a: 1}], 'a')).toEqual(true);
+
+    expect(filter.process([{a:{b:1}}], 'a.b')).toEqual(true);
+    expect(filter.process([{a:{b:1}, b: 2}], 'a.b')).toEqual(true);
+    expect(filter.process([{b: 2}, {a:{b:1}}], 'a.b')).toEqual(true);
+
+    expect(filter.process([], 'a')).toEqual(false);
+    expect(filter.process(0, 'a')).toEqual(false);
+    expect(filter.process([], 'a.b')).toEqual(false);
+    expect(filter.process(0, 'a.b')).toEqual(false);
+    expect(filter.process({}, 'a')).toEqual(false);
+    expect(filter.process({}, 'a.b')).toEqual(false);
+
+    expect(filter.process([{b: 2}], 'a')).toEqual(false);
+    expect(filter.process([{a: 2}], 'a.b')).toEqual(false);
+    expect(filter.process([{a: {}}], 'a.b.c')).toEqual(false);
   });
 });
