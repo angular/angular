@@ -26,6 +26,10 @@ export const R3_COMPILE_DIRECTIVE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COM
 export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_INJECTABLE;
 export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
+export const R3_COMPILE_NGMODULE_DEFS__POST_NGCC__: DirectiveCompiler =
+    ivyOn.R3_COMPILE_NGMODULE_DEFS;
+export const R3_PATCH_COMPONENT_DEF_WTIH_SCOPE__POST_NGCC__: DirectiveCompiler =
+    ivyOn.R3_PATCH_COMPONENT_DEF_WTIH_SCOPE;
 
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
@@ -34,6 +38,8 @@ const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
 const R3_COMPILE_NGMODULE__PRE_NGCC__: DirectiveCompiler = preR3NgModuleCompile;
 const R3_COMPILE_PIPE__PRE_NGCC__: DirectiveCompiler = noop;
+const R3_COMPILE_NGMODULE_DEFS__PRE_NGCC__: DirectiveCompiler = noop;
+const R3_PATCH_COMPONENT_DEF_WTIH_SCOPE__PRE_NGCC__: DirectiveCompiler = noop;
 
 const ivyEnable__PRE_NGCC__ = false;
 
@@ -43,6 +49,9 @@ export let R3_COMPILE_DIRECTIVE: DirectiveCompiler = R3_COMPILE_DIRECTIVE__PRE_N
 export let R3_COMPILE_INJECTABLE: DirectiveCompiler = R3_COMPILE_INJECTABLE__PRE_NGCC__;
 export let R3_COMPILE_NGMODULE: DirectiveCompiler = R3_COMPILE_NGMODULE__PRE_NGCC__;
 export let R3_COMPILE_PIPE: DirectiveCompiler = R3_COMPILE_PIPE__PRE_NGCC__;
+export let R3_COMPILE_NGMODULE_DEFS: DirectiveCompiler = R3_COMPILE_NGMODULE_DEFS__PRE_NGCC__;
+export let R3_PATCH_COMPONENT_DEF_WTIH_SCOPE: DirectiveCompiler =
+    R3_PATCH_COMPONENT_DEF_WTIH_SCOPE__PRE_NGCC__;
 
 
 ////////////////////////////////////////////////////////////
