@@ -8,7 +8,7 @@
 import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
-import {LContext, discoverDirectiveIndices, discoverDirectives, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
+import {LContext, discoverDirectiveIndices, discoverDirectives, discoverLocalRefs, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 
@@ -140,4 +140,17 @@ export function getRootView(componentOrView: LViewData | {}): LViewData {
     lViewData = lViewData[PARENT] !;
   }
   return lViewData;
+}
+
+/**
+ *  Retrieve map of local references (local reference name => element or directive instance).
+ */
+export function getLocalRefs(target: {}): {[key: string]: any} {
+  const context = loadContext(target) !;
+
+  if (context.localRefs === undefined) {
+    context.localRefs = discoverLocalRefs(context.lViewData, context.lNodeIndex);
+  }
+
+  return context.localRefs || {};
 }
