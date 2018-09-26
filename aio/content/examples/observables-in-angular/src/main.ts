@@ -113,7 +113,7 @@ export class MyComponent implements OnInit {
   }
   logNameChange() {
     const nameControl = this.heroForm.get('name');
-    nameControl.valueChanges.forEach(
+    nameControl.valueChanges.subscribe(
       (value: string) => this.nameChangeLog.push(value)
     );
   }
