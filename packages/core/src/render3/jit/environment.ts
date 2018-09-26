@@ -46,6 +46,8 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵnamespaceHTML': r3.namespaceHTML,
   'ɵnamespaceMathML': r3.namespaceMathML,
   'ɵnamespaceSVG': r3.namespaceSVG,
+  'ɵsetBindingsEnabled': r3.setBindingsEnabled,
+  'ɵsetBindingsDisabled': r3.setBindingsDisabled,
   'ɵelementStart': r3.elementStart,
   'ɵelementEnd': r3.elementEnd,
   'ɵelement': r3.element,

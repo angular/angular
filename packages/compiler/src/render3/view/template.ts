@@ -30,7 +30,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, NON_BINDABLE_ATTR, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -304,11 +304,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this._phToNodeIdxes[this._i18nSectionIndex][phName].push(elementIndex);
     }
 
+    let isNonBindableMode: boolean = false;
+
     // Handle i18n attributes
     for (const attr of element.attributes) {
       const name = attr.name;
       const value = attr.value;
-      if (name === I18N_ATTR) {
+      if (name === NON_BINDABLE_ATTR) {
+        isNonBindableMode = true;
+      } else if (name === I18N_ATTR) {
         if (this._inI18nSection) {
           throw new Error(
               `Could not mark an element as translatable inside of a translatable section`);
@@ -487,6 +491,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
           trimTrailingNulls(parameters));
 
+      if (isNonBindableMode) {
+        this.creationInstruction(element.sourceSpan, R3.setBindingsDisabled);
+      }
+
       // initial styling for static style="..." attributes
       if (hasStylingInstructions) {
         const paramsList: (o.Expression)[] = [];
@@ -652,6 +660,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
+      if (isNonBindableMode) {
+        this.creationInstruction(
+           element.endSourceSpan || element.sourceSpan,
+           R3.setBindingsEnabled);
+      }
       this.creationInstruction(
           element.endSourceSpan || element.sourceSpan,
           isNgContainer ? R3.elementContainerEnd : R3.elementEnd);

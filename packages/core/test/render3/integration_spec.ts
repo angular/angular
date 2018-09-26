@@ -7,12 +7,12 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-import {RenderFlags} from '@angular/core/src/render3';
+import {reference, RenderFlags} from '@angular/core/src/render3';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, setBindingsEnabled, setBindingsDisabled, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT, DIRECTIVES} from '../../src/render3/interfaces/view';
@@ -130,6 +130,132 @@ describe('render3 integration test', () => {
       });
     });
 
+  });
+
+
+  describe('ngNonBindable handling', () => {
+    it('should keep local ref for host element', () => {
+      /**
+       * <b ngNonBindable #myRef id="my-id">
+       *   <i>Hello {{ name }}!</i>
+       * </b>
+       * {{ myRef.id }}
+       */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'b', ['id', 'my-id'], ['myRef', '']);
+            setBindingsDisabled();
+              elementStart(2, 'i');
+                text(3, 'Hello {{ name }}!');
+              elementEnd();
+            setBindingsEnabled();
+          elementEnd();
+          text(4);
+        }
+        if (rf & RenderFlags.Update) {
+          const ref = reference(1) as any;
+          textBinding(4, interpolation1(" ", ref.id, " "));
+        }
+      }, 5, 1);
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<b id="my-id"><i>Hello {{ name }}!</i></b> my-id ');
+    });
+
+    it('should not have local refs for nested elements', () => {
+      /**
+       * <div ngNonBindable>
+       *   <input value="one" #myInput> {{ myInput.value }}
+       * </div>
+       */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+            setBindingsDisabled();
+              element(1, 'input', ['value', 'one']);
+              text(2, '{{ myInput.value }}');
+            setBindingsEnabled();
+          elementEnd();
+        }
+      }, 3, 0);
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div><input value="one">{{ myInput.value }}</div>');
+    });
+
+    it('should invoke directives for host element', () => {
+      let directiveInvoked: boolean = false;
+
+      class TestDirective {
+        ngOnInit() {
+          directiveInvoked = true;
+        }
+
+        static ngDirectiveDef = defineDirective({
+          type: TestDirective,
+          selectors: [['', 'directive', '']],
+          factory: () => new TestDirective()
+        });
+      }
+
+      /**
+       * <b ngNonBindable directive>
+       *   <i>Hello {{ name }}!</i>
+       * </b>
+       */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'b', ['directive', '']);
+            setBindingsDisabled();
+              elementStart(1, 'i');
+                text(2, 'Hello {{ name }}!');
+              elementEnd();
+            setBindingsEnabled();
+          elementEnd();
+        }
+      }, 3, 0, [TestDirective]);
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<b directive=""><i>Hello {{ name }}!</i></b>');
+      expect(directiveInvoked).toEqual(true);
+    });
+
+    it('should not invoke directives for nested elements', () => {
+      let directiveInvoked: boolean = false;
+
+      class TestDirective {
+        ngOnInit() {
+          directiveInvoked = true;
+        }
+
+        static ngDirectiveDef = defineDirective({
+          type: TestDirective,
+          selectors: [['', 'directive', '']],
+          factory: () => new TestDirective()
+        });
+      }
+
+      /**
+       * <b ngNonBindable>
+       *   <i directive>Hello {{ name }}!</i>
+       * </b>
+       */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'b');
+            setBindingsDisabled();
+              elementStart(1, 'i', ['directive', '']);
+                text(2, 'Hello {{ name }}!');
+              elementEnd();
+            setBindingsEnabled();
+          elementEnd();
+        }
+      }, 3, 0, [TestDirective]);
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<b><i directive="">Hello {{ name }}!</i></b>');
+      expect(directiveInvoked).toEqual(false);
+    });
   });
 
   describe('Siblings update', () => {
