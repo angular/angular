@@ -17,16 +17,30 @@ import {TestBed} from './test_bed';
 
 declare var global: any;
 
+let resetTestingModuleInBeforeEach = true;
+
 const _global = <any>(typeof window === 'undefined' ? global : window);
 
 // Reset the test providers and the fake async zone before each test.
 if (_global.beforeEach) {
   _global.beforeEach(() => {
-    TestBed.resetTestingModule();
+    if (resetTestingModuleInBeforeEach) TestBed.resetTestingModule();
     resetFakeAsyncZone();
   });
 }
 
-// TODO(juliemr): remove this, only used because we need to export something to have compilation
-// work.
-export const __core_private_testing_placeholder__ = '';
+/**
+ * By default, Angular calls TestBed.resetTestingModule in Jasmine's beforeEach.
+ * This is not always necessary and can slow down test execution.
+ * Calling disableTestBedAutoReset disables this behavior.
+ */
+export function disableTestBedAutoReset() {
+  resetTestingModuleInBeforeEach = false;
+}
+
+/**
+ * Reenable the automatic TestBed reset.
+ */
+export function enableTestBedAutoReset() {
+  resetTestingModuleInBeforeEach = true;
+}
