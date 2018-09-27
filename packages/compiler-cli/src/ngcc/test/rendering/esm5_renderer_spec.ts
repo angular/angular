@@ -15,7 +15,7 @@ import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Esm5ReflectionHost(program.getTypeChecker());
+  const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
   const parser = new Esm5FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
   const renderer = new Esm5Renderer(host);

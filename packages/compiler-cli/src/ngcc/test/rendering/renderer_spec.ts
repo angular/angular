@@ -34,22 +34,24 @@ class TestRenderer extends Renderer {
   }
 }
 
-function createTestRenderer() {
-  const renderer = new TestRenderer({} as Fesm2015ReflectionHost);
+function createTestRenderer(host: Fesm2015ReflectionHost) {
+  const renderer = new TestRenderer(host);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
   return renderer as jasmine.SpyObj<TestRenderer>;
 }
 
-function analyze(file: {name: string, contents: string}) {
+function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost('some-package', program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
 
   const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
-  return parsedFiles.map(file => analyzer.analyzeFile(file));
+  const analyzedFiles = parsedFiles.map(file => analyzer.analyzeFile(file));
+
+  return {program, host, parser, analyzer, parsedFiles, analyzedFiles};
 }
 
 describe('Renderer', () => {
@@ -98,8 +100,8 @@ describe('Renderer', () => {
   describe('renderFile()', () => {
     it('should render the modified contents; and a new map file, if the original provided no map file.',
        () => {
-         const renderer = createTestRenderer();
-         const analyzedFiles = analyze(INPUT_PROGRAM);
+         const {analyzedFiles, host} = setup(INPUT_PROGRAM);
+         const renderer = createTestRenderer(host);
          const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(result.source.path).toEqual('/output_file.js');
          expect(result.source.contents)
@@ -110,8 +112,8 @@ describe('Renderer', () => {
 
     it('should call addImports with the source code and info about the core Angular library.',
        () => {
-         const renderer = createTestRenderer();
-         const analyzedFiles = analyze(INPUT_PROGRAM);
+         const {analyzedFiles, host} = setup(INPUT_PROGRAM);
+         const renderer = createTestRenderer(host);
          renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(renderer.addImports.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
          expect(renderer.addImports.calls.first().args[1]).toEqual([
@@ -121,8 +123,9 @@ describe('Renderer', () => {
 
     it('should call addDefinitions with the source code, the analyzed class and the renderered definitions.',
        () => {
-         const renderer = createTestRenderer();
-         const analyzedFile = analyze(INPUT_PROGRAM)[0];
+         const {analyzedFiles, host} = setup(INPUT_PROGRAM);
+         const analyzedFile = analyzedFiles[0];
+         const renderer = createTestRenderer(host);
          renderer.renderFile(analyzedFile, '/output_file.js');
          expect(renderer.addDefinitions.calls.first().args[0].toString())
              .toEqual(RENDERED_CONTENTS);
@@ -135,8 +138,9 @@ describe('Renderer', () => {
 
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
        () => {
-         const renderer = createTestRenderer();
-         const analyzedFile = analyze(INPUT_PROGRAM)[0];
+         const {analyzedFiles, host} = setup(INPUT_PROGRAM);
+         const analyzedFile = analyzedFiles[0];
+         const renderer = createTestRenderer(host);
          renderer.renderFile(analyzedFile, '/output_file.js');
          expect(renderer.removeDecorators.calls.first().args[0].toString())
              .toEqual(RENDERED_CONTENTS);
@@ -156,11 +160,11 @@ describe('Renderer', () => {
 
     it('should merge any inline source map from the original file and write the output as an inline source map',
        () => {
-         const renderer = createTestRenderer();
-         const analyzedFiles = analyze({
+         const {analyzedFiles, host} = setup({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n' + INPUT_PROGRAM_MAP.toComment()
          });
+         const renderer = createTestRenderer(host);
          const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(result.source.path).toEqual('/output_file.js');
          expect(result.source.contents)
@@ -171,13 +175,12 @@ describe('Renderer', () => {
     it('should merge any external source map from the original file and write the output to an external source map',
        () => {
          // Mock out reading the map file from disk
-         const readFileSyncSpy =
-             spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
-         const renderer = createTestRenderer();
-         const analyzedFiles = analyze({
+         spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
+         const {analyzedFiles, host} = setup({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n//# sourceMappingURL=file.js.map'
          });
+         const renderer = createTestRenderer(host);
          const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(result.source.path).toEqual('/output_file.js');
          expect(result.source.contents)

@@ -158,7 +158,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
       describe('getDecoratorsOfDeclaration()', () => {
         it('should find the decorators on a class', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const decorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -183,7 +183,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
                                   {});
 
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
 
@@ -198,7 +198,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should support decorators being used inside @angular/core', () => {
           const program = makeProgram(fileSystem.files[1]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('@angular/core', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/node_modules/@angular/core/some_directive.js', 'SomeDirective',
               ts.isVariableDeclaration);
@@ -219,7 +219,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
       describe('getMembersOfClass()', () => {
         it('should find decorated members on a class', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
@@ -237,7 +237,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should find non decorated properties on a class', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
@@ -251,7 +251,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should find static methods on a class', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
@@ -264,7 +264,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should find static properties on a class', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const members = host.getMembersOfClass(classNode);
@@ -281,7 +281,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
               spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier').and.returnValue({});
 
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
 
@@ -292,7 +292,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should support decorators being used inside @angular/core', () => {
           const program = makeProgram(fileSystem.files[1]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('@angular/core', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/node_modules/@angular/core/some_directive.js', 'SomeDirective',
               ts.isVariableDeclaration);
@@ -308,7 +308,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
       describe('getConstructorParameters', () => {
         it('should find the decorated constructor parameters', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const parameters = host.getConstructorParameters(classNode);
@@ -329,7 +329,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
                             .and.returnValue(mockImportInfo);
 
             const program = makeProgram(fileSystem.files[0]);
-            const host = new Esm5ReflectionHost(program.getTypeChecker());
+            const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
             const classNode = getDeclaration(
                 program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
             const parameters = host.getConstructorParameters(classNode);
@@ -347,7 +347,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
       describe('getDeclarationOfIdentifier', () => {
         it('should return the declaration of a locally defined identifier', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const ctrDecorators = host.getConstructorParameters(classNode) !;
@@ -363,7 +363,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
         it('should return the declaration of an externally defined identifier', () => {
           const program = makeProgram(fileSystem.files[0]);
-          const host = new Esm5ReflectionHost(program.getTypeChecker());
+          const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
@@ -416,7 +416,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
     it('should find the "actual" declaration of an aliased variable identifier', () => {
       const program = makeProgram(NGMODULE_FILE);
-      const host = new Esm5ReflectionHost(program.getTypeChecker());
+      const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
       const ngModuleRef = findVariableDeclaration(
           program.getSourceFile(NGMODULE_FILE.name) !, 'HttpClientXsrfModule_1');
       const value = host.getVariableValue(ngModuleRef !);
@@ -429,7 +429,7 @@ describe('Esm5ReflectionHost [import helper style]', () => {
 
     it('should return undefined if the variable has no assignment', () => {
       const program = makeProgram(NGMODULE_FILE);
-      const host = new Esm5ReflectionHost(program.getTypeChecker());
+      const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
       const missingValue =
           findVariableDeclaration(program.getSourceFile(NGMODULE_FILE.name) !, 'missingValue');
       const value = host.getVariableValue(missingValue !);

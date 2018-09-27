@@ -48,7 +48,7 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  *   a static method called `ctorParameters`.
  */
 export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
-  constructor(checker: ts.TypeChecker) { super(checker); }
+  constructor(protected packageName: string, checker: ts.TypeChecker) { super(checker); }
 
   /**
    * Examine a declaration (for example, of a class or function) and return metadata about any
@@ -295,10 +295,12 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getClassDecoratorsFromStaticProperty(decoratorsSymbol: ts.Symbol): Decorator[]|null {
     const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
     if (decoratorsIdentifier && decoratorsIdentifier.parent) {
-      if (ts.isBinaryExpression(decoratorsIdentifier.parent) && decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      if (ts.isBinaryExpression(decoratorsIdentifier.parent) &&
+          decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
         // AST of the array of decorator values
         const decoratorsArray = decoratorsIdentifier.parent.right;
-        return this.reflectDecorators(decoratorsArray).filter(isImportedFromCore);
+        return this.reflectDecorators(decoratorsArray)
+            .filter(decorator => this.isImportedFromCore(decorator));
       }
     }
     return null;
@@ -321,10 +323,13 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getClassDecoratorsFromHelperCall(symbol: ts.Symbol): Decorator[]|null {
     const decorators: Decorator[] = [];
     const helperCalls = this.getHelperCallsForClass(symbol, '__decorate');
+    const isClassTarget = makeClassTargetFilter(symbol.name);
     helperCalls.forEach(helperCall => {
-      const {classDecorators} =
-          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(symbol.name));
-      classDecorators.filter(isImportedFromCore).forEach(decorator => decorators.push(decorator));
+      if (isClassTarget(helperCall.arguments[1])) {
+        const {classDecorators} = this.reflectDecoratorsFromHelperCall(helperCall);
+        classDecorators.filter(decorator => this.isImportedFromCore(decorator))
+            .forEach(decorator => decorators.push(decorator));
+      }
     });
     return decorators.length ? decorators : null;
   }
@@ -367,7 +372,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
       const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
       propertiesMap.forEach((value, name) => {
-        const decorators = this.reflectDecorators(value).filter(isImportedFromCore);
+        const decorators =
+            this.reflectDecorators(value).filter(decorator => this.isImportedFromCore(decorator));
         if (decorators.length) {
           memberDecorators.set(name, decorators);
         }
@@ -393,16 +399,19 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getMemberDecoratorsFromHelperCalls(classSymbol: ts.Symbol): Map<string, Decorator[]> {
     const memberDecoratorMap = new Map<string, Decorator[]>();
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
+    const isMemberTarget = makeMemberTargetFilter(classSymbol.name);
     helperCalls.forEach(helperCall => {
-      const {memberDecorators} =
-          this.reflectDecoratorsFromHelperCall(helperCall, makeMemberTargetFilter(classSymbol.name));
-      memberDecorators.forEach((decorators, memberName) => {
-        if (memberName) {
-          const memberDecorators = memberDecoratorMap.get(memberName) || [];
-          const coreDecorators = decorators.filter(isImportedFromCore);
-          memberDecoratorMap.set(memberName, memberDecorators.concat(coreDecorators));
-        }
-      });
+      if (isMemberTarget(helperCall.arguments[1])) {
+        const {memberDecorators} = this.reflectDecoratorsFromHelperCall(helperCall);
+        memberDecorators.forEach((decorators, memberName) => {
+          if (memberName) {
+            const memberDecorators = memberDecoratorMap.get(memberName) || [];
+            const coreDecorators =
+                decorators.filter(decorator => this.isImportedFromCore(decorator));
+            memberDecoratorMap.set(memberName, memberDecorators.concat(coreDecorators));
+          }
+        });
+      }
     });
     return memberDecoratorMap;
   }
@@ -414,35 +423,31 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns a mapping from member name to decorators, where the key is either the name of the
    * member or `undefined` if it refers to decorators on the class as a whole.
    */
-  protected reflectDecoratorsFromHelperCall(
-      helperCall: ts.CallExpression,
-      targetFilter: TargetFilter): {classDecorators: Decorator[], memberDecorators: Map<string, Decorator[]>} {
+  protected reflectDecoratorsFromHelperCall(helperCall: ts.CallExpression):
+      {classDecorators: Decorator[], memberDecorators: Map<string, Decorator[]>} {
     const classDecorators: Decorator[] = [];
     const memberDecorators = new Map<string, Decorator[]>();
 
-    // First check that the `target` argument is correct
-    if (targetFilter(helperCall.arguments[1])) {
-      // Grab the `decorators` argument which should be an array of calls
-      const decoratorCalls = helperCall.arguments[0];
-      if (decoratorCalls && ts.isArrayLiteralExpression(decoratorCalls)) {
-        decoratorCalls.elements.forEach(element => {
-          // We only care about those elements that are actual calls
-          if (ts.isCallExpression(element)) {
-            const decorator = this.reflectDecoratorCall(element);
-            if (decorator) {
-              const keyArg = helperCall.arguments[2];
-              const keyName = keyArg && ts.isStringLiteral(keyArg) ? keyArg.text : undefined;
-              if (keyName === undefined) {
-                classDecorators.push(decorator);
-              } else {
-                const decorators = memberDecorators.get(keyName) || [];
-                decorators.push(decorator);
-                memberDecorators.set(keyName, decorators);
-              }
+    // Grab the `decorators` argument which should be an array of calls
+    const decoratorCalls = helperCall.arguments[0];
+    if (decoratorCalls && ts.isArrayLiteralExpression(decoratorCalls)) {
+      decoratorCalls.elements.forEach(element => {
+        // We only care about those elements that are actual calls
+        if (ts.isCallExpression(element)) {
+          const decorator = this.reflectDecoratorCall(element);
+          if (decorator) {
+            const keyArg = helperCall.arguments[2];
+            const keyName = keyArg && ts.isStringLiteral(keyArg) ? keyArg.text : undefined;
+            if (keyName === undefined) {
+              classDecorators.push(decorator);
+            } else {
+              const decorators = memberDecorators.get(keyName) || [];
+              decorators.push(decorator);
+              memberDecorators.set(keyName, decorators);
             }
           }
-        });
-      }
+        }
+      });
     }
     return {classDecorators, memberDecorators};
   }
@@ -492,8 +497,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns the node that corresponds to the `__decorate(...)` call or null if the statement does
    * not match.
    */
-  protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression
-      |null {
+  protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
     if (ts.isExpressionStatement(statement)) {
       const expression =
           isAssignment(statement) ? statement.expression.right : statement.expression;
@@ -694,8 +698,9 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
             .map(paramInfo => {
               const type = paramInfo && paramInfo.get('type') || null;
               const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
-              const decorators =
-                  decoratorInfo && this.reflectDecorators(decoratorInfo).filter(isImportedFromCore);
+              const decorators = decoratorInfo &&
+                  this.reflectDecorators(decoratorInfo)
+                      .filter(decorator => this.isImportedFromCore(decorator));
               return {type, decorators};
             });
       }
@@ -718,38 +723,40 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
     const parameters: ParamInfo[] = parameterNodes.map(() => ({type: null, decorators: null}));
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
+    const isClassTarget = makeClassTargetFilter(classSymbol.name);
     helperCalls.forEach(helperCall => {
-      const {classDecorators} =
-          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(classSymbol.name));
-      classDecorators.forEach(call => {
-        switch (call.name) {
-          case '__metadata':
-            const metadataArg = call.args && call.args[0];
-            const typesArg = call.args && call.args[1];
-            const isParamTypeDecorator = metadataArg && ts.isStringLiteral(metadataArg) &&
-                metadataArg.text === 'design:paramtypes';
-            const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
-            if (isParamTypeDecorator && types) {
-              types.forEach((type, index) => parameters[index].type = type);
-            }
-            break;
-          case '__param':
-            const paramIndexArg = call.args && call.args[0];
-            const decoratorCallArg = call.args && call.args[1];
-            const paramIndex = paramIndexArg && ts.isNumericLiteral(paramIndexArg) ?
-                parseInt(paramIndexArg.text, 10) :
-                NaN;
-            const decorator = decoratorCallArg && ts.isCallExpression(decoratorCallArg) ?
-                this.reflectDecoratorCall(decoratorCallArg) :
-                null;
-            if (!isNaN(paramIndex) && decorator) {
-              const decorators = parameters[paramIndex].decorators =
-                  parameters[paramIndex].decorators || [];
-              decorators.push(decorator);
-            }
-            break;
-        }
-      });
+      if (isClassTarget(helperCall.arguments[1])) {
+        const {classDecorators} = this.reflectDecoratorsFromHelperCall(helperCall);
+        classDecorators.forEach(call => {
+          switch (call.name) {
+            case '__metadata':
+              const metadataArg = call.args && call.args[0];
+              const typesArg = call.args && call.args[1];
+              const isParamTypeDecorator = metadataArg && ts.isStringLiteral(metadataArg) &&
+                  metadataArg.text === 'design:paramtypes';
+              const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
+              if (isParamTypeDecorator && types) {
+                types.forEach((type, index) => parameters[index].type = type);
+              }
+              break;
+            case '__param':
+              const paramIndexArg = call.args && call.args[0];
+              const decoratorCallArg = call.args && call.args[1];
+              const paramIndex = paramIndexArg && ts.isNumericLiteral(paramIndexArg) ?
+                  parseInt(paramIndexArg.text, 10) :
+                  NaN;
+              const decorator = decoratorCallArg && ts.isCallExpression(decoratorCallArg) ?
+                  this.reflectDecoratorCall(decoratorCallArg) :
+                  null;
+              if (!isNaN(paramIndex) && decorator) {
+                const decorators = parameters[paramIndex].decorators =
+                    parameters[paramIndex].decorators || [];
+                decorators.push(decorator);
+              }
+              break;
+          }
+        });
+      }
     });
     return parameters;
   }
@@ -779,6 +786,23 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
     return Array.from(classSymbol.valueDeclaration.getSourceFile().statements);
   }
+
+  /**
+   * Test whether a decorator was imported from `@angular/core`.
+   *
+   * Is the decorator:
+   * * extermally mported from `@angulare/core`?
+   * * relatively internally imported where the package is `@angular/core`?
+   *
+   * Note we do not support decorators that are not imported at all.
+   *
+   * @param decorator the decorator to test.
+   */
+  isImportedFromCore(decorator: Decorator): boolean {
+    return !!decorator.import &&
+        (decorator.import.from === '@angular/core' ||
+         /^\./.test(decorator.import.from) && this.packageName === '@angular/core');
+  }
 }
 
 ///////////// Exported Helpers /////////////
@@ -802,24 +826,6 @@ export function isAssignment(statement: ts.Statement): statement is AssignmentSt
   return ts.isExpressionStatement(statement) && ts.isBinaryExpression(statement.expression) &&
       statement.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
       ts.isIdentifier(statement.expression.left);
-}
-
-/**
- * Test whether a decorator was imported from `@angular/core`.
- *
- * Is the decorator:
- * * extermally mported from `@angulare/core`?
- * * relatively internally imported where the decoratee is already in `@angular/core`?
- *
- * Note we do not support decorators that are not imported at all.
- *
- * @param decorator the decorator to test.
- */
-export function isImportedFromCore(decorator: Decorator): boolean {
-  const importFrom = decorator.import && decorator.import.from || '';
-  return importFrom === '@angular/core' ||
-      (/^\./.test(importFrom) &&
-       /node_modules[\\\/]@angular[\\\/]core/.test(decorator.node.getSourceFile().fileName));
 }
 
 /**

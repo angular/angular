@@ -31,7 +31,7 @@ import {CONSTRUCTOR_PARAMS, Fesm2015ReflectionHost, ParamInfo, getPropertyValueF
  *
  */
 export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
-  constructor(checker: ts.TypeChecker) { super(checker); }
+  constructor(packageName: string, checker: ts.TypeChecker) { super(packageName, checker); }
 
   /**
    * Check whether the given node actually represents a class.

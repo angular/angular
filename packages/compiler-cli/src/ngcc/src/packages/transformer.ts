@@ -81,7 +81,7 @@ export class Transformer {
     const packageProgram = ts.createProgram([entryPointFilePath], options, host);
     const typeChecker = packageProgram.getTypeChecker();
     const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
-    const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
+    const reflectionHost = this.getHost(entryPoint.name, format, packageProgram, dtsMapper);
 
     const parser = this.getFileParser(format, packageProgram, reflectionHost);
     const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
@@ -111,15 +111,16 @@ export class Transformer {
     writeMarkerFile(entryPoint, format);
   }
 
-  getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
+  getHost(packageName: string, format: string, program: ts.Program, dtsMapper: DtsMapper):
+      NgccReflectionHost {
     switch (format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
+        return new Esm2015ReflectionHost(packageName, program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(program.getTypeChecker());
+        return new Fesm2015ReflectionHost(packageName, program.getTypeChecker());
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(program.getTypeChecker());
+        return new Esm5ReflectionHost(packageName, program.getTypeChecker());
       default:
         throw new Error(`Relection host for "${format}" not yet implemented.`);
     }
