@@ -67,8 +67,8 @@ export {
   namespaceMathML,
   namespaceSVG,
 
-  setBindingsEnabled,
-  setBindingsDisabled,
+  enableBindings,
+  disableBindings,
 
   projection,
   projectionDef,

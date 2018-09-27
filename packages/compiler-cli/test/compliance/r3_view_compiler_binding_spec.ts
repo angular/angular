@@ -156,11 +156,11 @@ describe('compiler compliance: bindings', () => {
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵelementStart(0, "b", $_c0$, $_c1$);
-            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵdisableBindings();
             $i0$.ɵelementStart(2, "i");
             $i0$.ɵtext(3, "Hello {{ name }}!");
             $i0$.ɵelementEnd();
-            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵenableBindings();
             $i0$.ɵelementEnd();
             $i0$.ɵtext(4);
           }
@@ -187,10 +187,10 @@ describe('compiler compliance: bindings', () => {
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵelementStart(0, "div");
-            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵdisableBindings();
             $i0$.ɵelement(1, "input", $_c0$);
             $i0$.ɵtext(2, " {{ myInput.value }} ");
-            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵenableBindings();
             $i0$.ɵelementEnd();
         }
       `;
@@ -211,9 +211,9 @@ describe('compiler compliance: bindings', () => {
         template:function MyComponent_Template(rf, $ctx$){
           if (rf & 1) {
             $i0$.ɵelementStart(0, "div");
-            $i0$.ɵsetBindingsDisabled();
+            $i0$.ɵdisableBindings();
             $i0$.ɵelement(1, "div", $_c0$);
-            $i0$.ɵsetBindingsEnabled();
+            $i0$.ɵenableBindings();
             $i0$.ɵelementEnd();
         }
       `;
