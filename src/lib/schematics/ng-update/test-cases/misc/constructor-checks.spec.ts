@@ -3,7 +3,7 @@ import {resolveBazelDataFile, runTestCases} from '../index.spec';
 describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const {logOutput} = await runTestCases('migration-01', {
+    const {logOutput} = await runTestCases('migration-v6', {
       'constructor-checks': resolveBazelDataFile(`misc/constructor-checks_input.ts`)
     });
 

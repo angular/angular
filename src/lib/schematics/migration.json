@@ -1,12 +1,12 @@
 {
   "$schema": "./node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-    "migration-01": {
+    "migration-v6": {
       "version": "6",
       "description": "Updates Angular Material to v6",
       "factory": "./ng-update/index#updateToV6"
     },
-    "migration-02": {
+    "migration-v7": {
       "version": "7",
       "description": "Updates Angular Material to v7",
       "factory": "./ng-update/index#updateToV7"

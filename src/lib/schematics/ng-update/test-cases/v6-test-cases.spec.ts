@@ -25,7 +25,7 @@ describe('v6 upgrade test cases', () => {
       return inputs;
     }, {});
 
-    const {tempPath} = await runTestCases('migration-01', testCaseInputs);
+    const {tempPath} = await runTestCases('migration-v6', testCaseInputs);
 
     testCasesOutputPath = join(tempPath, 'projects/material/src/test-cases/');
   });

@@ -3,7 +3,7 @@ import {resolveBazelDataFile, runTestCases} from '../index.spec';
 describe('v6 import misc checks', () => {
 
   it('should report imports for deleted animation constants', async () => {
-    const {logOutput} = await runTestCases('migration-01', {
+    const {logOutput} = await runTestCases('migration-v6', {
       'import-checks': resolveBazelDataFile(`misc/import-checks_input.ts`)
     });
 
