@@ -256,7 +256,11 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
-      - run: xvfb-run --auto-servernum ./aio/scripts/test-production.sh
+      - run:
+          name: Run tests against the deployed apps
+          command: |
+            source "./scripts/ci/env.sh" print
+            xvfb-run --auto-servernum ./aio/scripts/test-production.sh $AIO_MIN_PWA_SCORE
 
 workflows:
   version: 2
