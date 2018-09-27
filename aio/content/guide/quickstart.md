@@ -1,13 +1,13 @@
 # Getting started 
 
-Welcome to Angular! Angular makes it easy to build modern applications for the web, mobile, or desktop.  
+Welcome to Angular! Angular helps you build modern applications for the web, mobile, or desktop.  
 
 This guide shows you how to build and run a simple Angular
 app, using the Angular CLI to accelerate development, 
 while adhering to the [Style Guide](guide/styleguide) recommendations that
 benefit _every_ Angular project.
 
-The end of this guide includes a link to download the solution and recommended next steps. 
+The end of this guide includes a link to download an example of the final code. It also recommends next steps for learning and using Angular. 
 
 
 {@a devenv}
@@ -28,10 +28,11 @@ Angular requires `Node.js` version 8.x or 10.x.
 
 Angular, the Angular CLI, and Angular apps depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
 
-You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which is installed with Node.js by default.
+You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which is installed with Node.js by default. 
+By default, the Angular CLI uses `npm` to install npm packages when you create a new project. 
 
-The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for downloading and installing npm packages.
-The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
+For more information about Angular and npm packages&mdash;including how to configure the CLI to use a different package manager&mdash;see [npm Packages](guide/npm-packages). 
+
 
 {@a install-cli}
 
@@ -70,21 +71,6 @@ Generate a new project and default app by running the following command:
 
 
 The Angular CLI installs the necessary `npm` packages, creates the project files, and populates the project with a simple default app. This can take a few minutes.
-
-
-
-<div class="alert is-helpful">
-
-
-
-You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
-For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
-
-Angular Material provides schematics for typical app layouts. 
-See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
-
-
-</div>
 
 
 {@a serve}
@@ -148,18 +134,15 @@ Open `src/app/app.component.css` and give the component some style.
   <img src='generated/images/guide/cli-quickstart/my-first-app.png' alt="Output of Getting Started app">
 </figure>
 
-
-
 That's all you need to do. You've created your first Angular app!
 
 
-## Solution and project file review
+## Final code review
 
-You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a> Most Angular guides contain links to an associated example app, so that you can see Angular concepts and code in action. 
+You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download an example</a> of the final app that was created in this Quick Start. Most Angular guides contain similar links to download or run a live example of an  example app, so that you can see Angular concepts and code in action. 
 
 Your app resides in the `src` folder.
 All Angular components, templates, styles, images, and anything else your app needs go here.
-Any files outside of this folder are meant to support building your app.
 
 Other files help you build, test, maintain, document, and deploy the app.
 These files go in the `root` folder next to `src/`.
@@ -171,17 +154,17 @@ For more details about Angular project files and the file structure, see [Anatom
 
 Now that you've seen the essentials of an Angular app and the Angular CLI, continue with these introductory materials: 
 
-* The [Tour of Heroes tutorial](tutorial "Tour of Heroes tutorial") provides additional hands-on learning. It walks you through the steps to build an app that helps a staffing agency manage its stable of heroes. 
+* The [Tour of Heroes tutorial](tutorial "Tour of Heroes tutorial") provides additional hands-on learning. It walks you through the steps to build an app that helps a staffing agency manage a group of superhero employees. 
 It has many of the features you'd expect to find in a data-driven application: 
 
-        - Acquiring and displaying a list of items (heroes)
+        - Acquiring and displaying a list of items
 
         - Editing a selected item's detail
 
         - Navigating among different views of the data
 
 
-* The [Architecture guide](guide/architecture "Architecture guide")  describes key concepts such as modules, components, services, dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
+* The [Architecture guide](guide/architecture "Architecture guide")  describes key concepts such as modules, components, services, and dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
 
 Both the Tutorial and Architecture guide are intended to give you the foundation to continue exploring Angular on your own, focusing on the features most important for your apps. 
 
