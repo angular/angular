@@ -8,9 +8,8 @@ genrule(
 
 npm_package(
     name = "npm_package",
-    srcs = [
+    srcs = glob(["*.bzl"]) + [
         "BUILD.bazel",
-        "index.bzl",
         "package.json",
         "//packages/bazel/src:package_assets",
     ],
