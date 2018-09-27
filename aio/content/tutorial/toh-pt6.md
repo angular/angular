@@ -347,7 +347,7 @@ Add the following `addHero()` method to the `HeroService` class.
 `HeroService.addHero()` differs from `updateHero` in two ways.
 
 * it calls `HttpClient.post()` instead of `put()`.
-* it expects the server to generates an id for the new hero, 
+* it expects the server to generate an id for the new hero, 
 which it returns in the `Observable<Hero>` to the caller.
 
 Refresh the browser and add some heroes.
