@@ -1109,77 +1109,129 @@ for the full source code.
 {@a tokens}
 
 
-
+<!--
 ## Provider token alternatives: the *class-interface* and *InjectionToken*
+-->
+## 프로바이더 토큰 대체하기: *클래스 인터페이스*, *InjectionToken*
 
+<!--
 Angular dependency injection is easiest when the provider *token* is a class
 that is also the type of the returned dependency object, or what you usually call the *service*.
+-->
+Angular 의존성 주입은 프로바이더로 등록하는 *토큰*이 클래스이며, 이 클래스 타입을 그대로 주입할 때 가장 간단합니다. 이 방법은 *서비스*를 주입할 때 일반적으로 사용하는 방법입니다.
 
+<!--
 But the token doesn't have to be a class and even when it is a class,
 it doesn't have to be the same type as the returned object.
 That's the subject of the next section.
+-->
+하지만 토큰이 꼭 클래스일 필요는 없습니다. 심지어 의존성으로 주입되는 객체가 클래스이더라도 토큰은 클래스가 아니어도 되고, 의존성으로 주입되는 객체와 다른 형태의 객체여도 됩니다.
+이 내용에 대해 알아봅시다.
+
 {@a class-interface}
 
+<!--
 ### class-interface
+-->
+### 클래스 인터페이스
+<!--
 The previous *Hero of the Month* example used the `MinimalLogger` class
 as the token for a provider of a `LoggerService`.
+-->
+위에서 살펴본 *이달의 히어로* 예제코드는 `LoggerService` 프로바이더의 API를 제한한 `MinimalLogger` 클래스를 사용합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
 
-
+<!--
 The `MinimalLogger` is an abstract class.
+-->
+그리고 `MinimalLogger`는 다음과 같이 정의된 추상 클래스입니다.
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You usually inherit from an abstract class.
 But *no class* in this application inherits from `MinimalLogger`.
+-->
+추상 클래스는 보통 상속해서 사용합니다.
+하지만 이 애플리케이션에는 `MinimalLogger` 클래스를 상속받는 클래스가 *없습니다*.
 
+<!--
 The `LoggerService` and the `DateLoggerService` _could_ have inherited from `MinimalLogger`.
 They could have _implemented_ it instead in the manner of an interface.
 But they did neither.
 The `MinimalLogger` is used exclusively as a dependency injection token.
+-->
+`LoggerService`와 `DateLoggerService`가 `MinimalLogger`를 상속받도록 구현할 _수도 있습니다_.
+아니면 인터페이스를 확장(implement)하는 것처럼 사용할 수도 있습니다.
+하지만 이 예제에서는 그렇게 사용되지 않았습니다.
+`MinimalLogger`는 의존성 주입 토큰으로만 사용되었습니다.
 
+<!--
 When you use a class this way, it's called a ***class-interface***.
 The key benefit of a *class-interface* is that you can get the strong-typing of an interface
 and you can ***use it as a provider token*** in the way you would a normal class.
+-->
+클래스를 이런 방식으로 사용하는 것을 ***클래스 인터페이스***라고 합니다.
+이렇게 사용하면 인터페이스를 사용하는 것처럼 타입을 강하게 제한할 수 있으면서 ***프로바이더에 클래스 토큰을 사용하는 것처럼*** 사용할 수도 있습니다.
 
+<!--
 A ***class-interface*** should define *only* the members that its consumers are allowed to call.
 Such a narrowing interface helps decouple the concrete class from its consumers.
-
+-->
+클래스 인터페이스에는 이 객체를 의존성으로 주입받는 컴포넌트가 *호출할 수 있는 멤버만* 정의합니다.
+이 방식은 결과적으로 원래 클래스의 API를 제한하기 때문에, 원래 클래스와 의존성으로 주입받는 컴포넌트의 커플링을 줄이는 용도로 자주 사용합니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 #### Why *MinimalLogger* is a class and not a TypeScript interface
+-->
+#### 왜 *MinimalLogger*는 TypeScript 인터페이스가 아니고 클래스일까
+
+<!--
 You can't use an interface as a provider token because
 interfaces are not JavaScript objects.
 They exist only in the TypeScript design space.
 They disappear after the code is transpiled to JavaScript.
+-->
+인터페이스는 JavaScript 객체가 아니기 때문에 프로바이더 토큰으로 사용할 수 없습니다.
+인터페이스는 TypeScript 문법 안에서만 존재하며, JavaScript로 변환된 코드에는 이 개념이 존재하지 않습니다.
 
+<!--
 A provider token must be a real JavaScript object of some kind:
 such as a function, an object, a string, or a class.
+-->
+프로바이더 토큰은 함수나 객체, 문자열, 스트링과 같은 JavaScript 객체여야 합니다.
 
+<!--
 Using a class as an interface gives you the characteristics of an interface in a real JavaScript object.
+-->
+그래서 클래스를 인터페이스처럼 사용하면 JavaScript 문법에서도 인터페이스를 사용하는 것과 같은 효과를 얻을 수 있습니다.
 
+<!--
 Of course a real object occupies memory. To minimize memory cost, the class should have *no implementation*.
 The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for a constructor function:
+-->
+물론 실제 객체는 메모리를 차지하기 때문에, 메모리의 부하를 줄이기 위해 클래스는 *실제로 구현하지 않습니다*.
+그래서 `MinimalLogger`가 컴파일되고 압축되기 전 시점의 코드를 보면 다음과 같은 코드가 됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Notice that it doesn't have a single member. It never grows no matter how many members you add to the class *as long as those members are typed but not implemented*. Look again at the TypeScript `MinimalLogger` class to confirm that it has no implementation.
-
+-->
+예제코드에서 확인할 수 있듯이 이 클래스에는 멤버가 없습니다. 그리고 이 클래스에 *멤버가 여러개 정의되더라도 실제로는 상속되지 않기 때문에* JavaScript로 변환된 코드에는 멤버가 존재하지 않습니다. TypeScript로 작성한 `MinimalLogger` 클래스에 실제 구현체는 아무것도 없는 것을 다시 확인해 보세요.
 
 </div>
 
@@ -1190,35 +1242,49 @@ Notice that it doesn't have a single member. It never grows no matter how many m
 
 ### _InjectionToken_
 
+<!--
 Dependency objects can be simple values like dates, numbers and strings, or
 shapeless objects like arrays and functions.
+-->
+의존성으로 주입되는 객체는 날짜나 숫자, 문자열, 객체, 배열, 함수 어떤 것이라도 가능합니다.
 
+<!--
 Such objects don't have application interfaces and therefore aren't well represented by a class.
 They're better represented by a token that is both unique and symbolic,
 a JavaScript object that has a friendly name but won't conflict with
 another token that happens to have the same name.
+-->
+이 객체들은 인터페이스로 존재하는 것이 아니며, 클래스로 표현하기에도 적절하지 않습니다.
+그래서 이 객체를 프로바이더로 등록하려면 다른 토큰과 겹치지 않는 이름의 심볼로 만드는 것이 좋습니다.
 
+<!--
 The `InjectionToken` has these characteristics.
 You encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
+-->
+`InjectionToken`은 이런 경우에 사용합니다.
+그리고 인젝션 토큰은 *이달의 히어로* 예제 코드에서 *title* 값 프로바이더와 *runnersUp* 팩토리 프로바이더에 이미 사용되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You created the `TITLE` token like this:
+-->
+`TITLE` 토큰은 다음과 같이 정의합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
 The token description is another developer aid.
-
+-->
+위 코드에서 `InjectionToken`에 사용한 타입 인자는 생략할 수 있으며, 개발자와 에디터에 좀 더 많은 기능을 제공하기 위해 지정했습니다.
 
 {@a di-inheritance}
 
