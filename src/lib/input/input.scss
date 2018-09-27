@@ -76,6 +76,14 @@
     }
   }
 
+  // Reduce the size of the native buttons in a date/time input,
+  // because they can increase the height of the input (see #13317).
+  &::-webkit-inner-spin-button,
+  &::-webkit-calendar-picker-indicator,
+  &::-webkit-clear-button {
+    font-size: 0.75em;
+  }
+
   @include input-placeholder {
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
