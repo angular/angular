@@ -1,6 +1,6 @@
 {
   "name": "angular-integration",
-  "description": "Assert that users with TypeScript 2.8 can type-check an Angular application",
+  "description": "Assert that users with TypeScript 3.0 can type-check an Angular application",
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
@@ -22,7 +22,7 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "2.5.41",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "2.8.x",
+    "typescript": "3.1.x",
     "zone.js": "file:../../node_modules/zone.js"
   },
   "scripts": {

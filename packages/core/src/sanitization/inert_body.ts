@@ -151,7 +151,7 @@ export class InertBodyHelper {
         el.removeAttribute(attrName);
       }
     }
-    let childNode = el.firstChild;
+    let childNode = el.firstChild as Node | null;
     while (childNode) {
       if (childNode.nodeType === Node.ELEMENT_NODE) this.stripCustomNsAttrs(childNode as Element);
       childNode = childNode.nextSibling;
