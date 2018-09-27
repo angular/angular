@@ -43,7 +43,7 @@ export class Identifiers {
 
   static elementStylingMap: o.ExternalReference = {name: 'ɵelementStylingMap', moduleName: CORE};
 
-  static elementStyleProp: o.ExternalReference = {name: 'ɵelementStylingProp', moduleName: CORE};
+  static elementStyleProp: o.ExternalReference = {name: 'ɵelementStyleProp', moduleName: CORE};
 
   static elementStylingApply:
       o.ExternalReference = {name: 'ɵelementStylingApply', moduleName: CORE};

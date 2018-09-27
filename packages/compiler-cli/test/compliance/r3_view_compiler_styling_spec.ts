@@ -315,8 +315,8 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵelementStylingMap(0, null, $ctx$.myStyleExp);
-                  $r3$.ɵelementStylingProp(0, 1, $ctx$.myWidth);
-                  $r3$.ɵelementStylingProp(0, 2, $ctx$.myHeight);
+                  $r3$.ɵelementStyleProp(0, 1, $ctx$.myWidth);
+                  $r3$.ɵelementStyleProp(0, 2, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
@@ -373,7 +373,7 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵelementStylingProp(0, 0, ctx.myImage);
+                $r3$.ɵelementStyleProp(0, 0, ctx.myImage);
                 $r3$.ɵelementStylingApply(0);
               }
             }

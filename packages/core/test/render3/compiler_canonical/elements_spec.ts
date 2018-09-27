@@ -345,8 +345,8 @@ describe('elements', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵelementStylingProp(0, 0, ctx.someColor);
-              $r3$.ɵelementStylingProp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵelementStyleProp(0, 0, ctx.someColor);
+              $r3$.ɵelementStyleProp(0, 1, ctx.someWidth, 'px');
               $r3$.ɵelementStylingApply(0);
             }
           }

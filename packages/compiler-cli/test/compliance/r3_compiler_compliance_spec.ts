@@ -425,7 +425,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵelementStylingProp(0, 0, ctx.color);
+                $r3$.ɵelementStyleProp(0, 0, ctx.color);
                 $r3$.ɵelementClassProp(0, 0, ctx.error);
                 $r3$.ɵelementStylingApply(0);
               }
@@ -674,10 +674,10 @@ describe('compiler compliance', () => {
         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          factory: function MyComponent_Factory(t) { 
+          factory: function MyComponent_Factory(t) {
              return new (t || MyComponent)(
-                $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef), 
-                $r3$.ɵdirectiveInject(ChangeDetectorRef)); 
+                $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef),
+                $r3$.ɵdirectiveInject(ChangeDetectorRef));
           },
           features: [$r3$.ɵPublicFeature],
           consts: 0,
