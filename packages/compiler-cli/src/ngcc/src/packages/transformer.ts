@@ -5,14 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative, resolve} from 'canonical-path';
-import {existsSync, lstatSync, readFileSync, readdirSync, writeFileSync} from 'fs';
+import {dirname, resolve} from 'canonical-path';
+import {existsSync, lstatSync, readdirSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
-import {DtsFileTransformer} from '../../../ngtsc/transform';
-import {DecorationAnalysis, DecorationAnalyzer} from '../analysis/decoration_analyzer';
-import {IMPORT_PREFIX} from '../constants';
+import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
@@ -20,6 +19,7 @@ import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
+import {Fesm2015Renderer} from '../rendering/fesm2015_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
@@ -52,7 +52,6 @@ export class Transformer {
       return;
     }
 
-    const outputFiles: FileInfo[] = [];
     const options: ts.CompilerOptions = {
       allowJs: true,
       maxNodeModuleJsDepth: Infinity,
@@ -72,35 +71,22 @@ export class Transformer {
     const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
     const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
     const packageProgram = ts.createProgram(rootPaths, options, host);
-    const typeChecker = packageProgram.getTypeChecker();
     const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
     const reflectionHost = this.getHost(isCore, format, packageProgram, dtsMapper);
     const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
 
-    const analyzer = new DecorationAnalyzer(typeChecker, reflectionHost, rootDirs, isCore);
-    const renderer =
-        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile);
-
     // Parse and analyze the files.
-    const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
-    const decoratedFiles = reflectionHost.findDecoratedFiles(entryPointFile);
-    const analyzedFiles = Array.from(decoratedFiles.values())
-                              .map(decoratedFile => analyzer.analyzeFile(decoratedFile));
+    const {decorationAnalyses, switchMarkerAnalyses} =
+        this.analyzeProgram(packageProgram, reflectionHost, rootDirs, isCore);
 
     // Transform the source files and source maps.
-    outputFiles.push(
-        ...this.transformSourceFiles(analyzedFiles, this.sourcePath, this.targetPath, renderer));
-
-    // Transform the `.d.ts` files (if necessary).
-    // TODO(gkalpak): What about `.d.ts` source maps? (See
-    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
-    if (format === 'esm2015') {
-      outputFiles.push(
-          ...this.transformDtsFiles(analyzedFiles, this.sourcePath, this.targetPath, dtsMapper));
-    }
+    const renderer =
+        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile, dtsMapper);
+    const renderedFiles =
+        renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
 
     // Write out all the transformed files.
-    outputFiles.forEach(file => this.writeFile(file));
+    renderedFiles.forEach(file => this.writeFile(file));
 
     // Write the built-with-ngcc marker
     writeMarkerFile(entryPoint, format);
@@ -133,68 +119,33 @@ export class Transformer {
 
   getRenderer(
       format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null): Renderer {
+      rewriteCoreImportsTo: ts.SourceFile|null, dtsMapper: DtsMapper): Renderer {
     switch (format) {
       case 'esm2015':
+        return new Esm2015Renderer(
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, dtsMapper);
       case 'fesm2015':
-        return new Esm2015Renderer(host, isCore, rewriteCoreImportsTo);
+        return new Fesm2015Renderer(
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
       case 'esm5':
       case 'fesm5':
-        return new Esm5Renderer(host, isCore, rewriteCoreImportsTo);
+        return new Esm5Renderer(
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
   }
 
-  transformDtsFiles(
-      analyzedFiles: DecorationAnalysis[], sourceNodeModules: string, targetNodeModules: string,
-      dtsMapper: DtsMapper): FileInfo[] {
-    const outputFiles: FileInfo[] = [];
-
-    analyzedFiles.forEach(analyzedFile => {
-      // Create a `DtsFileTransformer` for the source file and record the generated fields, which
-      // will allow the corresponding `.d.ts` file to be transformed later.
-      const dtsTransformer = new DtsFileTransformer(null, IMPORT_PREFIX);
-      analyzedFile.analyzedClasses.forEach(
-          analyzedClass =>
-              dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
-
-      // Find the corresponding `.d.ts` file.
-      const sourceFileName = analyzedFile.sourceFile.fileName;
-      const originalDtsFileName = dtsMapper.getDtsFileNameFor(sourceFileName);
-      const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
-
-      // Transform the `.d.ts` file based on the recorded source file changes.
-      const transformedDtsFileName =
-          resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
-      const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
-
-      // Add the transformed `.d.ts` file to the list of output files.
-      outputFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
-    });
-
-    return outputFiles;
-  }
-
-  transformSourceFiles(
-      analyzedFiles: DecorationAnalysis[], sourceNodeModules: string, targetNodeModules: string,
-      renderer: Renderer): FileInfo[] {
-    const outputFiles: FileInfo[] = [];
-
-    analyzedFiles.forEach(analyzedFile => {
-      // Transform the source file based on the recorded changes.
-      const targetPath =
-          resolve(targetNodeModules, relative(sourceNodeModules, analyzedFile.sourceFile.fileName));
-      const {source, map} = renderer.renderFile(analyzedFile, targetPath);
-
-      // Add the transformed file (and source map, if available) to the list of output files.
-      outputFiles.push(source);
-      if (map) {
-        outputFiles.push(map);
-      }
-    });
-
-    return outputFiles;
+  analyzeProgram(
+      program: ts.Program, reflectionHost: NgccReflectionHost, rootDirs: string[],
+      isCore: boolean) {
+    const decorationAnalyzer =
+        new DecorationAnalyzer(program.getTypeChecker(), reflectionHost, rootDirs, isCore);
+    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    return {
+      decorationAnalyses: decorationAnalyzer.analyzeProgram(program),
+      switchMarkerAnalyses: switchMarkerAnalyzer.analyzeProgram(program),
+    };
   }
 
   writeFile(file: FileInfo): void {
