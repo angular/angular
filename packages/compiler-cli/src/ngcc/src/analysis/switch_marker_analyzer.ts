@@ -13,7 +13,8 @@ export interface SwitchMarkerAnalysis {
   declarations: SwitchableVariableDeclaration[];
 }
 
-export class SwitchMarkerAnalyses extends Map<ts.SourceFile, SwitchMarkerAnalysis> {}
+export type SwitchMarkerAnalyses = Map<ts.SourceFile, SwitchMarkerAnalysis>;
+export const SwitchMarkerAnalyses = Map;
 
 /**
  * This Analyzer will analyse the files that have an NGCC switch marker in them
