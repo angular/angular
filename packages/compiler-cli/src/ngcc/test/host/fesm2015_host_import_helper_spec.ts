@@ -128,8 +128,6 @@ const DIRECT_TSLIB_IMPORT = [
   }
 ];
 
-const INTERNAL_CORE_DECORATORS = [];
-
 describe('Fesm2015ReflectionHost [import helper style]', () => {
   [{files: NAMESPACED_TSLIB_IMPORT, label: 'namespaced'},
    {files: DIRECT_TSLIB_IMPORT, label: 'direct import'},
@@ -156,7 +154,6 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
         });
 
         it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-          const mockImportInfo = {} as Import;
           const spy = spyOn(Fesm2015ReflectionHost.prototype, 'getImportOfIdentifier')
                           .and.callFake(
                               (identifier: ts.Identifier) => identifier.getText() === 'Directive' ?
