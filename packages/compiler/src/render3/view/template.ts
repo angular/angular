@@ -492,7 +492,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           trimTrailingNulls(parameters));
 
       if (isNonBindableMode) {
-        this.creationInstruction(element.sourceSpan, R3.setBindingsDisabled);
+        this.creationInstruction(element.sourceSpan, R3.disableBindings);
       }
 
       // initial styling for static style="..." attributes
@@ -661,8 +661,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
       if (isNonBindableMode) {
-        this.creationInstruction(
-            element.endSourceSpan || element.sourceSpan, R3.setBindingsEnabled);
+        this.creationInstruction(element.endSourceSpan || element.sourceSpan, R3.enableBindings);
       }
       this.creationInstruction(
           element.endSourceSpan || element.sourceSpan,

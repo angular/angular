@@ -99,6 +99,24 @@ export function getCurrentSanitizer(): Sanitizer|null {
  */
 let elementDepthCount !: number;
 
+/**
+ * Stores wether directives should be matched to elements.
+ *
+ * When template contains `ngNonBindable` than we need to prevent the runtime form matching
+ * directives on children of that element.
+ *
+ * Example:
+ * ```
+ * <my-comp my-directive>
+ *   Should match component / directive.
+ * </my-comp>
+ * <div ngNonBindable>
+ *   <my-comp my-directive>
+ *     Should not match component / directive because we are in ngNonBindable.
+ *   </my-comp>
+ * </div>
+ * ```
+ */
 let bindingsEnabled !: boolean;
 
 /**
@@ -1399,18 +1417,44 @@ export function elementProperty<T>(
 }
 
 /**
- * Enables bindings processing for further instructions
- * (used while processing "ngNonBindable" element's attribute).
+ * Enables directive matching on elements.
+ *
+ *  * Example:
+ * ```
+ * <my-comp my-directive>
+ *   Should match component / directive.
+ * </my-comp>
+ * <div ngNonBindable>
+ *   <!-- disabledBindings() -->
+ *   <my-comp my-directive>
+ *     Should not match component / directive because we are in ngNonBindable.
+ *   </my-comp>
+ *   <!-- enableBindings() -->
+ * </div>
+ * ```
  */
-export function setBindingsEnabled(): void {
+export function enableBindings(): void {
   bindingsEnabled = true;
 }
 
 /**
- * Disables bindings processing for further instructions
- * (used while processing "ngNonBindable" element's attribute).
+ * Disables directive matching on element.
+ *
+ *  * Example:
+ * ```
+ * <my-comp my-directive>
+ *   Should match component / directive.
+ * </my-comp>
+ * <div ngNonBindable>
+ *   <!-- disabledBindings() -->
+ *   <my-comp my-directive>
+ *     Should not match component / directive because we are in ngNonBindable.
+ *   </my-comp>
+ *   <!-- enableBindings() -->
+ * </div>
+ * ```
  */
-export function setBindingsDisabled(): void {
+export function disableBindings(): void {
   bindingsEnabled = false;
 }
 

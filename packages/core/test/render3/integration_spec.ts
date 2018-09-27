@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, setBindingsEnabled, setBindingsDisabled, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT, DIRECTIVES} from '../../src/render3/interfaces/view';
@@ -143,11 +143,11 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b', ['id', 'my-id'], ['myRef', '']);
-          setBindingsDisabled();
+          disableBindings();
           elementStart(2, 'i');
           text(3, 'Hello {{ name }}!');
           elementEnd();
-          setBindingsEnabled();
+          enableBindings();
           elementEnd();
           text(4);
         }
@@ -182,11 +182,11 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b', ['directive', '']);
-          setBindingsDisabled();
+          disableBindings();
           elementStart(1, 'i');
           text(2, 'Hello {{ name }}!');
           elementEnd();
-          setBindingsEnabled();
+          enableBindings();
           elementEnd();
         }
       }, 3, 0, [TestDirective]);
@@ -217,11 +217,11 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b');
-          setBindingsDisabled();
+          disableBindings();
           elementStart(1, 'i', ['directive', '']);
           text(2, 'Hello {{ name }}!');
           elementEnd();
-          setBindingsEnabled();
+          enableBindings();
           elementEnd();
         }
       }, 3, 0, [TestDirective]);
