@@ -29,6 +29,7 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
+        "@ngdeps//zone.js",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -67,6 +68,9 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
+        "@ngdeps//base64-js",
+        "@ngdeps//source-map",
+        "@ngdeps//zone.js",
     ],
 )
 

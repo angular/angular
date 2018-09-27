@@ -14,5 +14,6 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/core",
+        "@ngdeps//@types/node",
     ],
 )

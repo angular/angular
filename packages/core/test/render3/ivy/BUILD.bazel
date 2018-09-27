@@ -12,16 +12,6 @@ ts_library(
     ],
 )
 
-ts_library(
-    name = "ivy_node_lib",
-    testonly = 1,
-    srcs = [],
-    deps = [
-        ":ivy_lib",
-        "//packages/core/test/render3:domino",
-    ],
-)
-
 jasmine_node_test(
     name = "ivy",
     bootstrap = [
@@ -31,6 +21,7 @@ jasmine_node_test(
         "ivy-jit",
     ],
     deps = [
-        ":ivy_node_lib",
+        ":ivy_lib",
+        "//packages/core/test/render3:domino",
     ],
 )

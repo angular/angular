@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler/test:test_utils",
         "//packages/core",
         "//packages/platform-browser",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -28,5 +29,6 @@ jasmine_node_test(
         ":test_lib",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//source-map",
     ],
 )

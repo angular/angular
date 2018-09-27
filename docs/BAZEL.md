@@ -72,7 +72,7 @@ keeps the outputs up-to-date as you save sources.
 
 If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
 
-See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/tools/bazel.rc) where `--define=ivy=false` is defined as default.
+See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc) where `--define=ivy=false` is defined as default.
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
@@ -165,7 +165,7 @@ You can see an overview at https://www.kchodorow.com/blog/2017/03/27/stamping-yo
 In our repo, here is how it's configured:
 
 1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
-1) In `tools/bazel.rc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
+1) In `.bazelrc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
 
 Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
 

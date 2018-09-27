@@ -17,6 +17,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -31,6 +32,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -45,6 +47,7 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
     ],
 )
 
@@ -59,6 +62,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -76,6 +80,8 @@ jasmine_node_test(
         ":ngc_lib",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
+        "@ngdeps//tsickle",
     ],
 )
 
@@ -90,6 +96,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -118,6 +125,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 

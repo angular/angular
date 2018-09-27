@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/core",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -24,6 +25,7 @@ ts_library(
         ":mocks",
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -53,6 +55,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -83,6 +86,7 @@ ts_library(
         "//packages/compiler-cli/test:test_utils",
         "//packages/compiler/test:test_utils",
         "//packages/language-service",
+        "@ngdeps//typescript",
     ],
 )
 

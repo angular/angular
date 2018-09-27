@@ -35,6 +35,7 @@ ng_rollup_bundle(
         "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "@ngdeps//reflect-metadata",
     ],
 )
 
@@ -81,7 +82,7 @@ js_expected_symbol_test(
 genrule(
     name = "tslib",
     srcs = [
-        "@angular_deps//:node_modules/tslib/tslib.js",
+        "@ngdeps//node_modules/tslib:tslib.js",
     ],
     outs = [
         "tslib.js",

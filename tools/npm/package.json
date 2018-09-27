@@ -1,0 +1,14 @@
+{
+  "description": "minimal @npm repo required to build @rxjs from source and so that @npm//@angular/bazel is a valid target",
+  "dependencies": {
+    "@angular/bazel": "6.1.9",
+    "@angular/compiler": "6.1.9",
+    "@angular/compiler-cli": "6.1.9",
+    "@bazel/karma": "0.20.3",
+    "@bazel/typescript": "0.20.3",
+    "typescript": "~3.1.1"
+  },
+  "scripts": {
+    "//": "TODO(gregmagolan): figure out how to keep @bazel/karma & @bazel/typescript dependencies here up to date with the root package.json; NOTE: versions of @angular/x don't matter here as they are only require to create the @npm//@angular/bazel target name"
+  }
+}
