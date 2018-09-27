@@ -137,6 +137,9 @@ Open `src/app/app.component.css` and give the component some style.
 That's all you need to do. You've created your first Angular app!
 
 
+
+{@a project-file-review}
+
 ## Final code review
 
 You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download an example</a> of the final app that was created in this Quick Start. Most Angular guides contain similar links to download or run a live example of an  example app, so that you can see Angular concepts and code in action. 
