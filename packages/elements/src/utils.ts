@@ -74,7 +74,7 @@ export function createCustomEvent(doc: Document, name: string, detail: any): Cus
 /**
  * Check whether the input is an `Element`.
  */
-export function isElement(node: Node|null): node is Element {
+export function isElement(node: Node | null): node is Element {
   return !!node && node.nodeType === Node.ELEMENT_NODE;
 }
 

@@ -276,7 +276,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);
   }
-  getAttributeNS(element: Element, ns: string, name: string): string | null {
+  getAttributeNS(element: Element, ns: string, name: string): string|null {
     return element.getAttributeNS(ns, name);
   }
   setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
