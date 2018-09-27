@@ -11,6 +11,12 @@ import {MatGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 
 /**
+ * RegExp that can be used to check whether a value will
+ * be allowed inside a CSS `calc()` expression.
+ */
+const cssCalcAllowedValue = /^-?\d+((\.\d+)?[A-Za-z%$]?)+$/;
+
+/**
  * Sets the style properties for an individual tile, given the position calculated by the
  * Tile Coordinator.
  * @docs-private
@@ -162,6 +168,10 @@ export class FixedTileStyler extends TileStyler {
   init(gutterSize: string, tracker: TileCoordinator, cols: number, direction: string) {
     super.init(gutterSize, tracker, cols, direction);
     this.fixedRowHeight = normalizeUnits(this.fixedRowHeight);
+
+    if (!cssCalcAllowedValue.test(this.fixedRowHeight)) {
+      throw Error(`Invalid value "${this.fixedRowHeight}" set as rowHeight.`);
+    }
   }
 
   setRowStyles(tile: MatGridTile, rowIndex: number): void {

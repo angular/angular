@@ -389,6 +389,17 @@ describe('MatGridList', () => {
     expect(getStyle(tile, 'padding-top')).toBe('200px');
   });
 
+  it('should throw if an invalid value is set as the `rowHeight`', () => {
+    const fixture = createComponent(GridListWithUnspecifiedRowHeight);
+    const gridList = fixture.debugElement.query(By.directive(MatGridList));
+
+    expect(() => {
+      // Note the semicolon at the end which will be an invalid value on some browsers (see #13252).
+      gridList.componentInstance.rowHeight = '350px;';
+      fixture.detectChanges();
+    }).toThrowError(/^Invalid value/);
+  });
+
 });
 
 
