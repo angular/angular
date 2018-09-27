@@ -20,7 +20,9 @@ import {
   Output,
   QueryList,
   ViewEncapsulation,
+  Optional,
 } from '@angular/core';
+import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
 import {DragDropRegistry} from './drag-drop-registry';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit} from './drag-events';
@@ -103,7 +105,8 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
 
   constructor(
     public element: ElementRef<HTMLElement>,
-    private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDrop<T>>) {}
+    private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDrop<T>>,
+    @Optional() private _dir?: Directionality) {}
 
   ngOnInit() {
     this._dragDropRegistry.registerDropContainer(this);
@@ -217,9 +220,17 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param item Item whose index should be determined.
    */
   getItemIndex(item: CdkDrag): number {
-    return this._dragging ?
-        findIndex(this._positionCache.items, currentItem => currentItem.drag === item) :
-        this._draggables.toArray().indexOf(item);
+    if (!this._dragging) {
+      return this._draggables.toArray().indexOf(item);
+    }
+
+    // Items are sorted always by top/left in the cache, however they flow differently in RTL.
+    // The rest of the logic still stands no matter what orientation we're in, however
+    // we need to invert the array when determining the index.
+    const items = this.orientation === 'horizontal' && this._dir && this._dir.value === 'rtl' ?
+        this._positionCache.items.slice().reverse() : this._positionCache.items;
+
+    return findIndex(items, currentItem => currentItem.drag === item);
   }
 
   /**
