@@ -322,9 +322,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const decorators: Decorator[] = [];
     const helperCalls = this.getHelperCallsForClass(symbol, '__decorate');
     helperCalls.forEach(helperCall => {
-      const decoratorMap =
+      const {classDecorators} =
           this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(symbol.name));
-      const classDecorators = decoratorMap.get(undefined) || [];
       classDecorators.filter(isImportedFromCore).forEach(decorator => decorators.push(decorator));
     });
     return decorators.length ? decorators : null;
@@ -395,9 +394,9 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const memberDecoratorMap = new Map<string, Decorator[]>();
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
-      const decoratorMap =
+      const {memberDecorators} =
           this.reflectDecoratorsFromHelperCall(helperCall, makeMemberTargetFilter(classSymbol.name));
-      decoratorMap.forEach((decorators, memberName) => {
+      memberDecorators.forEach((decorators, memberName) => {
         if (memberName) {
           const memberDecorators = memberDecoratorMap.get(memberName) || [];
           const coreDecorators = decorators.filter(isImportedFromCore);
@@ -417,8 +416,9 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    */
   protected reflectDecoratorsFromHelperCall(
       helperCall: ts.CallExpression,
-      targetFilter: TargetFilter): Map<string|undefined, Decorator[]> {
-    const decoratorMap: Map<string|undefined, Decorator[]> = new Map();
+      targetFilter: TargetFilter): {classDecorators: Decorator[], memberDecorators: Map<string, Decorator[]>} {
+    const classDecorators: Decorator[] = [];
+    const memberDecorators = new Map<string, Decorator[]>();
 
     // First check that the `target` argument is correct
     if (targetFilter(helperCall.arguments[1])) {
@@ -432,15 +432,19 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
             if (decorator) {
               const keyArg = helperCall.arguments[2];
               const keyName = keyArg && ts.isStringLiteral(keyArg) ? keyArg.text : undefined;
-              const decorators = decoratorMap.get(keyName) || [];
-              decorators.push(decorator);
-              decoratorMap.set(keyName, decorators);
+              if (keyName === undefined) {
+                classDecorators.push(decorator);
+              } else {
+                const decorators = memberDecorators.get(keyName) || [];
+                decorators.push(decorator);
+                memberDecorators.set(keyName, decorators);
+              }
             }
           }
         });
       }
     }
-    return decoratorMap;
+    return {classDecorators, memberDecorators};
   }
 
   /**
@@ -715,40 +719,37 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const parameters: ParamInfo[] = parameterNodes.map(() => ({type: null, decorators: null}));
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
-      const decoratorMap =
+      const {classDecorators} =
           this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(classSymbol.name));
-      const decoratorCalls = decoratorMap.get(undefined);
-      if (decoratorCalls) {
-        decoratorCalls.forEach(call => {
-          switch (call.name) {
-            case '__metadata':
-              const metadataArg = call.args && call.args[0];
-              const typesArg = call.args && call.args[1];
-              const isParamTypeDecorator = metadataArg && ts.isStringLiteral(metadataArg) &&
-                  metadataArg.text === 'design:paramtypes';
-              const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
-              if (isParamTypeDecorator && types) {
-                types.forEach((type, index) => parameters[index].type = type);
-              }
-              break;
-            case '__param':
-              const paramIndexArg = call.args && call.args[0];
-              const decoratorCallArg = call.args && call.args[1];
-              const paramIndex = paramIndexArg && ts.isNumericLiteral(paramIndexArg) ?
-                  parseInt(paramIndexArg.text, 10) :
-                  NaN;
-              const decorator = decoratorCallArg && ts.isCallExpression(decoratorCallArg) ?
-                  this.reflectDecoratorCall(decoratorCallArg) :
-                  null;
-              if (!isNaN(paramIndex) && decorator) {
-                const decorators = parameters[paramIndex].decorators =
-                    parameters[paramIndex].decorators || [];
-                decorators.push(decorator);
-              }
-              break;
-          }
-        });
-      }
+      classDecorators.forEach(call => {
+        switch (call.name) {
+          case '__metadata':
+            const metadataArg = call.args && call.args[0];
+            const typesArg = call.args && call.args[1];
+            const isParamTypeDecorator = metadataArg && ts.isStringLiteral(metadataArg) &&
+                metadataArg.text === 'design:paramtypes';
+            const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
+            if (isParamTypeDecorator && types) {
+              types.forEach((type, index) => parameters[index].type = type);
+            }
+            break;
+          case '__param':
+            const paramIndexArg = call.args && call.args[0];
+            const decoratorCallArg = call.args && call.args[1];
+            const paramIndex = paramIndexArg && ts.isNumericLiteral(paramIndexArg) ?
+                parseInt(paramIndexArg.text, 10) :
+                NaN;
+            const decorator = decoratorCallArg && ts.isCallExpression(decoratorCallArg) ?
+                this.reflectDecoratorCall(decoratorCallArg) :
+                null;
+            if (!isNaN(paramIndex) && decorator) {
+              const decorators = parameters[paramIndex].decorators =
+                  parameters[paramIndex].decorators || [];
+              decorators.push(decorator);
+            }
+            break;
+        }
+      });
     });
     return parameters;
   }
