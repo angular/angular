@@ -2,48 +2,12 @@ package(default_visibility = ["//visibility:public"])
 
 # TODO(jelbourn): figure out if these workarounds are still needed
 
-# This rule belongs in node_modules/BUILD
-# It's here as a workaround for
-# https://github.com/bazelbuild/bazel/issues/374#issuecomment-296217940
-filegroup(
+# TODO: Replace with fine-grained node_modules using `npm_install` / `yarn_install`.
+# TODO: See https://github.com/bazelbuild/rules_nodejs/wiki#migrating-to-rules_nodejs-013
+alias(
   name = "node_modules",
-  # Performance workaround: list individual files
-  # Reduces the number of files as inputs to nodejs_binary:
-  # bazel query "deps(:node_modules)" | wc -l
-  # This won't scale in the general case.
-  # TODO(alexeagle): figure out what to do
-  srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
-    "@angular",
-    "@angular-devkit",
-    "@schematics",
-    "@types",
-    "bytebuffer",
-    "hammerjs",
-    "jasmine",
-    "minimist",
-    "moment",
-    "parse5",
-    "protobufjs",
-    "protractor",
-    "reflect-metadata",
-    "rxjs",
-    "tsickle",
-    "tslib",
-    "tslint",
-    "typescript",
-    "zone.js",
-  ] for ext in [
-    "*.js",
-    "*.json",
-    "*.d.ts",
-  ]] + [
-    "node_modules/http-server/**",
-    # Reference all files of the "@schematics/angular" package because the schematic
-    # tests depend on the template files of the angular schematics.
-    "node_modules/@schematics/angular/**",
-  ]),
+  actual = "@npm//:node_modules",
 )
-
 
 # Glob pattern that matches all Angular testing bundles.
 ANGULAR_TESTING = [

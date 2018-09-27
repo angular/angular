@@ -6,7 +6,7 @@ load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 filegroup(
   name = "schematics_assets",
-  srcs = ["README.md"],
+  srcs = glob(["**/*.json"]) + ["README.md"],
 )
 
 ts_library(
@@ -14,6 +14,19 @@ ts_library(
   module_name = "@angular/cdk/schematics",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   tsconfig = ":tsconfig.json",
+  deps = [
+    "@npm//:@schematics/angular",
+    "@npm//:@angular-devkit/schematics",
+     # TODO(devversion): Only include jasmine for test sources.
+    "@npm//:@types/jasmine",
+    "@npm//:@types/node",
+    "@npm//:glob",
+    "@npm//:jasmine",
+    "@npm//:parse5",
+    "@npm//:rxjs",
+    "@npm//:tslint",
+    "@npm//:typescript"
+  ],
 )
 
 # This package is intended to be combined into the main @angular/cdk package as a dep.
@@ -29,13 +42,23 @@ npm_package(
 jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
-  data = [":schematics_assets"]
+  data = [":schematics_assets"],
+  deps = ["@npm//:jasmine"],
 )
 
 ts_library(
   name = "schematics_test_sources",
   srcs = glob(["**/*.spec.ts"]),
-  deps = [":schematics"],
+  deps = [
+    ":schematics",
+    "@npm//:@schematics/angular",
+    "@npm//:@angular-devkit/schematics",
+    "@npm//:@types/jasmine",
+    "@npm//:@types/node",
+    "@npm//:mock-fs",
+    "@npm//:tslint",
+    "@npm//:typescript",
+  ],
   tsconfig = ":tsconfig.json",
   testonly = True,
 )

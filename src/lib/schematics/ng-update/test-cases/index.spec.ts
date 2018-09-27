@@ -2,10 +2,12 @@ import {getSystemPath, normalize} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {runPostScheduledTasks} from '../../test-setup/post-scheduled-tasks';
 import {readFileSync, writeFileSync, mkdirpSync} from 'fs-extra';
 import {join, dirname} from 'path';
-import {createTestApp, migrationCollection} from '../../test-setup/test-app';
+import {createTestApp, runPostScheduledTasks} from '@angular/cdk/schematics';
+
+/** Path to the schematic collection that includes the Angular Material migrations. */
+const migrationCollection = require.resolve('../../migration.json');
 
 /** Module name suffix for data files of the `jasmine_node_test` Bazel rule. */
 const bazelModuleSuffix = 'angular_material/src/lib/schematics/ng-update/test-cases';
@@ -31,9 +33,9 @@ export function resolveBazelDataFile(filePath: string) {
  * Creates a test app schematic tree that will be copied over to a real filesystem location.
  * This is necessary because TSLint is not able to read from the virtual filesystem tree.
  */
-export function createFileSystemTestApp() {
+export function createFileSystemTestApp(runner: SchematicTestRunner) {
   const tempFileSystemHost = new TempScopedNodeJsSyncHost();
-  const appTree = createTestApp();
+  const appTree = createTestApp(runner);
   const tempPath = getSystemPath(tempFileSystemHost.root);
 
   // Since the TSLint fix task expects all files to be present on the real file system, we
@@ -53,7 +55,7 @@ export async function runTestCases(migrationName: string, inputs: {[name: string
   let logOutput = '';
   runner.logger.subscribe(entry => logOutput += entry.message);
 
-  const {appTree, tempPath} = createFileSystemTestApp();
+  const {appTree, tempPath} = createFileSystemTestApp(runner);
 
   // Write each test-case input to the file-system. This is necessary because otherwise
   // TSLint won't be able to pick up the test cases.

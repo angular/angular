@@ -34,12 +34,7 @@
   },
   "schematics": "./schematics/collection.json",
   "ng-update": {
-    "migrations": "./schematics/migration.json",
-    "packageGroup": [
-      "@angular/material",
-      "@angular/cdk",
-      "@angular/material-moment-adapter"
-    ]
+    "migrations": "./schematics/migration.json"
   },
   "sideEffects": false
 }

@@ -1,44 +1,52 @@
 workspace(name = "angular_material")
 
-# Add nodejs rules
+# Load NodeJS rules. Note that this is technically not needed because
+# `rules_typescript_dependencies()` would also load the NodeJS rules, but we specifically need
+# at least v0.14.1 which includes: https://github.com/bazelbuild/rules_nodejs/pull/341
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
-  strip_prefix = "rules_nodejs-0.10.1",
-  sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.14.1.zip",
+  strip_prefix = "rules_nodejs-0.14.1",
+  sha256 = "813eb51733d3632f456f3bb581d940ed64e80dab417595c93bf5ad19079898e2"
 )
 
-# NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
-# your npm dependencies. You must still run the package manager.
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+# Add TypeScript rules
+http_archive(
+  name = "build_bazel_rules_typescript",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.18.0.zip",
+  strip_prefix = "rules_typescript-0.18.0",
+  sha256 = "4726e07a2f8d23b5e3af166f3b2a6e8aa75adad94b35ab4d959e8fe875f90272",
+)
 
-check_bazel_version("0.15.0")
-node_repositories(package_json = ["//:package.json"])
+# Fetch transient dependencies of the TypeScript bazel rules.
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+rules_typescript_dependencies()
 
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
-  url = "https://github.com/bazelbuild/rules_sass/archive/0.1.0.zip",
-  strip_prefix = "rules_sass-0.1.0",
-  sha256 = "b243c4d64f054c174051785862ab079050d90b37a1cef7da93821c6981cb9ad4",
+  url = "https://github.com/bazelbuild/rules_sass/archive/1.13.4.zip",
+  strip_prefix = "rules_sass-1.13.4",
+  sha256 = "5ddde0d3df96978fa537f76e766538c031dee4d29f91a895f4b1345b5e3f9b16",
 )
 
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 sass_repositories()
 
-# Add TypeScript rules
-http_archive(
-  name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.1.zip",
-  strip_prefix = "rules_typescript-0.15.1",
-  sha256 = "3792cc20ef13bb1d1d8b1760894c3320f02a87843e3a04fed7e8e454a75328b6",
-)
+# NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
+# your npm dependencies. You must still run the package manager.
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
+    "npm_install")
 
-http_archive(
-  name = "io_bazel_rules_webtesting",
-  url = "https://github.com/bazelbuild/rules_webtesting/archive/7ffe970bbf380891754487f66c3d680c087d67f2.zip",
-  strip_prefix = "rules_webtesting-7ffe970bbf380891754487f66c3d680c087d67f2",
-  sha256 = "4fb0dca8c9a90547891b7ef486592775a523330fc4555c88cd8f09270055c2ce",
+check_bazel_version("0.15.0")
+node_repositories()
+
+# Use Bazel managed node modules. See more below: 
+# https://github.com/bazelbuild/rules_nodejs#bazel-managed-vs-self-managed-dependencies
+npm_install(
+  name = "npm",
+  package_json = "//:package.json",
+  package_lock_json = "//:package-lock.json",
 )
 
 # Setup TypeScript Bazel workspace
@@ -56,9 +64,3 @@ local_repository(
   name = "rxjs",
   path = "node_modules/rxjs/src",
 )
-
-
-# This commit matches the version of buildifier in angular/ngcontainer
-# If you change this, also check if it matches the version in the angular/ngcontainer
-# version in /.circleci/config.yml
-BAZEL_BUILDTOOLS_VERSION = "82b21607e00913b16fe1c51bec80232d9d6de31c"

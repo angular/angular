@@ -18,7 +18,17 @@ ts_library(
     "test-setup/**/*",
     "ng-update/test-cases/**/*",
   ]),
-  deps = ["//src/cdk/schematics"],
+  deps = [
+    "//src/cdk/schematics",
+    "@npm//:@angular-devkit/schematics",
+    "@npm//:@schematics/angular",
+    # TODO(devversion): Only include jasmine for test sources.
+    "@npm//:@types/jasmine",
+    "@npm//:@types/node",
+    "@npm//:parse5",
+    "@npm//:tslint",
+    "@npm//:typescript",
+  ],
   tsconfig = ":tsconfig.json",
 )
 
@@ -36,12 +46,21 @@ jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
   data = [":schematics_assets", ":schematics_test_cases"],
+  deps = ["@npm//:jasmine"]
 )
 
 ts_library(
   name = "schematics_test_sources",
   srcs = glob(["**/*.spec.ts", "test-setup/**/*.ts"], exclude=["**/files/**/*"]),
-  deps = ["//src/cdk/schematics", ":schematics"],
+  deps = [
+    ":schematics",
+    "//src/cdk/schematics",
+    "@npm//:@schematics/angular",
+    "@npm//:@angular-devkit/schematics",
+    "@npm//:@types/jasmine",
+    "@npm//:@types/node",
+    "@npm//:fs-extra",
+  ],
   tsconfig = ":tsconfig.json",
   testonly = True,
 )

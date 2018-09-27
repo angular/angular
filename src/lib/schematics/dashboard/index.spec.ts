@@ -1,5 +1,5 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {collectionPath, createTestApp} from '../test-setup/test-app';
+import {createTestApp} from '@angular/cdk/schematics';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {Schema} from './schema';
 
@@ -12,11 +12,11 @@ describe('material-dashboard-schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', collectionPath);
+    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
   });
 
   it('should create dashboard files and add them to module', () => {
-    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp());
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp(runner));
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -30,7 +30,7 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should add dashboard imports to module', () => {
-    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp());
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp(runner));
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatGridListModule');
@@ -47,13 +47,14 @@ describe('material-dashboard-schematic', () => {
   describe('styleext option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', {styleext: 'scss', ...baseOptions}, createTestApp());
+          'dashboard', {styleext: 'scss', ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
 
     it('should fallback to the @schematics/angular:component option value', () => {
-      const tree = runner.runSchematic('dashboard', baseOptions, createTestApp({style: 'less'}));
+      const tree = runner.runSchematic(
+          'dashboard', baseOptions, createTestApp(runner, {style: 'less'}));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
     });
@@ -62,14 +63,14 @@ describe('material-dashboard-schematic', () => {
   describe('inlineStyle option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', {inlineStyle: true, ...baseOptions}, createTestApp());
+          'dashboard', {inlineStyle: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
 
     it('should fallback to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', baseOptions, createTestApp({inlineStyle: true}));
+          'dashboard', baseOptions, createTestApp(runner, {inlineStyle: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
@@ -78,14 +79,14 @@ describe('material-dashboard-schematic', () => {
   describe('inlineTemplate option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', {inlineTemplate: true, ...baseOptions}, createTestApp());
+          'dashboard', {inlineTemplate: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
 
     it('should fallback to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', baseOptions, createTestApp({inlineTemplate: true}));
+          'dashboard', baseOptions, createTestApp(runner, {inlineTemplate: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
@@ -94,13 +95,14 @@ describe('material-dashboard-schematic', () => {
   describe('spec option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'dashboard', {spec: false, ...baseOptions}, createTestApp());
+          'dashboard', {spec: false, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
 
     it('should fallback to the @schematics/angular:component option value', () => {
-      const tree = runner.runSchematic('dashboard', baseOptions, createTestApp({skipTests: true}));
+      const tree = runner.runSchematic(
+          'dashboard', baseOptions, createTestApp(runner, {skipTests: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });

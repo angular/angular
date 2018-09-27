@@ -2,13 +2,13 @@ import {normalize} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
+  createTestApp,
   getProjectFromWorkspace,
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
 import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
 import {getFileContent} from '@schematics/angular/utility/test';
-import {collectionPath, createTestApp} from '../test-setup/test-app';
 import {getIndexHtmlPath} from './fonts/project-index-html';
 
 describe('ng-add schematic', () => {
@@ -16,8 +16,8 @@ describe('ng-add schematic', () => {
   let appTree: Tree;
 
   beforeEach(() => {
-    appTree = createTestApp();
-    runner = new SchematicTestRunner('schematics', collectionPath);
+    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    appTree = createTestApp(runner);
   });
 
   /** Expects the given file to be in the styles of the specified workspace project. */
@@ -63,7 +63,8 @@ describe('ng-add schematic', () => {
   });
 
   it('should support adding a custom theme', () => {
-    appTree = createTestApp({style: 'scss'});
+    // TODO(devversion): do not re-create test app here.
+    appTree = createTestApp(runner, {style: 'scss'});
 
     const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
 
@@ -79,7 +80,8 @@ describe('ng-add schematic', () => {
   });
 
   it('should create a custom theme file if no SCSS file could be found', () => {
-    appTree = createTestApp({style: 'css'});
+    // TODO(devversion): do not re-create test app here.
+    appTree = createTestApp(runner, {style: 'css'});
 
     const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
     const workspace = getWorkspace(tree);
