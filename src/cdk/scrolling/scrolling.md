@@ -27,11 +27,7 @@ rest.
 same API as [`*ngFor`](https://angular.io/api/common/NgForOf). The simplest usage just specifies the
 list of items:
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50">
-  <div *cdkVirtualFor="let item of items">{{item}}</div>
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-overview) -->
 
 `*cdkVirtualFor` makes the following context variables available to the template:
 
@@ -47,15 +43,7 @@ list of items:
 All of these apply to the index of the item in the data source, not the index in the rendered
 portion of the data.
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50">
-  <div *cdkVirtualFor="let item of items;
-                       let index = index;
-                       let count = count">
-    {{item}} ({{index}} of {{count}})
-  </div>
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-context) -->
 
 A `trackBy` function can be specified and works the same as the `*ngFor` `trackBy`. The `index`
 passed to the tracking function will be the index in the data source, not the index in the rendered
@@ -68,11 +56,7 @@ is reused instead. The size of the view cache can be adjusted via the `templateC
 property; setting this size to `0` disables caching. If your templates are expensive in terms of
 memory you may wish to reduce this number to avoid spending too much memory on the template cache.
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50">
-  <div *cdkVirtualFor="let item of items; templateCacheSize: 0">{{item}}</div>
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-template-cache) -->
 
 ##### Specifying data
 `*cdkVirtualFor` accepts data from an `Array`, `Observable<Array>`, or `DataSource`. The
@@ -83,16 +67,12 @@ data array that should be rendered. The viewport will call `disconnect` when the
 destroyed, which may be the right time to clean up any subscriptions that were registered during the
 connect process.
 
+<!-- example(cdk-virtual-scroll-data-source) -->
+
 #### Scrolling over fixed size items
 When all items are the same fixed size, you can use the `FixedSizeVirtualScrollStrategy`. This can
 be easily added to your viewport using the `itemSize` directive. The advantage of this constraint is
 that it allows for better performance, since items do not need to be measured as they are rendered. 
-
-```html
-<cdk-virtual-scroll-viewport itemSize="50">
-  ...
-</cdk-virtual-scroll-viewport>
-```
 
 The fixed size strategy also supports setting a couple of buffer parameters that determine how much
 extra content is rendered beyond what is visible in the viewport. The first of these parameters is
@@ -108,11 +88,7 @@ remaining. Since this is below `minBufferPx` the viewport must render more buffe
 least enough buffer to get back to `maxBufferPx`. In this case, it renders 4 items (an additional
 `200px`) to bring the total buffer size to `290px`, back above `maxBufferPx`.
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50" minBufferPx="100" maxBufferPx="250">
-  ...
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-fixed-buffer) -->
 
 Other virtual scrolling strategies can be implemented by extending `VirtualScrollStrategy`. An
 autosize strategy that works on elements of differing sizes is currently being developed in
@@ -125,11 +101,7 @@ out horizontally via CSS. To do this you may want to target CSS at
 `.cdk-virtual-scroll-content-wrapper` which is the wrapper element that contains the rendered
 content.
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50" orientation="horizontal">
-  ...
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-horizontal) -->
 
 ### Elements with parent tag requirements
 Some HTML elements such as `<tr>` and `<li>` have limitations on the kinds of parent elements they
@@ -138,13 +110,4 @@ their proper parent, and then wrap the whole thing in a `cdk-virtual-scroll-view
 that the parent does not introduce additional space (e.g. via `margin` or `padding`) as it will
 interfere with the scrolling.
 
-```html
-<cdk-virtual-scroll-viewport itemSize="50">
-  <table>
-    <tr *cdkVirtualFor="let row of rows">
-      <td>{{row.first}}</td>
-      <td>{{row.second}}</td>
-    </tr>
-  </table>
-</cdk-virtual-scroll-viewport>
-```
+<!-- example(cdk-virtual-scroll-dl) -->

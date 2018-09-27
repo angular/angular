@@ -1,0 +1,13 @@
+.example-viewport {
+  height: 200px;
+  width: 200px;
+  border: 1px solid black;
+}
+
+.example-item-detail {
+  height: 18px;
+}
+
+.example-alternate {
+  background: rgba(127, 127, 127, 0.3);
+}

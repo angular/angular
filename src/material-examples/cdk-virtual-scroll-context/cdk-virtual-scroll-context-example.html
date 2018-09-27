@@ -1,0 +1,17 @@
+<cdk-virtual-scroll-viewport [itemSize]="18 * 7" class="example-viewport">
+  <div *cdkVirtualFor="let item of items;
+                       let index = index;
+                       let count = count;
+                       let first = first;
+                       let last = last;
+                       let even = even;
+                       let odd = odd;" [class.example-alternate]="odd">
+    <div class="example-item-detail">Item: {{item}}</div>
+    <div class="example-item-detail">Index: {{index}}</div>
+    <div class="example-item-detail">Count: {{count}}</div>
+    <div class="example-item-detail">First: {{first ? 'Yes' : 'No'}}</div>
+    <div class="example-item-detail">Last: {{last ? 'Yes' : 'No'}}</div>
+    <div class="example-item-detail">Event: {{even ? 'Yes' : 'No'}}</div>
+    <div class="example-item-detail">Odd: {{odd ? 'Yes' : 'No'}}</div>
+  </div>
+</cdk-virtual-scroll-viewport>
