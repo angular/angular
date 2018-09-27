@@ -125,18 +125,12 @@ export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from 
 
 
 export {
-  compileNgModuleDefs as ɵcompileNgModuleDefs,
-  patchComponentDefWithScope as ɵpatchComponentDefWithScope,
-} from './render3/jit/module';
-
-export {
-  compileComponent as ɵcompileComponent,
-  compileDirective as ɵcompileDirective,
-} from './render3/jit/directive';
-
-export {
-  compilePipe as ɵcompilePipe,
-} from './render3/jit/pipe';
+  R3_COMPILE_NGMODULE_DEFS as ɵcompileNgModuleDefs,
+  R3_PATCH_COMPONENT_DEF_WTIH_SCOPE as ɵpatchComponentDefWithScope,
+  R3_COMPILE_COMPONENT as ɵcompileComponent,
+  R3_COMPILE_DIRECTIVE as ɵcompileDirective,
+  R3_COMPILE_PIPE as ɵcompilePipe,
+} from './ivy_switch/compiler/ivy_switch_on';
 
 export {
   NgModuleDef as ɵNgModuleDef,
