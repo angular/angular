@@ -100,7 +100,7 @@ export function getCurrentSanitizer(): Sanitizer|null {
 let elementDepthCount !: number;
 
 /**
- * Stores wether directives should be matched to elements.
+ * Stores whether directives should be matched to elements.
  *
  * When template contains `ngNonBindable` than we need to prevent the runtime form matching
  * directives on children of that element.
