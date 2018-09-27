@@ -142,7 +142,7 @@ $mat-form-field-legacy-dedupe: 0;
     }
   }
 
-  // translateZ causes the label to not appear while printing, so we override it to not 
+  // translateZ causes the label to not appear while printing, so we override it to not
   // apply translateZ while printing
   @media print {
     .mat-form-field-appearance-legacy {
