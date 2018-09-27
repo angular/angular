@@ -625,6 +625,26 @@ describe('MatTooltip', () => {
       expect(overlayContainerElement.querySelector('.mat-tooltip')).toBeNull();
     }));
 
+    it('should not hide the tooltip when calling `show` twice in a row', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      fixture.detectChanges();
+      tick(500);
+
+      const overlayRef = tooltipDirective._overlayRef!;
+
+      spyOn(overlayRef, 'detach').and.callThrough();
+
+      tooltipDirective.show();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(overlayRef.detach).not.toHaveBeenCalled();
+    }));
+
   });
 
   describe('fallback positions', () => {

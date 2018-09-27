@@ -271,7 +271,10 @@ export class MatTooltip implements OnDestroy {
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
   show(delay: number = this.showDelay): void {
-    if (this.disabled || !this.message) { return; }
+    if (this.disabled || !this.message || (this._isTooltipVisible() &&
+      !this._tooltipInstance!._showTimeoutId && !this._tooltipInstance!._hideTimeoutId)) {
+        return;
+    }
 
     const overlayRef = this._createOverlay();
 
@@ -524,10 +527,10 @@ export class TooltipComponent {
   tooltipClass: string|string[]|Set<string>|{[key: string]: any};
 
   /** The timeout ID of any current timer set to show the tooltip */
-  _showTimeoutId: number;
+  _showTimeoutId: number | null;
 
   /** The timeout ID of any current timer set to hide the tooltip */
-  _hideTimeoutId: number;
+  _hideTimeoutId: number | null;
 
   /** Property watched by the animation framework to show or hide the tooltip */
   _visibility: TooltipVisibility = 'initial';
@@ -553,12 +556,14 @@ export class TooltipComponent {
     // Cancel the delayed hide if it is scheduled
     if (this._hideTimeoutId) {
       clearTimeout(this._hideTimeoutId);
+      this._hideTimeoutId = null;
     }
 
     // Body interactions should cancel the tooltip if there is a delay in showing.
     this._closeOnInteraction = true;
     this._showTimeoutId = setTimeout(() => {
       this._visibility = 'visible';
+      this._showTimeoutId = null;
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
@@ -574,10 +579,12 @@ export class TooltipComponent {
     // Cancel the delayed show if it is scheduled
     if (this._showTimeoutId) {
       clearTimeout(this._showTimeoutId);
+      this._showTimeoutId = null;
     }
 
     this._hideTimeoutId = setTimeout(() => {
       this._visibility = 'hidden';
+      this._hideTimeoutId = null;
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
