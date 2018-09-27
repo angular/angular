@@ -207,7 +207,8 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
    *
    * In ESM5 code the helper calls are hidden inside the class's IIFE.
    *
-   * @param classSymbol the class whose helper calls we are interested in.
+   * @param classSymbol the class whose helper calls we are interested in. We expect this symbol
+   * to reference the inner identifier inside the IIFE.
    * @returns an array of statements that may contain helper calls.
    */
   protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
