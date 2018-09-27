@@ -295,7 +295,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getClassDecoratorsFromStaticProperty(decoratorsSymbol: ts.Symbol): Decorator[]|null {
     const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
     if (decoratorsIdentifier && decoratorsIdentifier.parent) {
-      if (ts.isBinaryExpression(decoratorsIdentifier.parent)) {
+      if (ts.isBinaryExpression(decoratorsIdentifier.parent) && decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
         // AST of the array of decorator values
         const decoratorsArray = decoratorsIdentifier.parent.right;
         return this.reflectDecorators(decoratorsArray).filter(isImportedFromCore);
@@ -323,7 +323,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const helperCalls = this.getHelperCallsForClass(symbol, '__decorate');
     helperCalls.forEach(helperCall => {
       const decoratorMap =
-          this.reflectDecoratorsFromHelperCall(helperCall, isClassTarget(symbol.name));
+          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(symbol.name));
       const classDecorators = decoratorMap.get(undefined) || [];
       classDecorators.filter(isImportedFromCore).forEach(decorator => decorators.push(decorator));
     });
@@ -396,7 +396,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
       const decoratorMap =
-          this.reflectDecoratorsFromHelperCall(helperCall, isMemberTarget(classSymbol.name));
+          this.reflectDecoratorsFromHelperCall(helperCall, makeMemberTargetFilter(classSymbol.name));
       decoratorMap.forEach((decorators, memberName) => {
         if (memberName) {
           const memberDecorators = memberDecoratorMap.get(memberName) || [];
@@ -489,7 +489,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * not match.
    */
   protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression
-      |undefined {
+      |null {
     if (ts.isExpressionStatement(statement)) {
       const expression =
           isAssignment(statement) ? statement.expression.right : statement.expression;
@@ -497,7 +497,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
         return expression;
       }
     }
-    return undefined;
+    return null;
   }
 
 
@@ -716,7 +716,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
       const decoratorMap =
-          this.reflectDecoratorsFromHelperCall(helperCall, isClassTarget(classSymbol.name));
+          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(classSymbol.name));
       const decoratorCalls = decoratorMap.get(undefined);
       if (decoratorCalls) {
         decoratorCalls.forEach(call => {
@@ -831,7 +831,7 @@ export type TargetFilter = (target: ts.Expression) => boolean;
  * Creates a function that tests whether the given expression is a class target.
  * @param className the name of the class we want to target.
  */
-export function isClassTarget(className: string): TargetFilter {
+export function makeClassTargetFilter(className: string): TargetFilter {
   return (target: ts.Expression): boolean => ts.isIdentifier(target) && target.text === className;
 }
 
@@ -839,7 +839,7 @@ export function isClassTarget(className: string): TargetFilter {
  * Creates a function that tests whether the given expression is a class member target.
  * @param className the name of the class we want to target.
  */
-export function isMemberTarget(className: string): TargetFilter {
+export function makeMemberTargetFilter(className: string): TargetFilter {
   return (target: ts.Expression): boolean => ts.isPropertyAccessExpression(target) &&
       ts.isIdentifier(target.expression) && target.expression.text === className &&
       target.name.text === 'prototype';
