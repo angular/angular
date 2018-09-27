@@ -79,46 +79,42 @@ const FOO_FUNCTION_FILE = {
 const INVALID_DECORATORS_FILE = {
   name: '/invalid_decorators.js',
   contents: `
-    var NotArrayLiteralDecorator = {};
+    import { Directive } from '@angular/core';
     var NotArrayLiteral = (function() {
       function NotArrayLiteral() {
       }
       NotArrayLiteral.decorators = () => [
-        { type: NotArrayLiteralDecorator, args: [{ selector: '[ignored]' },] },
+        { type: Directive, args: [{ selector: '[ignored]' },] },
       ];
       return NotArrayLiteral;
     }());
 
-    var NotObjectLiteralDecorator = {};
     var NotObjectLiteral = (function() {
       function NotObjectLiteral() {
       }
       NotObjectLiteral.decorators = [
         "This is not an object literal",
-        { type: NotObjectLiteralDecorator },
+        { type: Directive },
       ];
       return NotObjectLiteral;
     }());
 
-    var NoTypePropertyDecorator1 = {};
-    var NoTypePropertyDecorator2 = {};
     var NoTypeProperty = (function() {
       function NoTypeProperty() {
       }
       NoTypeProperty.decorators = [
-        { notType: NoTypePropertyDecorator1 },
-        { type: NoTypePropertyDecorator2 },
+        { notType: Directive },
+        { type: Directive },
       ];
       return NoTypeProperty;
     }());
 
-    var NotIdentifierDecorator = {};
     var NotIdentifier = (function() {
       function NotIdentifier() {
       }
       NotIdentifier.decorators = [
         { type: 'StringsLiteralsAreNotIdentifiers' },
-        { type: NotIdentifierDecorator },
+        { type: Directive },
       ];
       return NotIdentifier;
     }());
@@ -128,33 +124,31 @@ const INVALID_DECORATORS_FILE = {
 const INVALID_DECORATOR_ARGS_FILE = {
   name: '/invalid_decorator_args.js',
   contents: `
-    var NoArgsPropertyDecorator = {};
+    import { Directive } from '@angular/core';
     var NoArgsProperty = (function() {
       function NoArgsProperty() {
       }
       NoArgsProperty.decorators = [
-        { type: NoArgsPropertyDecorator },
+        { type: Directive },
       ];
       return NoArgsProperty;
     }());
 
-    var NoPropertyAssignmentDecorator = {};
     var args = [{ selector: '[ignored]' },];
     var NoPropertyAssignment = (function() {
       function NoPropertyAssignment() {
       }
       NoPropertyAssignment.decorators = [
-        { type: NoPropertyAssignmentDecorator, args },
+        { type: Directive, args },
       ];
       return NoPropertyAssignment;
     }());
 
-    var NotArrayLiteralDecorator = {};
     var NotArrayLiteral = (function() {
       function NotArrayLiteral() {
       }
       NotArrayLiteral.decorators = [
-        { type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },
+        { type: Directive, args: () => [{ selector: '[ignored]' },] },
       ];
       return NotArrayLiteral;
     }());
@@ -164,51 +158,47 @@ const INVALID_DECORATOR_ARGS_FILE = {
 const INVALID_PROP_DECORATORS_FILE = {
   name: '/invalid_prop_decorators.js',
   contents: `
-    var NotObjectLiteralDecorator = {};
+    import { Input } from '@angular/core';
     var NotObjectLiteral = (function() {
       function NotObjectLiteral() {
       }
       NotObjectLiteral.propDecorators = () => ({
-        "prop": [{ type: NotObjectLiteralDecorator },]
+        "prop": [{ type: Input },]
       });
       return NotObjectLiteral;
     }());
 
-    var NotObjectLiteralPropDecorator = {};
     var NotObjectLiteralProp = (function() {
       function NotObjectLiteralProp() {
       }
       NotObjectLiteralProp.propDecorators = {
         "prop": [
           "This is not an object literal",
-          { type: NotObjectLiteralPropDecorator },
+          { type: Input },
         ]
       };
       return NotObjectLiteralProp;
     }());
 
-    var NoTypePropertyDecorator1 = {};
-    var NoTypePropertyDecorator2 = {};
     var NoTypeProperty = (function() {
       function NoTypeProperty() {
       }
       NoTypeProperty.propDecorators = {
         "prop": [
-          { notType: NoTypePropertyDecorator1 },
-          { type: NoTypePropertyDecorator2 },
+          { notType: Input },
+          { type: Input },
         ]
       };
       return NoTypeProperty;
     }());
 
-    var NotIdentifierDecorator = {};
     var NotIdentifier = (function() {
       function NotIdentifier() {
       }
       NotIdentifier.propDecorators = {
         "prop": [
           { type: 'StringsLiteralsAreNotIdentifiers' },
-          { type: NotIdentifierDecorator },
+          { type: Input },
         ]
       };
       return NotIdentifier;
@@ -219,33 +209,31 @@ const INVALID_PROP_DECORATORS_FILE = {
 const INVALID_PROP_DECORATOR_ARGS_FILE = {
   name: '/invalid_prop_decorator_args.js',
   contents: `
-    var NoArgsPropertyDecorator = {};
+    import { Input } from '@angular/core';
     var NoArgsProperty = (function() {
       function NoArgsProperty() {
       }
       NoArgsProperty.propDecorators = {
-        "prop": [{ type: NoArgsPropertyDecorator },]
+        "prop": [{ type: Input },]
       };
       return NoArgsProperty;
     }());
 
-    var NoPropertyAssignmentDecorator = {};
     var args = [{ selector: '[ignored]' },];
     var NoPropertyAssignment = (function() {
       function NoPropertyAssignment() {
       }
       NoPropertyAssignment.propDecorators = {
-        "prop": [{ type: NoPropertyAssignmentDecorator, args },]
+        "prop": [{ type: Input, args },]
       };
       return NoPropertyAssignment;
     }());
 
-    var NotArrayLiteralDecorator = {};
     var NotArrayLiteral = (function() {
       function NotArrayLiteral() {
       }
       NotArrayLiteral.propDecorators = {
-        "prop": [{ type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },],
+        "prop": [{ type: Input, args: () => [{ selector: '[ignored]' },] },],
       };
       return NotArrayLiteral;
     }());
@@ -255,23 +243,22 @@ const INVALID_PROP_DECORATOR_ARGS_FILE = {
 const INVALID_CTOR_DECORATORS_FILE = {
   name: '/invalid_ctor_decorators.js',
   contents: `
+    import { Inject } from '@angular/core';
     var NoParametersDecorator = {};
     var NoParameters = (function() {
       function NoParameters() {}
       return NoParameters;
     }());
 
-    var ArrowFunctionDecorator = {};
     var ArrowFunction = (function() {
       function ArrowFunction(arg1) {
       }
       ArrowFunction.ctorParameters = () => [
-        { type: 'ParamType', decorators: [{ type: ArrowFunctionDecorator },] }
+        { type: 'ParamType', decorators: [{ type: Inject },] }
       ];
       return ArrowFunction;
     }());
 
-    var NotArrayLiteralDecorator = {};
     var NotArrayLiteral = (function() {
       function NotArrayLiteral(arg1) {
       }
@@ -279,19 +266,16 @@ const INVALID_CTOR_DECORATORS_FILE = {
       return NotArrayLiteral;
     }());
 
-    var NotObjectLiteralDecorator = {};
     var NotObjectLiteral = (function() {
       function NotObjectLiteral(arg1, arg2) {
       }
       NotObjectLiteral.ctorParameters = function() { return [
         "This is not an object literal",
-        { type: 'ParamType', decorators: [{ type: NotObjectLiteralDecorator },] },
+        { type: 'ParamType', decorators: [{ type: Inject },] },
       ]; };
       return NotObjectLiteral;
     }());
 
-    var NoTypePropertyDecorator1 = {};
-    var NoTypePropertyDecorator2 = {};
     var NoTypeProperty = (function() {
       function NoTypeProperty(arg1, arg2) {
       }
@@ -299,15 +283,14 @@ const INVALID_CTOR_DECORATORS_FILE = {
         {
           type: 'ParamType',
           decorators: [
-            { notType: NoTypePropertyDecorator1 },
-            { type: NoTypePropertyDecorator2 },
+            { notType: Inject },
+            { type: Inject },
           ]
         },
       ]; };
       return NoTypeProperty;
     }());
 
-    var NotIdentifierDecorator = {};
     var NotIdentifier = (function() {
       function NotIdentifier(arg1, arg2) {
       }
@@ -316,7 +299,7 @@ const INVALID_CTOR_DECORATORS_FILE = {
           type: 'ParamType',
           decorators: [
             { type: 'StringsLiteralsAreNotIdentifiers' },
-            { type: NotIdentifierDecorator },
+            { type: Inject },
           ]
         },
       ]; };
@@ -328,33 +311,31 @@ const INVALID_CTOR_DECORATORS_FILE = {
 const INVALID_CTOR_DECORATOR_ARGS_FILE = {
   name: '/invalid_ctor_decorator_args.js',
   contents: `
-    var NoArgsPropertyDecorator = {};
+    import { Inject } from '@angular/core';
     var NoArgsProperty = (function() {
       function NoArgsProperty(arg1) {
       }
       NoArgsProperty.ctorParameters = function() { return [
-        { type: 'ParamType', decorators: [{ type: NoArgsPropertyDecorator },] },
+        { type: 'ParamType', decorators: [{ type: Inject },] },
       ]; };
       return NoArgsProperty;
     }());
 
-    var NoPropertyAssignmentDecorator = {};
     var args = [{ selector: '[ignored]' },];
     var NoPropertyAssignment = (function() {
       function NoPropertyAssignment(arg1) {
       }
       NoPropertyAssignment.ctorParameters = function() { return [
-        { type: 'ParamType', decorators: [{ type: NoPropertyAssignmentDecorator, args },] },
+        { type: 'ParamType', decorators: [{ type: Inject, args },] },
       ]; };
       return NoPropertyAssignment;
     }());
 
-    var NotArrayLiteralDecorator = {};
     var NotArrayLiteral = (function() {
       function NotArrayLiteral(arg1) {
       }
       NotArrayLiteral.ctorParameters = function() { return [
-        { type: 'ParamType', decorators: [{ type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },] },
+        { type: 'ParamType', decorators: [{ type: Inject, args: () => [{ selector: '[ignored]' },] },] },
       ]; };
       return NotArrayLiteral;
     }());
@@ -502,7 +483,7 @@ describe('Esm5ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotObjectLiteralDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should ignore decorator elements that have no `type` property', () => {
@@ -513,7 +494,7 @@ describe('Esm5ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should ignore decorator elements whose `type` value is not an identifier', () => {
@@ -524,11 +505,11 @@ describe('Esm5ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-      const mockImportInfo = {} as Import;
+      const mockImportInfo = { name: 'mock', from: '@angular/core' } as Import;
       const spy = spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier')
                       .and.returnValue(mockImportInfo);
 
@@ -554,7 +535,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -567,7 +548,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -579,7 +560,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
     });
@@ -688,9 +669,7 @@ describe('Esm5ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({
-        name: 'NotObjectLiteralPropDecorator'
-      }));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should ignore prop decorator elements that have no `type` property', () => {
@@ -703,7 +682,7 @@ describe('Esm5ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should ignore prop decorator elements whose `type` value is not an identifier', () => {
@@ -716,14 +695,14 @@ describe('Esm5ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
       let callCount = 0;
       const spy = spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier').and.callFake(() => {
         callCount++;
-        return {name: `name${callCount}`, from: `from${callCount}`};
+        return {name: `name${callCount}`, from: `@angular/core`};
       });
 
       const program = makeProgram(SOME_DIRECTIVE_FILE);
@@ -737,7 +716,7 @@ describe('Esm5ReflectionHost', () => {
 
       const index = members.findIndex(member => member.name === 'input1');
       expect(members[index].decorators !.length).toBe(1);
-      expect(members[index].decorators ![0].import).toEqual({name: 'name1', from: 'from1'});
+      expect(members[index].decorators ![0].import).toEqual({name: 'name1', from: '@angular/core'});
     });
 
     describe('(returned prop decorators `args`)', () => {
@@ -752,7 +731,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -767,7 +746,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -782,7 +761,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
     });
@@ -887,7 +866,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
       });
 
       it('should ignore param decorator elements whose `type` value is not an identifier', () => {
@@ -899,11 +878,11 @@ describe('Esm5ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
       });
 
       it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-        const mockImportInfo = {} as Import;
+        const mockImportInfo = { name: 'mock', from: '@angulare/core' } as Import;
         const spy = spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier')
                         .and.returnValue(mockImportInfo);
 
@@ -934,7 +913,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -948,7 +927,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -962,7 +941,7 @@ describe('Esm5ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
     });

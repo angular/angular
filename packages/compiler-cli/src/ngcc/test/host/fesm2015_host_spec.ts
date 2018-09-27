@@ -76,36 +76,32 @@ const FOO_FUNCTION_FILE = {
 const INVALID_DECORATORS_FILE = {
   name: '/invalid_decorators.js',
   contents: `
-    const NotArrayLiteralDecorator = {};
+    import {Directive} from '@angular/core';
     class NotArrayLiteral {
     }
     NotArrayLiteral.decorators = () => [
-      { type: NotArrayLiteralDecorator, args: [{ selector: '[ignored]' },] },
+      { type: Directive, args: [{ selector: '[ignored]' },] },
     ];
 
-    const NotObjectLiteralDecorator = {};
     class NotObjectLiteral {
     }
     NotObjectLiteral.decorators = [
       "This is not an object literal",
-      { type: NotObjectLiteralDecorator },
+      { type: Directive },
     ];
 
-    const NoTypePropertyDecorator1 = {};
-    const NoTypePropertyDecorator2 = {};
     class NoTypeProperty {
     }
     NoTypeProperty.decorators = [
-      { notType: NoTypePropertyDecorator1 },
-      { type: NoTypePropertyDecorator2 },
+      { notType: Directive },
+      { type: Directive },
     ];
 
-    const NotIdentifierDecorator = {};
     class NotIdentifier {
     }
     NotIdentifier.decorators = [
       { type: 'StringsLiteralsAreNotIdentifiers' },
-      { type: NotIdentifierDecorator },
+      { type: Directive },
     ];
   `,
 };
@@ -113,26 +109,24 @@ const INVALID_DECORATORS_FILE = {
 const INVALID_DECORATOR_ARGS_FILE = {
   name: '/invalid_decorator_args.js',
   contents: `
-    const NoArgsPropertyDecorator = {};
+    import {Directive} from '@angular/core';
     class NoArgsProperty {
     }
     NoArgsProperty.decorators = [
-      { type: NoArgsPropertyDecorator },
+      { type: Directive },
     ];
 
-    const NoPropertyAssignmentDecorator = {};
     const args = [{ selector: '[ignored]' },];
     class NoPropertyAssignment {
     }
     NoPropertyAssignment.decorators = [
-      { type: NoPropertyAssignmentDecorator, args },
+      { type: Directive, args },
     ];
 
-    const NotArrayLiteralDecorator = {};
     class NotArrayLiteral {
     }
     NotArrayLiteral.decorators = [
-      { type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },
+      { type: Directive, args: () => [{ selector: '[ignored]' },] },
     ];
   `,
 };
@@ -140,41 +134,37 @@ const INVALID_DECORATOR_ARGS_FILE = {
 const INVALID_PROP_DECORATORS_FILE = {
   name: '/invalid_prop_decorators.js',
   contents: `
-    const NotObjectLiteralDecorator = {};
+    import {Input} from '@angular/core';
     class NotObjectLiteral {
     }
     NotObjectLiteral.propDecorators = () => ({
-      "prop": [{ type: NotObjectLiteralDecorator },]
+      "prop": [{ type: Input },]
     });
 
-    const NotObjectLiteralPropDecorator = {};
     class NotObjectLiteralProp {
     }
     NotObjectLiteralProp.propDecorators = {
       "prop": [
         "This is not an object literal",
-        { type: NotObjectLiteralPropDecorator },
+        { type: Input },
       ]
     };
 
-    const NoTypePropertyDecorator1 = {};
-    const NoTypePropertyDecorator2 = {};
     class NoTypeProperty {
     }
     NoTypeProperty.propDecorators = {
       "prop": [
-        { notType: NoTypePropertyDecorator1 },
-        { type: NoTypePropertyDecorator2 },
+        { notType: Input },
+        { type: Input },
       ]
     };
 
-    const NotIdentifierDecorator = {};
     class NotIdentifier {
     }
     NotIdentifier.propDecorators = {
       "prop": [
         { type: 'StringsLiteralsAreNotIdentifiers' },
-        { type: NotIdentifierDecorator },
+        { type: Input },
       ]
     };
   `,
@@ -183,26 +173,24 @@ const INVALID_PROP_DECORATORS_FILE = {
 const INVALID_PROP_DECORATOR_ARGS_FILE = {
   name: '/invalid_prop_decorator_args.js',
   contents: `
-    const NoArgsPropertyDecorator = {};
+    import {Input} from '@angular/core';
     class NoArgsProperty {
     }
     NoArgsProperty.propDecorators = {
-      "prop": [{ type: NoArgsPropertyDecorator },]
+      "prop": [{ type: Input },]
     };
 
-    const NoPropertyAssignmentDecorator = {};
     const args = [{ selector: '[ignored]' },];
     class NoPropertyAssignment {
     }
     NoPropertyAssignment.propDecorators = {
-      "prop": [{ type: NoPropertyAssignmentDecorator, args },]
+      "prop": [{ type: Input, args },]
     };
 
-    const NotArrayLiteralDecorator = {};
     class NotArrayLiteral {
     }
     NotArrayLiteral.propDecorators = {
-      "prop": [{ type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },],
+      "prop": [{ type: Input, args: () => [{ selector: '[ignored]' },] },],
     };
   `,
 };
@@ -210,40 +198,44 @@ const INVALID_PROP_DECORATOR_ARGS_FILE = {
 const INVALID_CTOR_DECORATORS_FILE = {
   name: '/invalid_ctor_decorators.js',
   contents: `
-    const NoParametersDecorator = {};
+    import {Inject} from '@angular/core';
     class NoParameters {
       constructor() {
       }
     }
 
-    const NotArrowFunctionDecorator = {};
+    const NotFromCoreDecorator = {};
+    class NotFromCore {
+      constructor(arg1) {
+      }
+    }
+    NotFromCore.ctorParameters = () => [
+      { type: 'ParamType', decorators: [{ type: NotFromCoreDecorator },] },
+    ]
+
     class NotArrowFunction {
       constructor(arg1) {
       }
     }
     NotArrowFunction.ctorParameters = function() {
-      return { type: 'ParamType', decorators: [{ type: NotArrowFunctionDecorator },] };
+      return { type: 'ParamType', decorators: [{ type: Inject },] };
     };
 
-    const NotArrayLiteralDecorator = {};
     class NotArrayLiteral {
       constructor(arg1) {
       }
     }
     NotArrayLiteral.ctorParameters = () => 'StringsAreNotArrayLiterals';
 
-    const NotObjectLiteralDecorator = {};
     class NotObjectLiteral {
       constructor(arg1, arg2) {
       }
     }
     NotObjectLiteral.ctorParameters = () => [
       "This is not an object literal",
-      { type: 'ParamType', decorators: [{ type: NotObjectLiteralDecorator },] },
+      { type: 'ParamType', decorators: [{ type: Inject },] },
     ];
 
-    const NoTypePropertyDecorator1 = {};
-    const NoTypePropertyDecorator2 = {};
     class NoTypeProperty {
       constructor(arg1, arg2) {
       }
@@ -252,13 +244,12 @@ const INVALID_CTOR_DECORATORS_FILE = {
       {
         type: 'ParamType',
         decorators: [
-          { notType: NoTypePropertyDecorator1 },
-          { type: NoTypePropertyDecorator2 },
+          { notType: Inject },
+          { type: Inject },
         ]
       },
     ];
 
-    const NotIdentifierDecorator = {};
     class NotIdentifier {
       constructor(arg1, arg2) {
       }
@@ -268,7 +259,7 @@ const INVALID_CTOR_DECORATORS_FILE = {
         type: 'ParamType',
         decorators: [
           { type: 'StringsLiteralsAreNotIdentifiers' },
-          { type: NotIdentifierDecorator },
+          { type: Inject },
         ]
       },
     ];
@@ -278,32 +269,30 @@ const INVALID_CTOR_DECORATORS_FILE = {
 const INVALID_CTOR_DECORATOR_ARGS_FILE = {
   name: '/invalid_ctor_decorator_args.js',
   contents: `
-    const NoArgsPropertyDecorator = {};
+    import {Inject} from '@angular/core';
     class NoArgsProperty {
       constructor(arg1) {
       }
     }
     NoArgsProperty.ctorParameters = () => [
-      { type: 'ParamType', decorators: [{ type: NoArgsPropertyDecorator },] },
+      { type: 'ParamType', decorators: [{ type: Inject },] },
     ];
 
-    const NoPropertyAssignmentDecorator = {};
     const args = [{ selector: '[ignored]' },];
     class NoPropertyAssignment {
       constructor(arg1) {
       }
     }
     NoPropertyAssignment.ctorParameters = () => [
-      { type: 'ParamType', decorators: [{ type: NoPropertyAssignmentDecorator, args },] },
+      { type: 'ParamType', decorators: [{ type: Inject, args },] },
     ];
 
-    const NotArrayLiteralDecorator = {};
     class NotArrayLiteral {
       constructor(arg1) {
       }
     }
     NotArrayLiteral.ctorParameters = () => [
-      { type: 'ParamType', decorators: [{ type: NotArrayLiteralDecorator, args: () => [{ selector: '[ignored]' },] },] },
+      { type: 'ParamType', decorators: [{ type: Inject, args: () => [{ selector: '[ignored]' },] },] },
     ];
   `,
 };
@@ -459,7 +448,7 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotObjectLiteralDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should ignore decorator elements that have no `type` property', () => {
@@ -470,7 +459,7 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should ignore decorator elements whose `type` value is not an identifier', () => {
@@ -481,11 +470,11 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Directive'}));
     });
 
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-      const mockImportInfo = {} as Import;
+      const mockImportInfo = { from: '@angular/core' } as Import;
       const spy = spyOn(Fesm2015ReflectionHost.prototype, 'getImportOfIdentifier')
                       .and.returnValue(mockImportInfo);
 
@@ -511,7 +500,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -524,7 +513,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -536,7 +525,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Directive');
         expect(decorators[0].args).toEqual([]);
       });
     });
@@ -644,9 +633,7 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({
-        name: 'NotObjectLiteralPropDecorator'
-      }));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should ignore prop decorator elements that have no `type` property', () => {
@@ -659,7 +646,7 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should ignore prop decorator elements whose `type` value is not an identifier', () => {
@@ -672,7 +659,7 @@ describe('Fesm2015ReflectionHost', () => {
       const decorators = prop.decorators !;
 
       expect(decorators.length).toBe(1);
-      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+      expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Input'}));
     });
 
     it('should use `getImportOfIdentifier()` to retrieve import info', () => {
@@ -680,7 +667,7 @@ describe('Fesm2015ReflectionHost', () => {
       const spy =
           spyOn(Fesm2015ReflectionHost.prototype, 'getImportOfIdentifier').and.callFake(() => {
             callCount++;
-            return {name: `name${callCount}`, from: `from${callCount}`};
+            return {name: `name${callCount}`, from: '@angular/core'};
           });
 
       const program = makeProgram(SOME_DIRECTIVE_FILE);
@@ -698,9 +685,9 @@ describe('Fesm2015ReflectionHost', () => {
         'HostListener',
       ]);
 
-      const index = members.findIndex(member => member.name === 'input1');
-      expect(members[index].decorators !.length).toBe(1);
-      expect(members[index].decorators ![0].import).toEqual({name: 'name1', from: 'from1'});
+      const member = members.find(member => member.name === 'input1') !;
+      expect(member.decorators !.length).toBe(1);
+      expect(member.decorators ![0].import).toEqual({name: 'name1', from: '@angular/core'});
     });
 
     describe('(returned prop decorators `args`)', () => {
@@ -715,7 +702,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -730,7 +717,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -745,7 +732,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = prop.decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Input');
         expect(decorators[0].args).toEqual([]);
       });
     });
@@ -757,13 +744,13 @@ describe('Fesm2015ReflectionHost', () => {
       const host = new Fesm2015ReflectionHost(program.getTypeChecker());
       const classNode =
           getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
-      const parameters = host.getConstructorParameters(classNode);
+      const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters).toBeDefined();
-      expect(parameters !.map(parameter => parameter.name)).toEqual([
+      expect(parameters.map(parameter => parameter.name)).toEqual([
         '_viewContainer', '_template', 'injected'
       ]);
-      expect(parameters !.map(parameter => parameter.type !.getText())).toEqual([
+      expect(parameters.map(parameter => parameter.type !.getText())).toEqual([
         'ViewContainerRef', 'TemplateRef', 'undefined'
       ]);
     });
@@ -792,12 +779,12 @@ describe('Fesm2015ReflectionHost', () => {
       const host = new Fesm2015ReflectionHost(program.getTypeChecker());
       const classNode = getDeclaration(
           program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass', ts.isClassDeclaration);
-      const parameters = host.getConstructorParameters(classNode);
+      const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters).toEqual(jasmine.any(Array));
-      expect(parameters !.length).toEqual(1);
-      expect(parameters ![0].name).toEqual('foo');
-      expect(parameters ![0].decorators).toBe(null);
+      expect(parameters.length).toEqual(1);
+      expect(parameters[0].name).toEqual('foo');
+      expect(parameters[0].decorators).toBe(null);
     });
 
     it('should return an empty array if there are no constructor parameters', () => {
@@ -810,15 +797,29 @@ describe('Fesm2015ReflectionHost', () => {
       expect(parameters).toEqual([]);
     });
 
+    it('should ignore decorators that are not imported from core', () => {
+      const program = makeProgram(INVALID_CTOR_DECORATORS_FILE);
+      const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+      const classNode = getDeclaration(
+          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotFromCore', ts.isClassDeclaration);
+      const parameters = host.getConstructorParameters(classNode) !;
+
+      expect(parameters.length).toBe(1);
+      expect(parameters[0]).toEqual(jasmine.objectContaining({
+        name: 'arg1',
+        decorators: [],
+      }));
+    });
+
     it('should ignore `ctorParameters` if it is not an arrow function', () => {
       const program = makeProgram(INVALID_CTOR_DECORATORS_FILE);
       const host = new Fesm2015ReflectionHost(program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrowFunction', ts.isClassDeclaration);
-      const parameters = host.getConstructorParameters(classNode);
+      const parameters = host.getConstructorParameters(classNode) !;
 
-      expect(parameters !.length).toBe(1);
-      expect(parameters ![0]).toEqual(jasmine.objectContaining({
+      expect(parameters.length).toBe(1);
+      expect(parameters[0]).toEqual(jasmine.objectContaining({
         name: 'arg1',
         decorators: null,
       }));
@@ -829,10 +830,10 @@ describe('Fesm2015ReflectionHost', () => {
       const host = new Fesm2015ReflectionHost(program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral', ts.isClassDeclaration);
-      const parameters = host.getConstructorParameters(classNode);
+      const parameters = host.getConstructorParameters(classNode) !;
 
-      expect(parameters !.length).toBe(1);
-      expect(parameters ![0]).toEqual(jasmine.objectContaining({
+      expect(parameters.length).toBe(1);
+      expect(parameters[0]).toEqual(jasmine.objectContaining({
         name: 'arg1',
         decorators: null,
       }));
@@ -866,7 +867,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NoTypePropertyDecorator2'}));
+        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
       });
 
       it('should ignore param decorator elements whose `type` value is not an identifier', () => {
@@ -878,11 +879,11 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'NotIdentifierDecorator'}));
+        expect(decorators[0]).toEqual(jasmine.objectContaining({name: 'Inject'}));
       });
 
       it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-        const mockImportInfo = {} as Import;
+        const mockImportInfo: Import = {name: 'mock', from: '@angular/core'};
         const spy = spyOn(Fesm2015ReflectionHost.prototype, 'getImportOfIdentifier')
                         .and.returnValue(mockImportInfo);
 
@@ -890,8 +891,8 @@ describe('Fesm2015ReflectionHost', () => {
         const host = new Fesm2015ReflectionHost(program.getTypeChecker());
         const classNode = getDeclaration(
             program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
-        const parameters = host.getConstructorParameters(classNode);
-        const decorators = parameters ![2].decorators !;
+        const parameters = host.getConstructorParameters(classNode) !;
+        const decorators = parameters[2].decorators !;
 
         expect(decorators.length).toEqual(1);
         expect(decorators[0].import).toBe(mockImportInfo);
@@ -913,7 +914,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoArgsPropertyDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -927,7 +928,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NoPropertyAssignmentDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
 
@@ -941,7 +942,7 @@ describe('Fesm2015ReflectionHost', () => {
         const decorators = parameters ![0].decorators !;
 
         expect(decorators.length).toBe(1);
-        expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
+        expect(decorators[0].name).toBe('Inject');
         expect(decorators[0].args).toEqual([]);
       });
     });
