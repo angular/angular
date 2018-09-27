@@ -89,7 +89,7 @@ export {
   elementAttribute as ɵelementAttribute,
   elementStyling as ɵelementStyling,
   elementStylingMap as ɵelementStylingMap,
-  elementStyleProp as ɵelementStylingProp,
+  elementStyleProp as ɵelementStyleProp,
   elementStylingApply as ɵelementStylingApply,
   elementClassProp as ɵelementClassProp,
   textBinding as ɵtextBinding,
