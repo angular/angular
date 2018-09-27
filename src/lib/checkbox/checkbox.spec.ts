@@ -784,6 +784,14 @@ describe('MatCheckbox', () => {
       expect(checkbox.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
     }));
+
+    it('should clear the tabindex attribute from the host element', () => {
+      fixture = createComponent(CheckboxWithTabindexAttr);
+      fixture.detectChanges();
+
+      const checkbox = fixture.debugElement.query(By.directive(MatCheckbox)).nativeElement;
+      expect(checkbox.getAttribute('tabindex')).toBeFalsy();
+    });
   });
 
   describe('using ViewChild', () => {
