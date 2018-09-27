@@ -332,7 +332,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
 
   /** Does some manual dirty checking on the native input `value` property. */
   protected _dirtyCheckNativeValue() {
-    const newValue = this.value;
+    const newValue = this._elementRef.nativeElement.value;
 
     if (this._previousNativeValue !== newValue) {
       this._previousNativeValue = newValue;

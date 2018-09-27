@@ -5,7 +5,15 @@ import {
   wrappedErrorMessage,
   MockNgZone,
 } from '@angular/cdk/testing';
-import {ChangeDetectionStrategy, Component, ViewChild, Type, Provider, NgZone} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  Type,
+  Provider,
+  NgZone,
+  Directive,
+} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {
   FormControl,
@@ -35,8 +43,7 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
-import {MatInputModule} from './index';
-import {MatInput} from './input';
+import {MatInputModule, MatInput, MAT_INPUT_VALUE_ACCESSOR} from './index';
 import {MatTextareaAutosize} from './autosize';
 
 describe('MatInput without forms', () => {
@@ -889,6 +896,20 @@ describe('MatInput without forms', () => {
     expect(formField.classList).not.toContain('mat-form-field-type-mat-native-select');
   });
 
+  it('should use the native input value when determining whether ' +
+    'the element is empty with a custom accessor', fakeAsync(() => {
+      let fixture = createComponent(MatInputWithCustomAccessor, [], [], [CustomMatInputAccessor]);
+      fixture.detectChanges();
+      let label = fixture.debugElement.query(By.css('label')).nativeElement;
+
+      expect(label.classList).toContain('mat-form-field-empty');
+
+      fixture.nativeElement.querySelector('input').value = 'abc';
+      fixture.detectChanges();
+
+      expect(label.classList).not.toContain('mat-form-field-empty');
+    }));
+
 });
 
 describe('MatInput with forms', () => {
@@ -1368,7 +1389,8 @@ describe('MatInput with textarea autosize', () => {
 
 function createComponent<T>(component: Type<T>,
                             providers: Provider[] = [],
-                            imports: any[] = []): ComponentFixture<T> {
+                            imports: any[] = [],
+                            declarations: any[] = []): ComponentFixture<T> {
   TestBed.configureTestingModule({
     imports: [
       FormsModule,
@@ -1379,7 +1401,7 @@ function createComponent<T>(component: Type<T>,
       ReactiveFormsModule,
       ...imports
     ],
-    declarations: [component],
+    declarations: [component, ...declarations],
     providers,
   }).compileComponents();
 
@@ -1876,3 +1898,26 @@ class MatInputSelectWithLabel {}
     </mat-form-field>`
 })
 class MatInputSelectWithInnerHtml {}
+
+@Component({
+  template: `
+    <mat-form-field floatLabel="never">
+      <input matInput customInputAccessor placeholder="Placeholder">
+    </mat-form-field>`
+})
+class MatInputWithCustomAccessor {}
+
+
+/** Custom component that never has a value. Used for testing the `MAT_INPUT_VALUE_ACCESSOR`. */
+@Directive({
+  selector: 'input[customInputAccessor]',
+  providers: [{
+    provide: MAT_INPUT_VALUE_ACCESSOR,
+    useExisting: CustomMatInputAccessor
+  }]
+})
+class CustomMatInputAccessor {
+  get value() { return this._value; }
+  set value(_value: any) {}
+  private _value = null;
+}
