@@ -18,7 +18,8 @@ describe('MatRadio', () => {
         RadioGroupWithFormControl,
         StandaloneRadioButtons,
         InterleavedRadioGroup,
-        TranscludingWrapper
+        TranscludingWrapper,
+        RadioButtonWithPredefinedTabindex,
       ]
     });
 
@@ -714,6 +715,17 @@ describe('MatRadio', () => {
       expect(radioButtonInput.tabIndex)
         .toBe(4, 'Expected the tabindex to be set to "4".');
     });
+
+    it('should remove the tabindex from the host element', () => {
+      const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedTabindex);
+      predefinedFixture.detectChanges();
+
+      const radioButtonEl =
+          predefinedFixture.debugElement.query(By.css('.mat-radio-button')).nativeElement;
+
+      expect(radioButtonEl.getAttribute('tabindex')).toBeFalsy();
+    });
+
   });
 
   describe('group interspersed with other tags', () => {
@@ -873,3 +885,9 @@ class InterleavedRadioGroup {
   `
 })
 class TranscludingWrapper {}
+
+
+@Component({
+  template: `<mat-radio-button tabindex="0"></mat-radio-button>`
+})
+class RadioButtonWithPredefinedTabindex {}
