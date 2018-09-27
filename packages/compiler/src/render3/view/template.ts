@@ -549,21 +549,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       const stylingInput = mapBasedStyleInput || mapBasedClassInput;
       if (stylingInput) {
-        const params: o.Expression[] = [];
-        let value: AST;
-        if (mapBasedClassInput) {
-          value = mapBasedClassInput.value.visit(this._valueConverter);
-        } else if (mapBasedStyleInput) {
-          params.push(o.NULL_EXPR);
-        }
-
-        if (mapBasedStyleInput) {
-          value = mapBasedStyleInput.value.visit(this._valueConverter);
-        }
-
         this.updateInstruction(stylingInput.sourceSpan, R3.elementStylingMap, () => {
-          params.push(this.convertPropertyBinding(implicit, value, true));
-          return [indexLiteral, ...params];
+          const params: o.Expression[] = [indexLiteral];
+
+          if (mapBasedClassInput) {
+            const mapBasedClassValue = mapBasedClassInput.value.visit(this._valueConverter);
+            params.push(this.convertPropertyBinding(implicit, mapBasedClassValue, true));
+          } else if (mapBasedStyleInput) {
+            params.push(o.NULL_EXPR);
+          }
+
+          if (mapBasedStyleInput) {
+            const mapBasedStyleValue = mapBasedStyleInput.value.visit(this._valueConverter);
+            params.push(this.convertPropertyBinding(implicit, mapBasedStyleValue, true));
+          }
+
+          return params;
         });
       }
 
