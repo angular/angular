@@ -28,23 +28,41 @@ export const MONKEY_PATCH_KEY_NAME = '__ngContext__';
  * of the context.
  */
 export interface LContext {
-  /** The component's parent view data */
+  /**
+   * The component's parent view data.
+   */
   lViewData: LViewData;
 
-  /** The index instance of the LNode */
+  /**
+   * The index instance of the LNode.
+   */
   lNodeIndex: number;
 
-  /** The instance of the DOM node that is attached to the lNode */
+  /**
+   * The instance of the DOM node that is attached to the lNode.
+   */
   native: RElement;
 
-  /** The instance of the Component node */
+  /**
+   * The instance of the Component node.
+   */
   component: {}|null|undefined;
 
-  /** The list of indices for the active directives that exist on this element */
+  /**
+   * The list of indices for the active directives that exist on this element.
+   */
   directiveIndices: number[]|null|undefined;
 
-  /** The list of active directives that exist on this element */
-  directives: Array<{}>|null|undefined;
+  /**
+   * The list of active directives that exist on this element.
+   */
+  directives: any[]|null|undefined;
+
+  /**
+   * The map of local references (local reference name => element or directive instance) that exist
+   * on this element.
+   */
+  localRefs: {[key: string]: any}|null|undefined;
 }
 
 /** Returns the matching `LContext` data for a given DOM node, directive or component instance.
@@ -172,6 +190,7 @@ function createLContext(lViewData: LViewData, lNodeIndex: number, native: REleme
     component: undefined,
     directiveIndices: undefined,
     directives: undefined,
+    localRefs: undefined,
   };
 }
 
@@ -393,6 +412,28 @@ export function discoverDirectives(lViewData: LViewData, indices: number[]): num
     }
   }
   return directives;
+}
+
+/**
+ * Returns a map of local references (local reference name => element or directive instance) that
+ * exist on a given element.
+ */
+export function discoverLocalRefs(lViewData: LViewData, lNodeIndex: number): {[key: string]: any}|
+    null {
+  const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
+  if (tNode && tNode.localNames) {
+    const result: {[key: string]: any} = {};
+    for (let i = 0; i < tNode.localNames.length; i += 2) {
+      const localRefName = tNode.localNames[i];
+      const directiveIndex = tNode.localNames[i + 1] as number;
+      result[localRefName] = directiveIndex === -1 ?
+          getLNodeFromViewData(lViewData, lNodeIndex) !.native :
+          lViewData[DIRECTIVES] ![directiveIndex];
+    }
+    return result;
+  }
+
+  return null;
 }
 
 function getDirectiveStartIndex(tNode: TNode): number {
