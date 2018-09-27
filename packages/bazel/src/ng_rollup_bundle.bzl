@@ -17,8 +17,8 @@
 load(
     "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
+    "ROLLUP_DEPS_ASPECTS",
     "ROLLUP_OUTPUTS",
-    "rollup_module_mappings_aspect",
     "run_rollup",
     "run_sourcemapexplorer",
     "run_uglify",
@@ -141,16 +141,18 @@ def _ng_rollup_bundle(ctx):
 
     return DefaultInfo(files = depset([ctx.outputs.build_es5_min, sourcemap]))
 
+DEPS_ASPECTS = [esm5_outputs_aspect]
+
+# Workaround skydoc bug which assumes ROLLUP_DEPS_ASPECTS is a str type
+[DEPS_ASPECTS.append(a) for a in ROLLUP_DEPS_ASPECTS]
+
 ng_rollup_bundle = rule(
     implementation = _ng_rollup_bundle,
     attrs = dict(ROLLUP_ATTRS, **{
         "deps": attr.label_list(
             doc = """Other targets that provide JavaScript files.
             Typically this will be `ts_library` or `ng_module` targets.""",
-            aspects = [
-                rollup_module_mappings_aspect,
-                esm5_outputs_aspect,
-            ],
+            aspects = DEPS_ASPECTS,
         ),
         "_rollup": attr.label(
             executable = True,

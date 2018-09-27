@@ -1,4 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_config")
+
 exports_files(["tsconfig.json"])
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = ["tsconfig.json"],
+)
 
 # The toolchain container used for execution is defined in the target indicated
 # by "extra_execution_platforms", "host_platform" and "platforms".
@@ -28,5 +38,4 @@ platform(
             value: "SYS_ADMIN"
         }
         """,
-    visibility = ["//visibility:public"],
 )

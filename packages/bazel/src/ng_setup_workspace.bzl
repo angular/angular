@@ -5,7 +5,6 @@
 
 "Install toolchain dependencies"
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
 load("@build_bazel_rules_typescript//:defs.bzl", "check_rules_typescript_version")
 
 def ng_setup_workspace():
@@ -14,12 +13,9 @@ def ng_setup_workspace():
     It creates some additional Bazel external repositories that are used internally
     by the Angular rules.
     """
-    yarn_install(
-        name = "angular_packager_deps",
-        package_json = "@angular//packages/bazel/src/ng_package:package.json",
-        yarn_lock = "@angular//packages/bazel/src/ng_package:yarn.lock",
-    )
 
     # 0.16.0: minimal version required to work with ng_module
     # 0.16.2: bazel type resolution for zone.js types
-    check_rules_typescript_version("0.16.2")
+    # 0.20.1: fine grained deps
+    # 0.20.2: version check fix
+    check_rules_typescript_version("0.20.2")

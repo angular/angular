@@ -11,5 +11,6 @@ ts_library(
     module_name = "@angular/compiler-cli/src/ngtsc/diagnostics",
     deps = [
         "//packages/compiler",
+        "@ngdeps//typescript",
     ],
 )

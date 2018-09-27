@@ -2,6 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "ngc_test_lib",
+    testonly = True,
     srcs = [
         "index_test.ts",
         "test_support.ts",
@@ -11,6 +12,7 @@ ts_library(
     deps = [
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
