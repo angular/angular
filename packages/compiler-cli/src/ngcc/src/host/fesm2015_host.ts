@@ -131,7 +131,6 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     // }
     // MyClass.staticProperty = ...;
     // ```
-    // (IS THIS A BUG IN TS?)
     if (ts.isVariableDeclaration(symbol.valueDeclaration.parent)) {
       const variableSymbol = this.checker.getSymbolAtLocation(symbol.valueDeclaration.parent.name);
       if (variableSymbol && variableSymbol.exports) {
