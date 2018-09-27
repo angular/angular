@@ -92,7 +92,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵreference': r3.reference,
   'ɵelementStyling': r3.elementStyling,
   'ɵelementStylingMap': r3.elementStylingMap,
-  'ɵelementStylingProp': r3.elementStyleProp,
+  'ɵelementStyleProp': r3.elementStyleProp,
   'ɵelementStylingApply': r3.elementStylingApply,
   'ɵtemplate': r3.template,
   'ɵtext': r3.text,
