@@ -200,7 +200,7 @@ A.decorators = [
            const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
            const output = new MagicString(PROGRAM.contents);
            const analyzedClass = analyzedFile.analyzedClasses[1];
-           const decorator = analyzedClass.decorators[1];
+           const decorator = analyzedClass.decorators[0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
            decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
            renderer.removeDecorators(output, decoratorsToRemove);
