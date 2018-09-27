@@ -15,6 +15,7 @@ import {makeProgram} from '../helpers/utils';
 const BASIC_FILE = {
   name: '/primary.js',
   contents: `
+  import {Directive} from '@angular/core';
   var A = (function() {
     function A() {}
     A.decorators = [
