@@ -431,6 +431,7 @@ const DECORATED_FILES = [
   {
     name: '/primary.js',
     contents: `
+    import { Directive } from '@angular/core';
     var A = (function() {
       function A() {}
       A.decorators = [
@@ -458,6 +459,7 @@ const DECORATED_FILES = [
   {
     name: '/secondary.js',
     contents: `
+    import { Directive } from '@angular/core';
     var D = (function() {
       function D() {}
       D.decorators = [

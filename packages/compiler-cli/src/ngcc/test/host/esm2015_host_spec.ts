@@ -54,6 +54,7 @@ const DECORATED_FILES = [
   {
     name: '/primary.js',
     contents: `
+     import {Directive} from '@angular/core';
      class A {}
     A.decorators = [
       { type: Directive, args: [{ selector: '[a]' }] }
@@ -72,6 +73,7 @@ const DECORATED_FILES = [
   {
     name: '/secondary.js',
     contents: `
+    import {Directive} from '@angular/core';
     class D {}
     D.decorators = [
       { type: Directive, args: [{ selector: '[d]' }] }
