@@ -539,4 +539,46 @@ describe('compiler compliance: styling', () => {
          expectEmit(result.source, template, 'Incorrect template');
        });
   });
+
+  describe('[style] mixed with [class]', () => {
+    it('should combine [style] and [class] bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`<div [style]="myStyleExp" [class]="myClassExp"></div>\`
+                })
+                export class MyComponent {
+                  myStyleExp = [{color:'red'}, {color:'blue', duration:1000}]
+                  myClassExp = 'foo bar apple';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $ctx$.myClassExp, $ctx$.myStyleExp);
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+  });
 });
