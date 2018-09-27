@@ -95,16 +95,6 @@ In thinking about accessibility, it is useful to place icon use into one of thre
 3. **Indicator**: the icon is not interactive, but it conveys some information, such as a status. This
 includes using the icon in place of text inside of a larger message.
 
-### Bidirectionality
-
-By default icons in an RTL layout will look exactly the same as in LTR, however certain icons have
-to be [mirrored for RTL users](https://material.io/guidelines/usability/bidirectionality.html). If
-you want to mirror an icon only in an RTL layout, you can use the `mat-icon-rtl-mirror` CSS class.
-
-```html
-<mat-icon class="mat-icon-rtl-mirror" svgIcon="thumb-up"></mat-icon>
-```
-
 #### Decorative icons
 When the icon is purely cosmetic and conveys no real semantic meaning, the `<mat-icon>` element
 is marked with `aria-hidden="true"`.
@@ -124,3 +114,13 @@ screen-readers. The most straightforward way to do this is to
 information as the icon.
 2. Add the `cdk-visually-hidden` class to the `<span>`. This will make the message invisible
 on-screen but still available to screen-reader users.
+
+### Bidirectionality
+
+By default icons in an RTL layout will look exactly the same as in LTR, however certain icons have
+to be [mirrored for RTL users](https://material.io/guidelines/usability/bidirectionality.html). If
+you want to mirror an icon only in an RTL layout, you can use the `mat-icon-rtl-mirror` CSS class.
+
+```html
+<mat-icon class="mat-icon-rtl-mirror" svgIcon="thumb-up"></mat-icon>
+```
