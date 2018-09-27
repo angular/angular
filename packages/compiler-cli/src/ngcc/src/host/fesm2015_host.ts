@@ -336,7 +336,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
           decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
         // AST of the array of decorator values
         const decoratorsArray = decoratorsIdentifier.parent.right;
-        return this.reflectDecorators(decoratorsArray);
+        return this.reflectDecorators(decoratorsArray).filter(isImportedFromCore);
       }
     }
     return null;
@@ -404,8 +404,12 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     const propDecoratorsMap = getPropertyValueFromSymbol(decoratorsProperty);
     if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
       const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
-      propertiesMap.forEach(
-          (value, name) => { memberDecorators.set(name, this.reflectDecorators(value)); });
+      propertiesMap.forEach((value, name) => {
+        const decorators = this.reflectDecorators(value).filter(isImportedFromCore);
+        if (decorators.length) {
+          memberDecorators.set(name, decorators);
+        }
+      });
     }
     return memberDecorators;
   }
@@ -727,7 +731,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
             .map(paramInfo => {
               const type = paramInfo && paramInfo.get('type') || null;
               const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
-              const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
+              const decorators =
+                  decoratorInfo && this.reflectDecorators(decoratorInfo).filter(isImportedFromCore);
               return {type, decorators};
             });
       }
