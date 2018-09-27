@@ -264,6 +264,7 @@ export class MatListOption extends _MatListOptionMixinBase
     '(focus)': 'focus()',
     '(blur)': '_onTouched()',
     '(keydown)': '_keydown($event)',
+    'aria-multiselectable': 'true',
     '[attr.aria-disabled]': 'disabled.toString()',
   },
   template: '<ng-content></ng-content>',

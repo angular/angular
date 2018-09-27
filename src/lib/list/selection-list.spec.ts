@@ -431,6 +431,11 @@ describe('MatSelectionList without forms', () => {
 
       expect(item.selected).toBe(true);
     });
+
+    it('should set aria-multiselectable to true on the selection list element', () => {
+      expect(selectionList.nativeElement.getAttribute('aria-multiselectable')).toBe('true');
+    });
+
   });
 
   describe('with list option selected', () => {
