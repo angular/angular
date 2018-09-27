@@ -222,7 +222,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
         [];
   }
 
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|undefined {
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
     const value = super.getVariableValue(declaration);
     if (value) {
       return value;
@@ -242,7 +242,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     if (symbol && (ts.isBlock(block) || ts.isSourceFile(block))) {
       return this.findVariableValue(block, symbol);
     }
-    return undefined;
+    return null;
   }
 
   ///////////// Protected Helpers /////////////
@@ -253,11 +253,11 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns an expression that represents the value of the variable, or undefined if none can be
    * found.
    */
-  protected findVariableValue(node: ts.Node|undefined, symbol: ts.Symbol): ts.Expression|undefined {
+  protected findVariableValue(node: ts.Node|undefined, symbol: ts.Symbol): ts.Expression|null {
     if (!node) {
-      return node;
+      return null;
     }
-    if (ts.isBinaryExpression(node)) {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken ) {
       const left = node.left;
       const right = node.right;
       if (ts.isIdentifier(left) && this.checker.getSymbolAtLocation(left) === symbol) {
@@ -265,7 +265,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       }
       return this.findVariableValue(right, symbol);
     }
-    return node.forEachChild(node => this.findVariableValue(node, symbol));
+    return node.forEachChild(node => this.findVariableValue(node, symbol)) || null;
   }
 
   /**

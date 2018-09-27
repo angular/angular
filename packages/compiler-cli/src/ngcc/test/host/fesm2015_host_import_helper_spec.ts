@@ -405,7 +405,7 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
       const missingValue =
           findVariableDeclaration(program.getSourceFile(NGMODULE_FILE.name) !, 'missingValue');
       const value = host.getVariableValue(missingValue !);
-      expect(value).toBeUndefined();
+      expect(value).toBe(null);
     });
   });
 

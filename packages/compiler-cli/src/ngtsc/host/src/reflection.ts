@@ -430,5 +430,5 @@ export interface ReflectionHost {
    * @returns the value of the variable, as a TypeScript expression node, or `undefined`
    * if the value cannot be computed.
    */
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|undefined;
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null;
 }

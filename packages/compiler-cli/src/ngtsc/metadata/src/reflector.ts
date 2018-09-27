@@ -166,8 +166,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
   }
 
-  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|undefined {
-    return declaration.initializer;
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+    return declaration.initializer || null;
   }
 
   /**
