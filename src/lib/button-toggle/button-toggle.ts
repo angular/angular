@@ -28,6 +28,8 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  InjectionToken,
+  Inject,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -39,6 +41,26 @@ import {
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
+
+/** Possible appearance styles for the button toggle. */
+export type MatButtonToggleAppearance = 'legacy' | 'standard';
+
+/**
+ * Represents the default options for the button toggle that can be configured
+ * using the `MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS` injection token.
+ */
+export interface MatButtonToggleDefaultOptions {
+  appearance?: MatButtonToggleAppearance;
+}
+
+/**
+ * Injection token that can be used to configure the
+ * default options for all button toggles within an app.
+ */
+export const MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS =
+    new InjectionToken<MatButtonToggleDefaultOptions>('MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS');
+
+
 
 /**
  * Provider Expression that allows mat-button-toggle-group to register as a ControlValueAccessor.
@@ -80,12 +102,12 @@ export class MatButtonToggleChange {
     'role': 'group',
     'class': 'mat-button-toggle-group',
     '[attr.aria-disabled]': 'disabled',
-    '[class.mat-button-toggle-vertical]': 'vertical'
+    '[class.mat-button-toggle-vertical]': 'vertical',
+    '[class.mat-button-toggle-group-appearance-standard]': 'appearance === "standard"',
   },
   exportAs: 'matButtonToggleGroup',
 })
 export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, AfterContentInit {
-
   private _vertical = false;
   private _multiple = false;
   private _disabled = false;
@@ -110,6 +132,9 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
 
   /** Child button toggle buttons. */
   @ContentChildren(forwardRef(() => MatButtonToggle)) _buttonToggles: QueryList<MatButtonToggle>;
+
+  /** The appearance for all the buttons in the group. */
+  @Input() appearance: MatButtonToggleAppearance;
 
   /** `name` attribute for the underlying `input` element. */
   @Input()
@@ -181,7 +206,14 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
   @Output() readonly change: EventEmitter<MatButtonToggleChange> =
       new EventEmitter<MatButtonToggleChange>();
 
-  constructor(private _changeDetector: ChangeDetectorRef) {}
+  constructor(
+    private _changeDetector: ChangeDetectorRef,
+    @Optional() @Inject(MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS)
+        defaultOptions?: MatButtonToggleDefaultOptions) {
+
+      this.appearance =
+          defaultOptions && defaultOptions.appearance ? defaultOptions.appearance : 'standard';
+    }
 
   ngOnInit() {
     this._selectionModel = new SelectionModel<MatButtonToggle>(this.multiple, undefined, false);
@@ -331,6 +363,7 @@ export const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonT
     '[class.mat-button-toggle-standalone]': '!buttonToggleGroup',
     '[class.mat-button-toggle-checked]': 'checked',
     '[class.mat-button-toggle-disabled]': 'disabled',
+    '[class.mat-button-toggle-appearance-standard]': 'appearance === "standard"',
     'class': 'mat-button-toggle',
     // Clear out the native tabindex here since we forward it to the underlying button
     '[attr.tabindex]': 'null',
@@ -377,6 +410,16 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   /** Tabindex for the toggle. */
   @Input() tabIndex: number | null;
 
+  /** The appearance style of the button. */
+  @Input()
+  get appearance(): MatButtonToggleAppearance {
+    return this.buttonToggleGroup ? this.buttonToggleGroup.appearance : this._appearance;
+  }
+  set appearance(value: MatButtonToggleAppearance) {
+    this._appearance = value;
+  }
+  private _appearance: MatButtonToggleAppearance;
+
   /** Whether the button is checked. */
   @Input()
   get checked(): boolean {
@@ -413,12 +456,16 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
               private _elementRef: ElementRef<HTMLElement>,
               private _focusMonitor: FocusMonitor,
               // @breaking-change 8.0.0 `defaultTabIndex` to be made a required parameter.
-              @Attribute('tabindex') defaultTabIndex: string) {
+              @Attribute('tabindex') defaultTabIndex: string,
+              @Optional() @Inject(MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS)
+                  defaultOptions?: MatButtonToggleDefaultOptions) {
     super();
 
     const parsedTabIndex = Number(defaultTabIndex);
     this.tabIndex = (parsedTabIndex || parsedTabIndex === 0) ? parsedTabIndex : null;
     this.buttonToggleGroup = toggleGroup;
+    this.appearance =
+        defaultOptions && defaultOptions.appearance ? defaultOptions.appearance : 'standard';
   }
 
   ngOnInit() {

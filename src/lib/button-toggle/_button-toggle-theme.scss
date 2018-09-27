@@ -6,9 +6,16 @@
 @mixin mat-button-toggle-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
+  $divider-color: mat-color($foreground, divider);
 
-  .mat-button-toggle-standalone, .mat-button-toggle-group {
+  .mat-button-toggle-standalone,
+  .mat-button-toggle-group {
     @include _mat-theme-elevation(2, $theme);
+  }
+
+  .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
+  .mat-button-toggle-group-appearance-standard {
+    box-shadow: none;
   }
 
   .mat-button-toggle {
@@ -19,18 +26,55 @@
     }
   }
 
+  .mat-button-toggle-appearance-standard {
+    color: mat-color($foreground, text);
+    background: mat-color($background, card);
+
+    .mat-button-toggle-focus-overlay {
+      background-color: mat-color($background, focused-button, 1);
+    }
+  }
+
+  .mat-button-toggle-group-appearance-standard .mat-button-toggle + .mat-button-toggle {
+    border-left: solid 1px $divider-color;
+  }
+
+  [dir='rtl'] .mat-button-toggle-group-appearance-standard .mat-button-toggle + .mat-button-toggle {
+    border-left: none;
+    border-right: solid 1px $divider-color;
+  }
+
+  .mat-button-toggle-vertical-appearance-standard .mat-button-toggle + .mat-button-toggle {
+    border-left: none;
+    border-right: none;
+    border-top: solid 1px $divider-color;
+  }
+
   .mat-button-toggle-checked {
     background-color: mat-color($background, selected-button);
     color: mat-color($foreground, secondary-text);
+
+    &.mat-button-toggle-appearance-standard {
+      color: mat-color($foreground, text);
+    }
   }
 
   .mat-button-toggle-disabled {
-    background-color: mat-color($background, disabled-button-toggle);
     color: mat-color($foreground, disabled-button);
+    background-color: mat-color($background, disabled-button-toggle);
+
+    &.mat-button-toggle-appearance-standard {
+      background: mat-color($background, card);
+    }
 
     &.mat-button-toggle-checked {
       background-color: mat-color($background, selected-disabled-button);
     }
+  }
+
+  .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
+  .mat-button-toggle-group-appearance-standard {
+    border: solid 1px $divider-color;
   }
 }
 

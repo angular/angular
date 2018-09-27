@@ -2,24 +2,35 @@
 @import '../core/style/layout-common';
 @import '../../cdk/a11y/a11y';
 
-$mat-button-toggle-padding: 0 16px !default;
-$mat-button-toggle-height: 36px !default;
-$mat-button-toggle-border-radius: 2px !default;
+$mat-button-toggle-standard-padding: 0 12px !default;
+$mat-button-toggle-standard-height: 48px !default;
+$mat-button-toggle-standard-border-radius: 4px !default;
+
+$mat-button-toggle-legacy-padding: 0 16px !default;
+$mat-button-toggle-legacy-height: 36px !default;
+$mat-button-toggle-legacy-border-radius: 2px !default;
 
 .mat-button-toggle-standalone,
 .mat-button-toggle-group {
   position: relative;
   display: inline-flex;
   flex-direction: row;
-
-  border-radius: $mat-button-toggle-border-radius;
-
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
+  border-radius: $mat-button-toggle-legacy-border-radius;
 
   @include cdk-high-contrast {
     outline: solid 1px;
+  }
+}
+
+.mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
+.mat-button-toggle-group-appearance-standard {
+  border-radius: $mat-button-toggle-standard-border-radius;
+
+  @include cdk-high-contrast {
+    outline: 0;
   }
 }
 
@@ -38,10 +49,6 @@ $mat-button-toggle-border-radius: 2px !default;
   position: relative;
   -webkit-tap-highlight-color: transparent;
 
-  // Similar to components like the checkbox, slide-toggle and radio, we cannot show the focus
-  // overlay for `.cdk-program-focused` because mouse clicks on the <label> element would be always
-  // treated as programmatic focus.
-  // TODO(paul): support `program` as well. See https://github.com/angular/material2/issues/9889
   &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
       opacity: 1;
@@ -54,11 +61,35 @@ $mat-button-toggle-border-radius: 2px !default;
   }
 }
 
+.mat-button-toggle-appearance-standard {
+  &:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay {
+    opacity: 0.04;
+  }
+
+  // Similar to components like the checkbox, slide-toggle and radio, we cannot show the focus
+  // overlay for `.cdk-program-focused` because mouse clicks on the <label> element would be always
+  // treated as programmatic focus. Note that it needs the extra `:not` in order to have more
+  // specificity than the `:hover` above.
+  // TODO(paul): support `program` as well. See https://github.com/angular/material2/issues/9889
+  &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
+    opacity: 0.12;
+
+    @include cdk-high-contrast {
+      opacity: 0.5;
+    }
+  }
+}
+
 .mat-button-toggle-label-content {
   @include user-select(none);
   display: inline-block;
-  line-height: $mat-button-toggle-height;
-  padding: $mat-button-toggle-padding;
+  line-height: $mat-button-toggle-legacy-height;
+  padding: $mat-button-toggle-legacy-padding;
+
+  .mat-button-toggle-appearance-standard & {
+    line-height: $mat-button-toggle-standard-height;
+    padding: $mat-button-toggle-standard-padding;
+  }
 }
 
 .mat-button-toggle-label-content > * {
@@ -75,13 +106,22 @@ $mat-button-toggle-border-radius: 2px !default;
   @include mat-fill;
 
   .mat-button-toggle-checked & {
+    border-bottom: solid $mat-button-toggle-legacy-height;
+
     // Changing the background color for the selected item won't be visible in high contrast mode.
     // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
     // It uses a border, because the browser will render it using a brighter color.
     @include cdk-high-contrast {
       opacity: 0.5;
       height: 0;
-      border-bottom: solid $mat-button-toggle-height;
+    }
+  }
+}
+
+@include cdk-high-contrast {
+  .mat-button-toggle-checked {
+    &.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
+      border-bottom: solid $mat-button-toggle-standard-height;
     }
   }
 }
