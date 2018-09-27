@@ -30,6 +30,9 @@ export interface DecorationAnalysis {
   constantPool: ConstantPool;
 }
 
+export type DecorationAnalyses = Map<ts.SourceFile, DecorationAnalysis>;
+export const DecorationAnalyses = Map;
+
 export interface MatchingHandler<A, M> {
   handler: DecoratorHandler<A, M>;
   match: M;
@@ -64,11 +67,29 @@ export class DecorationAnalyzer {
       private rootDirs: string[], private isCore: boolean) {}
 
   /**
+   * Analyze a program to find all the decorated files should be transformed.
+   * @param program The program whose files should be analysed.
+   * @returns a map of the source files to the analysis for those files.
+   */
+  analyzeProgram(program: ts.Program): DecorationAnalyses {
+    const analyzedFiles = new DecorationAnalyses();
+    program.getRootFileNames().forEach(fileName => {
+      const entryPoint = program.getSourceFile(fileName) !;
+      const decoratedFiles = this.host.findDecoratedFiles(entryPoint);
+      decoratedFiles.forEach(
+          decoratedFile =>
+              analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile)));
+    });
+    return analyzedFiles;
+  }
+
+  /**
    * Analyze a decorated file to generate the information about decorated classes that
    * should be converted to use ivy definitions.
    * @param file The file to be analysed for decorated classes.
+   * @returns the analysis of the file
    */
-  analyzeFile(file: DecoratedFile): DecorationAnalysis {
+  protected analyzeFile(file: DecoratedFile): DecorationAnalysis {
     const constantPool = new ConstantPool();
     const analyzedClasses =
         file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
