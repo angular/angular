@@ -99,7 +99,7 @@
     "@angular/compiler-cli": "^7.0.0-rc.1",
     "@angular/language-service": "^7.0.0-rc.1",
     "@types/jasmine": "^2.5.52",
-    "@types/jasminewd2": "^2.0.3",
+    "@types/jasminewd2": "^2.0.4",
     "@types/node": "~6.0.60",
     "archiver": "^1.3.0",
     "canonical-path": "^0.0.2",
