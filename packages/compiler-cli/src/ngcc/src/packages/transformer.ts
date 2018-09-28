@@ -18,9 +18,6 @@ import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Esm2015FileParser} from '../parsing/esm2015_parser';
-import {Esm5FileParser} from '../parsing/esm5_parser';
-import {FileParser} from '../parsing/file_parser';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
@@ -83,14 +80,14 @@ export class Transformer {
     const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
     const reflectionHost = this.getHost(entryPoint.name, format, packageProgram, dtsMapper);
 
-    const parser = this.getFileParser(format, packageProgram, reflectionHost);
     const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
     const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
     // Parse and analyze the files.
     const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
-    const parsedFiles = parser.parseFile(entryPointFile);
-    const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
+    const decoratedFiles = reflectionHost.findDecoratedFiles(entryPointFile);
+    const analyzedFiles = Array.from(decoratedFiles.values())
+                              .map(decoratedFile => analyzer.analyzeFile(decoratedFile));
 
     // Transform the source files and source maps.
     outputFiles.push(
@@ -123,19 +120,6 @@ export class Transformer {
         return new Esm5ReflectionHost(packageName, program.getTypeChecker());
       default:
         throw new Error(`Relection host for "${format}" not yet implemented.`);
-    }
-  }
-
-  getFileParser(format: string, program: ts.Program, host: NgccReflectionHost): FileParser {
-    switch (format) {
-      case 'esm2015':
-      case 'fesm2015':
-        return new Esm2015FileParser(program, host);
-      case 'esm5':
-      case 'fesm5':
-        return new Esm5FileParser(program, host);
-      default:
-        throw new Error(`File parser for "${format}" not yet implemented.`);
     }
   }
 

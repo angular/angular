@@ -13,7 +13,6 @@ import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {AnalyzedClass, Analyzer} from '../../src/analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
-import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
@@ -48,10 +47,10 @@ function setup(file: {name: string, contents: string}) {
   const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
 
-  const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
-  const analyzedFiles = parsedFiles.map(file => analyzer.analyzeFile(file));
+  const decoratedFiles = host.findDecoratedFiles(program.getSourceFile(file.name) !);
+  const analyzedFiles = decoratedFiles.map(file => analyzer.analyzeFile(file));
 
-  return {program, host, parser, analyzer, parsedFiles, analyzedFiles};
+  return {program, host, parser, analyzer, decoratedFiles, analyzedFiles};
 }
 
 describe('Renderer', () => {

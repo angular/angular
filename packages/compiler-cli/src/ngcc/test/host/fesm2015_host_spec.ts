@@ -1188,11 +1188,12 @@ describe('Fesm2015ReflectionHost', () => {
     it('should return an array of objects for each file that has exported and decorated classes',
        () => {
          const program = makeProgram(DECORATED_FILE);
-         const host = new Fesm2015ReflectionHost(program.getTypeChecker());
-         const decoratedFiles =
-             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILE.name) !);
-         expect(decoratedFiles.length).toEqual(1);
-         const decoratedClasses = decoratedFiles[0].decoratedClasses;
+         const host = new Fesm2015ReflectionHost('some-package', program.getTypeChecker());
+         const primaryFile = program.getSourceFile(DECORATED_FILE.name) !;
+         const decoratedFiles = host.findDecoratedFiles(primaryFile);
+
+         expect(decoratedFiles.size).toEqual(1);
+         const decoratedClasses = decoratedFiles.get(primaryFile) !.decoratedClasses;
          expect(decoratedClasses.length).toEqual(2);
 
          const decoratedClassA = decoratedClasses.find(c => c.name === 'A') !;

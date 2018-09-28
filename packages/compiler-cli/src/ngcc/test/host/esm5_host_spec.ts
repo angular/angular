@@ -1254,18 +1254,20 @@ describe('Esm5ReflectionHost', () => {
     it('should return an array of objects for each file that has exported and decorated classes',
        () => {
          const program = makeProgram(...DECORATED_FILES);
-         const host = new Esm5ReflectionHost(program.getTypeChecker());
-         const decoratedFiles =
-             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILES[0].name) !);
-         expect(decoratedFiles.length).toEqual(2);
-         const primary = decoratedFiles[0];
-         expect(primary.decoratedClasses.length).toEqual(1);
-         const classA = primary.decoratedClasses[0];
+         const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
+         const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
+         const decoratedFiles = host.findDecoratedFiles(primary);
+         expect(decoratedFiles.size).toEqual(2);
+         const primaryClasses = decoratedFiles.get(primary) !.decoratedClasses;
+         expect(primaryClasses.length).toEqual(1);
+         const classA = primaryClasses.find(c => c.name === 'A') !;
          expect(classA.name).toEqual('A');
          expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-         const secondary = decoratedFiles[1];
-         expect(secondary.decoratedClasses.length).toEqual(1);
-         const classD = secondary.decoratedClasses[0];
+
+         const secondary = program.getSourceFile(DECORATED_FILES[1].name) !;
+         const secondaryClasses = decoratedFiles.get(secondary) !.decoratedClasses;
+         expect(secondaryClasses.length).toEqual(1);
+         const classD = secondaryClasses.find(c => c.name === 'D') !;
          expect(classD.name).toEqual('D');
          expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
        });
