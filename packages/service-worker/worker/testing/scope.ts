@@ -351,7 +351,7 @@ class MockPushEvent extends MockExtendableEvent {
 }
 class MockNotificationEvent extends MockExtendableEvent {
   constructor(private _notification: any, readonly action?: string) { super(); }
-  readonly notification = {...this._notification, close: () => { return; }};
+  readonly notification = {...this._notification, close: () => undefined};
 }
 
 class MockInstallEvent extends MockExtendableEvent {}
