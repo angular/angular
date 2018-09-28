@@ -5,15 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../src/render3/instructions';
-import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
-import {LElementNode} from '../../src/render3/interfaces/node';
-import {Renderer3} from '../../src/render3/interfaces/renderer';
-import {StylingContext, StylingFlags, StylingIndex, allocStylingContext, createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../src/render3/styling';
-import {defaultStyleSanitizer} from '../../src/sanitization/sanitization';
-import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
+import {elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
+import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
+import {LElementNode} from '../../../src/render3/interfaces/node';
+import {Renderer3} from '../../../src/render3/interfaces/renderer';
+import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
+import {allocStylingContext, createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
+import {defaultStyleSanitizer} from '../../../src/sanitization/sanitization';
+import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
 
-import {renderToHtml} from './render_util';
+import {renderToHtml} from '../render_util';
 
 describe('styling', () => {
   let element: LElementNode|null = null;

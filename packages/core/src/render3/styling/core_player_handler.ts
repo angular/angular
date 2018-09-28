@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Player, PlayerHandler} from './interfaces';
+import {Player, PlayerHandler} from '../interfaces/player';
 
 export class CorePlayerHandler implements PlayerHandler {
   private _players: Player[] = [];
