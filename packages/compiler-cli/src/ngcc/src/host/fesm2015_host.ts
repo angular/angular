@@ -302,7 +302,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns A collection of files objects that hold info about the decorated classes and import
    * information.
    */
-  findDecoratedFiles(entryPoint: ts.SourceFile): DecoratedFile[] {
+  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile> {
     const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
     const map = new Map<ts.SourceFile, DecoratedFile>();
     if (moduleSymbol) {
@@ -335,7 +335,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
         map.get(file) !.decoratedClasses.push(clazz);
       });
     }
-    return Array.from(map.values());
+    return map;
   }
 
   ///////////// Protected Helpers /////////////
