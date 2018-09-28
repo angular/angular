@@ -14,7 +14,6 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {Injector} from '../../src/di/injector';
 import {R3_CHANGE_DETECTOR_REF_FACTORY, R3_ELEMENT_REF_FACTORY, R3_TEMPLATE_REF_FACTORY, R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/ivy_switch/runtime/ivy_switch_on';
-import {PlayerHandler} from '../../src/render3/animations/interfaces';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
@@ -23,6 +22,7 @@ import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, P
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
+import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';

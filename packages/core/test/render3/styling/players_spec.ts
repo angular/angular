@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ElementRef, TemplateRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {AnimationContext, PlayState, Player, PlayerHandler} from '../../../src/render3/animations/interfaces';
-import {addPlayer, getOrCreateAnimationContext, getPlayers} from '../../../src/render3/animations/players';
+import {addPlayer, getPlayers} from '../../../src/render3/player';
+import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {QUERY_READ_FROM_NODE, defineComponent, getHostElement} from '../../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply, load, markDirty} from '../../../src/render3/instructions';
+import {PlayerContext, PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {QueryList, query, queryRefresh} from '../../../src/render3/query';
 import {ComponentFixture} from '../render_util';
@@ -55,7 +55,7 @@ describe('animation player access', () => {
 
   it('should add a player to the element animation context and remove it once it completes', () => {
     const element = buildElement();
-    const context = getOrCreateAnimationContext(element);
+    const context = getOrCreatePlayerContext(element);
     expect(context).toEqual([]);
 
     const player = new MockPlayer();
@@ -226,7 +226,7 @@ function buildElementWithStyling() {
   return fixture.hostElement.querySelector('div') as RElement;
 }
 
-function readPlayers(context: AnimationContext): Player[] {
+function readPlayers(context: PlayerContext): Player[] {
   return context;
 }
 

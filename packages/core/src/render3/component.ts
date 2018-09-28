@@ -12,11 +12,12 @@ import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
 
-import {PlayerHandler} from './animations/interfaces';
 import {assertComponentType, assertDefined} from './assert';
 import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
+import {PlayerHandler} from './interfaces/player';
+
 import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';

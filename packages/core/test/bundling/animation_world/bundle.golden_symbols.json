@@ -276,7 +276,7 @@
     "name": "addToViewTree"
   },
   {
-    "name": "allocAnimationContext"
+    "name": "allocPlayerContext"
   },
   {
     "name": "allocStylingContext"
@@ -600,9 +600,6 @@
     "name": "getMultiStartIndex"
   },
   {
-    "name": "getOrCreateAnimationContext"
-  },
-  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -610,6 +607,9 @@
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreatePlayerContext"
   },
   {
     "name": "getOrCreateRenderer2"
