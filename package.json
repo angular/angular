@@ -127,7 +127,7 @@
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
     "tsutils": "2.20.0",
-    "typescript": "~3.0.1",
+    "typescript": "~3.1.1",
     "uglify-es": "^3.3.9",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
