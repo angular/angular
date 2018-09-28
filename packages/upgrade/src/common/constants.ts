@@ -9,6 +9,7 @@
 export const $COMPILE = '$compile';
 export const $CONTROLLER = '$controller';
 export const $DELEGATE = '$delegate';
+export const $EXCEPTION_HANDLER = '$exceptionHandler';
 export const $HTTP_BACKEND = '$httpBackend';
 export const $INJECTOR = '$injector';
 export const $INTERVAL = '$interval';

@@ -609,6 +609,41 @@ withEachNg1Version(() => {
            // Wait for the module to be bootstrapped.
            setTimeout(() => expect($injectorFromNg2).toBe($injectorFromNg1));
          }));
+
+      it('should forward errors to $exceptionHandler', async(() => {
+
+           @Component({selector: 'ng2', template: 'test'})
+           class TestComponent {
+             constructor(@Inject('Not Existing') _notExisting: string) {}
+           }
+
+           @NgModule({
+             declarations: [TestComponent],
+             entryComponents: [TestComponent],
+             imports: [BrowserModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+
+           const ng1Module = angular.module('ng1', [lazyModuleName])
+                                 .directive('ng2', downgradeComponent({component: TestComponent}));
+
+           const $exceptionHandlerSpy = jasmine.createSpy('$exceptionHandler');
+           ng1Module.value('$exceptionHandler', $exceptionHandlerSpy);
+
+           const element = html('<ng2></ng2>');
+           const $injectorFromNg1 = angular.bootstrap(element, [ng1Module.name]);
+
+           setTimeout(() => {
+             expect($exceptionHandlerSpy).toHaveBeenCalledTimes(1);
+             expect(String($exceptionHandlerSpy.calls.argsFor(0))).toContain('Not Existing');
+           }, 0);
+         }));
     });
   });
 });

@@ -9,7 +9,7 @@
 import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
 
 import * as angular from './angular1';
-import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
+import {$COMPILE, $EXCEPTION_HANDLER, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 import {LazyModuleRef, controllerKey, getComponentName, isFunction} from './util';
 
@@ -68,11 +68,12 @@ export function downgradeComponent(info: {
   /** @deprecated since v4. This parameter is no longer used */
   selectors?: string[];
 }): any /* angular.IInjectable */ {
-  const directiveFactory:
-      angular.IAnnotatedFunction = function(
-                                       $compile: angular.ICompileService,
-                                       $injector: angular.IInjectorService,
-                                       $parse: angular.IParseService): angular.IDirective {
+  const directiveFactory: angular.IAnnotatedFunction = function(
+                                                           $compile: angular.ICompileService,
+                                                           $injector: angular.IInjectorService,
+                                                           $parse: angular.IParseService,
+                                                           $exceptionHandler: (exception: any) =>
+                                                               void): angular.IDirective {
     // When using `UpgradeModule`, we don't need to ensure callbacks to Angular APIs (e.g. change
     // detection) are run inside the Angular zone, because `$digest()` will be run inside the zone
     // (except if explicitly escaped, in which case we shouldn't force it back in).
@@ -143,7 +144,7 @@ export function downgradeComponent(info: {
         };
 
         if (isThenable<Injector>(parentInjector)) {
-          parentInjector.then(downgradeFn);
+          parentInjector.then(downgradeFn).catch($exceptionHandler);
         } else {
           downgradeFn(parentInjector);
         }
@@ -154,7 +155,7 @@ export function downgradeComponent(info: {
   };
 
   // bracket-notation because of closure - see #14441
-  directiveFactory['$inject'] = [$COMPILE, $INJECTOR, $PARSE];
+  directiveFactory['$inject'] = [$COMPILE, $INJECTOR, $PARSE, $EXCEPTION_HANDLER];
   return directiveFactory;
 }
 
@@ -179,6 +180,7 @@ class ParentInjectorPromise {
     } else {
       this.callbacks.push(callback);
     }
+    return {catch: () => {}};
   }
 
   resolve(injector: Injector) {
