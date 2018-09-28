@@ -52,9 +52,7 @@ interface StatusEvent {
   error?: string;
 }
 
-export interface NotificationObject extends NotificationOptions {
-  title: string; 
-}
+export interface NotificationObject extends NotificationOptions { title: string; }
 
 
 function errorObservable(message: string): Observable<any> {
