@@ -1,8 +1,6 @@
 # Contributing to Angular
-
 We would love for you to contribute to Angular and help make it even better than it is
 today! As a contributor, here are the guidelines we would like you to follow:
-
  - [Code of Conduct](#coc)
  - [Question or Problem?](#question)
  - [Issues and Bugs](#issue)
@@ -11,29 +9,20 @@ today! As a contributor, here are the guidelines we would like you to follow:
  - [Coding Rules](#rules)
  - [Commit Message Guidelines](#commit)
  - [Signing the CLA](#cla)
-
 ## <a name="coc"></a> Code of Conduct
 Help us keep Angular open and inclusive. Please read and follow our [Code of Conduct][coc].
-
 ## <a name="question"></a> Got a Question or Problem?
-
 Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) where the questions should be tagged with tag `angular`.
-
 Stack Overflow is a much better place to ask questions since:
-
 - there are thousands of people willing to help on Stack Overflow
 - questions and answers stay available for public viewing so your question / answer might help someone else
 - Stack Overflow's voting system assures that the best answers are prominently visible.
-
 To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
-
 If you would like to chat about the question in real-time, you can reach out via [our gitter channel][gitter].
-
 ## <a name="issue"></a> Found a Bug?
 If you find a bug in the source code, you can help us by
 [submitting an issue](#submit-issue) to our [GitHub Repository][github]. Even better, you can
 [submit a Pull Request](#submit-pr) with a fix.
-
 ## <a name="feature"></a> Missing a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our GitHub
 Repository. If you would like to *implement* a new feature, please submit an issue with
@@ -44,11 +33,9 @@ Please consider what kind of change it is:
 discussed. This will also allow us to better coordinate our efforts, prevent duplication of work,
 and help you to craft the change so that it is successfully accepted into the project.
 * **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
-
 ## <a name="submit"></a> Submission Guidelines
 
 ### <a name="submit-issue"></a> Submitting an Issue
-
 Before you submit an issue, please search the issue tracker, maybe an issue for your problem already exists and the discussion might inform you of workarounds readily available.
 
 We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it. In order to reproduce bugs, we will systematically ask you to provide a minimal reproduction scenario using http://plnkr.co. Having a live, reproducible scenario gives us a wealth of important information without going back & forth to you with additional questions like:
@@ -65,7 +52,6 @@ Unfortunately, we are not able to investigate / fix bugs without a minimal repro
 
 You can file new issues by filling out our [new issue form](https://github.com/angular/angular/issues/new).
 
-
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
@@ -77,7 +63,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Make your changes in a new git branch:
 
      ```shell
-     git checkout -b my-fix-branch master
+     git checkout -b my-fix-branch master    
      ```
 
 1. Create your patch, **including appropriate test cases**.
@@ -85,7 +71,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
 1. Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit). Adherence to these conventions
+  [commit message conventions](#commit).Adherence to these conventions
   is necessary because release notes are automatically generated from these messages.
 
      ```shell
@@ -109,41 +95,30 @@ Before you submit your Pull Request (PR) consider the following guidelines:
     git rebase master -i
     git push -f
     ```
-
 That's it! Thank you for your contribution!
-
 #### After your pull request is merged
-
 After your pull request is merged, you can safely delete your branch and pull the changes
 from the main (upstream) repository:
-
 * Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
-
     ```shell
     git push origin --delete my-fix-branch
     ```
-
 * Check out the master branch:
 
     ```shell
     git checkout master -f
     ```
-
 * Delete the local branch:
 
     ```shell
     git branch -D my-fix-branch
     ```
-
 * Update your master with the latest upstream version:
-
     ```shell
     git pull --ff upstream master
     ```
-
 ## <a name="rules"></a> Coding Rules
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
-
 * All features or bug fixes **must be tested** by one or more specs (unit-tests).
 * All public API methods **must be documented**. (Details TBC).
 * We follow [Google's JavaScript Style Guide][js-style-guide], but wrap all code at
@@ -167,31 +142,22 @@ format that includes a **type**, a **scope** and a **subject**:
 <BLANK LINE>
 <footer>
 ```
-
 The **header** is mandatory and the **scope** of the header is optional.
-
 Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
 to read on GitHub as well as in various git tools.
-
 The footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
-
 Samples: (even more [samples](https://github.com/angular/angular/commits/master))
-
 ```
 docs(changelog): update changelog to beta.5
 ```
 ```
 fix(release): need to depend on latest rxjs and zone.js
-
 The version in our package.json gets copied to the one we publish, and users need the latest of these.
 ```
-
 ### Revert
 If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
-
 ### Type
 Must be one of the following:
-
 * **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
 * **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 * **docs**: Documentation only changes
@@ -201,12 +167,9 @@ Must be one of the following:
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
-
 ### Scope
 The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages.
-
 The following is the list of supported scopes:
-
 * **animations**
 * **common**
 * **compiler**
@@ -224,9 +187,7 @@ The following is the list of supported scopes:
 * **router**
 * **service-worker**
 * **upgrade**
-
 There are currently a few exceptions to the "use package name" rule:
-
 * **packaging**: used for changes that change the npm package layout in all of our packages, e.g.
   public path changes, package.json changes done to all packages, d.ts file/format changes, changes
   to bundles, etc.
@@ -236,7 +197,6 @@ There are currently a few exceptions to the "use package name" rule:
 * none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
   packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a
   specific package (e.g. `docs: fix typo in tutorial`).
-
 ### Subject
 The subject contains a succinct description of the change:
 
@@ -286,7 +246,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 [dev-doc]: https://github.com/angular/angular/blob/master/docs/DEVELOPER.md
 [github]: https://github.com/angular/angular
 [gitter]: https://gitter.im/angular/angular
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[individual-cla]:http://code.google.com/legal/individual-cla-v1.0.html
 [js-style-guide]: https://google.github.io/styleguide/jsguide.html
 [jsfiddle]: http://jsfiddle.net
 [plunker]: http://plnkr.co/edit
