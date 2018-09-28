@@ -61,7 +61,6 @@ function publishRepo {
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
 
-  BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
   if [[ ${CI} ]]; then
     (
       # The file ~/.git_credentials is created in /.circleci/config.yml
@@ -88,6 +87,7 @@ function publishPackages {
   GIT_SCHEME=$1
   PKGS_DIST=$2
   BRANCH=$3
+  BUILD_VER=$4
 
   for dir in $PKGS_DIST/*/
   do
@@ -104,12 +104,6 @@ function publishPackages {
     else
       die "Don't have a way to publish to scheme $GIT_SCHEME"
     fi
-    SHA=`git rev-parse HEAD`
-    SHORT_SHA=`git rev-parse --short HEAD`
-    COMMIT_MSG=`git log --oneline -1`
-    COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
-    COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
-    LATEST_TAG=`getLatestTag`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
@@ -120,9 +114,17 @@ function publishPackages {
 function publishAllBuilds() {
   GIT_SCHEME="$1"
 
-  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-jit "${CUR_BRANCH}-ivy-jit"
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-local "${CUR_BRANCH}-ivy-aot"
+  SHA=`git rev-parse HEAD`
+  COMMIT_MSG=`git log --oneline -1`
+  COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+  COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+
+  local shortSha=`git rev-parse --short HEAD`
+  local latestTag=`getLatestTag`
+
+  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
+  publishPackages $GIT_SCHEME dist/packages-dist-ivy-jit "${CUR_BRANCH}-ivy-jit" "${latestTag}-ivy-jit+${shortSha}"
+  publishPackages $GIT_SCHEME dist/packages-dist-ivy-local "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
 }
 
 # See docs/DEVELOPER.md for help
