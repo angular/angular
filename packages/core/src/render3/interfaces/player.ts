@@ -31,7 +31,7 @@ export const enum PlayState {Pending = 0, Running = 1, Paused = 2, Finished = 10
 /**
  * The context that stores all active animation players present on an element.
  */
-export declare type AnimationContext = Player[];
+export declare type PlayerContext = Player[];
 export declare type ComponentInstance = {};
 export declare type DirectiveInstance = {};
 
