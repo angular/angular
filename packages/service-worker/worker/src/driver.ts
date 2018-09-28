@@ -34,8 +34,8 @@ const NOTIFICATION_OPTION_NAMES = [
   'vibrate', 'data'
 ];
 const NOTIFICATION_CLICK_OPTION_NAMES = [
-  'actions', 'badge', 'title', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction',
-  'tag', 'vibrate', 'data'
+  'actions', 'badge', 'title', 'body', 'dir', 'icon', 'image', 'lang', 'renotify',
+  'requireInteraction', 'tag', 'timestamp', 'vibrate', 'data'
 ];
 
 interface LatestEntry {
@@ -309,15 +309,15 @@ export class Driver implements Debuggable, UpdateSource {
     await this.scope.registration.showNotification(desc['title'] !, options);
   }
 
-  private async handleClick(notification: any, action?: string): Promise<void> {
-    (notification as Notification).close();
+  private async handleClick(notification: Notification, action?: string): Promise<void> {
+    notification.close();
 
-    const desc = notification as{[key: string]: string | undefined};
+    const desc = notification as any;
     let options: {[key: string]: string | undefined} = {};
     NOTIFICATION_CLICK_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
         .forEach(name => options[name] = desc[name]);
 
-    await this.broadcastAndFocus({
+    await this.broadcast({
       type: 'NOTIFICATION_CLICK',
       data: {action, notification: options},
     });
@@ -1005,18 +1005,6 @@ export class Driver implements Debuggable, UpdateSource {
       client.postMessage(notice);
 
     }, Promise.resolve());
-  }
-
-  async broadcastAndFocus(msg: Object): Promise<void> {
-    const clients = await this.scope.clients.matchAll();
-    clients.forEach((client: any) => {
-      if ('focus' in client) {
-        if (!client.focused) {
-          client.focus();
-        }
-      }
-      client.postMessage(msg);
-    });
   }
 
   async broadcast(msg: Object): Promise<void> {
