@@ -107,7 +107,7 @@ function overrideSetup() {
     const newName = 'New Name';
 
     page.nameInput.value = newName;
-    page.nameInput.dispatchEvent(newEvent('input')); // tell Angular
+    page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
     expect(component.hero.name).toBe(newName, 'component hero has new name');
     expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
@@ -206,7 +206,7 @@ function heroModuleSetup() {
       nameInput.value = 'quick BROWN  fOx';
 
       // dispatch a DOM event so that Angular learns of input value change.
-      nameInput.dispatchEvent(newEvent('input'));
+      nameInput.dispatchEvent(new Event('input'));
 
       // Tell Angular to update the display binding through the title pipe
       fixture.detectChanges();
