@@ -165,7 +165,7 @@ export function createCustomElement<P>(
 
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument, e.name, e.value);
+        const customEvent = createCustomEvent(this.ownerDocument !, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
     }

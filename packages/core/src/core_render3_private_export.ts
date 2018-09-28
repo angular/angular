@@ -21,10 +21,6 @@ export {
   DirectiveType as ɵDirectiveType,
   RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
-  injectElementRef as ɵinjectElementRef,
-  injectTemplateRef as ɵinjectTemplateRef,
-  injectViewContainerRef as ɵinjectViewContainerRef,
-  injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectRenderer2 as ɵinjectRenderer2,
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
@@ -88,6 +84,8 @@ export {
   elementProperty as ɵelementProperty,
   projectionDef as ɵprojectionDef,
   reference as ɵreference,
+  enableBindings as ɵenableBindings,
+  disableBindings as ɵdisableBindings,
   elementAttribute as ɵelementAttribute,
   elementStyling as ɵelementStyling,
   elementStylingMap as ɵelementStylingMap,
@@ -127,18 +125,12 @@ export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from 
 
 
 export {
-  compileNgModuleDefs as ɵcompileNgModuleDefs,
-  patchComponentDefWithScope as ɵpatchComponentDefWithScope,
-} from './render3/jit/module';
-
-export {
-  compileComponent as ɵcompileComponent,
-  compileDirective as ɵcompileDirective,
-} from './render3/jit/directive';
-
-export {
-  compilePipe as ɵcompilePipe,
-} from './render3/jit/pipe';
+  R3_COMPILE_NGMODULE_DEFS as ɵcompileNgModuleDefs,
+  R3_PATCH_COMPONENT_DEF_WTIH_SCOPE as ɵpatchComponentDefWithScope,
+  R3_COMPILE_COMPONENT as ɵcompileComponent,
+  R3_COMPILE_DIRECTIVE as ɵcompileDirective,
+  R3_COMPILE_PIPE as ɵcompilePipe,
+} from './ivy_switch/compiler/ivy_switch_on';
 
 export {
   NgModuleDef as ɵNgModuleDef,
@@ -166,6 +158,17 @@ export {
   getContext as ɵgetContext
 } from './render3/context_discovery';
 
+export {
+  Player as ɵPlayer,
+  PlayState as ɵPlayState,
+  PlayerHandler as ɵPlayerHandler,
+} from './render3/animations/interfaces';
+
+export {
+  addPlayer as ɵaddPlayer,
+  getPlayers as ɵgetPlayers,
+} from './render3/animations/players';
+
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
 //
@@ -176,6 +179,15 @@ export {
   R3_COMPILE_INJECTABLE__POST_NGCC__ as ɵR3_COMPILE_INJECTABLE__POST_NGCC__,
   R3_COMPILE_NGMODULE__POST_NGCC__ as ɵR3_COMPILE_NGMODULE__POST_NGCC__,
   R3_COMPILE_PIPE__POST_NGCC__ as ɵR3_COMPILE_PIPE__POST_NGCC__,
-  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__
-} from './ivy_switch_legacy';
+  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__,
+} from './ivy_switch/compiler/legacy';
+
+export {
+  R3_ELEMENT_REF_FACTORY__POST_NGCC__ as ɵR3_ELEMENT_REF_FACTORY__POST_NGCC__,
+  R3_TEMPLATE_REF_FACTORY__POST_NGCC__ as ɵR3_TEMPLATE_REF_FACTORY__POST_NGCC__,
+  R3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ as ɵR3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__,
+  R3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ as ɵR3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__,
+} from './ivy_switch/runtime/legacy';
+
+
 // clang-format on

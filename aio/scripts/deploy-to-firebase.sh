@@ -104,5 +104,5 @@ fi
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
-  yarn test-pwa-score "$deployedUrl" "$MIN_PWA_SCORE"
+  yarn test-pwa-score "$deployedUrl" "$AIO_MIN_PWA_SCORE"
 )

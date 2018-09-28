@@ -11,6 +11,7 @@ import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
 import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
+import {MockCache, clearAllCaches} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
@@ -849,6 +850,28 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         await driver.idle.empty;
 
         expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
+      });
+
+      async_it('enters degraded mode when failing to write to cache', async() => {
+        // Initialize the SW.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+        server.clearRequests();
+
+        // Operate normally.
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        server.assertNoOtherRequests();
+
+        // Clear the caches and make them unwritable.
+        await clearAllCaches(scope.caches);
+        spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+
+        // Enter degraded mode and serve from network.
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        server.assertSawRequestFor('/foo.txt');
       });
 
       async_it('ignores invalid `only-if-cached` requests ', async() => {

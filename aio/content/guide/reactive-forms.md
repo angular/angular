@@ -16,7 +16,7 @@ Reactive forms use an explicit and immutable approach to managing the state of a
 
 Reactive forms also provide a straightforward path to testing because you are assured that your data is consistent and predictable when requested. Any consumers of the streams have access to manipulate that data safely.
 
-Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
+Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview) for detailed comparisons between the two paradigms.
 
 ## Getting started
 
@@ -645,48 +645,3 @@ Listed below are the base classes and services used to create and manage form co
   </tr>
 
 </table>
-
-### Comparison to template-driven forms
-
-*Template-driven* forms, introduced in the [Template-driven forms guide](guide/forms), take a completely different approach compared to reactive forms. With template-drive forms, you follow these rules:
-
-* Place HTML form controls (such as `<input>` and `<select>`) in the component template and bind them to data model properties in the component, using directives such as `ngModel`.
-
-* Don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
-
-* Don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable data model with user changes as they happen.
-
-While using template-driven forms means less code in the component class, 
-they are [asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync"), 
-which can complicate development in more advanced scenarios.
-
-
-{@a async-vs-sync}
-
-
-### Async vs. sync
-
-Reactive forms are synchronous, and template-driven forms are asynchronous.
-
-In reactive forms, you create the entire form control tree in code. 
-You can immediately update a value or drill down through the descendants of the parent form 
-because all controls are always available.
-
-Template-driven forms delegate the creation of their form controls to directives. 
-To avoid *changed after checked* errors, 
-these directives take more than one cycle to build the entire control tree. 
-That means you must wait until the next change detection cycle happens before manipulating any of the controls 
-from within the component class.
-
-For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the 
-[`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"), 
-you'll discover that it has no children. 
-You must trigger a change detection cycle using `setTimeout()` before you can 
-extract a value from a control, test its validity, or set it to a new value.
-
-The asynchrony of template-driven forms also complicates unit testing. 
-You must wrap your test block in `async()` or `fakeAsync()` to 
-avoid looking for values in the form that aren't there yet. 
-With reactive forms, everything is available immediately.
-
-

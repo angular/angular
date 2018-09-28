@@ -98,7 +98,7 @@ The `HeroService` is now ready to plug into the `HeroesComponent`.
 
 <div class="alert is-important">
 
-This is a interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
+This is an interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
 
 </div>
 

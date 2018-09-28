@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, getRendererFactory, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TViewNode} from './interfaces/node';
-import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
+import {DIRECTIVES, FLAGS, LViewData, LViewFlags, PARENT} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
 
@@ -37,20 +37,14 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    */
   _tViewNode: TViewNode|null = null;
 
-  context: T;
   // TODO(issue/24571): remove '!'.
   rootNodes !: any[];
 
-  constructor(_view: LViewData, context: T|null) {
-    this.context = context !;
+  constructor(_view: LViewData, private _context: T|null, private _componentIndex: number) {
     this._view = _view;
   }
 
-  /** @internal */
-  _setComponentContext(view: LViewData, context: T) {
-    this._view = view;
-    this.context = context;
-  }
+  get context(): T { return this._context ? this._context : this._lookUpContext(); }
 
   get destroyed(): boolean {
     return (this._view[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
@@ -260,11 +254,15 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   detachFromAppRef() { this._appRef = null; }
 
   attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
+
+  private _lookUpContext(): T {
+    return this._context = this._view[PARENT] ![DIRECTIVES] ![this._componentIndex] as T;
+  }
 }
 
 /** @internal */
 export class RootViewRef<T> extends ViewRef<T> {
-  constructor(public _view: LViewData) { super(_view, null); }
+  constructor(public _view: LViewData) { super(_view, null, -1); }
 
   detectChanges(): void { detectChangesInRootView(this._view); }
 

@@ -198,6 +198,10 @@ aio-api-list {
         background: $blue-grey-50;
         color: $blue-500;
       }
+
+      &.deprecated-api-item {
+        text-decoration: line-through;
+      }
     }
   }
 }

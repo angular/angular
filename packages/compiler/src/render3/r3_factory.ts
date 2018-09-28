@@ -102,29 +102,9 @@ export enum R3ResolvedDependencyType {
   Injector = 2,
 
   /**
-   * The dependency is for `ElementRef`.
-   */
-  ElementRef = 3,
-
-  /**
-   * The dependency is for `TemplateRef`.
-   */
-  TemplateRef = 4,
-
-  /**
-   * The dependency is for `ViewContainerRef`.
-   */
-  ViewContainerRef = 5,
-
-  /**
-   * The dependency is for `ChangeDetectorRef`.
-   */
-  ChangeDetectorRef = 6,
-
-  /**
    * The dependency is for `Renderer2`.
    */
-  Renderer2 = 7,
+  Renderer2 = 3,
 }
 
 /**
@@ -282,14 +262,6 @@ function compileInjectDependency(
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
-    case R3ResolvedDependencyType.ElementRef:
-      return o.importExpr(R3.injectElementRef).callFn([]);
-    case R3ResolvedDependencyType.TemplateRef:
-      return o.importExpr(R3.injectTemplateRef).callFn([]);
-    case R3ResolvedDependencyType.ViewContainerRef:
-      return o.importExpr(R3.injectViewContainerRef).callFn([]);
-    case R3ResolvedDependencyType.ChangeDetectorRef:
-      return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
     case R3ResolvedDependencyType.Renderer2:
       return o.importExpr(R3.injectRenderer2).callFn([]);
     default:
@@ -320,13 +292,7 @@ export function dependenciesFromGlobalMetadata(
     if (dependency.token) {
       const tokenRef = tokenReference(dependency.token);
       let resolved: R3ResolvedDependencyType = R3ResolvedDependencyType.Token;
-      if (tokenRef === elementRef) {
-        resolved = R3ResolvedDependencyType.ElementRef;
-      } else if (tokenRef === templateRef) {
-        resolved = R3ResolvedDependencyType.TemplateRef;
-      } else if (tokenRef === viewContainerRef) {
-        resolved = R3ResolvedDependencyType.ViewContainerRef;
-      } else if (tokenRef === injectorRef) {
+      if (tokenRef === injectorRef) {
         resolved = R3ResolvedDependencyType.Injector;
       } else if (tokenRef === renderer2) {
         resolved = R3ResolvedDependencyType.Renderer2;

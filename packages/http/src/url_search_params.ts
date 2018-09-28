@@ -25,9 +25,9 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
  * @deprecated see https://angular.io/guide/http
  **/
 export class QueryEncoder {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(value: string): string { return standardEncoding(value); }
 }
 
 function standardEncoding(v: string): string {

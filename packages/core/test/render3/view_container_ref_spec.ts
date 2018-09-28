@@ -8,11 +8,12 @@
 
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {templateRefExtractor} from '../../src/render3/di';
-import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {directiveInject} from '../../src/render3/di';
+import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {NgForOf} from '../../test/render3/common_with_def';
@@ -23,7 +24,7 @@ import {ComponentFixture, TemplateFixture, createComponent} from './render_util'
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
 
-  beforeEach(() => { directiveInstance = null; });
+  beforeEach(() => directiveInstance = null);
 
   class DirectiveWithVCRef {
     static ngDirectiveDef = defineDirective({
@@ -31,7 +32,7 @@ describe('ViewContainerRef', () => {
       selectors: [['', 'vcref', '']],
       factory: () => directiveInstance = new DirectiveWithVCRef(
 
-                   injectViewContainerRef(), injectComponentFactoryResolver()),
+                   directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
       inputs: {tplRef: 'tplRef'}
     });
 
@@ -225,7 +226,8 @@ describe('ViewContainerRef', () => {
                type: TestDirective,
                selectors: [['', 'testdir', '']],
                factory: () => {
-                 const instance = new TestDirective(injectViewContainerRef(), injectTemplateRef());
+                 const instance = new TestDirective(
+                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any));
 
                  directiveInstances.push(instance);
 
@@ -299,8 +301,9 @@ describe('ViewContainerRef', () => {
              static ngDirectiveDef = defineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
-               factory: () => directiveInstance =
-                            new TestDirective(injectViewContainerRef(), injectTemplateRef())
+               factory: () => directiveInstance = new TestDirective(
+                            directiveInject(ViewContainerRef as any),
+                            directiveInject(TemplateRef as any))
              });
 
              constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
@@ -495,7 +498,7 @@ describe('ViewContainerRef', () => {
         static ngDirectiveDef = defineDirective({
           type: InsertionDir,
           selectors: [['', 'tplDir', '']],
-          factory: () => new InsertionDir(injectViewContainerRef()),
+          factory: () => new InsertionDir(directiveInject(ViewContainerRef as any)),
           inputs: {tplDir: 'tplDir'}
         });
       }

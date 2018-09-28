@@ -394,7 +394,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: IfDirective,
         selectors: [['', 'if', '']],
-        factory: () => new IfDirective($r3$.ɵinjectTemplateRef()),
+        factory: () => new IfDirective($r3$.ɵdirectiveInject(TemplateRef as any)),
       });
       // /NORMATIVE
     }

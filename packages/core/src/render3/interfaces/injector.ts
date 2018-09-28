@@ -70,22 +70,6 @@ export interface LInjector {
   cbf5: number;
   cbf6: number;
   cbf7: number;
-
-  /** Stores the TemplateRef so subsequent injections of the TemplateRef get the same instance. */
-  templateRef: TemplateRef<any>|null;
-
-  /** Stores the ViewContainerRef so subsequent injections of the ViewContainerRef get the same
-   * instance. */
-  viewContainerRef: ViewContainerRef|null;
-
-  /** Stores the ElementRef so subsequent injections of the ElementRef get the same instance. */
-  elementRef: ElementRef|null;
-
-  /**
-   * Stores the ChangeDetectorRef so subsequent injections of the ChangeDetectorRef get the
-   * same instance.
-   */
-  changeDetectorRef: ChangeDetectorRef|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

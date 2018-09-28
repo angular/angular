@@ -1279,7 +1279,7 @@ The arguments are the same as you would pass to `angular.bootstrap` if you were 
 bootstrapping AngularJS: the root element of the application; and an array of the
 AngularJS 1.x modules that you want to load.
 
-Finally, bootstrap the `AppModule` in `src/main.ts`.
+Finally, bootstrap the `AppModule` in `app/main.ts`.
 This file has been configured as the application entrypoint in `systemjs.config.js`,
 so it is already being loaded by the browser.
 

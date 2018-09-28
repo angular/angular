@@ -36,12 +36,11 @@ fi
 
 setEnvVar NODE_VERSION 10.9.0
 setEnvVar YARN_VERSION 1.9.2
-# Pin to a Chromium version that does not cause the aio e2e tests to flake. (See https://github.com/angular/angular/pull/20403.)
-# Revision 494239 (which was part of Chrome 62.0.3186.0) is the last version that does not cause flakes. (Latest revision checked: 508578)
-setEnvVar CHROMIUM_VERSION 561733 # Chrome 68 linux stable, see https://www.chromium.org/developers/calendar
+setEnvVar CHROMIUM_VERSION 561733  # Chrome 68 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
+setEnvVar AIO_MIN_PWA_SCORE 95
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
@@ -65,8 +64,6 @@ if [[ ${TRAVIS:-} ]]; then
       # Determine the current stable branch.
       readonly versionRe="^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$"
       setEnvVar STABLE_BRANCH `npm info @angular/core dist-tags.latest | sed -r "s/$versionRe/\1.x/"`
-
-      setEnvVar MIN_PWA_SCORE 95
       ;;
   esac
 else

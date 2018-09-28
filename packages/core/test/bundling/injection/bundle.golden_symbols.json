@@ -9,6 +9,9 @@
     "name": "EMPTY_ARRAY$2"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "INJECTOR"
   },
   {
@@ -33,6 +36,9 @@
     "name": "NullInjector"
   },
   {
+    "name": "ObjectUnsubscribedErrorImpl"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -55,6 +61,9 @@
   },
   {
     "name": "USE_VALUE"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "_THROW_IF_NOT_FOUND"

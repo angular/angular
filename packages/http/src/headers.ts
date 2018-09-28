@@ -13,6 +13,7 @@
  * The only known difference between this `Headers` implementation and the spec is the
  * lack of an `entries` method.
  *
+ * @usageNotes
  * ### Example
  *
  * ```

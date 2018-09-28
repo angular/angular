@@ -11,19 +11,23 @@
 import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
+import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
+import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
 import {assertDefined, assertEqual} from './assert';
-import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {_getViewData, assertPreviousIsParent, getOrCreateCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDefInternal, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {LContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 import {flatten, getLNode, isContentQueryHost} from './util';
+import {createContainerRef, createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -265,10 +269,10 @@ function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: T
 }
 
 function readFromNodeInjector(
-    nodeInjector: LInjector, tNode: TNode, currentView: LViewData,
-    read: QueryReadType<any>| Type<any>, directiveIdx: number): any {
+    tNode: TNode, currentView: LViewData, read: QueryReadType<any>| Type<any>,
+    directiveIdx: number): any {
   if (read instanceof ReadFromInjectorFn) {
-    return read.read(nodeInjector, tNode, directiveIdx);
+    return read.read(tNode, currentView, directiveIdx);
   } else {
     const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
     if (matchingIdx !== null) {
@@ -282,10 +286,6 @@ function add(
     query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   const currentView = _getViewData();
 
-  // TODO: remove this lookup when nodeInjector is removed from LNode
-  const nodeInjector =
-      getOrCreateNodeInjectorForNode(getLNode(tNode, currentView), tNode, currentView);
-
   while (query) {
     const predicate = query.predicate;
     const type = predicate.type;
@@ -294,8 +294,8 @@ function add(
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token
-        const result = readFromNodeInjector(
-            nodeInjector, tNode, currentView, predicate.read || type, directiveIdx);
+        const result =
+            readFromNodeInjector(tNode, currentView, predicate.read || type, directiveIdx);
         if (result !== null) {
           addMatch(query, result);
         }
@@ -308,8 +308,7 @@ function add(
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
           ngDevMode && assertDefined(predicate.read, 'the node should have a predicate');
-          const result = readFromNodeInjector(
-              nodeInjector, tNode, currentView, predicate.read !, directiveIdx);
+          const result = readFromNodeInjector(tNode, currentView, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
           }
@@ -471,4 +470,8 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
     return true;
   }
   return false;
+}
+
+export class ReadFromInjectorFn<T> {
+  constructor(readonly read: (tNode: TNode, view: LViewData, directiveIndex?: number) => T) {}
 }

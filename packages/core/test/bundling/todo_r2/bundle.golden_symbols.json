@@ -282,7 +282,7 @@
     "name": "ElementRef"
   },
   {
-    "name": "ElementRef$1"
+    "name": "EmptyErrorImpl"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"
@@ -603,6 +603,9 @@
     "name": "ObjectUnsubscribedError"
   },
   {
+    "name": "ObjectUnsubscribedErrorImpl"
+  },
+  {
     "name": "Observable"
   },
   {
@@ -661,6 +664,18 @@
   },
   {
     "name": "R3Injector"
+  },
+  {
+    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "R3_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "R3_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "REMOVE_EVENT_LISTENER"
@@ -810,9 +825,6 @@
     "name": "TemplateRef"
   },
   {
-    "name": "TemplateRef$1"
-  },
-  {
     "name": "Testability"
   },
   {
@@ -870,6 +882,9 @@
     "name": "UnsubscriptionError"
   },
   {
+    "name": "UnsubscriptionErrorImpl"
+  },
+  {
     "name": "UpperCasePipe"
   },
   {
@@ -889,9 +904,6 @@
   },
   {
     "name": "ViewContainerRef"
-  },
-  {
-    "name": "ViewContainerRef$1"
   },
   {
     "name": "ViewEncapsulation$1"
@@ -954,22 +966,16 @@
     "name": "__extends$5"
   },
   {
-    "name": "__extends$6"
+    "name": "__extends$l"
   },
   {
-    "name": "__extends$7"
+    "name": "__extends$m"
   },
   {
-    "name": "__extends$q"
+    "name": "__extends$n"
   },
   {
-    "name": "__extends$r"
-  },
-  {
-    "name": "__extends$s"
-  },
-  {
-    "name": "__extends$u"
+    "name": "__extends$p"
   },
   {
     "name": "__read"
@@ -1200,7 +1206,7 @@
     "name": "bloomFindPossibleInjector"
   },
   {
-    "name": "bloomHashBit"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -1219,6 +1225,9 @@
   },
   {
     "name": "canInsertNativeNode"
+  },
+  {
+    "name": "canReportError"
   },
   {
     "name": "checkFullData"
@@ -1275,10 +1284,19 @@
     "name": "couldBeInjectableType"
   },
   {
+    "name": "createContainerRef"
+  },
+  {
     "name": "createDirectivesAndLocals"
   },
   {
+    "name": "createElementRef"
+  },
+  {
     "name": "createEmbeddedViewAndNode"
+  },
+  {
+    "name": "createEmptyStylingContext"
   },
   {
     "name": "createInjector"
@@ -1326,6 +1344,9 @@
     "name": "createTView"
   },
   {
+    "name": "createTemplateRef"
+  },
+  {
     "name": "createTextNode"
   },
   {
@@ -1333,6 +1354,9 @@
   },
   {
     "name": "createViewQuery"
+  },
+  {
+    "name": "createViewRef"
   },
   {
     "name": "dateGetter"
@@ -1707,18 +1731,6 @@
     "name": "getNumberOfCurrencyDigits"
   },
   {
-    "name": "getOrCreateChangeDetectorRef"
-  },
-  {
-    "name": "getOrCreateContainerRef"
-  },
-  {
-    "name": "getOrCreateElementRef"
-  },
-  {
-    "name": "getOrCreateHostChangeDetector"
-  },
-  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -1732,9 +1744,6 @@
   },
   {
     "name": "getOrCreateTView"
-  },
-  {
-    "name": "getOrCreateTemplateRef"
   },
   {
     "name": "getOriginalError"
@@ -1845,9 +1854,6 @@
     "name": "identity"
   },
   {
-    "name": "initChangeDetectorIfExisting"
-  },
-  {
     "name": "initDomAdapter"
   },
   {
@@ -1944,6 +1950,9 @@
     "name": "isFunction"
   },
   {
+    "name": "isInteropObservable"
+  },
+  {
     "name": "isIterable"
   },
   {
@@ -1960,9 +1969,6 @@
   },
   {
     "name": "isObject"
-  },
-  {
-    "name": "isObservable"
   },
   {
     "name": "isObservable$1"
@@ -1987,9 +1993,6 @@
   },
   {
     "name": "isTemplateElement"
-  },
-  {
-    "name": "isTrustedSubscriber"
   },
   {
     "name": "isTypeProvider"
@@ -2290,6 +2293,9 @@
   },
   {
     "name": "setDirty"
+  },
+  {
+    "name": "setEnvironment"
   },
   {
     "name": "setFlag"

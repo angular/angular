@@ -10,7 +10,8 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
+import {directiveInject} from '../../src/render3/di';
+import {LifecycleHooksFeature, defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -18,7 +19,6 @@ import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interface
 import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
-
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
     class MyComponent implements DoCheck {
       value: string = 'works';
@@ -326,7 +326,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: () => myComp = new MyComp(injectChangeDetectorRef()),
+          factory: () => myComp = new MyComp(directiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 1,
           /** {{ name }} */
@@ -352,7 +352,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: ParentComp,
           selectors: [['parent-comp']],
-          factory: () => new ParentComp(injectChangeDetectorRef()),
+          factory: () => new ParentComp(directiveInject(ChangeDetectorRef as any)),
           consts: 2,
           vars: 1,
           /**
@@ -378,7 +378,7 @@ describe('change detection', () => {
         static ngDirectiveDef = defineDirective({
           type: Dir,
           selectors: [['', 'dir', '']],
-          factory: () => dir = new Dir(injectChangeDetectorRef())
+          factory: () => dir = new Dir(directiveInject(ChangeDetectorRef as any))
         });
       }
 
@@ -487,7 +487,7 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: MyApp,
             selectors: [['my-app']],
-            factory: () => new MyApp(injectChangeDetectorRef()),
+            factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
             consts: 2,
             vars: 1,
             /**
@@ -542,7 +542,7 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
             selectors: [['detect-changes-comp']],
-            factory: () => new DetectChangesComp(injectChangeDetectorRef()),
+            factory: () => new DetectChangesComp(directiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 1,
             /** {{ value }} */
@@ -575,7 +575,7 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
             selectors: [['detect-changes-comp']],
-            factory: () => new DetectChangesComp(injectChangeDetectorRef()),
+            factory: () => new DetectChangesComp(directiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 1,
             /** {{ doCheckCount }} */
@@ -605,7 +605,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: () => new MyApp(injectChangeDetectorRef()),
+          factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 0,
           /** <detached-comp></detached-comp> */
@@ -629,7 +629,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: DetachedComp,
           selectors: [['detached-comp']],
-          factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
+          factory: () => comp = new DetachedComp(directiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 1,
           /** {{ value }} */
@@ -730,7 +730,7 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: OnPushComp,
             selectors: [['on-push-comp']],
-            factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
+            factory: () => onPushComp = new OnPushComp(directiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 1,
             /** {{ value }} */
@@ -791,7 +791,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: OnPushComp,
           selectors: [['on-push-comp']],
-          factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
+          factory: () => comp = new OnPushComp(directiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 1,
           /** {{ value }} */
@@ -960,7 +960,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: NoChangesComp,
           selectors: [['no-changes-comp']],
-          factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
+          factory: () => comp = new NoChangesComp(directiveInject(ChangeDetectorRef as any)),
           consts: 1,
           vars: 1,
           template: (rf: RenderFlags, ctx: NoChangesComp) => {
@@ -982,7 +982,7 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: AppComp,
           selectors: [['app-comp']],
-          factory: () => new AppComp(injectChangeDetectorRef()),
+          factory: () => new AppComp(directiveInject(ChangeDetectorRef as any)),
           consts: 2,
           vars: 1,
           /**
@@ -1045,7 +1045,7 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: EmbeddedViewApp,
             selectors: [['embedded-view-app']],
-            factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
+            factory: () => new EmbeddedViewApp(directiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 0,
             /**

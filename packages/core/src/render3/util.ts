@@ -7,9 +7,13 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
-import {assertLessThan} from './assert';
+
+import {assertDefined, assertLessThan} from './assert';
+import {readElementValue, readPatchedLViewData} from './context_discovery';
 import {LContainerNode, LElementContainerNode, LElementNode, TNode, TNodeFlags} from './interfaces/node';
-import {HEADER_OFFSET, LViewData, TData} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, LViewData, LViewFlags, PARENT, RootContext, TData} from './interfaces/view';
+
+
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -87,10 +91,6 @@ export function loadElementInternal(index: number, arr: LViewData): LElementNode
   return readElementValue(value);
 }
 
-export function readElementValue(value: LElementNode | any[]): LElementNode {
-  return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
-}
-
 export function getLNode(tNode: TNode, hostView: LViewData): LElementNode|LContainerNode|
     LElementContainerNode {
   return readElementValue(hostView[tNode.index]);
@@ -102,4 +102,22 @@ export function isContentQueryHost(tNode: TNode): boolean {
 
 export function isComponent(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
+}
+/**
+ * Retrieve the root view from any component by walking the parent `LViewData` until
+ * reaching the root `LViewData`.
+ *
+ * @param component any component
+ */
+export function getRootView(target: LViewData | {}): LViewData {
+  ngDevMode && assertDefined(target, 'component');
+  let lViewData = Array.isArray(target) ? (target as LViewData) : readPatchedLViewData(target) !;
+  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
+    lViewData = lViewData[PARENT] !;
+  }
+  return lViewData;
+}
+
+export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
+  return getRootView(viewOrComponent)[CONTEXT] as RootContext;
 }

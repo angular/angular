@@ -9,7 +9,7 @@
 import {Adapter, Context} from './adapter';
 import {CacheState, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
-import {SwCriticalError} from './error';
+import {SwCriticalError, errorToString} from './error';
 import {IdleScheduler} from './idle';
 import {AssetGroupConfig} from './manifest';
 import {sha1Binary} from './sha1';
@@ -317,24 +317,33 @@ export abstract class AssetGroup {
             `Response not Ok (fetchAndCacheOnce): request for ${req.url} returned response ${res.status} ${res.statusText}`);
       }
 
-      // This response is safe to cache (as long as it's cloned). Wait until the cache operation
-      // is complete.
-      const cache = await this.scope.caches.open(`${this.prefix}:${this.config.name}:cache`);
-      await cache.put(req, res.clone());
+      try {
+        // This response is safe to cache (as long as it's cloned). Wait until the cache operation
+        // is complete.
+        const cache = await this.scope.caches.open(`${this.prefix}:${this.config.name}:cache`);
+        await cache.put(req, res.clone());
 
-      // If the request is not hashed, update its metadata, especially the timestamp. This is needed
-      // for future determination of whether this cached response is stale or not.
-      if (!this.hashes.has(req.url)) {
-        // Metadata is tracked for requests that are unhashed.
-        const meta: UrlMetadata = {ts: this.adapter.time, used};
-        const metaTable = await this.metadata;
-        await metaTable.write(req.url, meta);
+        // If the request is not hashed, update its metadata, especially the timestamp. This is
+        // needed for future determination of whether this cached response is stale or not.
+        if (!this.hashes.has(req.url)) {
+          // Metadata is tracked for requests that are unhashed.
+          const meta: UrlMetadata = {ts: this.adapter.time, used};
+          const metaTable = await this.metadata;
+          await metaTable.write(req.url, meta);
+        }
+
+        return res;
+      } catch (err) {
+        // Among other cases, this can happen when the user clears all data through the DevTools,
+        // but the SW is still running and serving another tab. In that case, trying to write to the
+        // caches throws an `Entry was not found` error.
+        // If this happens the SW can no longer work correctly. This situation is unrecoverable.
+        throw new SwCriticalError(
+            `Failed to update the caches for request to '${req.url}' (fetchAndCacheOnce): ${errorToString(err)}`);
       }
-
-      return res;
     } finally {
       // Finally, it can be removed from `inFlightRequests`. This might result in a double-remove
-      // if some other  chain was already making this request too, but that won't hurt anything.
+      // if some other chain was already making this request too, but that won't hurt anything.
       this.inFlightRequests.delete(req.url);
     }
   }

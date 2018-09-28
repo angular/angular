@@ -22,7 +22,7 @@ export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
 
   const options: SerializationOptions = {
-    stripExportPattern: argv['stripExportPattern'],
+    stripExportPattern: [].concat(argv['stripExportPattern']),
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
   };
 

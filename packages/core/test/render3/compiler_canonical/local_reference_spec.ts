@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementRef, TemplateRef} from '@angular/core';
+
 import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentFixture} from '../render_util';
+
 
 /// See: `normative.md`
 describe('local references', () => {

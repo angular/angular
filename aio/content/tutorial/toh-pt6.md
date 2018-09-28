@@ -66,7 +66,7 @@ which you will create in a moment.
 </code-example>
 
 Add the `HttpClientInMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
-_after importing the `HttpClient`_,
+_after importing the `HttpClientModule`_,
 &mdash;while configuring it with the `InMemoryDataService`.
 
 <code-example   
@@ -114,7 +114,9 @@ you'll wrap it in private `log` method.
   region="log" >
 </code-example>
 
-Define the `heroesUrl` with the address of the heroes resource on the server.
+Define the `heroesUrl` of the form `:base/:collectionName` with the address of the heroes resource on the server.
+ Here `base` is the resource to which requests are made,
+ and `collectionName` is the heroes data object in the `in-memory-data-service.ts`.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
@@ -242,8 +244,11 @@ Here is the final version of `getHeroes` with the `tap` that logs the operation.
 
 ### Get hero by id
 
-Most web APIs support a _get by id_ request in the form `api/hero/:id` 
-(such as `api/hero/11`).
+Most web APIs support a _get by id_ request in the form `:baseURL/:id`.
+
+Here, the _base URL_ is the `heroesURL` defined in the [Heroes and HTTP](http://localhost:4800/tutorial/toh-pt6#heroes-and-http) section (`api/heroes`) and _id_ is
+the number of the hero that you want to retrieve. For example, `api/heroes/11`.
+
 Add a `HeroService.getHero()` method to make that request:
 
 <code-example path="toh-pt6/src/app/hero.service.ts" region="getHero" title="src/app/hero.service.ts"></code-example>
@@ -626,6 +631,16 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
   <code-pane 
     title="hero-detail/hero-detail.component.ts" 
     path="toh-pt6/src/app/hero-detail/hero-detail.component.ts">
+  </code-pane>
+</code-tabs>
+
+{@a dashboardcomponent}
+#### _DashboardComponent_
+
+<code-tabs>
+  <code-pane 
+    title="src/app/dashboard/dashboard.component.html"
+    path="toh-pt6/src/app/dashboard/dashboard.component.html">
   </code-pane>
 </code-tabs>
 

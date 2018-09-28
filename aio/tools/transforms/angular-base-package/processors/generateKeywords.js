@@ -31,9 +31,6 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
       var propertiesToIgnore;
       var docTypesToIgnore;
 
-      // Keywords start with "ng:" or one of $, _ or a letter
-      var KEYWORD_REGEX = /^((ng:|[$_a-z])[\w\-_]+)/;
-
       // Load up the keywords to ignore, if specified in the config
       if (this.ignoreWordsFile) {
         var ignoreWordsPath = path.resolve(readFilesProcessor.basePath, this.ignoreWordsFile);
@@ -52,20 +49,33 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
       // If the heading contains a name starting with ng, e.g. "ngController", then add the
       // name without the ng to the text, e.g. "controller".
-      function preprocessText(text) {
-        return text.replace(/(^|\s)([nN]g([A-Z]\w*))/g, '$1$2 $3');
+      function tokenize(text) {
+        const rawTokens = text.split(/[\s\/]+/mg);
+        const tokens = [];
+        rawTokens.forEach(token => {
+          // Strip off unwanted trivial characters
+          token = token
+              .trim()
+              .replace(/^[_\-"'`({[<$*)}\]>.]+/, '')
+              .replace(/[_\-"'`({[<$*)}\]>.]+$/, '');
+          // Ignore tokens that contain weird characters
+          if (/^[\w.\-]+$/.test(token)) {
+            tokens.push(token.toLowerCase());
+            const ngTokenMatch = /^[nN]g([A-Z]\w*)/.exec(token);
+            if (ngTokenMatch) {
+              tokens.push(ngTokenMatch[1].toLowerCase());
+            }
+          }
+        });
+        return tokens;
       }
 
       function extractWords(text, words, keywordMap) {
-        var tokens = preprocessText(text).toLowerCase().split(/[.\s,`'"#]+/mg);
+        var tokens = tokenize(text);
         tokens.forEach(function(token) {
-          var match = token.match(KEYWORD_REGEX);
-          if (match) {
-            var key = match[1];
-            if (!keywordMap[key]) {
-              keywordMap[key] = true;
-              words.push(key);
-            }
+          if (!keywordMap[token]) {
+            words.push(token);
+            keywordMap[token] = true;
           }
         });
       }
@@ -116,7 +126,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
         // Attach all this search data to the document
         doc.searchTerms = {
-          titleWords: preprocessText(doc.searchTitle),
+          titleWords: tokenize(doc.searchTitle).join(' '),
           headingWords: headingWords.sort().join(' '),
           keywords: words.sort().join(' '),
           members: members.sort().join(' ')
@@ -130,7 +140,8 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
         return Object.assign({
           path: page.path,
           title: page.searchTitle,
-          type: page.docType
+          type: page.docType,
+          deprecated: !!page.deprecated,
         }, page.searchTerms);
       });
 

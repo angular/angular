@@ -60,6 +60,10 @@ export class Identifiers {
 
   static bind: o.ExternalReference = {name: 'ɵbind', moduleName: CORE};
 
+  static enableBindings: o.ExternalReference = {name: 'ɵenableBindings', moduleName: CORE};
+
+  static disableBindings: o.ExternalReference = {name: 'ɵdisableBindings', moduleName: CORE};
+
   static getCurrentView: o.ExternalReference = {name: 'ɵgetCurrentView', moduleName: CORE};
 
   static restoreView: o.ExternalReference = {name: 'ɵrestoreView', moduleName: CORE};
@@ -105,16 +109,6 @@ export class Identifiers {
   static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
 
   static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
-
-  static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
-
-  static injectTemplateRef: o.ExternalReference = {name: 'ɵinjectTemplateRef', moduleName: CORE};
-
-  static injectViewContainerRef:
-      o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
-
-  static injectChangeDetectorRef:
-      o.ExternalReference = {name: 'ɵinjectChangeDetectorRef', moduleName: CORE};
 
   static injectRenderer2: o.ExternalReference = {name: 'ɵinjectRenderer2', moduleName: CORE};
 

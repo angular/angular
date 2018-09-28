@@ -16,6 +16,26 @@ import {take} from 'rxjs/operators';
  *
  * Mock Connection to represent a {@link Connection} for tests.
  *
+ * @usageNotes
+ * ### Example of `mockRespond()`
+ *
+ * ```
+ * var connection;
+ * backend.connections.subscribe(c => connection = c);
+ * http.request('data.json').subscribe(res => console.log(res.text()));
+ * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
+ * 'fake response'
+ * ```
+ *
+ * ### Example of `mockError()`
+ *
+ * ```
+ * var connection;
+ * backend.connections.subscribe(c => connection = c);
+ * http.request('data.json').subscribe(res => res, err => console.log(err)));
+ * connection.mockError(new Error('error'));
+ * ```
+ *
  * @deprecated see https://angular.io/guide/http
  */
 export class MockConnection implements Connection {
@@ -48,16 +68,6 @@ export class MockConnection implements Connection {
    * Sends a mock response to the connection. This response is the value that is emitted to the
    * {@link EventEmitter} returned by {@link Http}.
    *
-   * ### Example
-   *
-   * ```
-   * var connection;
-   * backend.connections.subscribe(c => connection = c);
-   * http.request('data.json').subscribe(res => console.log(res.text()));
-   * connection.mockRespond(new Response(new ResponseOptions({ body: 'fake response' }))); //logs
-   * 'fake response'
-   * ```
-   *
    */
   mockRespond(res: Response) {
     if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
@@ -87,15 +97,6 @@ export class MockConnection implements Connection {
    * returned
    * from {@link Http}.
    *
-   * ### Example
-   *
-   * ```
-   * var connection;
-   * backend.connections.subscribe(c => connection = c);
-   * http.request('data.json').subscribe(res => res, err => console.log(err)));
-   * connection.mockError(new Error('error'));
-   * ```
-   *
    */
   mockError(err?: Error) {
     // Matches ResourceLoader semantics
@@ -110,6 +111,7 @@ export class MockConnection implements Connection {
  * This class can be injected in tests, and should be used to override providers
  * to other backends, such as {@link XHRBackend}.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -187,8 +189,6 @@ export class MockConnection implements Connection {
  * });
  * ```
  *
- * This method only exists in the mock implementation, not in real Backends.
- *
  * @deprecated see https://angular.io/guide/http
  */
 @Injectable()
@@ -197,35 +197,6 @@ export class MockBackend implements ConnectionBackend {
    * {@link EventEmitter}
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
    * to in order to respond to connections.
-   *
-   * ### Example
-   *
-   * ```
-   * import {Injector} from '@angular/core';
-   * import {fakeAsync, tick} from '@angular/core/testing';
-   * import {BaseRequestOptions, ConnectionBackend, Http, RequestOptions} from '@angular/http';
-   * import {Response, ResponseOptions} from '@angular/http';
-   * import {MockBackend, MockConnection} from '@angular/http/testing';
-   *
-   * it('should get a response', fakeAsync(() => {
-   *      let connection:
-   *          MockConnection;  // this will be set when a new connection is emitted from the
-   *                           // backend.
-   *      let text: string;    // this will be set from mock response
-   *      let injector = Injector.create([
-   *        {provide: ConnectionBackend, useClass: MockBackend},
-   *        {provide: RequestOptions, useClass: BaseRequestOptions},
-   *        Http,
-   *      ]);
-   *      let backend = injector.get(ConnectionBackend);
-   *      let http = injector.get(Http);
-   *      backend.connections.subscribe((c: MockConnection) => connection = c);
-   *      http.request('something.json').toPromise().then((res: any) => text = res.text());
-   *      connection.mockRespond(new Response(new ResponseOptions({body: 'Something'})));
-   *      tick();
-   *      expect(text).toBe('Something');
-   *    }));
-   * ```
    *
    * This property only exists in the mock implementation, not in real Backends.
    */

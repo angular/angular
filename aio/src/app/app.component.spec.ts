@@ -721,6 +721,15 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(false);
         });
 
+        it('should clear "only" the search query param from the URL', () => {
+          // Mock out the current state of the URL query params
+          locationService.search.and.returnValue({ a: 'some-A', b: 'some-B', search: 'some-C'});
+          // docViewer is a commonly-clicked, non-search element
+          docViewer.click();
+          // Check that the query params were updated correctly
+          expect(locationService.setSearch).toHaveBeenCalledWith('', { a: 'some-A', b: 'some-B', search: undefined });
+        });
+
         it('should not intercept clicks on the searchResults', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
@@ -775,7 +784,7 @@ describe('AppComponent', () => {
           const searchService: MockSearchService = TestBed.get(SearchService);
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
           ];
 
           searchService.searchResults.next({ query: 'something', results: results });

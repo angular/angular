@@ -480,7 +480,7 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = getContents('test.js');
     expect(jsContents)
         .toContain(
-            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵinjectChangeDetectorRef(), i0.ɵinjectElementRef(), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectRenderer2(), i0.ɵinjectTemplateRef(), i0.ɵinjectViewContainerRef()); }`);
+            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(ChangeDetectorRef), i0.ɵdirectiveInject(ElementRef), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectRenderer2(), i0.ɵdirectiveInject(TemplateRef), i0.ɵdirectiveInject(ViewContainerRef)); }`);
   });
 
   it('should generate queries for components', () => {

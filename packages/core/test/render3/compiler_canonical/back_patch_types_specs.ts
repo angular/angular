@@ -116,10 +116,12 @@ function ngBackPatch_node_modules_libB_module_LibAModule() {
 
 export const AppModuleFactory: NgModuleFactory<AppModule>&{patchedDeps: boolean} = {
   moduleType: AppModule,
-  patchedDeps: false,
-  create(parentInjector: Injector | null): NgModuleRef<AppModule>{
-      this.patchedDeps && ngBackPatch_node_modules_libB_module() && (this.patchedDeps = true);
-      return details_elided;}
+  patchedDeps: false, create(parentInjector: Injector | null): NgModuleRef<AppModule>{
+    if (!this.patchedDeps) {
+      ngBackPatch_node_modules_libB_module();
+      this.patchedDeps = true;
+    } return details_elided;
+  }
 };
 // BEGIN FILE: src/app.ngfactory.ts
 
