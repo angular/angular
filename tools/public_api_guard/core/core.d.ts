@@ -26,7 +26,7 @@ export declare const APP_ID: InjectionToken<string>;
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
 export declare class ApplicationInitStatus {
-    readonly done: boolean;
+    readonly done = false;
     readonly donePromise: Promise<any>;
     constructor(appInits: (() => any)[]);
 }
@@ -624,7 +624,7 @@ export declare abstract class Query {
 
 export declare class QueryList<T> {
     readonly changes: Observable<any>;
-    readonly dirty: boolean;
+    readonly dirty = true;
     readonly first: T;
     readonly last: T;
     readonly length: number;
