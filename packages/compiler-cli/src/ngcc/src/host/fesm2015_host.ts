@@ -500,7 +500,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
     if (ts.isExpressionStatement(statement)) {
       const expression =
-          isAssignment(statement) ? statement.expression.right : statement.expression;
+          isAssignmentStatement(statement) ? statement.expression.right : statement.expression;
       if (ts.isCallExpression(expression) && getCalleeName(expression) === helperName) {
         return expression;
       }
@@ -822,10 +822,15 @@ export type AssignmentStatement =
  * Test whether a statement node is an assignment statement.
  * @param statement the statement to test.
  */
-export function isAssignment(statement: ts.Statement): statement is AssignmentStatement {
-  return ts.isExpressionStatement(statement) && ts.isBinaryExpression(statement.expression) &&
-      statement.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+export function isAssignmentStatement(statement: ts.Statement): statement is AssignmentStatement {
+  return ts.isExpressionStatement(statement) && isAssignment(statement.expression) &&
       ts.isIdentifier(statement.expression.left);
+}
+
+export function isAssignment(expression: ts.Expression):
+    expression is ts.AssignmentExpression<ts.EqualsToken> {
+  return ts.isBinaryExpression(expression) &&
+      expression.operatorToken.kind === ts.SyntaxKind.EqualsToken;
 }
 
 /**

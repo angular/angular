@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
 import {reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {getNameText} from '../utils';
-import {CONSTRUCTOR_PARAMS, Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignment} from './fesm2015_host';
+import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './fesm2015_host';
 
 
 /**
@@ -268,7 +268,7 @@ function reflectParamInitializer(statement: ts.Statement, parameters: Parameter[
       ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1) {
     const ifStatementComparison = statement.expression;           // (arg === void 0)
     const thenStatement = statement.thenStatement.statements[0];  // arg = initializer;
-    if (isAssignment(thenStatement)) {
+    if (isAssignmentStatement(thenStatement)) {
       const comparisonName = ifStatementComparison.left.text;
       const assignmentName = thenStatement.expression.left.text;
       if (comparisonName === assignmentName) {
