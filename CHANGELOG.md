@@ -1,3 +1,13 @@
+<a name="7.0.0-rc.0"></a>
+# [7.0.0-rc.0](https://github.com/angular/angular/compare/7.0.0-beta.7...7.0.0-rc.0) (2018-09-28)
+
+
+### Features
+
+* add support for TypeScript 3.1 ([#26151](https://github.com/angular/angular/issues/26151)) ([9993c72](https://github.com/angular/angular/commit/9993c72))
+
+
+
 <a name="7.0.0-beta.7"></a>
 # [7.0.0-beta.7](https://github.com/angular/angular/compare/7.0.0-beta.6...7.0.0-beta.7) (2018-09-26)
 
