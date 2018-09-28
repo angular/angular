@@ -303,14 +303,15 @@ import {async_fit, async_it} from './async';
           ]);
         });
       });
+
       describe('messagesClicked', () => {
         it('receives notification clicked messages', () => {
-          const sendMessage = (type: string, message: string) =>
-              mock.sendMessage({type, data: {message}});
+          const sendMessage = (type: string, action: string) =>
+              mock.sendMessage({type, data: {action}});
 
           const receivedMessages: string[] = [];
           push.messagesClicked.subscribe(
-              (msg: {message: string}) => receivedMessages.push(msg.message));
+              (msg: {action: string}) => receivedMessages.push(msg.action));
 
           sendMessage('NOTIFICATION_CLICK', 'this was a click');
           sendMessage('NOT_IFICATION_CLICK', 'this was not a click');
