@@ -13,7 +13,6 @@ import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {AnalyzedClass, Analyzer} from '../../src/analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
-import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
@@ -45,12 +44,14 @@ function createTestRenderer() {
 function analyze(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
-  const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
 
-  const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
-  return parsedFiles.map(file => analyzer.analyzeFile(file));
+  const decoratedFiles = host.findDecoratedFiles(program.getSourceFile(file.name) !);
+  const analyzedFiles = Array.from(decoratedFiles.values()).map(file => analyzer.analyzeFile(file));
+
+  return {program, host, analyzer, decoratedFiles, analyzedFiles};
 }
+
 
 describe('Renderer', () => {
   const INPUT_PROGRAM = {
@@ -99,7 +100,7 @@ describe('Renderer', () => {
     it('should render the modified contents; and a new map file, if the original provided no map file.',
        () => {
          const renderer = createTestRenderer();
-         const analyzedFiles = analyze(INPUT_PROGRAM);
+         const {analyzedFiles} = analyze(INPUT_PROGRAM);
          const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(result.source.path).toEqual('/output_file.js');
          expect(result.source.contents)
@@ -111,7 +112,7 @@ describe('Renderer', () => {
     it('should call addImports with the source code and info about the core Angular library.',
        () => {
          const renderer = createTestRenderer();
-         const analyzedFiles = analyze(INPUT_PROGRAM);
+         const {analyzedFiles} = analyze(INPUT_PROGRAM);
          renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(renderer.addImports.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
          expect(renderer.addImports.calls.first().args[1]).toEqual([
@@ -122,12 +123,12 @@ describe('Renderer', () => {
     it('should call addDefinitions with the source code, the analyzed class and the renderered definitions.',
        () => {
          const renderer = createTestRenderer();
-         const analyzedFile = analyze(INPUT_PROGRAM)[0];
-         renderer.renderFile(analyzedFile, '/output_file.js');
+         const {analyzedFiles} = analyze(INPUT_PROGRAM);
+         renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(renderer.addDefinitions.calls.first().args[0].toString())
              .toEqual(RENDERED_CONTENTS);
          expect(renderer.addDefinitions.calls.first().args[1])
-             .toBe(analyzedFile.analyzedClasses[0]);
+             .toBe(analyzedFiles[0].analyzedClasses[0]);
          expect(renderer.addDefinitions.calls.first().args[2])
              .toEqual(
                  `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); }, features: [ɵngcc0.ɵPublicFeature] });`);
@@ -136,8 +137,8 @@ describe('Renderer', () => {
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
        () => {
          const renderer = createTestRenderer();
-         const analyzedFile = analyze(INPUT_PROGRAM)[0];
-         renderer.renderFile(analyzedFile, '/output_file.js');
+         const {analyzedFiles} = analyze(INPUT_PROGRAM);
+         renderer.renderFile(analyzedFiles[0], '/output_file.js');
          expect(renderer.removeDecorators.calls.first().args[0].toString())
              .toEqual(RENDERED_CONTENTS);
 
@@ -157,7 +158,7 @@ describe('Renderer', () => {
     it('should merge any inline source map from the original file and write the output as an inline source map',
        () => {
          const renderer = createTestRenderer();
-         const analyzedFiles = analyze({
+         const {analyzedFiles} = analyze({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n' + INPUT_PROGRAM_MAP.toComment()
          });
@@ -174,7 +175,7 @@ describe('Renderer', () => {
          const readFileSyncSpy =
              spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
          const renderer = createTestRenderer();
-         const analyzedFiles = analyze({
+         const {analyzedFiles} = analyze({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n//# sourceMappingURL=file.js.map'
          });

@@ -45,5 +45,5 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns A collection of files objects that hold info about the decorated classes and import
    * information.
    */
-  findDecoratedFiles(entryPoint: ts.SourceFile): DecoratedFile[];
+  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile>;
 }

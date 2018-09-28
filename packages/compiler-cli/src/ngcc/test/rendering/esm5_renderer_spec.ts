@@ -10,21 +10,19 @@ import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
 import {Analyzer} from '../../src/analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {Esm5FileParser} from '../../src/parsing/esm5_parser';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Esm5ReflectionHost(false, program.getTypeChecker());
-  const parser = new Esm5FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
   const renderer = new Esm5Renderer(host, false, null);
-  return {analyzer, host, parser, program, renderer};
+  return {analyzer, host, program, renderer};
 }
 
-function analyze(parser: Esm5FileParser, analyzer: Analyzer, file: ts.SourceFile) {
-  const parsedFiles = parser.parseFile(file);
-  return parsedFiles.map(file => analyzer.analyzeFile(file))[0];
+function analyze(host: Esm5ReflectionHost, analyzer: Analyzer, file: ts.SourceFile) {
+  const decoratedFiles = host.findDecoratedFiles(file);
+  return Array.from(decoratedFiles.values()).map(file => analyzer.analyzeFile(file))[0];
 }
 
 const PROGRAM = {
@@ -184,8 +182,8 @@ var A = (function() {`);
 
   describe('addDefinitions', () => {
     it('should insert the definitions directly after the class declaration', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+      const {analyzer, host, program, renderer} = setup(PROGRAM);
+      const analyzedFile = analyze(host, analyzer, program.getSourceFile(PROGRAM.name) !);
       const output = new MagicString(PROGRAM.contents);
       renderer.addDefinitions(output, analyzedFile.analyzedClasses[0], 'SOME DEFINITION TEXT');
       expect(output.toString()).toContain(`
@@ -201,8 +199,8 @@ SOME DEFINITION TEXT
   describe('removeDecorators', () => {
 
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+      const {analyzer, host, program, renderer} = setup(PROGRAM);
+      const analyzedFile = analyze(host, analyzer, program.getSourceFile(PROGRAM.name) !);
       const output = new MagicString(PROGRAM.contents);
       const analyzedClass = analyzedFile.analyzedClasses[0];
       const decorator = analyzedClass.decorators[0];
@@ -219,8 +217,8 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+         const {analyzer, host, program, renderer} = setup(PROGRAM);
+         const analyzedFile = analyze(host, analyzer, program.getSourceFile(PROGRAM.name) !);
          const output = new MagicString(PROGRAM.contents);
          const analyzedClass = analyzedFile.analyzedClasses[1];
          const decorator = analyzedClass.decorators[0];
@@ -238,8 +236,8 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM);
-         const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+         const {analyzer, host, program, renderer} = setup(PROGRAM);
+         const analyzedFile = analyze(host, analyzer, program.getSourceFile(PROGRAM.name) !);
          const output = new MagicString(PROGRAM.contents);
          const analyzedClass = analyzedFile.analyzedClasses[2];
          const decorator = analyzedClass.decorators[0];
@@ -259,9 +257,9 @@ SOME DEFINITION TEXT
 
   describe('[__decorate declarations]', () => {
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+      const {analyzer, host, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
       const analyzedFile =
-          analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+          analyze(host, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
       const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
       const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'A') !;
       const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
@@ -277,9 +275,9 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+         const {analyzer, host, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
          const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+             analyze(host, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
          const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'B') !;
          const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
@@ -296,9 +294,9 @@ SOME DEFINITION TEXT
 
     it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
+         const {analyzer, host, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
          const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+             analyze(host, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
          const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'C') !;
          const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
