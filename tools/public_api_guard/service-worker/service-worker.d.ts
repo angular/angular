@@ -8,7 +8,12 @@ export declare class ServiceWorkerModule {
 export declare class SwPush {
     readonly isEnabled: boolean;
     readonly messages: Observable<object>;
-    readonly messagesClicked: Observable<{ action: string; notification: NotificationObject }>;
+    readonly notificationClicks: Observable<{
+        action: string;
+        notification: NotificationOptions & {
+            title: string;
+        };
+    }>;
     readonly subscription: Observable<PushSubscription | null>;
     constructor(sw: NgswCommChannel);
     requestSubscription(options: {

@@ -576,7 +576,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       });
       expect(scope.notifications).toEqual([{
         title: 'This is a test',
-        options: {body: 'Test body'},
+        options: {title: 'This is a test', body: 'Test body'},
       }]);
       expect(scope.clients.getMock('default') !.messages).toEqual([{
         type: 'PUSH',

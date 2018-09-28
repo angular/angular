@@ -29,13 +29,9 @@ const IDLE_THRESHOLD = 5000;
 
 const SUPPORTED_CONFIG_VERSION = 1;
 
-const NOTIFICATION_OPTION_NAMES = [
-  'actions', 'badge', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction', 'tag',
-  'vibrate', 'data'
-];
-const NOTIFICATION_CLICK_OPTION_NAMES = [
-  'actions', 'badge', 'title', 'body', 'dir', 'icon', 'image', 'lang', 'renotify',
-  'requireInteraction', 'tag', 'timestamp', 'vibrate', 'data'
+const NOTIFICATION_OPTION_NAMES: (keyof Notification)[] = [
+  'actions', 'badge', 'body', 'data', 'dir', 'icon', 'image', 'lang', 'renotify',
+  'requireInteraction', 'silent', 'tag', 'timestamp', 'title', 'vibrate'
 ];
 
 interface LatestEntry {
@@ -312,10 +308,9 @@ export class Driver implements Debuggable, UpdateSource {
   private async handleClick(notification: Notification, action?: string): Promise<void> {
     notification.close();
 
-    const desc = notification as any;
-    let options: {[key: string]: string | undefined} = {};
-    NOTIFICATION_CLICK_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
-        .forEach(name => options[name] = desc[name]);
+    const options: {-readonly[K in keyof Notification]?: Notification[K]} = {};
+    NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
+        .forEach(name => options[name] = notification[name]);
 
     await this.broadcast({
       type: 'NOTIFICATION_CLICK',
