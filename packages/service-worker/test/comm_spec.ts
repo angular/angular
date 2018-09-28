@@ -304,13 +304,13 @@ import {async_fit, async_it} from './async';
         });
       });
 
-      describe('messagesClicked', () => {
+      describe('notificationClicks', () => {
         it('receives notification clicked messages', () => {
           const sendMessage = (type: string, action: string) =>
               mock.sendMessage({type, data: {action}});
 
           const receivedMessages: string[] = [];
-          push.messagesClicked.subscribe(
+          push.notificationClicks.subscribe(
               (msg: {action: string}) => receivedMessages.push(msg.action));
 
           sendMessage('NOTIFICATION_CLICK', 'this was a click');
@@ -388,7 +388,7 @@ import {async_fit, async_it} from './async';
 
         it('does not crash on subscription to observables', () => {
           push.messages.toPromise().catch(err => fail(err));
-          push.messagesClicked.toPromise().catch(err => fail(err));
+          push.notificationClicks.toPromise().catch(err => fail(err));
           push.subscription.toPromise().catch(err => fail(err));
         });
 

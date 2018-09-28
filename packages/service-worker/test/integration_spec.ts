@@ -88,7 +88,7 @@ const serverUpdate =
       scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
 
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
-      mock.messagesClicked.subscribe(msg => { scope.handleMessage(msg, 'default'); });
+      mock.notificationClicks.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
       reg = mock.mockRegistration !;
@@ -135,7 +135,7 @@ const serverUpdate =
       scope.updateServerState(serverUpdate);
 
       const gotNotificationClick = (async() => {
-        const event: any = await obsToSinglePromise(push.messagesClicked);
+        const event: any = await obsToSinglePromise(push.notificationClicks);
         expect(event.action).toEqual('clicked');
         expect(event.notification.title).toEqual('This is a test');
       })();

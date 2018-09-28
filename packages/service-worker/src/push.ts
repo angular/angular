@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {NEVER, Observable, Subject, merge} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, NotificationObject, PushEvent} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 
 
 /**
@@ -30,14 +30,16 @@ export class SwPush {
    * interacted with.
    * If no action was used the action property will be an empty string `''`.
    *
-   * Note that the `notification` property is __not__ a
-   * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification) but rather a
+   * Note that the `notification` property is **not** a
+   * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification) object but rather
+   * a
    * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
-   * object that also includes the notification `title`.
+   * object that also includes the `title` of the
+   * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification) object.
    */
-  readonly messagesClicked: Observable < {
+  readonly notificationClicks: Observable < {
     action: string;
-    notification: NotificationObject
+    notification: NotificationOptions&{ title: string }
   }
   > ;
 
@@ -61,14 +63,14 @@ export class SwPush {
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.messages = NEVER;
-      this.messagesClicked = NEVER;
+      this.notificationClicks = NEVER;
       this.subscription = NEVER;
       return;
     }
 
     this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map(message => message.data));
 
-    this.messagesClicked =
+    this.notificationClicks =
         this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
