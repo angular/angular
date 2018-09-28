@@ -1189,10 +1189,11 @@ describe('Fesm2015ReflectionHost', () => {
        () => {
          const program = makeProgram(DECORATED_FILE);
          const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
-         const decoratedFiles =
-             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILE.name) !);
-         expect(decoratedFiles.length).toEqual(1);
-         const decoratedClasses = decoratedFiles[0].decoratedClasses;
+         const primaryFile = program.getSourceFile(DECORATED_FILE.name) !;
+         const decoratedFiles = host.findDecoratedFiles(primaryFile);
+
+         expect(decoratedFiles.size).toEqual(1);
+         const decoratedClasses = decoratedFiles.get(primaryFile) !.decoratedClasses;
          expect(decoratedClasses.length).toEqual(2);
 
          const decoratedClassA = decoratedClasses.find(c => c.name === 'A') !;
