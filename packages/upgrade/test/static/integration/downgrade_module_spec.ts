@@ -644,6 +644,44 @@ withEachNg1Version(() => {
              expect(String($exceptionHandlerSpy.calls.argsFor(0))).toContain('Not Existing');
            }, 0);
          }));
+
+      it('should not create ng2 component instance if ng1 is destroyed ', async(() => {
+           let testComponentCreated = false;
+
+           @Component({selector: 'ng2', template: 'test'})
+           class TestComponent {
+             constructor() { testComponentCreated = true; }
+           }
+
+           @NgModule({
+             declarations: [TestComponent],
+             entryComponents: [TestComponent],
+             imports: [BrowserModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const element = html('<ng2></ng2>');
+           const bootstrapFn = (extraProviders: StaticProvider[]) => {
+             return platformBrowserDynamic(extraProviders)
+                 .bootstrapModule(Ng2Module)
+                 .then((module) => {
+                   // simulate scope destruction
+                   $injectorFromNg1.get($ROOT_SCOPE).$destroy();
+                   return module;
+                 });
+           };
+
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+
+           const ng1Module = angular.module('ng1', [lazyModuleName])
+                                 .directive('ng2', downgradeComponent({component: TestComponent}));
+
+           const $injectorFromNg1 = angular.bootstrap(element, [ng1Module.name]);
+
+           setTimeout(() => { expect(testComponentCreated).toBe(false); }, 0);
+         }));
     });
   });
 });

@@ -104,6 +104,13 @@ export function downgradeComponent(info: {
         }
 
         const doDowngrade = (injector: Injector) => {
+          // Downgrading can happen asynchronously; e.g. an Angular module may need to be
+          // bootstrapped first. By the time we get here, the parent component may have been
+          // destroyed, in which case there is no need to instantiate the downgraded component.
+          if (scope.$$destroyed) {
+            return;
+          }
+
           const componentFactoryResolver: ComponentFactoryResolver =
               injector.get(ComponentFactoryResolver);
           const componentFactory: ComponentFactory<any> =
