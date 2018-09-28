@@ -109,7 +109,7 @@ describe('styling', () => {
     describe('createStylingContextTemplate', () => {
       it('should initialize empty template', () => {
         const template = initContext();
-        expect(template).toEqual([element, null, null, [null], cleanStyle(0, 7), 0, null]);
+        expect(template).toEqual([element, null, null, [null], cleanStyle(0, 8), 0, null, null]);
       });
 
       it('should initialize static styles', () => {
@@ -120,27 +120,28 @@ describe('styling', () => {
           null,
           null,
           [null, 'red', '10px'],
-          dirtyStyle(0, 13),  //
+          dirtyStyle(0, 14),  //
           0,
           null,
+          null,
 
-          // #7
-          cleanStyle(1, 13),
+          // #8
+          cleanStyle(1, 14),
           'color',
           null,
 
-          // #10
-          cleanStyle(2, 16),
+          // #11
+          cleanStyle(2, 17),
           'width',
           null,
 
-          // #13
-          dirtyStyle(1, 7),
+          // #14
+          dirtyStyle(1, 8),
           'color',
           null,
 
-          // #16
-          dirtyStyle(2, 10),
+          // #17
+          dirtyStyle(2, 11),
           'width',
           null,
         ]);
@@ -323,27 +324,28 @@ describe('styling', () => {
           null,
           null,
           [null],
-          dirtyStyle(0, 13),  //
+          dirtyStyle(0, 14),  //
           2,
           null,
+          {width: '100px', height: '100px'},
 
-          // #7
-          cleanStyle(0, 13),
+          // #8
+          cleanStyle(0, 14),
           'width',
           null,
 
-          // #10
-          cleanStyle(0, 16),
+          // #11
+          cleanStyle(0, 17),
           'height',
           null,
 
-          // #13
-          dirtyStyle(0, 7),
+          // #14
+          dirtyStyle(0, 8),
           'width',
           '100px',
 
-          // #16
-          dirtyStyle(0, 10),
+          // #17
+          dirtyStyle(0, 11),
           'height',
           '100px',
         ]);
@@ -356,32 +358,33 @@ describe('styling', () => {
           null,
           null,
           [null],
-          dirtyStyle(0, 13),  //
+          dirtyStyle(0, 14),  //
           2,
           null,
+          {width: '200px', opacity: '0'},
 
-          // #7
-          cleanStyle(0, 13),
+          // #8
+          cleanStyle(0, 14),
           'width',
           null,
 
-          // #10
-          cleanStyle(0, 19),
+          // #11
+          cleanStyle(0, 20),
           'height',
           null,
 
-          // #13
-          dirtyStyle(0, 7),
+          // #14
+          dirtyStyle(0, 8),
           'width',
           '200px',
 
-          // #16
+          // #17
           dirtyStyle(),
           'opacity',
           '0',
 
-          // #19
-          dirtyStyle(0, 10),
+          // #20
+          dirtyStyle(0, 11),
           'height',
           null,
         ]);
@@ -392,32 +395,33 @@ describe('styling', () => {
           null,
           null,
           [null],
-          cleanStyle(0, 13),  //
+          cleanStyle(0, 14),  //
           2,
           null,
+          {width: '200px', opacity: '0'},
 
-          // #7
-          cleanStyle(0, 13),
+          // #8
+          cleanStyle(0, 14),
           'width',
           null,
 
-          // #10
-          cleanStyle(0, 19),
+          // #11
+          cleanStyle(0, 20),
           'height',
           null,
 
-          // #13
-          cleanStyle(0, 7),
+          // #14
+          cleanStyle(0, 8),
           'width',
           '200px',
 
-          // #16
+          // #17
           cleanStyle(),
           'opacity',
           '0',
 
-          // #19
-          cleanStyle(0, 10),
+          // #20
+          cleanStyle(0, 11),
           'height',
           null,
         ]);
@@ -430,32 +434,33 @@ describe('styling', () => {
           null,
           null,
           [null],
-          dirtyStyle(0, 13),  //
+          dirtyStyle(0, 14),  //
           2,
           null,
+          {width: null},
 
-          // #7
-          dirtyStyle(0, 13),
+          // #8
+          dirtyStyle(0, 14),
           'width',
           '300px',
 
-          // #10
-          cleanStyle(0, 19),
+          // #11
+          cleanStyle(0, 20),
           'height',
           null,
 
-          // #13
-          cleanStyle(0, 7),
+          // #14
+          cleanStyle(0, 8),
           'width',
           null,
 
-          // #16
+          // #17
           dirtyStyle(),
           'opacity',
           null,
 
-          // #19
-          cleanStyle(0, 10),
+          // #20
+          cleanStyle(0, 11),
           'height',
           null,
         ]);
@@ -468,32 +473,33 @@ describe('styling', () => {
           null,
           null,
           [null],
-          dirtyStyle(0, 13),  //
+          dirtyStyle(0, 14),  //
           2,
           null,
+          {width: null},
 
-          // #7
-          dirtyStyle(0, 13),
+          // #8
+          dirtyStyle(0, 14),
           'width',
           null,
 
-          // #10
-          cleanStyle(0, 19),
+          // #11
+          cleanStyle(0, 20),
           'height',
           null,
 
-          // #13
-          cleanStyle(0, 7),
+          // #14
+          cleanStyle(0, 8),
           'width',
           null,
 
-          // #16
+          // #17
           cleanStyle(),
           'opacity',
           null,
 
-          // #19
-          cleanStyle(0, 10),
+          // #20
+          cleanStyle(0, 11),
           'height',
           null,
         ]);
@@ -511,32 +517,33 @@ describe('styling', () => {
              null,
              null,
              [null],
-             dirtyStyle(0, 10),  //
+             dirtyStyle(0, 11),  //
              1,
              null,
+             {width: '100px', height: '100px', opacity: '0.5'},
 
-             // #7
-             cleanStyle(0, 19),
+             // #8
+             cleanStyle(0, 20),
              'lineHeight',
              null,
 
-             // #10
+             // #11
              dirtyStyle(),
              'width',
              '100px',
 
-             // #13
+             // #14
              dirtyStyle(),
              'height',
              '100px',
 
-             // #16
+             // #17
              dirtyStyle(),
              'opacity',
              '0.5',
 
-             // #19
-             cleanStyle(0, 7),
+             // #20
+             cleanStyle(0, 8),
              'lineHeight',
              null,
            ]);
@@ -549,32 +556,33 @@ describe('styling', () => {
              null,
              null,
              [null],
-             dirtyStyle(0, 10),  //
+             dirtyStyle(0, 11),  //
              1,
              null,
+             {},
 
-             // #7
-             cleanStyle(0, 19),
+             // #8
+             cleanStyle(0, 20),
              'lineHeight',
              null,
 
-             // #10
+             // #11
              dirtyStyle(),
              'width',
              null,
 
-             // #13
+             // #14
              dirtyStyle(),
              'height',
              null,
 
-             // #16
+             // #17
              dirtyStyle(),
              'opacity',
              null,
 
-             // #19
-             cleanStyle(0, 7),
+             // #20
+             cleanStyle(0, 8),
              'lineHeight',
              null,
            ]);
@@ -589,37 +597,38 @@ describe('styling', () => {
              null,
              null,
              [null],
-             dirtyStyle(0, 10),  //
+             dirtyStyle(0, 11),  //
              1,
              null,
+             {borderWidth: '5px'},
 
-             // #7
-             cleanStyle(0, 22),
+             // #8
+             cleanStyle(0, 23),
              'lineHeight',
              null,
 
-             // #10
+             // #11
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #13
+             // #14
              cleanStyle(),
              'width',
              null,
 
-             // #16
+             // #17
              cleanStyle(),
              'height',
              null,
 
-             // #19
+             // #20
              cleanStyle(),
              'opacity',
              null,
 
-             // #22
-             cleanStyle(0, 7),
+             // #23
+             cleanStyle(0, 8),
              'lineHeight',
              null,
            ]);
@@ -631,37 +640,38 @@ describe('styling', () => {
              null,
              null,
              [null],
-             dirtyStyle(0, 10),  //
+             dirtyStyle(0, 11),  //
              1,
              null,
+             {borderWidth: '5px'},
 
-             // #7
-             dirtyStyle(0, 22),
+             // #8
+             dirtyStyle(0, 23),
              'lineHeight',
              '200px',
 
-             // #10
+             // #11
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #13
+             // #14
              cleanStyle(),
              'width',
              null,
 
-             // #16
+             // #17
              cleanStyle(),
              'height',
              null,
 
-             // #19
+             // #20
              cleanStyle(),
              'opacity',
              null,
 
-             // #22
-             cleanStyle(0, 7),
+             // #23
+             cleanStyle(0, 8),
              'lineHeight',
              null,
            ]);
@@ -673,42 +683,43 @@ describe('styling', () => {
              null,
              null,
              [null],
-             dirtyStyle(0, 10),  //
+             dirtyStyle(0, 11),  //
              1,
              null,
+             {borderWidth: '15px', borderColor: 'red'},
 
-             // #7
-             dirtyStyle(0, 25),
+             // #8
+             dirtyStyle(0, 26),
              'lineHeight',
              '200px',
 
-             // #10
+             // #11
              dirtyStyle(),
              'borderWidth',
              '15px',
 
-             // #13
+             // #14
              dirtyStyle(),
              'borderColor',
              'red',
 
-             // #16
+             // #17
              cleanStyle(),
              'width',
              null,
 
-             // #19
+             // #20
              cleanStyle(),
              'height',
              null,
 
-             // #22
+             // #23
              cleanStyle(),
              'opacity',
              null,
 
-             // #25
-             cleanStyle(0, 7),
+             // #26
+             cleanStyle(0, 8),
              'lineHeight',
              null,
            ]);
@@ -729,22 +740,23 @@ describe('styling', () => {
           null,
           null,
           [null],
-          dirtyStyle(0, 10),  //
+          dirtyStyle(0, 11),  //
           1,
           null,
+          {width: '100px'},
 
-          // #7
-          dirtyStyle(0, 13),
+          // #8
+          dirtyStyle(0, 14),
           'height',
           '200px',
 
-          // #7
+          // #8
           dirtyStyle(),
           'width',
           '100px',
 
-          // #13
-          cleanStyle(0, 7),
+          // #14
+          cleanStyle(0, 8),
           'height',
           null,
         ]);
@@ -756,22 +768,23 @@ describe('styling', () => {
           null,
           null,
           [null],
-          cleanStyle(0, 10),  //
+          cleanStyle(0, 11),  //
           1,
           null,
+          {width: '100px'},
 
-          // #7
-          cleanStyle(0, 13),
+          // #8
+          cleanStyle(0, 14),
           'height',
           '200px',
 
-          // #7
+          // #8
           cleanStyle(),
           'width',
           '100px',
 
-          // #13
-          cleanStyle(0, 7),
+          // #14
+          cleanStyle(0, 8),
           'height',
           null,
         ]);
@@ -792,27 +805,28 @@ describe('styling', () => {
              null,
              styleSanitizer,
              [null],
-             dirtyStyle(0, 13),  //
+             dirtyStyle(0, 14),  //
              2,
              null,
+             null,
 
-             // #7
-             dirtyStyleWithSanitization(0, 13),
+             // #8
+             dirtyStyleWithSanitization(0, 14),
              'border-image',
              'url(foo.jpg)',
 
-             // #10
-             dirtyStyle(0, 16),
+             // #11
+             dirtyStyle(0, 17),
              'border-width',
              '100px',
 
-             // #13
-             cleanStyleWithSanitization(0, 7),
+             // #14
+             cleanStyleWithSanitization(0, 8),
              'border-image',
              null,
 
-             // #16
-             cleanStyle(0, 10),
+             // #17
+             cleanStyle(0, 11),
              'border-width',
              null,
            ]);
@@ -824,32 +838,33 @@ describe('styling', () => {
              null,
              styleSanitizer,
              [null],
-             dirtyStyle(0, 13),  //
+             dirtyStyle(0, 14),  //
              2,
              null,
+             {'background-image': 'unsafe'},
 
-             // #7
-             dirtyStyleWithSanitization(0, 16),
+             // #8
+             dirtyStyleWithSanitization(0, 17),
              'border-image',
              'url(foo.jpg)',
 
-             // #10
-             dirtyStyle(0, 19),
+             // #11
+             dirtyStyle(0, 20),
              'border-width',
              '100px',
 
-             // #13
+             // #14
              dirtyStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
 
-             // #16
-             cleanStyleWithSanitization(0, 7),
+             // #17
+             cleanStyleWithSanitization(0, 8),
              'border-image',
              null,
 
-             // #19
-             cleanStyle(0, 10),
+             // #20
+             cleanStyle(0, 11),
              'border-width',
              null,
            ]);
@@ -861,32 +876,33 @@ describe('styling', () => {
              null,
              styleSanitizer,
              [null],
-             cleanStyle(0, 13),  //
+             cleanStyle(0, 14),  //
              2,
              null,
+             {'background-image': 'unsafe'},
 
-             // #7
-             cleanStyleWithSanitization(0, 16),
+             // #8
+             cleanStyleWithSanitization(0, 17),
              'border-image',
              'url(foo.jpg)',
 
-             // #10
-             cleanStyle(0, 19),
+             // #11
+             cleanStyle(0, 20),
              'border-width',
              '100px',
 
-             // #13
+             // #14
              cleanStyleWithSanitization(0, 0),
              'background-image',
              'unsafe',
 
-             // #16
-             cleanStyleWithSanitization(0, 7),
+             // #17
+             cleanStyleWithSanitization(0, 8),
              'border-image',
              null,
 
-             // #19
-             cleanStyle(0, 10),
+             // #20
+             cleanStyle(0, 11),
              'border-width',
              null,
            ]);
@@ -899,20 +915,20 @@ describe('styling', () => {
       const template =
           initContext(null, [InitialStylingFlags.VALUES_MODE, 'one', true, 'two', true]);
       expect(template).toEqual([
-        element, null, null, [null, true, true], dirtyStyle(0, 13),  //
-        0, null,
+        element, null, null, [null, true, true], dirtyStyle(0, 14),  //
+        0, null, null,
 
-        // #7
-        cleanClass(1, 13), 'one', null,
+        // #8
+        cleanClass(1, 14), 'one', null,
 
-        // #10
-        cleanClass(2, 16), 'two', null,
+        // #11
+        cleanClass(2, 17), 'two', null,
 
-        // #13
-        dirtyClass(1, 7), 'one', null,
+        // #14
+        dirtyClass(1, 8), 'one', null,
 
-        // #16
-        dirtyClass(2, 10), 'two', null
+        // #17
+        dirtyClass(2, 11), 'two', null
       ]);
     });
 
@@ -966,47 +982,48 @@ describe('styling', () => {
         null,
         null,
         [null, '100px', true],
-        dirtyStyle(0, 19),  //
+        dirtyStyle(0, 20),  //
         2,
         null,
+        null,
 
-        // #7
-        cleanStyle(1, 19),
+        // #8
+        cleanStyle(1, 20),
         'width',
         null,
 
-        // #10
-        cleanStyle(0, 22),
+        // #11
+        cleanStyle(0, 23),
         'height',
         null,
 
-        // #13
-        cleanClass(2, 25),
+        // #14
+        cleanClass(2, 26),
         'wide',
         null,
 
-        // #16
-        cleanClass(0, 28),
+        // #17
+        cleanClass(0, 29),
         'tall',
         null,
 
-        // #19
-        dirtyStyle(1, 7),
+        // #20
+        dirtyStyle(1, 8),
         'width',
         null,
 
-        // #22
-        cleanStyle(0, 10),
+        // #23
+        cleanStyle(0, 11),
         'height',
         null,
 
-        // #25
-        dirtyClass(2, 13),
+        // #26
+        dirtyClass(2, 14),
         'wide',
         null,
 
-        // #28
-        cleanClass(0, 16),
+        // #29
+        cleanClass(0, 17),
         'tall',
         null,
       ]);
@@ -1019,57 +1036,58 @@ describe('styling', () => {
         null,
         null,
         [null, '100px', true],
-        dirtyStyle(0, 19),  //
+        dirtyStyle(0, 20),  //
         2,
         'tall round',
+        {width: '200px', opacity: '0.5'},
 
-        // #7
-        cleanStyle(1, 19),
+        // #8
+        cleanStyle(1, 20),
         'width',
         null,
 
-        // #10
-        cleanStyle(0, 34),
+        // #11
+        cleanStyle(0, 35),
         'height',
         null,
 
-        // #13
-        cleanClass(2, 31),
+        // #14
+        cleanClass(2, 32),
         'wide',
         null,
 
-        // #16
-        cleanClass(0, 25),
+        // #17
+        cleanClass(0, 26),
         'tall',
         null,
 
-        // #19
-        dirtyStyle(1, 7),
+        // #20
+        dirtyStyle(1, 8),
         'width',
         '200px',
 
-        // #22
+        // #23
         dirtyStyle(0, 0),
         'opacity',
         '0.5',
 
-        // #25
-        dirtyClass(0, 16),
+        // #26
+        dirtyClass(0, 17),
         'tall',
         true,
 
-        // #28
+        // #29
         dirtyClass(0, 0),
         'round',
         true,
 
-        // #31
-        cleanClass(2, 13),
+        // #32
+        cleanClass(2, 14),
         'wide',
         null,
 
-        // #34
-        cleanStyle(0, 10),
+        // #35
+        cleanStyle(0, 11),
         'height',
         null,
       ]);
@@ -1086,57 +1104,58 @@ describe('styling', () => {
         null,
         null,
         [null, '100px', true],
-        dirtyStyle(0, 19),  //
+        dirtyStyle(0, 20),  //
         2,
-        null,
+        {tall: true, wide: true},
+        {width: '500px'},
 
-        // #7
-        dirtyStyle(1, 19),
+        // #8
+        dirtyStyle(1, 20),
         'width',
         '300px',
 
-        // #10
-        cleanStyle(0, 34),
+        // #11
+        cleanStyle(0, 35),
         'height',
         null,
 
-        // #13
-        cleanClass(2, 25),
+        // #14
+        cleanClass(2, 26),
         'wide',
         null,
 
-        // #16
-        cleanClass(0, 22),
+        // #17
+        cleanClass(0, 23),
         'tall',
         null,
 
-        // #19
-        cleanStyle(1, 7),
+        // #20
+        cleanStyle(1, 8),
         'width',
         '500px',
 
-        // #22
-        cleanClass(0, 16),
+        // #23
+        cleanClass(0, 17),
         'tall',
         true,
 
-        // #25
-        cleanClass(2, 13),
+        // #26
+        cleanClass(2, 14),
         'wide',
         true,
 
-        // #28
+        // #29
         dirtyClass(0, 0),
         'round',
         null,
 
-        // #31
+        // #32
         dirtyStyle(0, 0),
         'opacity',
         null,
 
-        // #34
-        cleanStyle(0, 10),
+        // #35
+        cleanStyle(0, 11),
         'height',
         null,
       ]);
@@ -1145,5 +1164,111 @@ describe('styling', () => {
         {width: '300px', opacity: null}, {tall: true, round: false, wide: true}
       ]);
     });
+  });
+
+  it('should skip updating multi classes and styles if the input identity has not changed', () => {
+    const stylingContext = initContext();
+    const getStylesAndClasses = trackStylesAndClasses();
+
+    const stylesMap = {width: '200px'};
+    const classesMap = {foo: true};
+    updateStylingMap(stylingContext, classesMap, stylesMap);
+
+    // apply the styles
+    getStylesAndClasses(stylingContext);
+
+    expect(stylingContext).toEqual([
+      element,
+      null,
+      null,
+      [null],
+      cleanStyle(0, 8),  //
+      0,
+      {foo: true},
+      {width: '200px'},
+
+      // #8
+      cleanStyle(0, 0),
+      'width',
+      '200px',
+
+      // #11
+      cleanClass(0, 0),
+      'foo',
+      true,
+    ]);
+
+    stylesMap.width = '300px';
+    classesMap.foo = false;
+
+    updateStylingMap(stylingContext, classesMap, stylesMap);
+
+    // apply the styles
+    getStylesAndClasses(stylingContext);
+
+    expect(stylingContext).toEqual([
+      element,
+      null,
+      null,
+      [null],
+      cleanStyle(0, 8),  //
+      0,
+      {foo: false},
+      {width: '300px'},
+
+      // #8
+      cleanStyle(0, 0),
+      'width',
+      '200px',
+
+      // #11
+      cleanClass(0, 0),
+      'foo',
+      true,
+    ]);
+  });
+
+  it('should skip updating multi classes if the string-based identity has not changed', () => {
+    const stylingContext = initContext();
+    const getClasses = trackClassesFactory();
+
+    const classes = 'apple orange banana';
+    updateStylingMap(stylingContext, classes);
+
+    // apply the styles
+    expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
+
+    expect(stylingContext).toEqual([
+      element,
+      null,
+      null,
+      [null],
+      cleanStyle(0, 8),  //
+      0,
+      'apple orange banana',
+      null,
+
+      // #8
+      cleanClass(0, 0),
+      'apple',
+      true,
+
+      // #11
+      cleanClass(0, 0),
+      'orange',
+      true,
+
+      // #14
+      cleanClass(0, 0),
+      'banana',
+      true,
+    ]);
+
+    stylingContext[13] = false;  // no orange
+    stylingContext[16] = false;  // no banana
+    updateStylingMap(stylingContext, classes);
+
+    // apply the styles
+    expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
   });
 });
