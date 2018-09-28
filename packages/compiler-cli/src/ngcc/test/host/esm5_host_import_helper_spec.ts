@@ -10,9 +10,9 @@ import * as ts from 'typescript';
 
 import {ClassMemberKind, Import} from '../../../ngtsc/host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {getDeclaration, makeProgram} from '../helpers/utils';
+import {convertToDirectTsLibImport, getDeclaration, makeProgram} from '../helpers/utils';
 
-const NAMESPACED_TSLIB_IMPORT = [
+const FILES = [
   {
     name: '/some_directive.js',
     contents: `
@@ -77,81 +77,42 @@ const NAMESPACED_TSLIB_IMPORT = [
 }());
 export { SomeDirective };
 `,
-  }
-];
-
-const DIRECT_TSLIB_IMPORT = [
-  {
-    name: '/some_directive.js',
-    contents: `
-  import { __decorate, __metadata, __read, __values, __param, __extends, __assign } from 'tslib';
-  import { Directive, Inject, InjectionToken, Input } from '@angular/core';
-  var INJECTED_TOKEN = new InjectionToken('injected');
-  var ViewContainerRef = /** @class */ (function () {
-      function ViewContainerRef() {
-      }
-      return ViewContainerRef;
-  }());
-  var TemplateRef = /** @class */ (function () {
-      function TemplateRef() {
-      }
-      return TemplateRef;
-  }());
-  var SomeDirective = /** @class */ (function () {
-      function SomeDirective(_viewContainer, _template, injected) {
-          this.instanceProperty = 'instance';
-          this.input1 = '';
-          this.input2 = 0;
-      }
-      SomeDirective.prototype.instanceMethod = function () { };
-      SomeDirective.staticMethod = function () { };
-      SomeDirective.staticProperty = 'static';
-      __decorate([
-          Input(),
-          __metadata("design:type", String)
-      ], SomeDirective.prototype, "input1", void 0);
-      __decorate([
-          Input(),
-          __metadata("design:type", Number)
-      ], SomeDirective.prototype, "input2", void 0);
-      SomeDirective = __decorate([
-          Directive({ selector: '[someDirective]' }),
-          __param(2, Inject(INJECTED_TOKEN)),
-          __metadata("design:paramtypes", [ViewContainerRef,
-              TemplateRef, String])
-      ], SomeDirective);
-      return SomeDirective;
-  }());
-  export { SomeDirective };
-  `,
   },
   {
-    name: '/node_modules/@angular/core/some_directive.js',
+    name: '/ngmodule.js',
     contents: `
-  import { __decorate, __metadata, __read, __values, __param, __extends, __assign } from 'tslib';
-  import { Directive, Input } from './directives';
-  var SomeDirective = /** @class */ (function () {
-    function SomeDirective() {
-        this.input1 = '';
-    }
-    __decorate([
-        Input(),
-        __metadata("design:type", String)
-    ], SomeDirective.prototype, "input1", void 0);
-    SomeDirective = __decorate([
-        Directive({ selector: '[someDirective]' }),
-    ], SomeDirective);
-    return SomeDirective;
-}());
-export { SomeDirective };
-`,
-  }
+    import * as tslib_1 from "tslib";
+    import { NgModule } from '@angular/core';
+      var HttpClientXsrfModule = /** @class */ (function () {
+        function HttpClientXsrfModule() {
+        }
+        HttpClientXsrfModule_1 = HttpClientXsrfModule;
+        HttpClientXsrfModule.withOptions = function (options) {
+            if (options === void 0) { options = {}; }
+            return {
+                ngModule: HttpClientXsrfModule_1,
+                providers: [],
+            };
+        };
+        var HttpClientXsrfModule_1;
+        HttpClientXsrfModule = HttpClientXsrfModule_1 = tslib_1.__decorate([
+            NgModule({
+                providers: [],
+            })
+        ], HttpClientXsrfModule);
+        return HttpClientXsrfModule;
+    }());
+    var missingValue;
+    var nonDecoratedVar;
+    nonDecoratedVar = 43;
+    export { HttpClientXsrfModule };
+    `
+  },
 ];
 
-
 describe('Esm5ReflectionHost [import helper style]', () => {
-  [{files: NAMESPACED_TSLIB_IMPORT, label: 'namespaced'},
-   {files: DIRECT_TSLIB_IMPORT, label: 'direct import'},
+  [{files: FILES, label: 'namespaced'},
+   {files: convertToDirectTsLibImport(FILES), label: 'direct import'},
   ].forEach(fileSystem => {
     describe(`[${fileSystem.label}]`, () => {
 
@@ -384,56 +345,40 @@ describe('Esm5ReflectionHost [import helper style]', () => {
         });
       });
     });
-  });
 
-  describe('getVariableValue', () => {
-    const NGMODULE_FILE = {
-      name: 'ngmodule.js',
-      contents: `
-      var HttpClientXsrfModule = /** @class */ (function () {
-          function HttpClientXsrfModule() {
-          }
-          HttpClientXsrfModule_1 = HttpClientXsrfModule;
-          HttpClientXsrfModule.withOptions = function (options) {
-              if (options === void 0) { options = {}; }
-              return {
-                  ngModule: HttpClientXsrfModule_1,
-                  providers: [],
-              };
-          };
-          var HttpClientXsrfModule_1;
-          HttpClientXsrfModule = HttpClientXsrfModule_1 = tslib_1.__decorate([
-              NgModule({
-                  providers: [],
-              })
-          ], HttpClientXsrfModule);
-          return HttpClientXsrfModule;
-      }());
-      var missingValue;
-      export { HttpClientXsrfModule };
-      `
-    };
+    describe('getVariableValue', () => {
+      it('should find the "actual" declaration of an aliased variable identifier', () => {
+        const program = makeProgram(fileSystem.files[2]);
+        const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
+        const ngModuleRef = findVariableDeclaration(
+            program.getSourceFile(fileSystem.files[2].name) !, 'HttpClientXsrfModule_1');
 
-    it('should find the "actual" declaration of an aliased variable identifier', () => {
-      const program = makeProgram(NGMODULE_FILE);
-      const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
-      const ngModuleRef = findVariableDeclaration(
-          program.getSourceFile(NGMODULE_FILE.name) !, 'HttpClientXsrfModule_1');
-      const value = host.getVariableValue(ngModuleRef !);
-      expect(value).toBeDefined();
-      if (!value || !ts.isIdentifier(value)) {
-        throw new Error('Expected result to be an identifier.');
-      }
-      expect(value.text).toBe('HttpClientXsrfModule');
-    });
+        const value = host.getVariableValue(ngModuleRef !);
+        expect(value).not.toBe(null);
+        if (!value || !ts.isFunctionDeclaration(value.parent)) {
+          throw new Error(
+              `Expected result to be a function declaration: ${value && value.getText()}.`);
+        }
+        expect(value.getText()).toBe('HttpClientXsrfModule');
+      });
 
-    it('should return undefined if the variable has no assignment', () => {
-      const program = makeProgram(NGMODULE_FILE);
-      const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
-      const missingValue =
-          findVariableDeclaration(program.getSourceFile(NGMODULE_FILE.name) !, 'missingValue');
-      const value = host.getVariableValue(missingValue !);
-      expect(value).toBe(null);
+      it('should return undefined if the variable has no assignment', () => {
+        const program = makeProgram(fileSystem.files[2]);
+        const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
+        const missingValue = findVariableDeclaration(
+            program.getSourceFile(fileSystem.files[2].name) !, 'missingValue');
+        const value = host.getVariableValue(missingValue !);
+        expect(value).toBe(null);
+      });
+
+      it('should return null if the variable is not assigned from a call to __decorate', () => {
+        const program = makeProgram(fileSystem.files[2]);
+        const host = new Esm5ReflectionHost('some-package', program.getTypeChecker());
+        const nonDecoratedVar = findVariableDeclaration(
+            program.getSourceFile(fileSystem.files[2].name) !, 'nonDecoratedVar');
+        const value = host.getVariableValue(nonDecoratedVar !);
+        expect(value).toBe(null);
+      });
     });
   });
 

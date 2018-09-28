@@ -228,19 +228,55 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       return value;
     }
 
-    // We have a variable declaration that has no initializer so we need to find a suitable
-    // assignment in a nearby statement.
-    //
-    // For example:
+    // We have a variable declaration that has no initializer. For example:
     //
     // ```
-    // var myVar;
-    // myVar = 10;
+    // var HttpClientXsrfModule_1;
     // ```
+    //
+    // So we want to look for the special scenario where the variabe is being
+    // assigned in a nearby statement to a the return of a call to `__decorate`.
+    // Then we need to find the 2nd argument of that call, the "target", which
+    // will be the actual class identifier. For example:
+    //
+    // ```
+    // HttpClientXsrfModule = HttpClientXsrfModule_1 = tslib_1.__decorate([
+    //   NgModule({
+    //     providers: [],
+    //   })
+    // ], HttpClientXsrfModule);
+    // ```
+    //
+    // And finally, we find the declaration of the identifier in that argument.
+    // Note also that the assignment can occur within another assignment.
+    //
     const block = declaration.parent.parent.parent;
     const symbol = this.checker.getSymbolAtLocation(declaration.name);
     if (symbol && (ts.isBlock(block) || ts.isSourceFile(block))) {
-      return this.findVariableValue(block, symbol);
+      const decorateCall = this.findDecoratedVariableValue(block, symbol);
+      const target = decorateCall && decorateCall.arguments[1];
+      if (target && ts.isIdentifier(target)) {
+        const targetSymbol = this.checker.getSymbolAtLocation(target);
+        const targetDeclaration = targetSymbol && targetSymbol.valueDeclaration;
+        if (targetDeclaration) {
+          if (ts.isClassDeclaration(targetDeclaration) ||
+              ts.isFunctionDeclaration(targetDeclaration)) {
+            // The target is just a function or class declaration
+            // so return its identifier as the variable value.
+            return targetDeclaration.name || null;
+          } else if (ts.isVariableDeclaration(targetDeclaration)) {
+            // The target is a variable declaration, so find the far right expression,
+            // in the case of multiple assignments (e.g. `var1 = var2 = value`).
+            let targetValue = targetDeclaration.initializer;
+            while (targetValue && isAssignment(targetValue)) {
+              targetValue = targetValue.right;
+            }
+            if (targetValue) {
+              return targetValue;
+            }
+          }
+        }
+      }
     }
     return null;
   }
@@ -253,19 +289,20 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns an expression that represents the value of the variable, or undefined if none can be
    * found.
    */
-  protected findVariableValue(node: ts.Node|undefined, symbol: ts.Symbol): ts.Expression|null {
+  protected findDecoratedVariableValue(node: ts.Node|undefined, symbol: ts.Symbol):
+      ts.CallExpression|null {
     if (!node) {
       return null;
     }
-    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken ) {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
       const left = node.left;
       const right = node.right;
       if (ts.isIdentifier(left) && this.checker.getSymbolAtLocation(left) === symbol) {
-        return right;
+        return (ts.isCallExpression(right) && getCalleeName(right) === '__decorate') ? right : null;
       }
-      return this.findVariableValue(right, symbol);
+      return this.findDecoratedVariableValue(right, symbol);
     }
-    return node.forEachChild(node => this.findVariableValue(node, symbol)) || null;
+    return node.forEachChild(node => this.findDecoratedVariableValue(node, symbol)) || null;
   }
 
   /**
