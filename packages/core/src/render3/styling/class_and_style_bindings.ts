@@ -7,12 +7,13 @@
  */
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-
 import {InitialStylingFlags} from '../interfaces/definition';
 import {LElementNode} from '../interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
-import {createEmptyStylingContext, EMPTY_ARR, EMPTY_OBJ} from './util';
+
+import {EMPTY_ARR, EMPTY_OBJ, createEmptyStylingContext} from './util';
+
 
 /**
  * Used clone a copy of a pre-computed template of a styling context.
