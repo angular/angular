@@ -7,13 +7,13 @@
  */
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {addPlayer, getPlayers} from '../../../src/render3/player';
-import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {QUERY_READ_FROM_NODE, defineComponent, getHostElement} from '../../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply, load, markDirty} from '../../../src/render3/instructions';
-import {PlayerContext, PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
+import {PlayState, Player, PlayerContext, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
+import {addPlayer, getPlayers} from '../../../src/render3/player';
 import {QueryList, query, queryRefresh} from '../../../src/render3/query';
+import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
 import {MockPlayer} from './mock_player';

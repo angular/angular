@@ -7,12 +7,13 @@
  */
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-
 import {InitialStylingFlags} from '../interfaces/definition';
 import {LElementNode} from '../interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
-import {createEmptyStylingContext, EMPTY_ARR, EMPTY_OBJ} from './util';
+
+import {EMPTY_ARR, EMPTY_OBJ, createEmptyStylingContext} from './util';
+
 
 /**
  * Used clone a copy of a pre-computed template of a styling context.
@@ -240,7 +241,7 @@ export function updateStylingMap(
 
           // there is no point in setting this to dirty if the previously
           // rendered value was being referenced by the initial style (or null)
-          if (initialValue !== newValue) {
+          if (hasValueChanged(flag, initialValue, newValue)) {
             setDirty(context, ctxIndex, true);
             dirty = true;
           }
@@ -252,10 +253,10 @@ export function updateStylingMap(
           const valueToCompare = getValue(context, indexOfEntry);
           const flagToCompare = getPointers(context, indexOfEntry);
           swapMultiContextEntries(context, ctxIndex, indexOfEntry);
-          if (valueToCompare !== newValue) {
+          if (hasValueChanged(flagToCompare, valueToCompare, newValue)) {
             const initialValue = getInitialValue(context, flagToCompare);
             setValue(context, ctxIndex, newValue);
-            if (initialValue !== newValue) {
+            if (hasValueChanged(flagToCompare, initialValue, newValue)) {
               setDirty(context, ctxIndex, true);
               dirty = true;
             }
@@ -346,7 +347,7 @@ export function updateStyleProp(
 
     // if the value is the same in the multi-area then there's no point in re-assembling
     const valueForMulti = getValue(context, indexForMulti);
-    if (!valueForMulti || valueForMulti !== value) {
+    if (!valueForMulti || hasValueChanged(currFlag, valueForMulti, value)) {
       let multiDirty = false;
       let singleDirty = true;
 
