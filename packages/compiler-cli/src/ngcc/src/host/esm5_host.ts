@@ -131,7 +131,7 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
      * @returns A collection of files objects that hold info about the decorated classes and import
      * information.
      */
-  findDecoratedFiles(entryPoint: ts.SourceFile): DecoratedFile[] {
+  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile> {
     const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
     const map = new Map<ts.SourceFile, DecoratedFile>();
     const getParsedClass = (declaration: ts.VariableDeclaration) => {
@@ -158,7 +158,7 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
         map.get(file) !.decoratedClasses.push(clazz);
       });
     }
-    return Array.from(map.values());
+    return map;
   }
 
   ///////////// Protected Helpers /////////////

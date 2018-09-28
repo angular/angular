@@ -124,16 +124,20 @@ describe('Esm2015ReflectionHost', () => {
          const program = makeProgram(...DECORATED_FILES);
          const dtsMapper = new DtsMapper('/src', '/typings');
          const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
-         const decoratedFiles =
-             host.findDecoratedFiles(program.getSourceFile(DECORATED_FILES[0].name) !);
-         expect(decoratedFiles.length).toEqual(2);
-         const primary = decoratedFiles[0];
+         const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
+         const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
+         const decoratedFiles = host.findDecoratedFiles(primaryFile);
+
+         expect(decoratedFiles.size).toEqual(2);
+
+         const primary = decoratedFiles.get(primaryFile) !;
          expect(primary.decoratedClasses.length).toEqual(1);
          const classA = primary.decoratedClasses.find(c => c.name === 'A') !;
          expect(classA.name).toEqual('A');
          expect(ts.isClassDeclaration(classA.declaration)).toBeTruthy();
          expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-         const secondary = decoratedFiles[1];
+
+         const secondary = decoratedFiles.get(secondaryFile) !;
          expect(secondary.decoratedClasses.length).toEqual(1);
          const classD = secondary.decoratedClasses.find(c => c.name === 'D') !;
          expect(classD.name).toEqual('D');
