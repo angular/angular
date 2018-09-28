@@ -52,8 +52,6 @@ interface StatusEvent {
   error?: string;
 }
 
-export interface NotificationObject extends NotificationOptions { title: string; }
-
 
 function errorObservable(message: string): Observable<any> {
   return defer(() => throwError(new Error(message)));
