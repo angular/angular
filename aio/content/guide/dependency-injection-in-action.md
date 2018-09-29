@@ -1388,38 +1388,67 @@ These complications argue for *avoiding component inheritance*.
 {@a find-parent}
 
 
-
+<!--
 ## Find a parent component by injection
+-->
+## 부모 컴포넌트 주입하기
 
+<!--
 Application components often need to share information.
 More loosely coupled techniques such as data binding and service sharing
 are preferable. But sometimes it makes sense for one component
 to have a direct reference to another component
 perhaps to access values or call methods on that component.
+-->
+컴포넌트끼리 데이터를 공유해야 하는 경우가 자주 있습니다.
+이 때 컴포넌트의 결합도를 크게 높이지 않으려면 데이터 바인딩을 사용하거나 서비스 인스턴스를 공유하는 방식을 사용하는 것이 좋습니다.
+하지만 컴포넌트가 다른 컴포넌트를 직접 참조하면서 프로퍼티에 접근하거나 메소드를 실행하는 것이 더 편한 경우도 있습니다.
 
+<!--
 Obtaining a component reference is a bit tricky in Angular.
 Although an Angular application is a tree of components,
 there is no public API for inspecting and traversing that tree.
+-->
+하지만 컴포넌트 참조는 쉽지 않습니니다.
+Angular 애플리케이션이 컴포넌트의 트리로 구성되지만, 이 트리를 탐색하는 API는 제공되지 않기 때문입니다.
 
+<!--
 There is an API for acquiring a child reference.
 Check out `Query`, `QueryList`, `ViewChildren`, and `ContentChildren`
 in the [API Reference](api/).
+-->
+자식 컴포넌트를 참조하는 API는 여러가지가 있습니다.
+[API 참조](api/) 문서에서 `Query`, `QueryList`, `ViewChildren`, `ContentChildren`을 참고하세요.
 
+<!--
 There is no public API for acquiring a parent reference.
 But because every component instance is added to an injector's container,
 you can use Angular dependency injection to reach a parent component.
+-->
+하지만 부모 컴포넌트를 참조하는 API는 따로 없습니다.
+왜냐하면 모든 컴포넌트의 인스턴스는 인젝터의 컨테이너에 관리되는데, 컴포넌트에서 의존성 주입을 활용할 때 부모 컴포넌트를 참조할 수 있기 때문에 별도의 API가 없어도 부모 컴포넌트를 참조할 수 있습니다.
 
+<!--
 This section describes some techniques for doing that.
-
+-->
+이번 섹션에서는 이 내용에 대해 알아봅시다.
 
 {@a known-parent}
 
-
+<!--
 ### Find a parent component of known type
+-->
+### 타입으로 부모 컴포넌트 찾기
 
+<!--
 You use standard class injection to acquire a parent component whose type you know.
+-->
+부모 컴포넌트의 타입을 안다면 기존에 의존성 주입을 사용하던 방식대로 인스턴스를 주입할 수 있습니다.
 
+<!--
 In the following example, the parent `AlexComponent` has several children including a `CathyComponent`:
+-->
+아래 예제에는 부모 컴포넌트 `AlexComponent` 안에 `CathyComponent`와 같은 자식 컴포넌트가 몇 개 존재합니다:
 
 {@a alex}
 
@@ -1429,79 +1458,108 @@ In the following example, the parent `AlexComponent` has several children includ
 </code-example>
 
 
-
+<!--
 *Cathy* reports whether or not she has access to *Alex*
 after injecting an `AlexComponent` into her constructor:
+-->
+그러면 이제 *Cathy*가 *Alex*에 접근할 수 있는지 확인해서 템플릿에 이 내용을 표시하려고 합니다. `CathyComponent`의 생성자에 다음과 같이 `AlexComponent`를 주입합니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="cathy" title="parent-finder.component.ts (CathyComponent)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Notice that even though the [@Optional](guide/dependency-injection-in-action#optional) qualifier
 is there for safety,
 the <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is set.
-
+-->
+이 코드에는 [@Optional](guide/dependency-injection-in-action#optional)이 사용되었지만 AlexComponent는 이미 앱모듈에 등록되었기 때문에 정상적으로 주입됩니다. <live-example name="dependency-injection-in-action"></live-example>에서 예제가 동작하는 것을 직접 확인해 보세요.
 
 {@a base-parent}
 
-
+<!--
 ### Cannot find a parent by its base class
+-->
+### 부모 클래스로는 참조할 수 없습니다.
 
+<!--
 What if you *don't* know the concrete parent component class?
+-->
+부모 컴포넌트 클래스의 타입을 *모르는* 경우에는 어떻게 해야 할까요?
 
+<!--
 A re-usable component might be a child of multiple components.
 Imagine a component for rendering breaking news about a financial instrument.
 For business reasons, this news component makes frequent calls
 directly into its parent instrument as changing market data streams by.
+-->
+재사용을 염두에 두고 만든 컴포넌트라면 여러 인스턴스가 같은 계층에 존재할 수도 있습니다.
+금융 어플에서 뉴스를 표시하는 컴포넌트를 생각해 보세요.
+이 컴포넌트는 부모 컴포넌트를 계속 참조하면서 부모 컴포넌트의 내용을 지속적으로 반영하게 하려고 합니다.
 
+<!--
 The app probably defines more than a dozen financial instrument components.
 If you're lucky, they all implement the same base class
 whose API your `NewsComponent` understands.
-
+-->
+이 때 사용하는 컴포넌트가 여러 종류일 수도 있습니다.
+하지만 운이 좋게도 이 컴포넌트들의 부모 클래스는 모두 같으며, `NewsComponent`는 부모 클래스의 API를 이미 알고 있다고 합시다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Looking for components that implement an interface would be better.
 That's not possible because TypeScript interfaces disappear
 from the transpiled JavaScript, which doesn't support interfaces.
 There's no artifact to look for.
+-->
+컴포넌트를 확장할 때 인터페이스를 사용하는 방법을 고민해 볼 수도 있습니다.
+하지만 인터페이스는 TypeScript에만 존재하며 JavaScript로 변환된 코드에는 인터페이스가 존재하지 않기 때문에 의존성 주입에 사용할 수 없습니다.
 
 </div>
 
 
-
+<!--
 This isn't necessarily good design.
 This example is examining *whether a component can
 inject its parent via the parent's base class*.
+-->
+이 구조가 좋다는 것은 아닙니다.
+이 예제는 *부모 컴포넌트가 상속하는 클래스 타입을 사용하면 부모 컴포넌트의 인스턴스를 자식 컴포넌트에 주입할 수 있는지* 알아보는 예제일 뿐입니다.
 
+<!--
 The sample's `CraigComponent` explores this question. [Looking back](guide/dependency-injection-in-action#alex),
 you see that the `Alex` component *extends* (*inherits*) from a class named `Base`.
+-->
+`CraigComponent`에서 이 내용을 확인해 봅시다. [이전에 본 것처럼](guide/dependency-injection-in-action#alex) `Alex` 컴포넌트는 `Base` 클래스를 상속합니다.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (Alex class signature)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `CraigComponent` tries to inject `Base` into its `alex` constructor parameter and reports if it succeeded.
+-->
+`CraigComponent`는 `Base` 클래스의 인스턴스를 `alex` 프로퍼티로 주입하려고 하며, 이 동작이 성공한 것을 확인하기 위해 템플릿을 다음과 같이 작성했습니다.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="craig" title="parent-finder.component.ts (CraigComponent)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Unfortunately, this does not work.
 The <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is null.
 *You cannot inject a parent by its base class.*
-
-
+-->
+하지만 이 코드는 동작하지 않습니다.
+<live-example name="dependency-injection-in-action"></live-example>에서도 확인해보면 `alex` 프로퍼티에 `null` 값이 할당되는 것은 확인할 수 있습니다.
+*부모 컴포넌트가 상속하는 클래스의 원래 타입으로는 의존성 주입을 사용할 수 없습니다.*
 
 {@a class-interface-parent}
 
