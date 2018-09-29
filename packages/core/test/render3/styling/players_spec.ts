@@ -7,7 +7,7 @@
  */
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {QUERY_READ_FROM_NODE, defineComponent, getHostElement} from '../../../src/render3/index';
+import {defineComponent, getHostElement} from '../../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply, load, markDirty} from '../../../src/render3/instructions';
 import {PlayState, Player, PlayerContext, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
@@ -289,7 +289,7 @@ class SuperComp {
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        query(0, ['child'], true, QUERY_READ_FROM_NODE);
+        query(0, ['child'], true);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;
