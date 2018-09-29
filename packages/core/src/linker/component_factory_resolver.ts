@@ -39,7 +39,13 @@ export abstract class ComponentFactoryResolver {
 }
 
 export class CodegenComponentFactoryResolver implements ComponentFactoryResolver {
-  private _factories = new Map<any, ComponentFactory<any>>();
+  /**
+   * Make _factories to be static, components can be shared between modules.
+   */
+  private static _factories = new Map<any, ComponentFactory<any>>();
+  private get _factories() {
+    return CodegenComponentFactoryResolver._factories;
+  }
 
   constructor(
       factories: ComponentFactory<any>[], private _parent: ComponentFactoryResolver,
