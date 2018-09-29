@@ -25,7 +25,7 @@ import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, createTextNode, findComponentView, getContainerNode, getHostElementNode, getLViewChild, getParentOrContainerNode, getRenderParent, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, createTextNode, findComponentView, getHostElementNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, getLNode, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
@@ -333,6 +333,8 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
  * Note: view hooks are triggered later when leaving the view.
  */
 function refreshDescendantViews() {
+  setHostBindings(tView.hostBindings);
+
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = firstTemplatePass = false;
 
@@ -348,7 +350,6 @@ function refreshDescendantViews() {
     executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
   }
 
-  setHostBindings(tView.hostBindings);
   refreshChildComponents(tView.components);
 }
 
@@ -361,6 +362,12 @@ export function setHostBindings(bindings: number[] | null): void {
     for (let i = 0; i < bindings.length; i += 2) {
       const dirIndex = bindings[i];
       const def = defs[dirIndex] as DirectiveDefInternal<any>;
+      if (firstTemplatePass) {
+        for (let i = 0; i < def.hostVars; i++) {
+          tView.blueprint.push(NO_CHANGE);
+          viewData.push(NO_CHANGE);
+        }
+      }
       def.hostBindings !(dirIndex, bindings[i + 1]);
       bindingRootIndex = viewData[BINDING_INDEX] = bindingRootIndex + def.hostVars;
     }
@@ -399,7 +406,7 @@ export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
     sanitizer?: Sanitizer | null): LViewData {
   const instance = tView.blueprint.slice() as LViewData;
-  instance[PARENT] = viewData;
+  instance[PARENT] = instance[DECLARATION_VIEW] = viewData;
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
   instance[CONTEXT] = context;
   instance[INJECTOR] = viewData ? viewData[INJECTOR] : null;
@@ -414,14 +421,9 @@ export function createLViewData<T>(
  * (same properties assigned in the same order).
  */
 export function createLNodeObject(
-    type: TNodeType, nodeInjector: LInjector | null, native: RText | RElement | RComment | null,
-    state: any): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
-  return {
-    native: native as any,
-    nodeInjector: nodeInjector,
-    data: state,
-    dynamicLContainerNode: null
-  };
+    type: TNodeType, native: RText | RElement | RComment | null, state: any): LElementNode&
+    LTextNode&LViewNode&LContainerNode&LProjectionNode {
+  return {native: native as any, data: state, dynamicLContainerNode: null};
 }
 
 /**
@@ -464,7 +466,7 @@ export function createNodeAtIndex(
   const tParent = parentInSameView ? parent as TElementNode | TContainerNode : null;
 
   const isState = state != null;
-  const node = createLNodeObject(type, null, native, isState ? state as any : null);
+  const node = createLNodeObject(type, native, isState ? state as any : null);
   let tNode: TNode;
 
   if (index === -1 || type === TNodeType.View) {
@@ -505,13 +507,6 @@ export function createNodeAtIndex(
         previousOrParentTNode.child = tNode;
       }
     }
-  }
-  // TODO: temporary, remove this when removing nodeInjector (bringing in fns to hello world)
-  if (index !== -1 && !(viewData[FLAGS] & LViewFlags.IsRoot)) {
-    const parentLNode: LNode|null = type === TNodeType.View ?
-        getContainerNode(tNode, state as LViewData) :
-        getParentOrContainerNode(tNode, viewData);
-    parentLNode && (node.nodeInjector = parentLNode.nodeInjector);
   }
 
   // View nodes and host elements need to set their host node (components do not save host TNodes)
@@ -607,7 +602,7 @@ export function renderTemplate<T>(
  */
 export function createEmbeddedViewAndNode<T>(
     tView: TView, context: T, declarationView: LViewData, renderer: Renderer3,
-    queries?: LQueries | null): LViewData {
+    queries: LQueries | null, injectorIndex: number): LViewData {
   const _isParent = isParent;
   const _previousOrParentTNode = previousOrParentTNode;
   isParent = true;
@@ -621,6 +616,10 @@ export function createEmbeddedViewAndNode<T>(
     lView[QUERIES] = queries.createView();
   }
   createNodeAtIndex(-1, TNodeType.View, null, null, null, lView);
+
+  if (tView.firstTemplatePass) {
+    tView.node !.injectorIndex = injectorIndex;
+  }
 
   isParent = _isParent;
   previousOrParentTNode = _previousOrParentTNode;
@@ -969,10 +968,6 @@ export function queueHostBindingForCheck(dirIndex: number, hostVars: number): vo
   // instructions that expect element indices that are NOT adjusted (e.g. elementProperty).
   ngDevMode &&
       assertEqual(firstTemplatePass, true, 'Should only be called in first template pass.');
-  for (let i = 0; i < hostVars; i++) {
-    tView.blueprint.push(NO_CHANGE);
-    viewData.push(NO_CHANGE);
-  }
   (tView.hostBindings || (tView.hostBindings = [
    ])).push(dirIndex, previousOrParentTNode.index - HEADER_OFFSET);
 }
@@ -1476,6 +1471,7 @@ export function createTNode(
   return {
     type: type,
     index: adjustedIndex,
+    injectorIndex: parent ? parent.injectorIndex : -1,
     flags: 0,
     tagName: tagName,
     attrs: attrs,

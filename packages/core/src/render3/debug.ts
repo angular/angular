@@ -14,7 +14,6 @@ import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 import {getLElementNode} from './context_discovery';
 import * as di from './di';
 import {_getViewData} from './instructions';
-import {LElementNode} from './interfaces/node';
 import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
 
 /**
@@ -47,9 +46,8 @@ class Render3DebugContext implements DebugContext {
 
   get injector(): Injector {
     if (this.nodeIndex !== null) {
-      const lElementNode: LElementNode = this.view[this.nodeIndex];
-      const nodeInjector = lElementNode.nodeInjector;
-
+      const tNode = this.view[TVIEW].data[this.nodeIndex];
+      const nodeInjector = di.getInjector(tNode, this.view);
       if (nodeInjector) {
         return new di.NodeInjector(nodeInjector);
       }
