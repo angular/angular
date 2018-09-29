@@ -37,18 +37,6 @@ export function getHostElementNode(currentView: LViewData): LElementNode|null {
       null;
 }
 
-/**
- * Gets the parent LNode if it's not a view. If it's a view, it will instead return the view's
- * parent container node.
- */
-export function getParentOrContainerNode(tNode: TNode, currentView: LViewData): LElementNode|
-    LElementContainerNode|LContainerNode|null {
-  const parentTNode = tNode.parent || currentView[HOST_NODE];
-  return parentTNode && parentTNode.type === TNodeType.View ?
-      getContainerNode(parentTNode, currentView) :
-      getParentLNode(tNode, currentView);
-}
-
 export function getContainerNode(tNode: TNode, embeddedView: LViewData): LContainerNode|null {
   if (tNode.index === -1) {
     // This is a dynamically created view inside a dynamic container.

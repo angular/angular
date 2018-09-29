@@ -15,17 +15,16 @@ import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '.
 import {Renderer2} from '../render';
 import {Type} from '../type';
 
-import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
+import {assertDefined} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
-import {_getViewData, addToViewTree, assertPreviousIsParent, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, loadElement, renderEmbeddedTemplate, resolveDirective, setEnvironment} from './instructions';
-import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
+import {_getViewData, assertPreviousIsParent, getPreviousOrParentTNode, resolveDirective, setEnvironment} from './instructions';
+import {DirectiveDefInternal} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
-import {Renderer3, isProceduralRenderer} from './interfaces/renderer';
-import {CONTEXT, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
-import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getHostElementNode, getParentLNode, getParentOrContainerNode, getRenderParent, insertView, removeView} from './node_manipulation';
+import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {isProceduralRenderer} from './interfaces/renderer';
+import {DECLARATION_VIEW, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, RENDERER, TVIEW, TView} from './interfaces/view';
+import {assertNodeOfPossibleTypes} from './node_assert';
 
 /**
  * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
@@ -81,7 +80,6 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
 export function getOrCreateNodeInjector(): LInjector {
   ngDevMode && assertPreviousIsParent();
   return getOrCreateNodeInjectorForNode(
-      getPreviousOrParentNode() as LElementNode | LElementContainerNode | LContainerNode,
       getPreviousOrParentTNode() as TElementNode | TElementContainerNode | TContainerNode,
       _getViewData());
 }
@@ -89,22 +87,25 @@ export function getOrCreateNodeInjector(): LInjector {
 /**
  * Creates (or gets an existing) injector for a given element or container.
  *
- * @param node for which an injector should be retrieved / created.
  * @param tNode for which an injector should be retrieved / created.
  * @param hostView View where the node is stored
  * @returns Node injector
  */
 export function getOrCreateNodeInjectorForNode(
-    node: LElementNode | LElementContainerNode | LContainerNode,
     tNode: TElementNode | TContainerNode | TElementContainerNode, hostView: LViewData): LInjector {
-  // TODO: remove LNode arg when nodeInjector refactor is done
-  const nodeInjector = node.nodeInjector;
-  const parentLNode = getParentOrContainerNode(tNode, hostView);
-  const parentInjector = parentLNode && parentLNode.nodeInjector;
-  if (nodeInjector != parentInjector) {
-    return nodeInjector !;
+  const injector = getInjector(tNode, hostView);
+  if (injector) return injector;
+
+  const tView = hostView[TVIEW];
+  if (tView.firstTemplatePass) {
+    // TODO(kara): Store node injector with host bindings for that node (see VIEW_DATA.md)
+    tNode.injectorIndex = hostView.length;
+    tView.blueprint.push(null);
+    tView.hostBindingStartIndex++;
   }
-  return node.nodeInjector = {
+
+  const parentInjector = getParentInjector(tNode, hostView);
+  return hostView[tNode.injectorIndex] = {
     parent: parentInjector,
     tNode: tNode,
     view: hostView,
@@ -127,6 +128,32 @@ export function getOrCreateNodeInjectorForNode(
   };
 }
 
+export function getInjector(tNode: TNode, view: LViewData): LInjector|null {
+  // If the injector index is the same as its parent's injector index, then the index has been
+  // copied down from the parent node. No injector has been created yet on this node.
+  if (tNode.injectorIndex === -1 ||
+      tNode.parent && tNode.parent.injectorIndex === tNode.injectorIndex) {
+    return null;
+  } else {
+    return view[tNode.injectorIndex];
+  }
+}
+
+export function getParentInjector(tNode: TNode, view: LViewData): LInjector {
+  if (tNode.parent && tNode.parent.injectorIndex !== -1) {
+    return view[tNode.parent.injectorIndex];
+  }
+
+  // For most cases, the parent injector index can be found on the host node (e.g. for component
+  // or container), so this loop will be skipped, but we must keep the loop here to support
+  // the rarer case of deeply nested <ng-template> tags.
+  let hostTNode = view[HOST_NODE];
+  while (hostTNode && hostTNode.injectorIndex === -1) {
+    view = view[DECLARATION_VIEW] !;
+    hostTNode = view[HOST_NODE] !;
+  }
+  return hostTNode ? view[DECLARATION_VIEW] ![hostTNode.injectorIndex] : null;
+}
 
 /**
  * Makes a directive public to the DI system by adding it to an injector's bloom filter.

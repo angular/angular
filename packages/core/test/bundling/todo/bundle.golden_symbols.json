@@ -624,6 +624,9 @@
     "name": "getInjectableDef"
   },
   {
+    "name": "getInjector$1"
+  },
+  {
     "name": "getLElementFromComponent"
   },
   {
@@ -654,10 +657,10 @@
     "name": "getOrCreateTView"
   },
   {
-    "name": "getParentLNode"
+    "name": "getParentInjector"
   },
   {
-    "name": "getParentOrContainerNode"
+    "name": "getParentLNode"
   },
   {
     "name": "getParentState"
