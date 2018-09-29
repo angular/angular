@@ -16,7 +16,7 @@ import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {NodeInjector, getOrCreateNodeInjectorForNode} from './di';
+import {NodeInjector, getInjector, getOrCreateNodeInjectorForNode, getParentInjector} from './di';
 import {_getViewData, addToViewTree, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentTNode, getRenderer, renderEmbeddedTemplate} from './instructions';
 import {LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {RenderFlags} from './interfaces/definition';
@@ -64,7 +64,8 @@ export function createElementRef(
 let R3TemplateRef: {
   new (
       _declarationParentView: LViewData, elementRef: ViewEngine_ElementRef, _tView: TView,
-      _renderer: Renderer3, _queries: LQueries | null): ViewEngine_TemplateRef<any>
+      _renderer: Renderer3, _queries: LQueries | null, _injectorIndex: number):
+      ViewEngine_TemplateRef<any>
 };
 
 /**
@@ -96,7 +97,8 @@ export function createTemplateRef<T>(
     R3TemplateRef = class TemplateRef_<T> extends TemplateRefToken<T> {
       constructor(
           private _declarationParentView: LViewData, readonly elementRef: ViewEngine_ElementRef,
-          private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {
+          private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null,
+          private _injectorIndex: number) {
         super();
       }
 
@@ -104,7 +106,8 @@ export function createTemplateRef<T>(
           context: T, container?: LContainer, tContainerNode?: TContainerNode, hostView?: LViewData,
           index?: number): viewEngine_EmbeddedViewRef<T> {
         const lView = createEmbeddedViewAndNode(
-            this._tView, context, this._declarationParentView, this._renderer, this._queries);
+            this._tView, context, this._declarationParentView, this._renderer, this._queries,
+            this._injectorIndex);
         if (container) {
           insertView(lView, container, hostView !, index !, tContainerNode !.parent !.index);
         }
@@ -122,7 +125,7 @@ export function createTemplateRef<T>(
   ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
   return new R3TemplateRef(
       hostView, createElementRef(ElementRefToken, hostTNode, hostView), hostTNode.tViews as TView,
-      getRenderer(), hostNode.data ![QUERIES]);
+      getRenderer(), hostNode.data ![QUERIES], hostTNode.injectorIndex);
 }
 
 let R3ViewContainerRef: {
@@ -178,15 +181,13 @@ export function createContainerRef(
       }
 
       get injector(): Injector {
-        // TODO: Remove LNode lookup when removing LNode.nodeInjector
-        const injector =
-            getOrCreateNodeInjectorForNode(this._getHostNode(), this._hostTNode, this._hostView);
-        return new NodeInjector(injector);
+        const nodeInjector = getOrCreateNodeInjectorForNode(this._hostTNode, this._hostView);
+        return new NodeInjector(nodeInjector);
       }
 
       /** @deprecated No replacement */
       get parentInjector(): Injector {
-        const parentLInjector = getParentLNode(this._hostTNode, this._hostView) !.nodeInjector;
+        const parentLInjector = getParentInjector(this._hostTNode, this._hostView);
         return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
       }
 
@@ -292,7 +293,7 @@ export function createContainerRef(
   const lContainer = createLContainer(hostView, true);
   const comment = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
   const lContainerNode: LContainerNode =
-      createLNodeObject(TNodeType.Container, hostLNode.nodeInjector, comment, lContainer);
+      createLNodeObject(TNodeType.Container, comment, lContainer);
 
   lContainer[RENDER_PARENT] = getRenderParent(hostTNode, hostView);
 
