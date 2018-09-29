@@ -811,7 +811,7 @@ export class TransitionAnimationEngine {
     }
 
     this.driver.query(element, DISABLED_SELECTOR, true).forEach(node => {
-      this.markElementAsDisabled(element, false);
+      this.markElementAsDisabled(node, false);
     });
   }
 
