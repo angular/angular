@@ -1289,27 +1289,38 @@ The token description is another developer aid.
 {@a di-inheritance}
 
 
-
+<!--
 ## Inject into a derived class
+-->
+## 상속된 클래스에 의존성 주입하기
+
+<!--
 Take care when writing a component that inherits from another component.
 If the base component has injected dependencies,
 you must re-provide and re-inject them in the derived class
 and then pass them down to the base class through the constructor.
+-->
+컴포넌트를 상속할 때 주의해야 하는 내용이 있습니다.
+부모 컴포넌트에 의존성으로 주입되는 객체가 있다면 이 객체는 자식 컴포넌트에도 의존성으로 주입되어야 하며, 자식 컴포넌트에 전달된 객체는 부모 컴포넌트의 생성자로 전달되어야 합니다.
 
+<!--
 In this contrived example, `SortedHeroesComponent` inherits from `HeroesBaseComponent`
 to display a *sorted* list of heroes.
-
+-->
+다음 예제는 히어로의 목록을 *정렬해서* 표시하기 위해 `HeroesBaseComponent`를 상속받아 `SortedHeroesComponent`를 정의하는 예제 코드입니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/sorted-heroes.png" alt="Sorted Heroes">
 </figure>
 
 
-
+<!--
 The `HeroesBaseComponent` could stand on its own.
 It demands its own instance of the `HeroService` to get heroes
 and displays them in the order they arrive from the database.
-
+-->
+`HeroesBaseComponent`는 그 자체로 독립적인 컴포넌트입니다.
+이 컴포넌트는 `HeroService` 인스턴스를 의존성으로 요청하며, 이 서비스에서 히어로 목록을 가져와서 화면에 표시합니다.
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="heroes-base" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent)">
 
@@ -1320,41 +1331,59 @@ and displays them in the order they arrive from the database.
 <div class="alert is-helpful">
 
 
-
+<!--
 ***Keep constructors simple.*** They should do little more than initialize variables.
 This rule makes the component safe to construct under test without fear that it will do something dramatic like talk to the server.
 That's why you call the `HeroService` from within the `ngOnInit` rather than the constructor.
-
+-->
+***생성자는 최대한 간단하게 작성하세요.*** 생성자에서는 변수를 초기화하는 로직만 실행하는 것이 좋습니다.
+생성자는 이렇게 작성해야 컴포넌트를 테스트하는 로직이 복잡해지지 않으며, 서버와 통신하는 로직도 생략할 수 있습니다.
+그래서 `HeroService`의 메소드를 실행하는 로직은 생성자가 아니라 `ngOnInit()`에서 실행하는 것이 좋습니다.
 
 </div>
 
 
-
+<!--
 Users want to see the heroes in alphabetical order.
 Rather than modify the original component, sub-class it and create a
 `SortedHeroesComponent` that sorts the heroes before presenting them.
 The `SortedHeroesComponent` lets the base class fetch the heroes.
+-->
+사용자는 히어로의 목록을 알파벳 순서로 보고싶다고 합시다.
+그리고 이 예제에서는 히어로의 목록을 정렬하는 로직은 원래 컴포넌트에 작성하지 않고 자식 클래스인 `SortedHeroesComponent`에 작성하는데, 화면에 표시되기 전에 히어로의 목록을 정렬하려고 합니다.
+그러면 `SortedHeroesComponent`에서는 히어로의 목록을 가져오는 로직부터 작성해야 합니다.
 
+<!--
 Unfortunately, Angular cannot inject the `HeroService` directly into the base class.
 You must provide the `HeroService` again for *this* component,
 then pass it down to the base class inside the constructor.
-
+-->
+하지만 아쉽게도 Angular는 상속에서 부모 역할을 하는 클래스에 `HeroService`를 직접 주입할 수 없습니다. `HeroService`는 *이* 컴포넌트에 주입한 후에 생성자를 통해 부모 컴포넌트로 전달해야 합니다.
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="sorted-heroes" title="src/app/sorted-heroes.component.ts (SortedHeroesComponent)">
 
 </code-example>
 
 
-
+<!--
 Now take note of the `afterGetHeroes()` method.
 Your first instinct might have been to create an `ngOnInit` method in `SortedHeroesComponent` and do the sorting there.
 But Angular calls the *derived* class's `ngOnInit` *before* calling the base class's `ngOnInit`
 so you'd be sorting the heroes array *before they arrived*. That produces a nasty error.
+-->
+이제 `afterGetHeroes()` 메소드를 구현해 봅시다.
+히어로의 목록을 정렬하는 로직은 `SortedHeroesComponent`의 `ngOnInit()`에 구현하는 것이 낫지 않을까 생각이 들 수도 있습니다.
+하지만 이 경우는 Angular가 부모 클래스의 `ngOnInit`을 실행하기 전에 자식 클래스의 `ngOnInit` 을 먼저 실행하기 때문에, 히어로의 목록을 가져오기도 전에 정렬 로직이 실행되게 됩니다. 결국 생각했던 대로 동작하지 않습니다.
 
+<!--
 Overriding the base class's `afterGetHeroes()` method solves the problem.
+-->
+이 문제를 해결하려면 부모 클래스의 `afterGetHeroes()` 메소드를 오버라이드해야 합니다.
 
+<!--
 These complications argue for *avoiding component inheritance*.
-
+-->
+사실 컴포넌트를 상속하면서 고려해야할 내용이 많기 때문에 *꼭 필요하지 않다면 컴포넌트는 상속하지 않는 것이 좋습니다*.
 
 {@a find-parent}
 

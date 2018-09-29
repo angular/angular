@@ -23,7 +23,7 @@ export class HeroesBaseComponent implements OnInit {
     this.afterGetHeroes();
   }
 
-  // Post-process heroes in derived class override.
+  // 히어로 목록을 처리하는 로직은 자식 클래스에서 오버라이드합니다.
   protected afterGetHeroes() {}
 
 // #docregion injection
