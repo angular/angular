@@ -38,6 +38,7 @@
     "generator-jest": "^1.6.0",
     "generator-license": "^5.4.0",
     "jenkins": "^0.22.1",
+    "link": "^0.1.5",
     "manager": "^1.0.9",
     "package": "^1.0.1",
     "reflect-metadata": "^0.1.3",
