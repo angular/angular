@@ -141,7 +141,7 @@ export {
   pureFunctionV,
 } from './pure_function';
 
-export {templateRefExtractor, QUERY_READ_ELEMENT_REF, QUERY_READ_CONTAINER_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from './view_engine_compatibility_prebound';
+export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
 
 // clang-format on
