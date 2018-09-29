@@ -27,6 +27,31 @@ const TEST_PROGRAM = {
   `
 };
 
+const LIBRARY_ENTRYPOINT = {
+  name: 'entrypoint.js',
+  contents: `
+  import {NgModule} from '@angular/core';
+  import {MyComponent} from './component.js';
+
+  export class MyModule {}
+  MyModule.decorators = [{type: MyModule, args: [{
+                declarations: [MyComponent],
+                exports: [MyComponent],
+            },] }];
+  `
+};
+
+const IMPORTED_COMPONENT = {
+  name: 'component.js',
+  contents: `
+  import {Component} from '@angular/core';
+
+  export class MyComponent {}
+  MyComponent.decorators = [{type: Component}];
+  `,
+  isRoot: false,
+};
+
 function createTestHandler() {
   const handler = jasmine.createSpyObj<DecoratorHandler<any, any>>('TestDecoratorHandler', [
     'detect',
@@ -57,8 +82,8 @@ describe('DecorationAnalyzer', () => {
     beforeEach(() => {
       program = makeProgram(TEST_PROGRAM);
       const analyzer = new DecorationAnalyzer(
-          program.getTypeChecker(),
-          new Fesm2015ReflectionHost('some-package', program.getTypeChecker()), ['']);
+        program.getTypeChecker(),
+        new Fesm2015ReflectionHost('some-package', program.getTypeChecker()), ['']);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeProgram(program);
@@ -72,9 +97,9 @@ describe('DecorationAnalyzer', () => {
     it('should call detect on the decorator handlers with each class from the parsed file', () => {
       expect(testHandler.detect).toHaveBeenCalledTimes(2);
       expect(testHandler.detect.calls.allArgs()[0][1]).toEqual([jasmine.objectContaining(
-          {name: 'Component'})]);
+        {name: 'Component'})]);
       expect(testHandler.detect.calls.allArgs()[1][1]).toEqual([jasmine.objectContaining(
-          {name: 'Injectable'})]);
+        {name: 'Injectable'})]);
     });
 
     it('should return an object containing the classes that were analyzed', () => {
@@ -91,5 +116,30 @@ describe('DecorationAnalyzer', () => {
       expect(testHandler.compile).toHaveBeenCalledTimes(1);
       expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
     });
+  });
+
+  describe('analyzing internal component', () => {
+    let program: ts.Program;
+    let testHandler: jasmine.SpyObj<DecoratorHandler<any, any>>;
+    let result: DecorationAnalyses;
+
+    beforeEach(() => {
+      program = makeProgram(LIBRARY_ENTRYPOINT, IMPORTED_COMPONENT);
+      const analyzer = new DecorationAnalyzer(
+        program.getTypeChecker(),
+        new Fesm2015ReflectionHost('some-package', program.getTypeChecker()), ['']);
+      testHandler = createTestHandler();
+      analyzer.handlers = [testHandler];
+      result = analyzer.analyzeProgram(program);
+    });
+
+    it('should have analyzed the internally declared component', () => {
+      const file = program.getSourceFile(IMPORTED_COMPONENT.name) !;
+      const analysis = result.get(file) !;
+      expect(analysis).toBeDefined();
+      expect(analysis.analyzedClasses.length).toEqual(1);
+      expect(analysis.analyzedClasses[0].name).toEqual('MyComponent');
+    });
+
   });
 });
