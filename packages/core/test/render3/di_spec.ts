@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
-import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {PublicFeature, defineDirective, directiveInject, injectRenderer2, load} from '../../src/render3/index';
+import {bloomAdd, bloomFindPossibleInjector, getInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
+import {PublicFeature, defineDirective, directiveInject, elementProperty, getCurrentView, getRenderedText, injectRenderer2, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd, _getViewData, getTNode} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
 
-import {LViewFlags} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LViewData, LViewFlags, TVIEW, TView} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -67,7 +67,8 @@ describe('di', () => {
         selectors: [['', 'dirB', '']],
         type: DirB,
         factory: () => new DirB(),
-        features: [PublicFeature]
+        features: [PublicFeature],
+        inputs: {value: 'value'}
       });
     }
 
@@ -431,6 +432,297 @@ describe('di', () => {
 
       new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
+    });
+
+    describe('dependencies in parent views', () => {
+
+      class DirA {
+        injector: Injector;
+        constructor(public dirB: DirB, public vcr: ViewContainerRef) {
+          this.injector = vcr.injector;
+        }
+
+        static ngDirectiveDef = defineDirective({
+          type: DirA,
+          selectors: [['', 'dirA', '']],
+          factory: () => new DirA(directiveInject(DirB), directiveInject(ViewContainerRef as any)),
+          features: [PublicFeature],
+          exportAs: 'dirA'
+        });
+      }
+
+      /**
+       * <div dirA #dir="dirA">
+       *    {{ dir.dirB.value }}
+       * </div>
+       */
+      const Comp = createComponent('comp', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['dirA', ''], ['dir', 'dirA']);
+          { text(2); }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          const dir = reference(1) as DirA;
+          textBinding(2, bind(dir.dirB.value));
+        }
+      }, 3, 1, [DirA]);
+
+      it('should find dependencies on component hosts', () => {
+        /** <comp dirB>/comp> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'comp', ['dirB', '']);
+          }
+        }, 1, 0, [Comp, DirB]);
+
+        const fixture = new ComponentFixture(App);
+        expect(fixture.hostElement.textContent).toEqual(`DirB`);
+      });
+
+      it('should find dependencies for directives in embedded views', () => {
+
+        function IfTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div');
+            {
+              elementStart(1, 'div', ['dirA', ''], ['dir', 'dirA']);
+              { text(3); }
+              elementEnd();
+            }
+            elementEnd();
+          }
+
+          if (rf & RenderFlags.Update) {
+            const dir = reference(2) as DirA;
+            textBinding(3, bind(dir.dirB.value));
+          }
+        }
+
+        /**
+         * <div dirB>
+         *    <div *ngIf="showing">
+         *       <div dirA #dir="dirA"> {{ dir.dirB.value }} </div>
+         *    </div>
+         * </div>
+         */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div', ['dirB', '']);
+            { template(1, IfTemplate, 4, 1, '', [AttributeMarker.SelectOnly, 'ngIf', '']); }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(1, 'ngIf', bind(ctx.showing));
+          }
+        }, 2, 1, [DirA, DirB, NgIf]);
+
+        const fixture = new ComponentFixture(App);
+        fixture.component.showing = true;
+        fixture.update();
+
+        expect(fixture.hostElement.textContent).toEqual(`DirB`);
+      });
+
+      it('should find dependencies of directives nested deeply in inline views', () => {
+        /**
+         * <div dirB>
+         *     % if (!skipContent) {
+         *        % if (!skipContent2) {
+         *           <div dirA #dir="dirA"> {{ dir.dirB.value }} </div>
+         *        % }
+         *     % }
+         * </div>
+         */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div', ['dirB', '']);
+            { container(1); }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            containerRefreshStart(1);
+            {
+              if (!ctx.skipContent) {
+                let rf1 = embeddedViewStart(0, 1, 0);
+                {
+                  if (rf1 & RenderFlags.Create) {
+                    container(0);
+                  }
+                  if (rf1 & RenderFlags.Update) {
+                    containerRefreshStart(0);
+                    {
+                      if (!ctx.skipContent2) {
+                        let rf2 = embeddedViewStart(0, 3, 1);
+                        {
+                          if (rf2 & RenderFlags.Create) {
+                            elementStart(0, 'div', ['dirA', ''], ['dir', 'dirA']);
+                            { text(2); }
+                            elementEnd();
+                          }
+                          if (rf2 & RenderFlags.Update) {
+                            const dir = reference(1) as DirA;
+                            textBinding(2, bind(dir.dirB.value));
+                          }
+                        }
+                        embeddedViewEnd();
+                      }
+                    }
+                    containerRefreshEnd();
+                  }
+                }
+                embeddedViewEnd();
+              }
+            }
+            containerRefreshEnd();
+          }
+        }, 2, 0, [DirA, DirB]);
+
+        const fixture = new ComponentFixture(App);
+        expect(fixture.hostElement.textContent).toEqual(`DirB`);
+      });
+
+      it('should find dependencies in declaration tree of ng-template (not insertion tree)', () => {
+        let structuralDir !: StructuralDir;
+
+        class StructuralDir {
+          // @Input()
+          tmp !: TemplateRef<any>;
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { this.vcr.createEmbeddedView(this.tmp); }
+
+          static ngDirectiveDef = defineDirective({
+            type: StructuralDir,
+            selectors: [['', 'structuralDir', '']],
+            factory: () => structuralDir =
+                         new StructuralDir(directiveInject(ViewContainerRef as any)),
+            inputs: {tmp: 'tmp'},
+            features: [PublicFeature]
+          });
+        }
+
+        function FooTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div', ['dirA', ''], ['dir', 'dirA']);
+            { text(2); }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            const dir = reference(1) as DirA;
+            textBinding(2, bind(dir.dirB.value));
+          }
+        }
+
+        /**
+         * <div dirB value="declaration">
+         *   <ng-template #foo>
+         *       <div dirA dir="dirA"> {{ dir.dirB.value }} </div>
+         *   </ng-template>
+         * </div>
+         *
+         * <div dirB value="insertion">
+         *   <div structuralDir [tmp]="foo"></div>
+         *   // insertion point
+         * </div>
+         */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div', ['dirB', '', 'value', 'declaration']);
+            { template(1, FooTemplate, 3, 1, '', null, ['foo', ''], templateRefExtractor); }
+            elementEnd();
+            elementStart(3, 'div', ['dirB', '', 'value', 'insertion']);
+            { element(4, 'div', ['structuralDir', '']); }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            const foo = reference(2) as any;
+            elementProperty(4, 'tmp', bind(foo));
+          }
+        }, 5, 1, [DirA, DirB, StructuralDir]);
+
+        const fixture = new ComponentFixture(App);
+        structuralDir.create();
+        fixture.update();
+        expect(fixture.hostElement.textContent).toEqual(`declaration`);
+      });
+
+      it('should create injectors on second template pass', () => {
+        /**
+         * <comp dirB></comp>
+         * <comp dirB></comp>
+         */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'comp', ['dirB', '']);
+            element(1, 'comp', ['dirB', '']);
+          }
+        }, 2, 0, [Comp, DirB]);
+
+        const fixture = new ComponentFixture(App);
+        expect(fixture.hostElement.textContent).toEqual(`DirBDirB`);
+      });
+
+      it('should create injectors and host bindings in same view', () => {
+        let hostBindingDir !: HostBindingDir;
+
+        class HostBindingDir {
+          // @HostBinding('id')
+          id = 'foo';
+
+          static ngDirectiveDef = defineDirective({
+            type: HostBindingDir,
+            selectors: [['', 'hostBindingDir', '']],
+            factory: () => hostBindingDir = new HostBindingDir(),
+            hostVars: 1,
+            hostBindings: (directiveIndex: number, elementIndex: number) => {
+              elementProperty(
+                  elementIndex, 'id', bind(loadDirective<HostBindingDir>(directiveIndex).id));
+            }
+          });
+        }
+
+        let dir !: DirA;
+        /**
+         * <div dirB hostBindingDir>
+         *     <p dirA #dir="dirA">
+         *         {{ dir.dirB.value }}
+         *     </p>
+         * </div>
+         */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div', [
+              'dirB',
+              '',
+              'hostBindingDir',
+              '',
+            ]);
+            {
+              elementStart(1, 'p', ['dirA', ''], ['dir', 'dirA']);
+              { text(3); }
+              elementEnd();
+            }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            dir = reference(2) as DirA;
+            textBinding(3, bind(dir.dirB.value));
+          }
+        }, 4, 1, [HostBindingDir, DirA, DirB]);
+
+        const fixture = new ComponentFixture(App);
+        expect(fixture.hostElement.textContent).toEqual(`DirB`);
+        const hostDirEl = fixture.hostElement.querySelector('div') as HTMLElement;
+        expect(hostDirEl.id).toEqual('foo');
+        // The injector should not be overwritten by host bindings
+        expect(dir.vcr.injector).toEqual(dir.injector);
+
+        hostBindingDir.id = 'bar';
+        fixture.update();
+        expect(hostDirEl.id).toEqual('bar');
+      });
     });
 
     it('should create instance even when no injector present', () => {

@@ -21,6 +21,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DECLARATION_VIEW"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
@@ -237,6 +240,9 @@
     "name": "getHostElementNode"
   },
   {
+    "name": "getInjector$1"
+  },
+  {
     "name": "getLNode"
   },
   {
@@ -252,16 +258,13 @@
     "name": "getOrCreateTView"
   },
   {
+    "name": "getParentInjector"
+  },
+  {
     "name": "getParentLNode"
   },
   {
-    "name": "getParentOrContainerNode"
-  },
-  {
     "name": "getPipeDef"
-  },
-  {
-    "name": "getPreviousOrParentNode"
   },
   {
     "name": "getPreviousOrParentTNode"
