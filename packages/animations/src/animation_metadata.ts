@@ -1132,7 +1132,7 @@ export function useAnimation(
 
 /**
  * Finds one or more inner elements within the current element that is
- * being animated within a sequence. Use with `animateChild()`.
+ * being animated within a sequence. Use with `animate()`.
  *
  * @param selector The element to query, or a set of elements that contain Angular-specific
  * characteristics, specified with one or more of the following tokens.
@@ -1179,7 +1179,7 @@ export function useAnimation(
  * ### Usage Example
  *
  * The following example queries for inner elements and animates them
- * individually using `animateChild()`.
+ * individually using `animate()`. 
  *
  * ```typescript
  * @Component({
