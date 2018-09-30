@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/config';
+import {WorkspaceSchema, WorkspaceProject} from '@angular-devkit/core/src/workspace';
 
 /**
  * Finds the specified project configuration in the workspace. Throws an error if the project
  * couldn't be found.
  */
-export function getProjectFromWorkspace(workspace: WorkspaceSchema,
-                                        projectName?: string): WorkspaceProject {
+export function getProjectFromWorkspace(
+    workspace: WorkspaceSchema,
+    projectName?: string): WorkspaceProject {
 
   const project = workspace.projects[projectName || workspace.defaultProject!];
 
@@ -22,5 +23,4 @@ export function getProjectFromWorkspace(workspace: WorkspaceSchema,
   }
 
   return project;
-
 }

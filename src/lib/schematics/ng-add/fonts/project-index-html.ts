@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
 import {SchematicsException} from '@angular-devkit/schematics';
 import {getProjectTargetOptions} from '@angular/cdk/schematics';
-import {WorkspaceProject} from '@schematics/angular/utility/config';
+
 
 /** Looks for the index HTML file in the given project and returns its path. */
 export function getIndexHtmlPath(project: WorkspaceProject): string {

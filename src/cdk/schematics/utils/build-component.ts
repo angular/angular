@@ -181,7 +181,9 @@ export function buildComponent(options: ComponentOptions,
       .forEach(optionName => options[optionName] = defaultComponentOptions[optionName]);
 
     if (options.path === undefined) {
-      options.path = buildDefaultPath(project);
+      // TODO(jelbourn): figure out if the need for this `as any` is a bug due to two different
+      // incompatible `WorkspaceProject` classes in @angular-devkit
+      options.path = buildDefaultPath(project as any);
     }
 
     options.module = findModuleFromOptions(host, options);

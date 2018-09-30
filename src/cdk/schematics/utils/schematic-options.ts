@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WorkspaceProject} from '@schematics/angular/utility/config';
+import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
+
 
 /**
  * Returns the default options for the `@schematics/angular:component` schematic which would

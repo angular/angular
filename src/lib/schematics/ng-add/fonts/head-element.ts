@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {getChildElementIndentation} from '@angular/cdk/schematics';
-import {WorkspaceProject} from '@schematics/angular/utility/config';
 import {DefaultTreeDocument, DefaultTreeElement, parse as parseHtml} from 'parse5';
 import {getIndexHtmlPath} from './project-index-html';
+
 
 /** Appends the given element HTML fragment to the index.html head tag. */
 export function appendElementToHead(host: Tree, project: WorkspaceProject, elementHtml: string) {

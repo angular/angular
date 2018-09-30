@@ -1,4 +1,5 @@
 import {normalize} from '@angular-devkit/core';
+import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
@@ -7,7 +8,7 @@ import {
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
-import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
+import {getWorkspace} from '@schematics/angular/utility/config';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {getIndexHtmlPath} from './fonts/project-index-html';
 

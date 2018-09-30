@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {Schema as ComponentOptions} from '@schematics/angular/component/schema';
 import {addImportToModule} from '@schematics/angular/utility/ast-utils';
 import {InsertChange} from '@schematics/angular/utility/change';
-import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
+import {getWorkspace} from '@schematics/angular/utility/config';
 import {findModuleFromOptions as internalFindModule} from '@schematics/angular/utility/find-module';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {getProjectMainFile} from './project-main-file';
 import {ts} from './version-agnostic-typescript';
+
 
 /** Reads file given path and returns TypeScript source file. */
 export function getSourceFile(host: Tree, path: string) {

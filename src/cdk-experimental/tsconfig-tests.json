@@ -16,7 +16,12 @@
   "angularCompilerOptions": {
     "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+
+    // Unset options inherited from tsconfig-build
+    "annotateForClosureCompiler": false,
+    "flatModuleOutFile": null,
+    "flatModuleId": null,
   },
   "include": [
     // Include the index.ts for each secondary entry-point
