@@ -11,7 +11,8 @@ import {makeProgram as _makeProgram} from '../../../ngtsc/testing/in_memory_type
 export {getDeclaration} from '../../../ngtsc/testing/in_memory_typescript';
 
 export function makeProgram(...files: {name: string, contents: string}[]): ts.Program {
-  return _makeProgram([getFakeCore(), ...files], {allowJs: true, checkJs: false}).program;
+  return _makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false})
+      .program;
 }
 
 // TODO: unify this with the //packages/compiler-cli/test/ngtsc/fake_core package
@@ -51,6 +52,17 @@ export function getFakeCore() {
   };
 }
 
+export function getFakeTslib() {
+  return {
+    name: 'node_modules/tslib/index.ts',
+    contents: `
+    export function __decorate(decorators: any[], target: any, key?: string | symbol, desc?: any) {}
+    export function __param(paramIndex: number, decorator: any) {}
+    export function __metadata(metadataKey: any, metadataValue: any) {}
+    `
+  };
+}
+
 export function convertToDirectTsLibImport(filesystem: {name: string, contents: string}[]) {
   return filesystem.map(file => {
     const contents =
@@ -58,7 +70,7 @@ export function convertToDirectTsLibImport(filesystem: {name: string, contents: 
             .replace(
                 `import * as tslib_1 from 'tslib';`,
                 `import { __decorate, __metadata, __read, __values, __param, __extends, __assign } from 'tslib';`)
-            .replace('tslib_1.', '');
+            .replace(/tslib_1\./g, '');
     return {...file, contents};
   });
 }
