@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {normalize} from 'canonical-path';
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {findAll, getNameText} from '../utils';
+import {findAll, getNameText, isDefined} from '../utils';
 
 import {NgccReflectionHost, PRE_NGCC_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
@@ -64,22 +65,15 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    */
   getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
     const symbol = this.getClassSymbol(declaration);
-    if (symbol) {
-      if (symbol.exports && symbol.exports.has(DECORATORS)) {
-        // Symbol of the identifier for `SomeDirective.decorators`.
-        const decoratorsSymbol = symbol.exports.get(DECORATORS) !;
-        const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
-
-        if (decoratorsIdentifier && decoratorsIdentifier.parent) {
-          if (ts.isBinaryExpression(decoratorsIdentifier.parent)) {
-            // AST of the array of decorator values
-            const decoratorsArray = decoratorsIdentifier.parent.right;
-            return this.reflectDecorators(decoratorsArray);
-          }
-        }
-      }
+    if (!symbol) {
+      return null;
     }
-    return null;
+    const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
+    if (decoratorsProperty) {
+      return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
+    } else {
+      return this.getClassDecoratorsFromHelperCall(symbol);
+    }
   }
 
   /**
@@ -128,6 +122,28 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       });
     }
 
+    // If this class was declared as a VariableDeclaration then it may have static properties
+    // attached to the variable rather than the class itself
+    // For example:
+    // ```
+    // let MyClass = class MyClass {
+    //   // no static properties here!
+    // }
+    // MyClass.staticProperty = ...;
+    // ```
+    if (ts.isVariableDeclaration(symbol.valueDeclaration.parent)) {
+      const variableSymbol = this.checker.getSymbolAtLocation(symbol.valueDeclaration.parent.name);
+      if (variableSymbol && variableSymbol.exports) {
+        variableSymbol.exports.forEach((value, key) => {
+          const decorators = removeFromMap(decoratorsMap, key);
+          const member = this.reflectMember(value, decorators, true);
+          if (member) {
+            members.push(member);
+          }
+        });
+      }
+    }
+
     // Deal with any decorated properties that were not initialized in the class
     decoratorsMap.forEach((value, key) => {
       members.push({
@@ -171,38 +187,33 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     }
     const parameterNodes = this.getConstructorParameterDeclarations(classSymbol);
     if (parameterNodes) {
-      const parameters: CtorParameter[] = [];
-      const decoratorInfo = this.getConstructorDecorators(classSymbol);
-      parameterNodes.forEach((node, index) => {
-        const info = decoratorInfo[index];
-        const decorators =
-            info && info.has('decorators') && this.reflectDecorators(info.get('decorators') !) ||
-            null;
-        const type = info && info.get('type') || null;
-        const nameNode = node.name;
-        parameters.push({name: getNameText(nameNode), nameNode, type, decorators});
-      });
-      return parameters;
+      return this.getConstructorParamInfo(classSymbol, parameterNodes);
     }
     return null;
   }
 
   /**
    * Find a symbol for a node that we think is a class.
-   * @param node The node whose symbol we are finding.
-   * @returns The symbol for the node or `undefined` if it is not a "class" or has no symbol.
+   * @param node the node whose symbol we are finding.
+   * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
   getClassSymbol(declaration: ts.Node): ts.Symbol|undefined {
-    return ts.isClassDeclaration(declaration) ?
-        declaration.name && this.checker.getSymbolAtLocation(declaration.name) :
-        undefined;
+    if (ts.isClassDeclaration(declaration)) {
+      return declaration.name && this.checker.getSymbolAtLocation(declaration.name);
+    }
+    if (ts.isVariableDeclaration(declaration) && declaration.initializer &&
+        ts.isClassExpression(declaration.initializer)) {
+      return declaration.initializer.name &&
+          this.checker.getSymbolAtLocation(declaration.initializer.name);
+    }
+    return undefined;
   }
 
   /**
    * Search the given module for variable declarations in which the initializer
    * is an identifier marked with the `PRE_NGCC_MARKER`.
-   * @param module The module in which to search for switchable declarations.
-   * @returns An array of variable declarations that match.
+   * @param module the module in which to search for switchable declarations.
+   * @returns an array of variable declarations that match.
    */
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
     // Don't bother to walk the AST if the marker is not found in the text
@@ -295,7 +306,84 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   }
 
   /**
-   * Member decorators are declared as static properties of the class in ES2015:
+   * Try to retrieve the symbol of a static property on a class.
+   * @param symbol the class whose property we are interested in.
+   * @param propertyName the name of static property.
+   * @returns the symbol if it is found or `undefined` if not.
+   */
+  protected getStaticProperty(symbol: ts.Symbol, propertyName: ts.__String): ts.Symbol|undefined {
+    return symbol.exports && symbol.exports.get(propertyName);
+  }
+
+  /**
+   * Get all class decorators for the given class, where the decorators are declared
+   * via a static property. For example:
+   *
+   * ```
+   * class SomeDirective {}
+   * SomeDirective.decorators = [
+   *   { type: Directive, args: [{ selector: '[someDirective]' },] }
+   * ];
+   * ```
+   *
+   * @param decoratorsSymbol the property containing the decorators we want to get.
+   * @returns an array of decorators or null if none where found.
+   */
+  protected getClassDecoratorsFromStaticProperty(decoratorsSymbol: ts.Symbol): Decorator[]|null {
+    const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
+    if (decoratorsIdentifier && decoratorsIdentifier.parent) {
+      if (ts.isBinaryExpression(decoratorsIdentifier.parent) &&
+          decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+        // AST of the array of decorator values
+        const decoratorsArray = decoratorsIdentifier.parent.right;
+        return this.reflectDecorators(decoratorsArray);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get all class decorators for the given class, where the decorators are declared
+   * via the `__decorate` helper method. For example:
+   *
+   * ```
+   * let SomeDirective = class SomeDirective {}
+   * SomeDirective = __decorate([
+   *   Directive({ selector: '[someDirective]' }),
+   * ], SomeDirective);
+   * ```
+   *
+   * @param symbol the class whose decorators we want to get.
+   * @returns an array of decorators or null if none where found.
+   */
+  protected getClassDecoratorsFromHelperCall(symbol: ts.Symbol): Decorator[]|null {
+    const decorators: Decorator[] = [];
+    const helperCalls = this.getHelperCallsForClass(symbol, '__decorate');
+    helperCalls.forEach(helperCall => {
+      const {classDecorators} =
+          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(symbol.name));
+      classDecorators.filter(isImportedFromCore).forEach(decorator => decorators.push(decorator));
+    });
+    return decorators.length ? decorators : null;
+  }
+
+  /**
+   * Get all the member decorators for the given class.
+   * @param classSymbol the class whose member decorators we are interested in.
+   * @returns a map whose keys are the name of the members and whose values are collections of
+   * decorators for the given member.
+   */
+  protected getMemberDecorators(classSymbol: ts.Symbol): Map<string, Decorator[]> {
+    const decoratorsProperty = this.getStaticProperty(classSymbol, PROP_DECORATORS);
+    if (decoratorsProperty) {
+      return this.getMemberDecoratorsFromStaticProperty(decoratorsProperty);
+    } else {
+      return this.getMemberDecoratorsFromHelperCalls(classSymbol);
+    }
+  }
+
+  /**
+   * Member decorators may be declared as static properties of the class:
    *
    * ```
    * SomeDirective.propDecorators = {
@@ -304,25 +392,166 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    *   "ngForTemplate": [{ type: Input },],
    * };
    * ```
+   *
+   * @param decoratorsProperty the class whose member decorators we are interested in.
+   * @returns a map whose keys are the name of the members and whose values are collections of
+   * decorators for the given member.
    */
-  protected getMemberDecorators(classSymbol: ts.Symbol): Map<string, Decorator[]> {
+  protected getMemberDecoratorsFromStaticProperty(decoratorsProperty: ts.Symbol):
+      Map<string, Decorator[]> {
     const memberDecorators = new Map<string, Decorator[]>();
-    if (classSymbol.exports && classSymbol.exports.has(PROP_DECORATORS)) {
-      // Symbol of the identifier for `SomeDirective.propDecorators`.
-      const propDecoratorsMap =
-          getPropertyValueFromSymbol(classSymbol.exports.get(PROP_DECORATORS) !);
-      if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
-        const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
-        propertiesMap.forEach(
-            (value, name) => { memberDecorators.set(name, this.reflectDecorators(value)); });
-      }
+    // Symbol of the identifier for `SomeDirective.propDecorators`.
+    const propDecoratorsMap = getPropertyValueFromSymbol(decoratorsProperty);
+    if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
+      const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
+      propertiesMap.forEach(
+          (value, name) => { memberDecorators.set(name, this.reflectDecorators(value)); });
     }
     return memberDecorators;
   }
 
   /**
-   * Reflect over the given expression and extract decorator information.
-   * @param decoratorsArray An expression that contains decorator information.
+   * Member decorators may be declared via helper call statements.
+   *
+   * ```
+   * __decorate([
+   *     Input(),
+   *     __metadata("design:type", String)
+   * ], SomeDirective.prototype, "input1", void 0);
+   * ```
+   *
+   * @param classSymbol the class whose member decorators we are interested in.
+   * @returns a map whose keys are the name of the members and whose values are collections of
+   * decorators for the given member.
+   */
+  protected getMemberDecoratorsFromHelperCalls(classSymbol: ts.Symbol): Map<string, Decorator[]> {
+    const memberDecoratorMap = new Map<string, Decorator[]>();
+    const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
+    helperCalls.forEach(helperCall => {
+      const {memberDecorators} = this.reflectDecoratorsFromHelperCall(
+          helperCall, makeMemberTargetFilter(classSymbol.name));
+      memberDecorators.forEach((decorators, memberName) => {
+        if (memberName) {
+          const memberDecorators = memberDecoratorMap.get(memberName) || [];
+          const coreDecorators = decorators.filter(isImportedFromCore);
+          memberDecoratorMap.set(memberName, memberDecorators.concat(coreDecorators));
+        }
+      });
+    });
+    return memberDecoratorMap;
+  }
+
+  /**
+   * Extract decorator info from `__decorate` helper function calls.
+   * @param helperCall the call to a helper that may contain decorator calls
+   * @param targetFilter a function to filter out targets that we are not interested in.
+   * @returns a mapping from member name to decorators, where the key is either the name of the
+   * member or `undefined` if it refers to decorators on the class as a whole.
+   */
+  protected reflectDecoratorsFromHelperCall(
+      helperCall: ts.CallExpression, targetFilter: TargetFilter):
+      {classDecorators: Decorator[], memberDecorators: Map<string, Decorator[]>} {
+    const classDecorators: Decorator[] = [];
+    const memberDecorators = new Map<string, Decorator[]>();
+
+    // First check that the `target` argument is correct
+    if (targetFilter(helperCall.arguments[1])) {
+      // Grab the `decorators` argument which should be an array of calls
+      const decoratorCalls = helperCall.arguments[0];
+      if (decoratorCalls && ts.isArrayLiteralExpression(decoratorCalls)) {
+        decoratorCalls.elements.forEach(element => {
+          // We only care about those elements that are actual calls
+          if (ts.isCallExpression(element)) {
+            const decorator = this.reflectDecoratorCall(element);
+            if (decorator) {
+              const keyArg = helperCall.arguments[2];
+              const keyName = keyArg && ts.isStringLiteral(keyArg) ? keyArg.text : undefined;
+              if (keyName === undefined) {
+                classDecorators.push(decorator);
+              } else {
+                const decorators = memberDecorators.get(keyName) || [];
+                decorators.push(decorator);
+                memberDecorators.set(keyName, decorators);
+              }
+            }
+          }
+        });
+      }
+    }
+    return {classDecorators, memberDecorators};
+  }
+
+  /**
+   * Extract the decorator information from a call to a decorator as a function.
+   * This happens when the decorators has been used in a `__decorate` helper call.
+   * For example:
+   *
+   * ```
+   * __decorate([
+   *   Directive({ selector: '[someDirective]' }),
+   * ], SomeDirective);
+   * ```
+   *
+   * Here the `Directive` decorator is decorating `SomeDirective` and the options for
+   * the decorator are passed as arguments to the `Directive()` call.
+   *
+   * @param call the call to the decorator.
+   * @returns a decorator containing the reflected information, or null if the call
+   * is not a valid decorator call.
+   */
+  protected reflectDecoratorCall(call: ts.CallExpression): Decorator|null {
+    // The call could be of the form `Decorator(...)` or `namespace_1.Decorator(...)`
+    const decoratorExpression =
+        ts.isPropertyAccessExpression(call.expression) ? call.expression.name : call.expression;
+    if (ts.isIdentifier(decoratorExpression)) {
+      // We found a decorator!
+      const decoratorIdentifier = decoratorExpression;
+      return {
+        name: decoratorIdentifier.text,
+        import: this.getImportOfIdentifier(decoratorIdentifier),
+        node: call,
+        args: Array.from(call.arguments)
+      };
+    }
+    return null;
+  }
+
+  /**
+   * Check the given statement to see if it is a call to the specified helper function or null if
+   * not found.
+   *
+   * Matching statements will look like:  `tslib_1.__decorate(...);`.
+   * @param statement the statement that may contain the call.
+   * @param helperName the name of the helper we are looking for.
+   * @returns the node that corresponds to the `__decorate(...)` call or null if the statement does
+   * not match.
+   */
+  protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
+    if (ts.isExpressionStatement(statement)) {
+      const expression =
+          isAssignmentStatement(statement) ? statement.expression.right : statement.expression;
+      if (ts.isCallExpression(expression) && getCalleeName(expression) === helperName) {
+        return expression;
+      }
+    }
+    return null;
+  }
+
+
+
+  /**
+   * Reflect over the given array node and extract decorator information from each element.
+   *
+   * This is used for decorators that are defined in static properties. For example:
+   *
+   * ```
+   * SomeDirective.decorators = [
+   *   { type: Directive, args: [{ selector: '[someDirective]' },] }
+   * ];
+   * ```
+   *
+   * @param decoratorsArray an expression that contains decorator information.
+   * @returns an array of decorator info that was reflected from the array node.
    */
   protected reflectDecorators(decoratorsArray: ts.Expression): Decorator[] {
     const decorators: Decorator[] = [];
@@ -351,6 +580,14 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     return decorators;
   }
 
+  /**
+   * Reflect over a symbol and extract the member information, combining it with the
+   * provided decorator information, and whether it is a static member.
+   * @param symbol the symbol for the member to reflect over.
+   * @param decorators an array of decorators associated with the member.
+   * @param isStatic true if this member is static, false if it is an instance property.
+   * @returns the reflected member information, or null if the symbol is not a member.
+   */
   protected reflectMember(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
       ClassMember|null {
     let kind: ClassMemberKind|null = null;
@@ -421,8 +658,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * Find the declarations of the constructor parameters of a class identified by its symbol.
    * @param classSymbol the class whose parameters we want to find.
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
-   * the
-   * class's constructor or null if there is no constructor.
+   * the class's constructor or null if there is no constructor.
    */
   protected getConstructorParameterDeclarations(classSymbol: ts.Symbol):
       ts.ParameterDeclaration[]|null {
@@ -440,44 +676,211 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   }
 
   /**
-   * Constructors parameter decorators are declared in the body of static method of the class in
-   * ES2015:
+   * Get the parameter decorators of a class constructor.
+   *
+   * @param classSymbol the class whose parameter info we want to get.
+   * @param parameterNodes the array of TypeScript parameter nodes for this class's constructor.
+   * @returns an array of constructor parameter info objects.
+   */
+  protected getConstructorParamInfo(
+      classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+    const paramsProperty = this.getStaticProperty(classSymbol, CONSTRUCTOR_PARAMS);
+    const paramInfo: ParamInfo[]|null = paramsProperty ?
+        this.getParamInfoFromStaticProperty(paramsProperty) :
+        this.getParamInfoFromHelperCall(classSymbol, parameterNodes);
+
+    return parameterNodes.map((node, index) => {
+      const {decorators, type} =
+          paramInfo && paramInfo[index] ? paramInfo[index] : {decorators: null, type: null};
+      const nameNode = node.name;
+      return {name: getNameText(nameNode), nameNode, type, decorators};
+    });
+  }
+
+  /**
+   * Get the parameter type and decorators for the constructor of a class,
+   * where the information is stored on a static method of the class.
+   *
+   * Note that in ESM2015, the method is defined by an arrow function that returns an array of
+   * decorator and type information.
    *
    * ```
    * SomeDirective.ctorParameters = () => [
    *   { type: ViewContainerRef, },
    *   { type: TemplateRef, },
-   *   { type: IterableDiffers, },
    *   { type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN,] },] },
    * ];
    * ```
+   *
+   * @param paramDecoratorsProperty the property that holds the parameter info we want to get.
+   * @returns an array of objects containing the type and decorators for each parameter.
    */
-  protected getConstructorDecorators(classSymbol: ts.Symbol): (Map<string, ts.Expression>|null)[] {
-    if (classSymbol.exports && classSymbol.exports.has(CONSTRUCTOR_PARAMS)) {
-      const paramDecoratorsProperty =
-          getPropertyValueFromSymbol(classSymbol.exports.get(CONSTRUCTOR_PARAMS) !);
-      if (paramDecoratorsProperty && ts.isArrowFunction(paramDecoratorsProperty)) {
-        if (ts.isArrayLiteralExpression(paramDecoratorsProperty.body)) {
-          return paramDecoratorsProperty.body.elements.map(
-              element =>
-                  ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null);
-        }
+  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
+    const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
+    if (paramDecorators && ts.isArrowFunction(paramDecorators)) {
+      if (ts.isArrayLiteralExpression(paramDecorators.body)) {
+        const elements = paramDecorators.body.elements;
+        return elements
+            .map(
+                element =>
+                    ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null)
+            .map(paramInfo => {
+              const type = paramInfo && paramInfo.get('type') || null;
+              const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
+              const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
+              return {type, decorators};
+            });
       }
     }
-    return [];
+    return null;
+  }
+
+  /**
+   * Get the parmeter type and decorators for a class where the information is stored on
+   * in calls to `__decorate` helpers.
+   *
+   * Reflect over the helpers to find the decorators and types about each of
+   * the class's constructor parameters.
+   *
+   * @param classSymbol the class whose parameter info we want to get.
+   * @param parameterNodes the array of TypeScript parameter nodes for this class's constructor.
+   * @returns an array of objects containing the type and decorators for each parameter.
+   */
+  protected getParamInfoFromHelperCall(
+      classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
+    const parameters: ParamInfo[] = parameterNodes.map(() => ({type: null, decorators: null}));
+    const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
+    helperCalls.forEach(helperCall => {
+      const {classDecorators} =
+          this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(classSymbol.name));
+      classDecorators.forEach(call => {
+        switch (call.name) {
+          case '__metadata':
+            const metadataArg = call.args && call.args[0];
+            const typesArg = call.args && call.args[1];
+            const isParamTypeDecorator = metadataArg && ts.isStringLiteral(metadataArg) &&
+                metadataArg.text === 'design:paramtypes';
+            const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
+            if (isParamTypeDecorator && types) {
+              types.forEach((type, index) => parameters[index].type = type);
+            }
+            break;
+          case '__param':
+            const paramIndexArg = call.args && call.args[0];
+            const decoratorCallArg = call.args && call.args[1];
+            const paramIndex = paramIndexArg && ts.isNumericLiteral(paramIndexArg) ?
+                parseInt(paramIndexArg.text, 10) :
+                NaN;
+            const decorator = decoratorCallArg && ts.isCallExpression(decoratorCallArg) ?
+                this.reflectDecoratorCall(decoratorCallArg) :
+                null;
+            if (!isNaN(paramIndex) && decorator) {
+              const decorators = parameters[paramIndex].decorators =
+                  parameters[paramIndex].decorators || [];
+              decorators.push(decorator);
+            }
+            break;
+        }
+      });
+    });
+    return parameters;
+  }
+
+  /**
+   * Search statements related to the given class for calls to the specified helper.
+   * @param classSymbol the class whose helper calls we are interested in.
+   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @returns an array of CallExpression nodes for each matching helper call.
+   */
+  protected getHelperCallsForClass(classSymbol: ts.Symbol, helperName: string):
+      ts.CallExpression[] {
+    return this.getStatementsForClass(classSymbol)
+        .map(statement => this.getHelperCall(statement, helperName))
+        .filter(isDefined);
+  }
+
+  /**
+   * Find statements related to the given class that may contain calls to a helper.
+   *
+   * In ESM2015 code the helper calls are in the top level module, so we have to consider
+   * all the statements in the module.
+   *
+   * @param classSymbol the class whose helper calls we are interested in.
+   * @returns an array of statements that may contain helper calls.
+   */
+  protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
+    return Array.from(classSymbol.valueDeclaration.getSourceFile().statements);
   }
 }
 
+///////////// Exported Helpers /////////////
+
+export type ParamInfo = {
+  decorators: Decorator[] | null,
+  type: ts.Expression | null
+};
+
 /**
- * The arguments of a decorator are held in the `args` property of its declaration object.
+ * A statement node that represents an assignment.
  */
-function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
-  const argsProperty = node.properties.filter(ts.isPropertyAssignment)
-                           .find(property => getNameText(property.name) === 'args');
-  const argsExpression = argsProperty && argsProperty.initializer;
-  return argsExpression && ts.isArrayLiteralExpression(argsExpression) ?
-      Array.from(argsExpression.elements) :
-      [];
+export type AssignmentStatement =
+    ts.ExpressionStatement & {expression: {left: ts.Identifier, right: ts.Expression}};
+
+/**
+ * Test whether a statement node is an assignment statement.
+ * @param statement the statement to test.
+ */
+export function isAssignmentStatement(statement: ts.Statement): statement is AssignmentStatement {
+  return ts.isExpressionStatement(statement) && isAssignment(statement.expression) &&
+      ts.isIdentifier(statement.expression.left);
+}
+
+export function isAssignment(expression: ts.Expression):
+    expression is ts.AssignmentExpression<ts.EqualsToken> {
+  return ts.isBinaryExpression(expression) &&
+      expression.operatorToken.kind === ts.SyntaxKind.EqualsToken;
+}
+
+/**
+ * Test whether a decorator was imported from `@angular/core`.
+ *
+ * Is the decorator:
+ * * extermally mported from `@angulare/core`?
+ * * relatively internally imported where the decoratee is already in `@angular/core`?
+ *
+ * Note we do not support decorators that are not imported at all.
+ *
+ * @param decorator the decorator to test.
+ */
+export function isImportedFromCore(decorator: Decorator): boolean {
+  const importFrom = decorator.import && decorator.import.from || '';
+  return importFrom === '@angular/core' ||
+      (/^\./.test(importFrom) &&
+       /node_modules[\\\/]@angular[\\\/]core/.test(decorator.node.getSourceFile().fileName));
+}
+
+/**
+ * The type of a function that can be used to filter out helpers based on their target.
+ * This is used in `reflectDecoratorsFromHelperCall()`.
+ */
+export type TargetFilter = (target: ts.Expression) => boolean;
+
+/**
+ * Creates a function that tests whether the given expression is a class target.
+ * @param className the name of the class we want to target.
+ */
+export function makeClassTargetFilter(className: string): TargetFilter {
+  return (target: ts.Expression): boolean => ts.isIdentifier(target) && target.text === className;
+}
+
+/**
+ * Creates a function that tests whether the given expression is a class member target.
+ * @param className the name of the class we want to target.
+ */
+export function makeMemberTargetFilter(className: string): TargetFilter {
+  return (target: ts.Expression): boolean => ts.isPropertyAccessExpression(target) &&
+      ts.isIdentifier(target.expression) && target.expression.text === className &&
+      target.name.text === 'prototype';
 }
 
 /**
@@ -488,6 +891,31 @@ export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression
   const propIdentifier = propSymbol.valueDeclaration;
   const parent = propIdentifier && propIdentifier.parent;
   return parent && ts.isBinaryExpression(parent) ? parent.right : undefined;
+}
+
+/**
+ * A callee could be one of: `__decorate(...)` or `tslib_1.__decorate`.
+ */
+function getCalleeName(call: ts.CallExpression): string|null {
+  if (ts.isIdentifier(call.expression)) {
+    return call.expression.text;
+  }
+  if (ts.isPropertyAccessExpression(call.expression)) {
+    return call.expression.name.text;
+  }
+  return null;
+}
+
+///////////// Internal Helpers /////////////
+
+function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
+  // The arguments of a decorator are held in the `args` property of its declaration object.
+  const argsProperty = node.properties.filter(ts.isPropertyAssignment)
+                           .find(property => getNameText(property.name) === 'args');
+  const argsExpression = argsProperty && argsProperty.initializer;
+  return argsExpression && ts.isArrayLiteralExpression(argsExpression) ?
+      Array.from(argsExpression.elements) :
+      [];
 }
 
 function removeFromMap<T>(map: Map<string, T>, key: ts.__String): T|undefined {

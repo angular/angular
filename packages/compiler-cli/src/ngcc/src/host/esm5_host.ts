@@ -10,7 +10,8 @@ import * as ts from 'typescript';
 import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
 import {reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {getNameText} from '../utils';
-import {CONSTRUCTOR_PARAMS, Fesm2015ReflectionHost, getPropertyValueFromSymbol} from './fesm2015_host';
+import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './fesm2015_host';
+
 
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
@@ -49,9 +50,9 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
    * - The function declaration inside the IIFE, which is eventually returned and assigned to the
    *   outer variable.
    *
-   * @param node The top level declaration that represents an exported class or the function
+   * @param node the top level declaration that represents an exported class or the function
    *     expression inside the IIFE.
-   * @returns The symbol for the node or `undefined` if it is not a "class" or has no symbol.
+   * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
   getClassSymbol(node: ts.Node): ts.Symbol|undefined {
     const symbol = super.getClassSymbol(node);
@@ -96,10 +97,13 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
 
   /**
    * Parse a function declaration to find the relevant metadata about it.
+   *
    * In ESM5 we need to do special work with optional arguments to the function, since they get
    * their own initializer statement that needs to be parsed and then not included in the "body"
    * statements of the function.
+   *
    * @param node the function declaration to parse.
+   * @returns an object containing the node, statements and parameters of the function.
    */
   getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
                           ts.FunctionExpression>(node: T): FunctionDefinition<T> {
@@ -117,10 +121,17 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
     return {node, body: statements || null, parameters};
   }
 
+  ///////////// Protected Helpers /////////////
+
   /**
    * Find the declarations of the constructor parameters of a class identified by its symbol.
+   *
    * In ESM5 there is no "class" so the constructor that we want is actually the declaration
    * function itself.
+   *
+   * @param classSymbol the class whose parameters we want to find.
+   * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
+   * the class's constructor or null if there is no constructor.
    */
   protected getConstructorParameterDeclarations(classSymbol: ts.Symbol): ts.ParameterDeclaration[] {
     const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
@@ -131,8 +142,13 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
   }
 
   /**
-   * Constructors parameter decorators are declared in the body of static method of the constructor
-   * function in ES5. Note that unlike ESM2105 this is a function expression rather than an arrow
+   * Get the parameter type and decorators for the constructor of a class,
+   * where the information is stored on a static method of the class.
+   *
+   * In this case the decorators are stored in the body of a method
+   * (`ctorParatemers`) attached to the constructor function.
+   *
+   * Note that unlike ESM2015 this is a function expression rather than an arrow
    * function:
    *
    * ```
@@ -143,17 +159,34 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
    *   { type: undefined, decorators: [{ type: Inject, args: [INJECTED_TOKEN,] },] },
    * ]; };
    * ```
+   *
+   * @param paramDecoratorsProperty the property that holds the parameter info we want to get.
+   * @returns an array of objects containing the type and decorators for each parameter.
    */
-  protected getConstructorDecorators(classSymbol: ts.Symbol): (Map<string, ts.Expression>|null)[] {
-    const declaration = classSymbol.exports && classSymbol.exports.get(CONSTRUCTOR_PARAMS);
-    const paramDecoratorsProperty = declaration && getPropertyValueFromSymbol(declaration);
-    const returnStatement = getReturnStatement(paramDecoratorsProperty);
+  protected getParamInfoFromStaticProperty(paramDecoratorsProperty: ts.Symbol): ParamInfo[]|null {
+    const paramDecorators = getPropertyValueFromSymbol(paramDecoratorsProperty);
+    const returnStatement = getReturnStatement(paramDecorators);
     const expression = returnStatement && returnStatement.expression;
-    return expression && ts.isArrayLiteralExpression(expression) ?
-        expression.elements.map(reflectArrayElement) :
-        [];
+    if (expression && ts.isArrayLiteralExpression(expression)) {
+      const elements = expression.elements;
+      return elements.map(reflectArrayElement).map(paramInfo => {
+        const type = paramInfo && paramInfo.get('type') || null;
+        const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
+        const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
+        return {type, decorators};
+      });
+    }
+    return null;
   }
 
+  /**
+   * Reflect over a symbol and extract the member information, combining it with the
+   * provided decorator information, and whether it is a static member.
+   * @param symbol the symbol for the member to reflect over.
+   * @param decorators an array of decorators associated with the member.
+   * @param isStatic true if this member is static, false if it is an instance property.
+   * @returns the reflected member information, or null if the symbol is not a member.
+   */
   protected reflectMember(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
       ClassMember|null {
     const member = super.reflectMember(symbol, decorators, isStatic);
@@ -168,7 +201,24 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
     }
     return member;
   }
+
+  /**
+   * Find statements related to the given class that may contain calls to a helper.
+   *
+   * In ESM5 code the helper calls are hidden inside the class's IIFE.
+   *
+   * @param classSymbol the class whose helper calls we are interested in. We expect this symbol
+   * to reference the inner identifier inside the IIFE.
+   * @returns an array of statements that may contain helper calls.
+   */
+  protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
+    const classDeclaration = classSymbol.valueDeclaration;
+    return ts.isBlock(classDeclaration.parent) ? Array.from(classDeclaration.parent.statements) :
+                                                 [];
+  }
 }
+
+///////////// Internal Helpers /////////////
 
 function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
   if (!declaration.initializer || !ts.isParenthesizedExpression(declaration.initializer)) {
@@ -209,8 +259,8 @@ function reflectArrayElement(element: ts.Expression) {
  * if (arg === void 0) { arg = initializer; }
  * ```
  *
- * @param statement A statement that may be initializing an optional parameter
- * @param parameters The collection of parameters that were found in the function definition
+ * @param statement a statement that may be initializing an optional parameter
+ * @param parameters the collection of parameters that were found in the function definition
  * @returns true if the statement was a parameter initializer
  */
 function reflectParamInitializer(statement: ts.Statement, parameters: Parameter[]) {
@@ -218,7 +268,7 @@ function reflectParamInitializer(statement: ts.Statement, parameters: Parameter[
       ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1) {
     const ifStatementComparison = statement.expression;           // (arg === void 0)
     const thenStatement = statement.thenStatement.statements[0];  // arg = initializer;
-    if (isAssignment(thenStatement)) {
+    if (isAssignmentStatement(thenStatement)) {
       const comparisonName = ifStatementComparison.left.text;
       const assignmentName = thenStatement.expression.left.text;
       if (comparisonName === assignmentName) {
@@ -238,11 +288,4 @@ function isUndefinedComparison(expression: ts.Expression): expression is ts.Expr
   return ts.isBinaryExpression(expression) &&
       expression.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken &&
       ts.isVoidExpression(expression.right) && ts.isIdentifier(expression.left);
-}
-
-function isAssignment(statement: ts.Statement): statement is ts.ExpressionStatement&
-    {expression: {left: ts.Identifier, right: ts.Expression}} {
-  return ts.isExpressionStatement(statement) && ts.isBinaryExpression(statement.expression) &&
-      statement.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
-      ts.isIdentifier(statement.expression.left);
 }
