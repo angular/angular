@@ -1563,19 +1563,33 @@ confirms that the `alex` parameter is null.
 
 {@a class-interface-parent}
 
-
+<!--
 ### Find a parent by its class-interface
+-->
+### 클래스 인터페이스로 부모 컴포넌트 찾기
 
+<!--
 You can find a parent component with a [class-interface](guide/dependency-injection-in-action#class-interface).
+-->
+부모 컴포넌트는 [클래스 인터페이스](guide/dependency-injection-in-action#class-interface)를 사용해서 참조할 수 있습니다.
 
+<!--
 The parent must cooperate by providing an *alias* to itself in the name of a *class-interface* token.
+-->
+그리고 이때는 물론 *클래스 인터페이스* 토큰을 사용해서 *별칭(alias)* 프로바이더로 등록된 것만 가능합니다.
 
+<!--
 Recall that Angular always adds a component instance to its own injector;
 that's why you could inject *Alex* into *Cathy* [earlier](guide/dependency-injection-in-action#known-parent).
+-->
+컴포넌트의 인스턴스는 컴포넌트 인젝터에 등록된다는 것을 떠올려 봅시다. 이렇게 동작하기 때문에 [이전 예제](guide/dependency-injection-in-action#known-parent)에서는 *Alex*를 *Cathy*에게 의존성으로 주입할 수 있었습니다.
 
+<!--
 Write an [*alias provider*](guide/dependency-injection-in-action#useexisting)&mdash;a `provide` object literal with a `useExisting`
 definition&mdash;that creates an *alternative* way to inject the same component instance
 and add that provider to the `providers` array of the `@Component` metadata for the `AlexComponent`:
+-->
+이 예제에도 [*별칭 프로바이더*](guide/dependency-injection-in-action#useexisting)&mdash;`provide`와 `useExisting`으로 등록된 프로바이더&mdash;가 사용되었습니다. 이렇게 정의하면 컴포넌트 인스턴스를 다른 이름으로도 사용할 수 있기 때문에 별칭 프로바이더라고 하는 것이며, 이 프로바이더는 `@Component`의 `providers` 배열에 다음과 같이 추가합니다:
 
 {@a alex-providers}
 
@@ -1585,20 +1599,31 @@ and add that provider to the `providers` array of the `@Component` metadata for 
 </code-example>
 
 
-
+<!--
 [Parent](guide/dependency-injection-in-action#parent-token) is the provider's *class-interface* token.
 The [*forwardRef*](guide/dependency-injection-in-action#forwardref) breaks the circular reference you just created by having the `AlexComponent` refer to itself.
+-->
+이 코드에서 [Parent](guide/dependency-injection-in-action#parent-token)는 프로바이더에 사용된 *클래스 인터페이스* 토큰입니다.
+그리고 [*forwardRef*](guide/dependency-injection-in-action#forwardref)를 사용하면 `AlexComponent`가 자신을 참조하면서 발생하는 순환 참조 에러를 방지할 수 있습니다.
 
+<!--
 *Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter,
 the same way you've done it before:
+-->
+*Alex*의 3번째 자식 컴포넌트인 *Carol*은 이 방법으로 부모 컴포넌트를 참조해서 `parent` 인자에 할당한다고 합시다:
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent class)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent 클래스)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Here's *Alex* and family in action:
+-->
+그러면 *Alex* 컴포넌트는 다음과 같이 동작합니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
@@ -1609,27 +1634,46 @@ Here's *Alex* and family in action:
 {@a parent-tree}
 
 
+<!--
 ### Find the parent in a tree of parents with _@SkipSelf()_
+-->
+### 부모 컴포넌트 찾기: _@SkipSelf()_
 
+<!--
 Imagine one branch of a component hierarchy: *Alice* -> *Barry* -> *Carol*.
 Both *Alice* and *Barry* implement the `Parent` *class-interface*.
+-->
+컴포넌트 트리 중 어떤 브랜치가 *Alice* -> *Barry* -> *Carol* 과 같은 계층으로 구성되어 있다고 합시다. 이 때 *Alice*와 *Barry*는 `Parent` *클래스 인터페이스*를 사용해서 구현했습니다.
 
+<!--
 *Barry* is the problem. He needs to reach his parent, *Alice*, and also be a parent to *Carol*.
 That means he must both *inject* the `Parent` *class-interface* to get *Alice* and
 *provide* a `Parent` to satisfy *Carol*.
+-->
+여기에서 *Barry*가 문제가 됩니다. *Barry*는 부모 컴포넌트인 *Alice*를 참조하려고 하지만 *Barry* 자체도 *Carol*의 부모 컴포넌트입니다.
+그래서 *Carol*이 `Parent` *클래스 인터페이스*로 *Alice*를 참조하려고 하면 `Parent` 타입에 해당하는 것은 *Alice*와 *Barry* 두 컴포넌트가 모두 해당되기 때문입니다.
 
+<!--
 Here's *Barry*:
+-->
+*Barry*는 다음과 같이 구현되어 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry" title="parent-finder.component.ts (BarryComponent)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 *Barry*'s `providers` array looks just like [*Alex*'s](guide/dependency-injection-in-action#alex-providers).
 If you're going to keep writing [*alias providers*](guide/dependency-injection-in-action#useexisting) like this you should create a [helper function](guide/dependency-injection-in-action#provideparent).
+-->
+*Barry*의 `providers` 배열은 [*Alex*에 구현한 것](guide/dependency-injection-in-action#alex-providers)과 비슷하게 지정되어 있습니다.
+그래서 *Barry*에 [*별칭 프로바이더*](guide/dependency-injection-in-action#useexisting)를 사용하려면 별도로 [헬퍼 함수](guide/dependency-injection-in-action#provideparent)를 정의해야 합니다.
 
+<!--
 For now, focus on *Barry*'s constructor:
+-->
+지금은 *Barry*의 생성자에만 집중합시다:
 
 <code-tabs>
 
@@ -1646,20 +1690,33 @@ For now, focus on *Barry*'s constructor:
 
 
 
-
+<!--
 It's identical to *Carol*'s constructor except for the additional `@SkipSelf` decorator.
+-->
+*Barry*의 생성자는 `@SkipSelf` 데코레이터가 사용된 것만 제외하면 *Carol*의 생성자와 똑같습니다.
 
+<!--
 `@SkipSelf` is essential for two reasons:
+-->
+`@SkipSelf` 데코레이터는 두가지 역할을 합니다:
 
+<!--
 1. It tells the injector to start its search for a `Parent` dependency in a component *above* itself,
 which *is* what parent means.
+-->
+1. `Parent` 타입의 의존성 객체는 바로 위 부모가 아니라 *그 위쪽에서* 찾으라고 인젝터에게 알립니다.
 
+<!--
 2. Angular throws a cyclic dependency error if you omit the `@SkipSelf` decorator.
+-->
+2. 이 코드에서 `@SkipSelf` 데코레이터가 없으면 순환 참조 에러가 발생합니다.
 
   `Cannot instantiate cyclic dependency! (BethComponent -> Parent -> BethComponent)`
 
+<!--
 Here's *Alice*, *Barry* and family in action:
-
+-->
+이 코드가 제대로 동작하면 다음과 화면이 표시될 것입니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/alice.png" alt="Alice in action">
@@ -1669,35 +1726,59 @@ Here's *Alice*, *Barry* and family in action:
 
 {@a parent-token}
 
-
+<!--
 ### The *Parent* class-interface
+-->
+### *Parent* 클래스 인터페이스
+
+<!--
 You [learned earlier](guide/dependency-injection-in-action#class-interface) that a *class-interface* is an abstract class used as an interface rather than as a base class.
 
 The example defines a `Parent` *class-interface*.
+-->
+[위에서 알아본 것처럼](guide/dependency-injection-in-action#class-interface) *클래스 인터페이스*는 일반 클래스를 사용하지 않고 추상 클래스를 인터페이스로 사용하는 것을 의미합니다.
+
+예제에서 사용한 `Parent` *클래스 인터페이스*는 다음과 같이 정의되어 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" title="parent-finder.component.ts (Parent class-interface)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `Parent` *class-interface* defines a `name` property with a type declaration but *no implementation*.
 The `name` property is the only member of a parent component that a child component can call.
 Such a narrow interface helps decouple the child component class from its parent components.
+-->
+`Parent` *클래스 인터페이스*에는 `name` 프로퍼티가 선언되어 있지만 이 프로퍼티는 *실제로 구현되지 않았습니다*.
+`name` 프로퍼티는 부모 컴포넌트의 멤버로만 정의되었으며, 자식 컴포넌트가 상속한 이후에 사용할 수 있습니다.
+이렇게 상속 과정에 인터페이스를 사용하면 부모 컴포넌트와 자식 컴포넌트의 결합도를 줄일 수 있습니다.
 
+<!--
 A component that could serve as a parent *should* implement the *class-interface* as the `AliceComponent` does:
+-->
+그리고 *클래스 인터페이스*를 사용해서 부모 컴포넌트의 역할을 하려면 이 인터페이스를 사용해서 클래스를 구현(implement)해야 합니다. `AliceComponent`가 이렇게 정의되었습니다:
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" title="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" title="parent-finder.component.ts (AliceComponent 클래스 선언)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Doing so adds clarity to the code.  But it's not technically necessary.
 Although the `AlexComponent` has a `name` property, as required by its `Base` class,
 its class signature doesn't mention `Parent`:
+-->
+문법적으로 꼭 이렇게 작성해야 하는 것은 아니지만, 이 방식으로 작성하는 것이 코드가 더 간단합니다.
+그리고 `AlexComponent`에는 `Base` 클래스와 비슷하게 `name` 프로퍼티가 있지만 `AlexComponent`는 `Parent` 클래스를 확장한 것이 아니라 `Base` 클래스를 상속하도록 구현했습니다:
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (AlexComponent 클래스 선언)" linenums="false">
 
 </code-example>
 
@@ -1706,10 +1787,11 @@ its class signature doesn't mention `Parent`:
 <div class="alert is-helpful">
 
 
-
+<!--
 The `AlexComponent` *should* implement `Parent` as a matter of proper style.
 It doesn't in this example *only* to demonstrate that the code will compile and run without the interface
-
+-->
+`AlexComponent`를 정의할 때 `Parent`를 사용해야 하는지에 문제는 개발자의 취향에 따른 문제입니다. 어차피 인터페이스는 최종 빌드된 코드에 존재하지 않습니다.
 
 </div>
 
@@ -1717,46 +1799,63 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 
 {@a provideparent}
 
-
+<!--
 ### A _provideParent()_ helper function
+-->
+### _provideParent()_ 헬퍼 함수
 
+<!--
 Writing variations of the same parent *alias provider* gets old quickly,
 especially this awful mouthful with a [*forwardRef*](guide/dependency-injection-in-action#forwardref):
+-->
+*별칭 프로바이더*를 [*forwardRef*](guide/dependency-injection-in-action#forwardref)와 함께 사용하면 원하는 부모 컴포넌트의 인스턴스를 가져올 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You can extract that logic into a helper function like this:
+-->
+이 로직을 헬퍼 함수로 옮겨봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Now you can add a simpler, more meaningful parent provider to your components:
+-->
+그러면 컴포넌트에서 프로바이더를 등록할 때 좀 더 간단하며 가독성 좋은 코드를 사용할 수 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 You can do better. The current version of the helper function can only alias the `Parent` *class-interface*.
 The application might have a variety of parent types, each with its own *class-interface* token.
+-->
+이 코드는 더 개선할 수 있습니다. 지금까지 작성한 헬퍼 함수는 별칭이 `Parent` *클래스 인터페이스*로 고정되어 있기 때문입니다.
+애플리케이션에서 사용하는 부모 컴포넌트의 타입은 여러개일 수 있으며, 이 타입을 각각 *클래스 인터페이스* 토큰으로 사용하도록 개선해 봅시다.
 
+<!--
 Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent *class-interface*.
+-->
+이렇게 구현하려면 이 헬퍼 함수에 두번째 인자를 추가하면 됩니다. 이 인자는 생략할 수 있으며, 생략된 경우에는 `Parent`를 *클래스 인터페이스*로 사용하고 인자가 전달되면 그 인자를 *클래스 인터페이스*로 등록합니다.
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 And here's how you could use it with a different parent type:
+-->
+이제 이 헬퍼 함수는 다음과 같이 사용할 수 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
@@ -1767,28 +1866,50 @@ And here's how you could use it with a different parent type:
 {@a forwardref}
 
 
-
+<!--
 ## Break circularities with a forward class reference (*forwardRef*)
+-->
+## *forwardRef*로 순환참조 해결하기
 
+<!--
 The order of class declaration matters in TypeScript.
 You can't refer directly to a class until it's been defined.
+-->
+TypeScript에서는 아직 선언되지 않은 클래스를 참조할 수 없기 때문에 클래스 선언 순서를 고려해야 합니다.
 
+<!--
 This isn't usually a problem, especially if you adhere to the recommended *one class per file* rule.
 But sometimes circular references are unavoidable.
 You're in a bind when class 'A' refers to class 'B' and 'B' refers to 'A'.
 One of them has to be defined first.
+-->
+사실 이 문제는 *한 파일에 한 클래스만* 선언했다면 특별히 문제가 되지 않습니다.
+하지만 불가피하게 순환참조가 발생할 수도 있습니다.
+클래스 'A'가 클래스 'B'를 참조하는데 클래스 'B'가 클래스 'A'를 참조하는 경우가 이런 경우이며, 둘 중에 하나는 반드시 먼저 선언되어야 합니다.
 
+<!--
 The Angular `forwardRef()` function creates an *indirect* reference that Angular can resolve later.
+-->
+이런 경우에 `forwardRef()` 함수를 사용하면 Angular가 의존성 객체를 참조할 때 클래스 선언과 동시에 의존성 객체를 연결하지 않으며, 이 과정을 클래스 선언 이후로 미룹니다.
 
+<!--
 The *Parent Finder* sample is full of circular class references that are impossible to break.
+-->
+위에서 살펴본 *부모를 찾는 예제* 코드도 순환 참조가 발생하는 코드가 많습니다.
 
-
+<!--
 You face this dilemma when a class makes *a reference to itself*
 as does the `AlexComponent` in its `providers` array.
 The `providers` array is a property of the `@Component` decorator function which must
 appear *above* the class definition.
+-->
+`AlexComponent`의 `providers` 배열에 `AlexComponent` *그 자체를* 다시 등록하는 경우에도 문제가 생길 수 있습니다.
+왜냐하면 `providers` 배열은 `@Component` 데코레이터의 프로퍼티인데 이 데코레이터는 *바로 밑에 정의된* 클래스를 참조해야 하기 때문입니다.
 
+<!--
 Break the circularity with `forwardRef`:
+-->
+이 경우에도 `forwardRef`를 사용하면 순환 참조를 해결할 수 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
 

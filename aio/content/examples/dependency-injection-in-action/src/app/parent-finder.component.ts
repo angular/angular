@@ -15,7 +15,7 @@ export abstract class Parent { name: string; }
 const DifferentParent = Parent;
 
 // #docregion provide-parent, provide-the-parent
-// Helper method to provide the current component instance in the name of a `parentType`.
+// 현재 컴포넌트를 프로바이더 형태로 반환하는 헬퍼 메소드
 // #enddocregion provide-the-parent
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
