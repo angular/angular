@@ -489,7 +489,7 @@ export class Router {
                 return {...t, preActivation};
               }),
 
-              checkGuards(),
+              checkGuards(this.rootContexts, this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
 
               tap(t => {
                 const guardsEnd = new GuardsCheckEnd(
