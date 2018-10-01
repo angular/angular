@@ -183,9 +183,6 @@
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
-    "name": "APP_INITIALIZER"
-  },
-  {
     "name": "APP_ROOT"
   },
   {
@@ -228,7 +225,7 @@
     "name": "AttrAst"
   },
   {
-    "name": "Attribute$1"
+    "name": "Attribute$2"
   },
   {
     "name": "B64_DIGITS"
@@ -1905,9 +1902,6 @@
     "name": "__assign"
   },
   {
-    "name": "__decorate"
-  },
-  {
     "name": "__extends"
   },
   {
@@ -1942,12 +1936,6 @@
   },
   {
     "name": "__extends$u"
-  },
-  {
-    "name": "__metadata"
-  },
-  {
-    "name": "__param"
   },
   {
     "name": "__read"
