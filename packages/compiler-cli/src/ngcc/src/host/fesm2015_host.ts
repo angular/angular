@@ -211,6 +211,89 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
         [];
   }
 
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+    const value = super.getVariableValue(declaration);
+    if (value) {
+      return value;
+    }
+
+    // We have a variable declaration that has no initializer. For example:
+    //
+    // ```
+    // var HttpClientXsrfModule_1;
+    // ```
+    //
+    // So look for the special scenario where the variable is being assigned in
+    // a nearby statement to the return value of a call to `__decorate`.
+    // Then find the 2nd argument of that call, the "target", which will be the
+    // actual class identifier. For example:
+    //
+    // ```
+    // HttpClientXsrfModule = HttpClientXsrfModule_1 = tslib_1.__decorate([
+    //   NgModule({
+    //     providers: [],
+    //   })
+    // ], HttpClientXsrfModule);
+    // ```
+    //
+    // And finally, find the declaration of the identifier in that argument.
+    // Note also that the assignment can occur within another assignment.
+    //
+    const block = declaration.parent.parent.parent;
+    const symbol = this.checker.getSymbolAtLocation(declaration.name);
+    if (symbol && (ts.isBlock(block) || ts.isSourceFile(block))) {
+      const decorateCall = this.findDecoratedVariableValue(block, symbol);
+      const target = decorateCall && decorateCall.arguments[1];
+      if (target && ts.isIdentifier(target)) {
+        const targetSymbol = this.checker.getSymbolAtLocation(target);
+        const targetDeclaration = targetSymbol && targetSymbol.valueDeclaration;
+        if (targetDeclaration) {
+          if (ts.isClassDeclaration(targetDeclaration) ||
+              ts.isFunctionDeclaration(targetDeclaration)) {
+            // The target is just a function or class declaration
+            // so return its identifier as the variable value.
+            return targetDeclaration.name || null;
+          } else if (ts.isVariableDeclaration(targetDeclaration)) {
+            // The target is a variable declaration, so find the far right expression,
+            // in the case of multiple assignments (e.g. `var1 = var2 = value`).
+            let targetValue = targetDeclaration.initializer;
+            while (targetValue && isAssignment(targetValue)) {
+              targetValue = targetValue.right;
+            }
+            if (targetValue) {
+              return targetValue;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  ///////////// Protected Helpers /////////////
+
+  /**
+   * Walk the AST looking for an assignment to the specified symbol.
+   * @param node The current node we are searching.
+   * @returns an expression that represents the value of the variable, or undefined if none can be
+   * found.
+   */
+  protected findDecoratedVariableValue(node: ts.Node|undefined, symbol: ts.Symbol):
+      ts.CallExpression|null {
+    if (!node) {
+      return null;
+    }
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
+      const left = node.left;
+      const right = node.right;
+      if (ts.isIdentifier(left) && this.checker.getSymbolAtLocation(left) === symbol) {
+        return (ts.isCallExpression(right) && getCalleeName(right) === '__decorate') ? right : null;
+      }
+      return this.findDecoratedVariableValue(right, symbol);
+    }
+    return node.forEachChild(node => this.findDecoratedVariableValue(node, symbol)) || null;
+  }
+
   /**
    * Member decorators are declared as static properties of the class in ES2015:
    *

@@ -50,3 +50,15 @@ export function getFakeCore() {
     `
   };
 }
+
+export function convertToDirectTsLibImport(filesystem: {name: string, contents: string}[]) {
+  return filesystem.map(file => {
+    const contents =
+        file.contents
+            .replace(
+                `import * as tslib_1 from 'tslib';`,
+                `import { __decorate, __metadata, __read, __values, __param, __extends, __assign } from 'tslib';`)
+            .replace('tslib_1.', '');
+    return {...file, contents};
+  });
+}

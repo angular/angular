@@ -454,8 +454,9 @@ class StaticInterpreter {
   }
 
   private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
-    if (node.initializer !== undefined) {
-      return this.visitExpression(node.initializer, context);
+    const value = this.host.getVariableValue(node);
+    if (value !== null) {
+      return this.visitExpression(value, context);
     } else if (isVariableDeclarationDeclared(node)) {
       return this.getReference(node, context);
     } else {
