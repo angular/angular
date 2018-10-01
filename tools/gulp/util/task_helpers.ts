@@ -126,9 +126,22 @@ export function cleanTask(glob: string) {
  * Create a task that serves a given directory in the project.
  * The server rewrites all node_module/ or dist/ requests to the correct directory.
  */
-export function serverTask(packagePath: string, livereload = true) {
-  // The http-rewrite-middlware only supports relative paths as rewrite destinations.
+export function serverTask(packagePath: string, livereload = true,
+                           rewrites?: {from: string, to: string}[]) {
+
+  // The http-rewrite-middleware only supports relative paths as rewrite destinations.
   const relativePath = path.relative(projectDir, packagePath);
+  const defaultHttpRewrites = [
+    // Rewrite the node_modules/ and dist/ folder to the real paths. This is a trick to
+    // avoid that those folders will be rewritten to the specified package path.
+    { from: '^/node_modules/(.*)$', to: '/node_modules/$1' },
+    { from: '^/dist/(.*)$', to: '/dist/$1' },
+    // Rewrite every path that doesn't point to a specific file to the index.html file.
+    // This is necessary for Angular's routing using the HTML5 History API.
+    { from: '^/[^.]+$', to: `/${relativePath}/index.html`},
+    // Rewrite any path that didn't match a pattern before to the specified package path.
+    { from: '^(.*)$', to: `/${relativePath}/$1` },
+  ];
 
   return () => {
     gulpConnect.server({
@@ -137,17 +150,7 @@ export function serverTask(packagePath: string, livereload = true) {
       port: 4200,
       host: '0.0.0.0',
       middleware: () => {
-        return [httpRewrite.getMiddleware([
-          // Rewrite the node_modules/ and dist/ folder to the real paths. This is a trick to
-          // avoid that those folders will be rewritten to the specified package path.
-          { from: '^/node_modules/(.*)$', to: '/node_modules/$1' },
-          { from: '^/dist/(.*)$', to: '/dist/$1' },
-          // Rewrite every path that doesn't point to a specific file to the index.html file.
-          // This is necessary for Angular's routing using the HTML5 History API.
-          { from: '^/[^.]+$', to: `/${relativePath}/index.html`},
-          // Rewrite any path that didn't match a pattern before to the specified package path.
-          { from: '^(.*)$', to: `/${relativePath}/$1` },
-        ])];
+        return [httpRewrite.getMiddleware(rewrites || defaultHttpRewrites)];
       }
     });
   };

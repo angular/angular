@@ -15,8 +15,11 @@
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "rootDir": ".",
-    "outDir": ".",
+    "rootDirs": [
+      "../..",
+      "./"
+    ],
+    "outDir": "../../dist/",
     "sourceMap": true,
     "target": "es5",
     "typeRoots": [
@@ -24,15 +27,15 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/*": ["./cdk/*"],
-      "@angular/material": ["./material"],
-      "@angular/material/*": ["./material/*"],
-      "@angular/material-experimental/*": ["./material-experimental/*"],
-      "@angular/material-experimental": ["./material-experimental/"],
-      "@angular/cdk-experimental/*": ["./cdk-experimental/*"],
-      "@angular/cdk-experimental": ["./cdk-experimental/"],
-      "@angular/material-moment-adapter": ["./material-moment-adapter"],
-      "@angular/material-examples": ["./material-examples"]
+      "@angular/cdk/*": ["../../dist/releases/cdk/*"],
+      "@angular/material": ["../../dist/releases/material"],
+      "@angular/material/*": ["../../dist/releases/material/*"],
+      "@angular/material-experimental/*": ["../../dist/releases/material-experimental/*"],
+      "@angular/material-experimental": ["../../dist/releases/material-experimental/"],
+      "@angular/cdk-experimental/*": ["../../dist/releases/cdk-experimental/*"],
+      "@angular/cdk-experimental": ["../../dist/releases/cdk-experimental/"],
+      "@angular/material-moment-adapter": ["../../dist/releases/material-moment-adapter"],
+      "@angular/material-examples": ["../../dist/releases/material-examples"]
     }
   },
   "files": [
@@ -42,7 +45,7 @@
     "./system-config.ts"
   ],
   "angularCompilerOptions": {
-    "skipMetadataEmit": true,
-    "fullTemplateTypeCheck": true
+    "fullTemplateTypeCheck": true,
+    "enableResourceInlining": true
   }
 }
