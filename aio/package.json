@@ -159,7 +159,7 @@
     "unist-util-visit-parents": "^1.1.1",
     "vrsource-tslint-rules": "^5.8.2",
     "watchr": "^3.0.1",
-    "webpack-cli": "^2.0.14",
+    "webpack-cli": "^3.1.2",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
   }
