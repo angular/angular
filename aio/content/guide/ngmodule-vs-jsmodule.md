@@ -53,7 +53,7 @@ export class AppModule { }
 ```
 
 
-The NgModule classes differ from JavaScript module in the following key ways:
+The NgModule classes differ from JavaScript modules in the following key ways:
 
 * An NgModule bounds [declarable classes](guide/ngmodule-faq#q-declarable) only.
 Declarables are the only classes that matter to the [Angular compiler](guide/ngmodule-faq#q-angular-compiler).
