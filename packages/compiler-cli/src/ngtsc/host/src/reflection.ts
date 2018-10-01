@@ -419,4 +419,16 @@ export interface ReflectionHost {
    * is not a class or has an unknown number of type parameters.
    */
   getGenericArityOfClass(clazz: ts.Declaration): number|null;
+
+  /**
+   * Find the assigned value of a variable declaration.
+   *
+   * Normally this will be the initializer of the declaration, but where the variable is
+   * not a `const` we may need to look elsewhere for the variable's value.
+   *
+   * @param declaration a TypeScript variable declaration, whose value we want.
+   * @returns the value of the variable, as a TypeScript expression node, or `undefined`
+   * if the value cannot be computed.
+   */
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null;
 }
