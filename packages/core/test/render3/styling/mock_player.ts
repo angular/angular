@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PlayState, Player} from '../../../src/render3/animations/interfaces';
+import {PlayState, Player} from '../../../src/render3/interfaces/player';
 
 export class MockPlayer implements Player {
   parent: Player|null = null;

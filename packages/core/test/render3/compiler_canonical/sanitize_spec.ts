@@ -53,7 +53,7 @@ describe('compiler sanitization', () => {
           if (rf & 2) {
             $r3$.ɵelementProperty(0, 'innerHTML', $r3$.ɵbind(ctx.innerHTML), $r3$.ɵsanitizeHtml);
             $r3$.ɵelementProperty(0, 'hidden', $r3$.ɵbind(ctx.hidden));
-            $r3$.ɵelementStylingProp(0, 0, ctx.style);
+            $r3$.ɵelementStyleProp(0, 0, ctx.style);
             $r3$.ɵelementStylingApply(0);
             $r3$.ɵelementProperty(1, 'src', $r3$.ɵbind(ctx.url), $r3$.ɵsanitizeUrl);
             $r3$.ɵelementAttribute(1, 'srcset', $r3$.ɵbind(ctx.url), $r3$.ɵsanitizeUrl);

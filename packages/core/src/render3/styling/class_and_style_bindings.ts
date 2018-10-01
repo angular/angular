@@ -6,216 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-import {AnimationContext} from './animations/interfaces';
-import {InitialStylingFlags} from './interfaces/definition';
-import {LElementNode} from './interfaces/node';
-import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {InitialStylingFlags} from '../interfaces/definition';
+import {LElementNode} from '../interfaces/node';
+import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
+import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 
-/**
- * The styling context acts as a styling manifest (shaped as an array) for determining which
- * styling properties have been assigned via the provided `updateStylingMap`, `updateStyleProp`
- * and `updateClassProp` functions. There are also two initialization functions
- * `allocStylingContext` and `createStylingContextTemplate` which are used to initialize
- * and/or clone the context.
- *
- * The context is an array where the first two cells are used for static data (initial styling)
- * and dirty flags / index offsets). The remaining set of cells is used for multi (map) and single
- * (prop) style values.
- *
- * each value from here onwards is mapped as so:
- * [i] = mutation/type flag for the style/class value
- * [i + 1] = prop string (or null incase it has been removed)
- * [i + 2] = value string (or null incase it has been removed)
- *
- * There are three types of styling types stored in this context:
- *   initial: any styles that are passed in once the context is created
- *            (these are stored in the first cell of the array and the first
- *             value of this array is always `null` even if no initial styling exists.
- *             the `null` value is there so that any new styles have a parent to point
- *             to. This way we can always assume that there is a parent.)
- *
- *   single: any styles that are updated using `updateStyleProp` or `updateClassProp` (fixed set)
- *
- *   multi: any styles that are updated using `updateStylingMap` (dynamic set)
- *
- * Note that context is only used to collect style information. Only when `renderStyling`
- * is called is when the styling payload will be rendered (or built as a key/value map).
- *
- * When the context is created, depending on what initial styling values are passed in, the
- * context itself will be pre-filled with slots based on the initial style properties. Say
- * for example we have a series of initial styles that look like so:
- *
- *   style="width:100px; height:200px;"
- *   class="foo"
- *
- * Then the initial state of the context (once initialized) will look like so:
- *
- * ```
- * context = [
- *   element,
- *   styleSanitizer | null,
- *   [null, '100px', '200px', true],  // property names are not needed since they have already been
- * written to DOM.
- *
- *   configMasterVal,
- *   1, // this instructs how many `style` values there are so that class index values can be
- * offsetted
- *   'last class string applied',
- *
- *   // 6
- *   'width',
- *   pointers(1, 15);  // Point to static `width`: `100px` and multi `width`.
- *   null,
- *
- *   // 9
- *   'height',
- *   pointers(2, 18); // Point to static `height`: `200px` and multi `height`.
- *   null,
- *
- *   // 12
- *   'foo',
- *   pointers(1, 21);  // Point to static `foo`: `true` and multi `foo`.
- *   null,
- *
- *   // 15
- *   'width',
- *   pointers(1, 6);  // Point to static `width`: `100px` and single `width`.
- *   null,
- *
- *   // 18
- *   'height',
- *   pointers(2, 9);  // Point to static `height`: `200px` and single `height`.
- *   null,
- *
- *   // 21
- *   'foo',
- *   pointers(3, 12);  // Point to static `foo`: `true` and single `foo`.
- *   null,
- * ]
- *
- * function pointers(staticIndex: number, dynamicIndex: number) {
- *   // combine the two indices into a single word.
- *   return (staticIndex << StylingFlags.BitCountSize) |
- *     (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
- * }
- * ```
- *
- * The values are duplicated so that space is set aside for both multi ([style] and [class])
- * and single ([style.prop] or [class.named]) values. The respective config values
- * (configValA, configValB, etc...) are a combination of the StylingFlags with two index
- * values: the `initialIndex` (which points to the index location of the style value in
- * the initial styles array in slot 0) and the `dynamicIndex` (which points to the
- * matching single/multi index position in the context array for the same prop).
- *
- * This means that every time `updateStyleProp` or `updateClassProp` are called then they
- * must be called using an index value (not a property string) which references the index
- * value of the initial style prop/class when the context was created. This also means that
- * `updateStyleProp` or `updateClassProp` cannot be called with a new property (only
- * `updateStylingMap` can include new CSS properties that will be added to the context).
- */
-export interface StylingContext extends
-    Array<InitialStyles|number|string|boolean|LElementNode|StyleSanitizeFn|AnimationContext|null> {
-  /**
-   * Location of element that is used as a target for this context.
-   */
-  [StylingIndex.ElementPosition]: LElementNode|null;
+import {EMPTY_ARR, EMPTY_OBJ, createEmptyStylingContext} from './util';
 
-  /**
-   * Location of animation context (which contains the active players) for this element styling
-   * context.
-   */
-  [StylingIndex.AnimationContext]: AnimationContext|null;
-
-  /**
-   * The style sanitizer that is used within this context
-   */
-  [StylingIndex.StyleSanitizerPosition]: StyleSanitizeFn|null;
-
-  /**
-   * Location of initial data shared by all instances of this style.
-   */
-  [StylingIndex.InitialStylesPosition]: InitialStyles;
-
-  /**
-   * A numeric value representing the configuration status (whether the context is dirty or not)
-   * mixed together (using bit shifting) with a index value which tells the starting index value
-   * of where the multi style entries begin.
-   */
-  [StylingIndex.MasterFlagPosition]: number;
-
-  /**
-   * A numeric value representing the class index offset value. Whenever a single class is
-   * applied (using `elementClassProp`) it should have an styling index value that doesn't
-   * need to take into account any style values that exist in the context.
-   */
-  [StylingIndex.ClassOffsetPosition]: number;
-
-  /**
-   * The last CLASS STRING VALUE that was interpreted by elementStylingMap. This is cached
-   * So that the algorithm can exit early incase the string has not changed.
-   */
-  [StylingIndex.CachedCssClassString]: string|null;
-}
-
-/**
- * The initial styles is populated whether or not there are any initial styles passed into
- * the context during allocation. The 0th value must be null so that index values of `0` within
- * the context flags can always point to a null value safely when nothing is set.
- *
- * All other entries in this array are of `string` value and correspond to the values that
- * were extracted from the `style=""` attribute in the HTML code for the provided template.
- */
-export interface InitialStyles extends Array<string|null|boolean> { [0]: null; }
-
-/**
- * Used to set the context to be dirty or not both on the master flag (position 1)
- * or for each single/multi property that exists in the context.
- */
-export const enum StylingFlags {
-  // Implies no configurations
-  None = 0b000,
-  // Whether or not the entry or context itself is dirty
-  Dirty = 0b001,
-  // Whether or not this is a class-based assignment
-  Class = 0b010,
-  // Whether or not a sanitizer was applied to this property
-  Sanitize = 0b100,
-  // The max amount of bits used to represent these configuration values
-  BitCountSize = 3,
-  // There are only three bits here
-  BitMask = 0b111
-}
-
-/** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
-export const enum StylingIndex {
-  // Position of where the initial styles are stored in the styling context
-  ElementPosition = 0,
-  // Position of where the initial styles are stored in the styling context
-  AnimationContext = 1,
-  // Position of where the style sanitizer is stored within the styling context
-  StyleSanitizerPosition = 2,
-  // Position of where the initial styles are stored in the styling context
-  InitialStylesPosition = 3,
-  // Index of location where the start of single properties are stored. (`updateStyleProp`)
-  MasterFlagPosition = 4,
-  // Index of location where the class index offset value is located
-  ClassOffsetPosition = 5,
-  // Position of where the last string-based CSS class value was stored
-  CachedCssClassString = 6,
-  // Location of single (prop) value entries are stored within the context
-  SingleStylesStartPosition = 7,
-  // Multi and single entries are stored in `StylingContext` as: Flag; PropertyName;  PropertyValue
-  FlagsOffset = 0,
-  PropertyOffset = 1,
-  ValueOffset = 2,
-  // Size of each multi or single entry (flag + prop + value)
-  Size = 3,
-  // Each flag has a binary digit length of this value
-  BitCountSize = 14,  // (32 - 3) / 2 = ~14
-  // The binary digit value as a mask
-  BitMask = 0b11111111111111  // 14 bits
-}
 
 /**
  * Used clone a copy of a pre-computed template of a styling context.
@@ -229,12 +27,6 @@ export function allocStylingContext(
   const context = templateStyleContext.slice() as any as StylingContext;
   context[StylingIndex.ElementPosition] = lElement;
   return context;
-}
-
-export function createEmptyStylingContext(
-    element?: LElementNode | null, sanitizer?: StyleSanitizeFn | null,
-    initialStylingValues?: InitialStyles): StylingContext {
-  return [element || null, null, sanitizer || null, initialStylingValues || [null], 0, 0, null];
 }
 
 /**
@@ -364,8 +156,6 @@ export function createStylingContextTemplate(
   return context;
 }
 
-const EMPTY_ARR: any[] = [];
-const EMPTY_OBJ: {[key: string]: any} = {};
 /**
  * Sets and resolves all `multi` styling on an `StylingContext` so that they can be
  * applied to the element once `renderStyling` is called.
@@ -382,29 +172,34 @@ const EMPTY_OBJ: {[key: string]: any} = {};
 export function updateStylingMap(
     context: StylingContext, classes: {[key: string]: any} | string | null,
     styles?: {[key: string]: any} | null): void {
+  styles = styles || null;
+  // early exit (this is what's done to avoid using ctx.bind() to cache the value)
+  const ignoreAllClassUpdates = classes === context[StylingIndex.PreviousMultiClassValue];
+  const ignoreAllStyleUpdates = styles === context[StylingIndex.PreviousMultiStyleValue];
+  if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
+
   let classNames: string[] = EMPTY_ARR;
   let applyAllClasses = false;
-  let ignoreAllClassUpdates = false;
 
   // each time a string-based value pops up then it shouldn't require a deep
   // check of what's changed.
-  if (typeof classes == 'string') {
-    const cachedClassString = context[StylingIndex.CachedCssClassString] as string | null;
-    if (cachedClassString && cachedClassString === classes) {
-      ignoreAllClassUpdates = true;
-    } else {
-      context[StylingIndex.CachedCssClassString] = classes;
+  if (!ignoreAllClassUpdates) {
+    context[StylingIndex.PreviousMultiClassValue] = classes;
+    if (typeof classes == 'string') {
       classNames = classes.split(/\s+/);
       // this boolean is used to avoid having to create a key/value map of `true` values
       // since a classname string implies that all those classes are added
       applyAllClasses = true;
+    } else {
+      classNames = classes ? Object.keys(classes) : EMPTY_ARR;
     }
-  } else {
-    classNames = classes ? Object.keys(classes) : EMPTY_ARR;
-    context[StylingIndex.CachedCssClassString] = null;
   }
 
   classes = (classes || EMPTY_OBJ) as{[key: string]: any};
+
+  if (!ignoreAllStyleUpdates) {
+    context[StylingIndex.PreviousMultiStyleValue] = styles;
+  }
 
   const styleProps = styles ? Object.keys(styles) : EMPTY_ARR;
   styles = styles || EMPTY_OBJ;
@@ -423,10 +218,12 @@ export function updateStylingMap(
   // are off-balance then they will be dealt in another loop after this one
   while (ctxIndex < context.length && propIndex < propLimit) {
     const isClassBased = propIndex >= classesStartIndex;
+    const processValue =
+        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
 
     // when there is a cache-hit for a string-based class then we should
     // avoid doing any work diffing any of the changes
-    if (!ignoreAllClassUpdates || !isClassBased) {
+    if (processValue) {
       const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
       const newProp: string =
           isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
@@ -444,7 +241,7 @@ export function updateStylingMap(
 
           // there is no point in setting this to dirty if the previously
           // rendered value was being referenced by the initial style (or null)
-          if (initialValue !== newValue) {
+          if (hasValueChanged(flag, initialValue, newValue)) {
             setDirty(context, ctxIndex, true);
             dirty = true;
           }
@@ -456,10 +253,10 @@ export function updateStylingMap(
           const valueToCompare = getValue(context, indexOfEntry);
           const flagToCompare = getPointers(context, indexOfEntry);
           swapMultiContextEntries(context, ctxIndex, indexOfEntry);
-          if (valueToCompare !== newValue) {
+          if (hasValueChanged(flagToCompare, valueToCompare, newValue)) {
             const initialValue = getInitialValue(context, flagToCompare);
             setValue(context, ctxIndex, newValue);
-            if (initialValue !== newValue) {
+            if (hasValueChanged(flagToCompare, initialValue, newValue)) {
               setDirty(context, ctxIndex, true);
               dirty = true;
             }
@@ -483,14 +280,16 @@ export function updateStylingMap(
   while (ctxIndex < context.length) {
     const flag = getPointers(context, ctxIndex);
     const isClassBased = (flag & StylingFlags.Class) === StylingFlags.Class;
-    if (ignoreAllClassUpdates && isClassBased) break;
-
-    const value = getValue(context, ctxIndex);
-    const doRemoveValue = valueExists(value, isClassBased);
-    if (doRemoveValue) {
-      setDirty(context, ctxIndex, true);
-      setValue(context, ctxIndex, null);
-      dirty = true;
+    const processValue =
+        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
+    if (processValue) {
+      const value = getValue(context, ctxIndex);
+      const doRemoveValue = valueExists(value, isClassBased);
+      if (doRemoveValue) {
+        setDirty(context, ctxIndex, true);
+        setValue(context, ctxIndex, null);
+        dirty = true;
+      }
     }
     ctxIndex += StylingIndex.Size;
   }
@@ -501,16 +300,18 @@ export function updateStylingMap(
   const sanitizer = getStyleSanitizer(context);
   while (propIndex < propLimit) {
     const isClassBased = propIndex >= classesStartIndex;
-    if (ignoreAllClassUpdates && isClassBased) break;
-
-    const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
-    const prop = isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
-    const value: string|boolean =
-        isClassBased ? (applyAllClasses ? true : classes[prop]) : styles[prop];
-    const flag = prepareInitialFlag(prop, isClassBased, sanitizer) | StylingFlags.Dirty;
-    context.push(flag, prop, value);
+    const processValue =
+        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
+    if (processValue) {
+      const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
+      const prop = isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
+      const value: string|boolean =
+          isClassBased ? (applyAllClasses ? true : classes[prop]) : styles[prop];
+      const flag = prepareInitialFlag(prop, isClassBased, sanitizer) | StylingFlags.Dirty;
+      context.push(flag, prop, value);
+      dirty = true;
+    }
     propIndex++;
-    dirty = true;
   }
 
   if (dirty) {
@@ -546,7 +347,7 @@ export function updateStyleProp(
 
     // if the value is the same in the multi-area then there's no point in re-assembling
     const valueForMulti = getValue(context, indexForMulti);
-    if (!valueForMulti || valueForMulti !== value) {
+    if (!valueForMulti || hasValueChanged(currFlag, valueForMulti, value)) {
       let multiDirty = false;
       let singleDirty = true;
 

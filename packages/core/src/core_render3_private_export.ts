@@ -89,7 +89,7 @@ export {
   elementAttribute as ɵelementAttribute,
   elementStyling as ɵelementStyling,
   elementStylingMap as ɵelementStylingMap,
-  elementStyleProp as ɵelementStylingProp,
+  elementStyleProp as ɵelementStyleProp,
   elementStylingApply as ɵelementStylingApply,
   elementClassProp as ɵelementClassProp,
   textBinding as ɵtextBinding,
@@ -162,12 +162,12 @@ export {
   Player as ɵPlayer,
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
-} from './render3/animations/interfaces';
+} from './render3/interfaces/player';
 
 export {
   addPlayer as ɵaddPlayer,
   getPlayers as ɵgetPlayers,
-} from './render3/animations/players';
+} from './render3/player';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
