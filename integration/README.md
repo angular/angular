@@ -1,6 +1,7 @@
 # Integration tests for Angular
 
-This directory contains end-to-end tests for Angular. Each directory is a self-contained application that exactly mimics how a user might expect Angular
+This directory contains integration tests for Angular.
+Each directory is a self-contained application that exactly mimics how a user might expect Angular
 to work, so they allow high-fidelity reproductions of real-world issues.
 
 For this to work, we first build the Angular distribution just like we would
@@ -10,7 +11,7 @@ To test Angular CLI applications, we use the integration test `cli-hello-world`.
 When a significant change is released in the CLI, the application should be updated with `ng update`:
 
 ```bash
-$ cd integration
+$ cd integration/...
 $ ng update
 # ng build
 # ng test
@@ -48,9 +49,17 @@ you can install the package directly from `file:../../node_modules`.
 
 ## Running integration tests
 
+You can run a single integration test by running the following command:
+
+```
+$ ./integration/run_test.sh [subdirectory]
+```
+
+The test runner will first re-build any stale npm packages, then `cd` into the specified
+`subdirectory` to execute the test.
+
+You can run all the integration tests in one go via the following command:
+
 ```
 $ ./integration/run_tests.sh
 ```
-
-The test runner will first re-build any stale npm packages, then `cd` into each
-subdirectory to execute the test.
