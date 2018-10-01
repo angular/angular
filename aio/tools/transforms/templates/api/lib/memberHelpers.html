@@ -28,12 +28,13 @@
 {%- endmacro -%}
 
 {%- macro renderMemberSyntax(member, truncateLines) -%}
+    {%- if member.boundTo %}<span class="property-binding">@{$ member.boundTo.type $}(
+    {%- if member.boundTo.propertyName != member.boundTo.bindingName %}'{$ member.boundTo.bindingName $}'{% endif -%}
+    )</span><br>{% endif -%}
     {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
     {%- if member.isAbstract %}abstract {% endif -%}
     {%- if member.isStatic %}static {% endif -%}
-    {%- if (member.isGetAccessor or member.isReadonly) and not member.isSetAccessor %}get {% endif -%}
-    {%- if member.isSetAccessor and not member.isGetAccessor %}set {% endif -%}
-    {$ member.name $}{$ member.typeParameters | escape $}{% if not member.isGetAccessor %}{$ params.paramList(member.parameters, truncateLines) | trim $}{% endif %}
+    <span class="member-name">{$ member.name $}</span>{$ member.typeParameters | escape $}{% if not member.isGetAccessor %}{$ params.paramList(member.parameters, truncateLines) | trim $}{% endif %}
     {%- if member.isOptional  %}?{% endif -%}
     {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
 {%- endmacro -%}
@@ -168,27 +169,28 @@
 {%- endmacro -%}
 
 
-{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings) -%}
+{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings, headingLevel = 2) -%}
 {% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
-{% set hasTypes = properties | hasValues('type') %}
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
-  <h2>{$ headingText $}</h2>
+  <h{$ headingLevel $}>{$ headingText $}</h{$ headingLevel $}>
   <table class="is-full-width list-table property-table">
     <thead>
       <tr>
         <th>{$ headings[0] or 'Property' $}</th>
-        {% if hasTypes %}<th>{$ headings[1] or 'Type' $}</th>{% endif %}
-        <th>{$ headings[2] or 'Description' $}</th>
+        <th>{$ headings[1] or 'Description' $}</th>
       </tr>
     </thead>
     <tbody>
     {% for property in nonInternalProperties %}
       <tr class="{$ propertyClass $}">
-        <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
-        {% if hasTypes %}<td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>{% endif %}
+        <td>
+          <a id="{$ property.anchor $}"></a>
+          <code>{$ renderMemberSyntax(property) $}</code>
+        </td>
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
+          {%- if property.isSetAccessor and not property.isGetAccessor %}<span class='write-only-property'>Write-only.</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
           {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
@@ -200,3 +202,27 @@
 </section>
 {%- endif -%}
 {%- endmacro -%}
+
+{% macro renderDirectiveAncestors(doc, collectionName) %}
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+{% set nonInternalMembers = ancestor.doc[collectionName] | filterByPropertyValue('internal', undefined) %}
+{% if nonInternalMembers.length -%}
+<section class="inherited-members-list">
+  <h3>Inherited from <code>{$ ancestor.doc.id $}</code></h3>
+  <ul>
+  {% for member in nonInternalMembers %}
+    <li>
+        <code><a class="code-anchor" href="{$ ancestor.doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member) $}</a></code>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{$ renderDirectiveAncestors(ancestor.doc, collectionName) $}
+{% endif %}{% endfor -%}
+{% endmacro %}
+
+{% macro renderDirectiveProperties(doc, heading) %}
+{$ renderProperties(doc.properties, 'instance-properties', 'instance-property', heading) $}
+{$ renderDirectiveAncestors(doc, 'properties') $}
+{% endmacro %}

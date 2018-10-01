@@ -31,6 +31,11 @@
   }
 
   .method-table, .option-table, .list-table {
+    td > code {
+      background-color: inherit;
+      white-space: pre;
+    }
+
     .with-github-links {
       align-items: center;
       display: flex;
@@ -66,23 +71,6 @@
     font-weight: bold;
   }
 
-  .short-description {
-    margin: 6px 0 0 10px;
-  }
-
-  .properties-table {
-    font-size: 14px;
-
-    thead th {
-      &:nth-child(1) {
-        width: 20%;
-      }
-      &:nth-child(2) {
-        width: 20%;
-      }
-    }
-  }
-
   .parameters-table {
     margin-top: 0;
     font-size: 14px;
@@ -104,7 +92,7 @@
     }
   }
 
-  .from-constructor, .read-only-property {
+  .from-constructor, .read-only-property, .write-only-property {
     font-style: italic;
     color: $blue;
   }
@@ -112,6 +100,29 @@
   .ngmodule-list {
     list-style: none;
     padding: 0;
+  }
+
+  .selector-list, .inherited-members-list {
+    ul {
+      padding: 0;
+      li {
+        list-style: none;
+        margin-bottom: 12px;
+      }
+    }
+  }
+
+  .selector-list {
+    li, a {
+      font-weight: bold;
+      i {
+        font-weight: normal;
+      }
+    }
+  }
+
+  .member-name {
+    font-weight: bold;
   }
 }
 
