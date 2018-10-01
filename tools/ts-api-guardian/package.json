@@ -1,9 +1,9 @@
 {
   "name": "ts-api-guardian",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "Guards the API of TypeScript libraries!",
-  "main": "build/lib/main.js",
-  "typings": "build/definitions/main.d.ts",
+  "main": "lib/main.js",
+  "typings": "lib/main.d.ts",
   "bin": {
     "ts-api-guardian": "./bin/ts-api-guardian"
   },
@@ -34,8 +34,8 @@
     "Alan Agius <alan.agius4@gmail.com> (https://github.com/alan-agius4/)",
     "Alex Eagle <alexeagle@google.com> (https://angular.io/)",
     "Martin Probst <martinprobst@google.com> (https://angular.io/)",
-    "Victor Savkin<vsavkin@google.com> (https://victorsavkin.com)",
-    "Igor Minar<iminar@google.com> (https://angular.io/)"
+    "Victor Savkin <vsavkin@google.com> (https://victorsavkin.com)",
+    "Igor Minar <iminar@google.com> (https://angular.io/)"
   ],
   "license": "MIT",
   "bugs": {
