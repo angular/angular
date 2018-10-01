@@ -8,9 +8,11 @@
 
 import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
+import {of } from 'rxjs';
 
 import {Routes} from '../src/config';
 import {ChildActivationStart} from '../src/events';
+import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
 import {PreActivation} from '../src/pre_activation';
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
@@ -141,9 +143,11 @@ describe('Router', () => {
         const futureState = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
 
-        const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
-        p.initialize(new ChildrenOutletContexts());
-        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+        of ({targetSnapshot: futureState, currentSnapshot: empty})
+            .pipe(checkGuardsOperator(
+                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
+
         expect(result).toBe(true);
         expect(events.length).toEqual(2);
         expect(events[0].snapshot).toBe(events[0].snapshot.root);
@@ -174,9 +178,10 @@ describe('Router', () => {
                   new TreeNode(grandchildSnapshot, [new TreeNode(greatGrandchildSnapshot, [])])
                 ])]));
 
-        const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
-        p.initialize(new ChildrenOutletContexts());
-        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+        of ({targetSnapshot: futureState, currentSnapshot: empty})
+            .pipe(checkGuardsOperator(
+                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(6);
@@ -206,10 +211,10 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        const p =
-            new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
-        p.initialize(new ChildrenOutletContexts());
-        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+        of ({targetSnapshot: futureState, currentSnapshot: currentState})
+            .pipe(checkGuardsOperator(
+                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(2);
@@ -252,10 +257,10 @@ describe('Router', () => {
                           greatGrandchildSnapshot, [new TreeNode(greatGreatGrandchildSnapshot, [])])
                     ])])]));
 
-        const p =
-            new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
-        p.initialize(new ChildrenOutletContexts());
-        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+        of ({targetSnapshot: futureState, currentSnapshot: currentState})
+            .pipe(checkGuardsOperator(
+                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+            .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
         expect(events.length).toEqual(4);
@@ -541,7 +546,7 @@ function checkResolveData(
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
     check: (result: boolean) => void): void {
-  const p = new PreActivation(future, curr, injector);
-  p.initialize(new ChildrenOutletContexts());
-  p.checkGuards().subscribe(check, (e) => { throw e; });
+  of ({ targetSnapshot: future, currentSnapshot: curr } as any)
+      .pipe(checkGuardsOperator(new ChildrenOutletContexts(), injector))
+      .subscribe(t => check(!!t.guardsResult), (e) => { throw e; });
 }
