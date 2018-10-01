@@ -3918,7 +3918,7 @@ the `queryParamsHandling` and `preserveFragment` bindings respectively.
 
 As you've worked through the milestones, the application has naturally gotten larger.
 As you continue to build out feature areas, the overall application size will continue to grow.
-At some point you'll reach a tipping point where the application takes long time to load.
+At some point you'll reach a tipping point where the application takes a long time to load.
 
 How do you combat this problem?  With asynchronous routing, which loads feature modules _lazily_, on request.
 Lazy loading has multiple benefits.
