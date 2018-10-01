@@ -17,7 +17,7 @@ const DifferentParent = Parent;
 // #docregion provide-parent, provide-the-parent
 // 현재 컴포넌트를 프로바이더 형태로 반환하는 헬퍼 메소드
 // #enddocregion provide-the-parent
-// The `parentType` defaults to `Parent` when omitting the second parameter.
+// 두번째 인자가 생략되면 `parentType`은 `Parent`로 지정됩니다.
 // #docregion provide-the-parent
 const provideParent =
 // #enddocregion provide-parent, provide-the-parent

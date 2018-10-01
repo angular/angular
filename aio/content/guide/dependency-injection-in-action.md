@@ -8,7 +8,7 @@ Dependency Injection is a powerful pattern for managing code dependencies.
 This cookbook explores many of the features of Dependency Injection (DI) in Angular.
 -->
 의존성 주입은 코드의 의존성을 관리할 때 아주 유용하게 사용할 수 있는 패턴입니다.
-이 문서에서는 Angular에서 활용할 수 있는 여러가지 의존성 주입 패턴을 안내합니다.
+이 문서에서는 Angular에서 활용할 수 있는 여러가지 의존성 주입 패턴을 소개합니다.
 
 {@a toc}
 
@@ -29,7 +29,7 @@ of the code in this cookbook.
 Register providers for dependencies used throughout the application 
 in the `@Injectable()` decorator of the service itself. 
 -->
-서비스 클래스에 `@Injectable()` 데코레이터를 사용하면 이 서비스를 애플리케이션 전역에 사용되는 의존성으로 등록할 수 있습니다.
+서비스 클래스에 `@Injectable()` 데코레이터를 사용하면 이 서비스를 애플리케이션 전역에 사용되는 의존성 객체로 등록할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts" linenums="false">
 </code-example>
@@ -39,14 +39,14 @@ in the `@Injectable()` decorator of the service itself.
 Services that are provided this way are automatically made available to the entire 
 application and don't need to be listed in any module.
 -->
-이 코드에 사용된 `providedIn`은 `HeroService`의 인스턴스가 애플리케이션 최상위 인젝터에서 관리된다는 것을 의미합니다.
-그리고 이렇게 등록된 서비스는 다른 모듈에 다시 등록되지 않아도 애플리케이션 전역에 사용할 수 있습니다.
+`providedIn`은 `HeroService`의 인스턴스가 애플리케이션 최상위 인젝터에서 관리된다는 것을 의미합니다.
+이렇게 등록된 서비스는 다른 모듈에 다시 등록되지 않아도 애플리케이션 전역에 사용할 수 있습니다.
 
 <!--
 Service classes can act as their own providers which is why defining them in the `@Injectable` decorator
 is all the registration you need.
 -->
-`@Injectable` 데코레이터를 사용하면 서비스 클래스는 그 자체로 서비스 프로바이더의 역할을 합니다.
+`@Injectable` 데코레이터가 사용된 서비스 클래스는 그 자체로 서비스 프로바이더의 역할을 합니다.
 서비스를 인젝터에 등록하려면 이 데코레이터를 지정하기만 하면 됩니다.
 
 <div class="alert is-helpful">
@@ -75,12 +75,12 @@ Angular can inject them into the constructor of *any* component or service, *any
 <!--
 ## External module configuration
 -->
-## 모듈에 설정하는 경우
+## 모듈에 프로바이더 등록하기
 
 <!--
 If a provider cannot be configured in the `@Injectable` decorator of the service, then register application-wide providers in the root `AppModule`, not in the `AppComponent`. Generally, register providers in the `NgModule` rather than in the root application component.
 -->
-애플리케이션 전역에 사용되는 서비스에 `@Injectable` 데코레이터를 사용할 수 없다면, 최상위 `AppModule`에 이 설정을 대신할 수 있습니다. 이 때 주의할 것은 `AppComponent`가 아니라 `AppModule`이라는 것입니다. 일반적으로 서비스 프로바이더는 최상위 컴포넌트가 아니라 최상위 `NgModule`에 등록합니다.
+애플리케이션 전역에 사용되는 서비스에 `@Injectable` 데코레이터를 사용할 수 없다면, 최상위 `AppModule`에 이 설정을 대신할 수 있습니다. 이 때 주의할 점은 `AppComponent`가 아니라 `AppModule`에 등록한다는 것입니다. 일반적으로 서비스 프로바이더는 최상위 컴포넌트가 아니라 최상위 `NgModule`에 등록합니다.
 
 <!--
 Do this when users should explicitly opt-in to use a service, or the service should be 
@@ -94,7 +94,7 @@ Here is an example of the case where the component router configuration includes
 [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
 -->
-다음 코드는 `AppModule`의 `providers`에서 컴포넌트 라우팅에 사용하는 [로케이션 정책](guide/router#location-strategy)을 변경하는 코드입니다.
+다음 코드는 `AppModule`의 `providers`에서 컴포넌트 라우팅에 사용하는 [로케이션 정책](guide/router#location-strategy)을 변경하는 예제 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)" linenums="false">
 
@@ -129,13 +129,13 @@ At each step, the consumer of dependencies simply declares what it requires in i
 constructor and the framework takes over.
 -->
 어떤 경우에는 서비스가 다른 서비스를 의존성으로 참조하는 경우가 있을 수 있습니다.
-하지만 이렇게 의존성이 중첩된 경우에도 의존성이 연결된 순서에 맞게 인스턴스를 생성하는 것은 프레임워크가 해야할 역할입니다.
+하지만 이렇게 의존성이 중첩된 경우에도 의존성이 연결된 순서에 맞게 인스턴스를 생성하는 것은 프레임워크가 처리해야할 역할입니다.
 의존성 객체를 사용하는 쪽에서는 생성자에 어떤 타입의 의존성 객체가 필요한지 선언하기만 하면 프레임워크가 모두 처리할 것입니다.
 
 <!--
 The following example shows injecting both the `LoggerService` and the `UserContext` in the `AppComponent`.
 -->
-다음 코드는 `AppComponent`에 `LoggerService`와 `UserContextService`를 동시에 의존성으로 주입하는 예제 코드입니다.
+다음 코드는 `LoggerService`와 `UserContextService`를 `AppComponent`에 의존성으로 주입하는 예제 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
 
@@ -146,7 +146,7 @@ The following example shows injecting both the `LoggerService` and the `UserCont
 The `UserContext` in turn has its own dependencies on both the `LoggerService` and
 a `UserService` that gathers information about a particular user.
 -->
-그리고 `UserContextService`에서 `LoggerService`와 `UserService`를 주입받는다고 합시다.
+그리고 `UserContextService`에서도 `LoggerService`와 `UserService`를 주입받는다고 합시다.
 
 <code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" title="user-context.service.ts (injection)" linenums="false">
 
@@ -162,7 +162,7 @@ use `new` to instantiate one.
 -->
 이제 Angular가 `AppComponent`를 생성할 때 의존성 주입 프레임워크가 `LoggerService`의 인스턴스를 생성하며, 그 이후에 `UserContextService` 인스턴스를 생성합니다.
 이 때 `UserContextService`에서는 `LoggerService`를 의존성으로 요청하는데, 이 서비스의 인스턴스는 프레임워크가 이미 만들었기 때문에 있던 것을 그대로 활용할 수 있으며, `UserService`는 아직 생성하지 않았기 때문에 이 서비스의 인스턴스를 찾습니다.
-그리고 `UserService`는 따로 의존성이 없기 때문에 의존성 주입 프레임워크가 `new` 키워드를 사용해서 새로운 인스턴스를 생성합니다.
+그리고 `UserService`에는 추가 의존성 객체가 없기 때문에 프레임워크가 `new` 키워드를 사용해서 새로운 인스턴스를 생성합니다.
 
 <!--
 The beauty of dependency injection is that `AppComponent` doesn't care about any of this.
@@ -201,7 +201,7 @@ Notice the `@Injectable()`decorator on the `UserContextService` class.
 <!--
 The `@Injectable` decorator indicates that the Angular DI system is used to create one or more instances of `UserContextService`.
 -->
-`UserContextService`에 `@Injectable` 데코레이터를 사용하면 이 서비스의 인스턴스가 Angular 의존성 주입 시스템에 의해 생성된다는 것을 지정할 수 있습니다.
+`UserContextService`에 `@Injectable` 데코레이터를 사용하면 이 서비스의 인스턴스가 Angular 의존성 주입 시스템에 의해 생성되도록 지정할 수 있습니다.
 
 {@a service-scope}
 
@@ -229,12 +229,12 @@ if provided in multiple components.
 By default, a service dependency provided in one component is visible to all of its child components and
 Angular injects the same service instance into all child components that ask for that service.
 -->
-기본적으로 컴포넌트에 등록된 서비스는 해당 컴포넌트의 자식 컴포넌트에서도 모두 접근할 수 있으며, 이 때 모두 같은 인스턴스를 공유합니다.
+기본적으로 컴포넌트에 등록된 서비스는 해당 컴포넌트의 자식 컴포넌트에서도 모두 접근할 수 있으며, 모두 같은 인스턴스를 공유합니다.
 
 <!--
 Accordingly, dependencies provided in the root `AppComponent` can be injected into *any* component *anywhere* in the application.
 -->
-그래서 `AppComponent`에 등록된 서비스 프로바이더도 애플리케이션 *전역*에 *어떠한* 컴포넌트에도 의존성으로 주입될 수 있습니다.
+그래서 `AppComponent`에 등록된 서비스는 애플리케이션 *전역* 의 *모든* 컴포넌트에 의존성으로 주입될 수 있습니다.
 
 <!--
 That isn't always desirable.
@@ -250,8 +250,8 @@ This example shows how similar providing a service to a sub-root component is
 to providing a service in the root `AppComponent`. The syntax is the same.
 Here, the `HeroService` is available to the `HeroesBaseComponent` because it is in the `providers` array:
 -->
-서비스가 주입되는 범위는 특정 컴포넌트 트리로 제한할 수 있으며, 결과적으로 애플리케이션의 특정 계층으로 제한할 수 있다는 것을 의미합니다.
-다음 예제는 최상위 컴포넌트 `AppComponent`가 아닌 컴포넌트에 특정 서비스 프로바이더를 등록하는 예제 코드입니다. 문법은 기존에 사용하던 방식과 같습니다.
+서비스가 주입되는 범위는 특정 컴포넌트 트리로 제한할 수 있으며, 결과적으로 서비스가 주입될 수 있는 범위를 애플리케이션의 특정 계층으로 제한할 수 있다는 것을 의미합니다.
+다음 예제는 최상위 컴포넌트 `AppComponent`가 아닌 컴포넌트에 서비스 프로바이더를 등록하는 예제 코드입니다. 문법은 기존에 사용하던 방식과 같습니다.
 이 코드에서 `HeroService`는 `HeroesBaseComponent`의 `providers`에 등록되었기 때문에 이 컴포넌트 범위에서만 사용할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
@@ -263,13 +263,13 @@ Here, the `HeroService` is available to the `HeroesBaseComponent` because it is 
 When Angular creates the `HeroesBaseComponent`, it also creates a new instance of `HeroService`
 that is visible only to the component and its children, if any.
 -->
-이제 Angular가 `HeroesBaseComponent`의 인스턴스를 생성하면 `HeroService`의 인스턴스도 함께 생성하며, 이 서비스의 인스턴스는 `HeroesBaseComponent` 아래 계층에서 공유됩니다.
+이제 Angular가 `HeroesBaseComponent`의 인스턴스를 생성하면 `HeroService`의 인스턴스도 함께 생성하며, 이 서비스의 인스턴스는 `HeroesBaseComponent`와 자식 컴포넌트가 공유합니다.
 
 <!--
 You could also provide the `HeroService` to a *different* component elsewhere in the application.
 That would result in a *different* instance of the service, living in a *different* injector.
 -->
-`HeroService`는 물론 *다른* 컴포넌트에 등록해서 사용할 수도 있습니다.
+`HeroService`는 물론 *다른* 컴포넌트에 다시 등록해서 사용할 수도 있습니다.
 이 경우에는 *다른* 인젝터가 인스턴스를 생성하기 때문에 이전과는 *다른* 인스턴스가 사용됩니다.
 
 <div class="alert is-helpful">
@@ -281,7 +281,7 @@ including the `HeroBiosComponent`, `HeroOfTheMonthComponent`, and `HeroesBaseCom
 Each of these components has its own `HeroService` instance managing its own independent collection of heroes.
 -->
 예제 코드에서 `HeroService`는 사용범위가 제한되어 있으며, 이 서비스는 `HeroBiosComponent`, `HeroOfTheMonthComponent`, `HeroesBaseComponent`에서만 사용할 수 있습니다.
-그리고 각각의 컴포넌트는 독립적인 `HeroService` 인스턴스를 관리합니다.
+이 서비스는 각 컴포넌트가 히어로 목록을 처리할 때 사용됩니다.
 
 </div>
 
@@ -314,7 +314,7 @@ Angular 애플리케이션을 개발하면서 알아야 하는 의존성 주입�
 <!--
 Sometimes you want multiple instances of a service at *the same level of the component hierarchy*.
 -->
-어떤 경우에는 *같은 계층에 있는 컴포넌트라면* 서로 다른 서비스 인스턴스를 사용해야 할 때가 있습니다.
+*같은 계층에 있는 컴포넌트끼리* 서로 다른 서비스 인스턴스를 사용해야 할 때가 있습니다.
 
 <!--
 A good example is a service that holds state for its companion component instance.
@@ -324,7 +324,7 @@ This is called *sandboxing* because each service and component instance has its 
 -->
 컴포넌트의 상태를 서비스가 관리하는 경우가 이런 경우에 해당되며, 컴포넌트의 상태를 관리하려면 컴포넌트마다 독립된 서비스 인스턴스가 있어야 합니다.
 그러면 각 서비스 인스턴스는 해당 인스턴스에 연결된 컴포넌트에 대해서만 동작하며, 다른 컴포넌트의 영향을 배제할 수 있습니다.
-결국 컴포넌트와 서비스는 서로 연결된 인스턴스끼리 상호작용하며, 이런 관계를 *샌드박싱(sandboxing)*이라고 합니다.
+결국 컴포넌트와 서비스는 서로 연결된 인스턴스끼리 상호작용하는데, 이런 관계를 *샌드박싱(sandboxing)*이라고 합니다.
 
 
 {@a hero-bios-component}
@@ -354,8 +354,7 @@ A `HeroBioComponent` relies on a `HeroCacheService` to fetch, cache, and perform
 Clearly the three instances of the `HeroBioComponent` can't share the same `HeroCacheService`.
 They'd be competing with each other to determine which hero to cache.
 -->
-그러면 각각의 `HeroBioComponent`는 서로 다른 `HeroCacheService` 인스턴스를 사용합니다.
-캐싱하는 정보도 서로 다를 것입니다.
+그러면 각각의 `HeroBioComponent`는 서로 다른 `HeroCacheService` 인스턴스를 사용해야 하며, 캐싱하는 정보도 서로 독립적이어야 합니다.
 
 <!--
 Each `HeroBioComponent` gets its *own* `HeroCacheService` instance
@@ -375,14 +374,14 @@ The getter for the `hero` property pulls the cached hero from the service.
 And the template displays this data-bound property.
 -->
 부모 컴포넌트인 `HeroBiosComponent`와는 `heroId`로 연결됩니다.
-그리고 `HeroBioComponent`의 `ngOnInit`에서 서비스로 이 `id`를 보내서 히어로의 정보를 가져와서 캐싱합니다.
-`hero` 프로퍼티에 연결된 게터 함수는 서비스에서 가져온 히어로의 정보를 반환하며, 이 게터 함수는 템플릿과 데이터 바인딩되어 표시됩니다.
+그리고 `HeroBioComponent`의 `ngOnInit`에서 서비스로 이 `id`를 보내서 히어로의 정보를 서비스에 캐싱합니다.
+`hero` 프로퍼티에 연결된 게터 함수는 서비스에 캐싱된 히어로의 정보를 참조하며, 이 정보는 템플릿에 데이터 바인딩되어 표시됩니다.
 
 <!--
 Find this example in <live-example name="dependency-injection-in-action">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
 -->
-`HeroBioComponent`가 히어로 정보를 캐싱하는 예제는 <live-example name="dependency-injection-in-action">live code</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+`HeroBioComponent`가 히어로 정보를 캐싱하는 예제는 <live-example name="dependency-injection-in-action">live code</live-example>에서 확인해 보세요.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">
@@ -410,7 +409,7 @@ As you now know, dependencies can be registered at any level in the component hi
 When a component requests a dependency, Angular starts with that component's injector and walks up the injector tree
 until it finds the first suitable provider.  Angular throws an error if it can't find the dependency during that walk.
 -->
-컴포넌트에서 의존성 객체를 요구하면 Angular는 해당 컴포넌트의 인젝터부터 상위 인젝터로 올라가면서 의존성 객체에 해당하는 프로바이더를 찾습니다. 그리고 이 과정이 실패하면 에러를 발생시킵니다.
+컴포넌트에서 의존성 객체를 요구하면 Angular는 해당 컴포넌트의 인젝터부터 상위 인젝터로 올라가면서 의존성 객체에 해당하는 프로바이더를 찾습니다. 그리고 이 과정이 마지막 단계까지 실패하면 에러가 발생합니다.
 
 <!--
 You *want* this behavior most of the time.
@@ -418,9 +417,9 @@ But sometimes you need to limit the search and/or accommodate a missing dependen
 You can modify Angular's search behavior with the `@Host` and `@Optional` qualifying decorators,
 used individually or together.
 -->
-이 과정은 Angular 애플리케이션을 개발하면서 가장 많이 사용하게 될 것입니다.
+이 방식은 Angular 애플리케이션을 개발하면서 가장 많이 사용하는 작업입니다.
 하지만 때로는 의존성 객체를 찾는 과정을 제어해야 하는 경우가 있습니다.
-`@Host`와 `@Optional` 데코레이터는 이 때 사용됩니다. 두 데코레이터는 따로 사용할 수도 있고 함께 사용할 수도 있습니다.
+`@Host`와 `@Optional` 데코레이터는 이 때 사용합니다. 두 데코레이터는 따로 사용할 수도 있고 함께 사용할 수도 있습니다.
 
 <!--
 The `@Optional` decorator tells Angular to continue when it can't find the dependency.
@@ -475,9 +474,12 @@ Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` i
 placing it in the `<ng-content>` slot of the `HeroBioComponent` template:
 -->
 템플릿을 보면 `<hero-bio>` 태그 안에 `<hero-contact>` 엘리먼트가 추가되었습니다.
-그러면 Angular는 `HeroBioComponent` 템플릿에 정의된 `<ng-content>`에 `HeroContactComponent`를 표시하는데, 이것을 *프로젝션(projects)*이라고 하거나 *트랜스클루전(transcludes)*한다고 합니다.
+그러면 Angular는 `HeroBioComponent` 템플릿에 정의된 `<ng-content>`에 `HeroContactComponent`를 표시하는데, 이것을 *프로젝션(projects)*, 또는 *트랜스클루전(transcludes)* 이라고 합니다.
 
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (template)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (템플릿)" linenums="false">
 
 </code-example>
 
@@ -495,7 +497,7 @@ It looks like this, with the hero's telephone number from `HeroContactComponent`
 <!--
 Here's the `HeroContactComponent` which demonstrates the qualifying decorators:
 -->
-그리고 데코레이터는 `HeroContactComponent`에 이렇게 사용되었습니다:
+그리고 의존성 주입과 관련된 데코레이터들은 이렇게 사용되었습니다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" title="src/app/hero-contact.component.ts">
 
@@ -518,9 +520,9 @@ you get a reference to the cache service from the parent `HeroBioComponent`.
 Angular throws an error if the parent lacks that service, even if a component higher
 in the component tree happens to have it.
 -->
-`@Host()` 함수는 `heroCache` 프로퍼티에 주입되는 서비스의 인스턴스를 찾을 때 사용하는 인젝터의 범위를 `HeroBioComponent`까지로 제한합니다.
+`@Host()` 함수는 `heroCache` 프로퍼티에 주입되는 서비스의 인스턴스를 찾을 때 사용하는 인젝터의 범위를 `부모 컴포넌트인 HeroBioComponent`까지로 제한합니다.
 그리고 호스트 컴포넌트에서 서비스를 찾지 못하면 에러를 발생시킵니다.
-호스트 컴포넌트 위쪽에 서비스 인스턴스가 존재하더라도 이 인스턴스는 사용하지 않습니다.
+호스트 컴포넌트 위쪽에 서비스 인스턴스가 존재하더라도 이 인스턴스는 사용되지 않습니다.
 
 <!--
 A second `@Host()` function decorates the `loggerService` property.
@@ -535,7 +537,7 @@ Angular would throw an error if you hadn't also decorated the property with the 
 Thanks to `@Optional()`, Angular sets the `loggerService` to null and the rest of the component adapts.
 -->
 그러면 Angular가 의존성을 찾을 수 없기 때문에 에러를 발생시키지만, `@Optional()` 함수를 사용하면 에러가 발생하지 않습니다.
-`@Optional()` 데코레이터를 사용하면 Angular가 `LoggerService`를 찾지 못하더라도 에러를 발생시키지 않으며, `loggerService`에 `null` 값을 주입합니다.
+`@Optional()` 데코레이터를 사용하면 Angular가 `LoggerService`를 찾지 못하더라도 에러를 발생시키지 않으며, 대신 `loggerService` 프로퍼티에 `null` 값을 주입합니다.
 
 <!--
 Here's the `HeroBiosAndContactsComponent` in action.
@@ -580,7 +582,7 @@ On occasion you might need to access a component's corresponding DOM element.
 Although developers strive to avoid it, many visual effects and 3rd party tools, such as jQuery,
 require DOM access.
 -->
-때로는 컴포넌트의 DOM 엘리먼트에 접근해야 하는 경우가 있습니다. 개발자들이 원하는 것은 아니지만, 시각 효과를 주거나 jQuery와 같은 서드파티 라이브러리를 사용해야만 하는 때가 있다면 DOM에 접근해야 합니다.
+때로는 컴포넌트의 DOM 엘리먼트에 접근해야 하는 경우가 있습니다. 이런 상황을 개발자들이 원하는 것은 아니지만, 시각 효과를 주거나 jQuery와 같은 서드파티 라이브러리를 사용해야만 하는 경우가 있다면 DOM에 접근해야 합니다.
 
 <!--
 To illustrate, here's a simplified version of the `HighlightDirective` from
@@ -650,7 +652,7 @@ The parameter type serves as the injector lookup *token*.
 Angular passes this token to the injector and assigns the result to the parameter.
 Here's a typical example:
 -->
-좀 더 자세하게 이야기하면, 의존성으로 받을 객체는 생성자 인자에 타입을 지정하면 의존성 객체를 주입받을 수 있습니다.
+좀 더 자세하게 이야기하면 생성자 인자에 타입을 지정하면 이 타입에 해당하는 의존성 객체를 주입받을 수 있습니다.
 이 때 생성자에 지정하는 타입이 인젝터가 참조하는 *토큰* 입니다.
 Angular는 이 토큰에 해당하는 의존성 객체를 인젝터에서 찾아 반환합니다.
 예제와 함께 알아봅시다:
@@ -667,7 +669,7 @@ Angular는 이 토큰에 해당하는 의존성 객체를 인젝터에서 찾아
 Angular asks the injector for the service associated with the `LoggerService`
 and assigns the returned value to the `logger` parameter.
 -->
-Angular는 인젝터에게 `LoggerService`가 등록되어 있는지 확인하고, 프로바이더를 찾으면 인스턴스를 반환해서 `logger` 프로퍼티에 할당합니다.
+Angular는 인젝터에 `LoggerService`가 등록되어 있는지 확인하고, 프로바이더를 찾으면 인스턴스를 반환해서 `logger` 프로퍼티에 할당합니다.
 
 <!--
 Where did the injector get that value?
@@ -676,9 +678,9 @@ If it doesn't, it may be able to make one with the help of a ***provider***.
 A *provider* is a recipe for delivering a service associated with a *token*.
 -->
 이때 인젝터는 어디에서 인스턴스를 가져올까요?
-인스턴스는 이전에 생성되어 이미 인젝터가 갖고 있을 수도 있습니다.
-그리고 인스턴스가 아직 없다면 ***프로바이더***를 사용해서 인스턴스를 새로 생성합니다.
-그래서 *프로바이더*는 *토큰*으로 구분하는 서비스를 만드는 조립설명서라고 볼 수 있습니다.
+인스턴스는 이전에 생성되어 인젝터가 이미 갖고 있을 수도 있습니다.
+인스턴스가 아직 없다면 ***프로바이더***를 사용해서 인스턴스를 새로 생성합니다.
+그래서 *프로바이더*는 *토큰*으로 구별되는 서비스를 만드는 조립설명서라고 볼 수 있습니다.
 
 <div class="alert is-helpful">
 
@@ -719,7 +721,7 @@ usually in the `@Injectable` decorator of the service, `providers` array of the 
 <!--
 The simple way of defining providers in the `@Injectable` decorator of the class is recommended.
 -->
-프로바이더를 등록할 때 가장 권장하는 방법은 클래스에 `@Injectable` 데코레이터를 사용하는 것입니다.
+프로바이더를 등록할 때 가장 좋은 방법은 서비스 클래스에 `@Injectable` 데코레이터를 사용하는 것입니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.0.ts" linenums="false">
 </code-example>
@@ -741,7 +743,7 @@ It's that simple because the most common injected service is an instance of a cl
 But not every dependency can be satisfied by creating a new instance of a class.
 You need other ways to deliver dependency values and that means you need other ways to specify a provider.
 -->
-의존성으로 주입하는 서비스는 대부분 클래스로 정의되기 때문에 이렇게만 사용해도 간단합니다.
+의존성으로 주입하는 서비스는 대부분 클래스로 정의되기 때문에 간단하게 등록할 수 있습니다.
 하지만 모든 의존성 객체를 클래스로 생성하지는 않습니다.
 클래스를 사용하지 않는 프로바이더는 조금 다른 방식을 사용해야 합니다.
 
@@ -794,19 +796,19 @@ The *definition* object has a required property that specifies how to create the
 <!--
 #### useValue&mdash;the *value provider*
 -->
-#### useValue&mdash;*값 프로바이더*
+#### useValue&mdash;*값(value) 프로바이더*
 
 <!--
 Set the `useValue` property to a ***fixed value*** that the provider can return as the service instance (AKA, the "dependency object").
 -->
-`useValue` 프로퍼티를 사용하면 ***고정된 값***을 프로바이더에 등록할 수 있습니다.
+`useValue` 프로퍼티를 사용하면 ***상수 값***을 프로바이더에 등록할 수 있습니다.
 
 <!--
 Use this technique to provide *runtime configuration constants* such as website base addresses and feature flags.
 You can use a *value provider* in a unit test to replace a production service with a fake or mock.
 -->
-이 프로퍼티는 웹사이트 주소나 플래그값과 같이 *실행 시점에 필요한 상수*를 정의할 때 주로 사용합니다.
-그리고 서비스 클래스를 유닛 테스트할 때 목 로직을 적용할 때도 사용합니다.
+이 프로퍼티는 웹사이트 주소나 플래그 값과 같이 *실행 시점에 필요한 상수*를 정의할 때 주로 사용합니다.
+서비스 클래스를 유닛 테스트할 때 목 로직을 적용할 때도 사용합니다.
 
 <!--
 The `HeroOfTheMonthComponent` example has two *value providers*.
@@ -825,7 +827,7 @@ the second specifies a literal string resource:
 The `Hero` provider token is a class which makes sense because the value is a `Hero`
 and the consumer of the injected hero would want the type information.
 -->
-`Hero` 프로바이더 토큰에는 클래스가 사용되었습니다. 그래서 생성자의 `Hero` 타입이 지정된 곳에 이 클래스가 사용되는 것이 자연스럽습니다.
+`Hero` 프로바이더 토큰에는 클래스가 사용되었습니다. 그래서 생성자의 `Hero` 타입이 지정된 곳에는 자연스럽게 이 클래스가 사용됩니다.
 
 <!--
 The `TITLE` provider token is *not a class*.
@@ -842,7 +844,7 @@ The value of a *value provider* must be defined *now*. You can't create the valu
 Obviously the title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file:
 -->
-*값 프로바이더*의 값은 *이 시점에* 지정되어야 하며, 프로바이더가 등록된 이후에 지정될 수 없습니다.
+*값 프로바이더*의 값은 *이 시점에* 결정되어야 하며, 프로바이더가 등록된 이후에는 변경할 수 없습니다.
 물론 이 예제처럼 문자열 리터럴을 직접 지정할 수도 있습니다.
 그리고 `someHero`와 같이 다른 파일에서 생성한 객체를 사용할 수도 있습니다:
 
@@ -854,7 +856,7 @@ The `someHero` variable in this example was set earlier in the file:
 <!--
 The other providers create their values *lazily* when they're needed for injection.
 -->
-이런 경우가 아니라면 의존성 객체는 *필요한 시점에* 생성됩니다.
+이런 경우가 아니라면 의존성 객체는 *의존성 주입이 요청된 시점에* 생성됩니다.
 
 
 {@a useclass}
@@ -876,12 +878,12 @@ The alternative could implement a different strategy, extend the default class,
 or fake the behavior of the real class in a test case.
 -->
 이 방식은 클래스를 의존성으로 주입할 때 일반적으로 사용하는 방식입니다.
-그리고 특정 서비스 클래스를 다른 클래스로 대체하거나, 테스트할 때 목업 클래스로 대체할 때도 사용합니다.
+특정 서비스 클래스를 다른 클래스로 대체하거나 테스트할 때 목업 클래스로 대체할 때도 사용합니다.
 
 <!--
 Here are two examples in the `HeroOfTheMonthComponent`:
 -->
-`HeroOfTheMonthComponent`에 사용된 방식을 봅시다:
+`HeroOfTheMonthComponent`에 사용된 코드를 봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
@@ -893,8 +895,8 @@ The first provider is the *de-sugared*, expanded form of the most typical case i
 class to be created (`HeroService`) is also the provider's dependency injection token.
 It's in this long form to de-mystify the preferred short form.
 -->
-첫번째 프로바이더는 의존성 주입 토큰을 사용하는 일반적인 방식이며, 단축 표현을 사용하지 않고 원래 문법을 그대로 사용한 표현입니다.
-하지만 이 표현을 매번 사용하는 것은 번거롭기 때문에 간단한 표현을 사용하는 것이 더 좋습니다.
+첫번째 프로바이더는 의존성 주입 토큰을 사용하는 일반적인 방식이며, 단축 표현을 사용하지 않고 원래 문법을 그대로 사용했습니다.
+하지만 이 표현을 매번 사용하는 것은 번거롭기 때문에 축약 문법을 사용하는 것이 더 좋습니다.
 
 <!--
 The second provider substitutes the `DateLoggerService` for the `LoggerService`.
@@ -913,7 +915,7 @@ This component and its tree of child components receive the `DateLoggerService` 
 Components outside the tree continue to receive the original `LoggerService` instance.
 -->
 이 컴포넌트를 포함한 하위 컴포넌트들은 `DateLoggerService` 인스턴스를 주입받습니다.
-그리고 이 컴포넌트 밖에 있는 다른 컴포넌트는 `LoggerService` 인스턴스를 여전히 주입받습니다.
+그리고 이 컴포넌트 밖에 있는 다른 컴포넌트는 여전히 `LoggerService` 인스턴스를 주입받습니다.
 
 </div>
 
@@ -964,8 +966,8 @@ You might want to shrink that API surface to just the members you actually need.
 Here the `MinimalLogger` [*class-interface*](guide/dependency-injection-in-action#class-interface) reduces the API to two members:
 -->
 `LoggerService`에는 수많은 API가 있다고 합시다.
-그런데 이 API 중에서 실제로 필요한 몇가지 API만 사용하려고 합니다.
-그러면 다음과 같은 `MinimalLogger` [*클래스 인터페이스*](guide/dependency-injection-in-action#class-interface)를 사용해서 API를 2개만 사용하도록 정의할 수 있습니다:
+그런데 이 컴포넌트에서 실제로 사용하는 API는 몇 개 되지 않습니다.
+그러면 다음과 같은 `MinimalLogger` [*클래스 인터페이스*](guide/dependency-injection-in-action#class-interface)를 사용해서 API 2개만 사용하도록 정의할 수 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="src/app/minimal-logger.service.ts" linenums="false">
 
@@ -1031,7 +1033,7 @@ The following image, which displays the logging date, confirms the point:
 The `useFactory` provider creates a dependency object by calling a factory function
 as in this example.
 -->
-`useFactory`를 사용하면 팩토리 함수를 실행한 결과를 의존성으로 주입할 수 있습니다.
+`useFactory`를 사용하면 팩토리 함수가 실행된 결과를 의존성으로 주입할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
@@ -1042,7 +1044,7 @@ as in this example.
 Use this technique to ***create a dependency object***
 with a factory function whose inputs are some ***combination of injected services and local state***.
 -->
-이 방식은 어떤 입력값에 따라 팩토리 함수를 실행해서 **서비스를 조합하거나 현재 상태를 바탕으로** ***의존성 객체를*** 생성해야 할 때 사용합니다.
+이 방식은 어떤 입력값에 따라 팩토리 함수를 실행해서 **서비스를 조합하거나 현재 상태를 참조해서** ***의존성 객체를*** 생성할 때 사용합니다.
 
 <!--
 The *dependency object* doesn't have to be a class instance. It could be anything.
@@ -1073,7 +1075,7 @@ The true provider factory function is the function that `runnersUpFactory` retur
 <!--
 That returned function takes a winning `Hero` and a `HeroService` as arguments.
 -->
-이 함수는 이달의 우승자 `Hero`와 `HeroService`를 참고해서 함수를 반환합니다.
+이 함수는 이달의 우승자 `Hero` 객체와 `HeroService`를 참고해서 함수를 반환합니다.
 
 <!--
 Angular supplies these arguments from injected values identified by
@@ -1081,7 +1083,7 @@ the two *tokens* in the `deps` array.
 The two `deps` values are *tokens* that the injector uses
 to provide these factory function dependencies.
 -->
-그러면 Angular는 이 함수를 실행하기 위해 두 개의 *토큰*이 더 필요하며, 이 토큰들은 `deps` 배열에 지정합니다.
+그러면 Angular는 이 함수를 실행하기 위해 두 개의 *토큰*이 더 필요한데, 이 토큰은 `deps` 배열에 지정합니다.
 `deps` 배열에 지정하는 두 토큰은 인젝터가 팩토리 함수를 실행하기 위해 필요한 의존성 객체입니다.
 
 <!--
@@ -1100,7 +1102,7 @@ Look at the <live-example name="dependency-injection-in-action"></live-example>
 for the full source code.
 -->
 이 팩토리 함수는 `HeroService`에서 히어로의 목록을 가져오며, 이 목록 중에서 `2`회차 우승자에 해당하는 히어로의 이름을 최종 선택합니다.
-전체 코드는 <live-example name="dependency-injection-in-action"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+전체 코드는 <live-example name="dependency-injection-in-action"></live-example>에서 확인할 수 있습니다.
 
 </div>
 
@@ -1112,20 +1114,20 @@ for the full source code.
 <!--
 ## Provider token alternatives: the *class-interface* and *InjectionToken*
 -->
-## 프로바이더 토큰 대체하기: *클래스 인터페이스*, *InjectionToken*
+## 프로바이더 토큰 대체하기
 
 <!--
 Angular dependency injection is easiest when the provider *token* is a class
 that is also the type of the returned dependency object, or what you usually call the *service*.
 -->
-Angular 의존성 주입은 프로바이더로 등록하는 *토큰*이 클래스이며, 이 클래스 타입을 그대로 주입할 때 가장 간단합니다. 이 방법은 *서비스*를 주입할 때 일반적으로 사용하는 방법입니다.
+Angular 의존성 주입은 프로바이더로 등록하는 *토큰*이 클래스이며 이 클래스 타입을 그대로 주입할 때 가장 간단합니다. 이 방법은 *서비스*를 주입할 때 일반적으로 사용하는 방법입니다.
 
 <!--
 But the token doesn't have to be a class and even when it is a class,
 it doesn't have to be the same type as the returned object.
 That's the subject of the next section.
 -->
-하지만 토큰이 꼭 클래스일 필요는 없습니다. 심지어 의존성으로 주입되는 객체가 클래스이더라도 토큰은 클래스가 아니어도 되고, 의존성으로 주입되는 객체와 다른 형태의 객체여도 됩니다.
+하지만 토큰이 꼭 클래스일 필요는 없습니다. 심지어 의존성으로 주입되는 객체가 클래스이더라도 토큰은 클래스가 아니어도 되고, 의존성으로 주입되는 객체와 다른 타입의 객체여도 됩니다.
 이 내용에 대해 알아봅시다.
 
 {@a class-interface}
@@ -1254,7 +1256,7 @@ They're better represented by a token that is both unique and symbolic,
 a JavaScript object that has a friendly name but won't conflict with
 another token that happens to have the same name.
 -->
-이 객체들은 인터페이스로 존재하는 것이 아니며, 클래스로 표현하기에도 적절하지 않습니다.
+이 객체들은 인터페이스로 존재하는 것이 아니며 클래스로 표현하기에도 적절하지 않습니다.
 그래서 이 객체를 프로바이더로 등록하려면 다른 토큰과 겹치지 않는 이름의 심볼로 만드는 것이 좋습니다.
 
 <!--
@@ -1263,7 +1265,7 @@ You encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
 -->
 `InjectionToken`은 이런 경우에 사용합니다.
-그리고 인젝션 토큰은 *이달의 히어로* 예제 코드에서 *title* 값 프로바이더와 *runnersUp* 팩토리 프로바이더에 이미 사용되었습니다.
+그리고 인젝션 토큰은 *이달의 히어로* 예제 코드에서 `TITLE` 값 프로바이더와 `RUNNERS_UP` 팩토리 프로바이더에 이미 사용되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
@@ -1349,9 +1351,9 @@ Rather than modify the original component, sub-class it and create a
 `SortedHeroesComponent` that sorts the heroes before presenting them.
 The `SortedHeroesComponent` lets the base class fetch the heroes.
 -->
-사용자는 히어로의 목록을 알파벳 순서로 보고싶다고 합시다.
+사용자가 히어로의 목록을 알파벳 순서로 보고싶어 한다고 합시다.
 그리고 이 예제에서는 히어로의 목록을 정렬하는 로직은 원래 컴포넌트에 작성하지 않고 자식 클래스인 `SortedHeroesComponent`에 작성하는데, 화면에 표시되기 전에 히어로의 목록을 정렬하려고 합니다.
-그러면 `SortedHeroesComponent`에서는 히어로의 목록을 가져오는 로직부터 작성해야 합니다.
+그러면 `SortedHeroesComponent`에는 히어로의 목록을 가져오는 로직부터 작성해야 합니다.
 
 <!--
 Unfortunately, Angular cannot inject the `HeroService` directly into the base class.
@@ -1373,7 +1375,7 @@ so you'd be sorting the heroes array *before they arrived*. That produces a nast
 -->
 이제 `afterGetHeroes()` 메소드를 구현해 봅시다.
 히어로의 목록을 정렬하는 로직은 `SortedHeroesComponent`의 `ngOnInit()`에 구현하는 것이 낫지 않을까 생각이 들 수도 있습니다.
-하지만 이 경우는 Angular가 부모 클래스의 `ngOnInit`을 실행하기 전에 자식 클래스의 `ngOnInit` 을 먼저 실행하기 때문에, 히어로의 목록을 가져오기도 전에 정렬 로직이 실행되게 됩니다. 결국 생각했던 대로 동작하지 않습니다.
+하지만 이 경우는 Angular가 부모 클래스의 `ngOnInit`을 실행하기 전에 자식 클래스의 `ngOnInit` 을 먼저 실행하기 때문에, 히어로의 목록을 가져오기도 전에 정렬 로직이 실행되게 됩니다. `ngOnInit`에는 구현할 수 없습니다.
 
 <!--
 Overriding the base class's `afterGetHeroes()` method solves the problem.
@@ -1409,8 +1411,8 @@ Obtaining a component reference is a bit tricky in Angular.
 Although an Angular application is a tree of components,
 there is no public API for inspecting and traversing that tree.
 -->
-하지만 컴포넌트 참조는 쉽지 않습니니다.
-Angular 애플리케이션이 컴포넌트의 트리로 구성되지만, 이 트리를 탐색하는 API는 제공되지 않기 때문입니다.
+컴포넌트 참조는 쉽지 않습니니다.
+Angular 애플리케이션이 컴포넌트의 트리로 구성되지만 이 트리를 탐색하는 API는 제공되지 않기 때문입니다.
 
 <!--
 There is an API for acquiring a child reference.
@@ -1418,7 +1420,7 @@ Check out `Query`, `QueryList`, `ViewChildren`, and `ContentChildren`
 in the [API Reference](api/).
 -->
 자식 컴포넌트를 참조하는 API는 여러가지가 있습니다.
-[API 참조](api/) 문서에서 `Query`, `QueryList`, `ViewChildren`, `ContentChildren`을 참고하세요.
+[API](api/) 문서의 `Query`, `QueryList`, `ViewChildren`, `ContentChildren`을 참고하세요.
 
 <!--
 There is no public API for acquiring a parent reference.
@@ -1426,7 +1428,7 @@ But because every component instance is added to an injector's container,
 you can use Angular dependency injection to reach a parent component.
 -->
 하지만 부모 컴포넌트를 참조하는 API는 따로 없습니다.
-왜냐하면 모든 컴포넌트의 인스턴스는 인젝터의 컨테이너에 관리되는데, 컴포넌트에서 의존성 주입을 활용할 때 부모 컴포넌트를 참조할 수 있기 때문에 별도의 API가 없어도 부모 컴포넌트를 참조할 수 있습니다.
+왜냐하면 모든 컴포넌트의 인스턴스는 인젝터의 컨테이너에 관리되는데, 컴포넌트에서 의존성 주입을 활용할 때 부모 컴포넌트를 참조할 수 있기 때문에 별도의 API가 없어도 부모 컴포넌트를 참조할 수 있기 때문입니다.
 
 <!--
 This section describes some techniques for doing that.
@@ -1475,14 +1477,14 @@ is there for safety,
 the <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is set.
 -->
-이 코드에는 [@Optional](guide/dependency-injection-in-action#optional)이 사용되었지만 AlexComponent는 이미 앱모듈에 등록되었기 때문에 정상적으로 주입됩니다. <live-example name="dependency-injection-in-action"></live-example>에서 예제가 동작하는 것을 직접 확인해 보세요.
+이 코드에는 [@Optional](guide/dependency-injection-in-action#optional)이 사용되었지만 AlexComponent가 이미 앱모듈에 등록되었기 때문에 정상적으로 주입됩니다. <live-example name="dependency-injection-in-action"></live-example>에서 예제가 동작하는 것을 직접 확인해 보세요.
 
 {@a base-parent}
 
 <!--
 ### Cannot find a parent by its base class
 -->
-### 부모 클래스로는 참조할 수 없습니다.
+### 부모 클래스가 상속받은 클래스로는 참조할 수 없습니다.
 
 <!--
 What if you *don't* know the concrete parent component class?
@@ -1497,7 +1499,7 @@ directly into its parent instrument as changing market data streams by.
 -->
 재사용을 염두에 두고 만든 컴포넌트라면 여러 인스턴스가 같은 계층에 존재할 수도 있습니다.
 금융 어플에서 뉴스를 표시하는 컴포넌트를 생각해 보세요.
-이 컴포넌트는 부모 컴포넌트를 계속 참조하면서 부모 컴포넌트의 내용을 지속적으로 반영하게 하려고 합니다.
+이 컴포넌트는 부모 컴포넌트를 계속 참조하면서 부모 컴포넌트의 내용을 지속적으로 반영하려고 합니다.
 
 <!--
 The app probably defines more than a dozen financial instrument components.
@@ -1505,7 +1507,7 @@ If you're lucky, they all implement the same base class
 whose API your `NewsComponent` understands.
 -->
 이 때 사용하는 컴포넌트가 여러 종류일 수도 있습니다.
-하지만 운이 좋게도 이 컴포넌트들의 부모 클래스는 모두 같으며, `NewsComponent`는 부모 클래스의 API를 이미 알고 있다고 합시다.
+하지만 운이 좋게도 이 컴포넌트들의 부모 클래스는 모두 같으며, `NewsComponent`가 부모 클래스의 API를 이미 알고 있다고 합시다.
 
 <div class="alert is-helpful">
 
@@ -1623,7 +1625,7 @@ the same way you've done it before:
 <!--
 Here's *Alex* and family in action:
 -->
-그러면 *Alex* 컴포넌트는 다음과 같이 동작합니다:
+이제 *Alex* 컴포넌트는 다음과 같이 동작합니다:
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/alex.png" alt="Alex in action">
@@ -1704,7 +1706,7 @@ It's identical to *Carol*'s constructor except for the additional `@SkipSelf` de
 1. It tells the injector to start its search for a `Parent` dependency in a component *above* itself,
 which *is* what parent means.
 -->
-1. `Parent` 타입의 의존성 객체는 바로 위 부모가 아니라 *그 위쪽에서* 찾으라고 인젝터에게 알립니다.
+1. `Parent` 타입의 의존성 객체는 바로 위 부모가 아니라 *더 위쪽에서* 찾으라고 인젝터에게 알립니다.
 
 <!--
 2. Angular throws a cyclic dependency error if you omit the `@SkipSelf` decorator.
@@ -1751,7 +1753,7 @@ The `name` property is the only member of a parent component that a child compon
 Such a narrow interface helps decouple the child component class from its parent components.
 -->
 `Parent` *클래스 인터페이스*에는 `name` 프로퍼티가 선언되어 있지만 이 프로퍼티는 *실제로 구현되지 않았습니다*.
-`name` 프로퍼티는 부모 컴포넌트의 멤버로만 정의되었으며, 자식 컴포넌트가 상속한 이후에 사용할 수 있습니다.
+`name` 프로퍼티는 부모 컴포넌트의 멤버로만 정의되었으며 자식 컴포넌트가 상속한 이후에 사용할 수 있습니다.
 이렇게 상속 과정에 인터페이스를 사용하면 부모 컴포넌트와 자식 컴포넌트의 결합도를 줄일 수 있습니다.
 
 <!--
@@ -1772,7 +1774,7 @@ Doing so adds clarity to the code.  But it's not technically necessary.
 Although the `AlexComponent` has a `name` property, as required by its `Base` class,
 its class signature doesn't mention `Parent`:
 -->
-문법적으로 꼭 이렇게 작성해야 하는 것은 아니지만, 이 방식으로 작성하는 것이 코드가 더 간단합니다.
+문법적으로 꼭 이렇게 작성해야 하는 것은 아니지만, 이 방식으로 작성해야 코드가 더 간단합니다.
 그리고 `AlexComponent`에는 `Base` 클래스와 비슷하게 `name` 프로퍼티가 있지만 `AlexComponent`는 `Parent` 클래스를 확장한 것이 아니라 `Base` 클래스를 상속하도록 구현했습니다:
 
 <!--
@@ -1791,7 +1793,7 @@ its class signature doesn't mention `Parent`:
 The `AlexComponent` *should* implement `Parent` as a matter of proper style.
 It doesn't in this example *only* to demonstrate that the code will compile and run without the interface
 -->
-`AlexComponent`를 정의할 때 `Parent`를 사용해야 하는지에 문제는 개발자의 취향에 따른 문제입니다. 어차피 인터페이스는 최종 빌드된 코드에 존재하지 않습니다.
+`AlexComponent`를 정의할 때 `Parent` 클래스를 사용해야 하는지에 대한 문제는 개발자의 취향에 따른 것입니다. 어차피 인터페이스는 최종 빌드된 코드에 존재하지 않습니다.
 
 </div>
 
@@ -1828,7 +1830,7 @@ You can extract that logic into a helper function like this:
 <!--
 Now you can add a simpler, more meaningful parent provider to your components:
 -->
-그러면 컴포넌트에서 프로바이더를 등록할 때 좀 더 간단하며 가독성 좋은 코드를 사용할 수 있습니다:
+그러면 컴포넌트에 프로바이더를 등록하는 코드도 더 간단해집니다:
 
 <code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
@@ -1840,7 +1842,7 @@ You can do better. The current version of the helper function can only alias the
 The application might have a variety of parent types, each with its own *class-interface* token.
 -->
 이 코드는 더 개선할 수 있습니다. 지금까지 작성한 헬퍼 함수는 별칭이 `Parent` *클래스 인터페이스*로 고정되어 있기 때문입니다.
-애플리케이션에서 사용하는 부모 컴포넌트의 타입은 여러개일 수 있으며, 이 타입을 각각 *클래스 인터페이스* 토큰으로 사용하도록 개선해 봅시다.
+애플리케이션에서 사용하는 부모 컴포넌트의 타입은 변경될 수 있기 때문에, 이 타입을 각각 *클래스 인터페이스* 토큰으로 사용하도록 개선해 봅시다.
 
 <!--
 Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent *class-interface*.
@@ -1884,8 +1886,8 @@ You're in a bind when class 'A' refers to class 'B' and 'B' refers to 'A'.
 One of them has to be defined first.
 -->
 사실 이 문제는 *한 파일에 한 클래스만* 선언했다면 특별히 문제가 되지 않습니다.
-하지만 불가피하게 순환참조가 발생할 수도 있습니다.
-클래스 'A'가 클래스 'B'를 참조하는데 클래스 'B'가 클래스 'A'를 참조하는 경우가 이런 경우이며, 둘 중에 하나는 반드시 먼저 선언되어야 합니다.
+하지만 그렇지 않다면 순환참조가 발생할 수 있습니다.
+클래스 A가 클래스 B를 참조하는데 클래스 B가 클래스 A를 다시 참조하는 경우가 이런 경우이며, 둘 중에 하나는 반드시 먼저 선언되어야 합니다.
 
 <!--
 The Angular `forwardRef()` function creates an *indirect* reference that Angular can resolve later.
