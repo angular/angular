@@ -23,7 +23,7 @@ export function toNumbers(value: string): number[] {
  *
  * @param a The 'left hand' array in the comparison test
  * @param b The 'right hand' in the comparison test
- * @returns {-1|0|1} The comparison result: 1 if a is greater, -1 if b is greater, 0 is the two
+ * @returns The comparison result: 1 if a is greater, -1 if b is greater, 0 is the two
  * arrays are equals
  */
 export function compareNumbers(a: number[], b: number[]): -1|0|1 {
@@ -77,7 +77,7 @@ export function isVersionBetween(version: string, low: string, high?: string): b
  *
  * @param v1 The 'left hand' version in the comparison test
  * @param v2 The 'right hand' version in the comparison test
- * @returns {-1|0|1} The comparison result: 1 if v1 is greater, -1 if v2 is greater, 0 is the two
+ * @returns The comparison result: 1 if v1 is greater, -1 if v2 is greater, 0 is the two
  * versions are equals
  */
 export function compareVersions(v1: string, v2: string): -1|0|1 {
