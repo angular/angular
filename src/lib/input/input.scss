@@ -152,6 +152,16 @@ select.mat-input-element {
   &::-moz-focus-inner {
     border: 0;
   }
+
+  // As a part of its user agent styling, IE11 has a blue box inside each focused
+  // `select` element which we have to reset. Note that this needs to be in its own
+  // selector, because having it together with another one will cause other browsers
+  // to ignore it.
+  &::-ms-value {
+    // We need to reset the `color` as well, because IE sets it to white.
+    color: inherit;
+    background: none;
+  }
 }
 
 .mat-form-field-type-mat-native-select {
