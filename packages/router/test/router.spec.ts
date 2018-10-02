@@ -13,8 +13,8 @@ import {of } from 'rxjs';
 import {Routes} from '../src/config';
 import {ChildActivationStart} from '../src/events';
 import {checkGuards as checkGuardsOperator} from '../src/operators/check_guards';
-import {PreActivation} from '../src/pre_activation';
-import {Router} from '../src/router';
+import {resolveData as resolveDataOperator} from '../src/operators/resolve_data';
+import {NavigationTransition, Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
 import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
@@ -538,15 +538,15 @@ describe('Router', () => {
 
 function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
-  const p = new PreActivation(future, curr, injector);
-  p.initialize(new ChildrenOutletContexts());
-  p.resolveData('emptyOnly').subscribe(check, (e) => { throw e; });
+  of ({ targetSnapshot: future, currentSnapshot: curr } as Partial<NavigationTransition>)
+      .pipe(resolveDataOperator(new ChildrenOutletContexts(), 'emptyOnly', injector))
+      .subscribe(check, (e) => { throw e; });
 }
 
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
     check: (result: boolean) => void): void {
-  of ({ targetSnapshot: future, currentSnapshot: curr } as any)
+  of ({ targetSnapshot: future, currentSnapshot: curr } as Partial<NavigationTransition>)
       .pipe(checkGuardsOperator(new ChildrenOutletContexts(), injector))
       .subscribe(t => check(!!t.guardsResult), (e) => { throw e; });
 }
