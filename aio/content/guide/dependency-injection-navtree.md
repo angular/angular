@@ -112,7 +112,7 @@ The `CraigComponent` tries to inject `Base` into its `alex` constructor paramete
 
 
 
-Unfortunately, this does'nt work.
+Unfortunately, this doesn't work.
 The <live-example name="dependency-injection-in-action"></live-example>
 confirms that the `alex` parameter is null.
 *You cannot inject a parent by its base class.*
