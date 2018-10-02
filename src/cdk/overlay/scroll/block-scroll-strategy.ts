@@ -29,7 +29,7 @@ export class BlockScrollStrategy implements ScrollStrategy {
   /** Blocks page-level scroll while the attached overlay is open. */
   enable() {
     if (this._canBeEnabled()) {
-      const root = this._document.documentElement;
+      const root = this._document.documentElement!;
 
       this._previousScrollPosition = this._viewportRuler.getViewportScrollPosition();
 
@@ -49,8 +49,8 @@ export class BlockScrollStrategy implements ScrollStrategy {
   /** Unblocks page-level scroll while the attached overlay is open. */
   disable() {
     if (this._isEnabled) {
-      const html = this._document.documentElement;
-      const body = this._document.body;
+      const html = this._document.documentElement!;
+      const body = this._document.body!;
       const previousHtmlScrollBehavior = html.style['scrollBehavior'] || '';
       const previousBodyScrollBehavior = body.style['scrollBehavior'] || '';
 
@@ -75,7 +75,7 @@ export class BlockScrollStrategy implements ScrollStrategy {
     // Since the scroll strategies can't be singletons, we have to use a global CSS class
     // (`cdk-global-scrollblock`) to make sure that we don't try to disable global
     // scrolling multiple times.
-    const html = this._document.documentElement;
+    const html = this._document.documentElement!;
 
     if (html.classList.contains('cdk-global-scrollblock') || this._isEnabled) {
       return false;

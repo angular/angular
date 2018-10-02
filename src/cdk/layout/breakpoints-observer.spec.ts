@@ -133,25 +133,25 @@ describe('BreakpointObserver', () => {
   }));
 });
 
-export class FakeMediaQueryList implements MediaQueryList {
+export class FakeMediaQueryList {
   /** The callback for change events. */
-  addListenerCallback?: (mql: MediaQueryList) => void;
+  addListenerCallback?: (mql: MediaQueryListEvent) => void;
 
   constructor(public matches, public media) {}
 
   /** Toggles the matches state and "emits" a change event. */
   setMatches(matches: boolean) {
     this.matches = matches;
-    this.addListenerCallback!(this);
+    this.addListenerCallback!(this as any);
   }
 
   /** Registers the callback method for change events. */
-  addListener(callback: (mql: MediaQueryList) => void) {
+  addListener(callback: (mql: MediaQueryListEvent) => void) {
     this.addListenerCallback = callback;
   }
 
-  /** Noop, but required for implementing MediaQueryList. */
-  removeListener() {}
+  // Noop removal method for testing.
+  removeListener() { }
 }
 
 @Injectable()

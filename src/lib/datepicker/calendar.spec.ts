@@ -1,4 +1,4 @@
-import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Directionality} from '@angular/cdk/bidi';
 import {ENTER, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {
   dispatchFakeEvent,
@@ -15,7 +15,6 @@ import {MatDatepickerIntl} from './datepicker-intl';
 import {MatDatepickerModule} from './datepicker-module';
 
 describe('MatCalendar', () => {
-  let dir: {value: Direction};
   let zone: MockNgZone;
 
   beforeEach(async(() => {
@@ -34,7 +33,7 @@ describe('MatCalendar', () => {
       providers: [
         MatDatepickerIntl,
         {provide: NgZone, useFactory: () => zone = new MockNgZone()},
-        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
+        {provide: Directionality, useFactory: () => ({value: 'ltr'})},
       ],
     });
 

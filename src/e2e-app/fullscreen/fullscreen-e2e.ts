@@ -37,8 +37,8 @@ export class FullscreenE2E {
   exitFullscreen() {
     if (document.exitFullscreen) {
       document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen();
     } else if ((document as any).mozExitFullScreen) {
       (document as any).mozExitFullScreen();
     } else if ((document as any).msExitFullScreen) {

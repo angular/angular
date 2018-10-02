@@ -568,7 +568,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
         // If a transition is short enough, the browser might not fire the `transitionend` event.
         // Since we know how long it's supposed to take, add a timeout with a 50% buffer that'll
         // fire if the transition hasn't completed when it was supposed to.
-        const timeout = setTimeout(handler, duration * 1.5);
+        const timeout = setTimeout(handler as Function, duration * 1.5);
         this._preview.addEventListener('transitionend', handler);
       });
     });
@@ -685,7 +685,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       while (currentElement) {
         // IE doesn't support `matches` so we have to fall back to `msMatchesSelector`.
         if (currentElement.matches ? currentElement.matches(selector) :
-            currentElement.msMatchesSelector(selector)) {
+            (currentElement as any).msMatchesSelector(selector)) {
           return currentElement;
         }
 

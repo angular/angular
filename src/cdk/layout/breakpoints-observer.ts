@@ -98,6 +98,8 @@ export class BreakpointObserver implements OnDestroy {
     }
 
     const mql: MediaQueryList = this.mediaMatcher.matchMedia(query);
+    let queryListener;
+
     // Create callback for match changes and add it is as a listener.
     const queryObservable = fromEventPattern<MediaQueryList>(
       // Listener callback methods are wrapped to be placed back in ngZone. Callbacks must be placed
@@ -106,11 +108,12 @@ export class BreakpointObserver implements OnDestroy {
       // have MediaQueryList inherit from EventTarget, which causes inconsistencies in how Zone.js
       // patches it.
       (listener: Function) => {
-        mql.addListener((e: MediaQueryList) => this.zone.run(() => listener(e)));
+        // TODO(jelbourn): change this `any` to `MediaQueryListEvent` once Google has upgraded to
+        // TypeScript 3.1 (the type is unavailable before then).
+        queryListener = (e: any) => this.zone.run(() => listener(e));
+        mql.addListener(queryListener);
       },
-      (listener: Function) => {
-        mql.removeListener((e: MediaQueryList) => this.zone.run(() => listener(e)));
-      })
+      () => mql.removeListener(queryListener))
       .pipe(
         takeUntil(this._destroySubject),
         startWith(mql),

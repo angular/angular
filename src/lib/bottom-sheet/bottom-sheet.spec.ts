@@ -506,7 +506,7 @@ describe('MatBottomSheet', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.tagName)
+      expect(document.activeElement!.tagName)
           .toBe('INPUT', 'Expected first tabbable element (input) in the sheet to be focused.');
     }));
 
@@ -519,7 +519,7 @@ describe('MatBottomSheet', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.tagName).not.toBe('INPUT');
+      expect(document.activeElement!.tagName).not.toBe('INPUT');
     }));
 
     it('should re-focus trigger element when bottom sheet closes', fakeAsync(() => {
@@ -534,18 +534,18 @@ describe('MatBottomSheet', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.id)
+      expect(document.activeElement!.id)
           .not.toBe('bottom-sheet-trigger', 'Expected the focus to change when sheet was opened.');
 
       bottomSheetRef.dismiss();
-      expect(document.activeElement.id).not.toBe('bottom-sheet-trigger',
+      expect(document.activeElement!.id).not.toBe('bottom-sheet-trigger',
           'Expcted the focus not to have changed before the animation finishes.');
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       tick(500);
 
-      expect(document.activeElement.id).toBe('bottom-sheet-trigger',
+      expect(document.activeElement!.id).toBe('bottom-sheet-trigger',
           'Expected that the trigger was refocused after the sheet is closed.');
 
       document.body.removeChild(button);

@@ -30,7 +30,7 @@ let rtlScrollAxisType: RtlScrollAxisType;
 
 /** Check whether the browser supports scroll behaviors. */
 export function supportsScrollBehavior(): boolean {
-  return !!(typeof document == 'object' && 'scrollBehavior' in document.documentElement.style);
+  return !!(typeof document == 'object'  && 'scrollBehavior' in document.documentElement!.style);
 }
 
 /**

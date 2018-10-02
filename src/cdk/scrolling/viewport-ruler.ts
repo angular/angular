@@ -101,13 +101,14 @@ export class ViewportRuler implements OnDestroy {
     // `scrollTop` and `scrollLeft` is inconsistent. However, using the bounding rect of
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
-    const documentRect = document.documentElement.getBoundingClientRect();
+    const documentElement = document.documentElement!;
+    const documentRect = documentElement.getBoundingClientRect();
 
     const top = -documentRect.top || document.body.scrollTop || window.scrollY ||
-                 document.documentElement.scrollTop || 0;
+                 documentElement.scrollTop || 0;
 
     const left = -documentRect.left || document.body.scrollLeft || window.scrollX ||
-                  document.documentElement.scrollLeft || 0;
+                  documentElement.scrollLeft || 0;
 
     return {top, left};
   }

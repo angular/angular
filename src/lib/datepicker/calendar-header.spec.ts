@@ -1,16 +1,14 @@
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {MatDatepickerModule} from './datepicker-module';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MatDatepickerIntl} from './datepicker-intl';
-import {DEC, FEB, JAN, MatNativeDateModule} from '@angular/material/core';
+import {Directionality} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
-import {MatCalendar} from './calendar';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {DEC, FEB, JAN, MatNativeDateModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
+import {MatCalendar} from './calendar';
+import {MatDatepickerIntl} from './datepicker-intl';
+import {MatDatepickerModule} from './datepicker-module';
 import {yearsPerPage} from './multi-year-view';
 
 describe('MatCalendarHeader', () => {
-  let dir: { value: Direction };
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -23,7 +21,7 @@ describe('MatCalendarHeader', () => {
       ],
       providers: [
         MatDatepickerIntl,
-        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}}
+        {provide: Directionality, useFactory: () => ({value: 'ltr'})},
       ],
     });
 

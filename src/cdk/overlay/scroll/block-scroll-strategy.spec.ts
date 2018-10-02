@@ -9,13 +9,16 @@ import {Overlay, OverlayContainer, OverlayModule, OverlayRef, OverlayConfig} fro
 describe('BlockScrollStrategy', () => {
   let platform: Platform;
   let viewport: ViewportRuler;
+  let documentElement: HTMLElement;
   let overlayRef: OverlayRef;
   let componentPortal: ComponentPortal<FocacciaMsg>;
   let forceScrollElement: HTMLElement;
 
   beforeEach(async(() => {
+    documentElement = document.documentElement!;
+
     // Ensure a clean state for every test.
-    document.documentElement.classList.remove('cdk-global-scrollblock');
+    documentElement.classList.remove('cdk-global-scrollblock');
 
     TestBed.configureTestingModule({
       imports: [OverlayModule, PortalModule, OverlayTestModule]
@@ -51,7 +54,7 @@ describe('BlockScrollStrategy', () => {
         .toBe(100, 'Expected viewport to be scrollable initially.');
 
     overlayRef.attach(componentPortal);
-    expect(document.documentElement.style.top)
+    expect(documentElement.style.top)
         .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
 
     window.scroll(0, 300);
@@ -77,7 +80,7 @@ describe('BlockScrollStrategy', () => {
         .toBe(100, 'Expected viewport to be scrollable initially.');
 
     overlayRef.attach(componentPortal);
-    expect(document.documentElement.style.left)
+    expect(documentElement.style.left)
         .toBe('-100px', 'Expected <html> element to be offset by the previous scroll amount.');
 
     window.scroll(300, 0);
@@ -95,17 +98,17 @@ describe('BlockScrollStrategy', () => {
 
 
   it('should toggle the `cdk-global-scrollblock` class', skipIOS(() => {
-    expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
+    expect(documentElement.classList).not.toContain('cdk-global-scrollblock');
 
     overlayRef.attach(componentPortal);
-    expect(document.documentElement.classList).toContain('cdk-global-scrollblock');
+    expect(documentElement.classList).toContain('cdk-global-scrollblock');
 
     overlayRef.detach();
-    expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
+    expect(documentElement.classList).not.toContain('cdk-global-scrollblock');
   }));
 
   it('should restore any previously-set inline styles', skipIOS(() => {
-    const root = document.documentElement;
+    const root = documentElement;
 
     root.style.top = '13px';
     root.style.left = '37px';
@@ -124,22 +127,22 @@ describe('BlockScrollStrategy', () => {
   it(`should't do anything if the page isn't scrollable`, skipIOS(() => {
     forceScrollElement.style.display = 'none';
     overlayRef.attach(componentPortal);
-    expect(document.documentElement.classList).not.toContain('cdk-global-scrollblock');
+    expect(documentElement.classList).not.toContain('cdk-global-scrollblock');
   }));
 
 
   it('should keep the content width', () => {
     forceScrollElement.style.width = '100px';
 
-    const previousContentWidth = document.documentElement.getBoundingClientRect().width;
+    const previousContentWidth = documentElement.getBoundingClientRect().width;
 
     overlayRef.attach(componentPortal);
 
-    expect(document.documentElement.getBoundingClientRect().width).toBe(previousContentWidth);
+    expect(documentElement.getBoundingClientRect().width).toBe(previousContentWidth);
   });
 
   it('should not clobber user-defined scroll-behavior', skipIOS(() => {
-    const root = document.documentElement;
+    const root = documentElement;
     const body = document.body;
 
     root.style['scrollBehavior'] = body.style['scrollBehavior'] = 'smooth';

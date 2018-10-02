@@ -55,7 +55,7 @@ function createEmptyStyleRule(query: string) {
     if (!mediaQueryStyleNode) {
       mediaQueryStyleNode = document.createElement('style');
       mediaQueryStyleNode.setAttribute('type', 'text/css');
-      document.head.appendChild(mediaQueryStyleNode);
+      document.head!.appendChild(mediaQueryStyleNode);
     }
 
     if (mediaQueryStyleNode.sheet) {
@@ -70,10 +70,12 @@ function createEmptyStyleRule(query: string) {
 
 /** No-op matchMedia replacement for non-browser platforms. */
 function noopMatchMedia(query: string): MediaQueryList {
+  // Use `as any` here to avoid adding additional necessary properties for
+  // the noop matcher.
   return {
     matches: query === 'all' || query === '',
     media: query,
     addListener: () => {},
     removeListener: () => {}
-  };
+  } as any;
 }

@@ -311,8 +311,8 @@ describe('MatRipple', () => {
         document.body.scrollLeft = pageScrollLeft;
 
         // Firefox
-        document.documentElement.scrollLeft = pageScrollLeft;
-        document.documentElement.scrollTop = pageScrollTop;
+        document.documentElement!.scrollLeft = pageScrollLeft;
+        document.documentElement!.scrollTop = pageScrollTop;
 
         // Mobile safari
         window.scrollTo(pageScrollLeft, pageScrollTop);
@@ -324,8 +324,8 @@ describe('MatRipple', () => {
         document.body.scrollLeft = 0;
 
         // Firefox
-        document.documentElement.scrollLeft = 0;
-        document.documentElement.scrollTop = 0;
+        document.documentElement!.scrollLeft = 0;
+        document.documentElement!.scrollTop = 0;
 
         // Mobile safari
         window.scrollTo(0, 0);

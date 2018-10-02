@@ -929,7 +929,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     if (position.overlayY === 'bottom') {
       // When using `bottom`, we adjust the y position such that it is the distance
       // from the bottom of the viewport rather than the top.
-      const documentHeight = this._document.documentElement.clientHeight;
+      const documentHeight = this._document.documentElement!.clientHeight;
       styles.bottom = `${documentHeight - (overlayPoint.y + this._overlayRect.height)}px`;
     } else {
       styles.top = coerceCssPixelValue(overlayPoint.y);
@@ -966,7 +966,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // When we're setting `right`, we adjust the x position such that it is the distance
     // from the right edge of the viewport rather than the left edge.
     if (horizontalStyleProperty === 'right') {
-      const documentWidth = this._document.documentElement.clientWidth;
+      const documentWidth = this._document.documentElement!.clientWidth;
       styles.right = `${documentWidth - (overlayPoint.x + this._overlayRect.width)}px`;
     } else {
       styles.left = coerceCssPixelValue(overlayPoint.x);
@@ -1013,8 +1013,8 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // being that the client properties don't include the scrollbar, as opposed to `innerWidth`
     // and `innerHeight` that do. This is necessary, because the overlay container uses
     // 100% `width` and `height` which don't include the scrollbar either.
-    const width = this._document.documentElement.clientWidth;
-    const height = this._document.documentElement.clientHeight;
+    const width = this._document.documentElement!.clientWidth;
+    const height = this._document.documentElement!.clientHeight;
     const scrollPosition = this._viewportRuler.getViewportScrollPosition();
 
     return {

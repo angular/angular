@@ -37,7 +37,7 @@ describe('FocusTrap', () => {
       // focus event handler directly.
       const result = focusTrapInstance.focusFirstTabbableElement();
 
-      expect(document.activeElement.nodeName.toLowerCase())
+      expect(document.activeElement!.nodeName.toLowerCase())
           .toBe('input', 'Expected input element to be focused');
       expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
     });
@@ -51,7 +51,7 @@ describe('FocusTrap', () => {
       // In iOS button elements are never tabbable, so the last element will be the input.
       const lastElement = new Platform(platformId).IOS ? 'input' : 'button';
 
-      expect(document.activeElement.nodeName.toLowerCase())
+      expect(document.activeElement!.nodeName.toLowerCase())
           .toBe(lastElement, `Expected ${lastElement} element to be focused`);
 
       expect(result).toBe(true, 'Expected return value to be true if focus was shifted.');
@@ -122,21 +122,21 @@ describe('FocusTrap', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
       focusTrapInstance.focusInitialElement();
-      expect(document.activeElement.id).toBe('middle');
+      expect(document.activeElement!.id).toBe('middle');
     });
 
     it('should be able to prioritize the first focus target', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
       focusTrapInstance.focusFirstTabbableElement();
-      expect(document.activeElement.id).toBe('first');
+      expect(document.activeElement!.id).toBe('first');
     });
 
     it('should be able to prioritize the last focus target', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
       focusTrapInstance.focusLastTabbableElement();
-      expect(document.activeElement.id).toBe('last');
+      expect(document.activeElement!.id).toBe('last');
     });
   });
 
@@ -166,7 +166,7 @@ describe('FocusTrap', () => {
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        expect(document.activeElement.id).toBe('auto-capture-target');
+        expect(document.activeElement!.id).toBe('auto-capture-target');
 
         fixture.destroy();
         expect(document.activeElement).toBe(buttonOutsideTrappedRegion);

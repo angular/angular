@@ -804,7 +804,7 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.tagName)
+      expect(document.activeElement!.tagName)
           .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
     }));
 
@@ -817,7 +817,7 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.tagName).not.toBe('INPUT');
+      expect(document.activeElement!.tagName).not.toBe('INPUT');
     }));
 
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {
@@ -834,18 +834,18 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.id)
+      expect(document.activeElement!.id)
           .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
 
       dialogRef.close();
-      expect(document.activeElement.id).not.toBe('dialog-trigger',
+      expect(document.activeElement!.id).not.toBe('dialog-trigger',
           'Expcted the focus not to have changed before the animation finishes.');
 
       flushMicrotasks();
       viewContainerFixture.detectChanges();
       flush();
 
-      expect(document.activeElement.id).toBe('dialog-trigger',
+      expect(document.activeElement!.id).toBe('dialog-trigger',
           'Expected that the trigger was refocused after the dialog is closed.');
 
       document.body.removeChild(button);
@@ -876,7 +876,7 @@ describe('Dialog', () => {
       viewContainerFixture.detectChanges();
       flushMicrotasks();
 
-      expect(document.activeElement.id).toBe('input-to-be-focused',
+      expect(document.activeElement!.id).toBe('input-to-be-focused',
           'Expected that the trigger was refocused after the dialog is closed.');
 
       document.body.removeChild(button);
@@ -891,7 +891,7 @@ describe('Dialog', () => {
         viewContainerFixture.detectChanges();
         flushMicrotasks();
 
-        expect(document.activeElement.tagName.toLowerCase())
+        expect(document.activeElement!.tagName.toLowerCase())
             .toBe('cdk-dialog-container', 'Expected dialog container to be focused.');
       }));
 

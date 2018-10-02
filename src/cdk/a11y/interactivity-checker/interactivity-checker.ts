@@ -252,5 +252,6 @@ function isPotentiallyFocusable(element: HTMLElement): boolean {
 
 /** Gets the parent window of a DOM node with regards of being inside of an iframe. */
 function getWindow(node: HTMLElement): Window {
-  return node.ownerDocument.defaultView || window;
+  // ownerDocument is null if `node` itself *is* a document.
+  return node.ownerDocument && node.ownerDocument.defaultView || window;
 }

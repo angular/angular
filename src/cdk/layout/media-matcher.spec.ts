@@ -42,7 +42,7 @@ describe('MediaMatcher', () => {
       }
 
       function getStyleTagByString(str: string): HTMLStyleElement | undefined {
-        return Array.from(document.head.querySelectorAll('style')).find(tag => {
+        return Array.from(document.head!.querySelectorAll('style')).find(tag => {
           const rules = tag.sheet ? Array.from((tag.sheet as CSSStyleSheet).cssRules) : [];
           return !!rules.find(rule => rule.cssText.includes(str));
         });
