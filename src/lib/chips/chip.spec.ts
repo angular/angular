@@ -150,6 +150,55 @@ describe('Chips', () => {
         expect(event.defaultPrevented).toBe(true);
       });
 
+      it('should not dispatch `selectionChange` event when deselecting a non-selected chip', () => {
+        chipInstance.deselect();
+
+        const spy = jasmine.createSpy('selectionChange spy');
+        const subscription = chipInstance.selectionChange.subscribe(spy);
+
+        chipInstance.deselect();
+
+        expect(spy).not.toHaveBeenCalled();
+        subscription.unsubscribe();
+      });
+
+      it('should not dispatch `selectionChange` event when selecting a selected chip', () => {
+        chipInstance.select();
+
+        const spy = jasmine.createSpy('selectionChange spy');
+        const subscription = chipInstance.selectionChange.subscribe(spy);
+
+        chipInstance.select();
+
+        expect(spy).not.toHaveBeenCalled();
+        subscription.unsubscribe();
+      });
+
+      it('should not dispatch `selectionChange` event when selecting a selected chip via ' +
+        'user interaction', () => {
+          chipInstance.select();
+
+          const spy = jasmine.createSpy('selectionChange spy');
+          const subscription = chipInstance.selectionChange.subscribe(spy);
+
+          chipInstance.selectViaInteraction();
+
+          expect(spy).not.toHaveBeenCalled();
+          subscription.unsubscribe();
+        });
+
+      it('should not dispatch `selectionChange` through setter if the value did not change', () => {
+        chipInstance.selected = false;
+
+        const spy = jasmine.createSpy('selectionChange spy');
+        const subscription = chipInstance.selectionChange.subscribe(spy);
+
+        chipInstance.selected = false;
+
+        expect(spy).not.toHaveBeenCalled();
+        subscription.unsubscribe();
+      });
+
     });
 
     describe('keyboard behavior', () => {
