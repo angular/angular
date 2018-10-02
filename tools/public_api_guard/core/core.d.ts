@@ -314,11 +314,11 @@ export interface FactoryProvider extends FactorySansProvider {
 }
 
 /** @experimental */
-export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
+export declare function forwardRef<T>(forwardRefFn: ForwardRefFn<T>): T;
 
 /** @experimental */
-export interface ForwardRefFn {
-    (): any;
+export interface ForwardRefFn<T> {
+    (): T;
 }
 
 /** @experimental */

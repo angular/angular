@@ -1959,6 +1959,9 @@
     "name": "__extends$p"
   },
   {
+    "name": "__forward_ref__"
+  },
+  {
     "name": "__metadata"
   },
   {
