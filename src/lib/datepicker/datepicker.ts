@@ -461,7 +461,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
       .withTransformOriginOn('.mat-datepicker-content')
       .withFlexibleDimensions(false)
       .withViewportMargin(8)
-      .withPush(false)
+      .withLockedPosition()
       .withPositions([
         {
           originX: 'start',
