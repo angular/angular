@@ -718,10 +718,13 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       bottom = viewport.height - origin.y + this._viewportMargin * 2;
       height = viewport.height - bottom + this._viewportMargin;
     } else {
-      // If neither top nor bottom, it means that the overlay
-      // is vertically centered on the origin point.
+      // If neither top nor bottom, it means that the overlay is vertically centered on the
+      // origin point. Note that we want the position relative to the viewport, rather than
+      // the page, which is why we don't use something like `viewport.bottom - origin.y` and
+      // `origin.y - viewport.top`.
       const smallestDistanceToViewportEdge =
-          Math.min(viewport.bottom - origin.y, origin.y - viewport.left);
+          Math.min(viewport.bottom - origin.y + viewport.top, origin.y);
+
       const previousHeight = this._lastBoundingBoxSize.height;
 
       height = smallestDistanceToViewportEdge * 2;
@@ -751,10 +754,12 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       left = origin.x;
       width = viewport.right - origin.x;
     } else {
-      // If neither start nor end, it means that the overlay
-      // is horizontally centered on the origin point.
+      // If neither start nor end, it means that the overlay is horizontally centered on the
+      // origin point. Note that we want the position relative to the viewport, rather than
+      // the page, which is why we don't use something like `viewport.right - origin.x` and
+      // `origin.x - viewport.left`.
       const smallestDistanceToViewportEdge =
-          Math.min(viewport.right - origin.x, origin.x - viewport.top);
+          Math.min(viewport.right - origin.x + viewport.left, origin.x);
       const previousWidth = this._lastBoundingBoxSize.width;
 
       width = smallestDistanceToViewportEdge * 2;

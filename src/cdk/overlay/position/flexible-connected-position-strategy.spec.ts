@@ -1744,6 +1744,40 @@ describe('FlexibleConnectedPositionStrategy', () => {
       expect(Math.floor(overlayRect.top)).toBe(viewportMargin);
     });
 
+    it('should center flexible overlay with push on a scrolled page', () => {
+      const veryLargeElement = document.createElement('div');
+
+      originElement.style.left = '200px';
+      originElement.style.top = '200px';
+
+      veryLargeElement.style.width = '100%';
+      veryLargeElement.style.height = '2000px';
+      document.body.appendChild(veryLargeElement);
+      window.scroll(0, 250);
+
+      positionStrategy
+        .withFlexibleDimensions()
+        .withPush(true)
+        .withPositions([{
+          overlayY: 'top',
+          overlayX: 'center',
+          originY: 'bottom',
+          originX: 'center'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+      const originRect = originElement.getBoundingClientRect();
+
+      expect(Math.floor(overlayRect.left - overlayRect.width / 2))
+          .toBe(Math.floor(originRect.left - originRect.width / 2));
+
+      window.scroll(0, 0);
+      document.body.removeChild(veryLargeElement);
+    });
+
+
   });
 
   describe('onPositionChange with scrollable view properties', () => {
