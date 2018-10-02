@@ -348,6 +348,15 @@ describe('MatSlideToggle without forms', () => {
       expect(slideToggle.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
     }));
+
+    it('should clear the tabindex from the host element', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SlideToggleWithTabindexAttr);
+
+      fixture.detectChanges();
+
+      const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
+      expect(slideToggle.getAttribute('tabindex')).toBeFalsy();
+    }));
   });
 
   describe('custom action configuration', () => {
