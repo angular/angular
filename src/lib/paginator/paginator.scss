@@ -12,6 +12,7 @@ $mat-paginator-selector-trigger-fill-width: 64px;
 /** @deprecated Use `$mat-paginator-selector-trigger-width` instead. @breaking-change 8.0.0 */
 $mat-paginator-selector-trigger-min-width: $mat-paginator-selector-trigger-width;
 
+/** @deprecated Unused. To be removed */
 $mat-paginator-range-actions-min-height: 48px;
 
 $mat-paginator-range-label-margin: 0 32px 0 24px;
@@ -37,6 +38,12 @@ $mat-paginator-button-last-increment-icon-margin: 9px;
   display: block;
 }
 
+// Note: this wrapper element is only used to get the flexbox vertical centering to work
+// with the `min-height` on IE11. It can be removed if we drop support for IE.
+.mat-paginator-outer-container {
+  display: flex;
+}
+
 .mat-paginator-container {
   display: flex;
   align-items: center;
@@ -44,6 +51,7 @@ $mat-paginator-button-last-increment-icon-margin: 9px;
   min-height: $mat-paginator-height;
   padding: $mat-paginator-padding;
   flex-wrap: wrap-reverse;
+  width: 100%;
 }
 
 .mat-paginator-page-size {
@@ -81,7 +89,6 @@ $mat-paginator-button-last-increment-icon-margin: 9px;
 .mat-paginator-range-actions {
   display: flex;
   align-items: center;
-  min-height: $mat-paginator-range-actions-min-height;
 }
 
 .mat-paginator-icon {
