@@ -84,7 +84,7 @@ The abstraction of the form model promotes simplicity over structure. The templa
 
 ## Data flow in forms
 
-When building forms in Angular, it's important to understand how the the framework handles data flowing from the user or from programmatic changes. Reactive and template-driven forms follow two different strategies when handling form input. The data flow examples below begin with the favorite color input field example from above, and they show how changes to favorite color are handled in reactive forms compared to template-driven forms.
+When building forms in Angular, it's important to understand how the framework handles data flowing from the user or from programmatic changes. Reactive and template-driven forms follow two different strategies when handling form input. The data flow examples below begin with the favorite color input field example from above, and they show how changes to favorite color are handled in reactive forms compared to template-driven forms.
 
 ### Data flow in reactive forms
 
@@ -253,7 +253,7 @@ To learn more about reactive forms, see the following guides:
 * [Form Validation](guide/form-validation#reactive-form-validation)
 * [Dynamic forms](guide/dynamic-form)
 
-To learn more about tempate-driven forms, see the following guides:
+To learn more about template-driven forms, see the following guides:
 
 * [Template-driven Forms](guide/forms)
 * [Form Validation](guide/form-validation#template-driven-validation)
