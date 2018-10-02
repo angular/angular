@@ -1,7 +1,7 @@
-import { Component<% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
+import { Component, OnDestroy<% if(!!viewEncapsulation) { %>, ViewEncapsulation<% }%><% if(changeDetection !== 'Default') { %>, ChangeDetectionStrategy<% }%> } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: '<%= selector %>',<% if(inlineTemplate) { %>
@@ -16,13 +16,25 @@ import { map } from 'rxjs/operators';
   encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } if (changeDetection !== 'Default') { %>,
   changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
 })
-export class <%= classify(name) %>Component {
+export class <%= classify(name) %>Component implements OnDestroy {
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
-    .pipe(
-      map(result => result.matches)
-    );
+  isHandset: boolean;
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  /** Emits when the component is destroyed. */
+  private readonly _destroyed = new Subject<void>();
+
+  constructor(breakpointObserver: BreakpointObserver) {
+    breakpointObserver.observe(Breakpoints.Handset)
+      .pipe(
+        takeUntil(this._destroyed)
+      ).subscribe(result => {
+        this.isHandset = result.matches;
+      });
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
+  }
 
 }
