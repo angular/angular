@@ -1,0 +1,7 @@
+# Bazel configuration that will be copied to /etc/bazel.bazelrc in CircleCI containers.
+# This allows us adding specific configuration flags for builds within CircleCI.
+# See more: https://docs.bazel.build/versions/master/user-manual.html#where-are-the-bazelrc-files
+
+# Save downloaded repositories in a location that can be cached by CircleCI. This helps us
+# speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
+build --experimental_repository_cache=/home/circleci/bazel_repository_cache

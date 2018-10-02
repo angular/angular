@@ -44,6 +44,8 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
+      # Set up the CircleCI specific bazel configuration.
+      - run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
 
       # TODO(jelbourn): Update this command to run all tests if the Bazel issues have been fixed.
       - run: bazel test src/{cdk,lib}/schematics:unit_tests
@@ -52,6 +54,7 @@ jobs:
           key: *cache_key
           paths:
             - "node_modules"
+            - "~/bazel_repository_cache"
 
 workflows:
   version: 2
