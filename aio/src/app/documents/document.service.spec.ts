@@ -180,10 +180,8 @@ describe('DocumentService', () => {
 
   describe('computeMap', () => {
     it('should map the "empty" location to the correct document request', () => {
-      let latestDocument: DocumentContents;
       const { docService } = getServices();
-
-      docService.currentDocument.subscribe(doc => latestDocument = doc);
+      docService.currentDocument.subscribe();
 
       httpMock.expectOne(CONTENT_URL_PREFIX + 'index.json');
     });
