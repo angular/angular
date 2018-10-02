@@ -124,7 +124,15 @@ export class UpgradeHelper {
       controllerInstance.$onDestroy();
     }
     $scope.$destroy();
-    this.$element.triggerHandler !('$destroy');
+
+    // Clean the jQuery/jqLite data on the component+child elements.
+    // Equivelent to how jQuery/jqLite invoke `cleanData` on an Element (this.element)
+    //  https://github.com/jquery/jquery/blob/e743cbd28553267f955f71ea7248377915613fd9/src/manipulation.js#L223
+    //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/jqLite.js#L306-L312
+    // `cleanData` will invoke the AngularJS `$destroy` DOM event
+    //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/Angular.js#L1911-L1924
+    angular.element.cleanData([this.element]);
+    angular.element.cleanData(this.element.querySelectorAll('*'));
   }
 
   prepareTransclusion(): angular.ILinkFn|undefined {
