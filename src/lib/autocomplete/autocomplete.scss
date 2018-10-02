@@ -32,6 +32,12 @@ $mat-autocomplete-panel-border-radius: 4px !default;
     border-top-right-radius: $mat-autocomplete-panel-border-radius;
   }
 
+  // We need to offset horizontal dividers by their height, because
+  // they throw off the keyboard navigation inside the panel.
+  .mat-divider-horizontal {
+    margin-top: -1px;
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
