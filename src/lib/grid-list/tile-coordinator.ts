@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {QueryList} from '@angular/core';
 import {MatGridTile} from './grid-tile';
 
 /**
@@ -53,19 +52,17 @@ export class TileCoordinator {
   /** The computed (row, col) position of each tile (the output). */
   positions: TilePosition[];
 
-  constructor(private _tiles: QueryList<MatGridTile>) {}
-
   /**
    * Updates the tile positions.
    * @param numColumns Amount of columns in the grid.
    */
-  update(numColumns: number) {
+  update(numColumns: number, tiles: MatGridTile[]) {
     this.columnIndex = 0;
     this.rowIndex = 0;
 
     this.tracker = new Array(numColumns);
     this.tracker.fill(0, 0, this.tracker.length);
-    this.positions = this._tiles.map(tile => this._trackTile(tile));
+    this.positions = tiles.map(tile => this._trackTile(tile));
   }
 
   /** Calculates the row and col position of a tile. */

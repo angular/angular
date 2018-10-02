@@ -139,6 +139,18 @@ describe('MatGridList', () => {
     expect(getStyle(tiles[2], 'top')).toBe('101px');
   });
 
+  it('should lay out the tiles correctly for a nested grid list', () => {
+    const fixture = createComponent(NestedGridList);
+    fixture.detectChanges();
+
+    const innerTiles = fixture.debugElement.queryAll(
+        By.css('mat-grid-tile mat-grid-list mat-grid-tile'));
+
+    expect(getStyle(innerTiles[0], 'top')).toBe('0px');
+    expect(getStyle(innerTiles[1], 'top')).toBe('101px');
+    expect(getStyle(innerTiles[2], 'top')).toBe('202px');
+  });
+
   it('should set the gutter size if passed', () => {
     const fixture = createComponent(GridListWithGutterSize);
     fixture.detectChanges();
@@ -635,3 +647,19 @@ class GridListWithRtl { }
   `
 })
 class GridListWithIndirectTileDescendants {}
+
+
+@Component({template: `
+    <div style="width:200px">
+      <mat-grid-list cols="2" rowHeight="100px">
+        <mat-grid-tile></mat-grid-tile>
+        <mat-grid-tile>
+          <mat-grid-list cols="1" rowHeight="100px">
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+          </mat-grid-list>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>`})
+class NestedGridList { }
