@@ -14,7 +14,6 @@ import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
 import {attachPatchData, getLElementFromComponent, readElementValue, readPatchedLViewData} from './context_discovery';
-import {getRootView} from './discovery_utils';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -29,7 +28,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getHostElementNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
-import {assertDataInRangeInternal, getLNode, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
+import {assertDataInRangeInternal, getLNode, getRootView, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 
 
 /**
