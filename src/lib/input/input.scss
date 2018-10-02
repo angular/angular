@@ -138,6 +138,9 @@ select.mat-input-element {
   background-color: transparent;
   display: inline-flex;
   box-sizing: border-box;
+  padding-top: 1em;
+  top: -1em;
+  margin-bottom: -1em;
 
   &::-ms-expand {
     display: none;
