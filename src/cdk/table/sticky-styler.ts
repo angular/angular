@@ -140,6 +140,10 @@ export class StickyStyler {
         this._addStickyStyle(row, position, stickyHeight);
       }
 
+      if (rowIndex === rows.length - 1) {
+        // prevent unnecessary reflow from getBoundingClientRect()
+        return;
+      }
       stickyHeight += row.getBoundingClientRect().height;
     }
   }
