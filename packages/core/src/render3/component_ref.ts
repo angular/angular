@@ -13,7 +13,7 @@ import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEng
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
-import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
+import {RendererFactory2} from '../render/api';
 import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';

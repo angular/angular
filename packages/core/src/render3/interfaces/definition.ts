@@ -8,7 +8,9 @@
 
 import {Provider, ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
+
 import {CssSelectorList} from './projection';
+
 
 
 /**
@@ -43,13 +45,17 @@ export const enum RenderFlags {
  * A subclass of `Type` which has a static `ngComponentDef`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ngComponentDef: never; }
+export type ComponentType<T> = Type<T>& {
+  ngComponentDef: never;
+}
 
 /**
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
  * consumable for rendering.
  */
-export interface DirectiveType<T> extends Type<T> { ngDirectiveDef: never; }
+export type DirectiveType<T> = Type<T>& {
+  ngDirectiveDef: never;
+}
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -57,7 +63,9 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * A subclass of `Type` which has a static `ngPipeDef`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
+export type PipeType<T> = Type<T>& {
+  ngPipeDef: never;
+}
 
 /**
  * A version of {@link DirectiveDef} that represents the runtime type shape only, and excludes

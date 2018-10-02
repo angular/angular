@@ -22,6 +22,11 @@ export function isType(v: any): v is Type<any> {
   return typeof v === 'function';
 }
 
-export interface Type<T> extends Function { prototype: T; }
+export interface AbstractType<T> extends Function { prototype: T }
+export interface ConcreteType<T> extends Function { new (...args: any[]): T; }
 
-export interface Constructor<T> extends Type<T> { new (...args: any[]): T; }
+// See https://github.com/angular/angular/pull/25222#issuecomment-426423317 for why
+// we have to use union rather than extends. Using extends is a breaking change because
+// we get into situations where we both narrow and restrict types during casting which
+// causes TypeScript to fail.
+export type Type<T> = AbstractType<T>| ConcreteType<T>;

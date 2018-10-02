@@ -10,7 +10,7 @@ import {R3_COMPILE_INJECTABLE} from '../ivy_switch/compiler/index';
 import {Type} from '../type';
 import {makeDecorator} from '../util/decorators';
 
-import {InjectableDef, InjectableType} from './defs';
+import {InjectableDef, InjectableType, InjectorType} from './defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
 /**
@@ -68,4 +68,4 @@ export const Injectable: InjectableDecorator = makeDecorator(
  *
  * @experimental
  */
-export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }
+export type InjectableType<T> = Type<T>& {ngInjectableDef: InjectableDef<T>};

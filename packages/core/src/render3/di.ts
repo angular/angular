@@ -13,7 +13,7 @@ import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import {Renderer2} from '../render';
-import {Constructor, Type} from '../type';
+import {ConcreteType, Type} from '../type';
 
 import {assertDefined} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
@@ -485,7 +485,7 @@ export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   return def.factory;
 }
 
-export function getInheritedFactory<T>(type: Type<any>): (type: Constructor<T>) => T {
+export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
   const factory = getFactoryOf<T>(proto);
   if (factory !== null) {
@@ -495,6 +495,6 @@ export function getInheritedFactory<T>(type: Type<any>): (type: Constructor<T>) 
     // (no Angular decorator on the superclass) or there is no constructor at all
     // in the inheritance chain. Since the two cases cannot be distinguished, the
     // latter has to be assumed.
-    return (t) => new t();
+    return (t) => new (t as ConcreteType<any>)();
   }
 }

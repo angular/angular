@@ -7,7 +7,7 @@
  */
 
 import {OnDestroy} from '../metadata/lifecycle_hooks';
-import {Constructor, Type} from '../type';
+import {ConcreteType, Type} from '../type';
 import {stringify} from '../util';
 
 import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
@@ -260,7 +260,7 @@ export class R3Injector {
 
     // Next, include providers listed on the definition itself.
     if (def.providers != null) {
-      deepForEach(def.providers, provider => this.processProvider(provider));
+      deepForEach(def.providers, (provider: SingleProvider) => this.processProvider(provider));
     }
 
     // Finally, include providers from an InjectorDefTypeWithProviders if there was one.
@@ -336,7 +336,7 @@ function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any>
     }
     // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
     // no-args constructor.
-    return makeRecord(() => new (token as Constructor<any>)());
+    return makeRecord(() => new (token as ConcreteType<any>)());
   }
   return makeRecord(injectableDef.factory);
 }
@@ -356,9 +356,10 @@ function providerToRecord(provider: SingleProvider): Record<any> {
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else {
-      const classRef = (provider as StaticClassProvider | ClassProvider).useClass || token;
+      const classRef: ConcreteType<any> =
+          (provider as StaticClassProvider | ClassProvider).useClass || token;
       if (hasDeps(provider)) {
-        factory = () => new (classRef as Constructor<any>)(...injectArgs(provider.deps));
+        factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
         return injectableDefRecord(classRef);
       }

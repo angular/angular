@@ -12,7 +12,7 @@ import {inject, injectArgs} from '../../di/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
 import {NgModule} from '../../metadata';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
-import {Constructor, Type} from '../../type';
+import {ConcreteType, Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
 
 import * as ivyOn from './ivy_switch_on';
@@ -75,13 +75,13 @@ const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 const EMPTY_ARRAY: any[] = [];
 
-function convertInjectableProviderToFactory(
-    type: Constructor<any>, provider?: InjectableProvider): () => any {
+function convertInjectableProviderToFactory(type: Type<any>, provider?: InjectableProvider): () =>
+    any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
     // TODO - convert to flags.
-    return () => new type(...injectArgs(deps as any[]));
+    return () => new (type as ConcreteType<any>)(...injectArgs(deps as any[]));
   }
 
   if (USE_VALUE in provider) {
@@ -107,7 +107,7 @@ function convertInjectableProviderToFactory(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new type(...injectArgs(deps !));
+    return () => new (type as ConcreteType<any>)(...injectArgs(deps !));
   }
 }
 

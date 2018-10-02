@@ -142,10 +142,6 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
-export interface Constructor<T> extends Type<T> {
-    new (...args: any[]): T;
-}
-
 /** @experimental */
 export interface ConstructorSansProvider {
     deps?: any[];
@@ -314,11 +310,11 @@ export interface FactoryProvider extends FactorySansProvider {
 }
 
 /** @experimental */
-export declare function forwardRef<T>(forwardRefFn: ForwardRefFn<T>): T;
+export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
 
 /** @experimental */
-export interface ForwardRefFn<T> {
-    (): T;
+export interface ForwardRefFn {
+    (): any;
 }
 
 /** @experimental */
@@ -370,7 +366,7 @@ export interface InjectableDecorator {
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 /** @experimental */
-export interface InjectableType<T> extends Constructor<T> {
+export interface InjectableType<T> extends Type<T> {
     ngInjectableDef: never;
 }
 
@@ -415,7 +411,7 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 /** @experimental */
-export interface InjectorType<T> extends Constructor<T> {
+export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;
 }
 

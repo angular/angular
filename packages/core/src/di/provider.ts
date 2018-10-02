@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Constructor, Type} from '../type';
+import {ConcreteType, Type} from '../type';
 
 
 /**
@@ -72,7 +72,7 @@ export interface StaticClassSansProvider {
    * An optional class to instantiate for the `token`. (If not provided `provide` is assumed to be a
    * class to instantiate)
    */
-  useClass: Constructor<any>;
+  useClass: ConcreteType<any>;
 
   /**
    * A list of `token`s which need to be resolved by the injector. The list of values is then
@@ -289,7 +289,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
  */
-export interface TypeProvider extends Type<any> {}
+export type TypeProvider = ConcreteType<any>;
 
 /**
  * Configures the `Injector` to return a value by invoking a `useClass` function.
@@ -307,7 +307,7 @@ export interface ClassSansProvider {
   /**
    * Class to instantiate for the `token`.
    */
-  useClass: Constructor<any>;
+  useClass: ConcreteType<any>;
 }
 
 /**

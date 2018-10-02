@@ -7,9 +7,10 @@
  */
 
 import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
-import {Constructor, Type} from '../type';
+import {ConcreteType, Type} from '../type';
 
-import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
+
 
 
 /**
@@ -61,8 +62,8 @@ export interface InjectorDef<T> {
 
   // TODO(alxhub): Narrow down the type here once decorators properly change the return type of the
   // class they are decorating (to add the ngInjectableDef property for example).
-  providers: (Type<any>|ValueProvider|ExistingProvider|FactoryProvider|ConstructorProvider|
-              StaticClassProvider|ClassProvider|any[])[];
+  providers: (InjectableType<any>|ValueProvider|ExistingProvider|FactoryProvider|
+              ConstructorProvider|StaticClassProvider|ClassProvider|any[])[];
 
   imports: (InjectorType<any>|InjectorTypeWithProviders<any>)[];
 }
@@ -75,7 +76,7 @@ export interface InjectorDef<T> {
  *
  * @experimental
  */
-export interface InjectableType<T> extends Constructor<T> {
+export type InjectableType<T> = Type<T>& {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
@@ -87,9 +88,11 @@ export interface InjectableType<T> extends Constructor<T> {
  *
  * `InjectorDefTypes` can be used to configure a `StaticInjector`.
  *
+ * NOTE: This must be `ConcreteType` because the `InjectorType` itself will be eagerly instantiated.
+ *
  * @experimental
  */
-export interface InjectorType<T> extends Constructor<T> {
+export type InjectorType<T> = ConcreteType<T>& {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
