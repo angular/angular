@@ -25,7 +25,7 @@ import {
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatBottomSheet} from './bottom-sheet';
+import {MatBottomSheet, MAT_BOTTOM_SHEET_DEFAULT_OPTIONS} from './bottom-sheet';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
 import {MatBottomSheetModule} from './bottom-sheet-module';
 import {MatBottomSheetRef} from './bottom-sheet-ref';
@@ -615,6 +615,82 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
         .toContain('Taco', 'Expected child bottom sheet to be dismissed by opening from parent');
   }));
 });
+
+describe('MatBottomSheet with default options', () => {
+  let bottomSheet: MatBottomSheet;
+  let overlayContainer: OverlayContainer;
+  let overlayContainerElement: HTMLElement;
+
+  let testViewContainerRef: ViewContainerRef;
+  let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
+
+  beforeEach(fakeAsync(() => {
+    const defaultConfig: MatBottomSheetConfig = {
+      hasBackdrop: false,
+      disableClose: true,
+      autoFocus: false
+    };
+
+    TestBed.configureTestingModule({
+      imports: [MatBottomSheetModule, BottomSheetTestModule],
+      providers: [
+        {provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS, useValue: defaultConfig},
+      ],
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  beforeEach(inject([MatBottomSheet, OverlayContainer],
+    (b: MatBottomSheet, oc: OverlayContainer) => {
+      bottomSheet = b;
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    }));
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
+  });
+
+  beforeEach(() => {
+    viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
+
+    viewContainerFixture.detectChanges();
+    testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
+  });
+
+  it('should use the provided defaults', () => {
+    bottomSheet.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
+
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+    expect(document.activeElement.tagName).not.toBe('INPUT');
+  });
+
+  it('should be overridable by open() options', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg, {
+      hasBackdrop: true,
+      disableClose: false,
+      viewContainerRef: testViewContainerRef
+    });
+
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeTruthy();
+
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeFalsy();
+  }));
+});
+
 
 
 @Directive({selector: 'dir-with-view-container'})
