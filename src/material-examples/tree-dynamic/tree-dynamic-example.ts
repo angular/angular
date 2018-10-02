@@ -59,7 +59,7 @@ export class DynamicDataSource {
               private database: DynamicDatabase) {}
 
   connect(collectionViewer: CollectionViewer): Observable<DynamicFlatNode[]> {
-    this.treeControl.expansionModel.onChange!.subscribe(change => {
+    this.treeControl.expansionModel.onChange.subscribe(change => {
       if ((change as SelectionChange<DynamicFlatNode>).added ||
         (change as SelectionChange<DynamicFlatNode>).removed) {
         this.handleTreeControl(change as SelectionChange<DynamicFlatNode>);
