@@ -17,6 +17,8 @@ import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 
 
+let moduleUid = 0;
+
 /**
  * @description
  *
@@ -104,7 +106,10 @@ import {NgAdapterInjector} from './util';
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
     ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
-  const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy';
+  const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
+  const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
+  const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;
+
   const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
       moduleFactoryOrBootstrapFn :
       (extraProviders: StaticProvider[]) =>
@@ -113,9 +118,10 @@ export function downgradeModule<T>(
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
-  angular.module(LAZY_MODULE_NAME, [])
+  angular.module(lazyModuleName, [])
+      .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
       .factory(
-          INJECTOR_KEY,
+          lazyInjectorKey,
           () => {
             if (!injector) {
               throw new Error(
@@ -123,7 +129,8 @@ export function downgradeModule<T>(
             }
             return injector;
           })
-      .factory(LAZY_MODULE_REF, [
+      .factory(LAZY_MODULE_REF, [lazyModuleRefKey, identity])
+      .factory(lazyModuleRefKey, [
         $INJECTOR,
         ($injector: angular.IInjectorService) => {
           setTempInjectorRef($injector);
@@ -140,5 +147,9 @@ export function downgradeModule<T>(
         }
       ]);
 
-  return LAZY_MODULE_NAME;
+  return lazyModuleName;
+}
+
+function identity<T = any>(x: T): T {
+  return x;
 }

@@ -21,5 +21,16 @@ import {downgradeInjectable} from '@angular/upgrade/src/common/downgrade_injecta
       expect(injector.get).toHaveBeenCalledWith('someToken');
       expect(value).toEqual('service value');
     });
+
+    it('should inject the specified module\'s injector when specifying a module name', () => {
+      const factory = downgradeInjectable('someToken', 'someModule');
+      expect(factory).toEqual(jasmine.any(Function));
+      expect((factory as any).$inject).toEqual([`${INJECTOR_KEY}someModule`]);
+
+      const injector = {get: jasmine.createSpy('get').and.returnValue('service value')};
+      const value = factory(injector);
+      expect(injector.get).toHaveBeenCalledWith('someToken');
+      expect(value).toEqual('service value');
+    });
   });
 }
