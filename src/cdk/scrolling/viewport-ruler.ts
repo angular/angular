@@ -36,11 +36,15 @@ export class ViewportRuler implements OnDestroy {
   private _invalidateCache: Subscription;
 
   constructor(private _platform: Platform, ngZone: NgZone) {
-    this._change = _platform.isBrowser ? ngZone.runOutsideAngular(() => {
-      return merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange'));
-    }) : observableOf();
+    ngZone.runOutsideAngular(() => {
+      this._change = _platform.isBrowser ?
+          merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange')) :
+          observableOf();
 
-    this._invalidateCache = this.change().subscribe(() => this._updateViewportSize());
+      // Note that we need to do the subscription inside `runOutsideAngular`
+      // since subscribing is what causes the event listener to be added.
+      this._invalidateCache = this.change().subscribe(() => this._updateViewportSize());
+    });
   }
 
   ngOnDestroy() {

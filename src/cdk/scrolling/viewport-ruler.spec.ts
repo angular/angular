@@ -2,7 +2,7 @@ import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
 import {ScrollingModule} from './public-api';
 import {ViewportRuler} from './viewport-ruler';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-
+import {NgZone} from '@angular/core';
 
 // For all tests, we assume the browser window is 1024x786 (outerWidth x outerHeight).
 // The karma config has been set to this for local tests, and it is the default size
@@ -140,5 +140,15 @@ describe('ViewportRuler', () => {
       expect(spy).toHaveBeenCalledTimes(1);
       subscription.unsubscribe();
     }));
+
+    it('should run the resize event outside the NgZone', () => {
+      const spy = jasmine.createSpy('viewport changed spy');
+      const subscription = ruler.change(0).subscribe(() => spy(NgZone.isInAngularZone()));
+
+      dispatchFakeEvent(window, 'resize');
+      expect(spy).toHaveBeenCalledWith(false);
+      subscription.unsubscribe();
+    });
+
   });
 });
