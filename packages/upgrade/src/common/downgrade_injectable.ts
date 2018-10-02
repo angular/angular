@@ -43,16 +43,35 @@ import {INJECTOR_KEY} from './constants';
  *
  * {@example upgrade/static/ts/full/module.ts region="example-app"}
  *
+ * <div class="alert is-important">
+ *
+ *   When using `downgradeModule()`, downgraded injectables will not be available until the Angular
+ *   module that provides them is instantiated. In order to be safe, you need to ensure that the
+ *   downgraded injectables are not used anywhere _outside_ the part of the app where it is
+ *   guaranteed that their module has been instantiated.
+ *
+ *   For example, it is _OK_ to use a downgraded service in an upgraded component that is only used
+ *   from a downgraded Angular component provided by the same Angular module as the injectable, but
+ *   it is _not OK_ to use it in an AngularJS component that may be used independently of Angular or
+ *   use it in a downgraded Angular component from a different module.
+ *
+ * </div>
+ *
  * @param token an `InjectionToken` that identifies a service provided from Angular.
+ * @param downgradedModule the name of the downgraded module (if any) that the injectable
+ * "belongs to", as returned by a call to `downgradeModule()`. It is the module, whose injector will
+ * be used for instantiating the injectable.<br />
+ * (This option is only necessary when using `downgradeModule()` to downgrade more than one Angular
+ * module.)
  *
  * @returns a [factory function](https://docs.angularjs.org/guide/di) that can be
  * used to register the service on an AngularJS module.
  *
  * @publicApi
  */
-export function downgradeInjectable(token: any): Function {
+export function downgradeInjectable(token: any, downgradedModule: string = ''): Function {
   const factory = function(i: Injector) { return i.get(token); };
-  (factory as any)['$inject'] = [INJECTOR_KEY];
+  (factory as any)['$inject'] = [`${INJECTOR_KEY}${downgradedModule}`];
 
   return factory;
 }
