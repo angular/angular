@@ -16,7 +16,7 @@ import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
 
-import {getAllRouteGuards, getToken} from './check_guards';
+import {getAllRouteGuards, getToken} from '../utils/preactivation';
 
 export function resolveData(
     rootContexts: ChildrenOutletContexts, paramsInheritanceStrategy: 'emptyOnly' | 'always',
