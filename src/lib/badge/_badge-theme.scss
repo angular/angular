@@ -96,6 +96,8 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
 
   .mat-badge-content {
     color: mat-color($primary, default-contrast);
@@ -123,6 +125,20 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   .mat-badge-hidden {
     .mat-badge-content {
       display: none;
+    }
+  }
+
+  .mat-badge-disabled {
+    .mat-badge-content {
+      // The disabled color usually has some kind of opacity, but because the badge is overlayed
+      // on top of something else, it won't look good if it's opaque. We convert it into a solid
+      // color by taking the opacity from the rgba value and using the value to determine the
+      // percentage of the background to put into foreground when mixing the colors together.
+      $app-background: mat-color($background, 'background');
+      $badge-color: mat-color($foreground, disabled-button);
+      $badge-opacity: opacity($badge-color);
+      background: mix($app-background, rgba($badge-color, 1), (1 - $badge-opacity) * 100%);
+      color: mat-color($foreground, disabled-text);
     }
   }
 

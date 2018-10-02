@@ -154,6 +154,17 @@ describe('MatBadge', () => {
     expect(encapsulationAttr).toBeTruthy();
   });
 
+  it('should toggle a class depending on the badge disabled state', () => {
+    const element: HTMLElement = badgeDebugElement.nativeElement;
+
+    expect(element.classList).not.toContain('mat-badge-disabled');
+
+    testComponent.badgeDisabled = true;
+    fixture.detectChanges();
+
+    expect(element.classList).toContain('mat-badge-disabled');
+  });
+
 });
 
 /** Test component that contains a MatBadge. */
@@ -168,7 +179,8 @@ describe('MatBadge', () => {
           [matBadgeHidden]="badgeHidden"
           [matBadgeSize]="badgeSize"
           [matBadgeOverlap]="badgeOverlap"
-          [matBadgeDescription]="badgeDescription">
+          [matBadgeDescription]="badgeDescription"
+          [matBadgeDisabled]="badgeDisabled">
       home
     </span>
   `
@@ -181,4 +193,5 @@ class BadgeTestApp {
   badgeSize = 'medium';
   badgeOverlap = false;
   badgeDescription: string;
+  badgeDisabled = false;
 }
