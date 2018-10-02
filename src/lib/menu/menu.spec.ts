@@ -208,7 +208,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
 
-      dispatchFakeEvent(triggerEl, 'mousedown');
+      dispatchMouseEvent(triggerEl, 'mousedown');
       triggerEl.click();
       fixture.detectChanges();
       patchElementFocus(triggerEl);
@@ -219,6 +219,31 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       expect(triggerEl.classList).toContain('cdk-mouse-focused');
+      focusMonitor.stopMonitoring(triggerEl);
+    }));
+
+  it('should set proper focus origin when right clicking on trigger, before opening by keyboard',
+    fakeAsync(() => {
+      const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+      fixture.detectChanges();
+      const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+      patchElementFocus(triggerEl);
+      focusMonitor.monitor(triggerEl, false);
+
+      // Trigger a fake right click.
+      dispatchEvent(triggerEl, createMouseEvent('mousedown', 50, 100, 2));
+
+      // A click without a left button mousedown before it is considered a keyboard open.
+      triggerEl.click();
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.closeMenu();
+      fixture.detectChanges();
+      tick(500);
+      fixture.detectChanges();
+
+      expect(triggerEl.classList).toContain('cdk-program-focused');
       focusMonitor.stopMonitoring(triggerEl);
     }));
 
@@ -347,7 +372,7 @@ describe('MatMenu', () => {
 
     const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
 
-    dispatchFakeEvent(triggerEl, 'mousedown');
+    dispatchMouseEvent(triggerEl, 'mousedown');
     triggerEl.click();
     fixture.detectChanges();
     tick(500);
