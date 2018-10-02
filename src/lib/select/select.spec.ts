@@ -293,6 +293,29 @@ describe('MatSelect', () => {
               'Expected value from second option to have been set on the model.');
         }));
 
+        it('should select first/last options via the HOME/END keys on a closed select',
+          fakeAsync(() => {
+            const formControl = fixture.componentInstance.control;
+            const firstOption = fixture.componentInstance.options.first;
+            const lastOption = fixture.componentInstance.options.last;
+
+            expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+            const endEvent = dispatchKeyboardEvent(select, 'keydown', END);
+
+            expect(endEvent.defaultPrevented).toBe(true);
+            expect(lastOption.selected).toBe(true, 'Expected last option to be selected.');
+            expect(formControl.value).toBe(lastOption.value,
+                'Expected value from last option to have been set on the model.');
+
+            const homeEvent = dispatchKeyboardEvent(select, 'keydown', HOME);
+
+            expect(homeEvent.defaultPrevented).toBe(true);
+            expect(firstOption.selected).toBe(true, 'Expected first option to be selected.');
+            expect(formControl.value).toBe(firstOption.value,
+                'Expected value from first option to have been set on the model.');
+          }));
+
         it('should resume focus from selected item after selecting via click', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();

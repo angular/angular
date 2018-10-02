@@ -691,15 +691,21 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _handleClosedKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
     const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW ||
-        keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW;
+                       keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW;
     const isOpenKey = keyCode === ENTER || keyCode === SPACE;
+    const manager = this._keyManager;
 
     // Open the select on ALT + arrow key to match the native <select>
     if (isOpenKey || ((this.multiple || event.altKey) && isArrowKey)) {
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
     } else if (!this.multiple) {
-      this._keyManager.onKeydown(event);
+      if (keyCode === HOME || keyCode === END) {
+        keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
+        event.preventDefault();
+      } else {
+        manager.onKeydown(event);
+      }
     }
   }
 
