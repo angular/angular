@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, DoCheck, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, ViewRef, destroyPlatform} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, DoCheck, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, Type, ViewRef, destroyPlatform, getPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -24,6 +24,58 @@ withEachNg1Version(() => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
 
       beforeEach(() => destroyPlatform());
+
+      it('should support multiple downgraded modules', async(() => {
+           @Component({selector: 'ng2A', template: 'a'})
+           class Ng2ComponentA {
+           }
+
+           @Component({selector: 'ng2B', template: 'b'})
+           class Ng2ComponentB {
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentA],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleA {
+             ngDoBootstrap() {}
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentB],
+             entryComponents: [Ng2ComponentB],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleB {
+             ngDoBootstrap() {}
+           }
+
+           const doDowngradeModule = (module: Type<any>) => {
+             const bootstrapFn = (extraProviders: StaticProvider[]) =>
+                 (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(module);
+             return downgradeModule(bootstrapFn);
+           };
+
+           const downModA = doDowngradeModule(Ng2ModuleA);
+           const downModB = doDowngradeModule(Ng2ModuleB);
+           const ng1Module = angular.module('ng1', [downModA, downModB])
+                                 .directive('ng2A', downgradeComponent({
+                                              component: Ng2ComponentA,
+                                              downgradedModule: downModA, propagateDigest,
+                                            }))
+                                 .directive('ng2B', downgradeComponent({
+                                              component: Ng2ComponentB,
+                                              downgradedModule: downModB, propagateDigest,
+                                            }));
+
+           const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+           angular.bootstrap(element, [ng1Module.name]);
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => expect(element.textContent).toBe('a | b'));
+         }));
 
       it('should support downgrading a component and propagate inputs', async(() => {
            @Component(
