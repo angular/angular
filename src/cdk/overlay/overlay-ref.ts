@@ -189,10 +189,6 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       this._config.scrollStrategy.disable();
     }
 
-    if (this._config.panelClass) {
-      this._toggleClasses(this._pane, this._config.panelClass, false);
-    }
-
     const detachmentResult = this._portalOutlet.detach();
 
     // Only emit after everything is detached.
@@ -463,6 +459,10 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
           // Needs a couple of checks for the pane and host, because
           // they may have been removed by the time the zone stabilizes.
           if (!this._pane || !this._host || this._pane.children.length === 0) {
+            if (this._pane && this._config.panelClass) {
+              this._toggleClasses(this._pane, this._config.panelClass, false);
+            }
+
             if (this._host && this._host.parentElement) {
               this._previousHostParent = this._host.parentElement;
               this._previousHostParent.removeChild(this._host);

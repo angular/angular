@@ -758,16 +758,40 @@ describe('Overlay', () => {
       viewContainerFixture.detectChanges();
 
       const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-      expect(pane.classList).toContain('custom-panel-class');
+      expect(pane.classList).toContain('custom-panel-class', 'Expected class to be added');
 
       overlayRef.detach();
+      zone.simulateZoneExit();
       viewContainerFixture.detectChanges();
-      expect(pane.classList).not.toContain('custom-panel-class');
+      expect(pane.classList).not.toContain('custom-panel-class', 'Expected class to be removed');
 
       overlayRef.attach(componentPortal);
       viewContainerFixture.detectChanges();
-      expect(pane.classList).toContain('custom-panel-class');
+      expect(pane.classList).toContain('custom-panel-class', 'Expected class to be re-added');
     });
+
+    it('should wait for the overlay to be detached before removing the panelClass', () => {
+      const config = new OverlayConfig({panelClass: 'custom-panel-class'});
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.classList).toContain('custom-panel-class', 'Expected class to be added');
+
+      overlayRef.detach();
+      viewContainerFixture.detectChanges();
+
+      expect(pane.classList)
+          .toContain('custom-panel-class', 'Expected class not to be removed immediately');
+
+      zone.simulateZoneExit();
+
+      expect(pane.classList)
+          .not.toContain('custom-panel-class', 'Expected class to be removed on stable');
+    });
+
 
   });
 
