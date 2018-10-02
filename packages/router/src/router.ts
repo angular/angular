@@ -17,11 +17,10 @@ import {createUrlTree} from './create_url_tree';
 import {Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {activateRoutes} from './operators/activate_routes';
 import {applyRedirects} from './operators/apply_redirects';
-import {checkGuards} from './operators/check_guards';
+import {checkGuards, getAllRouteGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
 import {switchTap} from './operators/switch_tap';
-import {PreActivation} from './pre_activation';
 import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -167,9 +166,6 @@ function defaultMalformedUriErrorHandler(
   return urlSerializer.parse('/');
 }
 
-type NavStreamValue =
-    boolean | {appliedUrl: UrlTree, snapshot: RouterStateSnapshot, shouldActivate?: boolean};
-
 export type NavigationTransition = {
   id: number,
   currentUrlTree: UrlTree,
@@ -188,7 +184,6 @@ export type NavigationTransition = {
   currentRouterState: RouterState,
   targetRouterState: RouterState | null,
   guardsResult: boolean | null,
-  preActivation: PreActivation | null
 };
 
 /**
@@ -358,7 +353,6 @@ export class Router {
       currentRouterState: this.routerState,
       targetRouterState: null,
       guardsResult: null,
-      preActivation: null
     });
     this.navigations = this.setupNavigations(this.transitions);
 
@@ -481,15 +475,10 @@ export class Router {
                     t.targetSnapshot !);
                 this.triggerEvent(guardsStart);
               }),
-              map(t => {
-                const preActivation = new PreActivation(
-                    t.targetSnapshot !, t.currentSnapshot, this.ngModule.injector,
-                    (evt: Event) => this.triggerEvent(evt));
-                preActivation.initialize(this.rootContexts);
-                return {...t, preActivation};
-              }),
 
-              checkGuards(this.rootContexts, this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
+              checkGuards(
+                  this.rootContexts, this.ngModule.injector,
+                  (evt: Event) => this.triggerEvent(evt)),
 
               tap(t => {
                 const guardsEnd = new GuardsCheckEnd(
@@ -512,7 +501,8 @@ export class Router {
 
               // --- RESOLVE ---
               switchTap(t => {
-                if (t.preActivation !.isActivating()) {
+                if (getAllRouteGuards(t.targetSnapshot !, t.currentSnapshot, this.rootContexts)
+                        .canActivateChecks.length) {
                   return of (t).pipe(
                       tap(t => {
                         const resolveStart = new ResolveStart(
@@ -520,7 +510,9 @@ export class Router {
                             this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot !);
                         this.triggerEvent(resolveStart);
                       }),
-                      resolveData(this.paramsInheritanceStrategy),  //
+                      resolveData(
+                          this.rootContexts, this.paramsInheritanceStrategy,
+                          this.ngModule.injector),  //
                       tap(t => {
                         const resolveEnd = new ResolveEnd(
                             t.id, this.serializeUrl(t.extractedUrl),
