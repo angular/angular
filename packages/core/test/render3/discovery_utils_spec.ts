@@ -169,6 +169,48 @@ describe('discovery utils', () => {
       const elm2Dirs = getDirectives(elm2);
       expect(elm2Dirs).toContain(myDir3Instance !);
     });
+
+    it('should return a component as part of a directives list when asked for it', () => {
+      class MyDir {
+        static ngDirectiveDef = defineDirective(
+            {type: MyDir, selectors: [['', 'my-dir', '']], factory: () => new MyDir()});
+      }
+
+      class MyCmpt {
+        static ngComponentDef = defineComponent({
+          type: MyCmpt,
+          selectors: [['my-cmpt']],
+          factory: () => new MyCmpt(),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: MyCmpt) => {}
+        });
+      }
+
+      class TestComp {
+        static ngComponentDef = defineComponent({
+          type: TestComp,
+          selectors: [['comp']],
+          factory: () => new TestComp(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: TestComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'my-cmpt', ['my-dir']);
+            }
+          },
+          directives: [MyCmpt, MyDir]
+        });
+      }
+
+      const fixture = new ComponentFixture(TestComp);
+      fixture.update();
+
+      const myCmptEl = fixture.hostElement.querySelector('my-cmpt');
+
+      expect(getDirectives(myCmptEl !, false).length).toBe(1);
+      expect(getDirectives(myCmptEl !, true).length).toBe(2);
+    });
   });
 
   describe('getHostComponent()', () => {

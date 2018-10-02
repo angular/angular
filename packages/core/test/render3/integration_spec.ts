@@ -2219,22 +2219,22 @@ describe('render3 integration test', () => {
          assertMonkeyPatchValueIsLViewData(childComponentInstance);
 
          expect(getContext(myDir1Instance)).toBe(childNodeContext);
-         expect(childNodeContext.component).toBeFalsy();
-         expect(childNodeContext.directives !.length).toEqual(2);
+         expect(childNodeContext.component).toBeTruthy();
+         expect(childNodeContext.directives !.length).toEqual(3);
          assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
          assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance);
+         assertMonkeyPatchValueIsLViewData(childComponentInstance, false);
 
          expect(getContext(myDir2Instance)).toBe(childNodeContext);
-         expect(childNodeContext.component).toBeFalsy();
-         expect(childNodeContext.directives !.length).toEqual(2);
+         expect(childNodeContext.component).toBeTruthy();
+         expect(childNodeContext.directives !.length).toEqual(3);
          assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
          assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance);
+         assertMonkeyPatchValueIsLViewData(childComponentInstance, false);
 
          expect(getContext(childComponentInstance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeTruthy();
-         expect(childNodeContext.directives !.length).toEqual(2);
+         expect(childNodeContext.directives !.length).toEqual(3);
          assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
          assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
          assertMonkeyPatchValueIsLViewData(childComponentInstance, false);
