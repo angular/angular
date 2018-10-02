@@ -12,7 +12,7 @@ import {inject, injectArgs} from '../../di/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
 import {NgModule} from '../../metadata';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
-import {Type} from '../../type';
+import {Constructor, Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
 
 import * as ivyOn from './ivy_switch_on';
