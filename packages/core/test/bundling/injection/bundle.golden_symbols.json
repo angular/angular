@@ -9,13 +9,13 @@
     "name": "EMPTY_ARRAY$1"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "GET_PROPERTY_NAME"
   },
   {
     "name": "INJECTOR"
-  },
-  {
-    "name": "INJECTOR$2"
   },
   {
     "name": "Inject"
@@ -31,6 +31,9 @@
   },
   {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Optional"
@@ -55,6 +58,9 @@
   },
   {
     "name": "USE_VALUE"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "_THROW_IF_NOT_FOUND"

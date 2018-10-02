@@ -23,16 +23,12 @@ function main(args) {
   const data = JSON.parse(fs.readFileSync(input, {encoding: 'utf-8'}));
   data['compilerOptions']['target'] = 'es5';
   data['bazelOptions']['es5Mode'] = true;
-  // TODO(gregmagolan): remove this temporary fix for @rxjs on 6.1.x branch
-  //   once we can switch to an named UMD rxjs bundle and we are not building
-  //   rxjs from source with Bazel
-  if (!data['bazelOptions']['target'].startsWith('@rxjs//')) {
+  data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
+  if (data['angularCompilerOptions']) {
     // Enable tsickle for decorator downleveling only
     data['bazelOptions']['tsickle'] = true;
     data['bazelOptions']['tsickleExternsPath'] = '';
-  }
-  data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
-  if (data['angularCompilerOptions']) {
+
     // Don't enable tsickle's closure conversions
     data['angularCompilerOptions']['annotateForClosureCompiler'] = false;
     data['angularCompilerOptions']['expectedOut'] =

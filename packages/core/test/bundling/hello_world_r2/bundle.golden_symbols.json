@@ -225,7 +225,7 @@
     "name": "AttrAst"
   },
   {
-    "name": "Attribute$2"
+    "name": "Attribute$1"
   },
   {
     "name": "B64_DIGITS"
@@ -646,6 +646,9 @@
   },
   {
     "name": "EmitterVisitorContext"
+  },
+  {
+    "name": "EmptyErrorImpl"
   },
   {
     "name": "EmptyExpr"
@@ -1096,6 +1099,9 @@
   },
   {
     "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Observable"
@@ -1578,6 +1584,9 @@
     "name": "UnsubscriptionError"
   },
   {
+    "name": "UnsubscriptionErrorImpl"
+  },
+  {
     "name": "UrlResolver"
   },
   {
@@ -1920,22 +1929,16 @@
     "name": "__extends$5"
   },
   {
-    "name": "__extends$6"
+    "name": "__extends$l"
   },
   {
-    "name": "__extends$7"
+    "name": "__extends$m"
   },
   {
-    "name": "__extends$q"
+    "name": "__extends$n"
   },
   {
-    "name": "__extends$r"
-  },
-  {
-    "name": "__extends$s"
-  },
-  {
-    "name": "__extends$u"
+    "name": "__extends$p"
   },
   {
     "name": "__read"
@@ -2338,6 +2341,9 @@
   },
   {
     "name": "camelCaseToDashCase"
+  },
+  {
+    "name": "canReportError"
   },
   {
     "name": "checkAndUpdateBinding"
@@ -3129,6 +3135,9 @@
     "name": "isIdentifierStart"
   },
   {
+    "name": "isInteropObservable"
+  },
+  {
     "name": "isIterable"
   },
   {
@@ -3162,9 +3171,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isPrefixEnd"
   },
   {
@@ -3187,9 +3193,6 @@
   },
   {
     "name": "isStyleUrlResolvable"
-  },
-  {
-    "name": "isTrustedSubscriber"
   },
   {
     "name": "isType"
