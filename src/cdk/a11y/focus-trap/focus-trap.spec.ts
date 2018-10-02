@@ -104,7 +104,7 @@ describe('FocusTrap', () => {
       fixture.componentInstance._isFocusTrapEnabled = false;
       fixture.detectChanges();
 
-      expect(anchors.every(current => current.getAttribute('tabindex') === '-1')).toBe(true);
+      expect(anchors.every(current => !current.hasAttribute('tabindex'))).toBe(true);
     });
   });
 
