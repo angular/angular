@@ -669,7 +669,7 @@ describe('MatBottomSheet with default options', () => {
     dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
 
     expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
-    expect(document.activeElement.tagName).not.toBe('INPUT');
+    expect(document.activeElement!.tagName).not.toBe('INPUT');
   });
 
   it('should be overridable by open() options', fakeAsync(() => {
