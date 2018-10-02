@@ -1,3 +1,75 @@
+<a name="7.0.0-rc.0"></a>
+# 7.0.0-rc.0 (2018-10-02)
+
+
+### Bug Fixes
+
+* **autocomplete:** dividers in list throwing off keyboard navigation ([#13224](https://github.com/angular/material2/issues/13224)) ([0886cef](https://github.com/angular/material2/commit/0886cef)), closes [#13200](https://github.com/angular/material2/issues/13200)
+* **button:** fix stroked button border color ([#13219](https://github.com/angular/material2/issues/13219)) ([bfeb540](https://github.com/angular/material2/commit/bfeb540))
+* **checkbox:** clear tabindex from host element ([#13308](https://github.com/angular/material2/issues/13308)) ([845388c](https://github.com/angular/material2/commit/845388c))
+* **chips:** set aria-invalid on chip input ([#13249](https://github.com/angular/material2/issues/13249)) ([311d786](https://github.com/angular/material2/commit/311d786)), closes [#13205](https://github.com/angular/material2/issues/13205)
+* **common:** account for async hammer loader when checking whether hammer is defined ([#12933](https://github.com/angular/material2/issues/12933)) ([d15431b](https://github.com/angular/material2/commit/d15431b))
+* **drag-drop:** emitting incorrect index for horizontal list in rtl ([#13274](https://github.com/angular/material2/issues/13274)) ([f3bb0c7](https://github.com/angular/material2/commit/f3bb0c7))
+* **drag-drop:** error on IE when customizing root element ([#13279](https://github.com/angular/material2/issues/13279)) ([e1071f0](https://github.com/angular/material2/commit/e1071f0))
+* **drag-drop:** unable to return item to initial container within same drag sequence, if not connected to current drag container ([#13247](https://github.com/angular/material2/issues/13247)) ([0ac41a0](https://github.com/angular/material2/commit/0ac41a0)), closes [#13246](https://github.com/angular/material2/issues/13246)
+* **form-field:** always use native input value to determine whether control is empty ([#13307](https://github.com/angular/material2/issues/13307)) ([10e6502](https://github.com/angular/material2/commit/10e6502)), closes [#13305](https://github.com/angular/material2/issues/13305)
+* **form-field:** incorrect arrow color for native select ([#13046](https://github.com/angular/material2/issues/13046)) ([10b8353](https://github.com/angular/material2/commit/10b8353))
+* **form-field:** native date/time input taller than text input ([#13321](https://github.com/angular/material2/issues/13321)) ([92a5f0e](https://github.com/angular/material2/commit/92a5f0e)), closes [#13317](https://github.com/angular/material2/issues/13317)
+* **form-field:** native select outline not reset on firefox ([#12967](https://github.com/angular/material2/issues/12967)) ([38e492f](https://github.com/angular/material2/commit/38e492f))
+* **grid:** fix mat-grid-tile position ([#12980](https://github.com/angular/material2/issues/12980)) ([966cf5f](https://github.com/angular/material2/commit/966cf5f))
+* **grid-list:** exception thrown when rowHeight is set before first change detection run ([#13112](https://github.com/angular/material2/issues/13112)) ([e7007a2](https://github.com/angular/material2/commit/e7007a2)), closes [#13102](https://github.com/angular/material2/issues/13102)
+* **grid-list:** throw error if invalid value is assigned for rowHeight ([#13254](https://github.com/angular/material2/issues/13254)) ([210f3f9](https://github.com/angular/material2/commit/210f3f9)), closes [#13252](https://github.com/angular/material2/issues/13252)
+* **list:** set aria-multiselectable on selection list ([#13325](https://github.com/angular/material2/issues/13325)) ([877ef5d](https://github.com/angular/material2/commit/877ef5d))
+* **overlay:** connected overlay directive inputs not updating position strategy ([#13066](https://github.com/angular/material2/issues/13066)) ([1d8e9af](https://github.com/angular/material2/commit/1d8e9af))
+* **paginator:** getNumberOfPages off by one ([#10724](https://github.com/angular/material2/issues/10724)) ([016ba5c](https://github.com/angular/material2/commit/016ba5c)), closes [#10720](https://github.com/angular/material2/issues/10720) [#10699](https://github.com/angular/material2/issues/10699)
+* **radio:** clear tabindex from host element ([#13323](https://github.com/angular/material2/issues/13323)) ([5c0a061](https://github.com/angular/material2/commit/5c0a061)), closes [#13311](https://github.com/angular/material2/issues/13311) [#13308](https://github.com/angular/material2/issues/13308)
+* **schematics:** addressForm: fix bad Validators definition and TSLint ([#13285](https://github.com/angular/material2/issues/13285)) ([267dd65](https://github.com/angular/material2/commit/267dd65))
+* **schematics:** dashboard schematic fails parsing declaration in spec ([#13269](https://github.com/angular/material2/issues/13269)) ([543cb9f](https://github.com/angular/material2/commit/543cb9f))
+* **schematics:** fix typo in table's datasource ([#13283](https://github.com/angular/material2/issues/13283)) ([0ccdfc8](https://github.com/angular/material2/commit/0ccdfc8))
+* **schematics:** nav schematic generates TSLint errors ([#13268](https://github.com/angular/material2/issues/13268)) ([8d25fd1](https://github.com/angular/material2/commit/8d25fd1))
+* **schematics:** remove unnecessary semicolon in tree component ([#13284](https://github.com/angular/material2/issues/13284)) ([8558878](https://github.com/angular/material2/commit/8558878))
+* **schematics:** sidenav toolbar should use default background ([#13282](https://github.com/angular/material2/issues/13282)) ([c454f7b](https://github.com/angular/material2/commit/c454f7b))
+* **schematics:** table schematic not expanding full width ([#13234](https://github.com/angular/material2/issues/13234)) ([884762f](https://github.com/angular/material2/commit/884762f))
+* **schematics:** toolbar in nav w/o z-index causes issues with dashboard ([#13270](https://github.com/angular/material2/issues/13270)) ([d74e38c](https://github.com/angular/material2/commit/d74e38c))
+* **select:** give native select a bigger clickable area ([#13228](https://github.com/angular/material2/issues/13228)) ([6da7d23](https://github.com/angular/material2/commit/6da7d23))
+* **slide-toggle:** clear tabindex from host element ([#13311](https://github.com/angular/material2/issues/13311)) ([119fafd](https://github.com/angular/material2/commit/119fafd)), closes [#13308](https://github.com/angular/material2/issues/13308)
+* **snack-bar:** button not centered inside snack bar on IE11 ([#13062](https://github.com/angular/material2/issues/13062)) ([4e05745](https://github.com/angular/material2/commit/4e05745))
+* **snackbar:** move elevation style to snackbar theme ([#13273](https://github.com/angular/material2/issues/13273)) ([96e670f](https://github.com/angular/material2/commit/96e670f))
+* **stepper:** vertical step header labels not centered on IE ([#13262](https://github.com/angular/material2/issues/13262)) ([40fb5cb](https://github.com/angular/material2/commit/40fb5cb))
+* **tooltip:** custom gesture config not set up ([#12941](https://github.com/angular/material2/issues/12941)) ([1852563](https://github.com/angular/material2/commit/1852563)), closes [#12940](https://github.com/angular/material2/issues/12940) [#12917](https://github.com/angular/material2/issues/12917)
+* **tooltip:** hiding and reopening for consecutive show calls ([#13326](https://github.com/angular/material2/issues/13326)) ([b5001f6](https://github.com/angular/material2/commit/b5001f6))
+
+
+### Features
+
+* **badge:** allow badge to be disabled ([#13196](https://github.com/angular/material2/issues/13196)) ([bfc1286](https://github.com/angular/material2/commit/bfc1286)), closes [#13191](https://github.com/angular/material2/issues/13191)
+* **button-toggle:** align with 2018 material design spec ([#12443](https://github.com/angular/material2/issues/12443)) ([fd3eb6a](https://github.com/angular/material2/commit/fd3eb6a))
+* **overlay:** add option to automatically dispose on navigation ([#12592](https://github.com/angular/material2/issues/12592)) ([d48b1ba](https://github.com/angular/material2/commit/d48b1ba)), closes [#12544](https://github.com/angular/material2/issues/12544)
+* **overlay:** add support for swappable position strategies ([#12306](https://github.com/angular/material2/issues/12306)) ([e0f3ae7](https://github.com/angular/material2/commit/e0f3ae7))
+* **schematics:** support for cdk `ng add` ([#13319](https://github.com/angular/material2/issues/13319)) ([ac3f8c4](https://github.com/angular/material2/commit/ac3f8c4))
+* **schematics:** support for cdk `ng-update`. ([#13303](https://github.com/angular/material2/issues/13303)) ([1afddfb](https://github.com/angular/material2/commit/1afddfb))
+* **tabs:** align with 2018 material design spec ([#12605](https://github.com/angular/material2/issues/12605)) ([0c5598c](https://github.com/angular/material2/commit/0c5598c))
+* **tree:** support units different than px for indentation ([#12991](https://github.com/angular/material2/issues/12991)) ([590d294](https://github.com/angular/material2/commit/590d294))
+
+
+### Performance Improvements
+
+* **virtual-scroll:** use auditTime instead of sampleTime ([#13131](https://github.com/angular/material2/issues/13131)) ([c26dc74](https://github.com/angular/material2/commit/c26dc74))
+
+
+### update
+
+* **ripple:** remove deprecated speed factor option ([#12258](https://github.com/angular/material2/issues/12258)) ([a6c91bc](https://github.com/angular/material2/commit/a6c91bc))
+
+
+### BREAKING CHANGES
+
+* **ripple:** deprecated `[matRippleSpeedFactor]` and `baseSpeedFactor` for the ripples have been removed. Use the new animation config instead.
+
+* Add test case; fix NodeJS version target circular dependency; Support for rule version constraints
+
+
+
 <a name="7.0.0-beta.2"></a>
 # 7.0.0-beta.2 (2018-09-20)
 
