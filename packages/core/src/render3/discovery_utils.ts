@@ -9,9 +9,9 @@ import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
 import {LContext, discoverDirectiveIndices, discoverDirectives, discoverLocalRefs, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
-import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
-import {CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
-
+import {NodeInjector} from './di';
+import {LElementNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 
 /**
  * NOTE: The following functions might not be ideal for core usage in Angular...
@@ -89,9 +89,11 @@ export function getRootComponents(target: {}): any[] {
  * Returns the injector instance that is associated with
  * the element, component or directive.
  */
-export function getInjector(target: {}): Injector|null {
-  const context = loadContext(target) !;
-  return context.lViewData[INJECTOR] || null;
+export function getInjector(target: {}): Injector {
+  const context = loadContext(target);
+  const tNode = context.lViewData[TVIEW].data[context.lNodeIndex] as TElementNode;
+
+  return new NodeInjector(tNode, context.lViewData);
 }
 
 /**
