@@ -214,24 +214,29 @@ export interface INgModelController {
   $name: string;
 }
 
-function noNg() {
+function noNg(): never {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
+const noNgElement: typeof angular.element = () => noNg();
+noNgElement.cleanData = noNg;
 
 let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
                  IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
-  element: (e: string | Element | Document | IAugmentedJQuery) => IAugmentedJQuery,
+  element: {
+    (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
+    cleanData: (nodes: Node[] | NodeList) => void;
+  },
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
-} = <any>{
+} = {
   bootstrap: noNg,
   module: noNg,
-  element: noNg,
-  version: undefined,
+  element: noNgElement,
+  version: undefined as any,
   resumeBootstrap: noNg,
   getTestability: noNg
 };
@@ -282,6 +287,7 @@ export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
 export const element: typeof angular.element = e => angular.element(e);
+element.cleanData = nodes => angular.element.cleanData(nodes);
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
