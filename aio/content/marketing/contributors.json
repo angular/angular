@@ -671,5 +671,14 @@
     "website": "https://sajeetharan.herokuapp.com/",
     "bio": "Sajeetharan is a Developer, Top contributor on stackoverflow for #Angular, ng-SriLanka organizer. He makes use of his extensive knowledge over the past years to contribute to community to make the world a better place.",
     "group": "GDE"
+  },
+
+  "lacolaco": {
+    "name": "Suguru Inatomi",
+    "picture": "lacolaco.jpg",
+    "twitter": "laco2net",
+    "website": "https://lacolaco.net",
+    "bio": "Suguru is a community-loving Frontend developer and a lead of Angular Japan User Group. He organizes the largest Angular event in Japan (ng-japan). And he is a contributor to Angular by sending patches, writing, speaking, and localizing resources in Japanese.",
+    "group": "GDE"
   }
 }
