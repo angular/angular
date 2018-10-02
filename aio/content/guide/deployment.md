@@ -254,7 +254,7 @@ The `--prod` _meta-flag_ engages the following optimization features.
 The remaining [copy deployment steps](#copy-files) are the same as before.
 
 See [Building and serving Angular apps](guide/build) 
-for more about about CLI build options and what they do.
+for more about CLI build options and what they do.
 
 {@a enable-prod-mode}
 
