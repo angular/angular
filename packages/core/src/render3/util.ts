@@ -11,7 +11,7 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDefined, assertLessThan} from './assert';
 import {readElementValue, readPatchedLViewData} from './context_discovery';
 import {LContainerNode, LElementContainerNode, LElementNode, TNode, TNodeFlags} from './interfaces/node';
-import {CONTEXT, FLAGS, HEADER_OFFSET, LViewData, LViewFlags, PARENT, RootContext, TData} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
 
 
 

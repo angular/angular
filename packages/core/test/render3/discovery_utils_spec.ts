@@ -7,7 +7,7 @@
  */
 import {StaticInjector} from '../../src/di/injector';
 import {getComponent, getDirectives, getHostComponent, getInjector, getLocalRefs, getRootComponents} from '../../src/render3/discovery_utils';
-import {RenderFlags, defineComponent, defineDirective} from '../../src/render3/index';
+import {PublicFeature, RenderFlags, defineComponent, defineDirective} from '../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply} from '../../src/render3/instructions';
 
 import {ComponentFixture} from './render_util';
@@ -220,50 +220,51 @@ describe('discovery utils', () => {
     });
   });
 
-  describe('getInjector()', () => {
-    it('should return the instance of the injector that was passed into the component', () => {
+  describe('getInjector', () => {
+
+    it('should return an injector that can return directive instances', () => {
+
       class Comp {
         static ngComponentDef = defineComponent({
           type: Comp,
           selectors: [['comp']],
           factory: () => new Comp(),
-          consts: 1,
+          consts: 0,
           vars: 0,
-          template: (rf: RenderFlags, ctx: Comp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');
-            }
-          }
-        });
-      }
-
-      const injector = new StaticInjector([]);
-      const fixture = new ComponentFixture(Comp, {injector});
-      fixture.update();
-
-      expect(getInjector(fixture.hostElement) !).toBe(injector);
-    });
-
-    it('should return null when there is no injector passed into a component', () => {
-      class Comp {
-        static ngComponentDef = defineComponent({
-          type: Comp,
-          selectors: [['comp']],
-          factory: () => new Comp(),
-          consts: 1,
-          vars: 0,
-          template: (rf: RenderFlags, ctx: Comp) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'div');
-            }
-          }
+          template: (rf: RenderFlags, ctx: Comp) => {},
+          features: [PublicFeature]
         });
       }
 
       const fixture = new ComponentFixture(Comp);
       fixture.update();
 
-      expect(getInjector(fixture.hostElement)).toEqual(null);
+      const nodeInjector = getInjector(fixture.hostElement);
+      expect(nodeInjector.get(Comp)).toEqual(jasmine.any(Comp));
+    });
+
+    it('should return an injector that falls-back to a module injector', () => {
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          factory: () => new Comp(),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: Comp) => {},
+          features: [PublicFeature]
+        });
+      }
+
+      class TestToken {}
+
+      const staticInjector = new StaticInjector([{provide: TestToken, useValue: new TestToken()}]);
+      const fixture = new ComponentFixture(Comp, {injector: staticInjector});
+      fixture.update();
+
+      const nodeInjector = getInjector(fixture.hostElement);
+      expect(nodeInjector.get(TestToken)).toEqual(jasmine.any(TestToken));
     });
   });
 
