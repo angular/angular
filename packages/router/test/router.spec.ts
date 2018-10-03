@@ -18,6 +18,7 @@ import {NavigationTransition, Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
 import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
+import {getAllRouteGuards} from '../src/utils/preactivation';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/src/router_testing_module';
 
@@ -143,9 +144,8 @@ describe('Router', () => {
         const futureState = new (RouterStateSnapshot as any)(
             'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
 
-        of ({targetSnapshot: futureState, currentSnapshot: empty})
-            .pipe(checkGuardsOperator(
-                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+        of ({guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())})
+            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
             .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -178,9 +178,8 @@ describe('Router', () => {
                   new TreeNode(grandchildSnapshot, [new TreeNode(greatGrandchildSnapshot, [])])
                 ])]));
 
-        of ({targetSnapshot: futureState, currentSnapshot: empty})
-            .pipe(checkGuardsOperator(
-                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+        of ({guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts())})
+            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
             .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -211,9 +210,8 @@ describe('Router', () => {
             new TreeNode(
                 empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
 
-        of ({targetSnapshot: futureState, currentSnapshot: currentState})
-            .pipe(checkGuardsOperator(
-                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+        of ({guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())})
+            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
             .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -257,9 +255,8 @@ describe('Router', () => {
                           greatGrandchildSnapshot, [new TreeNode(greatGreatGrandchildSnapshot, [])])
                     ])])]));
 
-        of ({targetSnapshot: futureState, currentSnapshot: currentState})
-            .pipe(checkGuardsOperator(
-                new ChildrenOutletContexts(), TestBed, (evt) => { events.push(evt); }))
+        of ({guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts())})
+            .pipe(checkGuardsOperator(TestBed, (evt) => { events.push(evt); }))
             .subscribe((x) => result = !!x.guardsResult, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -538,15 +535,19 @@ describe('Router', () => {
 
 function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
-  of ({ targetSnapshot: future, currentSnapshot: curr } as Partial<NavigationTransition>)
-      .pipe(resolveDataOperator(new ChildrenOutletContexts(), 'emptyOnly', injector))
+  of ({
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
+  } as Partial<NavigationTransition>)
+      .pipe(resolveDataOperator('emptyOnly', injector))
       .subscribe(check, (e) => { throw e; });
 }
 
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
     check: (result: boolean) => void): void {
-  of ({ targetSnapshot: future, currentSnapshot: curr } as Partial<NavigationTransition>)
-      .pipe(checkGuardsOperator(new ChildrenOutletContexts(), injector))
+  of ({
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
+  } as Partial<NavigationTransition>)
+      .pipe(checkGuardsOperator(injector))
       .subscribe(t => check(!!t.guardsResult), (e) => { throw e; });
 }

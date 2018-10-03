@@ -28,7 +28,7 @@ import {ActivatedRoute, RouterState, RouterStateSnapshot, createEmptyState} from
 import {Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
-import {getAllRouteGuards} from './utils/preactivation';
+import {Checks, getAllRouteGuards} from './utils/preactivation';
 
 
 
@@ -185,6 +185,7 @@ export type NavigationTransition = {
   targetSnapshot: RouterStateSnapshot | null,
   currentRouterState: RouterState,
   targetRouterState: RouterState | null,
+  guards: Checks,
   guardsResult: boolean | null,
 };
 
@@ -354,6 +355,7 @@ export class Router {
       targetSnapshot: null,
       currentRouterState: this.routerState,
       targetRouterState: null,
+      guards: {canActivateChecks: [], canDeactivateChecks: []},
       guardsResult: null,
     });
     this.navigations = this.setupNavigations(this.transitions);
@@ -478,9 +480,13 @@ export class Router {
                 this.triggerEvent(guardsStart);
               }),
 
-              checkGuards(
-                  this.rootContexts, this.ngModule.injector,
-                  (evt: Event) => this.triggerEvent(evt)),
+              map(t => ({
+                    ...t,
+                    guards:
+                        getAllRouteGuards(t.targetSnapshot !, t.currentSnapshot, this.rootContexts)
+                  })),
+
+              checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
 
               tap(t => {
                 const guardsEnd = new GuardsCheckEnd(
@@ -503,8 +509,7 @@ export class Router {
 
               // --- RESOLVE ---
               switchTap(t => {
-                if (getAllRouteGuards(t.targetSnapshot !, t.currentSnapshot, this.rootContexts)
-                        .canActivateChecks.length) {
+                if (t.guards.canActivateChecks.length) {
                   return of (t).pipe(
                       tap(t => {
                         const resolveStart = new ResolveStart(
@@ -513,7 +518,7 @@ export class Router {
                         this.triggerEvent(resolveStart);
                       }),
                       resolveData(
-                          this.rootContexts, this.paramsInheritanceStrategy,
+                          this.paramsInheritanceStrategy,
                           this.ngModule.injector),  //
                       tap(t => {
                         const resolveEnd = new ResolveEnd(

@@ -12,25 +12,23 @@ import {concatMap, last, map, mergeMap, reduce} from 'rxjs/operators';
 
 import {ResolveData} from '../config';
 import {NavigationTransition} from '../router';
-import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
 
-import {getAllRouteGuards, getToken} from '../utils/preactivation';
+import {getToken} from '../utils/preactivation';
 
 export function resolveData(
-    rootContexts: ChildrenOutletContexts, paramsInheritanceStrategy: 'emptyOnly' | 'always',
+    paramsInheritanceStrategy: 'emptyOnly' | 'always',
     moduleInjector: Injector): MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
     return source.pipe(mergeMap(t => {
-      const {targetSnapshot, currentSnapshot} = t;
-      const checks = getAllRouteGuards(targetSnapshot !, currentSnapshot, rootContexts);
+      const {targetSnapshot, guards: {canActivateChecks}} = t;
 
-      if (!checks.canActivateChecks.length) {
+      if (!canActivateChecks.length) {
         return of (t);
       }
 
-      return from(checks.canActivateChecks)
+      return from(canActivateChecks)
           .pipe(
               concatMap(
                   check => runResolve(
