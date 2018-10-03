@@ -289,7 +289,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
  */
-export type TypeProvider = ConcreteType<any>;
+export type TypeProvider = Type<any>;
 
 /**
  * Configures the `Injector` to return a value by invoking a `useClass` function.

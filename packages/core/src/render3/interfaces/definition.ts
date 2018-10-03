@@ -8,9 +8,7 @@
 
 import {Provider, ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
-
 import {CssSelectorList} from './projection';
-
 
 
 /**
@@ -47,7 +45,7 @@ export const enum RenderFlags {
  */
 export type ComponentType<T> = Type<T>& {
   ngComponentDef: never;
-}
+};
 
 /**
  * A subclass of `Type` which has a static `ngDirectiveDef`:`DirectiveDef` field making it
@@ -55,7 +53,7 @@ export type ComponentType<T> = Type<T>& {
  */
 export type DirectiveType<T> = Type<T>& {
   ngDirectiveDef: never;
-}
+};
 
 export const enum DirectiveDefFlags {ContentQuery = 0b10}
 
@@ -65,7 +63,7 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  */
 export type PipeType<T> = Type<T>& {
   ngPipeDef: never;
-}
+};
 
 /**
  * A version of {@link DirectiveDef} that represents the runtime type shape only, and excludes

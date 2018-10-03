@@ -22,7 +22,7 @@ export function isType(v: any): v is Type<any> {
   return typeof v === 'function';
 }
 
-export interface AbstractType<T> extends Function { prototype: T }
+export interface AbstractType<T> extends Function { prototype: T; }
 export interface ConcreteType<T> extends Function { new (...args: any[]): T; }
 
 // See https://github.com/angular/angular/pull/25222#issuecomment-426423317 for why

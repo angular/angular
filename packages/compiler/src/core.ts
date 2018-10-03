@@ -154,7 +154,14 @@ export const createSelf = makeMetadataFactory('Self');
 export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
-export interface Type extends Function { new (...args: any[]): any; }
+export interface AbstractType extends Function { prototype: any; }
+export interface ConcreteType extends Function { new (...args: any[]): any; }
+
+// See https://github.com/angular/angular/pull/25222#issuecomment-426423317 for why
+// we have to use union rather than extends. Using extends is a breaking change because
+// we get into situations where we both narrow and restrict types during casting which
+// causes TypeScript to fail.
+export type Type = AbstractType | ConcreteType;
 export const Type = Function;
 
 export enum SecurityContext {

@@ -81,7 +81,7 @@ export type InjectableType<T> = Type<T>& {
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
   ngInjectableDef: never;
-}
+};
 
 /**
  * A type which has an `InjectorDef` static field.
@@ -97,7 +97,7 @@ export type InjectorType<T> = ConcreteType<T>& {
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
   ngInjectorDef: never;
-}
+};
 
 /**
  * Describes the `InjectorDef` equivalent of a `ModuleWithProviders`, an `InjectorDefType` with an

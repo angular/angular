@@ -22,8 +22,8 @@ import {APP_ROOT} from './scope';
 /**
  * Internal type for a single provider in a deep provider array.
  */
-type SingleProvider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider |
-    ExistingProvider | FactoryProvider | StaticClassProvider;
+type SingleProvider = InjectableType<any>| TypeProvider | ValueProvider | ClassProvider |
+    ConstructorProvider | ExistingProvider | FactoryProvider | StaticClassProvider;
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.
@@ -260,7 +260,7 @@ export class R3Injector {
 
     // Next, include providers listed on the definition itself.
     if (def.providers != null) {
-      deepForEach(def.providers, (provider: SingleProvider) => this.processProvider(provider));
+      deepForEach(def.providers, provider => this.processProvider(provider));
     }
 
     // Finally, include providers from an InjectorDefTypeWithProviders if there was one.

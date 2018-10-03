@@ -12,12 +12,12 @@ import {Type} from '../type';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, ValueProvider} from './provider';
 import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 
 
-interface NormalizedProvider extends TypeProvider, ValueProvider, ClassProvider, ExistingProvider,
+interface NormalizedProvider extends ValueProvider, ClassProvider, ExistingProvider,
     FactoryProvider {}
 
 /**

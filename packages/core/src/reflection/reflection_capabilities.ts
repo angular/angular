@@ -14,7 +14,6 @@ import {PlatformReflectionCapabilities} from './platform_reflection_capabilities
 import {GetterFn, MethodFn, SetterFn} from './types';
 
 
-
 /**
  * Attention: These regex has to hold even if the code is minified!
  */
