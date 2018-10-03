@@ -10,7 +10,7 @@ import {Observable} from 'rxjs';
 
 import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {UrlSegment} from './url_tree';
+import {UrlSegment, UrlTree} from './url_tree';
 
 
 /**
@@ -33,7 +33,7 @@ import {UrlSegment} from './url_tree';
  *   canActivate(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -80,8 +80,11 @@ import {UrlSegment} from './url_tree';
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|Promise<boolean>|boolean;
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
+
+export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    Observable<boolean>| Promise<boolean>| boolean | UrlTree;
 
 /**
  * @description
@@ -103,7 +106,7 @@ export interface CanActivate {
  *   canActivateChild(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -160,8 +163,11 @@ export interface CanActivate {
  */
 export interface CanActivateChild {
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
-      Observable<boolean>|Promise<boolean>|boolean;
+      Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree;
 }
+
+export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
+    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description
@@ -185,7 +191,7 @@ export interface CanActivateChild {
  *     currentRoute: ActivatedRouteSnapshot,
  *     currentState: RouterStateSnapshot,
  *     nextState: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean {
+ *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
  *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -234,8 +240,13 @@ export interface CanActivateChild {
 export interface CanDeactivate<T> {
   canDeactivate(
       component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-      nextState?: RouterStateSnapshot): Observable<boolean>|Promise<boolean>|boolean;
+      nextState?: RouterStateSnapshot): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean
+      |UrlTree;
 }
+
+export type CanDeactivateFn<T> =
+    (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
+     nextState?: RouterStateSnapshot) => Observable<boolean>| Promise<boolean>| boolean | UrlTree;
 
 /**
  * @description
@@ -374,7 +385,9 @@ export interface Resolve<T> {
  *
  * @publicApi
  */
-export interface CanLoad { canLoad: CanLoadFn; }
+export interface CanLoad {
+  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
+}
 
 export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
     Observable<boolean>| Promise<boolean>| boolean;

@@ -7,7 +7,7 @@
  */
 
 import {Type} from '@angular/core';
-import {CanActivate, CanActivateChild, CanDeactivate} from '../interfaces';
+import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../interfaces';
 
 /**
  * Simple function check, but generic so type inference will flow. Example:
@@ -24,6 +24,10 @@ import {CanActivate, CanActivateChild, CanDeactivate} from '../interfaces';
  */
 export function isFunction<T>(v: any): v is T {
   return typeof v === 'function';
+}
+
+export function isCanLoad(guard: any): guard is CanLoad {
+  return guard && isFunction<CanLoad>(guard.canLoad);
 }
 
 export function isCanActivate(guard: any): guard is CanActivate {
