@@ -1622,7 +1622,7 @@ describe('CdkDrag', () => {
         dropInstances[0].connectedTo = dropInstances[1];
         dropInstances[1].connectedTo = [];
 
-        dispatchMouseEvent(item.element.nativeElement, 'mousedown');
+        startDraggingViaMouse(fixture, item.element.nativeElement);
         fixture.detectChanges();
 
         const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
