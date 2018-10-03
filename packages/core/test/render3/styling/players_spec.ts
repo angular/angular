@@ -9,9 +9,9 @@ import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, getHostElement} from '../../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply, load, markDirty} from '../../../src/render3/instructions';
-import {PlayState, Player, PlayerContext, PlayerHandler} from '../../../src/render3/interfaces/player';
+import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
-import {addPlayer, getPlayers} from '../../../src/render3/player';
+import {addPlayer, getPlayers} from '../../../src/render3/players';
 import {QueryList, query, queryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
@@ -56,14 +56,14 @@ describe('animation player access', () => {
   it('should add a player to the element animation context and remove it once it completes', () => {
     const element = buildElement();
     const context = getOrCreatePlayerContext(element);
-    expect(context).toEqual([]);
+    expect(getPlayers(element)).toEqual([]);
 
     const player = new MockPlayer();
     addPlayer(element, player);
-    expect(readPlayers(context)).toEqual([player]);
+    expect(getPlayers(element)).toEqual([player]);
 
     player.destroy();
-    expect(readPlayers(context)).toEqual([]);
+    expect(getPlayers(element)).toEqual([]);
   });
 
   it('should flush all pending animation players after change detection', () => {
@@ -224,10 +224,6 @@ function buildElementWithStyling() {
   const fixture = new ComponentFixture(CompWithStyling);
   fixture.update();
   return fixture.hostElement.querySelector('div') as RElement;
-}
-
-function readPlayers(context: PlayerContext): Player[] {
-  return context;
 }
 
 class Comp {

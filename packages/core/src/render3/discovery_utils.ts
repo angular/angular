@@ -74,9 +74,9 @@ export function getHostComponent<T = {}>(target: {}): T|null {
  * Returns the `RootContext` instance that is associated with
  * the application where the target is situated.
  */
-export function getRootContext(target: {}): RootContext {
-  const context = loadContext(target) !;
-  const rootLViewData = getRootView(context.lViewData);
+export function getRootContext(target: LViewData | {}): RootContext {
+  const lViewData = Array.isArray(target) ? target : loadContext(target) !.lViewData;
+  const rootLViewData = getRootView(lViewData);
   return rootLViewData[CONTEXT] as RootContext;
 }
 
