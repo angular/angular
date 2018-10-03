@@ -174,7 +174,7 @@ export {
 export {
   addPlayer as ɵaddPlayer,
   getPlayers as ɵgetPlayers,
-} from './render3/player';
+} from './render3/players';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
