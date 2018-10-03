@@ -66,8 +66,6 @@
 
 * **ripple:** deprecated `[matRippleSpeedFactor]` and `baseSpeedFactor` for the ripples have been removed. Use the new animation config instead.
 
-* Add test case; fix NodeJS version target circular dependency; Support for rule version constraints
-
 
 
 <a name="7.0.0-beta.2"></a>
