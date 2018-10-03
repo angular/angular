@@ -1221,15 +1221,15 @@ describe('compiler compliance', () => {
         };
 
         const ViewQueryComponentDefinition = `
-          const $e0_attrs$ = ["myRef", ""];
-          const $e1_attrs$ = ["myRef1", ""];
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
           ViewQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵquery(0, ["myRef"], true);
-                $r3$.ɵquery(1, ["myRef1", "myRef2", "myRef3"], true);
+                $r3$.ɵquery(0, $e0_attrs$, true);
+                $r3$.ɵquery(1, $e1_attrs$, true);
               }
               if (rf & 2) {
                 var $tmp$;
@@ -1271,15 +1271,15 @@ describe('compiler compliance', () => {
         };
 
         const ViewQueryComponentDefinition = `
-          const $e0_attrs$ = ["myRef", ""];
-          const $e1_attrs$ = ["myRef1", ""];
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
           …
           ViewQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵquery(0, ["myRef"], true, ElementRef);
-                $r3$.ɵquery(1, ["myRef1", "myRef2", "myRef3"], true, ElementRef);
+                $r3$.ɵquery(0, $e0_attrs$, true, ElementRef);
+                $r3$.ɵquery(1, $e1_attrs$, true, ElementRef);
               }
               if (rf & 2) {
                 var $tmp$;
@@ -1393,14 +1393,14 @@ describe('compiler compliance', () => {
       };
 
       const ContentQueryComponentDefinition = `
-        const $e0_attrs$ = ["myRef", ""];
-        const $e1_attrs$ = ["myRef1", ""];
+        const $e0_attrs$ = ["myRef"];
+        const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
         …
         ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
           …
           contentQueries: function ContentQueryComponent_ContentQueries() {
-            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef"], true));
-            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef1", "myRef2", "myRef3"], false));
+            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true));
+            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false));
           },
           contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
             const instance = $r3$.ɵload(dirIndex);
@@ -1442,14 +1442,14 @@ describe('compiler compliance', () => {
       };
 
       const ContentQueryComponentDefinition = `
-        const $e0_attrs$ = ["myRef", ""];
-        const $e1_attrs$ = ["myRef1", ""];
+        const $e0_attrs$ = ["myRef"];
+        const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
         …
         ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
           …
           contentQueries: function ContentQueryComponent_ContentQueries() {
-            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef"], true, ElementRef));
-            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef1", "myRef2", "myRef3"], false, ElementRef));
+            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true, ElementRef));
+            $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false, ElementRef));
           },
           contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
             const instance = $r3$.ɵload(dirIndex);
