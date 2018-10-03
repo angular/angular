@@ -1,7 +1,7 @@
 # Angular Material components
 /src/lib/*                                         @jelbourn
 /src/lib/autocomplete/**                           @crisbeto
-/src/lib/badge/**                                  @amcdnl
+/src/lib/badge/**                                  @jelbourn
 /src/lib/bottom-sheet/**                           @jelbourn @crisbeto
 /src/lib/button-toggle/**                          @jelbourn
 /src/lib/button/**                                 @jelbourn @josephperrott
@@ -23,7 +23,7 @@
 /src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
 /src/lib/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
 /src/lib/radio/**                                  @jelbourn @devversion
-/src/lib/schematics/**                             @devversion @amcdnl
+/src/lib/schematics/**                             @devversion @jelbourn
 /src/lib/select/**                                 @crisbeto
 /src/lib/sidenav/**                                @mmalerba
 /src/lib/slide-toggle/**                           @devversion
@@ -91,14 +91,14 @@
 /src/cdk-experimental/scrolling/**                 @mmalerba
 
 # Docs examples & guides
-/guides/**                                         @amcdnl @jelbourn
-/src/material-examples/**                          @amcdnl @jelbourn
+/guides/**                                         @jelbourn
+/src/material-examples/**                          @jelbourn
 
 # Demo app
 /src/demo-app/*                                    @jelbourn
 /src/demo-app/a11y/**                              @jelbourn
 /src/demo-app/autocomplete/**                      @crisbeto
-/src/demo-app/badge/**                             @amcdnl
+/src/demo-app/badge/**                             @jelbourn
 /src/demo-app/baseline/**                          @mmalerba
 /src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
 /src/demo-app/button-toggle/**                     @jelbourn
