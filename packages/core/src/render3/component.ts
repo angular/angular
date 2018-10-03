@@ -25,7 +25,6 @@ import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags
 import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
-
 // Root component will always have an element index of 0 and an injector size of 1
 const ROOT_EXPANDO_INSTRUCTIONS = [0, 1];
 

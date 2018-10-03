@@ -163,6 +163,7 @@ export {
 
 export {
   Player as ɵPlayer,
+  PlayerFactory as ɵPlayerFactory,
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
 } from './render3/interfaces/player';
@@ -170,6 +171,10 @@ export {
 export {
   LContext as ɵLContext,
 } from './render3/interfaces/context';
+
+export {
+  bindPlayerFactory as ɵbindPlayerFactory,
+} from './render3/styling/player_factory';
 
 export {
   addPlayer as ɵaddPlayer,

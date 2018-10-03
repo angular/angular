@@ -9,6 +9,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BoundPlayerFactory"
+  },
+  {
     "name": "CIRCULAR$1"
   },
   {
@@ -25,6 +28,12 @@
   },
   {
     "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ClassAndStylePlayerBuilder"
+  },
+  {
+    "name": "CorePlayerHandler"
   },
   {
     "name": "DECLARATION_VIEW"
@@ -345,10 +354,16 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addPlayerInternal"
+  },
+  {
     "name": "addRemoveViewFromContainer"
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "allocPlayerContext"
   },
   {
     "name": "allocStylingContext"
@@ -516,6 +531,9 @@
     "name": "directiveInject"
   },
   {
+    "name": "discoverDirectives"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -582,6 +600,12 @@
     "name": "findViaComponent"
   },
   {
+    "name": "findViaDirective"
+  },
+  {
+    "name": "findViaNativeElement"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
@@ -615,6 +639,9 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContext"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
@@ -622,6 +649,12 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
   },
   {
     "name": "getHighestElementContainer"
@@ -687,6 +720,15 @@
     "name": "getPipeDef"
   },
   {
+    "name": "getPlayerBuilder"
+  },
+  {
+    "name": "getPlayerBuilderIndex"
+  },
+  {
+    "name": "getPlayerContext"
+  },
+  {
     "name": "getPointers"
   },
   {
@@ -711,6 +753,18 @@
     "name": "getRendererFactory"
   },
   {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootContext$1"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
+    "name": "getRootView$1"
+  },
+  {
     "name": "getStyleSanitizer"
   },
   {
@@ -733,6 +787,9 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "hasPlayerBuilderChanged"
   },
   {
     "name": "hasValueChanged"
@@ -768,6 +825,9 @@
     "name": "isComponent"
   },
   {
+    "name": "isComponentInstance"
+  },
+  {
     "name": "isContentQueryHost"
   },
   {
@@ -781,6 +841,9 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -817,6 +880,9 @@
   },
   {
     "name": "listener"
+  },
+  {
+    "name": "loadContext"
   },
   {
     "name": "loadInternal"
@@ -927,7 +993,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderStyling"
+    "name": "renderStyleAndClassBindings"
   },
   {
     "name": "resetComponentState"
@@ -960,6 +1026,9 @@
     "name": "setContextDirty"
   },
   {
+    "name": "setContextPlayersDirty"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
@@ -979,6 +1048,12 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setPlayerBuilder"
+  },
+  {
+    "name": "setPlayerBuilderIndex"
   },
   {
     "name": "setProp"
@@ -1036,6 +1111,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "traverseNextElement"
   },
   {
     "name": "updateClassProp"

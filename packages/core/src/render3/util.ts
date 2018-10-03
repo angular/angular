@@ -141,7 +141,6 @@ export function getRootView(target: LViewData | {}): LViewData {
   }
   return lViewData;
 }
-
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
   return getRootView(viewOrComponent)[CONTEXT] as RootContext;
 }
