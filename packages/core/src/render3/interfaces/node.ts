@@ -7,8 +7,6 @@
  */
 
 import {LContainer} from './container';
-import {LInjector} from './injector';
-import {LQueries} from './query';
 import {RComment, RElement, RText} from './renderer';
 import {StylingContext} from './styling';
 import {LViewData, TView} from './view';

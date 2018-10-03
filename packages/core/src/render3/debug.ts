@@ -47,10 +47,7 @@ class Render3DebugContext implements DebugContext {
   get injector(): Injector {
     if (this.nodeIndex !== null) {
       const tNode = this.view[TVIEW].data[this.nodeIndex];
-      const nodeInjector = di.getInjector(tNode, this.view);
-      if (nodeInjector) {
-        return new di.NodeInjector(nodeInjector);
-      }
+      return new di.NodeInjector(tNode, this.view);
     }
     return Injector.NULL;
   }
