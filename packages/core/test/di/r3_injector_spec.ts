@@ -26,12 +26,19 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
-  class Service {
+  abstract class AbstractService {
     static ngInjectableDef = defineInjectable({
       providedIn: null,
       factory: () => new Service(),
     });
   }
+  class Service extends AbstractService {
+    static ngInjectableDef = defineInjectable({
+      providedIn: null,
+      factory: () => new Service(),
+    });
+  }
+
 
   class StaticService {
     constructor(readonly dep: Service) {}
@@ -127,6 +134,7 @@ describe('InjectorDef-based createInjector()', () => {
         {provide: LOCALE, multi: true, useValue: 'en'},
         {provide: LOCALE, multi: true, useValue: 'es'},
         Service,
+        {provide: AbstractService, useExisting: Service},
         {provide: SERVICE_TOKEN, useExisting: Service},
         CircularA,
         CircularB,
@@ -202,6 +210,9 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(SERVICE_TOKEN);
     expect(instance).toBe(injector.get(Service));
   });
+
+  it('injects abstract token with useExisting',
+     () => { expect(injector.get(AbstractService)).toBe(injector.get(Service)); });
 
   it('instantiates a class with useClass and deps', () => {
     const instance = injector.get(STATIC_TOKEN);
