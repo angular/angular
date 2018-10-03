@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RuleUpgradeData} from '@angular/cdk/schematics';
 import {
   attributeSelectors,
   classNames,
@@ -19,7 +20,7 @@ import {
 } from './data';
 
 /** Upgrade data that will be used for the Angular Material ng-update schematic. */
-export const materialUpgradeData = {
+export const materialUpgradeData: RuleUpgradeData = {
   attributeSelectors,
   classNames,
   constructorChecks,

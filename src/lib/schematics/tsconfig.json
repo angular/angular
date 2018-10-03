@@ -9,6 +9,7 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "declaration": true,
     "target": "es6",
     "types": [
       "jasmine",
@@ -16,9 +17,12 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/schematics": ["../../cdk/schematics/"]
+      "@angular/cdk/schematics": ["../../cdk/schematics"]
     }
   },
+  "references": [
+    {"path": "../../cdk/schematics"}
+  ],
   "exclude": [
     "**/*.spec.ts",
     // Exclude the test-setup utility files. Those should not be part of the output.
