@@ -940,8 +940,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent): () => o.Expression[] {
-    const evName = sanitizeIdentifier(outputAst.name);
-    const functionName = `${this.templateName}_${tagName}_${evName}_listener`;
+    const evNameSanitized = sanitizeIdentifier(outputAst.name);
+    const tagNameSanitized = sanitizeIdentifier(tagName);
+    const functionName = `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_listener`;
 
     return () => {
 
