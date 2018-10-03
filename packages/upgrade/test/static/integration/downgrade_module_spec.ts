@@ -25,7 +25,7 @@ withEachNg1Version(() => {
 
       beforeEach(() => destroyPlatform());
 
-      it('should throw if called for more than one Angular modules', async(() => {
+      it('should throw if called for more than one Angular module', async(() => {
            @Component({selector: 'ng2A', template: 'a'})
            class Ng2ComponentA {
            }
