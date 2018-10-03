@@ -27,15 +27,14 @@ export class SwPush {
 
   /**
    * Emits the payloads of the received push notification messages as well as the action the user
-   * interacted with.
-   * If no action was used the action property will be an empty string `''`.
+   * interacted with. If no action was used the action property will be an empty string `''`.
    *
-   * Note that the `notification` property is **not** a
-   * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification) object but rather
-   * a
+   * Note that the `notification` property is **not** a [Notification][Mozilla Notification] object
+   * but rather a
    * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
-   * object that also includes the `title` of the
-   * [Notification](https://developer.mozilla.org/en-US/docs/Web/API/Notification) object.
+   * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+   *
+   * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
    */
   readonly notificationClicks: Observable < {
     action: string;
