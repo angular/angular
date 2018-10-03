@@ -16,16 +16,17 @@ import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {NodeInjector, getInjector, getOrCreateNodeInjectorForNode, getParentInjector} from './di';
+import {NodeInjector, getParentInjectorLocation, getParentInjectorView} from './di';
 import {_getViewData, addToViewTree, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentTNode, getRenderer, renderEmbeddedTemplate} from './instructions';
 import {LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {RenderFlags} from './interfaces/definition';
+import {InjectorLocationFlags} from './interfaces/injector';
 import {LContainerNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3} from './interfaces/renderer';
-import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TView} from './interfaces/view';
+import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getParentLNode, getRenderParent, insertView, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
 import {getLNode, isComponent} from './util';
 import {ViewRef} from './view_ref';
 
@@ -180,15 +181,17 @@ export function createContainerRef(
         return createElementRef(ElementRefToken, this._hostTNode, this._hostView);
       }
 
-      get injector(): Injector {
-        const nodeInjector = getOrCreateNodeInjectorForNode(this._hostTNode, this._hostView);
-        return new NodeInjector(nodeInjector);
-      }
+      get injector(): Injector { return new NodeInjector(this._hostTNode, this._hostView); }
 
       /** @deprecated No replacement */
       get parentInjector(): Injector {
-        const parentLInjector = getParentInjector(this._hostTNode, this._hostView);
-        return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
+        const parentLocation = getParentInjectorLocation(this._hostTNode, this._hostView);
+        const parentView = getParentInjectorView(parentLocation, this._hostView);
+        const parentIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
+        const parentTNode = parentView[TVIEW].data[parentIndex] as TElementNode | TContainerNode;
+
+        return parentLocation === -1 ? new NullInjector() :
+                                       new NodeInjector(parentTNode, parentView);
       }
 
       clear(): void {

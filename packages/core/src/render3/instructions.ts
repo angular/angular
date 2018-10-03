@@ -19,7 +19,6 @@ import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComp
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {LInjector} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
@@ -1106,8 +1105,8 @@ export function createTView(
     template: templateFn,
     viewQuery: viewQuery,
     node: null !,
-    data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
-    childIndex: -1,               // Children set in addToViewTree(), if any
+    data: blueprint.slice(),  // Fill in to match HEADER_OFFSET in LViewData
+    childIndex: -1,           // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
     hostBindingStartIndex: initialViewLength,
     directives: null,
