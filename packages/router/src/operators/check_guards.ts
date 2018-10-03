@@ -12,28 +12,27 @@ import {concatMap, every, first, map, mergeMap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
 import {NavigationTransition} from '../router';
-import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {andObservables, wrapIntoObservable} from '../utils/collection';
-import {CanActivate, CanDeactivate, Checks, getAllRouteGuards, getCanActivateChild, getToken} from '../utils/preactivation';
+import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
 
-export function checkGuards(
-    rootContexts: ChildrenOutletContexts, moduleInjector: Injector,
-    forwardEvent?: (evt: Event) => void): MonoTypeOperatorFunction<NavigationTransition> {
+export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
+    MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
 
     return source.pipe(mergeMap(t => {
-      const {targetSnapshot, currentSnapshot} = t;
-      const checks = getAllRouteGuards(targetSnapshot !, currentSnapshot, rootContexts);
-      if (checks.canDeactivateChecks.length === 0 && checks.canActivateChecks.length === 0) {
+      const {targetSnapshot, currentSnapshot, guards: {canActivateChecks, canDeactivateChecks}} = t;
+      if (canDeactivateChecks.length === 0 && canActivateChecks.length === 0) {
         return of ({...t, guardsResult: true});
       }
 
-      return runCanDeactivateChecks(checks, targetSnapshot !, currentSnapshot, moduleInjector)
+      return runCanDeactivateChecks(
+                 canDeactivateChecks, targetSnapshot !, currentSnapshot, moduleInjector)
           .pipe(
               mergeMap((canDeactivate: boolean) => {
                 return canDeactivate ?
-                    runCanActivateChecks(targetSnapshot !, checks, moduleInjector, forwardEvent) :
+                    runCanActivateChecks(
+                        targetSnapshot !, canActivateChecks, moduleInjector, forwardEvent) :
                     of (false);
               }),
               map(guardsResult => ({...t, guardsResult})));
@@ -42,28 +41,26 @@ export function checkGuards(
 }
 
 function runCanDeactivateChecks(
-    checks: Checks, futureRSS: RouterStateSnapshot, currRSS: RouterStateSnapshot,
+    checks: CanDeactivate[], futureRSS: RouterStateSnapshot, currRSS: RouterStateSnapshot,
     moduleInjector: Injector): Observable<boolean> {
-  return from(checks.canDeactivateChecks)
-      .pipe(
-          mergeMap(
-              (check: CanDeactivate) => runCanDeactivate(
-                  check.component, check.route, currRSS, futureRSS, moduleInjector)),
-          every((result: boolean) => result === true));
+  return from(checks).pipe(
+      mergeMap(
+          (check: CanDeactivate) =>
+              runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector)),
+      every((result: boolean) => result === true));
 }
 
 function runCanActivateChecks(
-    futureSnapshot: RouterStateSnapshot, checks: Checks, moduleInjector: Injector,
+    futureSnapshot: RouterStateSnapshot, checks: CanActivate[], moduleInjector: Injector,
     forwardEvent?: (evt: Event) => void): Observable<boolean> {
-  return from(checks.canActivateChecks)
-      .pipe(
-          concatMap((check: CanActivate) => andObservables(from([
-                      fireChildActivationStart(check.route.parent, forwardEvent),
-                      fireActivationStart(check.route, forwardEvent),
-                      runCanActivateChild(futureSnapshot, check.path, moduleInjector),
-                      runCanActivate(futureSnapshot, check.route, moduleInjector)
-                    ]))),
-          every((result: boolean) => result === true));
+  return from(checks).pipe(
+      concatMap((check: CanActivate) => andObservables(from([
+                  fireChildActivationStart(check.route.parent, forwardEvent),
+                  fireActivationStart(check.route, forwardEvent),
+                  runCanActivateChild(futureSnapshot, check.path, moduleInjector),
+                  runCanActivate(futureSnapshot, check.route, moduleInjector)
+                ]))),
+      every((result: boolean) => result === true));
 }
 
 /**
