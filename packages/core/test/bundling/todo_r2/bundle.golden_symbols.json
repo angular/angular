@@ -321,9 +321,6 @@
     "name": "HAMMER_LOADER"
   },
   {
-    "name": "HEADER_FILLER"
-  },
-  {
     "name": "HEADER_OFFSET"
   },
   {
@@ -352,6 +349,9 @@
   },
   {
     "name": "INJECTOR$1"
+  },
+  {
+    "name": "INJECTOR_SIZE"
   },
   {
     "name": "INSPECT_GLOBAL_NAME"
@@ -624,6 +624,9 @@
     "name": "PARENT"
   },
   {
+    "name": "PARENT_INJECTOR"
+  },
+  {
     "name": "PATTERN_SEP"
   },
   {
@@ -814,6 +817,9 @@
   },
   {
     "name": "THURSDAY"
+  },
+  {
+    "name": "TNODE"
   },
   {
     "name": "TRANSITION_ID"
@@ -1201,9 +1207,6 @@
   },
   {
     "name": "bloomAdd"
-  },
-  {
-    "name": "bloomFindPossibleInjector"
   },
   {
     "name": "bloomHashBitOrFactory"
@@ -1653,10 +1656,10 @@
     "name": "getInjectableDef"
   },
   {
-    "name": "getInjector$1"
+    "name": "getInjectorDef"
   },
   {
-    "name": "getInjectorDef"
+    "name": "getInjectorIndex"
   },
   {
     "name": "getLElementFromComponent"
@@ -1752,7 +1755,10 @@
     "name": "getOriginalError"
   },
   {
-    "name": "getParentInjector"
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
   },
   {
     "name": "getParentLNode"
@@ -1885,6 +1891,9 @@
   },
   {
     "name": "injectableDefRecord"
+  },
+  {
+    "name": "injectorHasToken"
   },
   {
     "name": "insertView"
@@ -2281,6 +2290,9 @@
   },
   {
     "name": "scheduleTick"
+  },
+  {
+    "name": "searchDirectivesOnInjector"
   },
   {
     "name": "searchMatchesQueuedForCreation"

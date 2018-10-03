@@ -14,7 +14,6 @@ import {EventEmitter} from '../event_emitter';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
