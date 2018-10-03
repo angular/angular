@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname, relative, resolve} from 'canonical-path';
-import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {existsSync, lstatSync, readFileSync, readdirSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
@@ -24,9 +24,9 @@ import {FileParser} from '../parsing/file_parser';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
+
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
 import {EntryPoint, EntryPointFormat} from './entry_point';
-
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -78,14 +78,19 @@ export class Transformer {
       throw new Error(
           `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
     }
-    const packageProgram = ts.createProgram([entryPointFilePath], options, host);
+    const isCore = entryPoint.name === '@angular/core';
+    const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
+    const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
+    const packageProgram = ts.createProgram(rootPaths, options, host);
     const typeChecker = packageProgram.getTypeChecker();
     const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
-    const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
+    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsMapper);
+    const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
 
     const parser = this.getFileParser(format, packageProgram, reflectionHost);
-    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
-    const renderer = this.getRenderer(format, packageProgram, reflectionHost);
+    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs, isCore);
+    const renderer =
+        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile);
 
     // Parse and analyze the files.
     const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
@@ -111,15 +116,16 @@ export class Transformer {
     writeMarkerFile(entryPoint, format);
   }
 
-  getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
+  getHost(isCore: boolean, format: string, program: ts.Program, dtsMapper: DtsMapper):
+      NgccReflectionHost {
     switch (format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
+        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(program.getTypeChecker());
+        return new Fesm2015ReflectionHost(isCore, program.getTypeChecker());
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(program.getTypeChecker());
+        return new Esm5ReflectionHost(isCore, program.getTypeChecker());
       default:
         throw new Error(`Relection host for "${format}" not yet implemented.`);
     }
@@ -138,14 +144,16 @@ export class Transformer {
     }
   }
 
-  getRenderer(format: string, program: ts.Program, host: NgccReflectionHost): Renderer {
+  getRenderer(
+      format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
+      rewriteCoreImportsTo: ts.SourceFile|null): Renderer {
     switch (format) {
       case 'esm2015':
       case 'fesm2015':
-        return new Esm2015Renderer(host);
+        return new Esm2015Renderer(host, isCore, rewriteCoreImportsTo);
       case 'esm5':
       case 'fesm5':
-        return new Esm5Renderer(host);
+        return new Esm5Renderer(host, isCore, rewriteCoreImportsTo);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
@@ -209,5 +217,33 @@ export class Transformer {
       mv(file.path, backPath);
     }
     writeFileSync(file.path, file.contents, 'utf8');
+  }
+
+  findR3SymbolsPath(directory: string): string|null {
+    const r3SymbolsFilePath = resolve(directory, 'r3_symbols.js');
+    if (existsSync(r3SymbolsFilePath)) {
+      return r3SymbolsFilePath;
+    }
+
+    const subDirectories =
+        readdirSync(directory)
+            // Not interested in hidden files
+            .filter(p => !p.startsWith('.'))
+            // Ignore node_modules
+            .filter(p => p !== 'node_modules')
+            // Only interested in directories (and only those that are not symlinks)
+            .filter(p => {
+              const stat = lstatSync(resolve(directory, p));
+              return stat.isDirectory() && !stat.isSymbolicLink();
+            });
+
+    for (const subDirectory of subDirectories) {
+      const r3SymbolsFilePath = this.findR3SymbolsPath(resolve(directory, subDirectory));
+      if (r3SymbolsFilePath) {
+        return r3SymbolsFilePath;
+      }
+    }
+
+    return null;
   }
 }
