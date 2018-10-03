@@ -374,6 +374,7 @@ export interface Resolve<T> {
  *
  * @publicApi
  */
-export interface CanLoad {
-  canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;
-}
+export interface CanLoad { canLoad: CanLoadFn; }
+
+export type CanLoadFn = (route: Route, segments: UrlSegment[]) =>
+    Observable<boolean>| Promise<boolean>| boolean;
