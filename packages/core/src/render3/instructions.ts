@@ -20,6 +20,7 @@ import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_SIZE} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
+import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
@@ -27,9 +28,10 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, Curre
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
-import {assertDataInRangeInternal, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootView, getTNode, isComponent, isContentQueryHost, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
+import {assertDataInRangeInternal, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isContentQueryHost, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
 
 
 
@@ -1501,9 +1503,11 @@ function generatePropertyAliases(
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
  */
-export function elementClassProp<T>(
-    index: number, stylingIndex: number, value: T | NO_CHANGE): void {
-  updateElementClassProp(getStylingContext(index, viewData), stylingIndex, value ? true : false);
+export function elementClassProp(
+    index: number, stylingIndex: number, value: boolean | PlayerFactory): void {
+  const val =
+      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
+  updateElementClassProp(getStylingContext(index, viewData), stylingIndex, val);
 }
 
 /**
@@ -1534,7 +1538,7 @@ export function elementClassProp<T>(
  * @param styleSanitizer An optional sanitizer function that will be used (if provided)
  *   to sanitize the any CSS property values that are applied to the element (during rendering).
  */
-export function elementStyling<T>(
+export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
@@ -1565,8 +1569,13 @@ export function elementStyling<T>(
  *        specifically for element styling--the index must be the next index after the element
  *        index.)
  */
-export function elementStylingApply<T>(index: number): void {
-  renderElementStyles(getStylingContext(index, viewData), renderer);
+export function elementStylingApply(index: number): void {
+  const totalPlayersQueued =
+      renderStyleAndClassBindings(getStylingContext(index, viewData), renderer, viewData);
+  if (totalPlayersQueued > 0) {
+    const rootContext = getRootContext(viewData);
+    scheduleTick(rootContext, RootContextFlags.FlushPlayers);
+  }
 }
 
 /**
@@ -1589,8 +1598,9 @@ export function elementStylingApply<T>(index: number): void {
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
  */
-export function elementStyleProp<T>(
-    index: number, styleIndex: number, value: T | null, suffix?: string): void {
+export function elementStyleProp(
+    index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
+    suffix?: string): void {
   let valueToAdd: string|null = null;
   if (value) {
     if (suffix) {
@@ -2386,11 +2396,7 @@ export function markViewDirty(view: LViewData): void {
   ngDevMode && assertDefined(currentView[CONTEXT], 'rootContext should be defined');
 
   const rootContext = currentView[CONTEXT] as RootContext;
-  const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
-  rootContext.flags |= RootContextFlags.DetectChanges;
-  if (nothingScheduled) {
-    scheduleTick(rootContext);
-  }
+  scheduleTick(rootContext, RootContextFlags.DetectChanges);
 }
 
 /**
@@ -2404,8 +2410,11 @@ export function markViewDirty(view: LViewData): void {
  * `scheduleTick` requests. The scheduling function can be overridden in
  * `renderComponent`'s `scheduler` option.
  */
-export function scheduleTick<T>(rootContext: RootContext) {
-  if (rootContext.clean == _CLEAN_PROMISE) {
+export function scheduleTick<T>(rootContext: RootContext, flags: RootContextFlags) {
+  const nothingScheduled = rootContext.flags === RootContextFlags.Empty;
+  rootContext.flags |= flags;
+
+  if (nothingScheduled && rootContext.clean == _CLEAN_PROMISE) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {

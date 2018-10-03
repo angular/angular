@@ -5,12 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {RElement} from '../interfaces/renderer';
-
 import {PlayerContext} from './player';
-
 
 
 /**
@@ -184,17 +181,19 @@ export interface InitialStyles extends Array<string|null|boolean> { [0]: null; }
  */
 export const enum StylingFlags {
   // Implies no configurations
-  None = 0b000,
+  None = 0b0000,
   // Whether or not the entry or context itself is dirty
-  Dirty = 0b001,
+  Dirty = 0b0001,
   // Whether or not this is a class-based assignment
-  Class = 0b010,
+  Class = 0b0010,
   // Whether or not a sanitizer was applied to this property
-  Sanitize = 0b100,
+  Sanitize = 0b0100,
+  // Whether or not any player builders within need to produce new players
+  PlayerBuildersDirty = 0b1000,
   // The max amount of bits used to represent these configuration values
-  BitCountSize = 3,
+  BitCountSize = 4,
   // There are only three bits here
-  BitMask = 0b111
+  BitMask = 0b1111
 }
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
@@ -222,10 +221,11 @@ export const enum StylingIndex {
   FlagsOffset = 0,
   PropertyOffset = 1,
   ValueOffset = 2,
-  // Size of each multi or single entry (flag + prop + value)
-  Size = 3,
+  PlayerBuilderIndexOffset = 3,
+  // Size of each multi or single entry (flag + prop + value + playerBuilderIndex)
+  Size = 4,
   // Each flag has a binary digit length of this value
-  BitCountSize = 14,  // (32 - 3) / 2 = ~14
+  BitCountSize = 14,  // (32 - 4) / 2 = ~14
   // The binary digit value as a mask
-  BitMask = 0b11111111111111  // 14 bits
+  BitMask = 0b11111111111111,  // 14 bits
 }
