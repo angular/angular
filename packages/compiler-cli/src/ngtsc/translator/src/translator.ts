@@ -212,11 +212,11 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
     const importIdentifier = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    if (importIdentifier) {
+    if (importIdentifier === null) {
+      return ts.createIdentifier(ast.value.name);
+    } else {
       return ts.createPropertyAccess(
           ts.createIdentifier(importIdentifier), ts.createIdentifier(ast.value.name));
-    } else {
-      return ts.createIdentifier(ast.value.name);
     }
   }
 

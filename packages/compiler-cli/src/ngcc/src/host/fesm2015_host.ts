@@ -883,7 +883,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * Test whether a decorator was imported from `@angular/core`.
    *
    * Is the decorator:
-   * * extermally mported from `@angulare/core`?
+   * * externally imported from `@angulare/core`?
    * * the current hosted program is actually `@angular/core` and
    *   - relatively internally imported; or
    *   - not imported, from the current file.
