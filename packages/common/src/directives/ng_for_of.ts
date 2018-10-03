@@ -198,6 +198,16 @@ export class NgForOf<T> implements DoCheck {
       view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
   }
+
+  /**
+   * Assert the correct type of the context for the template that `NgForOf` will render.
+   *
+   * The presence of this method is a signal to the Ivy template type check compiler that the
+   * `NgForOf` structural directive renders its template with a specific context type.
+   */
+  static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T> {
+    return true;
+  }
 }
 
 class RecordViewTuple<T> {
