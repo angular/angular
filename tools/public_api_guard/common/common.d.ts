@@ -263,6 +263,7 @@ export declare class NgForOf<T> implements DoCheck {
     ngForTrackBy: TrackByFunction<T>;
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
+    static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T>;
 }
 
 export declare class NgForOfContext<T> {
@@ -282,6 +283,7 @@ export declare class NgIf {
     ngIfElse: TemplateRef<NgIfContext> | null;
     ngIfThen: TemplateRef<NgIfContext> | null;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
+    static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E>;
 }
 
 export declare class NgIfContext {
