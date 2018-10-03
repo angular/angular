@@ -7,6 +7,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   background: #fff;
   border-radius: 4px;
   transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
