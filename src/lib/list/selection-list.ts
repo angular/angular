@@ -473,13 +473,21 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   private _setOptionsFromValues(values: string[]) {
     this.options.forEach(option => option._setSelected(false));
 
-    values
-      .map(value => {
-        return this.options.find(option =>
-            this.compareWith ? this.compareWith(option.value, value) : option.value === value);
-      })
-      .filter(Boolean)
-      .forEach(option => option!._setSelected(true));
+    values.forEach(value => {
+      const correspondingOption = this.options.find(option => {
+        // Skip options that are already in the model. This allows us to handle cases
+        // where the same primitive value is selected multiple times.
+        if (option.selected) {
+          return false;
+        }
+
+        return this.compareWith ? this.compareWith(option.value, value) : option.value === value;
+      });
+
+      if (correspondingOption) {
+        correspondingOption._setSelected(true);
+      }
+    });
   }
 
   /** Returns the values of the selected options. */

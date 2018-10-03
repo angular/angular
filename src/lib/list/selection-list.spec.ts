@@ -789,7 +789,7 @@ describe('MatSelectionList with forms', () => {
 
       expect(fixture.componentInstance.selectedOptions).toEqual(['opt2', 'opt3']);
 
-      fixture.componentInstance.renderLastOption = false;
+      fixture.componentInstance.options.pop();
       fixture.detectChanges();
       tick();
 
@@ -829,6 +829,20 @@ describe('MatSelectionList with forms', () => {
       expect(fixture.componentInstance.modelChangeSpy).not.toHaveBeenCalled();
     });
 
+    it('should be able to programmatically set an array with duplicate values', fakeAsync(() => {
+      fixture.componentInstance.options = ['one', 'two', 'two', 'two', 'three'];
+      fixture.detectChanges();
+      tick();
+
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+          .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      fixture.componentInstance.selectedOptions = ['one', 'two', 'two'];
+      fixture.detectChanges();
+      tick();
+
+      expect(listOptions.map(option => option.selected)).toEqual([true, true, true, false, false]);
+    }));
 
   });
 
@@ -1076,15 +1090,13 @@ class SelectionListWithTabindexBinding {
 @Component({
   template: `
     <mat-selection-list [(ngModel)]="selectedOptions" (ngModelChange)="modelChangeSpy()">
-      <mat-list-option value="opt1">Option 1</mat-list-option>
-      <mat-list-option value="opt2">Option 2</mat-list-option>
-      <mat-list-option value="opt3" *ngIf="renderLastOption">Option 3</mat-list-option>
+      <mat-list-option *ngFor="let option of options" [value]="option">{{option}}</mat-list-option>
     </mat-selection-list>`
 })
 class SelectionListWithModel {
   modelChangeSpy = jasmine.createSpy('model change spy');
   selectedOptions: string[] = [];
-  renderLastOption = true;
+  options = ['opt1', 'opt2', 'opt3'];
 }
 
 @Component({
