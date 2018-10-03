@@ -1093,16 +1093,23 @@ These changes propagate through the system and ultimately display in this and ot
 
 {@a two-way}
 
-## Two-way binding ( <span class="syntax">[(...)]</span> )
+## Two-way binding `[(...)]`
 
-You often want to both display a data property and update that property when the user makes changes.
+Two-way binding gives your app a way to share data between a component class and
+its template.
 
-On the element side that takes a combination of setting a specific element property
-and listening for an element change event.
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="two-way-binding">two-way binding example</live-example>.
 
-Angular offers a special _two-way data binding_ syntax for this purpose, **`[(x)]`**.
-The `[(x)]` syntax combines the brackets
-of _property binding_, `[x]`, with the parentheses of _event binding_, `(x)`.
+### Basics of two-way binding
+
+Two-way binding does two things:
+
+1. Sets a specific element property.
+1. Listens for an element change event.
+
+Angular offers a special _two-way data binding_ syntax for this purpose, `[()]`.
+The `[()]` syntax combines the brackets
+of property binding, `[]`, with the parentheses of event binding, `()`.
 
 <div class="callout is-important">
 
@@ -1114,44 +1121,52 @@ Visualize a *banana in a box* to remember that the parentheses go _inside_ the b
 
 </div>
 
-The `[(x)]` syntax is easy to demonstrate when the element has a settable property called `x`
-and a corresponding event named `xChange`.
-Here's a `SizerComponent` that fits the pattern.
+The `[()]` syntax is easy to demonstrate when the element has a settable
+property called `x` and a corresponding event named `xChange`.
+Here's a `SizerComponent` that fits this pattern.
 It has a `size` value property and a companion `sizeChange` event:
 
-<code-example path="template-syntax/src/app/sizer.component.ts" header="src/app/sizer.component.ts">
+<code-example path="two-way-binding/src/app/sizer/sizer.component.ts" header="src/app/sizer.component.ts" linenums="false">
 </code-example>
 
 The initial `size` is an input value from a property binding.
-Clicking the buttons increases or decreases the `size`, within min/max values constraints,
-and then raises (_emits_) the `sizeChange` event with the adjusted size.
+Clicking the buttons increases or decreases the `size`, within
+min/max value constraints,
+and then raises, or emits, the `sizeChange` event with the adjusted size.
 
 Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the `SizerComponent`:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
+<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
 </code-example>
 
 The `AppComponent.fontSizePx` establishes the initial `SizerComponent.size` value.
+
+<code-example path="two-way-binding/src/app/app.component.ts" header="src/app/app.component.ts" region="font-size">
+</code-example>
+
 Clicking the buttons updates the `AppComponent.fontSizePx` via the two-way binding.
 The revised `AppComponent.fontSizePx` value flows through to the _style_ binding,
 making the displayed text bigger or smaller.
 
 The two-way binding syntax is really just syntactic sugar for a _property_ binding and an _event_ binding.
-Angular _desugars_ the `SizerComponent` binding into this:
+Angular desugars the `SizerComponent` binding into this:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
+<code-example path="two-way-binding/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
 </code-example>
 
 The `$event` variable contains the payload of the `SizerComponent.sizeChange` event.
 Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the user clicks the buttons.
 
-Clearly the two-way binding syntax is a great convenience compared to separate property and event bindings.
+## Two-way binding in forms
 
-It would be convenient to use two-way binding with HTML form elements like `<input>` and `<select>`.
-However, no native HTML element follows the `x` value and `xChange` event pattern.
+The two-way binding syntax is a great convenience compared to
+separate property and event bindings. It would be convenient to
+use two-way binding with HTML form elements like `<input>` and
+`<select>`. However, no native HTML element follows the `x`
+value and `xChange` event pattern.
 
-Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
-
+For more on how to use two-way binding in forms, see
+Angular [NgModel](guide/template-syntax#ngModel).
 
 <hr/>
 
