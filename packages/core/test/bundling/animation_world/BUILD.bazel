@@ -8,6 +8,7 @@ ng_module(
     name = "animation_world",
     srcs = ["index.ts"],
     tags = ["ivy-only"],
+    type_check = False,  # see #26462
     deps = [
         "//packages/common",
         "//packages/core",

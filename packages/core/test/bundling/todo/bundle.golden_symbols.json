@@ -9,6 +9,9 @@
     "name": "BLOOM_MASK"
   },
   {
+    "name": "BoundPlayerFactory"
+  },
+  {
     "name": "CIRCULAR$1"
   },
   {
@@ -25,6 +28,12 @@
   },
   {
     "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ClassAndStylePlayerBuilder"
+  },
+  {
+    "name": "CorePlayerHandler"
   },
   {
     "name": "DECLARATION_VIEW"
@@ -345,10 +354,16 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addPlayerInternal"
+  },
+  {
     "name": "addRemoveViewFromContainer"
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "allocPlayerContext"
   },
   {
     "name": "allocStylingContext"
@@ -687,6 +702,15 @@
     "name": "getPipeDef"
   },
   {
+    "name": "getPlayerBuilder"
+  },
+  {
+    "name": "getPlayerBuilderIndex"
+  },
+  {
+    "name": "getPlayerContext"
+  },
+  {
     "name": "getPointers"
   },
   {
@@ -711,6 +735,12 @@
     "name": "getRendererFactory"
   },
   {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
     "name": "getStyleSanitizer"
   },
   {
@@ -733,6 +763,9 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "hasPlayerBuilderChanged"
   },
   {
     "name": "hasValueChanged"
@@ -930,7 +963,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderStyling"
+    "name": "renderStyleAndClassBindings"
   },
   {
     "name": "resetComponentState"
@@ -963,6 +996,9 @@
     "name": "setContextDirty"
   },
   {
+    "name": "setContextPlayersDirty"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
@@ -982,6 +1018,12 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setPlayerBuilder"
+  },
+  {
+    "name": "setPlayerBuilderIndex"
   },
   {
     "name": "setProp"
