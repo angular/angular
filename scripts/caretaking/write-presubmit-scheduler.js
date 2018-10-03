@@ -24,9 +24,6 @@ const presubmitScript = `${process.env.MAT_PRESUBMIT_DIR}/material-presubmit.sh`
 /** Time to start presubmits. */
 const startTime = '9:30 pm';
 
-/** Number of minutes between presubmit runs. */
-const intervalMinutes = 10;
-
 /** Instead of querying github for PR numbers, manually provide the PR numbers to be presubmit */
 const explicitPullRequests = [];
 
@@ -40,10 +37,6 @@ const githubSearchOptions = {
 
 /** END OF CONFIGURATION. */
 
-
-
-/** Number of intervals that have scheduled tasks already. */
-let presubmitCount = 0;
 
 if (explicitPullRequests.length) {
   writeScheduleScript(explicitPullRequests.map(n => ({number: n})));
@@ -69,10 +62,7 @@ function writeScheduleScript(prs) {
         `cd ${localRepo} ; ` +
         `${presubmitScript} ${pr.number} --global 2>&1 > ${logDir}/pr-${pr.number}.txt ` +
       `)' | ` +
-      `at ${startTime} today + ${intervalMinutes * presubmitCount} min ` +
-    `\n`;
-
-    presubmitCount++;
+      `at ${startTime} today \n`;
   }
 
   fs.writeFileSync(path.join(localRepo, 'dist', 'schedule-presubmit.sh'), script, 'utf-8');
