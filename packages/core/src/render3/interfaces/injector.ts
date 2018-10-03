@@ -19,16 +19,22 @@ export const enum InjectorLocationFlags {
 }
 
 /**
- * Each injector is saved in 9 contiguous slots in LViewData and 9 continguous slots in TView.data.
- * This allows us to store information about the current node's tokens (which can be shared
- * in TView) as well as the tokens of its ancestor nodes (which cannot be shared,
- * so they live in LViewData).
+ * Each injector is saved in 9 contiguous slots in `LViewData` and 9 contiguous slots in
+ * `TView.data`. This allows us to store information about the current node's tokens (which
+ * can be shared in `TView`) as well as the tokens of its ancestor nodes (which cannot be
+ * shared, so they live in `LViewData`).
  *
  * Each of these slots (aside from the last slot) contains a bloom filter. This bloom filter
  * determines whether a directive is available on the associated node or not. This prevents us
  * from searching the directives array at this level unless it's probable the directive is in it.
-
+ *
  * See: https://en.wikipedia.org/wiki/Bloom_filter for more about bloom filters.
+ *
+ * Because all injectors have been flattened into `LViewData` and `TViewData`, they cannot typed
+ * using interfaces as they were previously. The start index of each `LInjector` and `TInjector`
+ * will differ based on where it is flattened into the main array, so it's not possible to know
+ * the indices ahead of time and save their types here. The interfaces are still included here
+ * for documentation purposes.
  *
  * export interface LInjector extends Array<any> {
  *
@@ -89,6 +95,7 @@ export const enum InjectorLocationFlags {
  *
  *    // Necessary to find directive indices for a particular node.
  *    [TNODE]: TElementNode|TElementContainerNode|TContainerNode;
+ *  }
  */
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

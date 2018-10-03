@@ -153,7 +153,7 @@ export function getParentInjectorLocation(tNode: TNode, view: LViewData): number
 
   // For most cases, the parent injector index can be found on the host node (e.g. for component
   // or container), so this loop will be skipped, but we must keep the loop here to support
-  // the rarer case of deeply nested <ng-template> tags.
+  // the rarer case of deeply nested <ng-template> tags or inline views.
   let hostTNode = view[HOST_NODE];
   let viewOffset = 1;
   while (hostTNode && hostTNode.injectorIndex === -1) {
@@ -166,9 +166,22 @@ export function getParentInjectorLocation(tNode: TNode, view: LViewData): number
       -1;
 }
 
+/**
+ * Unwraps a parent injector location number to find the view offset from the current injector,
+ * then walks up the declaration view tree until the view is found that contains the parent
+ * injector.
+ *
+ * @param location The location of the parent injector, which contains the view offset
+ * @param startView The LViewData instance from which to start walking up the view tree
+ * @returns The LViewData instance that contains the parent injector
+ */
 export function getParentInjectorView(location: number, startView: LViewData): LViewData {
   let viewOffset = location >> InjectorLocationFlags.ViewOffsetShift;
   let parentView = startView;
+  // For most cases, the parent injector can be found on the host node (e.g. for component
+  // or container), but we must keep the loop here to support the rarer case of deeply nested
+  // <ng-template> tags or inline views, where the parent injector might live many views
+  // above the child injector.
   while (viewOffset > 0) {
     parentView = parentView[DECLARATION_VIEW] !;
     viewOffset--;
