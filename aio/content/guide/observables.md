@@ -1,3 +1,4 @@
+
 # Observables
 
 Observables provide support for passing messages between publishers and subscribers in your application. Observables offer significant benefits over other techniques for event handling, asynchronous programming, and handling multiple values.
@@ -36,10 +37,10 @@ An `Observable` instance begins publishing values only when someone subscribes t
 
 <div class="alert is-helpful">
 
-   In order to show how subscribing works, we need to create a new observable. There is a  constructor that you use to create new instances, but for illustration, we can use some static methods on the `Observable` class that create simple observables of frequently used types:
+In order to show how subscribing works, we need to create a new observable. There is a constructor that you use to create new instances, but for illustration, we can use some methods from the RxJS library that create simple observables of frequently used types:
 
-  * `Observable.of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
-  * `Observable.from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
+  * `of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
+  * `from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
 
 </div>
 
@@ -62,7 +63,7 @@ Note that a `next()` function could receive, for instance, message strings, or e
 
 Use the `Observable` constructor to create an observable stream of any type. The constructor takes as its argument the subscriber function to run when the observable’s `subscribe()` method executes. A subscriber function receives an `Observer` object, and can publish values to the observer's `next()` method.
 
-For example, to create an observable equivalent to the `Observable.of(1, 2, 3)` above, you could do something like this:
+For example, to create an observable equivalent to the `of(1, 2, 3)` above, you could do something like this:
 
 <code-example path="observables/src/creating.ts" region="subscriber" title="Create observable with constructor"></code-example>
 
