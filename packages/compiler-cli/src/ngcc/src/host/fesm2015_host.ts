@@ -9,7 +9,7 @@
 import {normalize} from 'canonical-path';
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../ngtsc/host';
+import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {findAll, getNameText, isDefined} from '../utils';
 
@@ -48,7 +48,7 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  *   a static method called `ctorParameters`.
  */
 export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
-  constructor(checker: ts.TypeChecker) { super(checker); }
+  constructor(protected isCore: boolean, checker: ts.TypeChecker) { super(checker); }
 
   /**
    * Examine a declaration (for example, of a class or function) and return metadata about any
@@ -281,6 +281,19 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     return null;
   }
 
+  /**
+   * Determine if an identifier was imported from another module and return `Import` metadata
+   * describing its origin.
+   *
+   * @param id a TypeScript `ts.Identifer` to reflect.
+   *
+   * @returns metadata about the `Import` if the identifier was imported from another module, or
+   * `null` if the identifier doesn't resolve to an import but instead is locally defined.
+   */
+  getImportOfIdentifier(id: ts.Identifier): Import|null {
+    return super.getImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
+  }
+
   ///////////// Protected Helpers /////////////
 
   /**
@@ -336,7 +349,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
           decoratorsIdentifier.parent.operatorToken.kind === ts.SyntaxKind.EqualsToken) {
         // AST of the array of decorator values
         const decoratorsArray = decoratorsIdentifier.parent.right;
-        return this.reflectDecorators(decoratorsArray).filter(isImportedFromCore);
+        return this.reflectDecorators(decoratorsArray)
+            .filter(decorator => this.isFromCore(decorator));
       }
     }
     return null;
@@ -362,7 +376,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     helperCalls.forEach(helperCall => {
       const {classDecorators} =
           this.reflectDecoratorsFromHelperCall(helperCall, makeClassTargetFilter(symbol.name));
-      classDecorators.filter(isImportedFromCore).forEach(decorator => decorators.push(decorator));
+      classDecorators.filter(decorator => this.isFromCore(decorator))
+          .forEach(decorator => decorators.push(decorator));
     });
     return decorators.length ? decorators : null;
   }
@@ -405,7 +420,8 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     if (propDecoratorsMap && ts.isObjectLiteralExpression(propDecoratorsMap)) {
       const propertiesMap = reflectObjectLiteral(propDecoratorsMap);
       propertiesMap.forEach((value, name) => {
-        const decorators = this.reflectDecorators(value).filter(isImportedFromCore);
+        const decorators =
+            this.reflectDecorators(value).filter(decorator => this.isFromCore(decorator));
         if (decorators.length) {
           memberDecorators.set(name, decorators);
         }
@@ -437,7 +453,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       memberDecorators.forEach((decorators, memberName) => {
         if (memberName) {
           const memberDecorators = memberDecoratorMap.get(memberName) || [];
-          const coreDecorators = decorators.filter(isImportedFromCore);
+          const coreDecorators = decorators.filter(decorator => this.isFromCore(decorator));
           memberDecoratorMap.set(memberName, memberDecorators.concat(coreDecorators));
         }
       });
@@ -731,8 +747,9 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
             .map(paramInfo => {
               const type = paramInfo && paramInfo.get('type') || null;
               const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
-              const decorators =
-                  decoratorInfo && this.reflectDecorators(decoratorInfo).filter(isImportedFromCore);
+              const decorators = decoratorInfo &&
+                  this.reflectDecorators(decoratorInfo)
+                      .filter(decorator => this.isFromCore(decorator));
               return {type, decorators};
             });
       }
@@ -816,6 +833,70 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
   protected getStatementsForClass(classSymbol: ts.Symbol): ts.Statement[] {
     return Array.from(classSymbol.valueDeclaration.getSourceFile().statements);
   }
+
+  /**
+   * Try to get the import info for this identifier as though it is a namespaced import.
+   * For example, if the identifier is the `__metadata` part of a property access chain like:
+   *
+   * ```
+   * tslib_1.__metadata
+   * ```
+   *
+   * then it might be that `tslib_1` is a namespace import such as:
+   *
+   * ```
+   * import * as tslib_1 from 'tslib';
+   * ```
+   * @param id the TypeScript identifier to find the import info for.
+   * @returns The import info if this is a namespaced import or `null`.
+   */
+  protected getImportOfNamespacedIdentifier(id: ts.Identifier): Import|null {
+    if (!(ts.isPropertyAccessExpression(id.parent) && id.parent.name === id)) {
+      return null;
+    }
+
+    const namespaceIdentifier = getFarLeftIdentifier(id.parent);
+    const namespaceSymbol =
+        namespaceIdentifier && this.checker.getSymbolAtLocation(namespaceIdentifier);
+    const declaration = namespaceSymbol && namespaceSymbol.declarations.length === 1 ?
+        namespaceSymbol.declarations[0] :
+        null;
+    const namespaceDeclaration =
+        declaration && ts.isNamespaceImport(declaration) ? declaration : null;
+    if (!namespaceDeclaration) {
+      return null;
+    }
+
+    const importDeclaration = namespaceDeclaration.parent.parent;
+    if (!ts.isStringLiteral(importDeclaration.moduleSpecifier)) {
+      // Should not happen as this would be invalid TypesScript
+      return null;
+    }
+
+    return {
+      from: importDeclaration.moduleSpecifier.text,
+      name: id.text,
+    };
+  }
+
+  /**
+   * Test whether a decorator was imported from `@angular/core`.
+   *
+   * Is the decorator:
+   * * externally imported from `@angulare/core`?
+   * * the current hosted program is actually `@angular/core` and
+   *   - relatively internally imported; or
+   *   - not imported, from the current file.
+   *
+   * @param decorator the decorator to test.
+   */
+  isFromCore(decorator: Decorator): boolean {
+    if (this.isCore) {
+      return !decorator.import || /^\./.test(decorator.import.from);
+    } else {
+      return !!decorator.import && decorator.import.from === '@angular/core';
+    }
+  }
 }
 
 ///////////// Exported Helpers /////////////
@@ -844,24 +925,6 @@ export function isAssignment(expression: ts.Expression):
     expression is ts.AssignmentExpression<ts.EqualsToken> {
   return ts.isBinaryExpression(expression) &&
       expression.operatorToken.kind === ts.SyntaxKind.EqualsToken;
-}
-
-/**
- * Test whether a decorator was imported from `@angular/core`.
- *
- * Is the decorator:
- * * extermally mported from `@angulare/core`?
- * * relatively internally imported where the decoratee is already in `@angular/core`?
- *
- * Note we do not support decorators that are not imported at all.
- *
- * @param decorator the decorator to test.
- */
-export function isImportedFromCore(decorator: Decorator): boolean {
-  const importFrom = decorator.import && decorator.import.from || '';
-  return importFrom === '@angular/core' ||
-      (/^\./.test(importFrom) &&
-       /node_modules[\\\/]@angular[\\\/]core/.test(decorator.node.getSourceFile().fileName));
 }
 
 /**
@@ -951,4 +1014,17 @@ function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration {
 function isClassMemberType(node: ts.Declaration): node is ts.ClassElement|
     ts.PropertyAccessExpression|ts.BinaryExpression {
   return ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node);
+}
+
+/**
+ * Compute the left most identifier in a property access chain. E.g. the `a` of `a.b.c.d`.
+ * @param propertyAccess The starting property access expression from which we want to compute
+ * the left most identifier.
+ * @returns the left most identifier in the chain or `null` if it is not an identifier.
+ */
+function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.Identifier|null {
+  while (ts.isPropertyAccessExpression(propertyAccess.expression)) {
+    propertyAccess = propertyAccess.expression;
+  }
+  return ts.isIdentifier(propertyAccess.expression) ? propertyAccess.expression : null;
 }

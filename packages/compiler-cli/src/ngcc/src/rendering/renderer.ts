@@ -14,7 +14,8 @@ import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
-import {ImportManager, translateStatement} from '../../../ngtsc/translator';
+import {translateStatement} from '../../../ngtsc/translator';
+import {NgccImportManager} from './ngcc_import_manager';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -64,7 +65,9 @@ export interface FileInfo {
  * implement the `addImports`, `addDefinitions` and `removeDecorators` abstract methods.
  */
 export abstract class Renderer {
-  constructor(protected host: NgccReflectionHost) {}
+  constructor(
+      protected host: NgccReflectionHost, protected isCore: boolean,
+      protected rewriteCoreImportsTo: ts.SourceFile|null) {}
 
   /**
    * Render the source code and source-map for an Analyzed file.
@@ -72,7 +75,8 @@ export abstract class Renderer {
    * @param targetPath The absolute path where the rendered file will be written.
    */
   renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
-    const importManager = new ImportManager(false, IMPORT_PREFIX);
+    const importManager =
+        new NgccImportManager(!this.rewriteCoreImportsTo, this.isCore, IMPORT_PREFIX);
     const input = this.extractSourceMap(file.sourceFile);
 
     const outputText = new MagicString(input.source);
@@ -88,7 +92,9 @@ export abstract class Renderer {
         outputText, renderConstantPool(file.sourceFile, file.constantPool, importManager),
         file.sourceFile);
 
-    this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
+    this.addImports(
+        outputText,
+        importManager.getAllImports(file.sourceFile.fileName, this.rewriteCoreImportsTo));
 
     // TODO: remove contructor param metadata and property decorators (we need info from the
     // handlers to do this)
@@ -241,7 +247,7 @@ export function mergeSourceMaps(
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
   return constantPool.statements.map(stmt => translateStatement(stmt, imports))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
@@ -257,7 +263,7 @@ export function renderConstantPool(
  * @param imports An object that tracks the imports that are needed by the rendered definitions.
  */
 export function renderDefinitions(
-    sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
   const name = (analyzedClass.declaration as ts.NamedDeclaration).name !;
   const definitions =
