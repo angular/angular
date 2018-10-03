@@ -69,9 +69,6 @@
     "name": "FLAGS"
   },
   {
-    "name": "HEADER_FILLER"
-  },
-  {
     "name": "HEADER_OFFSET"
   },
   {
@@ -79,6 +76,9 @@
   },
   {
     "name": "INJECTOR$1"
+  },
+  {
+    "name": "INJECTOR_SIZE"
   },
   {
     "name": "IterableChangeRecord_"
@@ -141,6 +141,9 @@
     "name": "PARENT"
   },
   {
+    "name": "PARENT_INJECTOR"
+  },
+  {
     "name": "PublicFeature"
   },
   {
@@ -181,6 +184,9 @@
   },
   {
     "name": "TAIL"
+  },
+  {
+    "name": "TNODE"
   },
   {
     "name": "TVIEW"
@@ -301,9 +307,6 @@
   },
   {
     "name": "bloomAdd"
-  },
-  {
-    "name": "bloomFindPossibleInjector"
   },
   {
     "name": "bloomHashBitOrFactory"
@@ -582,7 +585,7 @@
     "name": "getInjectableDef"
   },
   {
-    "name": "getInjector$1"
+    "name": "getInjectorIndex"
   },
   {
     "name": "getLElementFromComponent"
@@ -621,7 +624,10 @@
     "name": "getOrCreateTView"
   },
   {
-    "name": "getParentInjector"
+    "name": "getParentInjectorLocation"
+  },
+  {
+    "name": "getParentInjectorView"
   },
   {
     "name": "getParentLNode"
@@ -706,6 +712,9 @@
   },
   {
     "name": "injectViewContainerRef"
+  },
+  {
+    "name": "injectorHasToken"
   },
   {
     "name": "insertNewMultiProperty"
@@ -910,6 +919,9 @@
   },
   {
     "name": "scheduleTick"
+  },
+  {
+    "name": "searchDirectivesOnInjector"
   },
   {
     "name": "searchMatchesQueuedForCreation"

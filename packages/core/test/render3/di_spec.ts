@@ -10,20 +10,20 @@ import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, O
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
-import {bloomAdd, bloomFindPossibleInjector, getInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {PublicFeature, defineDirective, directiveInject, elementProperty, getCurrentView, getRenderedText, injectRenderer2, load, templateRefExtractor} from '../../src/render3/index';
+import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateInjectable, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
+import {PublicFeature, defineDirective, directiveInject, elementProperty, injectRenderer2, load, templateRefExtractor} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd, _getViewData, getTNode} from '../../src/render3/instructions';
-import {LInjector} from '../../src/render3/interfaces/injector';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
 
-import {HEADER_OFFSET, LViewData, LViewFlags, TVIEW, TView} from '../../src/render3/interfaces/view';
+import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
+import {TNODE} from '../../src/render3/interfaces/injector';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -1680,72 +1680,79 @@ describe('di', () => {
 
   describe('inject', () => {
     describe('bloom filter', () => {
-      let di: LInjector;
+      let mockTView: any;
       beforeEach(() => {
-        di = {} as any;
-        di.bf0 = 0;
-        di.bf1 = 0;
-        di.bf2 = 0;
-        di.bf3 = 0;
-        di.bf4 = 0;
-        di.bf5 = 0;
-        di.bf6 = 0;
-        di.bf7 = 0;
-        di.bf3 = 0;
-        di.cbf0 = 0;
-        di.cbf1 = 0;
-        di.cbf2 = 0;
-        di.cbf3 = 0;
-        di.cbf4 = 0;
-        di.cbf5 = 0;
-        di.cbf6 = 0;
-        di.cbf7 = 0;
+        mockTView = {data: [0, 0, 0, 0, 0, 0, 0, 0, null], firstTemplatePass: true};
       });
 
-      function bloomState() {
-        return [di.bf7, di.bf6, di.bf5, di.bf4, di.bf3, di.bf2, di.bf1, di.bf0];
+      function bloomState() { return mockTView.data.slice(0, TNODE).reverse(); }
+
+      class Dir0 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 0;
+      }
+      class Dir1 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 1;
+      }
+      class Dir33 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 33;
+      }
+      class Dir66 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 66;
+      }
+      class Dir99 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 99;
+      }
+      class Dir132 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 132;
+      }
+      class Dir165 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 165;
+      }
+      class Dir198 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 198;
+      }
+      class Dir231 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 231;
       }
 
       it('should add values', () => {
-        bloomAdd(di, { __NG_ELEMENT_ID__: 0 } as any);
+        bloomAdd(0, mockTView, Dir0);
         expect(bloomState()).toEqual([0, 0, 0, 0, 0, 0, 0, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 32 + 1 } as any);
+        bloomAdd(0, mockTView, Dir33);
         expect(bloomState()).toEqual([0, 0, 0, 0, 0, 0, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 64 + 2 } as any);
+        bloomAdd(0, mockTView, Dir66);
         expect(bloomState()).toEqual([0, 0, 0, 0, 0, 4, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 96 + 3 } as any);
+        bloomAdd(0, mockTView, Dir99);
         expect(bloomState()).toEqual([0, 0, 0, 0, 8, 4, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 128 + 4 } as any);
+        bloomAdd(0, mockTView, Dir132);
         expect(bloomState()).toEqual([0, 0, 0, 16, 8, 4, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 160 + 5 } as any);
+        bloomAdd(0, mockTView, Dir165);
         expect(bloomState()).toEqual([0, 0, 32, 16, 8, 4, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 192 + 6 } as any);
+        bloomAdd(0, mockTView, Dir198);
         expect(bloomState()).toEqual([0, 64, 32, 16, 8, 4, 2, 1]);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 224 + 7 } as any);
+        bloomAdd(0, mockTView, Dir231);
         expect(bloomState()).toEqual([128, 64, 32, 16, 8, 4, 2, 1]);
       });
 
       it('should query values', () => {
-        bloomAdd(di, { __NG_ELEMENT_ID__: 0 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 32 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 64 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 96 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 127 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 161 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 188 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 223 } as any);
-        bloomAdd(di, { __NG_ELEMENT_ID__: 255 } as any);
+        bloomAdd(0, mockTView, Dir0);
+        bloomAdd(0, mockTView, Dir33);
+        bloomAdd(0, mockTView, Dir66);
+        bloomAdd(0, mockTView, Dir99);
+        bloomAdd(0, mockTView, Dir132);
+        bloomAdd(0, mockTView, Dir165);
+        bloomAdd(0, mockTView, Dir198);
+        bloomAdd(0, mockTView, Dir231);
 
-        expect(bloomFindPossibleInjector(di, 0, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 1, InjectFlags.Default)).toEqual(null);
-        expect(bloomFindPossibleInjector(di, 32, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 64, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 96, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 127, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 161, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 188, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 223, InjectFlags.Default)).toEqual(di);
-        expect(bloomFindPossibleInjector(di, 255, InjectFlags.Default)).toEqual(di);
+        expect(injectorHasToken(bloomHash(Dir0) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir1) as number, 0, mockTView.data)).toEqual(false);
+        expect(injectorHasToken(bloomHash(Dir33) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir66) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir99) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir132) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir165) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir198) as number, 0, mockTView.data)).toEqual(true);
+        expect(injectorHasToken(bloomHash(Dir231) as number, 0, mockTView.data)).toEqual(true);
       });
     });
 
@@ -1778,9 +1785,11 @@ describe('di', () => {
 
       /**
        * <div parentDir>
+       *    % if (...) {
        *    <span childDir child2Dir #child1="childDir" #child2="child2Dir">
        *      {{ child1.value }} - {{ child2.value }}
        *    </span>
+       *    % }
        * </div>
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
