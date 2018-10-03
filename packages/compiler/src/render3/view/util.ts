@@ -112,7 +112,7 @@ export function getQueryPredicate(
       const selectors = selector.split(',').map(token => o.literal(token.trim()));
       predicate.push(...selectors);
     });
-    return constantPool.getConstLiteral(o.literalArr(predicate));
+    return constantPool.getConstLiteral(o.literalArr(predicate), true);
   } else {
     return query.predicate;
   }
