@@ -58,7 +58,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeProgram(CLASSES[0]);
 
       const dtsMapper = new DtsMapper('/src', '/typings');
-      const host = new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
       const noTypeParamClass =
           getDeclaration(program, '/src/class.js', 'NoTypeParam', ts.isClassDeclaration);
       expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
@@ -76,7 +76,7 @@ describe('Esm2015ReflectionHost', () => {
        () => {
          const program = makeProgram(MARKER_FILE);
          const dtsMapper = new DtsMapper('/src', '/typings');
-         const host = new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
          const file = program.getSourceFile(MARKER_FILE.name) !;
          const declarations = host.getSwitchableDeclarations(file);
          expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([

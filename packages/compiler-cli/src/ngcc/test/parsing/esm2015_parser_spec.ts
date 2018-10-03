@@ -47,7 +47,7 @@ describe('Esm2015FileParser', () => {
   describe('parseFile()', () => {
     it('should return an array of object for each class that is exported and decorated', () => {
       const program = makeProgram(BASIC_FILE);
-      const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+      const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
       const parser = new Esm2015FileParser(program, host);
 
       const parsedFiles = parser.parseFile(program.getSourceFile(BASIC_FILE.name) !);

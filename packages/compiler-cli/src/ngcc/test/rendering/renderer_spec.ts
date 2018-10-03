@@ -35,7 +35,7 @@ class TestRenderer extends Renderer {
 }
 
 function createTestRenderer() {
-  const renderer = new TestRenderer({} as Fesm2015ReflectionHost);
+  const renderer = new TestRenderer({} as Fesm2015ReflectionHost, false, null);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
@@ -44,9 +44,9 @@ function createTestRenderer() {
 
 function analyze(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
+  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
 
   const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
   return parsedFiles.map(file => analyzer.analyzeFile(file));

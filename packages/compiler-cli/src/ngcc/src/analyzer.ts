@@ -48,16 +48,17 @@ export class Analyzer {
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.typeChecker, this.host),
     new ComponentDecoratorHandler(
-        this.typeChecker, this.host, this.scopeRegistry, false, this.resourceLoader, this.rootDirs),
-    new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
-    new InjectableDecoratorHandler(this.host, false),
-    new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
-    new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
+        this.typeChecker, this.host, this.scopeRegistry, this.isCore, this.resourceLoader,
+        this.rootDirs),
+    new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new InjectableDecoratorHandler(this.host, this.isCore),
+    new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
   ];
 
   constructor(
       private typeChecker: ts.TypeChecker, private host: NgccReflectionHost,
-      private rootDirs: string[]) {}
+      private rootDirs: string[], private isCore: boolean) {}
 
   /**
    * Analyize a parsed file to generate the information about decorated classes that
