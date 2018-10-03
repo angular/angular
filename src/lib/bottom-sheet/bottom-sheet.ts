@@ -18,6 +18,7 @@ import {
   TemplateRef,
   InjectionToken,
   Inject,
+  OnDestroy,
 } from '@angular/core';
 import {Location} from '@angular/common';
 import {of as observableOf} from 'rxjs';
@@ -35,7 +36,7 @@ export const MAT_BOTTOM_SHEET_DEFAULT_OPTIONS =
  * Service to trigger Material Design bottom sheets.
  */
 @Injectable({providedIn: MatBottomSheetModule})
-export class MatBottomSheet {
+export class MatBottomSheet implements OnDestroy {
   private _bottomSheetRefAtThisLevel: MatBottomSheetRef<any> | null = null;
 
   /** Reference to the currently opened bottom sheet. */
@@ -115,6 +116,12 @@ export class MatBottomSheet {
   dismiss(): void {
     if (this._openedBottomSheetRef) {
       this._openedBottomSheetRef.dismiss();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._bottomSheetRefAtThisLevel) {
+      this._bottomSheetRefAtThisLevel.dismiss();
     }
   }
 

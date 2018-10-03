@@ -274,6 +274,18 @@ describe('MatBottomSheet', () => {
     expect(overlayContainerElement.childElementCount).toBe(0);
   }));
 
+  it('should dismiss the bottom sheet when the service is destroyed', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg);
+    viewContainerFixture.detectChanges();
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
+
+    bottomSheet.ngOnDestroy();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.childElementCount).toBe(0);
+  }));
+
   it('should open a new bottom sheet after dismissing a previous sheet', fakeAsync(() => {
     let config: MatBottomSheetConfig = {viewContainerRef: testViewContainerRef};
     let bottomSheetRef: MatBottomSheetRef<any> = bottomSheet.open(PizzaMsg, config);
@@ -614,6 +626,23 @@ describe('MatBottomSheet with parent MatBottomSheet', () => {
     expect(overlayContainerElement.textContent)
         .toContain('Taco', 'Expected child bottom sheet to be dismissed by opening from parent');
   }));
+
+  it('should not close parent bottom sheet when child is destroyed', fakeAsync(() => {
+    parentBottomSheet.open(PizzaMsg);
+    fixture.detectChanges();
+    tick(1000);
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a bottom sheet to be opened');
+
+    childBottomSheet.ngOnDestroy();
+    fixture.detectChanges();
+    tick(1000);
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a bottom sheet to stay open');
+  }));
+
 });
 
 describe('MatBottomSheet with default options', () => {
