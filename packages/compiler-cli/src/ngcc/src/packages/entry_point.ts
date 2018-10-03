@@ -27,6 +27,8 @@ export type EntryPointPaths = {
  * to each of the possible entry-point formats.
  */
 export type EntryPoint = EntryPointPaths & {
+  /** The name of the package (e.g. `@angular/core`). */
+  name: string;
   /** The path to the package that contains this entry-point. */
   package: string;
   /** The path to this entry point. */
@@ -36,6 +38,7 @@ export type EntryPoint = EntryPointPaths & {
 };
 
 interface EntryPointPackageJson {
+  name: string;
   fesm2015?: string;
   fesm5?: string;
   esm2015?: string;
@@ -59,8 +62,8 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
 
   // According to https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html,
   // `types` and `typings` are interchangeable.
-  const {fesm2015, fesm5, esm2015, esm5, main, types, typings = types}: EntryPointPackageJson =
-      JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const {name, fesm2015, fesm5, esm2015, esm5, main, types, typings = types}:
+      EntryPointPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   // Minimum requirement is that we have esm2015 format and typings.
   if (!typings || !esm2015) {
@@ -74,6 +77,7 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
   }
 
   const entryPointInfo: EntryPoint = {
+    name,
     package: pkgPath,
     path: entryPoint,
     typings: path.resolve(entryPoint, typings),
