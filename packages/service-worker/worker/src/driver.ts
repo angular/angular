@@ -309,6 +309,8 @@ export class Driver implements Debuggable, UpdateSource {
     notification.close();
 
     const options: {-readonly[K in keyof Notification]?: Notification[K]} = {};
+    // The filter uses `name in notification` because the properties are on the prototype so
+    // hasOwnProperty does not work here
     NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
         .forEach(name => options[name] = notification[name]);
 

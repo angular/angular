@@ -589,16 +589,30 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       }]);
     });
 
-    async_it('broadcasts notification click events', async() => {
+    async_it('broadcasts notification click events with action', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      await scope.handleClick({title: 'This is a test', body: 'Test body'}, 'button');
+      await scope.handleClick(
+          {title: 'This is a test with action', body: 'Test body with action'}, 'button');
       const message: any = scope.clients.getMock('default') !.messages[0];
 
       expect(message.type).toEqual('NOTIFICATION_CLICK');
       expect(message.data.action).toEqual('button');
-      expect(message.data.notification.title).toEqual('This is a test');
-      expect(message.data.notification.body).toEqual('Test body');
+      expect(message.data.notification.title).toEqual('This is a test with action');
+      expect(message.data.notification.body).toEqual('Test body with action');
+    });
+
+    async_it('broadcasts notification click events without action', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick(
+          {title: 'This is a test without action', body: 'Test body without action'});
+      const message: any = scope.clients.getMock('default') !.messages[0];
+
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toBeUndefined();
+      expect(message.data.notification.title).toEqual('This is a test without action');
+      expect(message.data.notification.body).toEqual('Test body without action');
     });
 
     async_it('prefetches updates to lazy cache when set', async() => {
