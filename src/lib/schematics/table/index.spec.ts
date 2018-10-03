@@ -53,6 +53,12 @@ describe('material-table-schematic', () => {
       `import { MatTableModule, MatPaginatorModule, MatSortModule } from '@angular/material';`);
   });
 
+  it('should throw if no name has been specified', () => {
+    expect(() => {
+      runner.runSchematic('table', {project: 'material'}, createTestApp(runner));
+    }).toThrowError(/required property 'name'/);
+  });
+
   describe('styleext option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
@@ -61,7 +67,7 @@ describe('material-table-schematic', () => {
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
 
-    it('should fallback to the @schematics/angular:component option value', () => {
+    it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
           'table', baseOptions, createTestApp(runner, {style: 'less'}));
 
@@ -77,7 +83,7 @@ describe('material-table-schematic', () => {
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
 
-    it('should fallback to the @schematics/angular:component option value', () => {
+    it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
           'table', baseOptions, createTestApp(runner, {inlineStyle: true}));
 
@@ -93,7 +99,7 @@ describe('material-table-schematic', () => {
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
 
-    it('should fallback to the @schematics/angular:component option value', () => {
+    it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
           'table', baseOptions, createTestApp(runner, {inlineTemplate: true}));
 
@@ -109,7 +115,7 @@ describe('material-table-schematic', () => {
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
 
-    it('should fallback to the @schematics/angular:component option value', () => {
+    it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
           'table', baseOptions, createTestApp(runner, {skipTests: true}));
 
