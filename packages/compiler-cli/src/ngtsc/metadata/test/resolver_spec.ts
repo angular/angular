@@ -294,7 +294,6 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const res = staticallyResolve(result.initializer !, host, checker);
-    console.error(res);
     expect(res instanceof Reference).toBe(true);
   });
 });

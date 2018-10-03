@@ -15,10 +15,10 @@ import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
-  const renderer = new Esm2015Renderer(host);
+  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
+  const renderer = new Esm2015Renderer(host, false, null);
   return {analyzer, host, parser, program, renderer};
 }
 
