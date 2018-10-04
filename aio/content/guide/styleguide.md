@@ -45,7 +45,7 @@ If you fully understand the meaning behind the guideline and have a good reason 
 
 
 
-**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
+**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakable red header.
 
 
 </div>
@@ -2865,7 +2865,7 @@ and more difficult in a flat structure.
 
 
 
-**Why?** NgModules make it easier to isolate, test, and re-use features.
+**Why?** NgModules make it easier to isolate, test, and reuse features.
 
 
 </div>
