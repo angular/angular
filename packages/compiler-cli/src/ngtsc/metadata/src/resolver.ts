@@ -183,10 +183,10 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
  * An `AbsoluteReference` can be resolved to an `Expression`, and if that expression is an import
  * the module specifier will be an absolute module name, not a relative path.
  */
-export class AbsoluteReference extends Reference {
+export class AbsoluteReference<T extends ts.Node> extends Reference<T> {
   private identifiers: ts.Identifier[] = [];
   constructor(
-      node: ts.Node, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
+      node: T, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
       readonly symbolName: string) {
     super(node);
   }

@@ -117,10 +117,7 @@ export function compileDirectiveFromMetadata(
   // string literal, which must be on one line.
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
 
-  const type = new o.ExpressionType(o.importExpr(R3.DirectiveDef, [
-    typeWithParameters(meta.type, meta.typeArgumentCount),
-    new o.ExpressionType(o.literal(selectorForType))
-  ]));
+  const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
   return {expression, type, statements};
 }
 
@@ -257,10 +254,7 @@ export function compileComponentFromMetadata(
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type = new o.ExpressionType(o.importExpr(R3.ComponentDef, [
-    typeWithParameters(meta.type, meta.typeArgumentCount),
-    new o.ExpressionType(o.literal(selectorForType))
-  ]));
+  const type = createTypeForDef(meta, R3.ComponentDefWithMeta);
 
   return {expression, type, statements};
 }
@@ -507,6 +501,39 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
   }
 
   return null;
+}
+
+function stringAsType(str: string): o.Type {
+  return o.expressionType(o.literal(str));
+}
+
+function stringMapAsType(map: {[key: string]: string}): o.Type {
+  const mapValues = Object.keys(map).map(key => ({
+                                           key,
+                                           value: o.literal(map[key]),
+                                           quoted: true,
+                                         }));
+  return o.expressionType(o.literalMap(mapValues));
+}
+
+function stringArrayAsType(arr: string[]): o.Type {
+  return arr.length > 0 ? o.expressionType(o.literalArr(arr.map(value => o.literal(value)))) :
+                          o.NONE_TYPE;
+}
+
+function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReference): o.Type {
+  // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
+  // string literal, which must be on one line.
+  const selectorForType = (meta.selector || '').replace(/\n/g, '');
+
+  return o.expressionType(o.importExpr(typeBase, [
+    typeWithParameters(meta.type, meta.typeArgumentCount),
+    stringAsType(selectorForType),
+    meta.exportAs !== null ? stringAsType(meta.exportAs) : o.NONE_TYPE,
+    stringMapAsType(meta.inputs),
+    stringMapAsType(meta.outputs),
+    stringArrayAsType(meta.queries.map(q => q.propertyName)),
+  ]));
 }
 
 // Define and update any view queries

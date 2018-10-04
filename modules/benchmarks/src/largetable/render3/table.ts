@@ -7,7 +7,7 @@
  */
 
 import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementStart, ɵelementStyleProp, ɵelementStyling, ɵembeddedViewEnd, ɵembeddedViewStart, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
-import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
+import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
 
@@ -16,7 +16,7 @@ export class LargeTableComponent {
   data: TableCell[][] = emptyTable;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDefInternal<LargeTableComponent> = ɵdefineComponent({
+  static ngComponentDef: ComponentDef<LargeTableComponent> = ɵdefineComponent({
     type: LargeTableComponent,
     selectors: [['largetable']],
     consts: 3,

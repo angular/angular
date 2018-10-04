@@ -11,11 +11,11 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
-import {Reference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
+import {extractDirectiveGuards, getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -40,7 +40,18 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
-      this.scopeRegistry.registerSelector(node, analysis.selector);
+      let ref = new ResolvedReference(node, node.name !);
+      this.scopeRegistry.registerDirective(node, {
+        ref,
+        directive: ref,
+        name: node.name !.text,
+        selector: analysis.selector,
+        exportAs: analysis.exportAs,
+        inputs: analysis.inputs,
+        outputs: analysis.outputs,
+        queries: analysis.queries.map(query => query.propertyName),
+        isComponent: false, ...extractDirectiveGuards(node, this.reflector),
+      });
     }
 
     return {analysis};

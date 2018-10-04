@@ -73,7 +73,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports: o.literalArr(exports.map(ref => ref.value)),
   })]);
 
-  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
+  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));

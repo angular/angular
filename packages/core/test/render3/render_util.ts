@@ -18,9 +18,9 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -198,13 +198,13 @@ export function renderToHtml(
 
 function toDefs(
     types: DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => DirectiveDefInternal<any>): DirectiveDefList|null;
+    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDefInternal<any>): PipeDefList|null;
+    mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDefInternal<any>| DirectiveDefInternal<any>): any {
+    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
   if (!types) return null;
   if (typeof types == 'function') {
     types = types();

@@ -150,29 +150,29 @@ export class CssSelector {
  * Reads a list of CssSelectors and allows to calculate which ones
  * are contained in a given CssSelector.
  */
-export class SelectorMatcher {
-  static createNotMatcher(notSelectors: CssSelector[]): SelectorMatcher {
-    const notMatcher = new SelectorMatcher();
+export class SelectorMatcher<T = any> {
+  static createNotMatcher(notSelectors: CssSelector[]): SelectorMatcher<null> {
+    const notMatcher = new SelectorMatcher<null>();
     notMatcher.addSelectables(notSelectors, null);
     return notMatcher;
   }
 
-  private _elementMap = new Map<string, SelectorContext[]>();
-  private _elementPartialMap = new Map<string, SelectorMatcher>();
-  private _classMap = new Map<string, SelectorContext[]>();
-  private _classPartialMap = new Map<string, SelectorMatcher>();
-  private _attrValueMap = new Map<string, Map<string, SelectorContext[]>>();
-  private _attrValuePartialMap = new Map<string, Map<string, SelectorMatcher>>();
+  private _elementMap = new Map<string, SelectorContext<T>[]>();
+  private _elementPartialMap = new Map<string, SelectorMatcher<T>>();
+  private _classMap = new Map<string, SelectorContext<T>[]>();
+  private _classPartialMap = new Map<string, SelectorMatcher<T>>();
+  private _attrValueMap = new Map<string, Map<string, SelectorContext<T>[]>>();
+  private _attrValuePartialMap = new Map<string, Map<string, SelectorMatcher<T>>>();
   private _listContexts: SelectorListContext[] = [];
 
-  addSelectables(cssSelectors: CssSelector[], callbackCtxt?: any) {
+  addSelectables(cssSelectors: CssSelector[], callbackCtxt?: T) {
     let listContext: SelectorListContext = null !;
     if (cssSelectors.length > 1) {
       listContext = new SelectorListContext(cssSelectors);
       this._listContexts.push(listContext);
     }
     for (let i = 0; i < cssSelectors.length; i++) {
-      this._addSelectable(cssSelectors[i], callbackCtxt, listContext);
+      this._addSelectable(cssSelectors[i], callbackCtxt as T, listContext);
     }
   }
 
@@ -182,8 +182,8 @@ export class SelectorMatcher {
    * @param callbackCtxt An opaque object that will be given to the callback of the `match` function
    */
   private _addSelectable(
-      cssSelector: CssSelector, callbackCtxt: any, listContext: SelectorListContext) {
-    let matcher: SelectorMatcher = this;
+      cssSelector: CssSelector, callbackCtxt: T, listContext: SelectorListContext) {
+    let matcher: SelectorMatcher<T> = this;
     const element = cssSelector.element;
     const classNames = cssSelector.classNames;
     const attrs = cssSelector.attrs;
@@ -219,7 +219,7 @@ export class SelectorMatcher {
           const terminalMap = matcher._attrValueMap;
           let terminalValuesMap = terminalMap.get(name);
           if (!terminalValuesMap) {
-            terminalValuesMap = new Map<string, SelectorContext[]>();
+            terminalValuesMap = new Map<string, SelectorContext<T>[]>();
             terminalMap.set(name, terminalValuesMap);
           }
           this._addTerminal(terminalValuesMap, value, selectable);
@@ -227,7 +227,7 @@ export class SelectorMatcher {
           const partialMap = matcher._attrValuePartialMap;
           let partialValuesMap = partialMap.get(name);
           if (!partialValuesMap) {
-            partialValuesMap = new Map<string, SelectorMatcher>();
+            partialValuesMap = new Map<string, SelectorMatcher<T>>();
             partialMap.set(name, partialValuesMap);
           }
           matcher = this._addPartial(partialValuesMap, value);
@@ -237,7 +237,7 @@ export class SelectorMatcher {
   }
 
   private _addTerminal(
-      map: Map<string, SelectorContext[]>, name: string, selectable: SelectorContext) {
+      map: Map<string, SelectorContext<T>[]>, name: string, selectable: SelectorContext<T>) {
     let terminalList = map.get(name);
     if (!terminalList) {
       terminalList = [];
@@ -246,10 +246,10 @@ export class SelectorMatcher {
     terminalList.push(selectable);
   }
 
-  private _addPartial(map: Map<string, SelectorMatcher>, name: string): SelectorMatcher {
+  private _addPartial(map: Map<string, SelectorMatcher<T>>, name: string): SelectorMatcher<T> {
     let matcher = map.get(name);
     if (!matcher) {
-      matcher = new SelectorMatcher();
+      matcher = new SelectorMatcher<T>();
       map.set(name, matcher);
     }
     return matcher;
@@ -262,8 +262,7 @@ export class SelectorMatcher {
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
   */
-  match(cssSelector: CssSelector, matchedCallback: ((c: CssSelector, a: any) => void)|null):
-      boolean {
+  match(cssSelector: CssSelector, matchedCallback: ((c: CssSelector, a: T) => void)|null): boolean {
     let result = false;
     const element = cssSelector.element !;
     const classNames = cssSelector.classNames;
@@ -314,21 +313,21 @@ export class SelectorMatcher {
 
   /** @internal */
   _matchTerminal(
-      map: Map<string, SelectorContext[]>, name: string, cssSelector: CssSelector,
+      map: Map<string, SelectorContext<T>[]>, name: string, cssSelector: CssSelector,
       matchedCallback: ((c: CssSelector, a: any) => void)|null): boolean {
     if (!map || typeof name !== 'string') {
       return false;
     }
 
-    let selectables: SelectorContext[] = map.get(name) || [];
-    const starSelectables: SelectorContext[] = map.get('*') !;
+    let selectables: SelectorContext<T>[] = map.get(name) || [];
+    const starSelectables: SelectorContext<T>[] = map.get('*') !;
     if (starSelectables) {
       selectables = selectables.concat(starSelectables);
     }
     if (selectables.length === 0) {
       return false;
     }
-    let selectable: SelectorContext;
+    let selectable: SelectorContext<T>;
     let result = false;
     for (let i = 0; i < selectables.length; i++) {
       selectable = selectables[i];
@@ -339,7 +338,7 @@ export class SelectorMatcher {
 
   /** @internal */
   _matchPartial(
-      map: Map<string, SelectorMatcher>, name: string, cssSelector: CssSelector,
+      map: Map<string, SelectorMatcher<T>>, name: string, cssSelector: CssSelector,
       matchedCallback: ((c: CssSelector, a: any) => void)|null): boolean {
     if (!map || typeof name !== 'string') {
       return false;
@@ -364,16 +363,15 @@ export class SelectorListContext {
 }
 
 // Store context to pass back selector and context when a selector is matched
-export class SelectorContext {
+export class SelectorContext<T = any> {
   notSelectors: CssSelector[];
 
   constructor(
-      public selector: CssSelector, public cbContext: any,
-      public listContext: SelectorListContext) {
+      public selector: CssSelector, public cbContext: T, public listContext: SelectorListContext) {
     this.notSelectors = selector.notSelectors;
   }
 
-  finalize(cssSelector: CssSelector, callback: ((c: CssSelector, a: any) => void)|null): boolean {
+  finalize(cssSelector: CssSelector, callback: ((c: CssSelector, a: T) => void)|null): boolean {
     let result = true;
     if (this.notSelectors.length > 0 && (!this.listContext || !this.listContext.alreadyMatched)) {
       const notMatcher = SelectorMatcher.createNotMatcher(this.notSelectors);

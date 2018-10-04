@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {containerEl, renderComponent, toHtml} from '../render_util';
 
 
@@ -105,7 +105,7 @@ describe('pipes', () => {
     }
 
     // NON-NORMATIVE
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).pipeDefs =
+    (MyApp.ngComponentDef as ComponentDef<any>).pipeDefs =
         () => [MyPurePipe.ngPipeDef, MyPipe.ngPipeDef];
     // /NON-NORMATIVE
 
@@ -205,8 +205,8 @@ describe('pipes', () => {
     }
 
     // NON-NORMATIVE
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs = [OneTimeIf.ngDirectiveDef];
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).pipeDefs = [MyPurePipe.ngPipeDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [OneTimeIf.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).pipeDefs = [MyPurePipe.ngPipeDef];
     // /NON-NORMATIVE
 
     let myApp: MyApp = renderComponent(MyApp);

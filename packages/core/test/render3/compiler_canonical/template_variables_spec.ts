@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, SimpleChanges, TemplateRef, ViewContainerRef, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -129,7 +129,7 @@ describe('template variables', () => {
     }
 
     // NON-NORMATIVE
-    (MyComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (MyComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
         [ForOfDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
