@@ -1002,6 +1002,9 @@
     "name": "stringify$2"
   },
   {
+    "name": "syncViewWithBlueprint"
+  },
+  {
     "name": "template"
   },
   {

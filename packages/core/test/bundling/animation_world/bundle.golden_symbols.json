@@ -984,6 +984,9 @@
     "name": "swapMultiContextEntries"
   },
   {
+    "name": "syncViewWithBlueprint"
+  },
+  {
     "name": "template"
   },
   {

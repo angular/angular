@@ -106,8 +106,9 @@ export function getOrCreateNodeInjectorForNode(
   if (tView.firstTemplatePass) {
     // TODO(kara): Store node injector with host bindings for that node (see VIEW_DATA.md)
     tNode.injectorIndex = hostView.length;
-    tView.blueprint.push(0, 0, 0, 0, 0, 0, 0, 0, null);  // foundation for cumulative bloom
-    tView.data.push(0, 0, 0, 0, 0, 0, 0, 0, tNode);      // foundation for node bloom
+    tView.data.push(0, 0, 0, 0, 0, 0, 0, 0, tNode);  // foundation for node bloom
+    hostView.push(0, 0, 0, 0, 0, 0, 0, 0, null);     // foundation for cumulative bloom
+    tView.blueprint.push(0, 0, 0, 0, 0, 0, 0, 0, null);
     tView.hostBindingStartIndex += INJECTOR_SIZE;
   }
 
@@ -118,10 +119,11 @@ export function getOrCreateNodeInjectorForNode(
   const parentData = parentView[TVIEW].data as any;
   const injectorIndex = tNode.injectorIndex;
 
-  for (let i = 0; i < PARENT_INJECTOR; i++) {
-    const bloomIndex = parentIndex + i;
-    hostView[injectorIndex + i] =
-        parentLoc === -1 ? 0 : parentView[bloomIndex] | parentData[bloomIndex];
+  if (parentLoc !== -1) {
+    for (let i = 0; i < PARENT_INJECTOR; i++) {
+      const bloomIndex = parentIndex + i;
+      hostView[injectorIndex + i] = parentView[bloomIndex] | parentData[bloomIndex];
+    }
   }
 
   hostView[injectorIndex + PARENT_INJECTOR] = parentLoc;
