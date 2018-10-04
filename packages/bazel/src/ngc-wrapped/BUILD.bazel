@@ -13,7 +13,9 @@ ts_library(
         "extract_i18n.ts",
         "index.ts",
     ],
+    compiler = "//:@bazel/typescript/tsc_wrapped",
     module_name = "@angular/bazel",
+    node_modules = "@ngdeps//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
     visibility = ["//packages/bazel/test/ngc-wrapped:__subpackages__"],
     deps = [
@@ -22,7 +24,10 @@ ts_library(
         # Users will get this dependency from node_modules.
         "//packages/compiler-cli",
         # END-INTERNAL
-        "@build_bazel_rules_typescript//internal:tsc_wrapped",
+        "@ngdeps//@bazel/typescript",
+        "@ngdeps//@types/node",
+        "@ngdeps//tsickle",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -31,9 +36,9 @@ nodejs_binary(
     data = [
         ":ngc_lib",
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "@ngdeps//tslib",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
-    node_modules = "@//:node_modules",
     visibility = ["//visibility:public"],
 )
 
@@ -43,6 +48,5 @@ nodejs_binary(
         ":ngc_lib",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js/extract_i18n.js",
-    node_modules = "@//:node_modules",
     visibility = ["//visibility:public"],
 )

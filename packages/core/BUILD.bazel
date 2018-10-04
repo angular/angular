@@ -21,6 +21,7 @@ ng_module(
     deps = [
         "//packages:types",
         "//packages/compiler",
+        "@ngdeps//zone.js",
         "@rxjs",
         "@rxjs//operators",
     ],

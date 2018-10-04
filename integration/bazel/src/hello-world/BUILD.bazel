@@ -18,13 +18,13 @@ ng_module(
     assets = [":hello-world-styles"],
     deps = [
         "@angular//packages/core",
+        "@npm//@types",
     ],
 )
 
 ng_package(
     name = "npm_package",
     entry_point = "src/hello-world/index.js",
-    node_modules = "//:node_modules",
     deps = [":hello-world"],
 )
 
@@ -38,19 +38,23 @@ ts_library(
         "@angular//packages/core/testing",
         "@angular//packages/platform-browser",
         "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@types",
+        "@npm//jasmine",
     ],
 )
 
 ts_web_test_suite(
     name = "test",
-    srcs = ["//:node_modules/tslib/tslib.js"],
+    srcs = ["@npm//node_modules/tslib:tslib.js"],
     bootstrap = [
-        "//:node_modules/zone.js/dist/zone-testing-bundle.js",
-        "//:node_modules/reflect-metadata/Reflect.js",
+        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
-        "@io_bazel_rules_webtesting//browsers:firefox-local",
+        # TODO(gregmagolan): re-enable firefox testing once fixed
+        # See https://github.com/bazelbuild/rules_typescript/issues/296
+        # "@io_bazel_rules_webtesting//browsers:firefox-local",
     ],
     deps = [
         ":test_lib",

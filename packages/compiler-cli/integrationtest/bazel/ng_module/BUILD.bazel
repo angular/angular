@@ -6,7 +6,11 @@ ng_module(
     entry_point = "index.ts",
     flat_module_out_file = "flat_module_filename",
     module_name = "some_npm_module",
-    deps = ["//packages/core"],
+    node_modules = "@ngdeps//typescript:typescript__typings",
+    deps = [
+        "//packages/core",
+        "@ngdeps//@types",
+    ],
 )
 
 load(":extract_flat_module_index.bzl", "extract_flat_module_index")

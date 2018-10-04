@@ -15,6 +15,8 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@types/hammerjs",
+        "@ngdeps//zone.js",
     ],
 )
 
