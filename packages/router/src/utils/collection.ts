@@ -96,8 +96,7 @@ export function andObservables(observables: Observable<Observable<any>>): Observ
   return observables.pipe(mergeAll(), every((result: any) => result === true));
 }
 
-export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
-    Observable<T> {
+export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
   if (isObservable(value)) {
     return value;
   }
@@ -109,5 +108,5 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
     return from(Promise.resolve(value));
   }
 
-  return of (value as T);
+  return of (value);
 }
