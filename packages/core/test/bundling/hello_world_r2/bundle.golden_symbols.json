@@ -4633,5 +4633,8 @@
   },
   {
     "name": "ɵResourceLoaderImpl_BaseFactory"
+  },
+  {
+    "name": "ɵdefineNgModule"
   }
 ]
