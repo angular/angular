@@ -987,6 +987,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "setValue"
   },
   {
@@ -1000,6 +1003,9 @@
   },
   {
     "name": "stringify$2"
+  },
+  {
+    "name": "syncViewWithBlueprint"
   },
   {
     "name": "template"

@@ -335,6 +335,7 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
  */
 function refreshDescendantViews() {
   setHostBindings(tView.hostBindings);
+  const parentFirstTemplatePass = firstTemplatePass;
 
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = firstTemplatePass = false;
@@ -351,7 +352,7 @@ function refreshDescendantViews() {
     executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
   }
 
-  refreshChildComponents(tView.components);
+  refreshChildComponents(tView.components, parentFirstTemplatePass);
 }
 
 
@@ -388,10 +389,11 @@ function refreshContentQueries(tView: TView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(components: number[] | null): void {
+function refreshChildComponents(
+    components: number[] | null, parentFirstTemplatePass: boolean): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
-      componentRefresh(components[i]);
+      componentRefresh(components[i], parentFirstTemplatePass);
     }
   }
 }
@@ -701,7 +703,7 @@ export function renderComponentOrTemplate<T>(
       // Element was stored at 0 in data and directive was stored at 0 in directives
       // in renderComponent()
       setHostBindings(tView.hostBindings);
-      componentRefresh(HEADER_OFFSET);
+      componentRefresh(HEADER_OFFSET, false);
     }
   } finally {
     if (rendererFactory.end) {
@@ -2220,7 +2222,8 @@ export function embeddedViewEnd(): void {
  *
  * @param adjustedElementIndex  Element index in LViewData[] (adjusted for HEADER_OFFSET)
  */
-export function componentRefresh<T>(adjustedElementIndex: number): void {
+export function componentRefresh<T>(
+    adjustedElementIndex: number, parentFirstTemplatePass: boolean): void {
   ngDevMode && assertDataInRange(adjustedElementIndex);
   const element = readElementValue(viewData[adjustedElementIndex]) as LElementNode;
   ngDevMode && assertNodeType(tView.data[adjustedElementIndex] as TNode, TNodeType.Element);
@@ -2230,7 +2233,41 @@ export function componentRefresh<T>(adjustedElementIndex: number): void {
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+    parentFirstTemplatePass && syncViewWithBlueprint(hostView);
     detectChangesInternal(hostView, hostView[CONTEXT]);
+  }
+}
+
+/**
+ * Syncs an LViewData instance with its blueprint if they have gotten out of sync.
+ *
+ * Typically, blueprints and their view instances should always be in sync, so the loop here
+ * will be skipped. However, consider this case of two components side-by-side:
+ *
+ * App template:
+ * ```
+ * <comp></comp>
+ * <comp></comp>
+ * ```
+ *
+ * The following will happen:
+ * 1. App template begins processing.
+ * 2. First <comp> is matched as a component and its LViewData is created.
+ * 3. Second <comp> is matched as a component and its LViewData is created.
+ * 4. App template completes processing, so it's time to check child templates.
+ * 5. First <comp> template is checked. It has a directive, so its def is pushed to blueprint.
+ * 6. Second <comp> template is checked. Its blueprint has been updated by the first
+ * <comp> template, but its LViewData was created before this update, so it is out of sync.
+ *
+ * Note that embedded views inside ngFor loops will never be out of sync because these views
+ * are processed as soon as they are created.
+ *
+ * @param componentView The view to sync
+ */
+function syncViewWithBlueprint(componentView: LViewData) {
+  const componentTView = componentView[TVIEW];
+  for (let i = componentView.length; i < componentTView.blueprint.length; i++) {
+    componentView[i] = componentTView.blueprint[i];
   }
 }
 
