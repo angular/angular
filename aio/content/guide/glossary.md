@@ -77,7 +77,7 @@ A way to initialize and launch an app or system.
 
 In Angular, an app's root NgModule (`AppModule`) has a `bootstrap` property that identifies the app's top-level [components](guide/glossary#component). 
 During the bootstrap process, Angular creates and inserts these components into the `index.html` host web page.
-You can bootstrap multiple apps in the same `index.html`. Each app ccontains its own components.
+You can bootstrap multiple apps in the same `index.html`. Each app contains its own components.
 
 Learn more in [Bootstrapping](guide/bootstrapping).
 
@@ -266,7 +266,7 @@ Angular extends TypeScript with domain-specific languages for a number of domain
 
 ## dynamic component loading
 
-A technique for adding a component to the DOM at run time. Requires that you exclude the component from compilation and then connect it to Angular's change-detection and event-handling framework when you add it to the DOM.
+A technique for adding a component to the DOM at runtime. Requires that you exclude the component from compilation and then connect it to Angular's change-detection and event-handling framework when you add it to the DOM.
 
 See also [custom element](guide/glossary#custom-element), which provides an easier path with the same result.
 
@@ -277,7 +277,7 @@ See also [custom element](guide/glossary#custom-element), which provides an easi
 ## eager loading
 
 NgModules or components that are loaded on launch are called eager-loaded, to distinguish them from those
-that are loaded at run time (lazy-loaded).
+that are loaded at runtime (lazy-loaded).
 See [lazy loading](guide/glossary#lazy-load).
 
 
