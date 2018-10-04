@@ -135,8 +135,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   /** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
 
-  /** Whether the slide-toggle element is checked or not */
-
   /** Used to set the aria-label attribute on the underlying input element. */
   @Input('aria-label') ariaLabel: string | null = null;
 
