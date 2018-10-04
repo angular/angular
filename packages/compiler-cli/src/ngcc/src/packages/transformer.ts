@@ -28,8 +28,6 @@ import {FileInfo, Renderer} from '../rendering/renderer';
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 
-
-
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
  * formats - e.g. fesm2015, UMD, etc. Additionally, each package provides typings (`.d.ts` files).
