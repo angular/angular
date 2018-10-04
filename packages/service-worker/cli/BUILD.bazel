@@ -12,6 +12,7 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "//packages/service-worker/config",
+        "@ngdeps//@types/node",
     ],
 )
 
