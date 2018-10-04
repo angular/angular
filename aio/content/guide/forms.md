@@ -7,7 +7,7 @@ schedule a meeting, and perform countless other data-entry tasks.
 In developing a form, it's important to create a data-entry experience that guides the
 user efficiently and effectively through the workflow.
 
-#### Introduction to Template-driven forms
+## Introduction to Template-driven forms
 
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
 *two-way data binding, change tracking, validation, and error handling*,
