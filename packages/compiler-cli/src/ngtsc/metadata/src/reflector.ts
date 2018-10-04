@@ -166,6 +166,10 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
   }
 
+  getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null {
+    return declaration.initializer || null;
+  }
+
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
    *
