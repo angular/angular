@@ -1,6 +1,6 @@
 # Building and serving Angular apps
 
-*intro - here are some topics of interest in the app development cycle*
+This page discusses build-specific configuration options for Angular projects.
 
 {@a app-environments}
 
@@ -260,50 +260,6 @@ Each budget entry is a JSON object with the following properties:
 
  </table>
 
-{@a assets}
-
-## Adding project assets
-
-You can configure your project with a set of assets, such as images, to copy directly into the build for a particular build target. 
-
-Each build target section of the CLI configuration file, `angular.json`, has an `assets` section that lists  files or folders you want to copy into the build for that target.
-By default, the `src/assets/` folder and `src/favicon.ico` are copied into a build.
-
-```
-"assets": [
-  "src/assets",
-  "src/favicon.ico"
-]
-```
-
-You can edit the assets configuration to extend it for assets outside your project. 
-For example, the following invokes the [node-glob pattern matcher](https://github.com/isaacs/node-glob) using input from a given base folder. 
-It sends output to a folder that is relative to `outDir`, a configuration value that defaults to `dist/`*project-name*). 
-The result in this cased is the same as for the default assets configuration.
-
-```
-"assets": [
-  { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
-  { "glob": "favicon.ico", "input": "/src", "output": "/" },
-]
-```
-
-You can use this extended configuration to copy assets from outside your project. 
-For instance, you can copy assets from a node package with the following value:
-
-```
-"assets": [
- { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
-]
-```
-
-This makes the contents of `node_modules/some-package/images/` available in the output folder `dist/some-package/`. 
-
-<div class="alert is-critical">
-
- For reasons of security, the CLI never writes files outside of the project output path.
-
-</div>
 
 {@a browser-compat}
 
