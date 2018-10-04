@@ -2671,5 +2671,8 @@
   },
   {
     "name": "wtfLeave"
+  },
+  {
+    "name": "ɵdefineNgModule"
   }
 ]
