@@ -13,7 +13,8 @@ import {
   Injectable,
   Injector,
   Inject,
-  ComponentRef
+  ComponentRef,
+  OnDestroy
 } from '@angular/core';
 import {ComponentPortal, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {of as observableOf, Observable, Subject, defer} from 'rxjs';
@@ -43,7 +44,7 @@ import {
  * Service to open modal dialogs.
  */
 @Injectable()
-export class Dialog {
+export class Dialog implements OnDestroy {
   /** Stream that emits when all dialogs are closed. */
   get _afterAllClosed(): Observable<void> {
     return this._parentDialog ? this._parentDialog.afterAllClosed : this._afterAllClosedBase;
@@ -122,6 +123,11 @@ export class Dialog {
 
     this.registerDialogRef(dialogRef);
     return dialogRef;
+  }
+
+  ngOnDestroy() {
+    // Only close all the dialogs at this level.
+    this._openDialogs.forEach(ref => ref.close());
   }
 
   /**

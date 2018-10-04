@@ -618,6 +618,20 @@ describe('Dialog', () => {
     expect(spy).toHaveBeenCalled();
   }));
 
+  it('should close all open dialogs on destroy', fakeAsync(() => {
+    dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+
+    viewContainerFixture.detectChanges();
+    expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(2);
+
+    dialog.ngOnDestroy();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(0);
+  }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {
@@ -990,6 +1004,22 @@ describe('Dialog with a parent Dialog', () => {
       expect(overlayContainerElement.textContent!.trim())
           .toBe('', 'Expected closeAll on parent Dialog to close dialog opened by child');
     }));
+
+  it('should not close the parent dialogs, when a child is destroyed', fakeAsync(() => {
+    parentDialog.openFromComponent(PizzaMsg);
+    fixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a dialog to be opened');
+
+    childDialog.ngOnDestroy();
+    fixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.textContent)
+        .toContain('Pizza', 'Expected a dialog to remain opened');
+  }));
 
   it('should close the top dialog via the escape key', fakeAsync(() => {
     childDialog.openFromComponent(PizzaMsg);
