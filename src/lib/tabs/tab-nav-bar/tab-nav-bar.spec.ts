@@ -1,7 +1,7 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, ViewChild, ViewChildren, QueryList} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent, dispatchMouseEvent, createMouseEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
 import {MatTabLink, MatTabNav, MatTabsModule} from '../index';
@@ -150,21 +150,15 @@ describe('MatTabNavBar', () => {
         .toBe(true, 'Expected element to no longer be keyboard focusable if disabled.');
     });
 
-    it('should prevent default action for clicks if links are disabled', () => {
+    it('should make disabled links unclickable', () => {
       const tabLinkElement = fixture.debugElement.query(By.css('a')).nativeElement;
 
-      const mouseEvent = createMouseEvent('click');
-      spyOn(mouseEvent, 'preventDefault');
-      tabLinkElement.dispatchEvent(mouseEvent);
-      expect(mouseEvent.preventDefault).not.toHaveBeenCalled();
+      expect(getComputedStyle(tabLinkElement).pointerEvents).not.toBe('none');
 
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
 
-      const mouseEventWhileDisabled = createMouseEvent('click');
-      spyOn(mouseEventWhileDisabled, 'preventDefault');
-      tabLinkElement.dispatchEvent(mouseEventWhileDisabled);
-      expect(mouseEventWhileDisabled.preventDefault).toHaveBeenCalled();
+      expect(getComputedStyle(tabLinkElement).pointerEvents).toBe('none');
     });
 
     it('should show ripples for tab links', () => {

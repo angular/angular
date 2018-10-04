@@ -180,7 +180,6 @@ export const _MatTabLinkMixinBase:
     '[attr.tabIndex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled',
     '[class.mat-tab-label-active]': 'active',
-    '(click)': '_handleClick($event)'
   }
 })
 export class MatTabLink extends _MatTabLinkMixinBase
@@ -257,15 +256,6 @@ export class MatTabLink extends _MatTabLinkMixinBase
 
     if (this._focusMonitor) {
       this._focusMonitor.stopMonitoring(this._elementRef);
-    }
-  }
-
-  /**
-   * Handles the click event, preventing default navigation if the tab link is disabled.
-   */
-  _handleClick(event: MouseEvent) {
-    if (this.disabled) {
-      event.preventDefault();
     }
   }
 }

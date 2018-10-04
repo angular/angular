@@ -24,6 +24,14 @@
     flex-basis: 0;
     flex-grow: 1;
   }
+
+  &.mat-tab-disabled {
+    // We use `pointer-events` to make the element unclickable when it's disabled, rather than
+    // preventing the default action through JS, because we can't prevent the action reliably
+    // due to other directives potentially registering their events earlier. This shouldn't cause
+    // the user to click through, because we always have a `.mat-tab-links` behind the link.
+    pointer-events: none;
+  }
 }
 
 
