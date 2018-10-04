@@ -14,6 +14,7 @@ load(
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
 )
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "collect_node_modules_aspect")
 
 def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
@@ -379,22 +380,30 @@ def ngc_compile_action(
 
     return None
 
+def _filter_ts_inputs(all_inputs):
+    # The compiler only needs to see TypeScript sources from the npm dependencies,
+    # but may need to look at package.json and ngsummary.json files as well.
+    return [
+        f
+        for f in all_inputs
+        if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
+    ]
+
 def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts):
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
-    # The compiler only needs to see TypeScript sources from the npm dependencies,
-    # but may need to look at package.json and ngsummary.json files as well.
-    if hasattr(ctx.attr, "node_modules"):
-        file_inputs += [
-            f
-            for f in ctx.files.node_modules
-            if f.path.endswith(".ts") or f.path.endswith(".json")
-        ]
+    file_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
 
     # If the user supplies a tsconfig.json file, the Angular compiler needs to read it
     if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
         file_inputs.append(ctx.file.tsconfig)
+
+    # Also include files from npm fine grained deps as action_inputs.
+    # These deps are identified by the NodeModuleInfo provider.
+    for d in ctx.attr.deps:
+        if NodeModuleInfo in d:
+            file_inputs.extend(_filter_ts_inputs(d.files))
 
     # Collect the inputs and summary files from our deps
     action_inputs = depset(
@@ -443,6 +452,13 @@ def ng_module_impl(ctx, ts_compile_actions):
     providers = ts_compile_actions(
         ctx,
         is_library = True,
+        # Filter out the node_modules from deps passed to TypeScript compiler
+        # since they don't have the required providers.
+        # They were added to the action inputs for tsc_wrapped already.
+        # strict_deps checking currently skips node_modules.
+        # TODO(alexeagle): turn on strict deps checking when we have a real
+        # provider for JS/DTS inputs to ts_library.
+        deps = [d for d in ctx.attr.deps if not NodeModuleInfo in d],
         compile_action = _prodmode_compile_action,
         devmode_compile_action = _devmode_compile_action,
         tsc_wrapped_tsconfig = _ngc_tsconfig,
@@ -474,6 +490,11 @@ def ng_module_impl(ctx, ts_compile_actions):
 def _ng_module_impl(ctx):
     return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts))
 
+local_deps_aspects = [collect_node_modules_aspect, _collect_summaries_aspect]
+
+# Workaround skydoc bug which assumes DEPS_ASPECTS is a str type
+[local_deps_aspects.append(a) for a in DEPS_ASPECTS]
+
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
 
@@ -481,7 +502,7 @@ NG_MODULE_ATTRIBUTES = {
     # https://github.com/bazelbuild/skydoc/issues/21
     "deps": attr.label_list(
         doc = "Targets that are imported by this target",
-        aspects = list(DEPS_ASPECTS) + [_collect_summaries_aspect],
+        aspects = local_deps_aspects,
     ),
     "assets": attr.label_list(
         doc = ".html and .css files needed by the Angular compiler",
@@ -514,12 +535,68 @@ NG_MODULE_ATTRIBUTES = {
 
 NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     "tsconfig": attr.label(allow_files = True, single_file = True),
-
-    # @// is special syntax for the "main" repository
-    # The default assumes the user specified a target "node_modules" in their
-    # root BUILD file.
     "node_modules": attr.label(
-        default = Label("@//:node_modules"),
+        doc = """The npm packages which should be available during the compile.
+
+        The default value is `@npm//typescript:typescript__typings` is setup
+        for projects that use bazel managed npm deps that. It is recommended
+        that you use the workspace name `@npm` for bazel managed deps so the
+        default node_modules works out of the box. Otherwise, you'll have to
+        override the node_modules attribute manually. This default is in place
+        since ng_module will always depend on at least the typescript
+        default libs which are provided by `@npm//typescript:typescript__typings`.
+
+        This attribute is DEPRECATED. As of version 0.18.0 the recommended
+        approach to npm dependencies is to use fine grained npm dependencies
+        which are setup with the `yarn_install` or `npm_install` rules.
+
+        For example, in targets that used a `//:node_modules` filegroup,
+
+        ```
+        ng_module(
+          name = "my_lib",
+          ...
+          node_modules = "@npm//node_modules",
+        )
+        ```
+
+        which specifies all files within the `//:node_modules` filegroup
+        to be inputs to the `my_lib`. Using fine grained npm dependencies,
+        `my_lib` is defined with only the npm dependencies that are
+        needed:
+
+        ```
+        ng_module(
+          name = "my_lib",
+          ...
+          deps = [
+              "@npm//@types/foo",
+              "@npm//@types/bar",
+              "@npm//foo",
+              "@npm//bar",
+              ...
+          ],
+        )
+        ```
+
+        In this case, only the listed npm packages and their
+        transitive deps are includes as inputs to the `my_lib` target
+        which reduces the time required to setup the runfiles for this
+        target (see https://github.com/bazelbuild/bazel/issues/5153).
+        The default typescript libs are also available via the node_modules
+        default in this case.
+
+        The @npm external repository and the fine grained npm package
+        targets are setup using the `yarn_install` or `npm_install` rule
+        in your WORKSPACE file:
+
+        yarn_install(
+          name = "npm",
+          package_json = "//:package.json",
+          yarn_lock = "//:yarn.lock",
+        )
+        """,
+        default = Label("@npm//typescript:typescript__typings"),
     ),
     "entry_point": attr.string(),
 

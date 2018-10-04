@@ -1,0 +1,11 @@
+{
+  "description": "minimal @npm repo",
+  "dependencies": {
+    "@bazel/karma": "0.19.1",
+    "@bazel/typescript": "0.19.1",
+    "typescript": "~3.1.1"
+  },
+  "scripts": {
+    "//": "TODO(gmagolan): figure out how to keep dependencies here up to date with the root package.json"
+  }
+}

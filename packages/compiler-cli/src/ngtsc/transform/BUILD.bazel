@@ -17,5 +17,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/util",
+        "@ngdeps//typescript",
     ],
 )

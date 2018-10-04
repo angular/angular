@@ -13,6 +13,7 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
     ],
 )
@@ -29,6 +30,7 @@ ts_library(
         ":ng-add",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -39,5 +41,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/elements/schematics:collection",
+        "@ngdeps//@schematics/angular",
     ],
 )

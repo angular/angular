@@ -12,6 +12,7 @@ exports_files(["bin/ts-api-guardian"])
 ts_library(
     name = "lib",
     srcs = glob(["lib/*.ts"]),
+    compiler = "//:@bazel/typescript/tsc_wrapped",
     module_name = "ts-api-guardian",
     node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
     tsconfig = "//tools:tsconfig.json",
@@ -47,8 +48,18 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
-    tsconfig = "//tools:tsconfig.json",
-    deps = [":lib"],
+    compiler = "//:@bazel/typescript/tsc_wrapped",
+    node_modules = "@ngdeps//typescript:typescript__typings",
+    tsconfig = "//tools:tsconfig-test",
+    deps = [
+        ":lib",
+        "@ngdeps//@types/chai",
+        "@ngdeps//@types/jasmine",
+        "@ngdeps//@types/node",
+        "@ngdeps//chai",
+        "@ngdeps//jasmine",
+        "@ngdeps//typescript",
+    ],
 )
 
 jasmine_node_test(

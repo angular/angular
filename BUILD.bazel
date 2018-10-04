@@ -15,19 +15,14 @@ alias(
     actual = "@nodejs//:yarn",
 )
 
-alias(
-    name = "node_modules",
-    actual = "@angular_deps//:node_modules",
-)
-
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "@angular_deps//:node_modules/reflect-metadata/Reflect.js",
-        "@angular_deps//:node_modules/zone.js/dist/zone.js",
-        "@angular_deps//:node_modules/zone.js/dist/zone-testing.js",
-        "@angular_deps//:node_modules/zone.js/dist/task-tracking.js",
+        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@ngdeps//node_modules/zone.js:dist/zone-testing.js",
+        "@ngdeps//node_modules/zone.js:dist/task-tracking.js",
         "//:test-events.js",
     ],
 )
@@ -35,11 +30,32 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
-        "@angular_deps//:node_modules/angular-1.5/angular.js",
-        "@angular_deps//:node_modules/angular-1.6/angular.js",
-        "@angular_deps//:node_modules/angular-mocks-1.5/angular-mocks.js",
-        "@angular_deps//:node_modules/angular-mocks-1.6/angular-mocks.js",
-        "@angular_deps//:node_modules/angular-mocks/angular-mocks.js",
-        "@angular_deps//:node_modules/angular/angular.js",
+        "@ngdeps//node_modules/angular:angular.js",
+        "@ngdeps//node_modules/angular-1.5:angular.js",
+        "@ngdeps//node_modules/angular-1.6:angular.js",
+        "@ngdeps//node_modules/angular-mocks:angular-mocks.js",
+        "@ngdeps//node_modules/angular-mocks-1.5:angular-mocks.js",
+        "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",
     ],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# Override for ts_web_test_suite to use @ngdeps instead of @npm
+nodejs_binary(
+    name = "@bazel/karma/karma",
+    data = ["@ngdeps//@bazel/karma"],
+    entry_point = "@bazel/karma/karma.js",
+    install_source_map_support = False,
+    visibility = ["//visibility:public"],
+)
+
+# Override for ts_library to use @ngdeps instead of @npm
+nodejs_binary(
+    name = "@bazel/typescript/tsc_wrapped",
+    data = ["@ngdeps//@bazel/typescript"],
+    entry_point = "@bazel/typescript/tsc_wrapped/tsc_wrapped.js",
+    install_source_map_support = False,
+    templated_args = ["--node_options=--expose-gc"],
+    visibility = ["//visibility:public"],
 )
