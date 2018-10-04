@@ -7,12 +7,13 @@
  */
 
 // clang-format off
+import {defineNgModule} from './render3/index';
+export const ɵdefineNgModule = defineNgModule;
 export {
   defineBase as ɵdefineBase,
   defineComponent as ɵdefineComponent,
   defineDirective as ɵdefineDirective,
   definePipe as ɵdefinePipe,
-  defineNgModule as ɵdefineNgModule,
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
