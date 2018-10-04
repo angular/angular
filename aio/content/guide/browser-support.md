@@ -1,17 +1,29 @@
+<!--
 # Browser support
+-->
+# 브라우저 지원
 
+<!--
 Angular supports most recent browsers. This includes the following specific versions:
+-->
+Angular는 대부분의 브라우저를 지원합니다. 좀 더 자세하게 설명하면 다음 버전을 지원합니다:
 
 <table>
 
   <tr>
 
 <th>
+      <!--
       Browser
+      -->
+      브라우저
 </th>
 
 <th>
+      <!--
       Supported versions
+      -->
+      지원 버전
 </th>
 
   </tr>
@@ -23,7 +35,10 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
+      <!--
       latest
+      -->
+      최신 버전
     </td>
   </tr>
 
@@ -34,7 +49,10 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
+      <!--
       latest
+      -->
+      최신 버전
     </td>
   </tr>
 
@@ -45,7 +63,10 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
+      <!--
       2 most recent major versions
+      -->
+      최근 2개 메이저 버전
     </td>
   </tr>
   <tr> 
@@ -71,7 +92,10 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
+      <!--
       2 most recent major versions
+      -->
+      최근 2개 메이저 버전
     </td>
   </tr>
   <tr>
@@ -80,7 +104,10 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
 
     <td>
+      <!--
       2 most recent major versions
+      -->
+      최근 2개 메이저 버전
     </td>
   </tr> 
   <tr>
@@ -97,35 +124,62 @@ Angular supports most recent browsers. This includes the following specific vers
 
 <div class="alert is-helpful">
 
+<!--
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
 using <a href="https://saucelabs.com/">SauceLabs</a> and
 <a href="https://www.browserstack.com">Browserstack</a>.
+-->
+Angular는 <a href="https://saucelabs.com/">SauceLabs</a>와 <a href="https://www.browserstack.com">Browserstack</a>과 함께 브라우저 지원을 위해 지속적으로 노력하고 있습니다.
 
 </div>
 
-
+<!--
 ## Polyfills
+-->
+## 폴리필 (Polyfills)
 
+<!--
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
+-->
+Angular는 최신 웹 플랫폼 표준을 준수하며 만들어졌습니다.
+하지만 최신 브라우저들이 대부분 지원하는 기능을 제대로 지원하지 않는 일부 브라우저에서는 Angular 애플리케이션이 제대로 동작하지 않은 기능이 있을 수 있습니다.
 
+<!--
 You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
 The [table below](#polyfill-libs) identifies most of the polyfills you might need.
+-->
+이 문제는 폴리필 스크립트를 로드하는 방법으로 해결할 수 있습니다.
+개발자들이 자주 사용하는 폴리필은 [아래 표](#polyfill-libs)를 참고하세요.
 
 <div class="alert is-important">
 
+<!--
 The suggested polyfills are the ones that run full Angular applications.
 You may need additional polyfills to support features not covered by this list.
 Note that polyfills cannot magically transform an old, slow browser into a modern, fast one.
+-->
+이 문서에서 소개하는 폴리필은 Angular 애플리케이션을 제대로 동작시키기 위해 필요한 것들입니다.
+그래서 필요한 기능이 더 있다면 또 다른 폴리필을 추가해야 할 수도 있습니다.
+다만, 오래되고 느린 브라우저에 폴리필을 사용했다고 해서 최신 스펙으로 동작하고 속도도 빠른 브라우저로 짠 변신하는 것은 아닙니다.
 
 </div>
 
+<!--
 ## Enabling polyfills
+-->
+## 폴리필 적용하기
 
+<!--
 [Angular CLI](https://github.com/angular/angular-cli/wiki) users enable polyfills through the `src/polyfills.ts` file that
 the CLI created with your project.
+-->
+[Angular CLI](https://github.com/angular/angular-cli/wiki)를 사용해서 프로젝트를 생성했다면 Angular CLI가 자동으로 만든 `src/polyfills.ts` 파일을 사용해서 폴리필을 적용할 수 있습니다.
 
+<!--
 This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
+-->
+이 파일에는 JavaScript `import` 키워드와 같이 필수로 사용해야 하는 폴리필이나 선택적으로 사용할 수 있는 폴리필이 다양하게 정의되어 있습니다.
 
 The npm packages for the _mandatory_ polyfills (such as `zone.js`) were installed automatically for you when you created your project and their corresponding `import` statements are ready to go. You probably won't touch these.
 
