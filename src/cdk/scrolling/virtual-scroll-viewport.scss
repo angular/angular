@@ -56,12 +56,10 @@ cdk-virtual-scroll-viewport {
 }
 
 .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
-  bottom: 0;
   @include _cdk-virtual-scroll-clear-container-space(horizontal);
 }
 
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
-  right: 0;
   @include _cdk-virtual-scroll-clear-container-space(vertical);
 }
 
