@@ -1,0 +1,24 @@
+{% import "macros.html" as macros %}
+
+<h4 id="{$ constant.name $}" class="docs-header-link docs-api-h4 docs-api-constant-name">
+  <span header-link="{$ constant.name $}"></span>
+  <code>{$ constant.name $}</code>
+</h4>
+
+{%- if constant.isDeprecated -%}
+<div class="docs-api-constant-deprecated-marker" {$ macros.deprecationTitle(constant) $}>
+  Deprecated
+</div>
+{%- endif -%}
+
+{%- if constant.description -%}
+  <p class="docs-api-constant-description">{$ constant.description | marked | safe $}</p>
+{%- endif -%}
+
+<pre class="docs-markdown-pre">
+<code class="docs-markdown-code">
+{%- highlight "typescript" -%}
+  const {$ constant.name | safe $}: {$ constant.type | safe $}
+{%- end_highlight -%}
+</code>
+</pre>

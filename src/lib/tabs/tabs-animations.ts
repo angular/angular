@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the Material tabs. */
+/**
+ * Animations used by the Material tabs.
+ * @docs-private
+ */
 export const matTabsAnimations: {
   readonly translateTab: AnimationTriggerMetadata;
 } = {

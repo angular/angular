@@ -19,7 +19,10 @@ import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 const SORT_ANIMATION_TRANSITION = AnimationDurations.ENTERING + ' ' +
                                   AnimationCurves.STANDARD_CURVE;
 
-/** Animations used by MatSort. */
+/**
+ * Animations used by MatSort.
+ * @docs-private
+ */
 export const matSortAnimations: {
   readonly indicator: AnimationTriggerMetadata;
   readonly leftPointer: AnimationTriggerMetadata;

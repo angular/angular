@@ -26,7 +26,10 @@ const animationBody = [
       animate('75ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({opacity: 0}))),
 ];
 
-/** Animations used by MatDialog. */
+/**
+ * Animations used by MatDialog.
+ * @docs-private
+ */
 export const matDialogAnimations: {
   readonly dialogContainer: AnimationTriggerMetadata;
   readonly slideDialog: AnimationTriggerMetadata;

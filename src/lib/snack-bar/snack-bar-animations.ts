@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the Material snack bar. */
+/**
+ * Animations used by the Material snack bar.
+ * @docs-private
+ */
 export const matSnackBarAnimations: {
   readonly snackBarState: AnimationTriggerMetadata;
 } = {

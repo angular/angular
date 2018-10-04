@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the Material steppers. */
+/**
+ * Animations used by the Material steppers.
+ * @docs-private
+ */
 export const matStepperAnimations: {
   readonly horizontalStepTransition: AnimationTriggerMetadata;
   readonly verticalStepTransition: AnimationTriggerMetadata;

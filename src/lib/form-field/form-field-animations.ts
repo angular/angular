@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the MatFormField. */
+/**
+ * Animations used by the MatFormField.
+ * @docs-private
+ */
 export const matFormFieldAnimations: {
   readonly transitionMessages: AnimationTriggerMetadata
 } = {

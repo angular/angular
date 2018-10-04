@@ -15,7 +15,10 @@ import {
   trigger,
 } from '@angular/animations';
 
-/** Animations used by MatTooltip. */
+/**
+ * Animations used by MatTooltip.
+ * @docs-private
+ */
 export const matTooltipAnimations: {
   readonly tooltipState: AnimationTriggerMetadata;
 } = {

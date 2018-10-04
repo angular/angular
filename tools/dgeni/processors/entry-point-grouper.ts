@@ -1,4 +1,5 @@
 import {DocCollection, Document, Processor} from 'dgeni';
+import {ConstExportDoc} from 'dgeni-packages/typescript/api-doc-types/ConstExportDoc';
 import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/InterfaceExportDoc';
 import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
@@ -49,6 +50,9 @@ export class EntryPointDoc {
 
   /** Functions that belong to the entry-point. */
   functions: FunctionExportDoc[] = [];
+
+  /** Constants that belong to the entry-point. */
+  constants: ConstExportDoc[] = [];
 
   /** NgModule that defines the current entry-point. */
   ngModule: CategorizedClassDoc | null = null;
@@ -108,6 +112,8 @@ export class EntryPointGrouper implements Processor {
         entryPoint.typeAliases.push(doc);
       } else if (doc.docType === 'function') {
         entryPoint.functions.push(doc);
+      } else if (doc.docType === 'const') {
+        entryPoint.constants.push(doc);
       }
     });
 

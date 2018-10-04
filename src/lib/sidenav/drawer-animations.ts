@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the Material drawers. */
+/**
+ * Animations used by the Material drawers.
+ * @docs-private
+ */
 export const matDrawerAnimations: {
   readonly transformDrawer: AnimationTriggerMetadata;
 } = {

@@ -27,6 +27,10 @@
   {% include 'type-alias.template.html' %}
 {% endmacro %}
 
+{% macro constant(constant) -%}
+  {% include 'constant.template.html' %}
+{% endmacro %}
+
 <div class="docs-api">
   <h2>
     API reference for Angular {$ doc.packageDisplayName $} {$ doc.displayName $}
@@ -100,6 +104,16 @@
     </h3>
     {% for item in doc.typeAliases %}
       {$ typeAlias(item) $}
+    {% endfor %}
+  {%- endif -%}
+
+  {%- if doc.constants.length -%}
+    <h3 id="constants" class="docs-header-link docs-api-h3">
+      <span header-link="constants"></span>
+      Constants
+    </h3>
+    {% for item in doc.constants %}
+      {$ constant(item) $}
     {% endfor %}
   {%- endif -%}
 </div>

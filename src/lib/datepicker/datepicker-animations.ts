@@ -14,7 +14,10 @@ import {
   AnimationTriggerMetadata,
 } from '@angular/animations';
 
-/** Animations used by the Material datepicker. */
+/**
+ * Animations used by the Material datepicker.
+ * @docs-private
+ */
 export const matDatepickerAnimations: {
   readonly transformPanel: AnimationTriggerMetadata;
   readonly fadeInCalendar: AnimationTriggerMetadata;
