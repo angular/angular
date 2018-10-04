@@ -9,13 +9,13 @@ exports_files(["#bazel_workaround.txt"])
 
 filegroup(
   name = "schematics_assets",
-  srcs = glob(["**/*.json"]) + ["README.md"],
+  srcs = glob(["**/files/**/*", "**/*.json"]) + ["README.md"],
 )
 
 ts_library(
   name = "schematics",
   module_name = "@angular/cdk/schematics",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  srcs = glob(["**/*.ts"], exclude=["**/files/**/*.ts", "**/*.spec.ts"]),
   tsconfig = ":tsconfig.json",
   deps = [
     "@npm//:@schematics/angular",
@@ -51,7 +51,7 @@ jasmine_node_test(
 
 ts_library(
   name = "schematics_test_sources",
-  srcs = glob(["**/*.spec.ts"]),
+  srcs = glob(["**/*.spec.ts"], exclude = ["**/files/**/*.spec.ts"]),
   deps = [
     ":schematics",
     "@npm//:@schematics/angular",

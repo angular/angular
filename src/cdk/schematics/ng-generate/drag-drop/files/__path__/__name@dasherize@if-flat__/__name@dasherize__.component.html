@@ -1,0 +1,15 @@
+<div class="container">
+  <h2>To do</h2>
+
+  <cdk-drop #todoList [data]="todo" [connectedTo]="doneList" class="list" (dropped)="drop($event)">
+    <div class="list-item" *ngFor="let item of todo" cdkDrag>{{item}}</div>
+  </cdk-drop>
+</div>
+
+<div class="container">
+  <h2>Done</h2>
+
+  <cdk-drop #doneList [data]="done" [connectedTo]="todoList" class="list" (dropped)="drop($event)">
+    <div class="list-item" *ngFor="let item of done" cdkDrag>{{item}}</div>
+  </cdk-drop>
+</div>

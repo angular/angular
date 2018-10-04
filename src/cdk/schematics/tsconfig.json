@@ -18,6 +18,7 @@
     ]
   },
   "exclude": [
+    "**/files/**/*",
     "**/*.spec.ts"
   ],
   "bazelOptions": {
