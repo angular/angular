@@ -44,10 +44,12 @@
     border-right: solid 1px $divider-color;
   }
 
-  .mat-button-toggle-vertical-appearance-standard .mat-button-toggle + .mat-button-toggle {
-    border-left: none;
-    border-right: none;
-    border-top: solid 1px $divider-color;
+  .mat-button-toggle-group-appearance-standard.mat-button-toggle-vertical {
+    .mat-button-toggle + .mat-button-toggle {
+      border-left: none;
+      border-right: none;
+      border-top: solid 1px $divider-color;
+    }
   }
 
   .mat-button-toggle-checked {
