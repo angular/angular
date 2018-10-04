@@ -2340,6 +2340,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "setValue"
   },
   {
@@ -2401,6 +2404,9 @@
   },
   {
     "name": "symbolNames"
+  },
+  {
+    "name": "syncViewWithBlueprint"
   },
   {
     "name": "tagSet"

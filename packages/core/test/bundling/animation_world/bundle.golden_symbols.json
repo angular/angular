@@ -966,6 +966,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "setValue"
   },
   {
@@ -982,6 +985,9 @@
   },
   {
     "name": "swapMultiContextEntries"
+  },
+  {
+    "name": "syncViewWithBlueprint"
   },
   {
     "name": "template"

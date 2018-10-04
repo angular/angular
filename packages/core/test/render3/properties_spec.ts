@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {AttributeMarker, defineComponent, defineDirective, tick} from '../../src/render3/index';
+import {AttributeMarker, PublicFeature, defineComponent, defineDirective} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, reference, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
@@ -151,6 +151,48 @@ describe('elementProperty', () => {
       fixture.component.id = 'other-id';
       fixture.update();
       expect(fixture.hostElement.id).toBe('other-id');
+    });
+
+    it('should support host bindings on second template pass', () => {
+      class HostBindingDir {
+        // @HostBinding()
+        id = 'foo';
+
+        static ngDirectiveDef = defineDirective({
+          type: HostBindingDir,
+          selectors: [['', 'hostBindingDir', '']],
+          factory: () => new HostBindingDir(),
+          hostVars: 1,
+          hostBindings: (directiveIndex: number, elementIndex: number) => {
+            elementProperty(
+                elementIndex, 'id', bind(loadDirective<HostBindingDir>(directiveIndex).id));
+          },
+          features: [PublicFeature]
+        });
+      }
+
+      /** <div hostBindingDir></div> */
+      const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'div', ['hostBindingDir', '']);
+        }
+      }, 1, 0, [HostBindingDir]);
+
+      /**
+       * <parent></parent>
+       * <parent></parent>
+       */
+      const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'parent');
+          element(1, 'parent');
+        }
+      }, 2, 0, [Parent]);
+
+      const fixture = new ComponentFixture(App);
+      const divs = fixture.hostElement.querySelectorAll('div');
+      expect(divs[0].id).toEqual('foo');
+      expect(divs[1].id).toEqual('foo');
     });
 
     it('should support component with host bindings and array literals', () => {
