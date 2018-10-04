@@ -20,8 +20,8 @@ against a minimum dependent build_bazel_rules_typescript version.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_typescript/0.19.1/package.bzl
-VERSION = "0.19.1"
+# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_typescript/0.20.1/package.bzl
+VERSION = "0.20.1"
 
 def rules_typescript_dependencies():
     """
@@ -35,8 +35,8 @@ def rules_typescript_dependencies():
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        urls = ["https://github.com/bazelbuild/rules_nodejs/archive/3501f9b6a9a78a01fd1ef9b808f022bfcbb478a0.zip"],
-        strip_prefix = "rules_nodejs-3501f9b6a9a78a01fd1ef9b808f022bfcbb478a0",
+        urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.15.0.zip"],
+        strip_prefix = "rules_nodejs-0.15.0",
     )
 
     # ts_web_test depends on the web testing rules to provision browsers.
