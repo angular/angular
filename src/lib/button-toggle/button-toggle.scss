@@ -151,4 +151,9 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   .mat-button-toggle-disabled & {
     cursor: default;
   }
+
+  // Remove the extra focus outline that is added by Firefox on native buttons.
+  &::-moz-focus-inner {
+    border: 0;
+  }
 }
