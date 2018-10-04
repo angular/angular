@@ -47,7 +47,7 @@ describe('SwitchMarkerAnalyzer', () => {
   describe('analyzeProgram()', () => {
     it('should check for switchable markers in all the files of the program', () => {
       const program = makeProgram(...TEST_PROGRAM);
-      const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+      const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
       const analyzer = new SwitchMarkerAnalyzer(host);
       const analysis = analyzer.analyzeProgram(program);
 
