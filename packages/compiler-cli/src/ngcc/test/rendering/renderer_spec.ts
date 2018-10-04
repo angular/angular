@@ -11,11 +11,13 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
-import {AnalyzedClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {AnalyzedClass, DecorationAnalyzer, DecorationAnalyses} from '../../src/analysis/decoration_analyzer';
+import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
+  constructor(host: Fesm2015ReflectionHost) { super(host, false, null, '/src', '/dist'); }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
@@ -33,118 +35,113 @@ class TestRenderer extends Renderer {
   }
 }
 
-function createTestRenderer() {
-  const renderer = new TestRenderer({} as Fesm2015ReflectionHost, false, null);
+function createTestRenderer(file: {name: string, contents: string}) {
+  const program = makeProgram(file);
+  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
+  const decorationAnalyses =
+      new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
+  const renderer = new TestRenderer(host);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
-  return renderer as jasmine.SpyObj<TestRenderer>;
-}
 
-function analyze(file: {name: string, contents: string}) {
-  const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
-  const analyzer = new DecorationAnalyzer(program.getTypeChecker(), host, [''], false);
-
-  const decoratedFiles = host.findDecoratedFiles(program.getSourceFile(file.name) !);
-  const analyzedFiles = Array.from(decoratedFiles.values()).map(file => analyzer.analyzeFile(file));
-
-  return {program, host, analyzer, decoratedFiles, analyzedFiles};
+  return {renderer, program, decorationAnalyses, switchMarkerAnalyses};
 }
 
 
 describe('Renderer', () => {
   const INPUT_PROGRAM = {
-    name: '/file.js',
+    name: '/src/file.js',
     contents:
         `import { Directive } from '@angular/core';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: '[a]' }] }\n];\n`
   };
+
   const INPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'file': '/file.js',
+    'file': '/src/file.js',
     'sourceRoot': '',
-    'sources': ['/file.ts'],
+    'sources': ['/src/file.ts'],
     'names': [],
     'mappings':
         'AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,eAAe,CAAC;AAC1C,MAAM;IACF,GAAG,CAAC,CAAS;QACT,OAAO,CAAC,CAAC;IACb,CAAC;;AACM,YAAU,GAAG;IAChB,EAAE,IAAI,EAAE,SAAS,EAAE,IAAI,EAAE,CAAC,EAAE,QAAQ,EAAE,KAAK,EAAE,CAAC,EAAE;CACnD,CAAC',
-    'sourcesContent': [
-      'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x: string): string {\n        return x;\n    }\n    static decorators = [\n        { type: Directive, args: [{ selector: \'[a]\' }] }\n    ];\n}'
-    ]
+    'sourcesContent': [INPUT_PROGRAM.contents]
   });
+
   const RENDERED_CONTENTS =
-      `\n// REWRITTEN DECLARATIONS\n\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
+      `\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
       INPUT_PROGRAM.contents;
+
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'file': '/output_file.js',
-    'sources': ['/file.js'],
-    'sourcesContent': [
-      'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: \'[a]\' }] }\n];\n'
-    ],
+    'file': '/dist/file.js',
+    'sources': ['/src/file.js'],
+    'sourcesContent': [INPUT_PROGRAM.contents],
     'names': [],
-    'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
+    'mappings': ';;;;;;;;AAAA;;;;;;;;;'
   });
 
   const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
-    'sources': ['/file.ts'],
+    'sources': ['/src/file.ts'],
     'names': [],
-    'mappings': ';;;;;;;;;;AAAA',
-    'file': '/output_file.js',
-    'sourcesContent': [
-      'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x: string): string {\n        return x;\n    }\n    static decorators = [\n        { type: Directive, args: [{ selector: \'[a]\' }] }\n    ];\n}'
-    ]
+    'mappings': ';;;;;;;;AAAA',
+    'file': '/dist/file.js',
+    'sourcesContent': [INPUT_PROGRAM.contents]
   });
 
-  describe('renderFile()', () => {
+  describe('renderProgram()', () => {
     it('should render the modified contents; and a new map file, if the original provided no map file.',
        () => {
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze(INPUT_PROGRAM);
-         const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(result.source.path).toEqual('/output_file.js');
-         expect(result.source.contents)
-             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/output_file.js.map'));
-         expect(result.map !.path).toEqual('/output_file.js.map');
-         expect(result.map !.contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
+         const {renderer, program, decorationAnalyses, switchMarkerAnalyses} =
+             createTestRenderer(INPUT_PROGRAM);
+         const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         expect(result[0].path).toEqual('/dist/file.js');
+         expect(result[0].contents)
+             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
+         expect(result[1].path).toEqual('/dist/file.js.map');
+         expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
        });
 
     it('should call addImports with the source code and info about the core Angular library.',
        () => {
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze(INPUT_PROGRAM);
-         renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(renderer.addImports.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
-         expect(renderer.addImports.calls.first().args[1]).toEqual([
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
+             createTestRenderer(INPUT_PROGRAM);
+         renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         const addImportsSpy = renderer.addImports as jasmine.Spy;
+         expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
+         expect(addImportsSpy.calls.first().args[1]).toEqual([
            {name: '@angular/core', as: 'ɵngcc0'}
          ]);
        });
 
     it('should call addDefinitions with the source code, the analyzed class and the renderered definitions.',
        () => {
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze(INPUT_PROGRAM);
-         renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(renderer.addDefinitions.calls.first().args[0].toString())
-             .toEqual(RENDERED_CONTENTS);
-         expect(renderer.addDefinitions.calls.first().args[1])
-             .toBe(analyzedFiles[0].analyzedClasses[0]);
-         expect(renderer.addDefinitions.calls.first().args[2])
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
+             createTestRenderer(INPUT_PROGRAM);
+         renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
+         expect(addDefinitionsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
+         expect(addDefinitionsSpy.calls.first().args[1]).toEqual(jasmine.objectContaining({
+           name: 'A',
+           decorators: [jasmine.objectContaining({name: 'Directive'})],
+         }));
+         expect(addDefinitionsSpy.calls.first().args[2])
              .toEqual(
                  `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); }, features: [ɵngcc0.ɵPublicFeature] });`);
        });
 
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
        () => {
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze(INPUT_PROGRAM);
-         renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(renderer.removeDecorators.calls.first().args[0].toString())
-             .toEqual(RENDERED_CONTENTS);
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
+             createTestRenderer(INPUT_PROGRAM);
+         renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         const removeDecoratorsSpy = renderer.removeDecorators as jasmine.Spy;
+         expect(removeDecoratorsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
 
          // Each map key is the TS node of the decorator container
          // Each map value is an array of TS nodes that are the decorators to remove
-         const map = renderer.removeDecorators.calls.first().args[1] as Map<ts.Node, ts.Node[]>;
+         const map = removeDecoratorsSpy.calls.first().args[1] as Map<ts.Node, ts.Node[]>;
          const keys = Array.from(map.keys());
          expect(keys.length).toEqual(1);
          expect(keys[0].getText())
@@ -157,34 +154,31 @@ describe('Renderer', () => {
 
     it('should merge any inline source map from the original file and write the output as an inline source map',
        () => {
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze({
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n' + INPUT_PROGRAM_MAP.toComment()
          });
-         const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(result.source.path).toEqual('/output_file.js');
-         expect(result.source.contents)
+         const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         expect(result[0].path).toEqual('/dist/file.js');
+         expect(result[0].contents)
              .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
-         expect(result.map).toBe(null);
+         expect(result[1]).toBeUndefined();
        });
 
     it('should merge any external source map from the original file and write the output to an external source map',
        () => {
          // Mock out reading the map file from disk
-         const readFileSyncSpy =
-             spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
-         const renderer = createTestRenderer();
-         const {analyzedFiles} = analyze({
+         spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer({
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n//# sourceMappingURL=file.js.map'
          });
-         const result = renderer.renderFile(analyzedFiles[0], '/output_file.js');
-         expect(result.source.path).toEqual('/output_file.js');
-         expect(result.source.contents)
-             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/output_file.js.map'));
-         expect(result.map !.path).toEqual('/output_file.js.map');
-         expect(result.map !.contents).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toJSON());
+         const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+         expect(result[0].path).toEqual('/dist/file.js');
+         expect(result[0].contents)
+             .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('/dist/file.js.map'));
+         expect(result[1].path).toEqual('/dist/file.js.map');
+         expect(result[1].contents).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toJSON());
        });
   });
 });
