@@ -266,7 +266,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
     opacity: 0.04;
   }
 
-  .mat-checkbox.cdk-focused & {
+  .mat-checkbox.cdk-keyboard-focused & {
     opacity: 0.12;
   }
 
