@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImportManager} from '../../../ngtsc/transform';
+import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 
 export class NgccImportManager extends ImportManager {
   constructor(private isFlat: boolean, isCore: boolean, prefix?: string) { super(isCore, prefix); }
