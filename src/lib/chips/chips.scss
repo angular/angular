@@ -29,6 +29,9 @@ $mat-chip-remove-size: 18px;
   overflow: hidden;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+
+  // Required for the ripple to clip properly in Safari.
+  transform: translateZ(0);
 }
 
 .mat-standard-chip {
