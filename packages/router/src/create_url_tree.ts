@@ -147,14 +147,17 @@ function findStartingPosition(nav: Navigation, tree: UrlTree, route: ActivatedRo
     return new Position(tree.root, true, 0);
   }
 
+  const segmentGroup = route.snapshot._urlSegment;
+
   if (route.snapshot._lastPathIndex === -1) {
-    return new Position(route.snapshot._urlSegment, true, 0);
+    // Pathless ActivatedRoute has _lastPathIndex === -1 but should not process children
+    // see issue #26224
+    return new Position(segmentGroup, segmentGroup.segments.length === 0, 0);
   }
 
   const modifier = isMatrixParams(nav.commands[0]) ? 0 : 1;
   const index = route.snapshot._lastPathIndex + modifier;
-  return createPositionApplyingDoubleDots(
-      route.snapshot._urlSegment, index, nav.numberOfDoubleDots);
+  return createPositionApplyingDoubleDots(segmentGroup, index, nav.numberOfDoubleDots);
 }
 
 function createPositionApplyingDoubleDots(
