@@ -18,6 +18,26 @@
     "@angular-devkit/core" "0.5.13"
     rxjs "^6.0.0"
 
+"@bazel/bazel-darwin_x64@0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.17.2.tgz#003abd23df5f6a413098385a7d66b5648da94aaa"
+
+"@bazel/bazel-linux_x64@0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.17.2.tgz#63e9796ec1e092fc87389b239bd0b840e3e7c241"
+
+"@bazel/bazel-win32_x64@0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.17.2.tgz#e267e632bcc64da3cec306e876f945b6da947557"
+
+"@bazel/bazel@0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel/-/bazel-0.17.2.tgz#f4dff1076028d55cf4394f31639b1c189d9e47a4"
+  optionalDependencies:
+    "@bazel/bazel-darwin_x64" "0.17.2"
+    "@bazel/bazel-linux_x64" "0.17.2"
+    "@bazel/bazel-win32_x64" "0.17.2"
+
 "@bazel/ibazel@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.1.1.tgz#f970c08b4e4efb0ab17e04ade3cc610554f33bed"
