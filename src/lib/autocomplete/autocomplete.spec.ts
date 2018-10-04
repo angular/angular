@@ -8,6 +8,7 @@ import {
   dispatchKeyboardEvent,
   MockNgZone,
   typeInElement,
+  dispatchEvent,
 } from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
@@ -1043,8 +1044,6 @@ describe('MatAutocomplete', () => {
 
     it('should close the panel when pressing escape', fakeAsync(() => {
       const trigger = fixture.componentInstance.trigger;
-      const escapeEvent = createKeyboardEvent('keydown', ESCAPE);
-      const stopPropagationSpy = spyOn(escapeEvent, 'stopPropagation').and.callThrough();
 
       input.focus();
       flush();
@@ -1053,12 +1052,11 @@ describe('MatAutocomplete', () => {
       expect(document.activeElement).toBe(input, 'Expected input to be focused.');
       expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
 
-      trigger._handleKeydown(escapeEvent);
+      dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
       expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
-      expect(stopPropagationSpy).toHaveBeenCalled();
     }));
 
     it('should prevent the default action when pressing escape', fakeAsync(() => {
@@ -1080,7 +1078,7 @@ describe('MatAutocomplete', () => {
       expect(document.activeElement).toBe(input, 'Expected input to be focused.');
       expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
 
-      trigger._handleKeydown(upArrowEvent);
+      dispatchEvent(document.body, upArrowEvent);
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
@@ -1125,7 +1123,7 @@ describe('MatAutocomplete', () => {
       // from crashing when trying to stringify the option if the test fails.
       expect(!!trigger.activeOption).toBe(true, 'Expected to find an active option.');
 
-      trigger._handleKeydown(createKeyboardEvent('keydown', ESCAPE));
+      dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
       tick();
 
       expect(!!trigger.activeOption).toBe(false, 'Expected no active options.');
@@ -1782,10 +1780,8 @@ describe('MatAutocomplete', () => {
     });
 
     it('should close the panel when pressing escape', () => {
-      const escapeEvent = createKeyboardEvent('keydown', ESCAPE);
-
       expect(closingActionSpy).not.toHaveBeenCalled();
-      trigger._handleKeydown(escapeEvent);
+      dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
       expect(closingActionSpy).toHaveBeenCalledWith(null);
     });
   });

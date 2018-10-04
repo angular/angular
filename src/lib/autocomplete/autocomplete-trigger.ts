@@ -365,13 +365,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       event.preventDefault();
     }
 
-    // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
-    // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
-    if (this.panelOpen && (keyCode === ESCAPE || (keyCode === UP_ARROW && event.altKey))) {
-      this._resetActiveItem();
-      this._closeKeyEventStream.next();
-      event.stopPropagation();
-    } else if (this.activeOption && keyCode === ENTER && this.panelOpen) {
+    if (this.activeOption && keyCode === ENTER && this.panelOpen) {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
@@ -573,6 +567,17 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     if (!this._overlayRef) {
       this._portal = new TemplatePortal(this.autocomplete.template, this._viewContainerRef);
       this._overlayRef = this._overlay.create(this._getOverlayConfig());
+
+      // Use the `keydownEvents` in order to take advantage of
+      // the overlay event targeting provided by the CDK overlay.
+      this._overlayRef.keydownEvents().subscribe(event => {
+        // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
+        // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
+        if (event.keyCode === ESCAPE || (event.keyCode === UP_ARROW && event.altKey)) {
+          this._resetActiveItem();
+          this._closeKeyEventStream.next();
+        }
+      });
 
       if (this._viewportRuler) {
         this._viewportSubscription = this._viewportRuler.change().subscribe(() => {
