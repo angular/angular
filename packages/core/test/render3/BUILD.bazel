@@ -40,6 +40,7 @@ ts_library(
     deps = [
         "//packages/platform-browser",
         "//packages/platform-server",
+        "@ngdeps//zone.js",
     ],
 )
 
@@ -60,6 +61,7 @@ jasmine_node_test(
     ],
     deps = [
         ":render3_node_lib",
+        "@ngdeps//zone.js",
     ],
 )
 

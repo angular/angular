@@ -6,6 +6,10 @@ ts_library(
     testonly = 1,
     srcs = ["app.spec.ts"],
     tsconfig = ":tsconfig.json",
+    deps = [
+        "@npm//@types",
+        "@npm//protractor",
+    ],
 )
 
 ts_library(
@@ -13,13 +17,20 @@ ts_library(
     testonly = 1,
     srcs = ["on-prepare.ts"],
     tsconfig = ":tsconfig.json",
-    deps = ["@angular//packages/bazel/src/protractor/utils"],
+    deps = [
+        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//@types",
+        "@npm//protractor",
+    ],
 )
 
 protractor_web_test_suite(
     name = "devserver_test",
     configuration = "//:protractor.conf.js",
-    data = ["@angular//packages/bazel/src/protractor/utils"],
+    data = [
+        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//protractor",
+    ],
     on_prepare = ":ts_on_prepare",
     server = "//src:devserver",
     deps = [":e2e"],
@@ -28,7 +39,10 @@ protractor_web_test_suite(
 protractor_web_test_suite(
     name = "prodserver_test",
     configuration = "//:protractor.conf.js",
-    data = ["@angular//packages/bazel/src/protractor/utils"],
+    data = [
+        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//protractor",
+    ],
     on_prepare = ":ts_on_prepare",
     server = "//src:prodserver",
     deps = [":e2e"],

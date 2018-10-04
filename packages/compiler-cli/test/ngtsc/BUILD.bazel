@@ -8,6 +8,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -20,5 +21,6 @@ jasmine_node_test(
     deps = [
         ":ngtsc_lib",
         "//tools/testing:node_no_angular",
+        "@ngdeps//minimist",
     ],
 )
