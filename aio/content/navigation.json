@@ -513,7 +513,7 @@
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
-          "tooltip": "Inside the local development environment for SystemJS."
+          "tooltip": "How your Angular workspace looks in your filesystem."
         },
         {
           "url": "guide/npm-packages",
