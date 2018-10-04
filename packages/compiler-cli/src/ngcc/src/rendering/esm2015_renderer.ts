@@ -5,90 +5,59 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {relative, resolve} from 'canonical-path';
+import {readFileSync} from 'fs';
 import * as ts from 'typescript';
-import MagicString from 'magic-string';
-import {POST_NGCC_MARKER, PRE_NGCC_MARKER} from '../host/ngcc_host';
-import {AnalyzedClass} from '../analysis/decoration_analyzer';
-import {Renderer} from './renderer';
 
-export class Esm2015Renderer extends Renderer {
-  /**
-   *  Add the imports at the top of the file
-   */
-  addImports(output: MagicString, imports: {name: string; as: string;}[]): void {
-    // The imports get inserted at the very top of the file.
-    imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
+import {DtsFileTransformer} from '../../../ngtsc/transform';
+import {DecorationAnalysis} from '../analysis/decoration_analyzer';
+import {SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
+import {IMPORT_PREFIX} from '../constants';
+import {DtsMapper} from '../host/dts_mapper';
+import {NgccReflectionHost} from '../host/ngcc_host';
+
+import {Fesm2015Renderer} from './fesm2015_renderer';
+import {FileInfo} from './renderer';
+
+export class Esm2015Renderer extends Fesm2015Renderer {
+  constructor(
+      protected host: NgccReflectionHost, protected isCore: boolean,
+      protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
+      protected targetPath: string, protected dtsMapper: DtsMapper) {
+    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath);
   }
 
-  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
-    if (constants === '') {
-      return;
+  renderFile(
+      sourceFile: ts.SourceFile, decorationAnalysis: DecorationAnalysis|undefined,
+      switchMarkerAnalysis: SwitchMarkerAnalysis|undefined, targetPath: string): FileInfo[] {
+    const renderedFiles =
+        super.renderFile(sourceFile, decorationAnalysis, switchMarkerAnalysis, targetPath);
+
+    // Transform the `.d.ts` files.
+    // TODO(gkalpak): What about `.d.ts` source maps? (See
+    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
+    if (decorationAnalysis) {
+      // Create a `DtsFileTransformer` for the source file and record the generated fields, which
+      // will allow the corresponding `.d.ts` file to be transformed later.
+      const dtsTransformer = new DtsFileTransformer(this.rewriteCoreImportsTo, IMPORT_PREFIX);
+      decorationAnalysis.analyzedClasses.forEach(
+          analyzedClass =>
+              dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
+
+      // Find the corresponding `.d.ts` file.
+      const sourceFileName = sourceFile.fileName;
+      const originalDtsFileName = this.dtsMapper.getDtsFileNameFor(sourceFileName);
+      const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
+
+      // Transform the `.d.ts` file based on the recorded source file changes.
+      const transformedDtsFileName =
+          resolve(this.targetPath, relative(this.sourcePath, originalDtsFileName));
+      const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
+
+      // Add the transformed `.d.ts` file to the list of output files.
+      renderedFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
     }
-    const insertionPoint = file.statements.reduce((prev, stmt) => {
-      if (ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
-          ts.isNamespaceImport(stmt)) {
-        return stmt.getEnd();
-      }
-      return prev;
-    }, 0);
-    output.appendLeft(insertionPoint, '\n' + constants + '\n');
-  }
 
-  /**
-   * Add the definitions to each decorated class
-   */
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void {
-    const classSymbol = this.host.getClassSymbol(analyzedClass.declaration);
-    if (!classSymbol) {
-      throw new Error(`Analyzed class does not have a valid symbol: ${analyzedClass.name}`);
-    }
-    const insertionPoint = classSymbol.valueDeclaration !.getEnd();
-    output.appendLeft(insertionPoint, '\n' + definitions);
+    return renderedFiles;
   }
-
-  /**
-   * Remove static decorator properties from classes
-   */
-  removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void {
-    decoratorsToRemove.forEach((nodesToRemove, containerNode) => {
-      if (ts.isArrayLiteralExpression(containerNode)) {
-        const items = containerNode.elements;
-        if (items.length === nodesToRemove.length) {
-          // Remove the entire statement
-          const statement = findStatement(containerNode);
-          if (statement) {
-            output.remove(statement.getFullStart(), statement.getEnd());
-          }
-        } else {
-          nodesToRemove.forEach(node => {
-            // remove any trailing comma
-            const end = (output.slice(node.getEnd(), node.getEnd() + 1) === ',') ?
-                node.getEnd() + 1 :
-                node.getEnd();
-            output.remove(node.getFullStart(), end);
-          });
-        }
-      }
-    });
-  }
-
-  rewriteSwitchableDeclarations(outputText: MagicString, sourceFile: ts.SourceFile): void {
-    const declarations = this.host.getSwitchableDeclarations(sourceFile);
-    declarations.forEach(declaration => {
-      const start = declaration.initializer.getStart();
-      const end = declaration.initializer.getEnd();
-      const replacement = declaration.initializer.text.replace(PRE_NGCC_MARKER, POST_NGCC_MARKER);
-      outputText.overwrite(start, end, replacement);
-    });
-  }
-}
-
-function findStatement(node: ts.Node) {
-  while (node) {
-    if (ts.isExpressionStatement(node)) {
-      return node;
-    }
-    node = node.parent;
-  }
-  return undefined;
 }
