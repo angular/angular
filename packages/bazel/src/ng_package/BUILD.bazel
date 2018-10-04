@@ -14,6 +14,7 @@ exports_files(["rollup.config.js"])
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
+    compiler = "//:@bazel/typescript/tsc_wrapped",
     node_modules = "@angular_packager_deps//:node_modules",
     tsconfig = ":tsconfig.json",
 )

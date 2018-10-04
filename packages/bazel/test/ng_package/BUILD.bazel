@@ -10,7 +10,10 @@ ts_library(
     name = "core_spec_lib",
     testonly = True,
     srcs = ["core_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "@ngdeps//@types/shelljs",
+    ],
 )
 
 jasmine_node_test(
@@ -18,6 +21,8 @@ jasmine_node_test(
     srcs = [":core_spec_lib"],
     data = [
         "//packages/core:npm_package",
+        "@ngdeps//@types/shelljs",
+        "@ngdeps//shelljs",
     ],
 )
 
@@ -25,20 +30,29 @@ ts_library(
     name = "common_spec_lib",
     testonly = True,
     srcs = ["common_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "@ngdeps//@types/shelljs",
+    ],
 )
 
 jasmine_node_test(
     name = "common_package",
     srcs = [":common_spec_lib"],
-    data = ["//packages/common:npm_package"],
+    data = [
+        "//packages/common:npm_package",
+        "@ngdeps//shelljs",
+    ],
 )
 
 ts_library(
     name = "example_spec_lib",
     testonly = True,
     srcs = ["example_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "@ngdeps//@types/diff",
+    ],
 )
 
 jasmine_node_test(

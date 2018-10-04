@@ -40,8 +40,7 @@ local_repository(
 #
 # Load and install our dependencies downloaded above.
 #
-
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 check_bazel_version("0.17.0", """
 If you are on a Mac and using Homebrew, there is a breaking change to the installation in Bazel 0.16
@@ -54,6 +53,12 @@ node_repositories(
     package_json = ["//:package.json"],
     preserve_symlinks = True,
     yarn_version = "1.9.2",
+)
+
+yarn_install(
+    name = "npm",
+    package_json = "//tools:npm/package.json",
+    yarn_lock = "//tools:npm/yarn.lock",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")

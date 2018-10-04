@@ -10,6 +10,7 @@ ts_library(
     deps = [
         "//packages/compiler-cli/src/ngcc",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//@types/mock-fs",
     ],
 )
 
@@ -23,5 +24,10 @@ jasmine_node_test(
     deps = [
         ":ngcc_lib",
         "//tools/testing:node_no_angular",
+        "@ngdeps//@types/mock-fs",
+        "@ngdeps//canonical-path",
+        "@ngdeps//convert-source-map",
+        "@ngdeps//shelljs",
+        "@ngdeps//yargs",
     ],
 )
