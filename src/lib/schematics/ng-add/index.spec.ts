@@ -3,6 +3,7 @@ import {WorkspaceProject} from '@angular-devkit/core/src/workspace';
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
+  addModuleImportToRootModule,
   createTestApp,
   getProjectFromWorkspace,
   getProjectStyleFile,
@@ -27,7 +28,19 @@ describe('ng-add schematic', () => {
         `Expected "${filePath}" to be added to the project styles in the workspace.`);
   }
 
+  /** Removes the specified dependency from the /package.json in the given tree. */
+  function removePackageJsonDependency(tree: Tree, dependencyName: string) {
+    const packageContent = JSON.parse(getFileContent(tree, '/package.json'));
+    delete packageContent.dependencies[dependencyName];
+    tree.overwrite('/package.json', JSON.stringify(packageContent, null, 2));
+  }
+
   it('should update package.json', () => {
+    // By default, the Angular workspace schematic sets up "@angular/animations". In order
+    // to verify that we would set up the dependency properly if someone doesn't have the
+    // animations installed already, we remove the animations dependency explicitly.
+    removePackageJsonDependency(appTree, '@angular/animations');
+
     const tree = runner.runSchematic('ng-add', {}, appTree);
     const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
     const dependencies = packageJson.dependencies;
@@ -140,6 +153,58 @@ describe('ng-add schematic', () => {
 
       expect(fileContent).not.toContain(`import 'hammerjs';`,
         'Expected the project main file to not contain a HammerJS import.');
+    });
+  });
+
+  describe('animations enabled', () => {
+    it('should add the BrowserAnimationsModule to the project module', () => {
+      const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
+      const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
+
+      expect(fileContent).toContain('BrowserAnimationsModule',
+        'Expected the project app module to import the "BrowserAnimationsModule".');
+    });
+
+    it('should not add BrowserAnimationsModule if NoopAnimationsModule is set up', () => {
+      const workspace = getWorkspace(appTree);
+      const project = getProjectFromWorkspace(workspace);
+
+      // Simulate the case where a developer uses `ng-add` on an Angular CLI project which already
+      // explicitly uses the `NoopAnimationsModule`. It would be wrong to forcibly enable browser
+      // animations without knowing what other components would be affected. In this case, we
+      // just print a warning message.
+      addModuleImportToRootModule(appTree, 'NoopAnimationsModule',
+          '@angular/platform-browser/animations', project);
+
+      spyOn(console, 'warn');
+      runner.runSchematic('ng-add-setup-project', {}, appTree);
+
+      expect(console.warn).toHaveBeenCalledWith(
+        jasmine.stringMatching(/Could not set up "BrowserAnimationsModule"/));
+    });
+  });
+
+  describe('animations disabled', () => {
+    it('should add the NoopAnimationsModule to the project module', () => {
+      const tree = runner.runSchematic('ng-add-setup-project', {animations: false}, appTree);
+      const fileContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
+
+      expect(fileContent).toContain('NoopAnimationsModule',
+        'Expected the project app module to import the "NoopAnimationsModule".');
+    });
+
+    it('should not add NoopAnimationsModule if BrowserAnimationsModule is set up', () => {
+      const workspace = getWorkspace(appTree);
+      const project = getProjectFromWorkspace(workspace);
+
+      // Simulate the case where a developer uses `ng-add` on an Angular CLI project which already
+      // explicitly uses the `BrowserAnimationsModule`. It would be wrong to forcibly change
+      // to noop animations.
+      const fileContent = addModuleImportToRootModule(appTree, 'BrowserAnimationsModule',
+          '@angular/platform-browser/animations', project);
+
+      expect(fileContent).not.toContain('NoopAnimationsModule',
+          'Expected the project app module to not import the "NoopAnimationsModule".');
     });
   });
 });

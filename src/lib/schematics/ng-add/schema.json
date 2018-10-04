@@ -22,6 +22,12 @@
       "default": true,
       "description": "Whether gesture support should be set up or not.",
       "x-prompt": "Set up HammerJS for gesture recognition?"
+    },
+    "animations": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether Angular browser animations should be set up or not.",
+      "x-prompt": "Set up browser animations for Angular Material?"
     }
   },
   "required": []
