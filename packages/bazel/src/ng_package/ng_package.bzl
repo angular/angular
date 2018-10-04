@@ -31,6 +31,8 @@ load("@build_bazel_rules_nodejs//:internal/node.bzl", "sources_aspect")
 load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
+_DEFAULT_NG_PACKAGER = "@npm//@angular/bazel/bin:packager"
+
 # Convert from some-dash-case to someCamelCase
 def _convert_dash_case_to_camel_case(s):
     parts = s.split("-")
@@ -341,7 +343,7 @@ def _ng_package_impl(ctx):
         mnemonic = "AngularPackage",
         inputs = packager_inputs,
         outputs = [npm_package_directory],
-        executable = ctx.executable._ng_packager,
+        executable = ctx.executable.ng_packager,
         arguments = [packager_args],
     )
 
@@ -379,8 +381,8 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "entry_point_name": attr.string(
         doc = "Name to use when generating bundle files for the primary entry-point.",
     ),
-    "_ng_packager": attr.label(
-        default = Label("//packages/bazel/src/ng_package:packager"),
+    "ng_packager": attr.label(
+        default = Label(_DEFAULT_NG_PACKAGER),
         executable = True,
         cfg = "host",
     ),

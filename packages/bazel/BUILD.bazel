@@ -1,24 +1,20 @@
 load("//tools:defaults.bzl", "npm_package")
 
-genrule(
-    name = "workspace",
-    outs = ["WORKSPACE"],
-    cmd = "echo 'workspace(name=\"angular\")' > $@",
-)
-
 npm_package(
     name = "npm_package",
-    srcs = glob(["*.bzl"]) + [
-        "BUILD.bazel",
+    srcs = [
+        "check_version.js",
         "package.json",
+        "protractor-utils.js",
         "//packages/bazel/src:package_assets",
     ],
-    packages = ["//packages/bazel/docs"],
-    # Re-host //packages/bazel/ which is just // in the public distro
-    replacements = {
-        "//packages/bazel/": "//",
-        "angular/packages/bazel/": "angular/",
-    },
+    packages = [
+        "//packages/bazel/docs",
+    ],
     tags = ["release-with-framework"],
-    deps = [":workspace"],
+    deps = [
+        "//packages/bazel/src/ng_package:lib",
+        "//packages/bazel/src/ngc-wrapped:ngc_lib",
+        "//packages/bazel/src/protractor/utils",
+    ],
 )
