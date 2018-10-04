@@ -24,8 +24,8 @@ def rules_angular_dependencies():
     _maybe(
         http_archive,
         name = "build_bazel_rules_typescript",
-        strip_prefix = "rules_typescript-0.17.0",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.17.0.zip",
+        url = "https://github.com/bazelbuild/rules_typescript/archive/6561f95aa621a6e3d421ab86451167ec84e580fa.zip",
+        strip_prefix = "rules_typescript-6561f95aa621a6e3d421ab86451167ec84e580fa",
     )
 
     # Needed for Remote Execution

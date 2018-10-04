@@ -18,7 +18,10 @@
       "dom"
     ],
     "target": "es5",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
   },
   "exclude": [
     "testing",

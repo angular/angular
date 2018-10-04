@@ -11,6 +11,7 @@ ts_library(
     ],
     deps = [
         "//packages/core",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -49,5 +50,8 @@ jasmine_node_test(
 js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
+    data = [
+        "@ngdeps//typescript",
+    ],
     golden = ":bundle.golden_symbols.json",
 )
