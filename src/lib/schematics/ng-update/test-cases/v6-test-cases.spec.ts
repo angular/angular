@@ -10,7 +10,7 @@ describe('v6 upgrade test cases', () => {
   const testCases = [
     'v6/attribute-selectors',
     'v6/class-names',
-    'v6/css-names',
+    'v6/css-selectors',
     'v6/element-selectors',
     'v6/input-names',
     'v6/output-names',

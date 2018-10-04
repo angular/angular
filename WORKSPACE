@@ -1,21 +1,19 @@
 workspace(name = "angular_material")
 
-# Load NodeJS rules. Note that this is technically not needed because
-# `rules_typescript_dependencies()` would also load the NodeJS rules, but we specifically need
-# at least v0.14.1 which includes: https://github.com/bazelbuild/rules_nodejs/pull/341
+# Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.14.1.zip",
-  strip_prefix = "rules_nodejs-0.14.1",
-  sha256 = "813eb51733d3632f456f3bb581d940ed64e80dab417595c93bf5ad19079898e2"
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.14.2.zip",
+  strip_prefix = "rules_nodejs-0.14.2",
+  sha256 = "af481421c9e74f754a693a8bf5e9409484e38cf7be6f73f85879bdc7ed1b1d82",
 )
 
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.18.0.zip",
-  strip_prefix = "rules_typescript-0.18.0",
-  sha256 = "4726e07a2f8d23b5e3af166f3b2a6e8aa75adad94b35ab4d959e8fe875f90272",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.19.1.zip",
+  strip_prefix = "rules_typescript-0.19.1",
+  sha256 = "91a03623a03a463ffd62cea3f7a384c2f298af6438d5d153fc4d69aa5665b53d",
 )
 
 # Fetch transient dependencies of the TypeScript bazel rules.
@@ -35,10 +33,7 @@ sass_repositories()
 
 # NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
 # your npm dependencies. You must still run the package manager.
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
-    "npm_install")
-
-check_bazel_version("0.15.0")
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "npm_install")
 node_repositories()
 
 # Use Bazel managed node modules. See more below: 
