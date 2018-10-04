@@ -15,6 +15,7 @@ import {makeProgram} from '../helpers/utils';
 const BASIC_FILE = {
   name: '/primary.js',
   contents: `
+  import {Directive} from '@angular/core';
   class A {}
   A.decorators = [
     { type: Directive, args: [{ selector: '[a]' }] }
@@ -31,12 +32,19 @@ const BASIC_FILE = {
 
   class C {}
 
+  let D = class D {}
+  D = tslib_1.__decorate([
+    Directive({ selector: '[d]' }),
+    OtherD()
+  ], D);
+  export {D};
+
   export { A, x, C };
   `
 };
 
-describe('Esm2015PackageParser', () => {
-  describe('getDecoratedClasses()', () => {
+describe('Esm2015FileParser', () => {
+  describe('parseFile()', () => {
     it('should return an array of object for each class that is exported and decorated', () => {
       const program = makeProgram(BASIC_FILE);
       const host = new Fesm2015ReflectionHost(program.getTypeChecker());
@@ -46,11 +54,19 @@ describe('Esm2015PackageParser', () => {
 
       expect(parsedFiles.length).toEqual(1);
       const decoratedClasses = parsedFiles[0].decoratedClasses;
-      expect(decoratedClasses.length).toEqual(1);
-      const decoratedClass = decoratedClasses[0];
-      expect(decoratedClass.name).toEqual('A');
-      expect(ts.isClassDeclaration(decoratedClass.declaration)).toBeTruthy();
-      expect(decoratedClass.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      expect(decoratedClasses.length).toEqual(2);
+
+      const decoratedClassA = decoratedClasses.find(c => c.name === 'A') !;
+      expect(decoratedClassA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      expect(decoratedClassA.decorators.map(
+                 decorator => decorator.args && decorator.args.map(arg => arg.getText())))
+          .toEqual([[`{ selector: '[a]' }`]]);
+
+      const decoratedClassD = decoratedClasses.find(c => c.name === 'D') !;
+      expect(decoratedClassD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      expect(decoratedClassD.decorators.map(
+                 decorator => decorator.args && decorator.args.map(arg => arg.getText())))
+          .toEqual([[`{ selector: '[d]' }`]]);
     });
   });
 });
