@@ -7,8 +7,7 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {POST_NGCC_MARKER, PRE_NGCC_MARKER} from '../host/ngcc_host';
-import {AnalyzedClass} from '../analyzer';
+import {DecoratedClass} from '../decorator_analyzer';
 import {Renderer} from './renderer';
 
 export class Esm2015Renderer extends Renderer {
@@ -37,7 +36,7 @@ export class Esm2015Renderer extends Renderer {
   /**
    * Add the definitions to each decorated class
    */
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void {
+  addDefinitions(output: MagicString, analyzedClass: DecoratedClass, definitions: string): void {
     const classSymbol = this.host.getClassSymbol(analyzedClass.declaration);
     if (!classSymbol) {
       throw new Error(`Analyzed class does not have a valid symbol: ${analyzedClass.name}`);
@@ -69,16 +68,6 @@ export class Esm2015Renderer extends Renderer {
           });
         }
       }
-    });
-  }
-
-  rewriteSwitchableDeclarations(outputText: MagicString, sourceFile: ts.SourceFile): void {
-    const declarations = this.host.getSwitchableDeclarations(sourceFile);
-    declarations.forEach(declaration => {
-      const start = declaration.initializer.getStart();
-      const end = declaration.initializer.getEnd();
-      const replacement = declaration.initializer.text.replace(PRE_NGCC_MARKER, POST_NGCC_MARKER);
-      outputText.overwrite(start, end, replacement);
     });
   }
 }

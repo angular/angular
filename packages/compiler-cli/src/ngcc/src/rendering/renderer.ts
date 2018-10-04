@@ -15,9 +15,10 @@ import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
 import {ImportManager, translateStatement} from '../../../ngtsc/transform';
-import {AnalyzedClass, AnalyzedFile} from '../analyzer';
+import {AnalyzedFile, SwitchableFile} from '../analyzer';
+import {DecoratedClass, DecoratedFile} from '../decorator_analyzer';
 import {IMPORT_PREFIX} from '../constants';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {NgccReflectionHost, POST_NGCC_MARKER, PRE_NGCC_MARKER} from '../host/ngcc_host';
 
 interface SourceMapInfo {
   source: string;
@@ -72,13 +73,43 @@ export abstract class Renderer {
    * @param targetPath The absolute path where the rendered file will be written.
    */
   renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
-    const importManager = new ImportManager(false, IMPORT_PREFIX);
     const input = this.extractSourceMap(file.sourceFile);
 
     const outputText = new MagicString(input.source);
+
+    if (file.decorated) {
+      this.renderDecorators(outputText, file.decorated);
+    }
+
+    if (file.switchable) {
+      this.rewriteSwitchableDeclarations(outputText, file.switchable);
+    }
+
+    return this.renderSourceAndMap(file, input, outputText, targetPath);
+  }
+
+  protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
+      void;
+  protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
+  protected abstract addDefinitions(
+      output: MagicString, analyzedClass: DecoratedClass, definitions: string): void;
+  protected abstract removeDecorators(
+      output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
+
+  rewriteSwitchableDeclarations(outputText: MagicString, file: SwitchableFile): void {
+    file.declarations.forEach(declaration => {
+      const start = declaration.initializer.getStart();
+      const end = declaration.initializer.getEnd();
+      const replacement = declaration.initializer.text.replace(PRE_NGCC_MARKER, POST_NGCC_MARKER);
+      outputText.overwrite(start, end, replacement);
+    });
+  }
+
+  protected renderDecorators(outputText: MagicString, file: DecoratedFile): void {
+    const importManager = new ImportManager(false, IMPORT_PREFIX);
     const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
 
-    file.analyzedClasses.forEach(clazz => {
+    file.decoratedClasses.forEach(clazz => {
       const renderedDefinition = renderDefinitions(file.sourceFile, clazz, importManager);
       this.addDefinitions(outputText, clazz, renderedDefinition);
       this.trackDecorators(clazz.decorators, decoratorsToRemove);
@@ -90,24 +121,10 @@ export abstract class Renderer {
 
     this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
 
-    // TODO: remove contructor param metadata and property decorators (we need info from the
+    // TODO: remove constructor param metadata and property decorators (we need info from the
     // handlers to do this)
     this.removeDecorators(outputText, decoratorsToRemove);
-
-    this.rewriteSwitchableDeclarations(outputText, file.sourceFile);
-
-    return this.renderSourceAndMap(file, input, outputText, targetPath);
   }
-
-  protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
-      void;
-  protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
-  protected abstract addDefinitions(
-      output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
-  protected abstract removeDecorators(
-      output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
-  protected abstract rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile): void;
 
   /**
    * Add the decorator nodes that are to be removed to a map
@@ -257,7 +274,7 @@ export function renderConstantPool(
  * @param imports An object that tracks the imports that are needed by the rendered definitions.
  */
 export function renderDefinitions(
-    sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, analyzedClass: DecoratedClass, imports: ImportManager): string {
   const printer = ts.createPrinter();
   const name = (analyzedClass.declaration as ts.NamedDeclaration).name !;
   const definitions =
