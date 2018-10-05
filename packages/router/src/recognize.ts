@@ -70,6 +70,14 @@ class Recognizer {
   processSegmentGroup(config: Route[], segmentGroup: UrlSegmentGroup, outlet: string):
       TreeNode<ActivatedRouteSnapshot>[] {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
+      const empties = config.filter(r => emptyPathMatch(segmentGroup, segmentGroup.segments, r));
+      if (empties.length !== 0) {
+        try {
+          return this.processSegment(empties, segmentGroup, segmentGroup.segments, outlet);
+        } catch (e) {
+          if (!(e instanceof NoMatch)) throw e;
+        }
+      }
       return this.processChildren(config, segmentGroup);
     }
 
