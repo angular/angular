@@ -1,7 +1,7 @@
 .container {
   width: 400px;
   max-width: 100%;
-  margin: 0 25px 25px 0;
+  margin: 0 20px;
   display: inline-block;
   vertical-align: top;
 }
