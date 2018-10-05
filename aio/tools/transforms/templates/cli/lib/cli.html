@@ -53,16 +53,12 @@
   {% for option in options %}
     <tr class="cli-option">
       <td>
-        {% for type in option.types -%}
-        {% for alias in option.names -%}
-        <code class="cli-option-syntax">{$ renderOption(option.name, alias, type, option.default, option.enum) $}</code>
-        {% if not loop.last %}<br>{% endif %}
-        {% endfor -%}
-        {% if not loop.last %}<br>{% endif %}
-        {% endfor -%}
+        <code class="cli-option-syntax">{$ renderOption(option.name, option.type, option.default, option.enum) $}</code>
       </td>
       <td>
         {$ option.description | marked $}
+        {% if option.default !== undefined %}<p><span class="cli-default">Default:</span> <code>{$ option.default $}</code></p>{% endif %}
+        {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
       </td>
     </tr>
   {% endfor %}
@@ -71,26 +67,23 @@
 {% endif %}
 {% endmacro %}
 
-{% macro bold(isBold, contents) -%}
-<span {% if isBold %}class="cli-default"{% endif %}>{$ contents $}</span>
-{%- endmacro -%}
+{%- macro renderOptionName(name) -%}
+{% if name.length > 1 %}-{% endif %}-{$ name $}
+{%- endmacro %}
 
 {%- macro renderValues(values, default) -%}
-{% for value in values %}{$ bold(value==default, value) $}{% if not loop.last %}|{% endif %}{% endfor %}
+{$ values.join('|') $}
 {%- endmacro -%}
 
-{%- macro renderOption(name, alias, type, default, values) -%}
-{% set prefix = '--' if (name === alias and name.length > 1) else '-' %}
-{%- if type === 'boolean' -%}
-{%- if not values.length %}{$ prefix $}{$ alias $}={$ renderValues([true, false], default) $}
-{% endif -%}
-{$ prefix $}{$ bold(default, alias) $}|{$ prefix $}{$ bold(not default, alias | cliNegate) $}
+{%- macro renderOption(name, type, default, values) -%}
+{% set prefix = '--' if name.length > 1 else '-' %}
+{%- if type === 'boolean' and not values.length %}{$ prefix $}{$ name $}={$ renderValues([true, false], default) $}
 {%- elif values.length -%}
-{$ prefix $}{$ alias $}={$ renderValues(values, default) $}
+{$ prefix $}{$ name $}={$ renderValues(values, default) $}
 {%- elif type === 'string' -%}
-{$ prefix $}{$ alias $}=<var>{$ name $}</var>
+<var>{$ name $}</var>
 {%- else -%}
-{$ prefix $}{$ alias $}
+{$ prefix $}{$ name $}
 {%- endif -%}
 {%- endmacro -%}
 
