@@ -98,6 +98,11 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵtextBinding': r3.textBinding,
   'ɵembeddedViewStart': r3.embeddedViewStart,
   'ɵembeddedViewEnd': r3.embeddedViewEnd,
+  'ɵi18nAttribute': r3.i18nAttribute,
+  'ɵi18nExp': r3.i18nExp,
+  'ɵi18nStart': r3.i18nStart,
+  'ɵi18nEnd': r3.i18nEnd,
+  'ɵi18nApply': r3.i18nApply,
 
   'ɵsanitizeHtml': sanitization.sanitizeHtml,
   'ɵsanitizeStyle': sanitization.sanitizeStyle,
