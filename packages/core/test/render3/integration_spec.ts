@@ -1765,14 +1765,14 @@ describe('render3 integration test', () => {
       const section = fixture.hostElement.querySelector('section') !;
       const sectionContext = getContext(section) !;
       const sectionLView = sectionContext.lViewData !;
-      expect(sectionContext.lNodeIndex).toEqual(HEADER_OFFSET);
+      expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
       expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
       expect(sectionContext.native).toBe(section);
 
       const div = fixture.hostElement.querySelector('div') !;
       const divContext = getContext(div) !;
       const divLView = divContext.lViewData !;
-      expect(divContext.lNodeIndex).toEqual(HEADER_OFFSET + 1);
+      expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
       expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
       expect(divContext.native).toBe(div);
 
@@ -2110,7 +2110,7 @@ describe('render3 integration test', () => {
          const div1 = hostElm.querySelector('div:first-child') !as any;
          const div2 = hostElm.querySelector('div:last-child') !as any;
          const context = getContext(hostElm) !;
-         const elementNode = context.lViewData[context.lNodeIndex];
+         const elementNode = context.lViewData[context.nodeIndex];
          const elmData = elementNode.data !;
          const dirs = elmData[DIRECTIVES];
 
@@ -2134,15 +2134,15 @@ describe('render3 integration test', () => {
          expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
          expect((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d3Context);
 
-         expect(d1Context.lNodeIndex).toEqual(HEADER_OFFSET);
+         expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
          expect(d1Context.native).toBe(div1);
          expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-         expect(d2Context.lNodeIndex).toEqual(HEADER_OFFSET);
+         expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
          expect(d2Context.native).toBe(div1);
          expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-         expect(d3Context.lNodeIndex).toEqual(HEADER_OFFSET + 1);
+         expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
          expect(d3Context.native).toBe(div2);
          expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
        });
@@ -2292,14 +2292,14 @@ describe('render3 integration test', () => {
          const context = getContext(child) !;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-         const componentData = context.lViewData[context.lNodeIndex].data;
+         const componentData = context.lViewData[context.nodeIndex].data;
          const component = componentData[CONTEXT];
          expect(component instanceof ChildComp).toBeTruthy();
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lViewData);
 
          const componentContext = getContext(component) !;
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
-         expect(componentContext.lNodeIndex).toEqual(context.lNodeIndex);
+         expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
          expect(componentContext.native).toEqual(context.native);
          expect(componentContext.lViewData).toEqual(context.lViewData);
        });
