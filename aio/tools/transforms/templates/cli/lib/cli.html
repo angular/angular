@@ -72,7 +72,8 @@
 {%- endmacro %}
 
 {%- macro renderValues(values, default) -%}
-{$ values.join('|') $}
+{%- set valString = values.join('|') -%}
+{%- if valString.length > 15 %}<br>    {% endif %}{$ valString $}
 {%- endmacro -%}
 
 {%- macro renderOption(name, type, default, values) -%}
@@ -81,7 +82,7 @@
 {%- elif values.length -%}
 {$ prefix $}{$ name $}={$ renderValues(values, default) $}
 {%- elif type === 'string' -%}
-<var>{$ name $}</var>
+{$ prefix $}{$ name $}={% if name.length > 15 %}<br>    {% endif %}<var>{$ name $}</var>
 {%- else -%}
 {$ prefix $}{$ name $}
 {%- endif -%}
