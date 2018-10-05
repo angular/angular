@@ -43,7 +43,7 @@ function compileNgModuleFactory__PRE_NGCC__<M>(
   return compiler.compileModuleAsync(moduleType);
 }
 
-function compileNgModuleFactory__POST_NGCC__<M>(
+export function compileNgModuleFactory__POST_NGCC__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
