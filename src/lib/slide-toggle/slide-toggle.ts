@@ -49,6 +49,7 @@ import {
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
 
+/** @docs-private */
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatSlideToggle),

@@ -36,14 +36,14 @@ import {Subscription} from 'rxjs';
 import {MatDatepicker} from './datepicker';
 import {createMissingDateImplError} from './datepicker-errors';
 
-
+/** @docs-private */
 export const MAT_DATEPICKER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => MatDatepickerInput),
   multi: true
 };
 
-
+/** @docs-private */
 export const MAT_DATEPICKER_VALIDATORS: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MatDatepickerInput),
