@@ -30,7 +30,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, assembleI18nTemplate, getAttrsForDirectiveMatching, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -306,7 +306,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     let isNonBindableMode: boolean = false;
 
-    // Handle i18n attributes
+    // Handle i18n and ngNonBindable attributes
     for (const attr of element.attributes) {
       const name = attr.name;
       const value = attr.value;
@@ -344,6 +344,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const styleInputs: t.BoundAttribute[] = [];
     const classInputs: t.BoundAttribute[] = [];
+    const i18nInputs: t.BoundAttribute[] = [];
     const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
@@ -360,6 +361,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           } else if (isClassBinding(input)) {
             // this should always go first in the compilation (for [class])
             classInputs.splice(0, 0, input);
+          } else if (attrI18nMetas.hasOwnProperty(input.name)) {
+            i18nInputs.push(input);
           } else {
             allOtherInputs.push(input);
           }
@@ -482,7 +485,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const implicit = o.variable(CONTEXT_NAME);
 
     const createSelfClosingInstruction = !hasStylingInstructions && !isNgContainer &&
-        element.children.length === 0 && element.outputs.length === 0;
+        element.children.length === 0 && element.outputs.length === 0 && i18nInputs.length === 0;
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
@@ -493,6 +496,33 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       if (isNonBindableMode) {
         this.creationInstruction(element.sourceSpan, R3.disableBindings);
+      }
+
+      if (i18nInputs.length > 0) {
+        for (let i = 0; i < i18nInputs.length; i++) {
+          const input = i18nInputs[i];
+          const value = input.value.visit(this._valueConverter);
+          const indexLiteral: o.Expression = o.literal(this.allocateDataSlot());
+
+          const meta = parseI18nMeta(attrI18nMetas[input.name]);
+          const label = assembleI18nTemplate(value.strings);
+          const attrValue = this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
+          const params: o.Expression[] = [
+            indexLiteral,
+            o.literal(input.name),
+            attrValue
+          ];
+          this.creationInstruction(element.sourceSpan, R3.i18nAttribute, params);
+
+          if (value instanceof Interpolation) {
+            for (let i = 0; i < value.expressions.length; i++) {
+              const expression = value.expressions[i];
+              const binding = this.convertExpressionBinding(implicit, expression);
+              this.updateInstruction(element.sourceSpan, R3.i18nExp, [binding]);
+            }
+            this.updateInstruction(element.sourceSpan, R3.i18nApply, [indexLiteral]);
+          }
+        }
       }
 
       // initial styling for static style="..." attributes
@@ -838,6 +868,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private allocateBindingSlots(value: AST) {
     this._bindingSlots += value instanceof Interpolation ? value.expressions.length : 1;
+  }
+
+  private convertExpressionBinding(implicit: o.Expression, value: AST): o.Expression {
+    const convertedPropertyBinding = convertPropertyBinding(
+        this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
+    const valExpr = convertedPropertyBinding.currValExpr;
+    return o.importExpr(R3.bind).callFn([valExpr]);
   }
 
   private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
