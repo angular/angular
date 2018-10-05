@@ -20,8 +20,8 @@ against a minimum dependent build_bazel_rules_typescript version.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_typescript/0.20.1/package.bzl
-VERSION = "0.20.1"
+# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_typescript/0.20.2/package.bzl
+VERSION = "0.20.2"
 
 def rules_typescript_dependencies():
     """
