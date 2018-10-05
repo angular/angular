@@ -28,19 +28,16 @@ describe('MatExpansionPanel', () => {
 
   it('should expand and collapse the panel', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);
-    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
     const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
     fixture.detectChanges();
 
     expect(headerEl.classList).not.toContain('mat-expanded');
-    expect(contentEl.classList).not.toContain('mat-expanded');
 
     fixture.componentInstance.expanded = true;
     fixture.detectChanges();
     flush();
 
     expect(headerEl.classList).toContain('mat-expanded');
-    expect(contentEl.classList).toContain('mat-expanded');
   }));
 
   it('should be able to render panel content lazily', fakeAsync(() => {
@@ -267,23 +264,7 @@ describe('MatExpansionPanel', () => {
     expect(fixture.componentInstance.expanded).toBe(false);
   });
 
-  it('should not set the mat-expanded class until the open animation is done', fakeAsync(() => {
-    const fixture = TestBed.createComponent(PanelWithContent);
-    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
 
-    fixture.detectChanges();
-    expect(contentEl.classList).not.toContain('mat-expanded',
-        'Expected class not to be there on init');
-
-    fixture.componentInstance.expanded = true;
-    fixture.detectChanges();
-    expect(contentEl.classList).not.toContain('mat-expanded',
-        'Expected class not to be added immediately after becoming expanded');
-
-    flush();
-    expect(contentEl.classList).toContain('mat-expanded',
-        'Expected class to be added after the animation has finished');
-  }));
 
   it('should emit events for body expanding and collapsing animations', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);

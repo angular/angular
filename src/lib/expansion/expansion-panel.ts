@@ -170,20 +170,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   }
 
   _bodyAnimation(event: AnimationEvent) {
-    const classList = event.element.classList;
-    const cssClass = 'mat-expanded';
     const {phaseName, toState, fromState} = event;
-
-    // Toggle the body's `overflow: hidden` class when closing starts or when expansion ends in
-    // order to prevent the cases where switching too early would cause the animation to jump.
-    // Note that we do it directly on the DOM element to avoid the slight delay that comes
-    // with doing it via change detection.
-    if (phaseName === 'done' && toState === 'expanded') {
-      classList.add(cssClass);
-    }
-    if (phaseName === 'start' && toState === 'collapsed') {
-      classList.remove(cssClass);
-    }
 
     if (phaseName === 'done' && toState === 'expanded' && fromState !== 'void') {
       this.afterExpand.emit();

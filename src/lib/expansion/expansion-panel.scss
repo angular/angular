@@ -9,6 +9,7 @@
   display: block;
   margin: 0;
   border-radius: $border-radius;
+  overflow: hidden;
   transition: margin 225ms $mat-fast-out-slow-in-timing-function,
       mat-elevation-transition-property-value();
 
@@ -40,11 +41,9 @@
 }
 
 .mat-expansion-panel-content {
-  overflow: hidden;
-
-  &.mat-expanded {
-    overflow: visible;
-  }
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 .mat-expansion-panel-body {
