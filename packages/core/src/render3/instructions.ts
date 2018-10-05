@@ -2262,7 +2262,7 @@ export function componentRefresh<T>(
  * Note that embedded views inside ngFor loops will never be out of sync because these views
  * are processed as soon as they are created.
  *
- * @param The view to sync
+ * @param componentView The view to sync
  */
 function syncViewWithBlueprint(componentView: LViewData) {
   const componentTView = componentView[TVIEW];

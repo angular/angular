@@ -345,6 +345,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "stringify$2"
   },
   {

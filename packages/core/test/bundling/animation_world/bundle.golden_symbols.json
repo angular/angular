@@ -966,6 +966,9 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "setValue"
   },
   {
