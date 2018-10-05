@@ -38,6 +38,6 @@ export function isCanActivateChild(guard: any): guard is CanActivateChild {
   return guard && isFunction<CanActivateChild>(guard.canActivate);
 }
 
-export function isCanDeactivate(guard: any): guard is CanDeactivate<Type<any>> {
-  return guard && isFunction<CanDeactivate<Type<any>>>(guard.canDeactivate);
+export function isCanDeactivate<T>(guard: any): guard is CanDeactivate<T> {
+  return guard && isFunction<CanDeactivate<T>>(guard.canDeactivate);
 }

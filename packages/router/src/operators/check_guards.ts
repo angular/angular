@@ -11,10 +11,13 @@ import {MonoTypeOperatorFunction, Observable, from, of } from 'rxjs';
 import {concatMap, every, first, map, mergeMap} from 'rxjs/operators';
 
 import {ActivationStart, ChildActivationStart, Event} from '../events';
+import {CanActivateChildFn, CanActivateFn, CanDeactivateFn} from '../interfaces';
 import {NavigationTransition} from '../router';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
+import {UrlTree} from '../url_tree';
 import {andObservables, wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
+import {isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
 
 export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event) => void):
     MonoTypeOperatorFunction<NavigationTransition> {
@@ -29,7 +32,7 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
       return runCanDeactivateChecks(
                  canDeactivateChecks, targetSnapshot !, currentSnapshot, moduleInjector)
           .pipe(
-              mergeMap((canDeactivate: boolean) => {
+              mergeMap(canDeactivate => {
                 return canDeactivate ?
                     runCanActivateChecks(
                         targetSnapshot !, canActivateChecks, moduleInjector, forwardEvent) :
@@ -42,12 +45,12 @@ export function checkGuards(moduleInjector: Injector, forwardEvent?: (evt: Event
 
 function runCanDeactivateChecks(
     checks: CanDeactivate[], futureRSS: RouterStateSnapshot, currRSS: RouterStateSnapshot,
-    moduleInjector: Injector): Observable<boolean> {
+    moduleInjector: Injector): Observable<boolean|UrlTree> {
   return from(checks).pipe(
-      mergeMap(
-          (check: CanDeactivate) =>
-              runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector)),
-      every((result: boolean) => result === true));
+      mergeMap(check => {
+        return runCanDeactivate(check.component, check.route, currRSS, futureRSS, moduleInjector);
+      }),
+      every(result => result === true));
 }
 
 function runCanActivateChecks(
@@ -104,11 +107,13 @@ function runCanActivate(
   if (!canActivate || canActivate.length === 0) return of (true);
   const obs = from(canActivate).pipe(map((c: any) => {
     const guard = getToken(c, futureARS, moduleInjector);
-    let observable: Observable<boolean>;
-    if (guard.canActivate) {
+    let observable;
+    if (isCanActivate(guard)) {
       observable = wrapIntoObservable(guard.canActivate(futureARS, futureRSS));
-    } else {
+    } else if (isFunction<CanActivateFn>(guard)) {
       observable = wrapIntoObservable(guard(futureARS, futureRSS));
+    } else {
+      throw new Error('Invalid canActivate guard');
     }
     return observable.pipe(first());
   }));
@@ -128,11 +133,13 @@ function runCanActivateChild(
   return andObservables(from(canActivateChildGuards).pipe(map((d: any) => {
     const obs = from(d.guards).pipe(map((c: any) => {
       const guard = getToken(c, d.node, moduleInjector);
-      let observable: Observable<boolean>;
-      if (guard.canActivateChild) {
+      let observable;
+      if (isCanActivateChild(guard)) {
         observable = wrapIntoObservable(guard.canActivateChild(futureARS, futureRSS));
-      } else {
+      } else if (isFunction<CanActivateChildFn>(guard)) {
         observable = wrapIntoObservable(guard(futureARS, futureRSS));
+      } else {
+        throw new Error('Invalid CanActivateChild guard');
       }
       return observable.pipe(first());
     }));
@@ -141,17 +148,20 @@ function runCanActivateChild(
 }
 
 function runCanDeactivate(
-    component: Object | null, currARS: ActivatedRouteSnapshot, currRSS: RouterStateSnapshot,
-    futureRSS: RouterStateSnapshot, moduleInjector: Injector): Observable<boolean> {
+    component: Object| null, currARS: ActivatedRouteSnapshot, currRSS: RouterStateSnapshot,
+    futureRSS: RouterStateSnapshot, moduleInjector: Injector): Observable<boolean|UrlTree> {
   const canDeactivate = currARS && currARS.routeConfig ? currARS.routeConfig.canDeactivate : null;
   if (!canDeactivate || canDeactivate.length === 0) return of (true);
   const canDeactivate$ = from(canDeactivate).pipe(mergeMap((c: any) => {
     const guard = getToken(c, currARS, moduleInjector);
-    let observable: Observable<boolean>;
-    if (guard.canDeactivate) {
-      observable = wrapIntoObservable(guard.canDeactivate(component, currARS, currRSS, futureRSS));
-    } else {
+    let observable;
+    if (isCanDeactivate(guard)) {
+      observable =
+          wrapIntoObservable(guard.canDeactivate(component !, currARS, currRSS, futureRSS));
+    } else if (isFunction<CanDeactivateFn<any>>(guard)) {
       observable = wrapIntoObservable(guard(component, currARS, currRSS, futureRSS));
+    } else {
+      throw new Error('Invalid CanDeactivate guard');
     }
     return observable.pipe(first());
   }));

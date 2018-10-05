@@ -84,7 +84,7 @@ export interface CanActivate {
 }
 
 export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-    Observable<boolean>| Promise<boolean>| boolean | UrlTree;
+    Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description
@@ -246,7 +246,8 @@ export interface CanDeactivate<T> {
 
 export type CanDeactivateFn<T> =
     (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
-     nextState?: RouterStateSnapshot) => Observable<boolean>| Promise<boolean>| boolean | UrlTree;
+     nextState?: RouterStateSnapshot) =>
+        Observable<boolean|UrlTree>| Promise<boolean|UrlTree>| boolean | UrlTree;
 
 /**
  * @description

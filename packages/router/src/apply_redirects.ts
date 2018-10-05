@@ -11,10 +11,12 @@ import {EmptyError, Observable, Observer, from, of } from 'rxjs';
 import {catchError, concatAll, first, map, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
+import {CanLoadFn} from './interfaces';
 import {RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {andObservables, forEach, waitForMap, wrapIntoObservable} from './utils/collection';
+import {isCanLoad, isFunction} from './utils/type_guards';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -408,8 +410,15 @@ function runCanLoadGuard(
 
   const obs = from(canLoad).pipe(map((injectionToken: any) => {
     const guard = moduleInjector.get(injectionToken);
-    return wrapIntoObservable(
-        guard.canLoad ? guard.canLoad(route, segments) : guard(route, segments));
+    let guardVal;
+    if (isCanLoad(guard)) {
+      guardVal = guard.canLoad(route, segments);
+    } else if (isFunction<CanLoadFn>(guard)) {
+      guardVal = guard(route, segments);
+    } else {
+      throw new Error('Invalid CanLoad guard');
+    }
+    return wrapIntoObservable(guardVal);
   }));
 
   return andObservables(obs);
