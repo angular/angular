@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@bazel/karma@0.19.1":
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.19.1.tgz#99873ee9d85456b693f435f689ce0acfd09d2445"
+"@bazel/karma@0.20.1":
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.1.tgz#84e437cb4c4545906152bbfab401ed8111d5d558"
   dependencies:
     jasmine-core "2.8.0"
     karma alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a
@@ -17,9 +17,9 @@
     requirejs "2.3.5"
     tmp "0.0.33"
 
-"@bazel/typescript@0.19.1":
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.19.1.tgz#61dd57c0ab8a6c9930d2463d44e9522ec007fe3a"
+"@bazel/typescript@0.20.1":
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.1.tgz#f6d3ff13fb203ccb6ddeb7ca670978983b3e1b73"
   dependencies:
     protobufjs "5.0.0"
     source-map-support "0.5.9"
@@ -1649,7 +1649,7 @@ karma-sourcemap-loader@0.3.7:
   dependencies:
     graceful-fs "^4.1.2"
 
-karma@alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a:
+"karma@github:alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a":
   version "1.7.1"
   resolved "https://codeload.github.com/alexeagle/karma/tar.gz/fa1a84ac881485b5657cb669e9b4e5da77b79f0a"
   dependencies:
