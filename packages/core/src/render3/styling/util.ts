@@ -29,11 +29,11 @@ export function getOrCreatePlayerContext(target: {}, context?: LContext | null):
         'Only elements that exist in an Angular application can be used for player access');
   }
 
-  const {lViewData, lNodeIndex} = context;
-  const value = lViewData[lNodeIndex];
+  const {lViewData, nodeIndex} = context;
+  const value = lViewData[nodeIndex];
   let stylingContext = value as StylingContext;
   if (!Array.isArray(value)) {
-    stylingContext = lViewData[lNodeIndex] = createEmptyStylingContext(value as LElementNode);
+    stylingContext = lViewData[nodeIndex] = createEmptyStylingContext(value as LElementNode);
   }
   return stylingContext[StylingIndex.PlayerContext] || allocPlayerContext(stylingContext);
 }
