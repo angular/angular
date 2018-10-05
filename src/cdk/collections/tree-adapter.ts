@@ -27,5 +27,5 @@ export interface TreeDataNodeFlattener<T> {
    * Put node descendants of node in array.
    * If `onlyExpandable` is true, then only process expandable descendants.
    */
-  nodeDescendents(node: T, nodes: T[], onlyExpandable: boolean);
+  nodeDescendents(node: T, nodes: T[], onlyExpandable: boolean): void;
 }

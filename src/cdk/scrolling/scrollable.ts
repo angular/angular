@@ -13,7 +13,7 @@ import {
   supportsScrollBehavior
 } from '@angular/cdk/platform';
 import {Directive, ElementRef, NgZone, OnDestroy, OnInit, Optional} from '@angular/core';
-import {fromEvent, Observable, Subject} from 'rxjs';
+import {fromEvent, Observable, Subject, Observer} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 
@@ -47,7 +47,7 @@ export type ExtendedScrollToOptions = _XAxis & _YAxis & ScrollOptions;
 export class CdkScrollable implements OnInit, OnDestroy {
   private _destroyed = new Subject();
 
-  private _elementScrolled: Observable<Event> = Observable.create(observer =>
+  private _elementScrolled: Observable<Event> = Observable.create((observer: Observer<Event>) =>
       this.ngZone.runOutsideAngular(() =>
           fromEvent(this.elementRef.nativeElement, 'scroll').pipe(takeUntil(this._destroyed))
               .subscribe(observer)));

@@ -113,15 +113,15 @@ export class AutofillMonitor implements OnDestroy {
    * Stop monitoring the autofill state of the given input element.
    * @param element The element to stop monitoring.
    */
-  stopMonitoring(element: Element);
+  stopMonitoring(element: Element): void;
 
   /**
    * Stop monitoring the autofill state of the given input element.
    * @param element The element to stop monitoring.
    */
-  stopMonitoring(element: ElementRef<Element>);
+  stopMonitoring(element: ElementRef<Element>): void;
 
-  stopMonitoring(elementOrRef: Element | ElementRef<Element>) {
+  stopMonitoring(elementOrRef: Element | ElementRef<Element>): void {
     const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
     const info = this._monitoredElements.get(element);
 

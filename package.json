@@ -61,6 +61,7 @@
     "@types/fs-extra": "^4.0.3",
     "@types/glob": "^5.0.33",
     "@types/gulp": "3.8.32",
+    "@types/gulp-util": "^3.0.34",
     "@types/hammerjs": "^2.0.35",
     "@types/jasmine": "^2.8.8",
     "@types/merge2": "^0.3.30",

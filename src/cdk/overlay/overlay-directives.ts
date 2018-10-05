@@ -114,6 +114,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _offsetX: number;
   private _offsetY: number;
   private _position: FlexibleConnectedPositionStrategy;
+  private _scrollStrategyFactory: () => ScrollStrategy;
 
   /** Origin for the connected overlay. */
   @Input('cdkConnectedOverlayOrigin') origin: CdkOverlayOrigin;
@@ -165,8 +166,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   @Input('cdkConnectedOverlayViewportMargin') viewportMargin: number = 0;
 
   /** Strategy to be used when handling scroll events while the overlay is open. */
-  @Input('cdkConnectedOverlayScrollStrategy') scrollStrategy: ScrollStrategy =
-      this._scrollStrategy();
+  @Input('cdkConnectedOverlayScrollStrategy') scrollStrategy: ScrollStrategy;
 
   /** Whether the overlay is open. */
   @Input('cdkConnectedOverlayOpen') open: boolean = false;
@@ -219,9 +219,11 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       private _overlay: Overlay,
       templateRef: TemplateRef<any>,
       viewContainerRef: ViewContainerRef,
-      @Inject(CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY) private _scrollStrategy,
+      @Inject(CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY) scrollStrategyFactory: any,
       @Optional() private _dir: Directionality) {
     this._templatePortal = new TemplatePortal(templateRef, viewContainerRef);
+    this._scrollStrategyFactory = scrollStrategyFactory;
+    this.scrollStrategy = this._scrollStrategyFactory();
   }
 
   /** The associated overlay reference. */

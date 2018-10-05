@@ -369,7 +369,7 @@ describe('MatStepper', () => {
   });
 
   describe('basic stepper with i18n label change', () => {
-    let i18nFixture;
+    let i18nFixture: ComponentFixture<SimpleMatHorizontalStepperApp>;
 
     beforeEach(() => {
       i18nFixture = createComponent(SimpleMatHorizontalStepperApp);
@@ -688,7 +688,7 @@ describe('MatStepper', () => {
   });
 
   describe('linear stepper with a pre-defined selectedIndex', () => {
-    let preselectedFixture;
+    let preselectedFixture: ComponentFixture<SimplePreselectedMatHorizontalStepperApp>;
     beforeEach(() => {
       preselectedFixture = createComponent(SimplePreselectedMatHorizontalStepperApp);
     });
@@ -699,7 +699,7 @@ describe('MatStepper', () => {
   });
 
   describe('linear stepper with no `stepControl`', () => {
-    let noStepControlFixture;
+    let noStepControlFixture: ComponentFixture<SimpleStepperWithoutStepControl>;
     beforeEach(() => {
       noStepControlFixture = createComponent(SimpleStepperWithoutStepControl);
       noStepControlFixture.detectChanges();
@@ -721,7 +721,7 @@ describe('MatStepper', () => {
   });
 
   describe('linear stepper with `stepControl`', () => {
-    let controlAndBindingFixture;
+    let controlAndBindingFixture: ComponentFixture<SimpleStepperWithStepControlAndCompletedBinding>;
     beforeEach(() => {
       controlAndBindingFixture =
       createComponent(SimpleStepperWithStepControlAndCompletedBinding);
@@ -1326,7 +1326,7 @@ class SimpleStepperWithStepControlAndCompletedBinding {
 })
 class IconOverridesStepper {
   getRomanNumeral(value: number) {
-    return {
+    const numberMap: {[key: number]: string} = {
       1: 'I',
       2: 'II',
       3: 'III',
@@ -1336,7 +1336,9 @@ class IconOverridesStepper {
       7: 'VII',
       8: 'VIII',
       9: 'IX'
-    }[value];
+    };
+
+    return numberMap[value];
   }
 }
 

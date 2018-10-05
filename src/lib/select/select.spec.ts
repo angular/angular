@@ -2926,7 +2926,7 @@ describe('MatSelect', () => {
       const overlayTop = overlayPane.getBoundingClientRect().top;
       const options = overlayPane.querySelectorAll('mat-option');
       const optionTop = options[index].getBoundingClientRect().top;
-      const triggerFontSize = parseInt(window.getComputedStyle(trigger)['font-size']);
+      const triggerFontSize = parseInt(window.getComputedStyle(trigger).fontSize || '0');
       const triggerLineHeightEm = 1.125;
 
       // Extra trigger height beyond the font size caused by the fact that the line-height is

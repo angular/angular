@@ -19,7 +19,7 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject, Subscription, Observer} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 /**
@@ -65,7 +65,7 @@ export class ContentObserver implements OnDestroy {
   observe(elementOrRef: Element | ElementRef<Element>): Observable<MutationRecord[]> {
     const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
 
-    return Observable.create(observer => {
+    return Observable.create((observer: Observer<MutationRecord[]>) => {
       const stream = this._observeElement(element);
       const subscription = stream.subscribe(observer);
 

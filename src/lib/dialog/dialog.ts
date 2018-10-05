@@ -45,13 +45,13 @@ export const MAT_DIALOG_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy');
 
 /** @docs-private */
-export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(overlay: Overlay): ()  => ScrollStrategy {
+export function MAT_DIALOG_SCROLL_STRATEGY_FACTORY(overlay: Overlay): () => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 
 /** @docs-private */
 export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => ScrollStrategy {
+  () => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 
@@ -72,6 +72,7 @@ export class MatDialog implements OnDestroy {
   private readonly _afterAllClosedAtThisLevel = new Subject<void>();
   private readonly _afterOpenedAtThisLevel = new Subject<MatDialogRef<any>>();
   private _ariaHiddenElements = new Map<Element, string|null>();
+  private _scrollStrategy: () => ScrollStrategy;
 
   /** Keeps track of the currently-open dialogs. */
   get openDialogs(): MatDialogRef<any>[] {
@@ -92,7 +93,7 @@ export class MatDialog implements OnDestroy {
     return this.afterOpened;
   }
 
-  get _afterAllClosed() {
+  get _afterAllClosed(): Subject<void> {
     const parent = this._parentDialog;
     return parent ? parent._afterAllClosed : this._afterAllClosedAtThisLevel;
   }
@@ -109,10 +110,12 @@ export class MatDialog implements OnDestroy {
       private _overlay: Overlay,
       private _injector: Injector,
       @Optional() private _location: Location,
-      @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions,
-      @Inject(MAT_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
+      @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions: MatDialogConfig,
+      @Inject(MAT_DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
       @Optional() @SkipSelf() private _parentDialog: MatDialog,
-      private _overlayContainer: OverlayContainer) {}
+      private _overlayContainer: OverlayContainer) {
+    this._scrollStrategy = scrollStrategy;
+  }
 
   /**
    * Opens a modal dialog containing the given component.

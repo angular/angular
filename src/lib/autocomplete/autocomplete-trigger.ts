@@ -120,6 +120,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _portal: TemplatePortal;
   private _componentDestroyed = false;
   private _autocompleteDisabled = false;
+  private _scrollStrategy: () => ScrollStrategy;
 
   /** Old value of the native input. Used to work around issues with the `input` event on IE. */
   private _previousValue: string | number | null;
@@ -193,7 +194,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               private _viewContainerRef: ViewContainerRef,
               private _zone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
+              @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
               @Optional() private _dir: Directionality,
               @Optional() @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any,
@@ -205,6 +206,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         window.addEventListener('blur', this._windowBlurHandler);
       });
     }
+
+    this._scrollStrategy = scrollStrategy;
   }
 
   ngOnDestroy() {

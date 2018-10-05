@@ -23,7 +23,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {animationFrameScheduler, Observable, Subject} from 'rxjs';
+import {animationFrameScheduler, Observable, Subject, Observer} from 'rxjs';
 import {auditTime, startWith, takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 import {CdkScrollable, ExtendedScrollToOptions} from './scrollable';
@@ -66,9 +66,10 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   // depending on how the strategy calculates the scrolled index, it may come at a cost to
   // performance.
   /** Emits when the index of the first element visible in the viewport changes. */
-  @Output() scrolledIndexChange: Observable<number> = Observable.create(observer =>
-      this._scrollStrategy.scrolledIndexChange.subscribe(index =>
-          Promise.resolve().then(() => this.ngZone.run(() => observer.next(index)))));
+  @Output() scrolledIndexChange: Observable<number> =
+      Observable.create((observer: Observer<number>) =>
+        this._scrollStrategy.scrolledIndexChange.subscribe(index =>
+            Promise.resolve().then(() => this.ngZone.run(() => observer.next(index)))));
 
   /** The element that wraps the rendered content. */
   @ViewChild('contentWrapper') _contentWrapper: ElementRef<HTMLElement>;

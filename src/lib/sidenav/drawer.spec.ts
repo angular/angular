@@ -99,9 +99,10 @@ describe('MatDrawer', () => {
     it('should resolve the open method promise with the new state of the drawer', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
-      const drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      const drawer: MatDrawer =
+          fixture.debugElement.query(By.directive(MatDrawer)).componentInstance;
 
-      drawer.componentInstance.open().then(result => expect(result).toBe('open'));
+      drawer.open().then(result => expect(result).toBe('open'));
       fixture.detectChanges();
       tick();
       fixture.detectChanges();
@@ -111,13 +112,14 @@ describe('MatDrawer', () => {
       const fixture = TestBed.createComponent(BasicTestApp);
       fixture.detectChanges();
       const drawer = fixture.debugElement.query(By.directive(MatDrawer));
+      const drawerInstance: MatDrawer = drawer.componentInstance;
 
-      drawer.componentInstance.open();
+      drawerInstance.open();
       fixture.detectChanges();
       flush();
       fixture.detectChanges();
 
-      drawer.componentInstance.close().then(result => expect(result).toBe('close'));
+      drawerInstance.close().then(result => expect(result).toBe('close'));
       fixture.detectChanges();
       flush();
       fixture.detectChanges();

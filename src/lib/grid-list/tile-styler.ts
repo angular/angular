@@ -138,7 +138,7 @@ export abstract class TileStyler {
    * @docs-private
    */
   abstract setRowStyles(tile: MatGridTile, rowIndex: number, percentWidth: number,
-                        gutterWidth: number);
+                        gutterWidth: number): void;
 
   /**
    * Calculates the computed height and returns the correct style property to set.
@@ -152,7 +152,7 @@ export abstract class TileStyler {
    * @param list Grid list that the styler was attached to.
    * @docs-private
    */
-  abstract reset(list: MatGridList);
+  abstract reset(list: MatGridList): void;
 }
 
 

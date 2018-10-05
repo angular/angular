@@ -88,10 +88,10 @@ export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterV
 
     // Check if there are any other DOM nodes that can display content but aren't inside of
     // a <mat-toolbar-row> element.
-    const isCombinedUsage = [].slice.call(this._elementRef.nativeElement.childNodes)
+    const isCombinedUsage = Array.from<HTMLElement>(this._elementRef.nativeElement.childNodes)
       .filter(node => !(node.classList && node.classList.contains('mat-toolbar-row')))
       .filter(node => node.nodeType !== (this._document ? this._document.COMMENT_NODE : 8))
-      .some(node => node.textContent.trim());
+      .some(node => !!(node.textContent && node.textContent.trim()));
 
     if (isCombinedUsage) {
       throwToolbarMixedModesError();

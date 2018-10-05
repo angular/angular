@@ -57,7 +57,7 @@ describe('dragging utilities', () => {
     });
 
     it('should not do anything if the source array is empty', () => {
-      const a = [];
+      const a: number[] = [];
       const b = [3, 4, 5];
 
       transferArrayItem(a, b, 0, 0);

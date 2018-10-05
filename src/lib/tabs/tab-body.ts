@@ -161,7 +161,7 @@ export class MatTabBody implements OnInit, OnDestroy {
               changeDetectorRef?: ChangeDetectorRef) {
 
     if (this._dir && changeDetectorRef) {
-      this._dirChangeSubscription = this._dir.change.subscribe(dir => {
+      this._dirChangeSubscription = this._dir.change.subscribe((dir: Direction) => {
         this._computePositionAnimationState(dir);
         changeDetectorRef.markForCheck();
       });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
-import {Component, ViewChild, TrackByFunction} from '@angular/core';
+import {Component, ViewChild, TrackByFunction, Type} from '@angular/core';
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
@@ -28,7 +28,7 @@ describe('CdkTree', () => {
   let treeElement: HTMLElement;
   let tree: CdkTree<TestData>;
 
-  function configureCdkTreeTestingModule(declarations) {
+  function configureCdkTreeTestingModule(declarations: Type<any>[]) {
     TestBed.configureTestingModule({
       imports: [CdkTreeModule],
       declarations: declarations,

@@ -17,7 +17,7 @@ describe('GestureConfig', () => {
     const fixture = TestBed.createComponent(ButtonWithLongpressHander);
     fixture.detectChanges();
 
-    expect(window['Hammer']).toHaveBeenCalled();
+    expect((window as any).Hammer).toHaveBeenCalled();
   });
 
   it('should be able to pass options to HammerJS', () => {
@@ -38,7 +38,7 @@ describe('GestureConfig', () => {
     fixture.detectChanges();
 
     const button = fixture.debugElement.nativeElement.querySelector('button');
-    const firstCallArgs = window['Hammer'].calls.first().args;
+    const firstCallArgs = (window as any).Hammer.calls.first().args;
 
     expect(firstCallArgs[0]).toBe(button);
     expect(firstCallArgs[1].cssProps.touchAction).toBe('auto');

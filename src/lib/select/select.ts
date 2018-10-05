@@ -21,12 +21,7 @@ import {
   SPACE,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {
-  CdkConnectedOverlay,
-  Overlay,
-  RepositionScrollStrategy,
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
+import {CdkConnectedOverlay, Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
@@ -141,7 +136,7 @@ export const MAT_SELECT_SCROLL_STRATEGY =
 
 /** @docs-private */
 export function MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => RepositionScrollStrategy {
+    () => ScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
 
@@ -230,6 +225,8 @@ export class MatSelectTrigger {}
 export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnChanges,
     OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex,
     MatFormFieldControl<any>, CanUpdateErrorState, CanDisableRipple {
+  private _scrollStrategyFactory: () => ScrollStrategy;
+
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -285,7 +282,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   _panelDoneAnimatingStream = new Subject<string>();
 
   /** Strategy that will be used to handle scrolling while the select panel is open. */
-  _scrollStrategy = this._scrollStrategyFactory();
+  _scrollStrategy: ScrollStrategy;
 
   /**
    * The y-offset of the overlay panel in relation to the trigger's top start corner.
@@ -487,7 +484,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     @Optional() private _parentFormField: MatFormField,
     @Self() @Optional() public ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
-    @Inject(MAT_SELECT_SCROLL_STRATEGY) private _scrollStrategyFactory) {
+    @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any) {
     super(elementRef, _defaultErrorStateMatcher, _parentForm,
           _parentFormGroup, ngControl);
 
@@ -497,6 +494,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       this.ngControl.valueAccessor = this;
     }
 
+    this._scrollStrategyFactory = scrollStrategyFactory;
+    this._scrollStrategy = this._scrollStrategyFactory();
     this.tabIndex = parseInt(tabIndex) || 0;
 
     // Force setter to be called in case id was not specified.
@@ -572,7 +571,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._triggerRect = this.trigger.nativeElement.getBoundingClientRect();
     // Note: The computed font-size will be a string pixel value (e.g. "16px").
     // `parseInt` ignores the trailing 'px' and converts this to a number.
-    this._triggerFontSize = parseInt(getComputedStyle(this.trigger.nativeElement)['font-size']);
+    this._triggerFontSize = parseInt(getComputedStyle(this.trigger.nativeElement).fontSize || '0');
 
     this._panelOpen = true;
     this._keyManager.withHorizontalOrientation(null);

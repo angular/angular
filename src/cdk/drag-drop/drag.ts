@@ -28,7 +28,7 @@ import {
   SkipSelf,
   ViewContainerRef,
 } from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject, Subscription, Observer} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
 import {
@@ -206,15 +206,16 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
    * Emits as the user is dragging the item. Use with caution,
    * because this event will fire for every pixel that the user has dragged.
    */
-  @Output('cdkDragMoved') moved: Observable<CdkDragMove<T>> = Observable.create(observer => {
-    const subscription = this._moveEvents.subscribe(observer);
-    this._moveEventSubscriptions++;
+  @Output('cdkDragMoved') moved: Observable<CdkDragMove<T>> =
+      Observable.create((observer: Observer<CdkDragMove<T>>) => {
+        const subscription = this._moveEvents.subscribe(observer);
+        this._moveEventSubscriptions++;
 
-    return () => {
-      subscription.unsubscribe();
-      this._moveEventSubscriptions--;
-    };
-  });
+        return () => {
+          subscription.unsubscribe();
+          this._moveEventSubscriptions--;
+        };
+      });
 
   constructor(
     /** Element that the draggable is attached to. */
@@ -470,7 +471,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
    * Updates the item's position in its drop container, or moves it
    * into a new one, depending on its current drag position.
    */
-  private _updateActiveDropContainer({x, y}) {
+  private _updateActiveDropContainer({x, y}: Point) {
     // Drop container that draggable has been moved into.
     let newContainer = this.dropContainer._getSiblingContainerFromPosition(this, x, y);
 

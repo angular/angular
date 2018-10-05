@@ -139,6 +139,8 @@ export class MatDatepickerContent<D> extends _MatDatepickerContentMixinBase
   encapsulation: ViewEncapsulation.None,
 })
 export class MatDatepicker<D> implements OnDestroy, CanColor {
+  private _scrollStrategy: () => ScrollStrategy;
+
   /** An input indicating the type of the custom header component for the calendar, if set. */
   @Input() calendarHeaderComponent: ComponentType<any>;
 
@@ -276,13 +278,15 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
               private _overlay: Overlay,
               private _ngZone: NgZone,
               private _viewContainerRef: ViewContainerRef,
-              @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) private _scrollStrategy,
+              @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) scrollStrategy: any,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() private _dir: Directionality,
               @Optional() @Inject(DOCUMENT) private _document: any) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
+
+    this._scrollStrategy = scrollStrategy;
   }
 
   ngOnDestroy() {

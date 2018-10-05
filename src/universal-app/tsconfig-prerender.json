@@ -7,6 +7,7 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitAny": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": ".",

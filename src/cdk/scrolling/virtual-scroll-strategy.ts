@@ -31,16 +31,16 @@ export interface VirtualScrollStrategy {
   detach(): void;
 
   /** Called when the viewport is scrolled (debounced using requestAnimationFrame). */
-  onContentScrolled();
+  onContentScrolled(): void;
 
   /** Called when the length of the data changes. */
-  onDataLengthChanged();
+  onDataLengthChanged(): void;
 
   /** Called when the range of items rendered in the DOM has changed. */
-  onContentRendered();
+  onContentRendered(): void;
 
   /** Called when the offset of the rendered items changed. */
-  onRenderedOffsetChanged();
+  onRenderedOffsetChanged(): void;
 
   /**
    * Scroll to the offset for the given index.

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FlatTreeControl, NestedTreeControl, TreeControl} from '@angular/cdk/tree';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {
@@ -25,7 +25,7 @@ describe('MatTree', () => {
   let treeElement: HTMLElement;
   let underlyingDataSource: FakeDataSource;
 
-  function configureMatTreeTestingModule(declarations) {
+  function configureMatTreeTestingModule(declarations: Type<any>[]) {
     TestBed.configureTestingModule({
       imports: [MatTreeModule],
       declarations: declarations,

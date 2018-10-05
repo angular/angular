@@ -14,7 +14,8 @@ import {
   Injector,
   Inject,
   ComponentRef,
-  OnDestroy
+  OnDestroy,
+  Type
 } from '@angular/core';
 import {ComponentPortal, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {of as observableOf, Observable, Subject, defer} from 'rxjs';
@@ -28,6 +29,7 @@ import {
   Overlay,
   OverlayRef,
   OverlayConfig,
+  ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {startWith} from 'rxjs/operators';
 
@@ -45,6 +47,8 @@ import {
  */
 @Injectable()
 export class Dialog implements OnDestroy {
+  private _scrollStrategy: () => ScrollStrategy;
+
   /** Stream that emits when all dialogs are closed. */
   get _afterAllClosed(): Observable<void> {
     return this._parentDialog ? this._parentDialog.afterAllClosed : this._afterAllClosedBase;
@@ -68,8 +72,10 @@ export class Dialog implements OnDestroy {
   constructor(
       private overlay: Overlay,
       private injector: Injector,
-      @Inject(DIALOG_REF) private dialogRefConstructor,
-      @Inject(DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
+      @Inject(DIALOG_REF) private dialogRefConstructor: Type<DialogRef<any>>,
+      // TODO(crisbeto): the `any` here can be replaced
+      // with the proper type once we start using Ivy.
+      @Inject(DIALOG_SCROLL_STRATEGY) scrollStrategy: any,
       @Optional() @SkipSelf() private _parentDialog: Dialog,
       @Optional() location: Location) {
 
@@ -79,6 +85,8 @@ export class Dialog implements OnDestroy {
     if (!_parentDialog && location) {
       location.subscribe(() => this.closeAll());
     }
+
+    this._scrollStrategy = scrollStrategy;
   }
 
   /** Gets an open dialog by id. */

@@ -166,7 +166,7 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
   /** Sets style on the main grid-list element, given the style name and value. */
   _setListStyle(style: [string, string | null] | null): void {
     if (style) {
-      this._element.nativeElement.style[style[0]] = style[1];
+      (this._element.nativeElement.style as any)[style[0]] = style[1];
     }
   }
 }

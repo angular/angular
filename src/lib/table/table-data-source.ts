@@ -108,7 +108,7 @@ export class MatTableDataSource<T> extends DataSource<T> {
    */
   sortingDataAccessor: ((data: T, sortHeaderId: string) => string|number) =
       (data: T, sortHeaderId: string): string|number => {
-    const value: any = data[sortHeaderId];
+    const value = (data as {[key: string]: any})[sortHeaderId];
 
     if (_isNumberValue(value)) {
       const numberValue = Number(value);
@@ -173,7 +173,8 @@ export class MatTableDataSource<T> extends DataSource<T> {
    */
   filterPredicate: ((data: T, filter: string) => boolean) = (data: T, filter: string): boolean => {
     // Transform the data into a lowercase string of all property values.
-    const accumulator = (currentTerm, key) => currentTerm + data[key];
+    const accumulator =
+        (currentTerm: string, key: string) => currentTerm + (data as {[key: string]: any})[key];
     const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
 
     // Transform the filter by converting it to lowercase and removing whitespace.

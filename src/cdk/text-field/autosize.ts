@@ -90,7 +90,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
         `${this.minRows * this._cachedLineHeight}px` : null;
 
     if (minHeight)  {
-      this._setTextareaStyle('minHeight', minHeight);
+      this._textareaElement.style.minHeight = minHeight;
     }
   }
 
@@ -100,7 +100,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
         `${this.maxRows * this._cachedLineHeight}px` : null;
 
     if (maxHeight) {
-      this._setTextareaStyle('maxHeight', maxHeight);
+      this._textareaElement.style.maxHeight = maxHeight;
     }
   }
 
@@ -122,11 +122,6 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
-  }
-
-  /** Sets a style property on the textarea element. */
-  private _setTextareaStyle(property: string, value: string): void {
-    this._textareaElement.style[property] = value;
   }
 
   /**

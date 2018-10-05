@@ -16,7 +16,7 @@ import {
   validateHorizontalPosition,
   validateVerticalPosition,
 } from './connected-position';
-import {Observable, Subscription, Subject} from 'rxjs';
+import {Observable, Subscription, Subject, Observer} from 'rxjs';
 import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
@@ -122,15 +122,16 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _previousPushAmount: {x: number, y: number} | null;
 
   /** Observable sequence of position changes. */
-  positionChanges: Observable<ConnectedOverlayPositionChange> = Observable.create(observer => {
-    const subscription = this._positionChanges.subscribe(observer);
-    this._positionChangeSubscriptions++;
+  positionChanges: Observable<ConnectedOverlayPositionChange> =
+      Observable.create((observer: Observer<ConnectedOverlayPositionChange>) => {
+        const subscription = this._positionChanges.subscribe(observer);
+        this._positionChangeSubscriptions++;
 
-    return () => {
-      subscription.unsubscribe();
-      this._positionChangeSubscriptions--;
-    };
-  });
+        return () => {
+          subscription.unsubscribe();
+          this._positionChangeSubscriptions--;
+        };
+      });
 
   /** Ordered list of preferred positions, from most to least desirable. */
   get positions() {
@@ -705,7 +706,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _calculateBoundingBoxRect(origin: Point, position: ConnectedPosition): BoundingBoxRect {
     const viewport = this._viewportRect;
     const isRtl = this._isRtl();
-    let height, top, bottom;
+    let height: number, top: number, bottom: number;
 
     if (position.overlayY === 'top') {
       // Overlay is opening "downward" and thus is bound by the bottom viewport edge.
@@ -745,7 +746,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
         (position.overlayX === 'end' && !isRtl) ||
         (position.overlayX === 'start' && isRtl);
 
-    let width, left, right;
+    let width: number, left: number, right: number;
 
     if (isBoundedByLeftViewportEdge) {
       right = viewport.right - origin.x + this._viewportMargin;
@@ -770,7 +771,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       }
     }
 
-    return {top, left, bottom, right, width, height};
+    return {top: top!, left: left!, bottom: bottom!, right: right!, width, height};
   }
 
   /**

@@ -15,7 +15,7 @@ import {
   Optional,
   SkipSelf,
 } from '@angular/core';
-import {fromEvent, of as observableOf, Subject, Subscription, Observable} from 'rxjs';
+import {fromEvent, of as observableOf, Subject, Subscription, Observable, Observer} from 'rxjs';
 import {auditTime, filter} from 'rxjs/operators';
 import {CdkScrollable} from './scrollable';
 
@@ -82,7 +82,11 @@ export class ScrollDispatcher implements OnDestroy {
    * to run the callback using `NgZone.run`.
    */
   scrolled(auditTimeInMs: number = DEFAULT_SCROLL_TIME): Observable<CdkScrollable|void> {
-    return this._platform.isBrowser ? Observable.create(observer => {
+    if (!this._platform.isBrowser) {
+      return observableOf<void>();
+    }
+
+    return Observable.create((observer: Observer<CdkScrollable|void>) => {
       if (!this._globalSubscription) {
         this._addGlobalListener();
       }
@@ -103,7 +107,7 @@ export class ScrollDispatcher implements OnDestroy {
           this._removeGlobalListener();
         }
       };
-    }) : observableOf<void>();
+    });
   }
 
   ngOnDestroy() {

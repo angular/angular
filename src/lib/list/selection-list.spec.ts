@@ -975,7 +975,7 @@ describe('MatSelectionList with forms', () => {
       const fixture = TestBed.createComponent(SelectionListWithCustomComparator);
       const testComponent = fixture.componentInstance;
 
-      testComponent.compareWith = jasmine.createSpy('comparator', (o1, o2) => {
+      testComponent.compareWith = jasmine.createSpy('comparator', (o1: any, o2: any) => {
         return o1 && o2 && o1.id === o2.id;
       }).and.callThrough();
 

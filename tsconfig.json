@@ -9,6 +9,7 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitAny": true,
     "skipLibCheck": true,
     "target": "es2015",
     "lib": ["es5", "es2015", "dom"],

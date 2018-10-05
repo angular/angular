@@ -63,7 +63,8 @@ export class MatCommonModule {
 
   /** Whether the code is running in tests. */
   private _isTestEnv() {
-    return this._window && (this._window['__karma__'] || this._window['jasmine']);
+    const window = this._window as any;
+    return window && (window.__karma__ || window.jasmine);
   }
 
   private _checkDoctypeIsDefined(): void {
@@ -109,7 +110,7 @@ export class MatCommonModule {
       return;
     }
 
-    if (this._areChecksEnabled() && !this._window['Hammer'] && !this._hammerLoader) {
+    if (this._areChecksEnabled() && !(this._window as any)['Hammer'] && !this._hammerLoader) {
       console.warn(
         'Could not find HammerJS. Certain Angular Material components may not work correctly.');
     }

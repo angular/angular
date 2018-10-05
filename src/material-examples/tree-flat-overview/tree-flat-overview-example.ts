@@ -91,7 +91,7 @@ export class FileDatabase {
    * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
    * The return value is the list of `FileNode`.
    */
-  buildFileTree(obj: object, level: number): FileNode[] {
+  buildFileTree(obj: {[key: string]: any}, level: number): FileNode[] {
     return Object.keys(obj).reduce<FileNode[]>((accumulator, key) => {
       const value = obj[key];
       const node = new FileNode();

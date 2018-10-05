@@ -58,7 +58,7 @@ export class MatGridTile {
    * "Changed after checked" errors that would occur with HostBinding.
    */
   _setStyle(property: string, value: any): void {
-    this._element.nativeElement.style[property] = value;
+    (this._element.nativeElement.style as any)[property] = value;
   }
 }
 

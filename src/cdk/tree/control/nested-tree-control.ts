@@ -32,7 +32,8 @@ export class NestedTreeControl<T> extends BaseTreeControl<T> {
 
   /** Gets a list of descendant dataNodes of a subtree rooted at given data node recursively. */
   getDescendants(dataNode: T): T[] {
-    const descendants = [];
+    const descendants: T[] = [];
+
     this._getDescendants(descendants, dataNode);
     // Remove the node itself
     return descendants.splice(1);

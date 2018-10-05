@@ -66,12 +66,10 @@ describe('CdkAccordion', () => {
 
 @Component({template: `
   <cdk-accordion [multi]="multi">
-    <cdk-accordion-item #item1></cdk-accordion-item>
-    <cdk-accordion-item #item2></cdk-accordion-item>
+    <cdk-accordion-item></cdk-accordion-item>
+    <cdk-accordion-item></cdk-accordion-item>
   </cdk-accordion>`})
 class SetOfItems {
-  @ViewChild('item1') item1;
-  @ViewChild('item2') item2;
   multi: boolean = false;
 }
 

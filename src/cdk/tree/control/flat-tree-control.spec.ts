@@ -93,8 +93,7 @@ describe('CdkFlatTreeControl', () => {
       const numChildren = 4;
       const numGrandChildren = 2;
       const nodes = generateData(numNodes, numChildren, numGrandChildren);
-
-      let data = [];
+      const data: TestData[] = [];
       flatten(nodes, data);
       treeControl.dataNodes = data;
 
@@ -122,7 +121,7 @@ describe('CdkFlatTreeControl', () => {
       const numChildren = 4;
       const numGrandChildren = 2;
       const nodes = generateData(numNodes, numChildren, numGrandChildren);
-      let data = [];
+      const data: TestData[] = [];
       flatten(nodes, data);
       treeControl.dataNodes = data;
 

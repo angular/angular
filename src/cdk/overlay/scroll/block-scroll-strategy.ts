@@ -11,10 +11,17 @@ import {ViewportRuler} from '@angular/cdk/scrolling';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
 
 /**
+ * Extended `CSSStyleDeclaration` that includes `scrollBehavior` which isn't part of the
+ * built-in TS typings. Once it is, this declaration can be removed safely.
+ * @docs-private
+ */
+type ScrollBehaviorCSSStyleDeclaration = CSSStyleDeclaration & {scrollBehavior: string};
+
+/**
  * Strategy that will prevent the user from scrolling while the overlay is visible.
  */
 export class BlockScrollStrategy implements ScrollStrategy {
-  private _previousHTMLStyles = { top: '', left: '' };
+  private _previousHTMLStyles = {top: '', left: ''};
   private _previousScrollPosition: { top: number, left: number };
   private _isEnabled = false;
   private _document: Document;
@@ -51,23 +58,25 @@ export class BlockScrollStrategy implements ScrollStrategy {
     if (this._isEnabled) {
       const html = this._document.documentElement!;
       const body = this._document.body!;
-      const previousHtmlScrollBehavior = html.style['scrollBehavior'] || '';
-      const previousBodyScrollBehavior = body.style['scrollBehavior'] || '';
+      const htmlStyle = html.style as ScrollBehaviorCSSStyleDeclaration;
+      const bodyStyle = body.style as ScrollBehaviorCSSStyleDeclaration;
+      const previousHtmlScrollBehavior = htmlStyle.scrollBehavior || '';
+      const previousBodyScrollBehavior = bodyStyle.scrollBehavior || '';
 
       this._isEnabled = false;
 
-      html.style.left = this._previousHTMLStyles.left;
-      html.style.top = this._previousHTMLStyles.top;
+      htmlStyle.left = this._previousHTMLStyles.left;
+      htmlStyle.top = this._previousHTMLStyles.top;
       html.classList.remove('cdk-global-scrollblock');
 
       // Disable user-defined smooth scrolling temporarily while we restore the scroll position.
       // See https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
-      html.style['scrollBehavior'] = body.style['scrollBehavior'] = 'auto';
+      htmlStyle.scrollBehavior = bodyStyle.scrollBehavior = 'auto';
 
       window.scroll(this._previousScrollPosition.left, this._previousScrollPosition.top);
 
-      html.style['scrollBehavior'] = previousHtmlScrollBehavior;
-      body.style['scrollBehavior'] = previousBodyScrollBehavior;
+      htmlStyle.scrollBehavior = previousHtmlScrollBehavior;
+      bodyStyle.scrollBehavior = previousBodyScrollBehavior;
     }
   }
 

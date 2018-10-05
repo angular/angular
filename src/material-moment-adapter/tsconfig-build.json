@@ -10,6 +10,7 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitAny": true,
     "importHelpers": true,
     "newLine": "lf",
     "module": "es2015",

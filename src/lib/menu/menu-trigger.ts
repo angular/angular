@@ -15,8 +15,8 @@ import {
   Overlay,
   OverlayConfig,
   OverlayRef,
-  ScrollStrategy,
   VerticalConnectionPos,
+  ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {
@@ -83,6 +83,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _menuOpen: boolean = false;
   private _closeSubscription = Subscription.EMPTY;
   private _hoverSubscription = Subscription.EMPTY;
+  private _scrollStrategy: () => ScrollStrategy;
 
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
@@ -132,7 +133,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   constructor(private _overlay: Overlay,
               private _element: ElementRef<HTMLElement>,
               private _viewContainerRef: ViewContainerRef,
-              @Inject(MAT_MENU_SCROLL_STRATEGY) private _scrollStrategy,
+              @Inject(MAT_MENU_SCROLL_STRATEGY) scrollStrategy: any,
               @Optional() private _parentMenu: MatMenu,
               @Optional() @Self() private _menuItemInstance: MatMenuItem,
               @Optional() private _dir: Directionality,
@@ -143,12 +144,14 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     if (_menuItemInstance) {
       _menuItemInstance._triggersSubmenu = this.triggersSubmenu();
     }
+
+    this._scrollStrategy = scrollStrategy;
   }
 
   ngAfterContentInit() {
     this._checkMenu();
 
-    this.menu.close.subscribe(reason => {
+    this.menu.close.asObservable().subscribe(reason => {
       this._destroyMenu();
 
       // If a click closed the menu, we should close the entire chain of nested menus.

@@ -7,7 +7,11 @@
  */
 
 import {InjectionToken} from '@angular/core';
-import {ComponentType, Overlay, ScrollStrategy, BlockScrollStrategy} from '@angular/cdk/overlay';
+import {
+  ComponentType,
+  Overlay,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
 import {DialogRef} from './dialog-ref';
 import {CdkDialogContainer} from './dialog-container';
 import {DialogConfig} from './dialog-config';
@@ -31,7 +35,7 @@ export const DIALOG_CONTAINER =
 
 /** @docs-private */
 export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
-    () => BlockScrollStrategy {
+    () => ScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 

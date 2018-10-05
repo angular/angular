@@ -708,6 +708,7 @@ describe('CdkTable', () => {
 
   describe('with sticky positioning', () => {
     interface PositionDirections {
+      [key: string]: string | undefined;
       top?: string;
       bottom?: string;
       left?: string;
@@ -731,21 +732,23 @@ describe('CdkTable', () => {
       expect(element.style.zIndex).toBe(zIndex, `Expected zIndex to be ${zIndex}`);
 
       ['top', 'bottom', 'left', 'right'].forEach(d => {
-        if (!directions[d]) {
+        const directionValue = directions[d];
+
+        if (!directionValue) {
           // If no expected position for this direction, must either be unset or empty string
           expect(element.style[d] || 'unset').toBe('unset', `Expected ${d} to be unset`);
           return;
         }
 
-        const expectationMessage = `Expected direction ${d} to be ${directions[d]}`;
+        const expectationMessage = `Expected direction ${d} to be ${directionValue}`;
 
         // If the direction contains `px`, we parse the number to be able to avoid deviations
         // caused by individual browsers.
-        if (directions[d].includes('px')) {
+        if (directionValue.includes('px')) {
           expect(Math.round(parseInt(element.style[d])))
-            .toBe(Math.round(parseInt(directions[d])), expectationMessage);
+            .toBe(Math.round(parseInt(directionValue)), expectationMessage);
         } else {
-          expect(element.style[d]).toBe(directions[d], expectationMessage);
+          expect(element.style[d]).toBe(directionValue, expectationMessage);
         }
       });
     }
@@ -1095,7 +1098,7 @@ describe('CdkTable', () => {
   });
 
   describe('with trackBy', () => {
-    function createTestComponentWithTrackyByTable(trackByStrategy) {
+    function createTestComponentWithTrackyByTable(trackByStrategy: string) {
       fixture = createComponent(TrackByCdkTableApp);
 
       component = fixture.componentInstance;
@@ -1150,7 +1153,7 @@ describe('CdkTable', () => {
 
       // Change each item reference to show that the trackby is not checking the item properties.
       component.dataSource.data = component.dataSource.data
-          .map(item => { return {a: item.a, b: item.b, c: item.c}; });
+          .map((item: TestData) => ({a: item.a, b: item.b, c: item.c}));
 
       // Expect that all the rows are considered new since their references are all different
       const changedRows = getRows(tableElement);
@@ -1167,7 +1170,7 @@ describe('CdkTable', () => {
       // Change each item reference to show that the trackby is checking the item properties.
       // Otherwise this would cause them all to be removed/added.
       component.dataSource.data = component.dataSource.data
-          .map(item => { return {a: item.a, b: item.b, c: item.c}; });
+          .map((item: TestData) => ({a: item.a, b: item.b, c: item.c}));
 
       // Expect that the first and second rows were swapped and that the last row is new
       const changedRows = getRows(tableElement);
@@ -1184,7 +1187,7 @@ describe('CdkTable', () => {
       // Change each item reference to show that the trackby is checking the index.
       // Otherwise this would cause them all to be removed/added.
       component.dataSource.data = component.dataSource.data
-          .map(item => { return {a: item.a, b: item.b, c: item.c}; });
+          .map((item: TestData) => ({a: item.a, b: item.b, c: item.c}));
 
       // Expect first two to be the same since they were swapped but indicies are consistent.
       // The third element was removed and caught by the table so it was removed before another
@@ -1206,7 +1209,7 @@ describe('CdkTable', () => {
       // Change each item reference to show that the trackby is checking the index.
       // Otherwise this would cause them all to be removed/added.
       component.dataSource.data = component.dataSource.data
-          .map(item => ({a: item.a, b: item.b, c: item.c}));
+          .map((item: TestData) => ({a: item.a, b: item.b, c: item.c}));
 
       // Expect the rows were given the right implicit data even though the rows were not moved.
       fixture.detectChanges();
@@ -2043,7 +2046,7 @@ class MissingFooterRowDefCdkTableApp {
   `
 })
 class UndefinedColumnsCdkTableApp {
-  undefinedColumns;
+  undefinedColumns: string[];
   dataSource: FakeDataSource = new FakeDataSource();
 }
 
@@ -2146,7 +2149,7 @@ class OuterTableApp {
   columnsToRender =
       ['content_column_a', 'content_column_b', 'injected_column_a', 'injected_column_b'];
 
-  firstRow = i => i === 0;
+  firstRow = (i: number) => i === 0;
 }
 
 @Component({

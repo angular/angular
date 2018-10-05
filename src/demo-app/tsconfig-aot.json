@@ -9,6 +9,7 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitAny": true,
     "outDir": "../../dist/packages/demo-app",
     "rootDirs": [
       ".",

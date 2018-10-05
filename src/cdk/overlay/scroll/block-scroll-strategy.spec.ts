@@ -144,22 +144,24 @@ describe('BlockScrollStrategy', () => {
   it('should not clobber user-defined scroll-behavior', skipIOS(() => {
     const root = documentElement;
     const body = document.body;
+    const rootStyle = root.style as CSSStyleDeclaration & {scrollBehavior: string};
+    const bodyStyle = body.style as CSSStyleDeclaration & {scrollBehavior: string};
 
-    root.style['scrollBehavior'] = body.style['scrollBehavior'] = 'smooth';
+    rootStyle.scrollBehavior = bodyStyle.scrollBehavior = 'smooth';
 
     // Get the value via the style declaration in order to
     // handle browsers that don't support the property yet.
-    const initialRootValue = root.style['scrollBehavior'];
-    const initialBodyValue = root.style['scrollBehavior'];
+    const initialRootValue = rootStyle.scrollBehavior;
+    const initialBodyValue = rootStyle.scrollBehavior;
 
     overlayRef.attach(componentPortal);
     overlayRef.detach();
 
-    expect(root.style['scrollBehavior']).toBe(initialRootValue);
-    expect(body.style['scrollBehavior']).toBe(initialBodyValue);
+    expect(rootStyle.scrollBehavior).toBe(initialRootValue);
+    expect(bodyStyle.scrollBehavior).toBe(initialBodyValue);
 
     // Avoid bleeding styles into other tests.
-    root.style['scrollBehavior'] = body.style['scrollBehavior'] = '';
+    rootStyle.scrollBehavior = bodyStyle.scrollBehavior = '';
   }));
 
   /**

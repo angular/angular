@@ -99,7 +99,7 @@ describe('AutofillMonitor', () => {
     const inputEl = testComponent.input1.nativeElement;
     let animationStartCallback: Function = () => {};
     let autofillStreamEvent: AutofillEvent | null = null;
-    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    inputEl.addEventListener.and.callFake((_: string, cb: Function) => animationStartCallback = cb);
     const autofillStream = autofillMonitor.monitor(inputEl);
     autofillStream.subscribe(event => autofillStreamEvent = event);
     expect(autofillStreamEvent).toBeNull();
@@ -114,7 +114,7 @@ describe('AutofillMonitor', () => {
     const inputEl = testComponent.input1.nativeElement;
     let animationStartCallback: Function = () => {};
     let autofillStreamEvent: AutofillEvent | null = null;
-    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    inputEl.addEventListener.and.callFake((_: string, cb: Function) => animationStartCallback = cb);
     const autofillStream = autofillMonitor.monitor(inputEl);
     autofillStream.subscribe(event => autofillStreamEvent = event);
     animationStartCallback({animationName: 'cdk-text-field-autofill-start', target: inputEl});
@@ -129,7 +129,7 @@ describe('AutofillMonitor', () => {
   it('should cleanup filled class if monitoring stopped in autofilled state', () => {
     const inputEl = testComponent.input1.nativeElement;
     let animationStartCallback: Function = () => {};
-    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    inputEl.addEventListener.and.callFake((_: string, cb: Function) => animationStartCallback = cb);
     autofillMonitor.monitor(inputEl);
     animationStartCallback({animationName: 'cdk-text-field-autofill-start', target: inputEl});
     expect(inputEl.classList).toContain('cdk-text-field-autofilled');
@@ -153,7 +153,7 @@ describe('AutofillMonitor', () => {
   it('should emit on stream inside the NgZone', () => {
     const inputEl = testComponent.input1.nativeElement;
     let animationStartCallback: Function = () => {};
-    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    inputEl.addEventListener.and.callFake((_: string, cb: Function) => animationStartCallback = cb);
     const autofillStream = autofillMonitor.monitor(inputEl);
     const spy = jasmine.createSpy('autofill spy');
 
@@ -167,7 +167,7 @@ describe('AutofillMonitor', () => {
   it('should not emit on init if input is unfilled', () => {
     const inputEl = testComponent.input1.nativeElement;
     let animationStartCallback: Function = () => {};
-    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    inputEl.addEventListener.and.callFake((_: string, cb: Function) => animationStartCallback = cb);
     const autofillStream = autofillMonitor.monitor(inputEl);
     const spy = jasmine.createSpy('autofill spy');
     autofillStream.subscribe(() => spy());
