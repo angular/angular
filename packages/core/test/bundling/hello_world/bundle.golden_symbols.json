@@ -345,7 +345,13 @@
     "name": "setUpAttributes"
   },
   {
+    "name": "setUpBloom"
+  },
+  {
     "name": "stringify$2"
+  },
+  {
+    "name": "syncViewWithBlueprint"
   },
   {
     "name": "text"

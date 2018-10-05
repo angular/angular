@@ -106,8 +106,9 @@ export function getOrCreateNodeInjectorForNode(
   if (tView.firstTemplatePass) {
     // TODO(kara): Store node injector with host bindings for that node (see VIEW_DATA.md)
     tNode.injectorIndex = hostView.length;
-    tView.blueprint.push(0, 0, 0, 0, 0, 0, 0, 0, null);  // foundation for cumulative bloom
-    tView.data.push(0, 0, 0, 0, 0, 0, 0, 0, tNode);      // foundation for node bloom
+    setUpBloom(tView.data, tNode);  // foundation for node bloom
+    setUpBloom(hostView, null);     // foundation for cumulative bloom
+    setUpBloom(tView.blueprint, null);
     tView.hostBindingStartIndex += INJECTOR_SIZE;
   }
 
@@ -118,14 +119,23 @@ export function getOrCreateNodeInjectorForNode(
   const parentData = parentView[TVIEW].data as any;
   const injectorIndex = tNode.injectorIndex;
 
-  for (let i = 0; i < PARENT_INJECTOR; i++) {
-    const bloomIndex = parentIndex + i;
-    hostView[injectorIndex + i] =
-        parentLoc === -1 ? 0 : parentView[bloomIndex] | parentData[bloomIndex];
+  // If a parent injector can't be found, its location is set to -1.
+  // In that case, we don't need to set up a cumulative bloom
+  if (parentLoc !== -1) {
+    for (let i = 0; i < PARENT_INJECTOR; i++) {
+      const bloomIndex = parentIndex + i;
+      // Creates a cumulative bloom filter that merges the parent's bloom filter
+      // and its own cumulative bloom (which contains tokens for all ancestors)
+      hostView[injectorIndex + i] = parentView[bloomIndex] | parentData[bloomIndex];
+    }
   }
 
   hostView[injectorIndex + PARENT_INJECTOR] = parentLoc;
   return injectorIndex;
+}
+
+function setUpBloom(arr: any[], footer: TNode | null) {
+  arr.push(0, 0, 0, 0, 0, 0, 0, 0, footer);
 }
 
 export function getInjectorIndex(tNode: TNode, hostView: LViewData): number {
