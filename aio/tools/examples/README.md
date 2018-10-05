@@ -32,8 +32,6 @@ Currently you will find the next boilerplates:
 * systemjs - Currently in deprecation, only used in a a few examples.
 * i18n - Based on the CLI one, features a few scripts for i18n.
 * universal - Based on the cli with a extra server for universal.
-* elements - Based on the CLI, with a custom `tsconfig.json` for changing the `target`
-* testing - Based on the CLI, with extra testing styles
 
 There is also a `common` folder that contains files used in all different examples.
 
