@@ -11,6 +11,7 @@ import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTy
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
 import {sync as globSync} from 'glob';
 import * as path from 'path';
+import {NoTruncateConstTypeProcessor} from './processors/no-truncate-const-type';
 
 // Dgeni packages that the Material docs package depends on.
 const jsdocPackage = require('dgeni-packages/jsdoc');
@@ -50,6 +51,9 @@ export const apiDocsPackage = new Package('material2-api-docs', [
   nunjucksPackage,
   typescriptPackage,
 ]);
+
+// Processor that ensures that Dgeni const docs don't truncate the resolved type string.
+apiDocsPackage.processor(new NoTruncateConstTypeProcessor());
 
 // Processor that filters out duplicate exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterDuplicateExports());
