@@ -3,6 +3,7 @@ import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExpor
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {ConstExportDoc} from 'dgeni-packages/typescript/api-doc-types/ConstExportDoc';
 import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
+import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
 import {ParsedDecorator} from 'dgeni-packages/typescript/services/TsParser/getDecorators';
 import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
@@ -55,3 +56,6 @@ export interface CategorizedFunctionExportDoc
 
 /** Extended Dgeni const export document that simplifies logic for the Dgeni template. */
 export interface CategorizedConstExportDoc extends ConstExportDoc, DeprecationDoc {}
+
+/** Extended Dgeni type alias document that includes more information when rendering. */
+export interface CategorizedTypeAliasExportDoc extends TypeAliasExportDoc, DeprecationDoc {}

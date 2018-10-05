@@ -5,11 +5,20 @@
   <code>{$ alias.name $}</code>
 </h4>
 
+{%- if alias.isDeprecated -%}
+<div class="docs-api-type-alias-deprecated-marker" {$ macros.deprecationTitle(alias) $}>
+  Deprecated
+</div>
+{%- endif -%}
+
 {%- if alias.description -%}
   <p class="docs-api-type-alias-description">{$ alias.description | marked | safe $}</p>
 {%- endif -%}
 
-<p class="docs-api-type-alias-value">
-  <span class="docs-api-type-alias-value-label">Type:</span>
-  <code class="docs-api-type-alias-value">{$ alias.typeDefinition $}</code>
-</p>
+<pre class="docs-markdown-pre">
+<code class="docs-markdown-code">
+{%- highlight "typescript" -%}
+  type {$ alias.name | safe $} = {$ alias.typeDefinition | safe $};
+{%- end_highlight -%}
+</code>
+</pre>
