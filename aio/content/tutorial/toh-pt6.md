@@ -208,7 +208,7 @@ innocuous result so that the application keeps working.
 
 #### _handleError_
 
-The following `errorHandler()` will be shared by many `HeroService` methods
+The following `handleError()` will be shared by many `HeroService` methods
 so it's generalized to meet their different needs.
 
 Instead of handling the error directly, it returns an _error handler_ function to `catchError` that it 
@@ -223,7 +223,7 @@ After reporting the error to console, the handler constructs
 a user friendly message and returns a safe value to the app so it can keep working.
 
 Because each service method returns a different kind of `Observable` result,
-`errorHandler()` takes a type parameter so it can return the safe value as the type that the app expects.
+`handleError()` takes a type parameter so it can return the safe value as the type that the app expects.
 
 ### Tap into the _Observable_
 
