@@ -35,6 +35,9 @@ export const I18N_ATTR_PREFIX = 'i18n-';
 export const MEANING_SEPARATOR = '|';
 export const ID_SEPARATOR = '@@';
 
+/** Placeholder wrapper for i18n expressions **/
+export const I18N_PLACEHOLDER_SYMBOL = '�';
+
 /** Non bindable attribute name **/
 export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
@@ -69,6 +72,21 @@ export function invalid<T>(arg: o.Expression | o.Statement | t.Node): never {
 
 export function isI18NAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
+}
+
+export function wrapI18nPlaceholder(content: string | number): string {
+  return `${I18N_PLACEHOLDER_SYMBOL}${content}${I18N_PLACEHOLDER_SYMBOL}`;
+}
+
+export function assembleI18nTemplate(strings: Array<string>): string {
+  if (!strings.length) return '';
+  let acc = '';
+  const lastIdx = strings.length - 1;
+  for (let i = 0; i < lastIdx; i++) {
+    acc += `${strings[i]}${wrapI18nPlaceholder(i)}`;
+  }
+  acc += strings[lastIdx];
+  return acc;
 }
 
 export function asLiteral(value: any): o.Expression {
