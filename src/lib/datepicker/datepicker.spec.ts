@@ -1632,7 +1632,17 @@ describe('MatDatepicker', () => {
 
       expect(document.querySelector('mat-calendar-header')).toBeTruthy();
     }));
+
+    it('should find the custom element', fakeAsync(() => {
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(document.querySelector('.custom-element')).toBeTruthy();
+    }));
   });
+
 });
 
 
@@ -1885,22 +1895,21 @@ class DatepickerOpeningOnFocus {
 @Component({
   template: `
     <input [matDatepicker]="ch">
-    <mat-datepicker #ch [calendarHeaderComponent]="CustomHeaderForDatepicker"></mat-datepicker>
+    <mat-datepicker #ch [calendarHeaderComponent]="customHeaderForDatePicker"></mat-datepicker>
   `,
 })
 class DatepickerWithCustomHeader {
   @ViewChild('ch') datepicker: MatDatepicker<Date>;
+  customHeaderForDatePicker = CustomHeaderForDatepicker;
 }
 
 @Component({
   template: `
-    <div>Custom element</div>
+    <div class="custom-element">Custom element</div>
     <mat-calendar-header></mat-calendar-header>
   `,
 })
 class CustomHeaderForDatepicker {}
-
-
 
 @Component({
   template: `

@@ -25,7 +25,7 @@ import {CardDemo} from '../card/card-demo';
 import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from '../checkbox/checkbox-demo';
 import {ChipsDemo} from '../chips/chips-demo';
 import {ConnectedOverlayDemo} from '../connected-overlay/connected-overlay-demo';
-import {CustomHeader, DatepickerDemo} from '../datepicker/datepicker-demo';
+import {CustomHeader, CustomHeaderNgContent, DatepickerDemo} from '../datepicker/datepicker-demo';
 import {DemoMaterialModule} from '../demo-material-module';
 import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from '../dialog/dialog-demo';
 import {DrawerDemo} from '../drawer/drawer-demo';
@@ -92,6 +92,7 @@ import {DragAndDropDemo} from '../drag-drop/drag-drop-demo';
     ConnectedOverlayDemo,
     ContentElementDialog,
     CustomHeader,
+    CustomHeaderNgContent,
     DatepickerDemo,
     DemoApp,
     DialogDemo,
@@ -138,6 +139,7 @@ import {DragAndDropDemo} from '../drag-drop/drag-drop-demo';
   entryComponents: [
     ContentElementDialog,
     CustomHeader,
+    CustomHeaderNgContent,
     DemoApp,
     ExampleBottomSheet,
     IFrameDialog,

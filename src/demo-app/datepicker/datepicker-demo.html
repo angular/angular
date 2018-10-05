@@ -154,3 +154,13 @@
     <mat-datepicker #customHeaderPicker [calendarHeaderComponent]="customHeader"></mat-datepicker>
   </mat-form-field>
 </p>
+
+<h2>Datepicker with custom header extending the default header</h2>
+<p>
+  <mat-form-field>
+    <mat-label>Custom calendar header extending default</mat-label>
+    <input matInput [matDatepicker]="customHeaderNgContentPicker">
+    <mat-datepicker-toggle matSuffix [for]="customHeaderNgContentPicker"></mat-datepicker-toggle>
+    <mat-datepicker #customHeaderNgContentPicker [calendarHeaderComponent]="customHeaderNgContent"></mat-datepicker>
+  </mat-form-field>
+</p>

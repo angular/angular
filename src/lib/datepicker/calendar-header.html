@@ -10,6 +10,8 @@
 
     <div class="mat-calendar-spacer"></div>
 
+    <ng-content></ng-content>
+
     <button mat-icon-button type="button" class="mat-calendar-previous-button"
             [disabled]="!previousEnabled()" (click)="previousClicked()"
             [attr.aria-label]="prevButtonLabel">
