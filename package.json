@@ -76,7 +76,7 @@
     "codelyzer": "^4.3.0",
     "dgeni": "^0.4.10",
     "dgeni-packages": "^0.26.9",
-    "firebase": "^4.0.0",
+    "firebase": "^5.5.2",
     "firebase-admin": "^5.0.0",
     "firebase-tools": "^4.1.0",
     "fs-extra": "^3.0.1",

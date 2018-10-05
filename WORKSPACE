@@ -33,15 +33,21 @@ sass_repositories()
 
 # NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
 # your npm dependencies. You must still run the package manager.
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "npm_install")
-node_repositories()
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
+
+node_repositories(
+  # For deterministic builds, specify explicit NodeJS and Yarn versions. Keep the Yarn version
+  # in sync with the version of Travis.
+  node_version = "10.10.0",
+  yarn_version = "1.9.4",
+)
 
 # Use Bazel managed node modules. See more below: 
 # https://github.com/bazelbuild/rules_nodejs#bazel-managed-vs-self-managed-dependencies
-npm_install(
+yarn_install(
   name = "npm",
   package_json = "//:package.json",
-  package_lock_json = "//:package-lock.json",
+  yarn_lock = "//:yarn.lock",
 )
 
 # Setup TypeScript Bazel workspace

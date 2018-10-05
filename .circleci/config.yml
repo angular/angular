@@ -8,7 +8,7 @@
 # http://yaml-online-parser.appspot.com/
 
 var_1: &docker_image angular/ngcontainer:0.6.0
-var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "package-lock.json" }}-0.6.0
+var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.6.0
 
 # Define common ENV vars
 var_3: &define_env_vars

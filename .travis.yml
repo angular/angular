@@ -41,19 +41,22 @@ jobs:
       if: type = cron
 env:
   global:
-  - LOGS_DIR=/tmp/angular-material2-build/logs
-  - SAUCE_USERNAME=angular-ci
-  - BROWSER_STACK_USERNAME=angularteam1
-  - BROWSER_STACK_ACCESS_KEY=CaXMeMHD9pr5PHg8N7Jq
-  - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
-  - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
+    # Keep Yarn version in sync with Yarn version within Bazel WORKSPACE.
+    - YARN_VERSION=1.9.4
+    - LOGS_DIR=/tmp/angular-material2-build/logs
+    - SAUCE_USERNAME=angular-ci
+    - BROWSER_STACK_USERNAME=angularteam1
+    - BROWSER_STACK_ACCESS_KEY=CaXMeMHD9pr5PHg8N7Jq
+    - BROWSER_PROVIDER_READY_FILE=/tmp/angular-material2-build/readyfile
+    - BROWSER_PROVIDER_ERROR_FILE=/tmp/angular-material2-build/errorfile
 
 before_install:
   - source ./scripts/ci/travis-env.sh
+  - source ./scripts/ci/install-yarn.sh
   - if [[ "$TRAVIS_EVENT_TYPE" == "cron" ]]; then ./scripts/install-angular-snapshot.sh --only-save; fi
 
 install:
-  - npm install
+  - yarn install --frozen-lockfile --non-interactive
 
 before_script:
   - mkdir -p $LOGS_DIR
@@ -62,5 +65,6 @@ script:
   - ./scripts/ci/travis-script.sh
 
 cache:
+  yarn: true
   directories:
     - ./node_modules/
