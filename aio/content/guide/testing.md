@@ -1237,6 +1237,8 @@ value becomes available. The test must become _asynchronous_.
 
 #### Async test with _fakeAsync()_
 
+To use `fakeAsync()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
+
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
 
 <code-example
@@ -1250,7 +1252,7 @@ Note that the `it()` function receives an argument of the following form.
 fakeAsync(() => { /* test body */ })`
 ```
 
-The `fakeAsync` function enables a linear coding style by running the test body in a special _fakeAsync test zone_.
+The `fakeAsync()` function enables a linear coding style by running the test body in a special `fakeAsync test zone`.
 The test body appears to be synchronous.
 There is no nested syntax (like a `Promise.then()`) to disrupt the flow of control.
 
@@ -1263,12 +1265,55 @@ You do have to call `tick()` to advance the (virtual) clock.
 Calling `tick()` simulates the passage of time until all pending asynchronous activities finish.
 In this case, it waits for the error handler's `setTimeout()`;
 
-The `tick` function is one of the Angular testing utilities that you import with `TestBed`.
-It's a companion to `fakeAsync` and you can only call it within a `fakeAsync` body.
+The `tick()` function accepts milliseconds as parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-tick">
+</code-example>
+
+The `tick()` function is one of the Angular testing utilities that you import with `TestBed`.
+It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()` body.
+
+#### Comparing dates inside fakeAsync()
+
+`fakeAsync()` simulates passage of time, which allows you to calculate the difference between dates inside `fakeAsync()`.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-date">
+</code-example>
+
+#### jasmine.clock with fakeAsync()
+
+Jasmine also provides a `clock` feature to mock dates. Angular automatically runs tests that are run after
+`jasmine.clock().install()` is called inside a `fakeAsync()` method until `jasmine.clock().uninstall()` is called. `fakeAsync()` is not needed and throws an error if nested.
+
+By default, this feature is disabled. To enable it, set a global flag before import `zone-testing`.
+
+If you use the Angular CLI, configure this flag in `src/test.ts`.
+
+```
+(window as any)['__zone_symbol__fakeAsyncPatchLock'] = true;
+import 'zone.js/dist/zone-testing';
+```
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-clock">
+</code-example>
+
+#### Using the RxJS scheduler inside fakeAsync()
+
+You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` or `setInterval()`, but you need to import `zone.js/dist/zone-patch-rxjs-fake-async` to patch RxJS scheduler.
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="fake-async-test-rxjs">
+</code-example>
 
 #### Support more macroTasks
 
-By default `fakeAsync` supports the following `macroTasks`.
+By default `fakeAsync()` supports the following `macroTasks`.
 
 - setTimeout
 - setInterval
@@ -1289,7 +1334,7 @@ If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macr
   </code-pane>
 </code-tabs>
 
-If you want to support such case, you need to define the `macroTask` you want to support in `beforeEach`.
+If you want to support such case, you need to define the `macroTask` you want to support in `beforeEach()`.
 For example:
 
 ```javascript
@@ -1386,6 +1431,8 @@ Then you can assert that the quote element displays the expected text.
 
 #### Async test with _async()_
 
+To use `async()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
+
 The `fakeAsync()` utility function has a few limitations.
 In particular, it won't work if the test body makes an `XHR` call.
 
@@ -1409,11 +1456,12 @@ Here's the previous `fakeAsync()` test, re-written with the `async()` utility.
 
 The `async()` utility hides some asynchronous boilerplate by arranging for the tester's code
 to run in a special _async test zone_.
-You don't have to pass Jasmine's `done()` into the test and call `done()`
-in promise or observable callbacks.
+You don't need to pass Jasmine's `done()` into the test and call `done()` because it is `undefined` in promise or observable callbacks.
 
 But the test's asynchronous nature is revealed by the call to `fixture.whenStable()`,
 which breaks the linear flow of control.
+
+When using an `intervalTimer()` such as `setInterval()` in `async()`, remember to cancel the timer with `clearInterval()` after the test, otherwise the `async()` never ends.
 
 {@a when-stable}
 
@@ -1433,18 +1481,19 @@ update the quote element with the expected text.
 
 #### Jasmine _done()_
 
-While the `async` and `fakeAsync` functions greatly
+While the `async()` and `fakeAsync()` functions greatly
 simplify Angular asynchronous testing,
 you can still fall back to the traditional technique
 and pass `it` a function that takes a
 [`done` callback](http://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support).
 
+You can't call `done()` in `async()` or `fakeAsync()` functions, because the `done parameter`
+is `undefined`.
+
 Now you are responsible for chaining promises, handling errors, and calling `done()` at the appropriate moments.
 
-Writing test functions with `done()`, is more cumbersome than `async`and `fakeAsync`.
-But it is occasionally necessary.
-For example, you can't call `async` or `fakeAsync` when testing
-code that involves the `intervalTimer()` or the RxJS `delay()` operator.
+Writing test functions with `done()`, is more cumbersome than `async()`and `fakeAsync()`.
+But it is occasionally necessary when code involves the `intervalTimer()` like `setInterval`.
 
 Here are two more versions of the previous test, written with `done()`.
 The first one subscribes to the `Observable` exposed to the template by the component's `quote` property.
@@ -2307,7 +2356,6 @@ Here are a few more `HeroDetailComponent` tests to reinforce the point.
 
 {@a compile-components}
 ### Calling _compileComponents()_
-
 <div class="alert is-helpful">
 
 You can ignore this section if you _only_ run tests with the CLI `ng test` command
@@ -2871,7 +2919,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
-      When a `fakeAsync` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),
+      When a `fakeAsync()` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),
       the test fails with a clear error message.
 
       In general, a test should end with no queued tasks.
@@ -2888,7 +2936,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
-      When a `fakeAsync` test ends with pending _micro-tasks_ such as unresolved promises,
+      When a `fakeAsync()` test ends with pending _micro-tasks_ such as unresolved promises,
       the test fails with a clear error message.
 
       In general, a test should wait for micro-tasks to finish.
