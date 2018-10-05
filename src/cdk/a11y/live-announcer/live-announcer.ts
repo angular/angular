@@ -34,6 +34,7 @@ export class LiveAnnouncer implements OnDestroy {
 
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
+      private _ngZone: NgZone,
       @Inject(DOCUMENT) _document: any) {
 
     // We inject the live element and document as `any` because the constructor signature cannot
@@ -60,11 +61,13 @@ export class LiveAnnouncer implements OnDestroy {
     // - With Chrome and IE11 with NVDA or JAWS, a repeated (identical) message won't be read a
     //   second time without clearing and then using a non-zero delay.
     // (using JAWS 17 at time of this writing).
-    return new Promise(resolve => {
-      setTimeout(() => {
-        this._liveElement.textContent = message;
-        resolve();
-      }, 100);
+    return this._ngZone.runOutsideAngular(() => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          this._liveElement.textContent = message;
+          resolve();
+        }, 100);
+      });
     });
   }
 
@@ -77,13 +80,13 @@ export class LiveAnnouncer implements OnDestroy {
   private _createLiveElement(): HTMLElement {
     const elementClass = 'cdk-live-announcer-element';
     const previousElements = this._document.getElementsByClassName(elementClass);
+    const liveEl = this._document.createElement('div');
 
     // Remove any old containers. This can happen when coming in from a server-side-rendered page.
     for (let i = 0; i < previousElements.length; i++) {
       previousElements[i].parentNode!.removeChild(previousElements[i]);
     }
 
-    const liveEl = this._document.createElement('div');
     liveEl.classList.add(elementClass);
     liveEl.classList.add('cdk-visually-hidden');
 
@@ -146,8 +149,8 @@ export class CdkAriaLive implements OnDestroy {
 
 /** @docs-private @deprecated @breaking-change 7.0.0 */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
-    parentDispatcher: LiveAnnouncer, liveElement: any, _document: any) {
-  return parentDispatcher || new LiveAnnouncer(liveElement, _document);
+    parentDispatcher: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone) {
+  return parentDispatcher || new LiveAnnouncer(liveElement, _document, ngZone);
 }
 
 
@@ -159,6 +162,7 @@ export const LIVE_ANNOUNCER_PROVIDER: Provider = {
     [new Optional(), new SkipSelf(), LiveAnnouncer],
     [new Optional(), new Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN)],
     DOCUMENT,
+    NgZone,
   ],
   useFactory: LIVE_ANNOUNCER_PROVIDER_FACTORY
 };
