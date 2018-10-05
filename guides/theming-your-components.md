@@ -1,80 +1,99 @@
-# Theming your custom components
-In order to style your own components with Angular Material's tooling, the component's styles must be defined with Sass.
+### Theming your custom component with Angular Material's theming system
+In order to style your own components with Angular Material's tooling, the component's styles must
+be defined with Sass.
 
-### Using `@mixin` to automatically apply a theme
+#### 1. Define all color and typography styles in a "theme file" for the component
+First, create a Sass mixin that accepts an Angular Material theme and outputs the color-specific
+styles for the component. An Angular Material theme definition is a Sass map.
 
-#### Why using `@mixin`
-The advantage of using a `@mixin` function is that when you change your theme, every file that uses it will be automatically updated.
-Calling the `@mixin` with a different theme argument allows multiple themes within the app or component.
-
-#### How to use `@mixin`
-We can better theme our custom components by adding a `@mixin` function to its theme file, and then call this function to apply a theme.
-
-All you need is to create a `@mixin` function in the custom-component-theme.scss
-
+For example, if building a custom carousel component:
 ```scss
-// Import all the tools needed to customize the theme and extract parts of it
+// Import library functions for theme creation.
 @import '~@angular/material/theming';
 
-// Define a mixin that accepts a theme and outputs the color styles for the component.
+// Define a mixin that accepts a theme and outputs the theme-specific styles.
 @mixin candy-carousel-theme($theme) {
-  // Extract whichever individual palettes you need from the theme.
+  // Extract the palettes you need from the theme definition.
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
-
-  // Use mat-color to extract individual colors from a palette as necessary.
+  
+  // Define any styles affected by the theme.
   .candy-carousel {
+    // Use mat-color to extract individual colors a palette.
     background-color: mat-color($primary);
     border-color: mat-color($accent, A400);
   }
 }
 ```
-Now you just have to call the `@mixin` function to apply the theme:
+
+Second, create another Sass mixin that accepts an Angular Material typography definition and outputs
+typographic styles. For example:
 
 ```scss
-// Import a pre-built theme
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-// Import your custom input theme file so you can call the custom-input-theme function
-@import 'app/candy-carousel/candy-carousel-theme.scss';
+@mixin candy-caroursel-typography($config) {
+  .candy-carousel {
+    font: {
+      family: mat-font-family($config, body-1);
+      size: mat-font-size($config, body-1);
+      weight: mat-font-weight($config, body-1);
+    }
+  }
+}
+```
 
-// Using the $theme variable from the pre-built theme you can call the theming function
+See the [typography guide](https://material.angular.io/guide/typography) for more information on
+typographic customization.
+
+#### 2. Define all remaining styles in a normal component stylesheet.
+Define all styles unaffected by the theme in a separate file referenced directly in the component's
+`styleUrl`.  This generally includes everything except for color and typography styles.
+
+
+#### 3. Include the theme mixin in your application
+Use the Sass `@include` keyword to include a component's theme mixin wherever you're already
+including Angular Material's built-in theme mixins. 
+
+```scss
+// Import library functions for theme creation.
+@import '~@angular/material/theming';
+
+// Include non-theme styles for core.
+@include mat-core();
+
+// Define your application's custom theme.
+$primary: mat-palette($mat-indigo);
+$accent:  mat-palette($mat-pink, A200, A100, A400);
+$theme: mat-light-theme($primary, $accent);
+
+// Include theme styles for Angular Material components.
+@include angular-material-theme($theme);
+
+// Include theme styles for your custom components.
 @include candy-carousel-theme($theme);
 ```
 
-For more details about the theming functions, see the comments in the
-[source](https://github.com/angular/material2/blob/master/src/lib/core/theming/_theming.scss).
 
-#### Best practices using `@mixin`
-When using `@mixin`, the theme file should only contain the definitions that are affected by the passed-in theme.
-
-All styles that are not affected by the theme should be placed in a `candy-carousel.scss` file.
-This file should contain everything that is not affected by the theme like sizes, transitions...
-
-Styles that are affected by the theme should be placed in a separated theming file as
-`_candy-carousel-theme.scss` and the file should have a `_` before the name. This file should
-contain the `@mixin` function responsible for applying the theme to the component.
-
-
-### Using colors from a palette
-You can consume the theming functions and Material palette variables from
-`@angular/material/theming`. You can use the `mat-color` function to extract a specific color
-from a palette. For example:
+#### Note: using the `mat-color` function to extract colors from a palette
+You can consume the theming functions and Material Design color palettes from
+`@angular/material/theming`. The `mat-color` Sass function extracts a specific color from a palette.
+For example:
 
 ```scss
 // Import theming functions
 @import '~@angular/material/theming';
-// Import your custom theme
-@import 'src/unicorn-app-theme.scss';
 
-// Use mat-color to extract individual colors from a palette as necessary.
-// The hue can be one of the standard values (500, A400, etc.), one of the three preconfigured
-// hues (default, lighter, darker), or any of the aforementioned prefixed with "-contrast".
-// For example a hue of "darker-contrast" gives a light color to contrast with a "darker" hue.
-// Note that quotes are needed when using a numeric hue with the "-contrast" modifier.
-// Available color palettes: https://material.io/design/color/
 .candy-carousel {
-  background-color: mat-color($candy-app-primary);
-  border-color: mat-color($candy-app-accent, A400);
-  color: mat-color($candy-app-primary, '100-contrast');
+  // Get the default hue for a palette.
+  color: mat-color($primary);
+  
+  // Get a specific hue for a palette. 
+  // See https://material.io/archive/guidelines/style/color.html#color-color-palette for hues.
+  background-color: mat-color($accent, 300);
+  
+  // Get a relative color for a hue ('lighter' or 'darker')
+  outline-color: mat-color($accent, lighter);
+
+  // Get a constrast color for a hue by adding `-contrast` to any other key.
+  border-color: mat-color($primary, '100-constrast');
 }
 ```
