@@ -40,6 +40,9 @@ case ${CI_MODE} in
   aio)
     ${thisDir}/test-aio.sh
     ;;
+  aio_local)
+    ${thisDir}/test-aio-local.sh
+    ;;
   aio_e2e)
     ${thisDir}/test-aio-e2e.sh
     ;;
