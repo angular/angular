@@ -17,7 +17,12 @@ import {
   OnInit,
   SimpleChanges,
   ViewEncapsulation,
+  Optional,
+  InjectionToken,
+  inject,
+  Inject,
 } from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatIconRegistry} from './icon-registry';
@@ -31,6 +36,53 @@ export class MatIconBase {
 export const _MatIconMixinBase: CanColorCtor & typeof MatIconBase =
     mixinColor(MatIconBase);
 
+/**
+ * Injection token used to provide the current location to `MatIcon`.
+ * Used to handle server-side rendering and to stub out during unit tests.
+ * @docs-private
+ */
+export const MAT_ICON_LOCATION = new InjectionToken<MatIconLocation>('mat-icon-location', {
+  providedIn: 'root',
+  factory: MAT_ICON_LOCATION_FACTORY
+});
+
+/**
+ * Stubbed out location for `MatIcon`.
+ * @docs-private
+ */
+export interface MatIconLocation {
+  pathname: string;
+}
+
+/** @docs-private */
+export function MAT_ICON_LOCATION_FACTORY(): MatIconLocation {
+  const _document = inject(DOCUMENT);
+  const pathname = (_document && _document.location && _document.location.pathname) || '';
+  return {pathname};
+}
+
+
+/** SVG attributes that accept a FuncIRI (e.g. `url(<something>)`). */
+const funcIriAttributes = [
+  'clip-path',
+  'color-profile',
+  'src',
+  'cursor',
+  'fill',
+  'filter',
+  'marker',
+  'marker-start',
+  'marker-mid',
+  'marker-end',
+  'mask',
+  'stroke'
+];
+
+/** Selector that can be used to find all elements that are using a `FuncIRI`. */
+const funcIriAttributeSelector = funcIriAttributes.map(attr => `[${attr}]`).join(', ');
+
+/** Regex that can be used to extract the id out of a FuncIRI. */
+const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
 
 /**
  * Component to display an icon. It can be used in the following ways:
@@ -113,7 +165,12 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
   constructor(
       elementRef: ElementRef<HTMLElement>,
       private _iconRegistry: MatIconRegistry,
-      @Attribute('aria-hidden') ariaHidden: string) {
+      @Attribute('aria-hidden') ariaHidden: string,
+      /**
+       * @deprecated `location` parameter to be made required.
+       * @breaking-change 8.0.0
+       */
+      @Optional() @Inject(MAT_ICON_LOCATION) private _location?: MatIconLocation) {
     super(elementRef);
 
     // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
@@ -192,6 +249,9 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
       styleTags[i].textContent += ' ';
     }
 
+    // Note: we do this fix here, rather than the icon registry, because the
+    // references have to point to the URL at the time that the icon was created.
+    this._prependCurrentPathToReferences(svg);
     this._elementRef.nativeElement.appendChild(svg);
   }
 
@@ -250,5 +310,33 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
    */
   private _cleanupFontValue(value: string) {
     return typeof value === 'string' ? value.trim().split(' ')[0] : value;
+  }
+
+  /**
+   * Prepends the current path to all elements that have an attribute pointing to a `FuncIRI`
+   * reference. This is required because WebKit browsers require references to be prefixed with
+   * the current path, if the page has a `base` tag.
+   */
+  private _prependCurrentPathToReferences(element: SVGElement) {
+    // @breaking-change 8.0.0 Remove this null check once `_location` parameter is required.
+    if (!this._location) {
+      return;
+    }
+
+    const elementsWithFuncIri = element.querySelectorAll(funcIriAttributeSelector);
+    const path = this._location.pathname ? this._location.pathname.split('#')[0] : '';
+
+    for (let i = 0; i < elementsWithFuncIri.length; i++) {
+      funcIriAttributes.forEach(attr => {
+        const value = elementsWithFuncIri[i].getAttribute(attr);
+        const match = value ? value.match(funcIriPattern) : null;
+
+        if (match) {
+          // Note the quotes inside the `url()`. They're important, because URLs pointing to named
+          // router outlets can contain parentheses which will break if they aren't quoted.
+          elementsWithFuncIri[i].setAttribute(attr, `url('${path}#${match[1]}')`);
+        }
+      });
+    }
   }
 }

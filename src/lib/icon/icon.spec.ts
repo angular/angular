@@ -2,7 +2,7 @@ import {inject, async, fakeAsync, tick, TestBed} from '@angular/core/testing';
 import {SafeResourceUrl, DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {Component} from '@angular/core';
-import {MatIconModule} from './index';
+import {MatIconModule, MAT_ICON_LOCATION} from './index';
 import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
 import {FAKE_SVGS} from './fake-svgs';
 import {wrappedErrorMessage} from '@angular/cdk/testing';
@@ -52,7 +52,11 @@ describe('MatIcon', () => {
         IconWithBindingAndNgIf,
         InlineIcon,
         SvgIconWithUserContent,
-      ]
+      ],
+      providers: [{
+        provide: MAT_ICON_LOCATION,
+        useValue: {pathname: '/fake-path'}
+      }]
     });
 
     TestBed.compileComponents();
@@ -580,6 +584,30 @@ describe('MatIcon', () => {
 
       tick();
     }));
+
+    it('should prepend the current path to attributes with `url()` references', fakeAsync(() => {
+      iconRegistry.addSvgIconLiteral('fido', trustHtml(`
+        <svg>
+          <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+          </filter>
+
+          <circle cx="170" cy="60" r="50" fill="green" filter="url('#blur')" />
+        </svg>
+      `));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      const circle = fixture.nativeElement.querySelector('mat-icon svg circle');
+
+      // We use a regex to match here, rather than the exact value, because different browsers
+      // return different quotes through `getAttribute`, while some even omit the quotes altogether.
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+
+      tick();
+    }));
+
   });
 
   describe('custom fonts', () => {
