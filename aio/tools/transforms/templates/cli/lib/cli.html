@@ -20,7 +20,7 @@
   <tbody>
   {% for option in arguments %}
   <tr class="cli-option">
-    <td><code>{$ option.name $}</code></td>
+    <td><code>&lt;<var>{$ option.name $}</var>&gt;</code></td>
     <td>
       {$ option.description | marked $}
       {% if option.subcommands.length -%}
