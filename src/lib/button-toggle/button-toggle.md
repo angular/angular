@@ -1,5 +1,5 @@
-`<mat-button-toggle>` are on/off toggles with the appearance of a button. These toggles can be 
-configured to behave as either radio-buttons or checkboxes. While they can be standalone, they are 
+`<mat-button-toggle>` are on/off toggles with the appearance of a button. These toggles can be
+configured to behave as either radio-buttons or checkboxes. While they can be standalone, they are
 typically part of a `mat-button-toggle-group`.
 
 
@@ -7,16 +7,24 @@ typically part of a `mat-button-toggle-group`.
 
 ### Exclusive selection vs. multiple selection
 By default, `mat-button-toggle-group` acts like a radio-button group- only one item can be selected.
-In this mode, the `value` of the `mat-button-toggle-group` will reflect the value of the selected 
-button and `ngModel` is supported. 
+In this mode, the `value` of the `mat-button-toggle-group` will reflect the value of the selected
+button and `ngModel` is supported.
 
 Adding the `multiple` attribute allows multiple items to be selected (checkbox behavior). In this
-mode the values of the the toggles are not used, the `mat-button-toggle-group` does not have a value, 
+mode the values of the the toggles are not used, the `mat-button-toggle-group` does not have a value,
 and `ngModel` is not supported.
+
+### Appearance
+By default, the appearance of `mat-button-toggle-group` and `mat-button-toggle` will follow the
+latest Material Design guidelines. If you want to, you can switch back to the appearance that was
+following the previous Material Design spec by using the `appearance` input. The `appearance` can
+be configured globally using the `MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS` injection token.
+
+<!-- example(button-toggle-appearance) -->
 
 ### Accessibility
 The button-toggles will present themselves as either checkboxes or radio-buttons based on the
-presence of the `multiple` attribute. 
+presence of the `multiple` attribute.
 
 For button toggles containing only icons, each button toggle should be given a meaningful label via
 `aria-label` or `aria-labelledby`.
