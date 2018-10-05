@@ -8,7 +8,7 @@
 import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
-import {LContext, discoverDirectiveIndices, discoverDirectives, discoverLocalRefs, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
+import {LContext, discoverDirectives, discoverLocalRefs, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
 import {NodeInjector} from './di';
 import {LElementNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
@@ -59,9 +59,9 @@ export function getComponent<T = {}>(target: {}): T|null {
  */
 export function getHostComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target);
-  const tNode = context.lViewData[TVIEW].data[context.lNodeIndex] as TNode;
+  const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TNode;
   if (tNode.flags & TNodeFlags.isComponent) {
-    const lNode = context.lViewData[context.lNodeIndex] as LElementNode;
+    const lNode = context.lViewData[context.nodeIndex] as LElementNode;
     return lNode.data ![CONTEXT] as any as T;
   }
   return null;
@@ -91,7 +91,7 @@ export function getRootComponents(target: {}): any[] {
  */
 export function getInjector(target: {}): Injector {
   const context = loadContext(target);
-  const tNode = context.lViewData[TVIEW].data[context.lNodeIndex] as TElementNode;
+  const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TElementNode;
 
   return new NodeInjector(tNode, context.lViewData);
 }
@@ -104,10 +104,7 @@ export function getDirectives(target: {}): Array<{}> {
   const context = loadContext(target) !;
 
   if (context.directives === undefined) {
-    context.directiveIndices = discoverDirectiveIndices(context.lViewData, context.lNodeIndex);
-    context.directives = context.directiveIndices ?
-        discoverDirectives(context.lViewData, context.directiveIndices) :
-        null;
+    context.directives = discoverDirectives(context.nodeIndex, context.lViewData);
   }
 
   return context.directives || [];
@@ -151,7 +148,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
   const context = loadContext(target) !;
 
   if (context.localRefs === undefined) {
-    context.localRefs = discoverLocalRefs(context.lViewData, context.lNodeIndex);
+    context.localRefs = discoverLocalRefs(context.lViewData, context.nodeIndex);
   }
 
   return context.localRefs || {};

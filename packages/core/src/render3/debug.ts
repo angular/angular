@@ -11,10 +11,11 @@ import {Renderer2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 
-import {getLElementNode} from './context_discovery';
 import * as di from './di';
 import {_getViewData} from './instructions';
-import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {TNodeFlags} from './interfaces/node';
+import {CONTEXT, LViewData, TVIEW} from './interfaces/view';
+
 
 /**
  * Adapts the DebugRendererFactory2 to create a DebugRenderer2 specific for IVY.
@@ -68,25 +69,16 @@ class Render3DebugContext implements DebugContext {
 
   // TODO(vicb): add view providers when supported
   get providerTokens(): any[] {
-    const matchedDirectives: any[] = [];
-
     // TODO(vicb): why/when
-    if (this.nodeIndex === null) {
-      return matchedDirectives;
+    const directiveDefs = this.view[TVIEW].directives;
+    if (this.nodeIndex === null || directiveDefs == null) {
+      return [];
     }
 
-    const directives = this.view[DIRECTIVES];
-
-    if (directives) {
-      const currentNode = this.view[this.nodeIndex];
-      for (let dirIndex = 0; dirIndex < directives.length; dirIndex++) {
-        const directive = directives[dirIndex];
-        if (getLElementNode(directive) === currentNode) {
-          matchedDirectives.push(directive.constructor);
-        }
-      }
-    }
-    return matchedDirectives;
+    const currentTNode = this.view[TVIEW].data[this.nodeIndex];
+    const dirStart = currentTNode >> TNodeFlags.DirectiveStartingIndexShift;
+    const dirEnd = dirStart + (currentTNode & TNodeFlags.DirectiveCountMask);
+    return directiveDefs.slice(dirStart, dirEnd);
   }
 
   get references(): {[key: string]: any} {
