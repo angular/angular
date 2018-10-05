@@ -34,7 +34,7 @@ import {
   MAT_LABEL_GLOBAL_OPTIONS,
   mixinColor,
 } from '@angular/material/core';
-import {EMPTY, fromEvent, merge} from 'rxjs';
+import {fromEvent, merge} from 'rxjs';
 import {startWith, take} from 'rxjs/operators';
 import {MatError} from './error';
 import {matFormFieldAnimations} from './form-field-animations';
@@ -154,14 +154,7 @@ export class MatFormField extends _MatFormFieldMixinBase
     this._appearance = value || (this._defaults && this._defaults.appearance) || 'legacy';
 
     if (this._appearance === 'outline' && oldValue !== value) {
-      // @breaking-change 7.0.0 Remove this check and else block once _ngZone is required.
-      if (this._ngZone) {
-        this._ngZone!.onStable.pipe(take(1)).subscribe(() => {
-          this._ngZone!.runOutsideAngular(() => this.updateOutlineGap());
-        });
-      } else {
-        Promise.resolve().then(() => this.updateOutlineGap());
-      }
+      this._updateOutlineGapOnStable();
     }
   }
   _appearance: MatFormFieldAppearance;
@@ -274,22 +267,30 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   ngAfterContentInit() {
     this._validateControlChild();
-    if (this._control.controlType) {
-      this._elementRef.nativeElement.classList
-          .add(`mat-form-field-type-${this._control.controlType}`);
+
+    const control = this._control;
+
+    if (control.controlType) {
+      this._elementRef.nativeElement.classList.add(`mat-form-field-type-${control.controlType}`);
     }
 
     // Subscribe to changes in the child control state in order to update the form field UI.
-    this._control.stateChanges.pipe(startWith<void>(null!)).subscribe(() => {
+    control.stateChanges.pipe(startWith<void>(null!)).subscribe(() => {
       this._validatePlaceholders();
       this._syncDescribedByIds();
       this._changeDetectorRef.markForCheck();
     });
 
-    // Run change detection if the value, prefix, or suffix changes.
-    const valueChanges = this._control.ngControl && this._control.ngControl.valueChanges || EMPTY;
-    merge(valueChanges, this._prefixChildren.changes, this._suffixChildren.changes)
-        .subscribe(() => this._changeDetectorRef.markForCheck());
+    // Run change detection if the value changes.
+    if (control.ngControl && control.ngControl.valueChanges) {
+      control.ngControl.valueChanges.subscribe(() => this._changeDetectorRef.markForCheck());
+    }
+
+    // Run change detection and update the outline if the suffix or prefix changes.
+    merge(this._prefixChildren.changes, this._suffixChildren.changes).subscribe(() => {
+      this._updateOutlineGapOnStable();
+      this._changeDetectorRef.markForCheck();
+    });
 
     // Re-validate when the number of hints changes.
     this._hintChildren.changes.pipe(startWith(null)).subscribe(() => {
@@ -503,5 +504,15 @@ export class MatFormField extends _MatFormFieldMixinBase
   /** Gets the start end of the rect considering the current directionality. */
   private _getStartEnd(rect: ClientRect): number {
     return this._dir && this._dir.value === 'rtl' ? rect.right : rect.left;
+  }
+
+  /** Updates the outline gap the new time the zone stabilizes. */
+  private _updateOutlineGapOnStable() {
+    // @breaking-change 7.0.0 Remove this check and else block once _ngZone is required.
+    if (this._ngZone) {
+      this._ngZone.onStable.pipe(take(1)).subscribe(() => this.updateOutlineGap());
+    } else {
+      Promise.resolve().then(() => this.updateOutlineGap());
+    }
   }
 }

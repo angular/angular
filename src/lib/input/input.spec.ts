@@ -1319,6 +1319,28 @@ describe('MatInput with appearance', () => {
     expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
   }));
 
+  it('should update the outline gap when the prefix/suffix is added or removed', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    const outlineFixture = createComponent(MatInputWithAppearanceAndLabel);
+
+    outlineFixture.componentInstance.appearance = 'outline';
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    spyOn(outlineFixture.componentInstance.formField, 'updateOutlineGap');
+
+    outlineFixture.componentInstance.showPrefix = true;
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
+  }));
+
+
 });
 
 describe('MatFormField default options', () => {
@@ -1774,13 +1796,16 @@ class MatInputWithAppearance {
 @Component({
   template: `
     <mat-form-field [appearance]="appearance">
+      <span matPrefix *ngIf="showPrefix">Somewhat long prefix</span>
       <mat-label>{{labelContent}}</mat-label>
       <input matInput>
     </mat-form-field>
   `
 })
 class MatInputWithAppearanceAndLabel {
+  @ViewChild(MatFormField) formField: MatFormField;
   appearance: MatFormFieldAppearance;
+  showPrefix: boolean;
   labelContent = 'Label';
 }
 
