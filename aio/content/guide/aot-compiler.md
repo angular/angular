@@ -1241,7 +1241,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   ### Non-null type assertion operator
 
   Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator)
-  to suppress the `Object is possibly 'undefined'` error when it is incovienent to use
+  to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use
   `*ngIf` or when some constraint in the component ensures that the expression is always
   non-null when the binding expression is interpolated.
 
@@ -1366,7 +1366,7 @@ for example, the content of annotations (such as a component's template), which 
 emits to the `.js` file but not to the `.d.ts` file.
 
 This option should be set to `true` if you are using TypeScript's `--outFile` option, because the metadata files
-are not valid for this style of TypeScript output. It is not recommeded to use `--outFile` with
+are not valid for this style of TypeScript output. It is not recommended to use `--outFile` with
 Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
 
 This option can also be set to `true` when using factory summaries because the factory summaries
@@ -1461,7 +1461,7 @@ JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
 ### *annotationsAs*
 
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
-annotations and decorators are unnaffected. Default is `static fields`.
+annotations and decorators are unaffected. Default is `static fields`.
 
 <style>
   td, th {vertical-align: top}

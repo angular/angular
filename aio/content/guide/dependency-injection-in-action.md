@@ -149,7 +149,7 @@ By default, the DI framework searches for a provider in the injector hierarchy,
 starting at the component's local injector of the component, and if necessary bubbling up 
 through the injector tree until it reaches the root injector.
 
-* The first injector configured with a provider supplies the the dependency (a service instance or value) to the constructor.  
+* The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.  
 
 * If no provider is found in the root injector, the DI framework returns null to the constructor.
 
@@ -260,7 +260,7 @@ Using a custom provider allows you to provide a concrete implementation for impl
 
 </code-example>
 
-The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overriden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
+The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
 
 ### Modify the provider search with `@Self` and `@SkipSelf`
 

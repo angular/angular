@@ -255,7 +255,7 @@ You can combine keyframes with `duration`, `delay`, and `easing` within a single
 
 ### Keyframes with a pulsation
 
-Use ketframes to create a pulse effect in your animations by defining styles at specific offset throughout the animation.
+Use keyframes to create a pulse effect in your animations by defining styles at specific offset throughout the animation.
 
 Here's an example of using keyframes to create a pulse effect:
 

@@ -936,7 +936,7 @@ setting up such mocking straightforward.
 ### Mocking philosophy
 
 Angular's HTTP testing library is designed for a pattern of testing wherein 
-the the app executes code and makes requests first.
+the app executes code and makes requests first.
 
 Then a test expects that certain requests have or have not been made, 
 performs assertions against those requests, 
