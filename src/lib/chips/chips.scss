@@ -43,6 +43,11 @@ $mat-chip-remove-size: 18px;
   cursor: default;
   min-height: $mat-chip-min-height;
 
+  // Centering the content using flexbox won't work on IE, if we have
+  // a `min-height` without setting a `height`. This height won't do
+  // anything since it's less than the minimum set above.
+  height: 1px;
+
   .mat-chip-remove.mat-icon {
     width: $mat-chip-remove-size;
     height: $mat-chip-remove-size;
