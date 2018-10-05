@@ -49,6 +49,7 @@ travisFoldEnd "bower-install"
 
 if [[ ${TRAVIS} &&
   ${CI_MODE} == "aio" ||
+  ${CI_MODE} == "aio_local" ||
   ${CI_MODE} == "aio_e2e" ||
   ${CI_MODE} == "aio_tools_test"
 ]]; then
@@ -67,6 +68,7 @@ if [[ ${TRAVIS} &&
   ${CI_MODE} == "e2e" ||
   ${CI_MODE} == "e2e_2" ||
   ${CI_MODE} == "aio" ||
+  ${CI_MODE} == "aio_local" ||
   ${CI_MODE} == "aio_e2e"
 ]]; then
   travisFoldStart "install-chromium"
