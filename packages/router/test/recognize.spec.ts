@@ -263,6 +263,20 @@ describe('recognize', () => {
         });
       });
 
+      it('should work with children outlets', () => {
+        checkRecognize(
+            [{
+              path: '',
+              component: ComponentA,
+              children: [{path: 'b', outlet: 'b', component: ComponentB}]
+            }],
+            '(b:b)', (s: RouterStateSnapshot) => {
+              checkActivatedRoute((s as any).firstChild(s.root) !, '', {}, ComponentA);
+              checkActivatedRoute(
+                  (s as any).firstChild((s as any).firstChild(s.root)) !, 'b', {}, ComponentB, 'b');
+            });
+      });
+
       it('should match when terminal', () => {
         checkRecognize(
             [{path: '', pathMatch: 'full', component: ComponentA}], '',
