@@ -297,6 +297,144 @@ describe('i18n support in the view compiler', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
+
+    it('should support interpolation', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n id="dynamic-1"
+                  i18n-title="m|d" title="intro {{ valueA | uppercase }}"
+                  i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
+                  i18n-aria-roledescription aria-roledescription="static text"
+                ></div>
+                <div i18n id="dynamic-2"
+                  i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
+                  i18n-aria-roledescription aria-roledescription="{{ valueC }}"
+                ></div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+        `
+        }
+      };
+
+      const template = String.raw `
+        const $_c0$ = ["id", "dynamic-1"];
+        /**
+         * @desc d
+         * @meaning m
+         */
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("intro \uFFFD0\uFFFD");
+        /**
+         * @desc d1
+         * @meaning m1
+         */
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("\uFFFD0\uFFFD");
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("static text");
+        const $_c4$ = ["title", $MSG_APP_SPEC_TS_1$, 1, "aria-label", $MSG_APP_SPEC_TS_2$, 1, "aria-roledescription", $MSG_APP_SPEC_TS_3$, 0];
+        const $_c5$ = ["id", "dynamic-2"];
+        /**
+         * @desc d2
+         * @meaning m2
+         */
+        const $MSG_APP_SPEC_TS_6$ = goog.getMsg("\uFFFD0\uFFFD and \uFFFD1\uFFFD and again \uFFFD2\uFFFD");
+        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("\uFFFD0\uFFFD");
+        const $_c8$ = ["title", $MSG_APP_SPEC_TS_6$, 3, "aria-roledescription", $MSG_APP_SPEC_TS_7$, 1];
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div", $_c0$);
+            $r3$.ɵpipe(1, "uppercase");
+            $r3$.ɵi18nAttribute(2, $_c4$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(3, "div", $_c5$);
+            $r3$.ɵi18nAttribute(4, $_c8$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
+            $r3$.ɵi18nApply(2);
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
+            $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
+            $r3$.ɵi18nApply(4);
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should correctly bind to context in nested template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div *ngFor="let outer of items">
+                  <div i18n-title="m|d" title="different scope {{ outer | uppercase }}">
+                </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $_c0$ = ["ngFor", "", 1, "ngForOf"];
+        /**
+         * @desc d
+         * @meaning m
+         */
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope \uFFFD0\uFFFD");
+        const $_c2$ = ["title", $MSG_APP_SPEC_TS__1$, 1];
+        function MyComponent_div_Template_0(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵelementStart(1, "div");
+            $r3$.ɵpipe(2, "uppercase");
+            $r3$.ɵi18nAttribute(3, $_c2$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            const $outer_r1$ = ctx.$implicit;
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, $outer_r1$)));
+            $r3$.ɵi18nApply(3);
+          }
+        }
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 4, 2, null, $_c0$);
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx.items));
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   // TODO(vicb): this feature is not supported yet
