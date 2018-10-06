@@ -181,19 +181,38 @@ This file incorporates the mandatory and many of the optional polyfills as JavaS
 -->
 이 파일에는 JavaScript `import` 키워드와 같이 필수로 사용해야 하는 폴리필이나 선택적으로 사용할 수 있는 폴리필이 다양하게 정의되어 있습니다.
 
+<!--
 The npm packages for the _mandatory_ polyfills (such as `zone.js`) were installed automatically for you when you created your project and their corresponding `import` statements are ready to go. You probably won't touch these.
+-->
+`zone.js`과 같은 _필수_ 라이브러리에 적용되는 폴리필은 프로젝트가 생성될 때 함께 설치되며 `import` 구문도 자동으로 추가됩니다. 이 부분은 수정할 필요가 없습니다.
 
+<!--
 But if you need an optional polyfill, you'll have to install its npm package.
 For example, [if you need the web animations polyfill](http://caniuse.com/#feat=web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
+-->
+하지만 추가 폴리필을 적용하려면 이 폴리필을 npm 패키지로 설치해야 합니다.
+예를 들어 [웹 애니메이션 폴리필](http://caniuse.com/#feat=web-animation)을 적용하려면 `npm`이나 `yarn`으로 다음 명령을 실행하면 됩니다.
 
+<!--
 <code-example language="sh" class="code-shell">
   # note that the web-animations-js polyfill is only here as an example
   # it isn't a strict requirement of Angular anymore (more below)
   npm install --save web-animations-js
 </code-example>
+-->
 
+<code-example language="sh" class="code-shell">
+  # web-animation-js 폴리필은 이 예제에서만 사용합니다.
+  # Angular 애플리케이션에 꼭 필요한 것은 아닙니다.
+  npm install --save web-animations-js
+</code-example>
+
+<!--
 Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
+-->
+그리고 `polyfills.ts` 파일을 열어서 해당 `import` 구문에 걸린 주석을 해제합니다:
 
+<!--
 <code-example title="src/polyfills.ts">
   /**
   * Required to support Web Animations `@angular/platform-browser/animations`.
@@ -201,34 +220,65 @@ Then open the `polyfills.ts` file and un-comment the corresponding `import` stat
   **/
   import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 </code-example>
+-->
+<code-example title="src/polyfills.ts">
+  /**
+  * `@angular/platform-browser/animations` 패키지로 웹 애니메이션을 사용할 때 필요합니다.
+  * Chrome, Firefox, Opera를 제외한 브라우저에 필요합니다. http://caniuse.com/#feat=web-animation
+  **/
+  import 'web-animations-js';  // `npm install --save web-animations-js` 명령을 실행한 후에 동작합니다.
+</code-example>
 
+<!--
 If you can't find the polyfill you want in `polyfills.ts`,
 add it yourself, following the same pattern:
+-->
+원하는 폴리필을 `polyfills.ts`에서 찾지 못하면 직접 추가해도 됩니다. 다음 순서로 적용하세요:
 
+<!--
 1. install the npm package
 1. `import` the file in `polyfills.ts`
+-->
+1. npm 패키지를 설치합니다.
+1. `polyfills.ts` 파일에 `import` 키워드로 폴리필을 로드합니다.
 
 <div class="alert is-helpful">
 
+<!--
 Non-CLI users should follow the instructions [below](#non-cli).
+-->
+Angular CLI를 사용하지 않는 사용자는 [아래](#non-cli)에서 설명하는 방법으로 적용할 수 있습니다.
+
 </div>
 
 {@a polyfill-libs}
 
+<!--
 ### Mandatory polyfills
-These are the polyfills required to run an Angular application on each supported browser:
+-->
+### 필수 폴리필
 
+<!--
+These are the polyfills required to run an Angular application on each supported browser:
+-->
+다음 브라우저에서 Angular 애플리케이션을 실행하려면 반드시 폴리필을 적용해야 합니다:
 
 <table>
 
   <tr style="vertical-align: top">
 
     <th>
+      <!--
       Browsers (Desktop & Mobile)
+      -->
+      브라우저 (데스크탑 & 모바일)
     </th>
 
     <th>
+      <!--
       Polyfills Required
+      -->
+      필요한 폴리필
     </th>
 
   </tr>
@@ -241,7 +291,10 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
 
+      <!--
       [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only)
+      -->
+      [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT인 경우만)
 
     </td>
 
