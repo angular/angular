@@ -82,7 +82,6 @@ export function bloomAdd(injectorIndex: number, tView: TView, type: Type<any>): 
 }
 
 export function getOrCreateNodeInjector(): number {
-  ngDevMode && assertPreviousIsParent();
   return getOrCreateNodeInjectorForNode(
       getPreviousOrParentTNode() as TElementNode | TElementContainerNode | TContainerNode,
       _getViewData());

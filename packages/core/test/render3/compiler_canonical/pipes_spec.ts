@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../../src/core';
+import {Component, Directive, InjectionToken, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef, defineInjectable} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentDef} from '../../../src/render3/interfaces/definition';
-import {containerEl, renderComponent, toHtml} from '../render_util';
+import {containerEl, renderComponent, resetDOM, toHtml} from '../render_util';
+import { PublicFeature } from '../../../src/render3';
 
 
 
@@ -214,4 +215,89 @@ describe('pipes', () => {
     expect(myPurePipeTransformCalls).toEqual(3);
     expect(myPipeTransformCalls).toEqual(0);
   });
+
+  it('should be able to handle services injection', () => {
+    class ServiceA {
+      title = 'ServiceA Title';
+
+      static ngInjectableDef = defineInjectable({
+        providedIn: 'root',
+        factory: () => new ServiceA()
+      });
+    }
+
+    const generatePipe = (InjectionType: any) => {
+      return class MyConcatPipe implements PipeTransform {
+        constructor(public obj: any) {}
+
+        transform(value: string): string {
+          return `${value} - ${this.obj.title}`;
+        }
+
+        static ngPipeDef = $r3$.ɵdefinePipe({
+          name: 'myConcatPipe',
+          type: MyConcatPipe,
+          factory: () => new MyConcatPipe($r3$.ɵdirectiveInject(InjectionType)),
+          pure: false
+        });
+      }
+    };
+
+    const generateApp = (overrides: any) => {
+      return class MyApp {
+        title = 'MyApp Title';
+
+        static ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyApp,
+          selectors: [['my-app']],
+          features: [PublicFeature],
+          factory: function MyApp_Factory() {
+            return new MyApp();
+          },
+          consts: 2,
+          vars: 1,
+          // '{{ title | myPipe }}'
+          template: (rf: $RenderFlags$, ctx: MyApp) => {
+            if (rf & 1) {
+              $r3$.ɵtext(0);
+              $r3$.ɵpipe(1, 'myConcatPipe');
+            }
+            if (rf & 2) {
+              $r3$.ɵtextBinding(
+                0, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind1(1, 3, ctx.title), ''));
+            }
+          },
+          ...overrides
+        });
+      }
+    };
+
+    // Service Injection
+    const AppImplForService = generateApp({
+      providers: [ServiceA],
+      pipes: [generatePipe(ServiceA)]
+    });
+    const appForService = renderComponent(AppImplForService);
+    expect(toHtml(appForService)).toEqual('MyApp Title - ServiceA Title');
+
+    resetDOM();
+
+    // Tokens Injection
+    const provider = new InjectionToken<ServiceA>('token', {
+      providedIn: 'root',
+      factory: () => new ServiceA()
+    });
+    const AppImplForToken = generateApp({
+      providers: [provider],
+      pipes: [generatePipe(provider)]
+    });
+    const appForToken = renderComponent(AppImplForToken);
+    expect(toHtml(appForToken)).toEqual('MyApp Title - ServiceA Title');
+
+    resetDOM();
+
+    // Module Injection
+    // TODO: to be implemented...
+  });
+
 });
