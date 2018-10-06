@@ -124,6 +124,7 @@ describe('i18n support in the view compiler', () => {
         app: {
           'spec.ts': `
             import {Component, NgModule} from '@angular/core';
+
             @Component({
               selector: 'my-component',
               template: \`
@@ -131,6 +132,7 @@ describe('i18n support in the view compiler', () => {
               \`
             })
             export class MyComponent {}
+
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
         `
@@ -158,7 +160,7 @@ describe('i18n support in the view compiler', () => {
       });
     });
 
-    fit('should support interpolation', () => {
+    it('should support interpolation', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -185,26 +187,27 @@ describe('i18n support in the view compiler', () => {
         `
         }
       };
-      const template = `
+
+      const template = String.raw`
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("static text");
         const $_c1$ = ["id", "dynamic-1", "aria-roledescription", $MSG_APP_SPEC_TS_0$];
         /**
          * @desc d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro �0�");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro \uFFFD0\uFFFD");
         /**
          * @desc d1
          * @meaning m1
          */
-        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("�0�");
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("\uFFFD0\uFFFD");
         const $_c4$ = ["id", "dynamic-2"];
         /**
          * @desc d2
          * @meaning m2
          */
-        const $MSG_APP_SPEC_TS_5$ = goog.getMsg("�0� and �1� and again �2�");
-        const $MSG_APP_SPEC_TS_6$ = goog.getMsg("�0�");
+        const $MSG_APP_SPEC_TS_5$ = goog.getMsg("\uFFFD0\uFFFD and \uFFFD1\uFFFD and again \uFFFD2\uFFFD");
+        const $MSG_APP_SPEC_TS_6$ = goog.getMsg("\uFFFD0\uFFFD");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -259,13 +262,13 @@ describe('i18n support in the view compiler', () => {
         }
       };
 
-      const template = `
+      const template = String.raw`
         const $_c0$ = ["ngFor", "", 1, "ngForOf"];
         /**
          * @desc d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope �0�");
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope \uFFFD0\uFFFD");
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
