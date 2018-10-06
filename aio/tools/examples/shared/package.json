@@ -82,7 +82,8 @@
     "ts-loader": "^4.2.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
-    "typescript": "~3.1.1"
+    "typescript": "~3.1.1",
+    "webpack-cli": "^2.0.14"
   },
   "repository": {}
 }
