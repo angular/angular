@@ -41,8 +41,8 @@
   },
   "devDependencies": {
     "@bazel/ibazel": "^0.1.1",
-    "@bazel/karma": "0.20.1",
-    "@bazel/typescript": "0.20.1",
+    "@bazel/karma": "0.20.2",
+    "@bazel/typescript": "0.20.2",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
     "@types/chai": "^4.1.2",
