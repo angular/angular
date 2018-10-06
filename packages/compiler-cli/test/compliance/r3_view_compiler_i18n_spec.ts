@@ -296,7 +296,7 @@ describe('i18n support in the view compiler', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should support interpolation', () => {
+    fit('should support interpolation', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -308,10 +308,11 @@ describe('i18n support in the view compiler', () => {
                 <div i18n id="dynamic-1"
                   i18n-title="m|d" title="intro {{ valueA | uppercase }}"
                   i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
-                  i18n-aria-description aria-description="static text"
+                  i18n-aria-roledescription aria-roledescription="static text"
                 ></div>
                 <div i18n id="dynamic-2"
                   i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
+                  i18n-aria-roledescription aria-roledescription="{{ valueC }}"
                 ></div>
               \`
             })
@@ -324,12 +325,12 @@ describe('i18n support in the view compiler', () => {
       };
       const template = `
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("static text");
-        const $_c1$ = ["id", "dynamic-1", "aria-description", $MSG_APP_SPEC_TS_0$];
+        const $_c1$ = ["id", "dynamic-1", "aria-roledescription", $MSG_APP_SPEC_TS_0$];
         /**
          * @desc d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro ɵ0ɵ");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro �0�");
         /**
          * @desc d1
          * @meaning m1
@@ -341,6 +342,7 @@ describe('i18n support in the view compiler', () => {
          * @meaning m2
          */
         const $MSG_APP_SPEC_TS_5$ = goog.getMsg("�0� and �1� and again �2�");
+        const $MSG_APP_SPEC_TS_6$ = goog.getMsg("�0�");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -351,6 +353,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(4, "div", $_c4$);
             $r3$.ɵi18nAttribute(5, "title", $MSG_APP_SPEC_TS_5$);
+            $r3$.ɵi18nAttribute(6, "aria-roledescription", $MSG_APP_SPEC_TS_6$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -362,12 +365,13 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
             $r3$.ɵi18nExp($r3$.ɵbind((ctx.valueA + ctx.valueB)));
             $r3$.ɵi18nApply(5);
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
+            $r3$.ɵi18nApply(6);
           }
         }
       `;
 
       const result = compile(files, angularFiles);
-
       expectEmit(result.source, template, 'Incorrect template');
     });
 
@@ -427,7 +431,6 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const result = compile(files, angularFiles);
-
       expectEmit(result.source, template, 'Incorrect template');
     });
   });
