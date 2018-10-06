@@ -216,7 +216,7 @@ describe('pipes', () => {
     expect(myPipeTransformCalls).toEqual(0);
   });
 
-  it('should be able to handle services injection', () => {
+  it('should be able to handle service, token and module injections', () => {
     class ServiceA {
       title = 'ServiceA Title';
 
