@@ -1,8 +1,8 @@
 {
   "description": "minimal @npm repo",
   "dependencies": {
-    "@bazel/karma": "0.20.1",
-    "@bazel/typescript": "0.20.1",
+    "@bazel/karma": "0.20.2",
+    "@bazel/typescript": "0.20.2",
     "typescript": "~3.1.1"
   },
   "scripts": {

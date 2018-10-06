@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@bazel/karma@0.20.1":
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.1.tgz#84e437cb4c4545906152bbfab401ed8111d5d558"
+"@bazel/karma@0.20.2":
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.2.tgz#69b440e320eadce2b4c7de922f87c5fc539b6586"
   dependencies:
     jasmine-core "2.8.0"
     karma alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a
@@ -17,9 +17,9 @@
     requirejs "2.3.5"
     tmp "0.0.33"
 
-"@bazel/typescript@0.20.1":
-  version "0.20.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.1.tgz#f6d3ff13fb203ccb6ddeb7ca670978983b3e1b73"
+"@bazel/typescript@0.20.2":
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.2.tgz#7e31e2fe23458536e4917bf5ee130d55704c54f5"
   dependencies:
     protobufjs "5.0.0"
     source-map-support "0.5.9"

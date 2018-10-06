@@ -10,8 +10,8 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@bazel/karma": "0.20.1",
-    "@bazel/typescript": "0.20.1",
+    "@bazel/karma": "0.20.2",
+    "@bazel/typescript": "0.20.2",
     "@types/jasmine": "2.8.8",
     "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
