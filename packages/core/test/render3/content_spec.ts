@@ -9,11 +9,11 @@
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, template, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, createComponent, renderComponent, toHtml} from './render_util';
+import {ComponentFixture, createComponent, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 
 describe('content projection', () => {
   it('should project content', () => {
@@ -452,7 +452,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        childCmptInstance = loadDirective(0);
+        childCmptInstance = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -504,7 +504,7 @@ describe('content projection', () => {
         element(0, 'child');
 
         // testing
-        childCmptInstance = loadDirective(0);
+        childCmptInstance = getDirectiveOnNode(0);
       }
     }, 1, 0, [Child]);
 
@@ -556,7 +556,7 @@ describe('content projection', () => {
          if (rf & RenderFlags.Create) {
            elementStart(0, 'child');
            {
-             childCmptInstance = loadDirective(0);
+             childCmptInstance = getDirectiveOnNode(0);
              text(1, 'content');
            }
            elementEnd();
@@ -730,7 +730,7 @@ describe('content projection', () => {
         }
         elementEnd();
         // testing
-        parent = loadDirective(0);
+        parent = getDirectiveOnNode(0);
       }
     }, 3, 0, [Parent]);
 
@@ -786,7 +786,7 @@ describe('content projection', () => {
          if (rf & RenderFlags.Create) {
            elementStart(0, 'child');
            {
-             childCmptInstance = loadDirective(0);
+             childCmptInstance = getDirectiveOnNode(0);
              text(1, 'content');
            }
            elementEnd();
@@ -848,7 +848,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        child = loadDirective(0);
+        child = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -913,7 +913,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        child = loadDirective(0);
+        child = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -1012,7 +1012,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
         {
-          childCmptInstance = loadDirective(0);
+          childCmptInstance = getDirectiveOnNode(0);
           text(1, 'content');
         }
         elementEnd();

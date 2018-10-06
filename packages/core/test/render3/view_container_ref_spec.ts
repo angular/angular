@@ -19,7 +19,7 @@ import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
@@ -161,8 +161,8 @@ describe('ViewContainerRef', () => {
           element(3, 'div', ['vcref', '']);
 
           // for testing only:
-          firstDir = loadDirective(0);
-          secondDir = loadDirective(1);
+          firstDir = getDirectiveOnNode(2);
+          secondDir = getDirectiveOnNode(3);
         }
 
         function update() {
