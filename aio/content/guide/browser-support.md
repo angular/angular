@@ -143,7 +143,7 @@ Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
 -->
 Angular는 최신 웹 플랫폼 표준을 준수하며 만들어졌습니다.
-하지만 최신 브라우저들이 대부분 지원하는 기능을 제대로 지원하지 않는 일부 브라우저에서는 Angular 애플리케이션이 제대로 동작하지 않은 기능이 있을 수 있습니다.
+하지만 최신 브라우저들이 대부분 지원하는 기능을 제대로 지원하지 않는 일부 브라우저에서는 Angular 애플리케이션의 기능 중 일부가 제대로 동작하지 않을 수 있습니다.
 
 <!--
 You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
@@ -210,7 +210,7 @@ For example, [if you need the web animations polyfill](http://caniuse.com/#feat=
 <!--
 Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
 -->
-그리고 `polyfills.ts` 파일을 열어서 해당 `import` 구문에 걸린 주석을 해제합니다:
+그리고 `polyfills.ts` 파일을 열어서 해당 `import` 구문에 지정된 주석을 해제합니다:
 
 <!--
 <code-example title="src/polyfills.ts">
@@ -331,14 +331,27 @@ These are the polyfills required to run an Angular application on each supported
 </table>
 
 
+<!--
 ### Optional browser features to polyfill
+-->
+### 폴리필을 적용해야 하는 Angular 기능
 
+<!--
 Some features of Angular may require additional polyfills.
+-->
+Angular 기능 중 일부는 폴리필을 추가로 적용해야 하는 것이 있습니다.
 
+<!--
 For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today.
 (note that the dependency of web-animations-js in Angular is only necessary if `AnimationBuilder` is used.)
+-->
+예를 들어 Angular에서 제공하는 애니메이션 라이브러리는 웹 표준 애니메이션 API를 사용하는데, 이 기능은 현재 Chrome과 Firefox에서만 정상적으로 동작합니다.
+(web-animation.js 폴리필은 Angular에서 `AnimationBuilder`를 사용할 때만 필요합니다.)
 
+<!--
 Here are the features which may require additional polyfills:
+-->
+다음 기능을 사용하려면 폴리필을 함께 적용해야 합니다:
 
 
 <table>
@@ -346,15 +359,24 @@ Here are the features which may require additional polyfills:
   <tr style="vertical-align: top">
 
     <th>
+      <!--
       Feature
+      -->
+      기능
     </th>
 
     <th>
+      <!--
       Polyfill
+      -->
+      폴리필
     </th>
 
     <th style="width: 50%">
+       <!--
        Browsers (Desktop & Mobile)
+       -->
+       브라우저 (데스크탑 & 모바일)
     </th>
 
   </tr>
@@ -363,9 +385,14 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+      <!--
       [JIT compilation](guide/aot-compiler).
 
       Required to reflect for metadata.
+      -->
+      [JIT 컴파일](guide/aot-compiler).
+
+      메타데이터 적용을 위해 필요
     </td>
 
     <td>
@@ -375,8 +402,12 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
+      <!--
       All current browsers. Enabled by default.
       Can remove if you always use AOT and only use Angular decorators.
+      -->
+      모든 브라우저에 필요하며 기본으로 적용됩니다.
+      Angular 데코레이터만 사용하고 AOT 컴파일러를 사용한다면 제거해도 됩니다.
     </td>
 
   </tr>
@@ -385,21 +416,31 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+      <!--
       [Animations](guide/animations)
       <br>Only if `Animation Builder` is used within the application--standard
       animation support in Angular doesn't require any polyfills (as of NG6).
+      -->
+      [애니메이션](guide/animations)
+      <br>애플리케이션에서 `Animation Builder`를 사용할 때만 필요합니다--표준 애니메이션을 사용할 때는 필요없습니다.
 
     </td>
 
     <td>
 
+      <!--
       [Web Animations](guide/browser-support#web-animations)
+      -->
+      [웹 애니메이션](guide/browser-support#web-animations)
 
     </td>
 
     <td>
+      <!--
       <p>If AnimationBuilder is used then the polyfill will enable scrubbing
       support for IE/Edge and Safari (Chrome and Firefox support this natively).</p>
+      -->
+      <p>AnimationBuilder를 사용하면 폴리필이 필요합니다. (Chrome과 Firefox는 네이티브로 지원합니다.)</p>
     </td>
 
   </tr>
@@ -408,7 +449,10 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+    <!--
     If you use the following deprecated i18n pipes:
+    -->
+    다음 i18n 파이프는 지원이 중단되었습니다:
     
 
      [date](api/common/DeprecatedDatePipe), 
@@ -428,7 +472,10 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
+      <!--
       All but Chrome, Firefox, Edge, IE11 and Safari 10
+      -->
+      Chrome, Firefox, Edge, IE11, Safari 10을 제외하면 모두 필요합니다.
     </td>
 
   </tr>
@@ -437,9 +484,12 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+       <!--
        [NgClass](api/common/NgClass) 
        
        on SVG elements
+       -->
+       SVG 엘리먼트에 적용하는 [NgClass](api/common/NgClass) 
     </td>
 
     <td>
@@ -458,9 +508,12 @@ Here are the features which may require additional polyfills:
 
     <td>
 
+      <!--
       [Http](guide/http) 
       
       when sending and receiving binary data
+      -->
+      [Http](guide/http)를 사용해서 바이너리 데이터를 보내거나 받을 때
     </td>
 
     <td>
@@ -482,9 +535,15 @@ Here are the features which may require additional polyfills:
 </table>
 
 
-
+<!--
 ### Suggested polyfills ##
+-->
+### 추천 폴리필 ##
+
+<!--
 Below are the polyfills which are used to test the framework itself. They are a good starting point for an application.
+-->
+다음 폴리필은 Angular 프레임워크가 개발될 때 사용된 것들입니다. 애플리케이션을 개발할 때 사용하는 것도 고려해 보세요.
 
 
 <table>
@@ -492,15 +551,24 @@ Below are the polyfills which are used to test the framework itself. They are a 
   <tr>
 
     <th>
+      <!--
       Polyfill
+      -->
+      폴리필
     </th>
 
     <th>
+      <!--
       License
+      -->
+      라이센스
     </th>
 
     <th>
+      <!--
       Size*
+      -->
+      크기*
     </th>
 
   </tr>
@@ -651,17 +719,27 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
 </table>
 
-
+<!--
 \* Figures are for minified and gzipped code,
 computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
+-->
+\* <a href="http://closure-compiler.appspot.com/home">closure compiler</a>로 압축되고 난독화된 크기입니다.
 
 {@a non-cli}
+
+<!--
 ## Polyfills for non-CLI users
+-->
+## Angular CLI를 사용하지 않는 경우에 필요한 폴리필
 
+<!--
 If you are not using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
+-->
+프로젝트를 생성할 때 Angular CLI를 사용하지 않았다면 폴리필 스크립트를 `index.html` 파일에 직접 추가해야 합니다. 이 경우는 폴리필을 다음과 같이 적용합니다.
 
+<!--
 <code-example title="src/index.html">
-  &lt;!-- pre-zone polyfills -->
+  &lt;!-- pre-zone polyfills --&gt;
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
   &lt;script>
@@ -680,8 +758,33 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
      */
     // __Zone_enable_cross_context_check = true;
   &lt;/script>
-  &lt;!-- zone.js required by Angular -->
+  &lt;!-- zone.js required by Angular --&gt;
   &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
 
-  &lt;!-- application polyfills -->
+  &lt;!-- application polyfills --&gt;
+</code-example>
+-->
+<code-example title="src/index.html">
+  &lt;!-- 폴리필에 필요한 스크립트 --&gt;
+  &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
+  &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
+  &lt;script>
+    /**
+     * 애플리케이션 초기 실행 시간을 줄이려면 zone에 관련된 플래그들을 비활성화할 수 있습니다.
+     * 이 옵션을 사용하면 디버깅이 어려워지기 때문에 관련 내용을 확실하게 이해하고 있을 때만 적용하세요.
+     */
+    // __Zone_disable_requestAnimationFrame = true; // requestAnimationFrame 패치를 비활성화합니다.
+    // __Zone_disable_on_property = true; // onclick과 같은 onProperty 패치를 비활성화합니다.
+    // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // 이벤트 이름으로 동작하는 패치를 비활성화합니다.
+
+    /*
+     * IE/Edge 개발자 도구에서는 addEventListener가 zone.js을 사용합니다.
+     * 아래 옵션을 설정하면 IE/Edge에서 `zone.js` 패치를 생략할 수 있습니다.
+     */
+    // __Zone_enable_cross_context_check = true;
+  &lt;/script>
+  &lt;!-- Angular에는 zone.js이 필요합니다. --&gt;
+  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+
+  &lt;!-- 애플리케이션 폴리필 --&gt;
 </code-example>
