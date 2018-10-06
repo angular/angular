@@ -21,7 +21,7 @@
 
 export {InjectableDef as ɵInjectableDef, InjectorDef as ɵInjectorDef, defineInjectable, defineInjector} from './di/defs';
 export {inject} from './di/injector';
-export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
+export {NgModuleDef as ɵNgModuleDef, NgModuleDefWithMeta as ɵNgModuleDefWithMeta} from './metadata/ng_module';
 export {defineNgModule as ɵdefineNgModule} from './render3/definition';
 export {NgModuleFactory as ɵNgModuleFactory} from './render3/ng_module_ref';
 
