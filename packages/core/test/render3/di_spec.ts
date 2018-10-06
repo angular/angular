@@ -21,7 +21,7 @@ import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
+import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
 import {TNODE} from '../../src/render3/interfaces/injector';
 
@@ -1610,7 +1610,7 @@ describe('di', () => {
               ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
         }
         if (rf & RenderFlags.Update) {
-          myDirectiveInstance = loadDirective(0);
+          myDirectiveInstance = getDirectiveOnNode(0);
         }
       }, 1, 0, [MyDirective]);
 
@@ -1631,7 +1631,7 @@ describe('di', () => {
           elementContainerEnd();
         }
         if (rf & RenderFlags.Update) {
-          myDirectiveInstance = loadDirective(0);
+          myDirectiveInstance = getDirectiveOnNode(0);
         }
       }, 1, 0, [MyDirective]);
 

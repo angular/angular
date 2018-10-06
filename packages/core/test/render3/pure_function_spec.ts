@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker, defineComponent, template} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, nextContext} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
-import {ComponentFixture, createComponent, renderToHtml} from '../../test/render3/render_util';
+import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from '../../test/render3/render_util';
 import {NgIf} from './common_with_def';
 
 describe('array literals', () => {
@@ -176,7 +176,7 @@ describe('array literals', () => {
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'my-comp');
-            myComps.push(loadDirective(0));
+            myComps.push(getDirectiveOnNode(0));
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -275,22 +275,22 @@ describe('array literals', () => {
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
-        f3Comp = loadDirective(0);
+        f3Comp = getDirectiveOnNode(0);
         elementEnd();
         elementStart(1, 'my-comp');
-        f4Comp = loadDirective(1);
+        f4Comp = getDirectiveOnNode(1);
         elementEnd();
         elementStart(2, 'my-comp');
-        f5Comp = loadDirective(2);
+        f5Comp = getDirectiveOnNode(2);
         elementEnd();
         elementStart(3, 'my-comp');
-        f6Comp = loadDirective(3);
+        f6Comp = getDirectiveOnNode(3);
         elementEnd();
         elementStart(4, 'my-comp');
-        f7Comp = loadDirective(4);
+        f7Comp = getDirectiveOnNode(4);
         elementEnd();
         elementStart(5, 'my-comp');
-        f8Comp = loadDirective(5);
+        f8Comp = getDirectiveOnNode(5);
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
@@ -513,7 +513,7 @@ describe('object literals', () => {
             let rf1 = embeddedViewStart(0, 1, 4);
             if (rf1 & RenderFlags.Create) {
               elementStart(0, 'object-comp');
-              objectComps.push(loadDirective(0));
+              objectComps.push(getDirectiveOnNode(0));
               elementEnd();
             }
             if (rf1 & RenderFlags.Update) {

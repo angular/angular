@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {ComponentDef} from '../../../src/render3/interfaces/definition';
-import {renderComponent, toHtml} from '../render_util';
+import {getDirectiveOnNode, renderComponent, toHtml} from '../render_util';
 
 
 /// See: `normative.md`
@@ -161,7 +161,7 @@ describe('queries', () => {
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'content-query-component');
-            contentQueryComp = $r3$.ɵloadDirective<ContentQueryComponent>(0);
+            contentQueryComp = getDirectiveOnNode(0);
             $r3$.ɵelement(1, 'div', $e2_attrs$);
             $r3$.ɵelementEnd();
           }

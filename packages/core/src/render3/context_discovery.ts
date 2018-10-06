@@ -99,7 +99,7 @@ export function getContext(target: any): LContext|null {
         if (nodeIndex == -1) {
           throw new Error('The provided directive was not found in the application');
         }
-        directives = discoverDirectives(nodeIndex, lViewData);
+        directives = discoverDirectives(nodeIndex, lViewData, false);
       } else {
         nodeIndex = findViaNativeElement(lViewData, target as RElement);
         if (nodeIndex == -1) {
@@ -344,15 +344,18 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
  * Returns a list of directives extracted from the given view. Does not contain
  * the component.
  *
+ * @param nodeIndex Index of node to search
  * @param lViewData The target view data
+ * @param includeComponents Whether or not to include components in returned directives
  */
-export function discoverDirectives(nodeIndex: number, lViewData: LViewData): any[]|null {
+export function discoverDirectives(
+    nodeIndex: number, lViewData: LViewData, includeComponents: boolean): any[]|null {
   const directivesAcrossView = lViewData[DIRECTIVES];
   if (directivesAcrossView != null) {
     const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
     let directiveStartIndex = getDirectiveStartIndex(tNode);
     const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
-    if (tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
+    if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
     return directivesAcrossView.slice(directiveStartIndex, directiveEndIndex);
   }
   return null;
