@@ -104,7 +104,7 @@ export function getDirectives(target: {}): Array<{}> {
   const context = loadContext(target) !;
 
   if (context.directives === undefined) {
-    context.directives = discoverDirectives(context.nodeIndex, context.lViewData);
+    context.directives = discoverDirectives(context.nodeIndex, context.lViewData, false);
   }
 
   return context.directives || [];

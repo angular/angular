@@ -10,12 +10,12 @@ import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform} from '@angular/cor
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
-import {ComponentFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
 
 
 let log: string[] = [];
@@ -100,7 +100,7 @@ describe('pipe', () => {
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'elprop', bind(pipeBind1(1, 1, ctx)));
-        directive = loadDirective(0);
+        directive = getDirectiveOnNode(0);
       }
     }
     renderToHtml(Template, 'a', 2, 3, [MyDir], [DoublePipe]);

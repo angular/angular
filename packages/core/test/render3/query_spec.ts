@@ -20,7 +20,7 @@ import {query, queryRefresh} from '../../src/render3/query';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
-import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent, getDirectiveOnNode} from './render_util';
 
 
 
@@ -76,8 +76,8 @@ describe('query', () => {
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            child1 = loadDirective(0);
-            child2 = loadDirective(1);
+            child1 = getDirectiveOnNode(2);
+            child2 = getDirectiveOnNode(3);
           }
         },
         4, 0, [Child], [],
@@ -151,7 +151,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 elementStart(1, 'div', ['child', '', 'otherChild', '']);
-                { otherChildInstance = loadDirective(1); }
+                { otherChildInstance = getDirectiveOnNode(1, 1); }
                 elementEnd();
               }
             },
@@ -684,7 +684,7 @@ describe('query', () => {
                 element(1, 'child', null, ['foo', '']);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(1);
               }
             },
             3, 0, [Child], [],
@@ -767,7 +767,7 @@ describe('query', () => {
                    element(1, 'div', ['child', ''], ['foo', 'child']);
                  }
                  if (rf & RenderFlags.Update) {
-                   childInstance = loadDirective(0);
+                   childInstance = getDirectiveOnNode(1);
                  }
                },
                3, 0, [Child], [],
@@ -806,8 +806,8 @@ describe('query', () => {
                 element(1, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
               }
               if (rf & RenderFlags.Update) {
-                child1Instance = loadDirective(0);
-                child2Instance = loadDirective(1);
+                child1Instance = getDirectiveOnNode(1, 0);
+                child2Instance = getDirectiveOnNode(1, 1);
               }
             },
             4, 0, [Child1, Child2], [],
@@ -846,7 +846,7 @@ describe('query', () => {
                 element(2, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(2);
               }
             },
             5, 0, [Child], [],
@@ -928,7 +928,7 @@ describe('query', () => {
                 div = loadElement(1).native;
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(1);
               }
             },
             4, 0, [Child], [],
