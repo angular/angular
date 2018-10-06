@@ -507,11 +507,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const meta = parseI18nMeta(attrI18nMetas[input.name]);
           const label = assembleI18nTemplate(value.strings);
           const attrValue = this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
-          const params: o.Expression[] = [
-            indexLiteral,
-            o.literal(input.name),
-            attrValue
-          ];
+          const params: o.Expression[] = [indexLiteral, o.literal(input.name), attrValue];
           this.creationInstruction(element.sourceSpan, R3.i18nAttribute, params);
 
           if (value instanceof Interpolation) {
@@ -871,8 +867,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private convertExpressionBinding(implicit: o.Expression, value: AST): o.Expression {
-    const convertedPropertyBinding = convertPropertyBinding(
-        this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
+    const convertedPropertyBinding =
+        convertPropertyBinding(this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
     const valExpr = convertedPropertyBinding.currValExpr;
     return o.importExpr(R3.bind).callFn([valExpr]);
   }

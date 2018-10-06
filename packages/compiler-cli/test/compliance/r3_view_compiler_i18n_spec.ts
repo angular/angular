@@ -188,7 +188,7 @@ describe('i18n support in the view compiler', () => {
         }
       };
 
-      const template = String.raw`
+      const template = String.raw `
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("static text");
         const $_c1$ = ["id", "dynamic-1", "aria-roledescription", $MSG_APP_SPEC_TS_0$];
         /**
@@ -262,7 +262,7 @@ describe('i18n support in the view compiler', () => {
         }
       };
 
-      const template = String.raw`
+      const template = String.raw `
         const $_c0$ = ["ngFor", "", 1, "ngForOf"];
         /**
          * @desc d
