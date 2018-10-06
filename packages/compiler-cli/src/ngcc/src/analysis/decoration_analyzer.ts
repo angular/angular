@@ -78,7 +78,7 @@ export class DecorationAnalyzer {
         const decoratedFiles = this.host.findDecoratedFiles(file);
         decoratedFiles.forEach(
             decoratedFile =>
-                analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile)));
+                analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile, analyzedFiles)));
       }
     });
     return analyzedFiles;
@@ -90,10 +90,10 @@ export class DecorationAnalyzer {
    * @param file The file to be analysed for decorated classes.
    * @returns the analysis of the file
    */
-  protected analyzeFile(file: DecoratedFile): DecorationAnalysis {
+  protected analyzeFile(file: DecoratedFile, analyzedFiles: DecorationAnalyses): DecorationAnalysis {
     const constantPool = new ConstantPool();
     const analyzedClasses =
-        file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
+        file.decoratedClasses.map(clazz => analyzedFiles.has(clazz.declaration.getSourceFile()) ? undefined : this.analyzeClass(constantPool, clazz))
             .filter(isDefined);
 
     return {

@@ -20,7 +20,7 @@ const TEST_PROGRAM = {
   import {Component, Injectable} from '@angular/core';
 
   export class MyComponent {}
-  MyComponent.decorators = [{type: Component}];
+  MyComponent.decorators = [{type: Component, args: [{ template: '...' }]}];
 
   export class MyService {}
   MyService.decorators = [{type: Injectable}];
@@ -30,26 +30,40 @@ const TEST_PROGRAM = {
 const LIBRARY_ENTRYPOINT = {
   name: 'entrypoint.js',
   contents: `
-  import {NgModule} from '@angular/core';
-  import {MyComponent} from './component.js';
+  import {Component, NgModule} from '@angular/core';
+  import {MyComponent1} from './component_1.js';
+  import {MyComponent2} from './component_2.js';
 
   export class MyModule {}
-  MyModule.decorators = [{type: MyModule, args: [{
-                declarations: [MyComponent],
-                exports: [MyComponent],
-            },] }];
+  MyModule.decorators = [{
+    type: MyModule, args: [{
+      declarations: [MyComponent1, MyComponent2, MyComponent3],
+    }]
+  }];
+
+  class MyComponent3 {}
+  MyComponent.decorators = [{type: Component, args: [{ template: '...' }]}];
   `
 };
 
-const IMPORTED_COMPONENT = {
-  name: 'component.js',
+const IMPORTED_COMPONENT_1 = {
+  name: 'component_1.js',
   contents: `
   import {Component} from '@angular/core';
 
-  export class MyComponent {}
-  MyComponent.decorators = [{type: Component}];
+  export class MyComponent1 {}
+  MyComponent1.decorators = [{type: Component, args: [{ template: '...' }]}];
   `,
   isRoot: false,
+};
+const IMPORTED_COMPONENT_2 = {
+  name: 'component_2.js',
+  contents: `
+  import {Component} from '@angular/core';
+
+  export class MyComponent2 {}
+  MyComponent2.decorators = [{type: Component, args: [{ template: '...' }]}];
+  `
 };
 
 function createTestHandler() {
@@ -118,28 +132,34 @@ describe('DecorationAnalyzer', () => {
     });
   });
 
-  describe('analyzing internal component', () => {
+  describe('analyzing internal components', () => {
     let program: ts.Program;
-    let testHandler: jasmine.SpyObj<DecoratorHandler<any, any>>;
     let result: DecorationAnalyses;
 
     beforeEach(() => {
-      program = makeProgram(LIBRARY_ENTRYPOINT, IMPORTED_COMPONENT);
+      // We include MyComponent2 as it is a root file AND imported from a root file
+      // The DecorationAnalyzer must not try to analyze this file twice.
+      program = makeProgram(LIBRARY_ENTRYPOINT, IMPORTED_COMPONENT_1, IMPORTED_COMPONENT_2);
       const analyzer = new DecorationAnalyzer(
           program.getTypeChecker(), new Fesm2015ReflectionHost(false, program.getTypeChecker()),
           [''], false);
-      testHandler = createTestHandler();
-      analyzer.handlers = [testHandler];
       result = analyzer.analyzeProgram(program);
     });
 
-    it('should have analyzed the internally declared component', () => {
-      const file = program.getSourceFile(IMPORTED_COMPONENT.name) !;
+    it('should have analyzed the internally imported component', () => {
+      const file = program.getSourceFile(IMPORTED_COMPONENT_1.name) !;
       const analysis = result.get(file) !;
       expect(analysis).toBeDefined();
       expect(analysis.analyzedClasses.length).toEqual(1);
-      expect(analysis.analyzedClasses[0].name).toEqual('MyComponent');
+      expect(analysis.analyzedClasses[0].name).toEqual('MyComponent1');
     });
 
+    it('should have analyzed the internally declared (no import) component', () => {
+      const file = program.getSourceFile(LIBRARY_ENTRYPOINT.name) !;
+      const analysis = result.get(file) !;
+      expect(analysis).toBeDefined();
+      expect(analysis.analyzedClasses.length).toEqual(2);
+      expect(analysis.analyzedClasses[1].name).toEqual('MyComponent3');
+    });
   });
 });
