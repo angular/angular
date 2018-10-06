@@ -73,12 +73,13 @@ export class DecorationAnalyzer {
    */
   analyzeProgram(program: ts.Program): DecorationAnalyses {
     const analyzedFiles = new DecorationAnalyses();
-    program.getRootFileNames().forEach(fileName => {
-      const entryPoint = program.getSourceFile(fileName) !;
-      const decoratedFiles = this.host.findDecoratedFiles(entryPoint);
-      decoratedFiles.forEach(
-          decoratedFile =>
-              analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile)));
+    program.getSourceFiles().forEach(file => {
+      if (!analyzedFiles.has(file)) {
+        const decoratedFiles = this.host.findDecoratedFiles(file);
+        decoratedFiles.forEach(
+            decoratedFile =>
+                analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile)));
+      }
     });
     return analyzedFiles;
   }
