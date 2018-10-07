@@ -18,7 +18,7 @@ The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for down
 The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
 -->
 [**yarn 클라이언트**](https://yarnpkg.com/en/)는 npm 패키지 매니저를 대체하는 툴로 많이 사용됩니다.
-그리고 Angular CLI도 `yarn`을 기본 패키지 매니저로 사용합니다.
+Angular CLI도 기본 패키지 매니저로 `yarn`을 사용합니다.
 
 <div class="alert is-helpful">
 
@@ -67,7 +67,7 @@ This guide focuses on the most important packages in the starter set.
 애플리케이션이 점차 확장되면 `package.json`에 새로운 패키지를 추가하게 될 것입니다.
 물론 사용하지 않는 패키지는 제거할 수도 있습니다.
 
-이 문서에서는 스타터 셋에 포함된 패키지 중 어떤 것이 중요한지 알아봅시다.
+이 문서에서는 스타터 셋에 포함된 패키지 중 중요한 것에 대해 소개합니다.
 
 <!--
 #### *dependencies* and *devDependencies*
@@ -101,7 +101,7 @@ The `dependencies` section of `package.json` contains:
 -->
 `dependencies`에는 다음과 같은 패키지가 해당됩니다:
 
-* **Angular 패키지**:  Angular 코어 모듈과 옵션 모듈이 해당됩니다. 이 모듈의 이름은 `@angular/`로 시작합니다.
+* **Angular 패키지**:  Angular 코어 모듈과 옵션 모듈이 해당됩니다. 모듈의 이름은 모두 `@angular/`로 시작합니다.
 
 * **지원 패키지**: Angular가 실행될 때 필요한 서드파티 라이브러리가 해당됩니다.
 
@@ -116,7 +116,7 @@ The `dependencies` section of `package.json` contains:
 **@angular/animations**: Angular's animations library makes it easy to define and apply animation effects such as page and list transitions.
 Read about it in the [Animations guide](guide/animations).
 -->
-**@angular/animation**: 페이지 전환이나 리스트 전환과 같은 애니메이션 기능을 제공하는 라이브러리입니다.
+**@angular/animation**: 페이지 전환이나 리스트에 사용되는 애니메이션 기능을 제공하는 라이브러리입니다.
 자세한 내용은 [애니메이션 문서](guide/animations)를 참고하세요.
 
 <!--
