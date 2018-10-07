@@ -200,74 +200,44 @@ unless told to do otherwise.
 The following are all in `src/`
 
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
+<table class="is-full-width">
 
+  <col width="20%"></col>
+  <col width="80%"></col>
 
-<table width="100%">
-
-  <col width="20%">
-
-  </col>
-
-  <col width="80%">
-
-  </col>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      File
-    </th>
-
-    <th>
-      Purpose
-    </th>
-
-  </tr>
-
-  <tr>
-
+    <td><code>app/app.component.ts</code></td>
     <td>
-      <code>app/app.component.ts</code>
-    </td>
-
-    <td>
-
 
       Defines the same `AppComponent` as the one in the QuickStart playground.
       It is the **root** component of what will become a tree of nested components
       as the application evolves.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>app/app.module.ts</code></td>
     <td>
-      <code>app/app.module.ts</code>
-    </td>
-
-    <td>
-
 
       Defines `AppModule`, the  [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
       Right now it declares only the `AppComponent`.
       Soon there will be more components to declare.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>main.ts</code></td>
     <td>
-      <code>main.ts</code>
-    </td>
-
-    <td>
-
 
       Compiles the application with the [JIT compiler](guide/glossary#jit) and
       [bootstraps](guide/bootstrapping)
@@ -277,7 +247,6 @@ The following are all in `src/`
       You'll learn about alternative compiling and [deployment](guide/deployment) options later in the documentation.
 
     </td>
-
   </tr>
 
 </table>

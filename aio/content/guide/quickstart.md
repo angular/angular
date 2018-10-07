@@ -77,10 +77,10 @@ The Angular CLI installs the necessary npm packages, creates the project files, 
 
 
 
-You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
-For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
+You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package.
+For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation")
 
-Angular Material provides schematics for typical app layouts. 
+Angular Material provides schematics for typical app layouts.
 See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
 
 
@@ -222,31 +222,20 @@ Any files outside of this folder are meant to support building your app.
 
 
 
-<style>
-  td, th {vertical-align: top}
-</style>
+<table class="is-full-width">
 
+  <col width="20%"></col>
+  <col width="80%"></col>
 
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
 
-<table width="100%">
-  <col width="20%">
-  </col>
-  <col width="80%">
-  </col>
   <tr>
-    <th>
-      File
-    </th>
-    <th>
-      Purpose
-    </th>
-  </tr>
-  <tr>
-    <td>
-
-      `app/app.component.{ts,html,css,spec.ts}`
-
-    </td>
+    <td><code>app/app.component.{ts,html,css,spec.ts}</code></td>
     <td>
 
       Defines the `AppComponent` along with an HTML template, CSS stylesheet, and a unit test.
@@ -255,12 +244,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `app/app.module.ts`
-
-    </td>
+    <td><code>app/app.module.ts</code></td>
     <td>
 
       Defines `AppModule`, the [root module](guide/bootstrapping "AppModule: the root module") that tells Angular how to assemble the application.
@@ -269,12 +255,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `assets/*`
-
-    </td>
+    <td><code>assets/*</code></td>
     <td>
 
       A folder where you can put images and anything else to be copied wholesale
@@ -282,12 +265,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `environments/*`
-
-    </td>
+    <td><code>environments/*</code></td>
     <td>
 
       This folder contains one file for each of your destination environments,
@@ -300,24 +280,18 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `browserslist`
-
-    </td>
+    <td><code>browserslist</code></td>
     <td>
 
       A configuration file to share [target browsers](https://github.com/browserslist/browserslist) between different front-end tools.
 
     </td>
-  </tr>  
+  </tr>
+
   <tr>
-    <td>
-
-      `favicon.ico`
-
-    </td>
+    <td><code>favicon.ico</code></td>
     <td>
 
       Every site wants to look good on the bookmark bar.
@@ -325,12 +299,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `index.html`
-
-    </td>
+    <td><code>index.html</code></td>
     <td>
 
       The main HTML page that is served when someone visits your site.
@@ -340,25 +311,19 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `karma.conf.js`
-
-    </td>
+    <td><code>karma.conf.js</code></td>
     <td>
 
       Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
       used when running `ng test`.
 
     </td>
-  </tr>  
+  </tr>
+
   <tr>
-    <td>
-
-      `main.ts`
-
-    </td>
+    <td><code>main.ts</code></td>
     <td>
 
       The main entry point for your app.
@@ -369,12 +334,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `polyfills.ts`
-
-    </td>
+    <td><code>polyfills.ts</code></td>
     <td>
 
       Different browsers have different levels of support of the web standards.
@@ -384,12 +346,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `styles.css`
-
-    </td>
+    <td><code>styles.css</code></td>
     <td>
 
       Your global styles go here.
@@ -398,24 +357,20 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `test.ts`
-
-    </td>
+    <td><code>test.ts</code></td>
     <td>
 
       This is the main entry point for your unit tests.
       It has some custom configuration that might be unfamiliar, but it's not something you'll
       need to edit.
+
     </td>
   </tr>
-  <tr>
-    <td>
 
-      `tsconfig.{app|spec}.json`
-    </td>
+  <tr>
+    <td><code>tsconfig.{app|spec}.json</code></td>
     <td>
 
       TypeScript compiler configuration for the Angular app (`tsconfig.app.json`)
@@ -423,12 +378,9 @@ Any files outside of this folder are meant to support building your app.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `tslint.json`
-
-    </td>
+    <td><code>tslint.json</code></td>
     <td>
 
       Additional Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
@@ -436,7 +388,8 @@ Any files outside of this folder are meant to support building your app.
       Linting helps keep your code style consistent.
 
     </td>
-  </tr>  
+  </tr>
+
 </table>
 
 ### The root folder
@@ -455,7 +408,7 @@ These files go in the root folder next to `src/`.
       <div class='children'>
         <div class="file">app.e2e-spec.ts</div>
         <div class="file">app.po.ts</div>
-      </div>      
+      </div>
       <div class="file">tsconfig.e2e.json</div>
       <div class="file">protractor.conf.js</div>
     </div>
@@ -463,7 +416,7 @@ These files go in the root folder next to `src/`.
     <div class="file">src/...</div>
     <div class='children'>
       <div class="file">karma.conf.js</div>
-    </div>    
+    </div>
     <div class="file">.editorconfig</div>
     <div class="file">.gitignore</div>
     <div class="file">angular.json</div>
@@ -474,31 +427,22 @@ These files go in the root folder next to `src/`.
   </div>
 </div>
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 
+<table class="is-full-width">
 
-<table width="100%">
-  <col width="20%">
-  </col>
-  <col width="80%">
-  </col>
+  <col width="20%"></col>
+  <col width="80%"></col>
+
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>
-      File
-    </th>
-    <th>
-      Purpose
-    </th>
-  </tr>
-  <tr>
-    <td>
-
-      `e2e/`
-
-    </td>
+    <td><code>e2e/</code></td>
     <td>
 
       Inside `e2e/` live the end-to-end tests.
@@ -508,24 +452,19 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `node_modules/`
-
-    </td>
+    <td><code>node_modules/</code></td>
     <td>
 
       `Node.js` creates this folder and puts all third party modules listed in
       `package.json` inside of it.
+
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `.editorconfig`
-
-    </td>
+    <td><code>.editorconfig</code></td>
     <td>
 
       Simple configuration for your editor to make sure everyone that uses your project
@@ -535,24 +474,18 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `.gitignore`
-
-    </td>
+    <td><code>.gitignore</code></td>
     <td>
 
       Git configuration to make sure autogenerated files are not committed to source control.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `angular.json`
-
-    </td>
+    <td><code>angular.json</code></td>
     <td>
 
       Configuration for Angular CLI.
@@ -562,12 +495,9 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `package.json`
-
-    </td>
+    <td><code>package.json</code></td>
     <td>
 
       `npm` configuration listing the third party packages your project uses.
@@ -575,12 +505,9 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `protractor.conf.js`
-
-    </td>
+    <td><code>protractor.conf.js</code></td>
     <td>
 
       End-to-end test configuration for [Protractor](http://www.protractortest.org/),
@@ -588,12 +515,9 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `README.md`
-
-    </td>
+    <td><code>README.md</code></td>
     <td>
 
       Basic documentation for your project, pre-filled with CLI command information.
@@ -602,24 +526,18 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `tsconfig.json`
-
-    </td>
+    <td><code>tsconfig.json</code></td>
     <td>
 
       TypeScript compiler configuration for your IDE to pick up and give you helpful tooling.
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `tslint.json`
-
-    </td>
+    <td><code>tslint.json</code></td>
     <td>
 
       Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
@@ -628,6 +546,7 @@ These files go in the root folder next to `src/`.
 
     </td>
   </tr>
+
 </table>
 
 <div class="alert is-helpful">

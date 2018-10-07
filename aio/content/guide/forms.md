@@ -424,68 +424,30 @@ You can leverage those class names to change the appearance of the control.
 
 <table>
 
+  <thead>
+    <tr>
+      <th>State</th>
+      <th>Class if true</th>
+      <th>Class if false</th>
+    </tr>
+  </thead>
+
   <tr>
-
-    <th>
-      State
-    </th>
-
-    <th>
-      Class if true
-    </th>
-
-    <th>
-      Class if false
-    </th>
-
+    <td>The control has been visited.</td>
+    <td><code>ng-touched</code></td>
+    <td><code>ng-untouched</code></td>
   </tr>
 
   <tr>
-
-    <td>
-      The control has been visited.
-    </td>
-
-    <td>
-      <code>ng-touched</code>
-    </td>
-
-    <td>
-      <code>ng-untouched</code>
-    </td>
-
+    <td>The control's value has changed.</td>
+    <td><code>ng-dirty</code></td>
+    <td><code>ng-pristine</code></td>
   </tr>
 
   <tr>
-
-    <td>
-      The control's value has changed.
-    </td>
-
-    <td>
-      <code>ng-dirty</code>
-    </td>
-
-    <td>
-      <code>ng-pristine</code>
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      The control's value is valid.
-    </td>
-
-    <td>
-      <code>ng-valid</code>
-    </td>
-
-    <td>
-      <code>ng-invalid</code>
-    </td>
-
+    <td>The control's value is valid.</td>
+    <td><code>ng-valid</code></td>
+    <td><code>ng-invalid</code></td>
   </tr>
 
 </table>
@@ -785,4 +747,3 @@ Here’s the code for the final version of the application:
   </code-pane>
 
 </code-tabs>
-

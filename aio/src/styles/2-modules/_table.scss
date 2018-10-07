@@ -24,12 +24,11 @@ table {
     tr > th {
       background: rgba($lightgray, 0.2);
       border-bottom: 1px solid $lightgray;
-      color: $darkgray;
-      font-size: 12px;
-      font-weight: 500;
-      padding: 8px 24px;
+      // color: $darkgray;
+      // font-size: 12px;
+      font-weight: 600;
+      padding: 16px;
       text-align: left;
-      text-transform: uppercase;
       line-height: 28px;
     }
   }

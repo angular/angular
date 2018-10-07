@@ -89,32 +89,39 @@ For more information, see Web Component documentation for [Creating custom event
 The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers. Support is pending or planned in other browsers.
 
 <table>
-<tr>
-  <th>Browser</th>
-  <th>Custom Element Support</th>
-</tr>
-<tr>
-  <td>Chrome</td>
-  <td>Supported natively.</td>
-</tr>
-<tr>
-  <td>Opera</td>
-  <td>Supported natively.</td>
-</tr>
-<tr>
-  <td>Safari</td>
-  <td>Supported natively.</td>
-</tr>
-<tr>
-  <td>Firefox</td>
-  <td> Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true. Planned to be enabled by default in version 63.</td>
-</tr>
-<tr>
-  <td>Edge</td>
-  <td>Working on an implementation. <br>
 
-  </td>
-</tr>
+  <thead>
+    <tr>
+      <th>Browser</th>
+      <th>Custom Element Support</th>
+    </tr>
+  </thead>
+
+  <tr>
+    <td>Chrome</td>
+    <td>Supported natively.</td>
+  </tr>
+
+  <tr>
+    <td>Opera</td>
+    <td>Supported natively.</td>
+  </tr>
+
+  <tr>
+    <td>Safari</td>
+    <td>Supported natively.</td>
+  </tr>
+
+  <tr>
+    <td>Firefox</td>
+    <td> Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true. Planned to be enabled by default in version 63.</td>
+  </tr>
+
+  <tr>
+    <td>Edge</td>
+    <td>Working on an implementation.</td>
+  </tr>
+
 </table>
 
 In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's `tsconfig.json`. As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.

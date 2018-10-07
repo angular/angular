@@ -100,12 +100,12 @@ The following code snippets illustrate how the same kind of operation is defined
     <tr>
       <td>Creation</td>
       <td>
-        <pre>new Observable((observer) => {
+<pre>new Observable((observer) => {
     observer.next(123);
   });</pre>
       </td>
       <td>
-        <pre>new Promise((resolve, reject) => {
+<pre>new Promise((resolve, reject) => {
     resolve(123);
   });</pre>
       </td>
@@ -118,12 +118,12 @@ The following code snippets illustrate how the same kind of operation is defined
     <tr>
       <td>Subscribe</td>
       <td>
-        <pre>sub = obs.subscribe((value) => {
+<pre>sub = obs.subscribe((value) => {
     console.log(value)
   });</pre>
       </td>
       <td>
-        <pre>promise.then((value) => {
+<pre>promise.then((value) => {
     console.log(value);
   });</pre>
       </td>
@@ -145,11 +145,15 @@ Using observables to handle events and asynchronous operations can have the adva
 Here are some code samples that illustrate how the same kind of operation is defined using observables and the events API.
 
 <table>
-  <tr>
-    <th></th>
-    <th>Observable</th>
-    <th>Events API</th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th></th>
+      <th>Observable</th>
+      <th>Events API</th>
+    </tr>
+  </thead>
+
   <tr>
     <td>Creation & cancellation</td>
     <td>
@@ -173,6 +177,7 @@ button.removeEventListener(‘click’, handler);
 </pre>
     </td>
   </tr>
+
   <tr>
     <td>Subscription</td>
     <td>
@@ -186,6 +191,7 @@ button.removeEventListener(‘click’, handler);
 });</pre>
     </td>
   </tr>
+
   <tr>
     <td>Configuration</td>
     <td>Listen for keystrokes, but provide a stream representing the value in the input.
@@ -200,6 +206,7 @@ button.removeEventListener(‘click’, handler);
 });</pre>
     </td>
   </tr>
+
 </table>
 
 
@@ -208,11 +215,15 @@ button.removeEventListener(‘click’, handler);
 An observable produces values over time. An array is created as a static set of values. In a sense, observables are asynchronous where arrays are synchronous. In the following examples, ➞ implies asynchronous value delivery.
 
 <table>
-  <tr>
-    <th></th>
-    <th>Observable</th>
-    <th>Array</th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th></th>
+      <th>Observable</th>
+      <th>Array</th>
+    </tr>
+  </thead>
+
   <tr>
     <td>Given</td>
     <td>
@@ -224,6 +235,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>arrB: ['a', 'b', 'c']</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>concat()</pre></td>
     <td>
@@ -235,6 +247,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>[1,2,3,5,7,'a','b','c']</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>filter()</pre></td>
     <td>
@@ -246,6 +259,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>[5, 7]</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>find()</pre></td>
     <td>
@@ -257,6 +271,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>5</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>findIndex()</pre></td>
     <td>
@@ -268,6 +283,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>3</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>forEach()</pre></td>
     <td>
@@ -291,6 +307,7 @@ An observable produces values over time. An array is created as a static set of 
 7</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>map()</pre></td>
     <td>
@@ -302,6 +319,7 @@ An observable produces values over time. An array is created as a static set of 
       <pre>[-1, -2, -3, -5, -7]</pre>
     </td>
   </tr>
+
   <tr>
     <td><pre>reduce()</pre></td>
     <td>
@@ -313,7 +331,5 @@ An observable produces values over time. An array is created as a static set of 
       <pre>18</pre>
     </td>
   </tr>
+
 </table>
-
-
-

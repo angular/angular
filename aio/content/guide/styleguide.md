@@ -527,178 +527,93 @@ and reference assets of different types.
 
 
 
-<table width="100%">
+<table class="is-full-width is-fixed-layout">
 
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+  <thead>
+    <tr>
+      <th>Symbol Name</th>
+      <th>File Name</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Symbol Name
-    </th>
-
-    <th>
-      File Name
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
     <td>
-
       <code-example hideCopy class="no-box">
         @Component({ ... })
         export class AppComponent { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      app.component.ts
-    </td>
-
+    <td>app.component.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroesComponent { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      heroes.component.ts
-    </td>
-
+    <td>heroes.component.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroListComponent { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      hero-list.component.ts
-    </td>
-
+    <td>hero-list.component.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Component({ ... })
         export class HeroDetailComponent { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      hero-detail.component.ts
-    </td>
-
+    <td>hero-detail.component.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Directive({ ... })
         export class ValidationDirective { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      validation.directive.ts
-    </td>
-
+    <td>validation.directive.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppModule
       </code-example>
-
     </td>
-
-    <td>
-
-
-      app.module.ts
-    </td>
-
+    <td>app.module.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Pipe({ name: 'initCaps' })
         export class InitCapsPipe implements PipeTransform { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      init-caps.pipe.ts
-    </td>
-
+    <td>init-caps.pipe.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Injectable()
         export class UserProfileService { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      user-profile.service.ts
-    </td>
-
+    <td>user-profile.service.ts</td>
   </tr>
 
 </table>
@@ -777,83 +692,42 @@ As always, strive for consistency.
 
 
 
-<table width="100%">
-
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+<table class="is-full-width is-fixed-layout">
+  <thead>
+    <tr>
+      <th>Symbol Name</th>
+      <th>File Name</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Symbol Name
-    </th>
-
-    <th>
-      File Name
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
     <td>
-
       <code-example hideCopy class="no-box">
         @Injectable()
         export class HeroDataService { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      hero-data.service.ts
-    </td>
-
+    <td>hero-data.service.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Injectable()
         export class CreditService { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      credit.service.ts
-    </td>
-
+    <td>credit.service.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Injectable()
         export class Logger { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      logger.service.ts
-    </td>
-
+    <td>logger.service.ts</td>
   </tr>
 
 </table>
@@ -1228,64 +1102,32 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-<table width="100%">
-
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+<table class="is-full-width is-fixed-layout">
+  <thead>
+    <tr>
+      <th>Symbol Name</th>
+      <th>File Name</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Symbol Name
-    </th>
-
-    <th>
-      File Name
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
     <td>
-
       <code-example hideCopy class="no-box">
         @Pipe({ name: 'ellipsis' })
         export class EllipsisPipe implements PipeTransform { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      ellipsis.pipe.ts
-    </td>
-
+    <td>ellipsis.pipe.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @Pipe({ name: 'initCaps' })
         export class InitCapsPipe implements PipeTransform { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      init-caps.pipe.ts
-    </td>
-
+    <td>init-caps.pipe.ts</td>
   </tr>
 
 </table>
@@ -1347,84 +1189,49 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-<table width="100%">
-
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+<table class="is-full-width is-fixed-layout">
+  <thead>
+    <tr>
+      <th>Test Type</th>
+      <th>File Names</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Test Type
-    </th>
-
-    <th>
-      File Names
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
+    <td>Components</td>
     <td>
-
-
-      Components
-    </td>
-
-    <td>
-
 
       heroes.component.spec.ts
 
       hero-list.component.spec.ts
 
       hero-detail.component.spec.ts
-    </td>
 
+    </td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
+    <td>Services</td>
     <td>
-
-
-      Services
-    </td>
-
-    <td>
-
 
       logger.service.spec.ts
 
       hero.service.spec.ts
 
       filter-text.service.spec.ts
-    </td>
 
+    </td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
+    <td>Pipes</td>
     <td>
-
-
-      Pipes
-    </td>
-
-    <td>
-
 
       ellipsis.pipe.spec.ts
 
       init-caps.pipe.spec.ts
-    </td>
 
+    </td>
   </tr>
 
 </table>
@@ -1477,44 +1284,23 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
-<table width="100%">
-
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+<table class="is-full-width is-fixed-layout">
+  <thead>
+    <tr>
+      <th>Test Type</th>
+      <th>File Names</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Test Type
-    </th>
-
-    <th>
-      File Names
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
+    <td>End-to-End Tests</td>
     <td>
-
-
-      End-to-End Tests
-    </td>
-
-    <td>
-
 
       app.e2e-spec.ts
 
       heroes.e2e-spec.ts
-    </td>
 
+    </td>
   </tr>
 
 </table>
@@ -1629,121 +1415,63 @@ A consistent class and file name convention make these modules easy to spot and 
 
 
 
-<table width="100%">
+<table class="is-full-width is-fixed-layout">
 
-  <col width="50%">
-
-  </col>
-
-  <col width="50%">
-
-  </col>
+  <thead>
+    <tr>
+      <th>Symbol Name</th>
+      <th>File Name</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <th>
-      Symbol Name
-    </th>
-
-    <th>
-      File Name
-    </th>
-
-  </tr>
-
-  <tr style=top>
-
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppModule { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      app.module.ts
-    </td>
-
+    <td>app.module.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class HeroesModule { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      heroes.module.ts
-    </td>
-
+    <td>heroes.module.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class VillainsModule { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      villains.module.ts
-    </td>
-
+    <td>villains.module.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class AppRoutingModule { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      app-routing.module.ts
-    </td>
-
+    <td>app-routing.module.ts</td>
   </tr>
 
-  <tr style=top>
-
+  <tr>
     <td>
-
       <code-example hideCopy class="no-box">
         @NgModule({ ... })
         export class HeroesRoutingModule { }
       </code-example>
-
     </td>
-
-    <td>
-
-
-      heroes-routing.module.ts
-    </td>
-
+    <td>heroes-routing.module.ts</td>
   </tr>
 
 </table>
@@ -4514,7 +4242,7 @@ helps instantly identify which members of the component serve which purpose.
 
 **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
 can be modified only in a single place&mdash;in the directive's class.
-If you use the `host` metadata property, you must modify both the property/method declaration in the 
+If you use the `host` metadata property, you must modify both the property/method declaration in the
 directive's class and the metadata in the decorator associated with the directive.
 
 
@@ -4712,7 +4440,7 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts" title="src/app/treeshaking/service.ts" linenums="false"> </code-example> 
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts" title="src/app/treeshaking/service.ts" linenums="false"> </code-example>
 
 
 

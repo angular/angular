@@ -15,55 +15,49 @@ of some of the things they contain:
 
 <table>
 
- <tr>
-   <th style="vertical-align: top">
-     NgModule
-   </th>
+  <thead>
+    <tr>
+      <th>NgModule</th>
+      <th>Import it from</th>
+      <th>Why you use it</th>
+    </tr>
+  </thead>
 
-   <th style="vertical-align: top">
-     Import it from
-   </th>
+  <tr>
+    <td><code>BrowserModule</code></td>
+    <td><code>@angular/platform-browser</code></td>
+    <td>When you want to run your app in a browser</td>
+  </tr>
 
-   <th style="vertical-align: top">
-     Why you use it
-   </th>
- </tr>
+  <tr>
+    <td><code>CommonModule</code></td>
+    <td><code>@angular/common</code></td>
+    <td>When you want to use <code>NgIf</code>, <code>NgFor</code></td>
+  </tr>
 
- <tr>
-   <td><code>BrowserModule</code></td>
-   <td><code>@angular/platform-browser</code></td>
-   <td>When you want to run your app in a browser</td>
- </tr>
+  <tr>
+    <td><code>FormsModule</code></td>
+    <td><code>@angular/forms</code></td>
+    <td>When you want to build template driven forms (includes <code>NgModel</code>)</td>
+  </tr>
 
- <tr>
-   <td><code>CommonModule</code></td>
-   <td><code>@angular/common</code></td>
-   <td>When you want to use <code>NgIf</code>, <code>NgFor</code></td>
- </tr>
+  <tr>
+    <td><code>ReactiveFormsModule</code></td>
+    <td><code>@angular/forms</code></td>
+    <td>When you want to build reactive forms</td>
+  </tr>
 
- <tr>
-   <td><code>FormsModule</code></td>
-   <td><code>@angular/forms</code></td>
-   <td>When you want to build template driven forms (includes <code>NgModel</code>)</td>
- </tr>
+  <tr>
+    <td><code>RouterModule</code></td>
+    <td><code>@angular/router</code></td>
+    <td>When you want to use <code>RouterLink</code>, <code>.forRoot()</code>, and <code>.forChild()</code></td>
+  </tr>
 
- <tr>
-   <td><code>ReactiveFormsModule</code></td>
-   <td><code>@angular/forms</code></td>
-   <td>When you want to build reactive forms</td>
- </tr>
-
- <tr>
-   <td><code>RouterModule</code></td>
-   <td><code>@angular/router</code></td>
-   <td>When you want to use <code>RouterLink</code>, <code>.forRoot()</code>, and <code>.forChild()</code></td>
- </tr>
-
- <tr>
-   <td><code>HttpClientModule</code></td>
-   <td><code>@angular/common/http</code></td>
-   <td>When you want to talk to a server</td>
- </tr>
+  <tr>
+    <td><code>HttpClientModule</code></td>
+    <td><code>@angular/common/http</code></td>
+    <td>When you want to talk to a server</td>
+  </tr>
 
 </table>
 

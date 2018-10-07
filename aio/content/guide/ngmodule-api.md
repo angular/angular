@@ -40,24 +40,15 @@ The following table summarizes the `@NgModule` metadata properties.
 
 <table>
 
-  <tr>
-
-    <th>
-      Property
-    </th>
-
-    <th>
-      Description
-    </th>
-
-  </tr>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>declarations</code>
-    </td>
-
+    <td><code>declarations</code></td>
     <td>
 
       A list of [declarable](guide/ngmodule-faq#q-declarable) classes,
@@ -79,15 +70,10 @@ The following table summarizes the `@NgModule` metadata properties.
       directly or indirectly from another module.
 
     </td>
-
   </tr>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>providers</code>
-    </td>
-
+    <td><code>providers</code></td>
     <td>
 
       A list of dependency-injection providers.
@@ -110,15 +96,10 @@ The following table summarizes the `@NgModule` metadata properties.
       For more information on injector hierarchy and scoping, see [Providers](guide/providers) and the [DI Guide](guide/dependency-injection).
 
     </td>
-
   </tr>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>imports</code>
-    </td>
-
+    <td><code>imports</code></td>
     <td>
 
       A list of modules which should be folded into this module. Folded means it is
@@ -138,15 +119,10 @@ The following table summarizes the `@NgModule` metadata properties.
       after importing the Angular `FormsModule`.
 
     </td>
-
   </tr>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>exports</code>
-    </td>
-
+    <td><code>exports</code></td>
     <td>
 
       A list of declarations&mdash;*component*, *directive*, and *pipe* classes&mdash;that
@@ -172,15 +148,10 @@ The following table summarizes the `@NgModule` metadata properties.
       Module 'B' components can use `ngIf` even though 'B' itself didn't import `CommonModule`.
 
     </td>
-
   </tr>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>bootstrap</code>
-    </td>
-
+    <td><code>bootstrap</code></td>
     <td>
 
       A list of components that are automatically bootstrapped.
@@ -193,15 +164,10 @@ The following table summarizes the `@NgModule` metadata properties.
       A bootstrap component is automatically added to `entryComponents`.
 
     </td>
-
   </tr>
 
   <tr>
-
-    <td style="vertical-align: top">
-      <code>entryComponents</code>
-    </td>
-
+    <td><code>entryComponents</code></td>
     <td>
 
       A list of components that can be dynamically loaded into the view.
@@ -224,7 +190,6 @@ The following table summarizes the `@NgModule` metadata properties.
       For more information, see [Entry Components](guide/entry-components).
 
     </td>
-
   </tr>
 
 </table>

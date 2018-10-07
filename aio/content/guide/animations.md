@@ -242,80 +242,77 @@ The functional API provided by the `@angular/animations` module provides a domai
 
 <table>
 
-<tr>
-<th style="vertical-align: top">
-Function name
-</th>
+  <thead>
+    <tr>
+      <th>Function name</th>
+      <th>What it does</th>
+    </tr>
+  </thead>
 
-<th style="vertical-align: top">
-What it does
-</th>
-</tr>
+  <tr>
+    <td><code>trigger()</code></td>
+    <td>Kicks off the animation and serves as a container for all other animation function calls. HTML template binds to <code>triggerName</code>. Use the first argument to declare a unique trigger name. Uses array syntax.</td>
+  </tr>
 
-<tr>
-<td><code>trigger()</code></td>
-<td>Kicks off the animation and serves as a container for all other animation function calls. HTML template binds to <code>triggerName</code>. Use the first argument to declare a unique trigger name. Uses array syntax.</td>
-</tr>
+  <tr>
+    <td><code>style()</code></td>
+    <td>Defines one or more CSS styles to use in animations. Controls the visual appearance of HTML elements during animations. Uses object syntax.</td>
+  </tr>
 
-<tr>
-<td><code>style()</code></td>
-<td>Defines one or more CSS styles to use in animations. Controls the visual appearance of HTML elements during animations. Uses object syntax.</td>
-</tr>
+  <tr>
+    <td><code>state()</code></td>
+    <td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
+  </tr>
 
-<tr>
-<td><code>state()</code></td>
-<td>Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.</td>
-</tr>
+  <tr>
+    <td><code>animate()</code></td>
+    <td>Specifies the timing information for a transition. Optional values for <code>delay</code> and <code>easing</code>. Can contain <code>style()</code> calls within.</td>
+  </tr>
 
-<tr>
-<td><code>animate()</code></td>
-<td>Specifies the timing information for a transition. Optional values for <code>delay</code> and <code>easing</code>. Can contain <code>style()</code> calls within.</td>
-</tr>
+  <tr>
+    <td><code>transition()</code></td>
+    <td>Defines the animation sequence between two named states. Uses array syntax.</td>
+  </tr>
 
-<tr>
-<td><code>transition()</code></td>
-<td>Defines the animation sequence between two named states. Uses array syntax.</td>
-</tr>
+  <tr>
+    <td><code>keyframes()</code></td>
+    <td>Allows a sequential change between styles within a specified time interval. Use within <code>animate()</code>. Can include multiple <code>style()</code> calls within each <code>keyframe()</code>. Uses array syntax.</td>
+  </tr>
 
-<tr>
-<td><code>keyframes()</code></td>
-<td>Allows a sequential change between styles within a specified time interval. Use within <code>animate()</code>. Can include multiple <code>style()</code> calls within each <code>keyframe()</code>. Uses array syntax.</td>
-</tr>
+  <tr>
+    <td><code>group()</code></td>
+    <td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition()</code>.</td>
+  </tr>
 
-<tr>
-<td><code>group()</code></td>
-<td>Specifies a group of animation steps (<em>inner animations</em>) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within <code>sequence()</code> or <code>transition().</code></td>
-</tr>
+  <tr>
+    <td><code>query()</code></td>
+    <td>Use to find one or more inner HTML elements within the current element.</td>
+  </tr>
 
-<tr>
-<td><code>query()</code></td>
-<td>Use to find one or more inner HTML elements within the current element. </td>
-</tr>
+  <tr>
+    <td><code>sequence()</code></td>
+    <td>Specifies a list of animation steps that are run sequentially, one by one.</td>
+  </tr>
 
-<tr>
-<td><code>sequence()</code></td>
-<td>Specifies a list of animation steps that are run sequentially, one by one.</td>
-</tr>
+  <tr>
+    <td><code>stagger()</code></td>
+    <td>Staggers the starting time for animations for multiple elements.</td>
+  </tr>
 
-<tr>
-<td><code>stagger()</code></td>
-<td>Staggers the starting time for animations for multiple elements.</td>
-</tr>
+  <tr>
+    <td><code>animation()</code></td>
+    <td>Produces a reusable animation that can be invoked from elsewhere. Used together with <code>useAnimation()</code>.</td>
+  </tr>
 
-<tr>
-<td><code>animation()</code></td>
-<td>Produces a reusable animation that can be invoked from elsewhere. Used together with <code>useAnimation()</code>.</td>
-</tr>
+  <tr>
+    <td><code>useAnimation()</code></td>
+    <td>Activates a reusable animation. Used with <code>animation()</code>.</td>
+  </tr>
 
-<tr>
-<td><code>useAnimation()</code></td>
-<td>Activates a reusable animation. Used with <code>animation()</code>.</td>
-</tr>
-
-<tr>
-<td><code>animateChild()</code></td>
-<td>Allows animations on child components to be run within the same timeframe as the parent.</td>
-</tr>
+  <tr>
+    <td><code>animateChild()</code></td>
+    <td>Allows animations on child components to be run within the same timeframe as the parent.</td>
+  </tr>
 
 </table>
 

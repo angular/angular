@@ -292,41 +292,29 @@ This guide covers most of them, after a high-level view of Angular data binding 
 Binding types can be grouped into three categories distinguished by the direction of data flow:
 from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
-<table width="100%">
-  <col width="30%">
-  </col>
-  <col width="50%">
-  </col>
-  <col width="20%">
-  </col>
+<table  class="is-full-width">
+
+  <col width="30%"></col>
+  <col width="50%"></col>
+  <col width="20%"></col>
+
+  <thead>
+    <tr>
+      <th>Data direction</th>
+      <th>Syntax</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>
-      Data direction
-    </th>
-    <th>
-      Syntax
-    </th>
-    <th>
-      Type
-    </th>
-
-  </tr>
-  <tr>
+    <td>One-way<br>from data source<br>to view target</td>
     <td>
-      One-way<br>from data source<br>to view target
-    </td>
-    <td>
-
       <code-example>
         {{expression}}
         [target]="expression"
         bind-target="expression"
       </code-example>
-
     </td>
     <td>
       Interpolation<br>
@@ -335,35 +323,30 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
       Class<br>
       Style
     </td>
-    <tr>
-      <td>
-        One-way<br>from view target<br>to data source
-      </td>
-      <td>
-        <code-example>
-          (target)="statement"
-          on-target="statement"
-        </code-example>
-      </td>
-      <td>
-        Event
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Two-way
-      </td>
-      <td>
-        <code-example>
-          [(target)]="expression"
-          bindon-target="expression"
-        </code-example>
-      </td>
-      <td>
-        Two-way
-      </td>
-    </tr>
   </tr>
+
+  <tr>
+    <td>One-way<br>from view target<br>to data source</td>
+    <td>
+      <code-example>
+        (target)="statement"
+        on-target="statement"
+      </code-example>
+    </td>
+    <td>Event</td>
+  </tr>
+
+  <tr>
+    <td>Two-way</td>
+    <td>
+      <code-example>
+        [(target)]="expression"
+        bindon-target="expression"
+      </code-example>
+    </td>
+    <td>Two-way</td>
+  </tr>
+
 </table>
 
 Binding types other than interpolation have a **target name** to the left of the equal sign,
@@ -480,32 +463,23 @@ Depending on the binding type, the target can be an
 (element | component | directive) event, or (rarely) an attribute name.
 The following table summarizes:
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
-<table width="100%">
-  <col width="10%">
-  </col>
-  <col width="15%">
-  </col>
-  <col width="75%">
-  </col>
+<table  class="is-full-width">
+
+  <col width="10%"></col>
+  <col width="15%"></col>
+  <col width="75%"></col>
+
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Target</th>
+      <th>Examples</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>
-      Type
-    </th>
-    <th>
-      Target
-    </th>
-    <th>
-      Examples
-    </th>
-  </tr>
-  <tr>
-    <td>
-      Property
-    </td>
+    <td>Property</td>
     <td>
       Element&nbsp;property<br>
       Component&nbsp;property<br>
@@ -516,10 +490,9 @@ The following table summarizes:
       </code-example>
     </td>
   </tr>
+
   <tr>
-    <td>
-      Event
-    </td>
+    <td>Event</td>
     <td>
       Element&nbsp;event<br>
       Component&nbsp;event<br>
@@ -530,22 +503,18 @@ The following table summarizes:
       </code-example>
     </td>
   </tr>
+
   <tr>
-    <td>
-      Two-way
-    </td>
-    <td>
-      Event and property
-    </td>
+    <td>Two-way</td>
+    <td>Event and property</td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" title="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
+
   <tr>
-    <td>
-      Attribute
-    </td>
+    <td>Attribute</td>
     <td>
       Attribute
       (the&nbsp;exception)
@@ -555,30 +524,25 @@ The following table summarizes:
       </code-example>
     </td>
   </tr>
+
   <tr>
-    <td>
-      Class
-    </td>
-    <td>
-      <code>class</code> property
-    </td>
+    <td>Class</td>
+    <td><code>class</code> property</td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" title="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
+
   <tr>
-    <td>
-      Style
-    </td>
-    <td>
-      <code>style</code> property
-    </td>
+    <td>Style</td>
+    <td><code>style</code> property</td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" title="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
+
 </table>
 
 With this broad view in mind, you're ready to look at binding types in detail.
@@ -1673,8 +1637,8 @@ You can only bind to _another_ component or directive through its _Input_ and _O
 
 Remember that all **components** are **directives**.
 
-The following discussion refers to _components_ for brevity and 
-because this topic is mostly a concern for component authors. 
+The following discussion refers to _components_ for brevity and
+because this topic is mostly a concern for component authors.
 </div>
 
 <h3 class="no-toc">Discussion</h3>
@@ -1985,7 +1949,7 @@ You'll need this template operator when you turn on strict null checks. It's opt
 
 {@a any-type-cast-function}
 
-## The `$any` type cast function (`$any( <expression> )`) 
+## The `$any` type cast function (`$any( <expression> )`)
 
 Sometimes a binding expression will be reported as a type error and it is not possible or difficult
 to fully specify the type. To silence the error, you can use the `$any` cast function to cast
@@ -1994,7 +1958,7 @@ the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/b
 <code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-In this example, when the Angular compiler turns your template into TypeScript code, 
+In this example, when the Angular compiler turns your template into TypeScript code,
 it prevents TypeScript from reporting that `marker` is not a member of the `Hero`
 interface.
 

@@ -216,17 +216,19 @@ Angular, but there are some key differences between the two
 frameworks in how it actually works.
 
 <table>
-  <tr>
-    <th>
-      AngularJS
-    </th>
-    <th>
-      Angular
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>AngularJS</th>
+      <th>Angular</th>
+    </tr>
+  </thead>
+
   <tr>
     <td>
+
       Dependency injection tokens are always strings
+
     </td>
     <td>
 
@@ -235,6 +237,7 @@ frameworks in how it actually works.
 
     </td>
   </tr>
+
   <tr>
     <td>
 
@@ -249,6 +252,7 @@ frameworks in how it actually works.
 
     </td>
   </tr>
+
 </table>
 
 Even accounting for these differences you can still have dependency injection
@@ -613,71 +617,36 @@ provide the inputs and outputs using **Angular template syntax**,
 observing the following rules:
 
 <table>
+
+  <thead>
+    <tr>
+      <th></th>
+      <th>Binding definition</th>
+      <th>Template syntax</th>
+    </tr>
+  <thead>
+
   <tr>
-    <th>
-    </th>
-    <th>
-      Binding definition
-    </th>
-    <th>
-      Template syntax
-    </th>
+    <th>Attribute binding</th>
+    <td><code>myAttribute: '@myAttribute'</code></td>
+    <td><code>&lt;my-component myAttribute="value"></code></td>
   </tr>
+
   <tr>
-    <th>
-      Attribute binding
-    </th>
-    <td>
-
-      `myAttribute: '@myAttribute'`
-
-    </td>
-
-    <td>
-
-      `<my-component myAttribute="value">`
-
-    </td>
+    <th>Expression binding</th>
+    <td><code>myOutput: '&myOutput'</code></td>
+    <td><code>&lt;my-component (myOutput)="action()"></code></td>
   </tr>
+
   <tr>
-    <th>
-      Expression binding
-    </th>
-    <td>
-
-      `myOutput: '&myOutput'`
-
-    </td>
-    <td>
-
-      `<my-component (myOutput)="action()">`
-
-    </td>
+    <th>One-way binding</th>
+    <td><code>myValue: '&lt;myValue'</code></td>
+    <td><code>&lt;my-component [myValue]="anExpression"></code></td>
   </tr>
+
   <tr>
-    <th>
-      One-way binding
-    </th>
-    <td>
-
-      `myValue: '<myValue'`
-
-    </td>
-    <td>
-
-      `<my-component [myValue]="anExpression">`
-
-    </td>
-  </tr>
-  <tr>
-    <th>
-      Two-way binding
-    </th>
-    <td>
-
-      `myValue: '=myValue'`
-
-    </td>
+    <th>Two-way binding</th>
+    <td><code>myValue: '=myValue'</code></td>
     <td>
 
       As a two-way binding: `<my-component [(myValue)]="anExpression">`.
@@ -686,6 +655,7 @@ observing the following rules:
 
     </td>
   </tr>
+
 </table>
 
 For example, imagine a hero detail AngularJS component directive
@@ -1752,103 +1722,65 @@ because the E2E tests have matchers that are specific to AngularJS.
 For PhoneCat you need to make the following changes in order to make things work with Angular:
 
 <table>
+
+  <thead>
+    <tr>
+      <th>Previous code</th>
+      <th>New code</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>
-      Previous code
-    </th>
-    <th>
-      New code
-    </th>
-    <th>
-      Notes
-    </th>
-  </tr>
-  <tr>
-    <td>
-
-      `by.repeater('phone in $ctrl.phones').column('phone.name')`
-
-    </td>
-    <td>
-
-      `by.css('.phones .name')`
-
-    </td>
+    <td><code>by.repeater('phone in $ctrl.phones').column('phone.name')</code></td>
+    <td><code>by.css('.phones .name')</code></td>
     <td>
 
       The repeater matcher relies on AngularJS `ng-repeat`
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `by.repeater('phone in $ctrl.phones')`
-
-    </td>
-    <td>
-
-      `by.css('.phones li')`
-
-    </td>
-
+    <td><code>by.repeater('phone in $ctrl.phones')</code></td>
+    <td><code>by.css('.phones li')</code></td>
     <td>
 
       The repeater matcher relies on AngularJS `ng-repeat`
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `by.model('$ctrl.query')`
-
-    </td>
-    <td>
-
-      `by.css('input')`
-
-    </td>
+    <td><code>by.model('$ctrl.query')</code></td>
+    <td><code>by.css('input')</code></td>
     <td>
 
       The model matcher relies on AngularJS `ng-model`
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `by.model('$ctrl.orderProp')`
-
-    </td>
-    <td>
-
-      `by.css('select')`
-
-    </td>
+    <td><code>by.model('$ctrl.orderProp')</code></td>
+    <td><code>by.css('select')</code></td>
     <td>
 
       The model matcher relies on AngularJS `ng-model`
 
     </td>
   </tr>
+
   <tr>
-    <td>
-
-      `by.binding('$ctrl.phone.name')`
-
-    </td>
-    <td>
-
-      `by.css('h1')`
-
-    </td>
+    <td><code>by.binding('$ctrl.phone.name')</code></td>
+    <td><code>by.css('h1')</code></td>
     <td>
 
       The binding matcher relies on AngularJS data binding
 
     </td>
   </tr>
+
 </table>
 
 When the bootstrap method is switched from that of `UpgradeModule` to

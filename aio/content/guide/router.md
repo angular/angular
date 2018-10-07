@@ -6,11 +6,6 @@ as users perform application tasks.
 This guide covers the router's primary features, illustrating them through the evolution
 of a small application that you can <live-example>run live in the browser</live-example>.
 
-<!-- style for all tables on this page -->
-<style>
-  td, th {vertical-align: top}
-</style>
-
 
 ## Overview
 
@@ -148,8 +143,8 @@ If you need to see what events are happening during the navigation lifecycle, th
 
 ### Router outlet
 
-The `RouterOutlet` is a directive from the router library that is used like a component. 
-It acts as a placeholder that marks the spot in the template where the router should 
+The `RouterOutlet` is a directive from the router library that is used like a component.
+It acts as a placeholder that marks the spot in the template where the router should
 display the components for that outlet.
 
 
@@ -199,9 +194,9 @@ The `RouterLinkActive` directive toggles css classes for active `RouterLink` bin
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
-that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 
-directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component 
-property that returns such a string. 
+that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive`
+directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component
+property that returns such a string.
 
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
 
@@ -228,20 +223,16 @@ The route path and parameters are available through an injected router service c
 It has a great deal of useful information including:
 
 <table>
-  <tr>
-    <th>
-      Property
-    </th>
 
-    <th>
-      Description
-    </th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td>
-      <code>url</code>
-    </td>
+    <td><code>url</code></td>
     <td>
 
     An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
@@ -250,9 +241,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>data</code>
-    </td>
+    <td><code>data</code></td>
     <td>
 
     An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the [resolve guard](#resolve-guard).
@@ -261,9 +250,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>paramMap</code>
-    </td>
+    <td><code>paramMap</code></td>
     <td>
 
     An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter.
@@ -272,9 +259,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>queryParamMap</code>
-    </td>
+    <td><code>queryParamMap</code></td>
     <td>
 
     An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes.
@@ -284,9 +269,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>fragment</code>
-    </td>
+    <td><code>fragment</code></td>
     <td>
 
     An `Observable` of the URL [fragment](#fragment) available to all routes.
@@ -295,9 +278,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>outlet</code>
-    </td>
+    <td><code>outlet</code></td>
     <td>
 
     The name of the `RouterOutlet` used to render the route. For an unnamed outlet, the outlet name is _primary_.
@@ -306,9 +287,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>routeConfig</code>
-    </td>
+    <td><code>routeConfig</code></td>
     <td>
 
     The route configuration used for the route that contains the origin path.
@@ -316,10 +295,8 @@ It has a great deal of useful information including:
     </td>
   </tr>
 
-    <tr>
-    <td>
-      <code>parent</code>
-    </td>
+  <tr>
+    <td><code>parent</code></td>
     <td>
 
     The route's parent `ActivatedRoute` when this route is a [child route](#child-routing-component).
@@ -328,9 +305,7 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>firstChild</code>
-    </td>
+    <td><code>firstChild</code></td>
     <td>
 
     Contains the first `ActivatedRoute` in the list of this route's child routes.
@@ -339,15 +314,14 @@ It has a great deal of useful information including:
   </tr>
 
   <tr>
-    <td>
-      <code>children</code>
-    </td>
+    <td><code>children</code></td>
     <td>
 
     Contains all the [child routes](#child-routing-component) activated under the current route.
 
     </td>
   </tr>
+
 </table>
 
 <div class="alert is-helpful">
@@ -366,20 +340,16 @@ Use `queryParamMap` instead.
 During each navigation, the `Router` emits navigation events through the `Router.events` property. These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the table below.
 
 <table>
-  <tr>
-    <th>
-      Router Event
-    </th>
 
-    <th>
-      Description
-    </th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Router Event</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td>
-      <code>NavigationStart</code>
-    </td>
+    <td><code>NavigationStart</code></td>
     <td>
 
       An [event](api/router/NavigationStart) triggered when navigation starts.
@@ -388,9 +358,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>RouteConfigLoadStart</code>
-    </td>
+    <td><code>RouteConfigLoadStart</code></td>
     <td>
 
       An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
@@ -400,9 +368,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>RouteConfigLoadEnd</code>
-    </td>
+    <td><code>RouteConfigLoadEnd</code></td>
     <td>
 
       An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
@@ -411,9 +377,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>RoutesRecognized</code>
-    </td>
+    <td><code>RoutesRecognized</code></td>
     <td>
 
       An [event](api/router/RoutesRecognized) triggered when the Router parses the URL and the routes are recognized.
@@ -422,9 +386,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>GuardsCheckStart</code>
-    </td>
+    <td><code>GuardsCheckStart</code></td>
     <td>
 
       An [event](api/router/GuardsCheckStart) triggered when the Router begins the Guards phase of routing.
@@ -433,9 +395,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ChildActivationStart</code>
-    </td>
+    <td><code>ChildActivationStart</code></td>
     <td>
 
       An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children.
@@ -444,9 +404,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ActivationStart</code>
-    </td>
+    <td><code>ActivationStart</code></td>
     <td>
 
       An [event](api/router/ActivationStart) triggered when the Router begins activating a route.
@@ -455,9 +413,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>GuardsCheckEnd</code>
-    </td>
+    <td><code>GuardsCheckEnd</code></td>
     <td>
 
       An [event](api/router/GuardsCheckEnd) triggered when the Router finishes the Guards phase of routing successfully.
@@ -466,9 +422,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ResolveStart</code>
-    </td>
+    <td><code>ResolveStart</code></td>
     <td>
 
       An [event](api/router/ResolveStart) triggered when the Router begins the Resolve phase of routing.
@@ -477,9 +431,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ResolveEnd</code>
-    </td>
+    <td><code>ResolveEnd</code></td>
     <td>
 
       An [event](api/router/ResolveEnd) triggered when the Router finishes the Resolve phase of routing successfuly.
@@ -488,9 +440,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ChildActivationEnd</code>
-    </td>
+    <td><code>ChildActivationEnd</code></td>
     <td>
 
       An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children.
@@ -499,9 +449,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>ActivationEnd</code>
-    </td>
+    <td><code>ActivationEnd</code></td>
     <td>
 
       An [event](api/router/ActivationStart) triggered when the Router finishes activating a route.
@@ -510,9 +458,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>NavigationEnd</code>
-    </td>
+    <td><code>NavigationEnd</code></td>
     <td>
 
       An [event](api/router/NavigationEnd) triggered when navigation ends successfully.
@@ -521,9 +467,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>NavigationCancel</code>
-    </td>
+    <td><code>NavigationCancel</code></td>
     <td>
 
       An [event](api/router/NavigationCancel) triggered when navigation is canceled.
@@ -533,9 +477,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>NavigationError</code>
-    </td>
+    <td><code>NavigationError</code></td>
     <td>
 
       An [event](api/router/NavigationError) triggered when navigation fails due to an unexpected error.
@@ -544,15 +486,14 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 
   <tr>
-    <td>
-      <code>Scroll</code>
-    </td>
+    <td><code>Scroll</code></td>
     <td>
 
       An [event](api/router/Scroll) that represents a scrolling event.
 
     </td>
   </tr>
+
 </table>
 
 These events are logged to the console when the `enableTracing` option is enabled also. For an example of filtering router navigation events, visit the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
@@ -570,158 +511,66 @@ Here are the key `Router` terms and their meanings:
 
 <table>
 
+  <thead>
+    <tr>
+      <th>Router Part</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+
   <tr>
-
-    <th>
-      Router Part
-    </th>
-
-    <th>
-      Meaning
-    </th>
-
+    <td><code>Router</code></td>
+    <td>Displays the application component for the active URL. Manages navigation from one component to the next.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>Router</code>
-    </td>
-
-    <td>
-      Displays the application component for the active URL.
-      Manages navigation from one component to the next.
-    </td>
-
+    <td><code>RouterModule</code></td>
+    <td>A separate NgModule that provides the necessary service providers and directives for navigating through application views.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>RouterModule</code>
-    </td>
-
-    <td>
-      A separate NgModule that provides the necessary service providers
-      and directives for navigating through application views.
-    </td>
-
+    <td><code>Routes</code></td>
+    <td>Defines an array of Routes, each mapping a URL path to a component.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>Routes</code>
-    </td>
-
-    <td>
-      Defines an array of Routes, each mapping a URL path to a component.
-    </td>
-
+    <td><code>Route</code></td>
+    <td>Defines how the router should navigate to a component based on a URL pattern. Most routes consist of a path and a component type.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>Route</code>
-    </td>
-
-    <td>
-      Defines how the router should navigate to a component based on a URL pattern.
-      Most routes consist of a path and a component type.
-    </td>
-
+    <td><code>RouterOutlet</code></td>
+    <td>The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>RouterOutlet</code>
-    </td>
-
-    <td>
-      The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.
-    </td>
-
+    <td><code>RouterLink</code></td>
+    <td>The directive for binding a clickable HTML element to a route. Clicking an element with a <code>routerLink</code> directive that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>RouterLink</code>
-    </td>
-
-    <td>
-      The directive for binding a clickable HTML element to
-      a route. Clicking an element with a <code>routerLink</code> directive
-      that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.
-    </td>
-
+    <td><code>RouterLinkActive</code></td>
+    <td>The directive for adding/removing classes from an HTML element when an associated <code>routerLink</code> contained on or inside the element becomes active/inactive.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>RouterLinkActive</code>
-    </td>
-
-    <td>
-      The directive for adding/removing classes from an HTML element when an associated
-      <code>routerLink</code> contained on or inside the element becomes active/inactive.
-    </td>
-
+    <td><code>ActivatedRoute</code></td>
+    <td>A service that is provided to each route component that contains route specific information such as route parameters, static data, resolve data, global query params, and the global fragment.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>ActivatedRoute</code>
-    </td>
-
-    <td>
-      A service that is provided to each route component that contains route specific
-      information such as route parameters, static data, resolve data, global query params, and the global fragment.
-    </td>
-
+    <td><code>RouterState</code></td>
+    <td>The current state of the router including a tree of the currently activated routes together with convenience methods for traversing the route tree.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <code>RouterState</code>
-    </td>
-
-    <td>
-      The current state of the router including a tree of the currently activated
-      routes together with convenience methods for traversing the route tree.
-    </td>
-
+    <td><b><i>Link parameters array</i></b></td>
+    <td>An array that the router interprets as a routing instruction. You can bind that array to a <code>RouterLink</code> or pass the array as an argument to the <code>Router.navigate</code> method.</td>
   </tr>
 
   <tr>
-
-    <td>
-      <b><i>Link parameters array</i></b>
-    </td>
-
-    <td>
-      An array that the router interprets as a routing instruction.
-      You can bind that array to a <code>RouterLink</code> or pass the array as an argument to
-      the <code>Router.navigate</code> method.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <b><i>Routing component</i></b>
-    </td>
-
-    <td>
-      An Angular component with a <code>RouterOutlet</code> that displays views based on router navigations.
-    </td>
-
+    <td><b><i>Routing component</i></b></td>
+    <td>An Angular component with a <code>RouterOutlet</code> that displays views based on router navigations.</td>
   </tr>
 
 </table>
@@ -1147,7 +996,7 @@ The starter app's structure looks like this:
             hero-list.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1173,7 +1022,7 @@ The starter app's structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
         <div class='file'>
@@ -1280,7 +1129,7 @@ The **Routing Module** has several characteristics:
 ### Integrate routing with your app
 
 The sample routing application does not include routing by default.
-When you use the CLI to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
+When you use the CLI to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule.
 When you create or initialize a new project (using the CLI `new` command) or a new app (using the `generate app` command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
 
@@ -1317,7 +1166,7 @@ After these steps, the file should look like this.
 
 </code-example>
 
-Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in 
+Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in
 the `imports` array.
 
 <code-example path="router/src/app/app.module.2.ts" title="src/app/app.module.ts">
@@ -1426,7 +1275,7 @@ Follow these steps:
 
   * Change the component class name to `HeroListComponent`.
   * Change the `selector` to `app-hero-list`.
-  
+
 <div class="alert is-helpful">
 
    Selectors are **not required** for _routed components_ due to the components are dynamically inserted when the page is rendered, but are useful for identifying and targeting them in your HTML element tree.
@@ -1500,7 +1349,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       hero.service.ts
-    </div>    
+    </div>
 
     <div class='file'>
       hero.ts
@@ -1508,7 +1357,7 @@ When you're done, you'll have these *hero management* files:
 
     <div class='file'>
       heroes-routing.module.ts
-    </div>    
+    </div>
 
     <div class='file'>
       heroes.module.ts
@@ -1818,20 +1667,16 @@ The `ParamMap` API is inspired by the [URLSearchParams interface](https://develo
 to handle parameter access for both route parameters (`paramMap`) and query parameters (`queryParamMap`).
 
 <table>
-  <tr>
-    <th>
-      Member
-    </th>
 
-    <th>
-      Description
-    </th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td>
-      <code>has(name)</code>
-    </td>
+    <td><code>has(name)</code></td>
     <td>
 
     Returns `true` if the parameter name is in the map of parameters.
@@ -1840,9 +1685,7 @@ to handle parameter access for both route parameters (`paramMap`) and query para
   </tr>
 
   <tr>
-    <td>
-      <code>get(name)</code>
-    </td>
+    <td><code>get(name)</code></td>
     <td>
 
     Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values.
@@ -1851,9 +1694,7 @@ to handle parameter access for both route parameters (`paramMap`) and query para
   </tr>
 
   <tr>
-    <td>
-      <code>getAll(name)</code>
-    </td>
+    <td><code>getAll(name)</code></td>
     <td>
 
     Returns a `string array` of the parameter name value if found, or an empty `array` if the parameter name value is not in the map. Use `getAll` when a single parameter could have multiple values.
@@ -1862,15 +1703,14 @@ to handle parameter access for both route parameters (`paramMap`) and query para
   </tr>
 
   <tr>
-    <td>
-      <code>keys</code>
-    </td>
+    <td><code>keys</code></td>
     <td>
 
     Returns a `string array` of all parameter names in the map.
 
     </td>
   </tr>
+
 </table>
 
 {@a reuse}
@@ -2242,7 +2082,7 @@ This file does the following:
 
 You could also create more transitions for other routes. This trigger is sufficient for the current milestone.
 
-Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from 
+Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from
 `'./animations.ts`.
 
 Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
@@ -2324,7 +2164,7 @@ After these changes, the folder structure looks like this:
               crisis-list.component.ts
             </div>
 
-          </div>      
+          </div>
 
         <div class='file'>
           heroes
@@ -2374,7 +2214,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             hero.service.ts
-          </div>    
+          </div>
 
           <div class='file'>
             hero.ts
@@ -2382,7 +2222,7 @@ After these changes, the folder structure looks like this:
 
           <div class='file'>
             heroes-routing.module.ts
-          </div>    
+          </div>
 
           <div class='file'>
             heroes.module.ts
@@ -2417,7 +2257,7 @@ After these changes, the folder structure looks like this:
             page-not-found.component.ts
 
           </div>
-          
+
         </div>
 
       </div>
@@ -2452,7 +2292,7 @@ After these changes, the folder structure looks like this:
 
       <div class='file'>
         message.service.ts
-      </div>      
+      </div>
 
       <div class='file'>
         index.html
@@ -2486,7 +2326,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane title="animations.ts" path="router/src/app/animations.ts">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane title="app.component.html" path="router/src/app/app.component.2.html">
 
@@ -2506,11 +2346,11 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane title="hero-list.component.css" path="router/src/app/heroes/hero-list/hero-list.component.css">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane title="hero-list.component.html" path="router/src/app/heroes/hero-list/hero-list.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane title="hero-list.component.ts" path="router/src/app/heroes/hero-list/hero-list.component.ts">
 
@@ -2538,7 +2378,7 @@ Here are the relevant files for this version of the sample application.
 
   <code-pane title="message.service.ts" path="router/src/app/message.service.ts">
 
-  </code-pane>  
+  </code-pane>
 
 </code-tabs>
 
@@ -2720,7 +2560,7 @@ _before_ the `AppRoutingModule`:
 
   <code-pane path="router/src/app/crisis-center/crisis-center.module.ts"title="src/app/crisis-center/crisis-center.module.ts">
 
-  </code-pane> 
+  </code-pane>
 
   <code-pane path="router/src/app/app.module.4.ts" linenums="false" title="src/app/app.module.ts (import CrisisCenterModule)" region="crisis-center-module">
 
@@ -3379,7 +3219,7 @@ update the admin route with a `canActivate` guard property that references it:
 </code-example>
 
 
- 
+
 The admin feature is now protected by the guard, albeit protected poorly.
 
 
@@ -3458,7 +3298,7 @@ Register a `/login` route in the `auth/auth-routing.module.ts`. In `app.module.t
 
   <code-pane title="src/app/auth/login/login.component.html" path="router/src/app/auth/login/login.component.html">
 
-  </code-pane>  
+  </code-pane>
 
   <code-pane title="src/app/auth/login/login.component.ts" path="router/src/app/auth/login/login.component.1.ts">
 

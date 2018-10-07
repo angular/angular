@@ -1077,21 +1077,23 @@ Here is the markup for this file tree.
 Use HTML tables to present tabular data.
 
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 <table>
-  <tr>
-    <th>Framework</th>
-    <th>Task</th>
-    <th>Speed</th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>Framework</th>
+      <th>Task</th>
+      <th>Speed</th>
+    </tr>
+  </thead>
+
   <tr>
     <td><code>AngularJS</code></td>
     <td>Routing</td>
     <td>Fast</td>
   </tr>
+
   <tr>
     <td><code>Angular v2</code></td>
     <td>Routing</td>
@@ -1102,6 +1104,7 @@ Use HTML tables to present tabular data.
 
     </td>
   </tr>
+
   <tr>
     <td><code>Angular v4</code></td>
     <td>Routing</td>
@@ -1111,26 +1114,28 @@ Use HTML tables to present tabular data.
 
     </td>
   </tr>
+
 </table>
 
 Here is the markup for this table.
 
 ```html
-<style>
-  td, th {vertical-align: top}
-</style>
-
 <table>
-  <tr>
-    <th>Framework</th>
-    <th>Task</th>
-    <th>Speed</th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>Framework</th>
+      <th>Task</th>
+      <th>Speed</th>
+    </tr>
+  </thead>
+
   <tr>
     <td><code>AngularJS</code></td>
     <td>Routing</td>
     <td>Fast</td>
   </tr>
+
   <tr>
     <td><code>Angular v2</code></td>
     <td>Routing</td>
@@ -1141,6 +1146,7 @@ Here is the markup for this table.
 
     </td>
   </tr>
+
   <tr>
     <td><code>Angular v4</code></td>
     <td>Routing</td>
@@ -1150,6 +1156,7 @@ Here is the markup for this table.
 
     </td>
   </tr>
+
 </table>
 ```
 

@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
    *
    * * `page-...`: computed from the current document id (e.g. events, guide-security, tutorial-toh-pt2)
    * * `folder-...`: computed from the top level folder for an id (e.g. guide, tutorial, etc)
-   * * `view-...`: computef from the navigation view (e.g. SideNav, TopBar, etc)
+   * * `view-...`: computed from the navigation view (e.g. SideNav, TopBar, etc)
    */
   @HostBinding('class')
   hostClasses = '';

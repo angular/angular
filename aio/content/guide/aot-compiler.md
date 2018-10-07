@@ -146,82 +146,100 @@ describes the JSON format as a collection of TypeScript interfaces.
 The _collector_ only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
 
-<style>
-  td, th {vertical-align: top}
-</style>
-
 <table>
+
+  <thead>
+    <tr>
+      <th>Syntax</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>Syntax</th>
-    <th>Example</th>
-  </tr>
-  <tr>
-    <td>Literal object </td>
+    <td>Literal object</td>
     <td><code>{cherry: true, apple: true, mincemeat: false}</code></td>
   </tr>
+
   <tr>
-    <td>Literal array  </td>
+    <td>Literal array</td>
     <td><code>['cherries', 'flour', 'sugar']</code></td>
   </tr>
+
   <tr>
     <td>Spread in literal array</td>
     <td><code>['apples', 'flour', ...the_rest]</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Calls</td>
     <td><code>bake(ingredients)</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>New</td>
     <td><code>new Oven()</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Property access</td>
     <td><code>pie.slice</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Array index</td>
     <td><code>ingredients[0]</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Identity reference</td>
     <td><code>Component</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>A template string</td>
     <td><code>`pie is ${multiplier} times better than cake`</code></td>
-   <tr>
+  </tr>
+
+  <tr>
     <td>Literal string</td>
     <td><code>pi</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Literal number</td>
     <td><code>3.14153265</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Literal boolean</td>
     <td><code>true</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Literal null</td>
     <td><code>null</code></td>
   </tr>
-   <tr>
-    <td>Supported prefix operator </td>
+
+  <tr>
+    <td>Supported prefix operator</td>
     <td><code>!cake</code></td>
   </tr>
-   <tr>
-    <td>Supported binary operator </td>
+
+  <tr>
+    <td>Supported binary operator</td>
     <td><code>a+b</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Conditional operator</td>
     <td><code>a ? b : c</code></td>
   </tr>
-   <tr>
+
+  <tr>
     <td>Parentheses</td>
     <td><code>(a+b)</code></td>
   </tr>
+
 </table>
 
 
@@ -356,15 +374,14 @@ The _collector_ reduces this expression to its equivalent _folded_ string:
 
 The following table describes which expressions the _collector_ can and cannot fold:
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 <table>
-  <tr>
-    <th>Syntax</th>
-    <th>Foldable</th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Syntax</th>
+      <th>Foldable</th>
+    </tr>
+  </thead>
   <tr>
     <td>Literal object </td>
     <td>Yes</td>
@@ -377,63 +394,63 @@ The following table describes which expressions the _collector_ can and cannot f
     <td>Spread in literal array</td>
     <td>no</td>
   </tr>
-   <tr>
+  <tr>
     <td>Calls</td>
     <td>no</td>
   </tr>
-   <tr>
+  <tr>
     <td>New</td>
     <td>no</td>
   </tr>
-   <tr>
+  <tr>
     <td>Property access</td>
     <td>yes, if target is foldable</td>
   </tr>
-   <tr>
+  <tr>
     <td>Array index</td>
     <td> yes, if target and index are foldable</td>
   </tr>
-   <tr>
+  <tr>
     <td>Identity reference</td>
     <td>yes, if it is a reference to a local</td>
   </tr>
-   <tr>
+  <tr>
     <td>A template with no substitutions</td>
     <td>yes</td>
   </tr>
-   <tr>
+  <tr>
     <td>A template with substitutions</td>
     <td>yes, if the substitutions are foldable</td>
   </tr>
-   <tr>
+  <tr>
     <td>Literal string</td>
     <td>yes</td>
   </tr>
-   <tr>
+  <tr>
     <td>Literal number</td>
     <td>yes</td>
   </tr>
-   <tr>
+  <tr>
     <td>Literal boolean</td>
     <td>yes</td>
   </tr>
-   <tr>
+  <tr>
     <td>Literal null</td>
     <td>yes</td>
   </tr>
-   <tr>
+  <tr>
     <td>Supported prefix operator </td>
     <td>yes, if operand is foldable</td>
   </tr>
-   <tr>
+  <tr>
     <td>Supported binary operator </td>
     <td>yes, if both left and right are foldable</td>
   </tr>
-   <tr>
+  <tr>
     <td>Conditional operator</td>
     <td>yes, if condition is foldable </td>
   </tr>
-   <tr>
+  <tr>
     <td>Parentheses</td>
     <td>yes, if the expression is foldable</td>
   </tr>
@@ -480,16 +497,15 @@ The compiler only allows metadata that create instances of the class `InjectionT
 
 The compiler only supports metadata for these Angular decorators.
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 <table>
-  <tr>
-    <th>Decorator</th>
-    <th>Module</th>
-  </tr>
+  <thead>
     <tr>
+      <th>Decorator</th>
+      <th>Module</th>
+    </tr>
+  </thead>
+  <tr>
     <td><code>Attribute</code></td>
     <td><code>@angular/core</code></td>
   </tr>
@@ -562,7 +578,7 @@ The compiler only supports metadata for these Angular decorators.
     <td><code>@angular/core</code></td>
   </tr>
 
-  </table>
+</table>
 
 
 
@@ -1311,7 +1327,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 {@a tsconfig-extends}
 ## Configuration inheritance with extends
 Similar to TypeScript Compiler, Angular Compiler also supports `extends` in the `tsconfig.json` on `angularCompilerOptions`. A tsconfig file can inherit configurations from another file using the `extends` property.
- The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`. 
+ The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`.
  The configuration from the base file are loaded first, then overridden by those in the inheriting config file.
  Example:
 ```json
@@ -1463,25 +1479,26 @@ JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
 annotations and decorators are unaffected. Default is `static fields`.
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 <table>
-  <tr>
-    <th>Value</th>
-    <th>Description</th>
-  </tr>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
   <tr>
     <td><code>decorators</code></td>
-    <td>Leave the decorators in place. This makes compilation faster. TypeScript will emit calls to the __decorate helper.  Use <code>--emitDecoratorMetadata</code> for runtime reflection.  However, the resulting code will not properly tree-shake.</td>
+    <td>
+      Leave the decorators in place. This makes compilation faster. TypeScript will emit calls to the __decorate helper. Use <code>--emitDecoratorMetadata</code> for runtime reflection. However, the resulting code will not properly tree-shake.</td>
   </tr>
   <tr>
     <td><code>static fields</code></td>
-    <td>Replace decorators with a static field in the class. Allows advanced tree-shakers like
-    <a href="https://github.com/google/closure-compiler">Closure compiler</a> to remove unused classes.</td>
+    <td>
+      Replace decorators with a static field in the class. Allows advanced tree-shakers like <a href="https://github.com/google/closure-compiler">Closure compiler</a> to remove unused classes.
+    </td>
   </tr>
-  </table>
+</table>
 
 
 ### *trace*
@@ -1523,4 +1540,3 @@ Tells the compiler to generate all the possible generated files even if they are
 `false` by default. This is an option used by the Bazel build rules and is needed to simplify
 how Bazel rules track file dependencies. It is not recommended to use this option outside of the Bazel
 rules.
-

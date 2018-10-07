@@ -93,12 +93,12 @@ Adopt these two conventions in your own projects for _every kind_ of test file.
 
 ## Set up continuous integration
 
-One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time. 
+One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time.
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
-There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others. 
-Although Circle CI and Travis CI are paid services, they are provided free for open source projects. 
-You can create a public project on GitHub and add these services without paying. 
+There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
+Although Circle CI and Travis CI are paid services, they are provided free for open source projects.
+You can create a public project on GitHub and add these services without paying.
 Contributions to the Angular repo are automatically run through a whole suite of Circle CI and Travis CI tests.
 
 This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
@@ -130,14 +130,14 @@ jobs:
       - run: xvfb-run -a npm run e2e -- --no-progress --config=protractor-ci.conf.js
 ```
 
-This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally. 
+This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally.
 The double dash (`--`) is needed to pass arguments into the `npm` script.
 
 For Chrome, it uses `xvfb-run` to run the `npm run` command using a virtual screen.
 
 Step 3: Commit your changes and push them to your repository.
 
-Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects). 
+Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects).
 Your project should start building.
 
 * Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
@@ -153,7 +153,7 @@ sudo: false
 language: node_js
 node_js:
   - "8"
-  
+
 addons:
   apt:
     sources:
@@ -179,7 +179,7 @@ This does the same things as the Circle CI configuration, except that Travis doe
 
 Step 2: Commit your changes and push them to your repository.
 
-Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your project](https://travis-ci.org/profile). 
+Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your project](https://travis-ci.org/profile).
 You'll need to push a new commit to trigger a build.
 
 * Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
@@ -188,8 +188,8 @@ You'll need to push a new commit to trigger a build.
 
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
-There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/2.0/config/configuration-file.html) 
-and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool, 
+There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/2.0/config/configuration-file.html)
+and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool,
 which  you must adjust to start Chrome without sandboxing.
 
 * In the Karma configuration file, `karma.conf.js`, add a custom launcher called ChromeNoSandbox below browsers:
@@ -228,7 +228,7 @@ ng e2e --no-progress --config=protractor-ci.conf.js
 
 ## Enable code coverage reports
 
-The CLI can run unit tests and create code coverage reports. 
+The CLI can run unit tests and create code coverage reports.
 Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
 
 To generate a coverage report run the following command in the root of your project.
@@ -251,10 +251,10 @@ If you want to create code-coverage reports every time you test, you can set the
 
 ### Code coverage enforcement
 
-The code coverage percentages let you estimate how much of your code is tested.  
-If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
+The code coverage percentages let you estimate how much of your code is tested.
+If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI.
 
-For example, suppose you want the code base to have a minimum of 80% code coverage. 
+For example, suppose you want the code base to have a minimum of 80% code coverage.
 To enable this, open the [Karma](http://karma-runner.github.io/0.13/index.html) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
 
 ```
@@ -2838,20 +2838,16 @@ The [_TestBed_](#testbed-api-summary) and [_ComponentFixture_](#component-fixtur
 Here's a summary of the stand-alone functions, in order of likely utility:
 
 <table>
-  <tr>
-    <th>
-      Function
-    </th>
-    <th>
-      Description
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+        <th>Function</th>
+        <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>async</code>
-    </td>
-
+    <td><code>async</code></td>
     <td>
 
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.
@@ -2861,10 +2857,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>fakeAsync</code>
-    </td>
-
+    <td><code>fakeAsync</code></td>
     <td>
 
       Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling
@@ -2874,10 +2867,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>tick</code>
-    </td>
-
+    <td><code>tick</code></td>
     <td>
 
       Simulates the passage of time and the completion of pending asynchronous activities
@@ -2899,10 +2889,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-       <code>inject</code>
-    </td>
-
+    <td><code>inject</code></td>
     <td>
 
       Injects one or more services from the current `TestBed` injector into a test function.
@@ -2913,10 +2900,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>discardPeriodicTasks</code>
-    </td>
-
+    <td><code>discardPeriodicTasks</code></td>
     <td>
 
       When a `fakeAsync()` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),
@@ -2930,10 +2914,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>flushMicrotasks</code>
-    </td>
-
+    <td><code>flushMicrotasks</code></td>
     <td>
 
       When a `fakeAsync()` test ends with pending _micro-tasks_ such as unresolved promises,
@@ -2947,10 +2928,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>ComponentFixtureAutoDetect</code>
-    </td>
-
+    <td><code>ComponentFixtureAutoDetect</code></td>
     <td>
 
       A provider token for a service that turns on [automatic change detection](#automatic-change-detection).
@@ -2959,10 +2937,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>getTestBed</code>
-    </td>
-
+    <td><code>getTestBed</code></td>
     <td>
 
       Gets the current instance of the `TestBed`.
@@ -2972,6 +2947,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     </td>
   </tr>
+
 </table>
 
 <hr>
@@ -3024,20 +3000,16 @@ Call `TestBed` methods _within_ a `beforeEach()` to ensure a fresh start before 
 Here are the most important static methods, in order of likely utility.
 
 <table>
-  <tr>
-    <th>
-      Methods
-    </th>
-    <th>
-      Description
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+        <th>Methods</th>
+        <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>configureTestingModule</code>
-    </td>
-
+    <td><code>configureTestingModule</code></td>
     <td>
 
       The testing shims (`karma-test-shim`, `browser-test-shim`)
@@ -3051,10 +3023,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>compileComponents</code>
-    </td>
-
+    <td><code>compileComponents</code></td>
     <td>
 
       Compile the testing module asynchronously after you've finished configuring it.
@@ -3068,10 +3037,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>createComponent<T></code>
-    </td>
-
+    <td><code>createComponent<T></code></td>
     <td>
 
       Create an instance of a component of type `T` based on the current `TestBed` configuration.
@@ -3081,9 +3047,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>overrideModule</code>
-    </td>
+    <td><code>overrideModule</code></td>
     <td>
 
       Replace metadata for the given `NgModule`. Recall that modules can import other modules.
@@ -3094,10 +3058,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>overrideComponent</code>
-    </td>
-
+    <td><code>overrideComponent</code></td>
     <td>
 
       Replace metadata for the given component class, which could be nested deeply
@@ -3107,10 +3068,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>overrideDirective</code>
-    </td>
-
+    <td><code>overrideDirective</code></td>
     <td>
 
       Replace metadata for the given directive class, which could be nested deeply
@@ -3120,10 +3078,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>overridePipe</code>
-    </td>
-    <td>
+    <td><code>overridePipe</code></td> <td>
 
       Replace metadata for the given pipe class, which could be nested deeply
       within an inner module.
@@ -3132,11 +3087,10 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
+    <td>
       {@a testbed-get}
       <code>get</code>
     </td>
-
     <td>
 
       Retrieve a service from the current `TestBed` injector.
@@ -3158,7 +3112,7 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
+    <td>
       {@a testbed-initTestEnvironment}
       <code>initTestEnvironment</code>
     </td>
@@ -3180,16 +3134,15 @@ Here are the most important static methods, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>resetTestEnvironment</code>
-    </td>
+    <td><code>resetTestEnvironment</code></td>
     <td>
 
       Reset the initial test environment, including the default testing module.
 
     </td>
   </tr>
-</table
+
+</table>
 
 A few of the `TestBed` instance methods are not covered by static `TestBed` _class_ methods.
 These are rarely needed.
@@ -3212,20 +3165,16 @@ its DOM representation, and aspects of its Angular environment.
 Here are the most important properties for testers, in order of likely utility.
 
 <table>
-  <tr>
-    <th>
-      Properties
-    </th>
-    <th>
-      Description
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>Properties</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>componentInstance</code>
-    </td>
-
+    <td><code>componentInstance</code></td>
     <td>
 
       The instance of the component class created by `TestBed.createComponent`.
@@ -3234,10 +3183,7 @@ Here are the most important properties for testers, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>debugElement</code>
-    </td>
-
+    <td><code>debugElement</code></td>
     <td>
 
       The `DebugElement` associated with the root element of the component.
@@ -3249,10 +3195,7 @@ Here are the most important properties for testers, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>nativeElement</code>
-    </td>
-
+    <td><code>nativeElement</code></td>
     <td>
 
       The native DOM element at the root of the component.
@@ -3261,10 +3204,7 @@ Here are the most important properties for testers, in order of likely utility.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>changeDetectorRef</code>
-    </td>
-
+    <td><code>changeDetectorRef</code></td>
     <td>
 
       The `ChangeDetectorRef` for the component.
@@ -3275,6 +3215,7 @@ Here are the most important properties for testers, in order of likely utility.
 
     </td>
   </tr>
+
 </table>
 
 {@a component-fixture-methods}
@@ -3287,20 +3228,16 @@ Call these method to trigger Angular behavior in response to simulated user acti
 Here are the most useful methods for testers.
 
 <table>
-  <tr>
-    <th>
-      Methods
-    </th>
-    <th>
-      Description
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>Methods</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>detectChanges</code>
-    </td>
-
+    <td><code>detectChanges</code></td>
     <td>
 
       Trigger a change detection cycle for the component.
@@ -3317,10 +3254,7 @@ Here are the most useful methods for testers.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>autoDetectChanges</code>
-    </td>
-
+    <td><code>autoDetectChanges</code></td>
     <td>
 
       Set this to `true` when you want the fixture to detect changes automatically.
@@ -3338,22 +3272,17 @@ Here are the most useful methods for testers.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>checkNoChanges</code>
-    </td>
-
+    <td><code>checkNoChanges</code></td>
     <td>
 
       Do a change detection run to make sure there are no pending changes.
       Throws an exceptions if there are.
+
     </td>
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>isStable</code>
-    </td>
-
+    <td><code>isStable</code></td>
     <td>
 
       If the fixture is currently _stable_, returns `true`.
@@ -3363,10 +3292,7 @@ Here are the most useful methods for testers.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>whenStable</code>
-    </td>
-
+    <td><code>whenStable</code></td>
     <td>
 
       Returns a promise that resolves when the fixture is stable.
@@ -3379,16 +3305,14 @@ Here are the most useful methods for testers.
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>destroy</code>
-    </td>
-
+    <td><code>destroy</code></td>
     <td>
 
       Trigger component destruction.
 
     </td>
   </tr>
+
 </table>
 
 {@a debug-element-details}
@@ -3403,20 +3327,16 @@ you can walk (and query) the fixture's entire element and component subtrees.
 Here are the most useful `DebugElement` members for testers, in approximate order of utility:
 
 <table>
-  <tr>
-    <th>
-      Member
-    </th>
-    <th>
-      Description
-    </th>
-  </tr>
+
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Description</th>
+    </tr>
+  </thead>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>nativeElement</code>
-    </td>
-
+    <td><code>nativeElement</code></td>
     <td>
 
       The corresponding DOM element in the browser (null for WebWorkers).
@@ -3425,10 +3345,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>query</code>
-    </td>
-
+    <td><code>query</code></td>
     <td>
 
       Calling `query(predicate: Predicate<DebugElement>)` returns the first `DebugElement`
@@ -3438,10 +3355,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>queryAll</code>
-    </td>
-
+    <td><code>queryAll</code></td>
     <td>
 
       Calling `queryAll(predicate: Predicate<DebugElement>)` returns all `DebugElements`
@@ -3451,10 +3365,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>injector</code>
-    </td>
-
+    <td><code>injector</code></td>
     <td>
 
       The host dependency injector.
@@ -3464,10 +3375,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>componentInstance</code>
-    </td>
-
+    <td><code>componentInstance</code></td>
     <td>
 
       The element's own component instance, if it has one.
@@ -3476,10 +3384,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>context</code>
-    </td>
-
+    <td><code>context</code></td>
     <td>
 
       An object that provides parent context for this element.
@@ -3493,10 +3398,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>children</code>
-    </td>
-
+    <td><code>children</code></td>
     <td>
 
       The immediate `DebugElement` children. Walk the tree by descending through `children`.
@@ -3512,9 +3414,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>parent</code>
-    </td>
+    <td><code>parent</code></td>
     <td>
 
       The `DebugElement` parent. Null if this is the root element.
@@ -3523,10 +3423,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>name</code>
-    </td>
-
+    <td><code>name</code></td>
     <td>
 
       The element tag name, if it is an element.
@@ -3535,9 +3432,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>triggerEventHandler</code>
-    </td>
+    <td><code>triggerEventHandler</code></td>
     <td>
 
       Triggers the event by its name if there is a corresponding listener
@@ -3552,10 +3447,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>listeners</code>
-    </td>
-
+    <td><code>listeners</code></td>
     <td>
 
       The callbacks attached to the component's `@Output` properties and/or the element's event properties.
@@ -3564,10 +3456,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>providerTokens</code>
-    </td>
-
+    <td><code>providerTokens</code></td>
     <td>
 
       This component's injector lookup tokens.
@@ -3577,10 +3466,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>source</code>
-    </td>
-
+    <td><code>source</code></td>
     <td>
 
       Where to find this element in the source component template.
@@ -3589,10 +3475,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
   </tr>
 
   <tr>
-    <td style="vertical-align: top">
-      <code>references</code>
-    </td>
-
+    <td><code>references</code></td>
     <td>
 
       Dictionary of objects associated with template local variables (e.g. `#foo`),
@@ -3600,6 +3483,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
     </td>
   </tr>
+
 </table>
 
 {@a query-predicate}

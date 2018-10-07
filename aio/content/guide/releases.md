@@ -18,21 +18,21 @@ The practices described in this document apply to Angular 2.0 and later. If you 
 {@a angular-versioning}
 ## Angular versioning
 
-Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version. 
+Angular version numbers indicate the level of changes that are introduced by the release. This use of [semantic versioning](https://semver.org/ "Semantic Versioning Specification") helps you understand the potential impact of updating to a new version.
 
-Angular version numbers have three parts: `major.minor.patch`. For example, version 5.2.9 indicates major version 5, minor version 2, and patch version 9. 
+Angular version numbers have three parts: `major.minor.patch`. For example, version 5.2.9 indicates major version 5, minor version 2, and patch version 9.
 
-The version number is incremented based on the level of change included in the release. 
+The version number is incremented based on the level of change included in the release.
 
-* Major releases contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs. 
+* Major releases contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs.
 
-* Minor releases contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your apps and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies. 
+* Minor releases contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your apps and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies.
 
 * Patch releases are low risk, bug fix releases. No developer assistance is expected during update.
 
-If you are updating within the same major version, then you can skip any intermediate versions and update directly to the targeted version. For example, if you want to update from 5.0.0 to 5.2.9, then you can update directly; you do not need to update from 5.0.0 to 5.1.0 before updating to 5.2.9. 
+If you are updating within the same major version, then you can skip any intermediate versions and update directly to the targeted version. For example, if you want to update from 5.0.0 to 5.2.9, then you can update directly; you do not need to update from 5.0.0 to 5.1.0 before updating to 5.2.9.
 
-If you are updating from one major version to another, then we recommend that you don't skip major versions. Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 4.x.x to version 6.x.x, we recommend that you update to the latest 5.x.x release first. After successfully updating to 5.x.x, you can then update to 6.x.x. 
+If you are updating from one major version to another, then we recommend that you don't skip major versions. Follow the instructions to incrementally update to the next major version, testing and validating at each step. For example, if you want to update from version 4.x.x to version 6.x.x, we recommend that you update to the latest 5.x.x release first. After successfully updating to 5.x.x, you can then update to 6.x.x.
 
 Pre-release previews&mdash;such as Beta and Release Candidate versions&mdash;are indicated by appending a dash and a beta or rc identifier, such as version 5.2.9-rc.3.
 
@@ -59,11 +59,11 @@ This cadence of releases gives you access to new beta features as soon as they a
 
 <div class="alert is-helpful">
 
-Disclaimer: The dates are offered as general guidance and may be adjusted by us when necessary to ensure delivery of a high-quality platform. 
+Disclaimer: The dates are offered as general guidance and may be adjusted by us when necessary to ensure delivery of a high-quality platform.
 
 </div>
 
-The following table contains our current target release dates for the next two major versions of Angular: 
+The following table contains our current target release dates for the next two major versions of Angular:
 
  Date                   | Stable Release | Compatibility
  ---------------------- | -------------- | ----------------
@@ -77,53 +77,50 @@ The following table contains our current target release dates for the next two m
 {@a support}
 ## Support policy
 
-All of our major releases are supported for 18 months. 
+All of our major releases are supported for 18 months.
 
 * 6 months of active support, during which regularly-scheduled updates and patches are released, as described above in [Release frequency](#frequency "Release frequency").
 
 * 12 months of long-term support (LTS). During the LTS period, only critical fixes and security patches will be released.
 
-The following table provides the support status and key dates for Angular version 4.0.0 and higher. 
+The following table provides the support status and key dates for Angular version 4.0.0 and higher.
 
-<style>
-
-    td, th {vertical-align: top}
-
-</style>
 
 <table>
 
+  <thead>
     <tr>
-        <th>Version</th>
-        <th>Status</th>
-        <th>Release Date</th>
-        <th>LTS Start Date</th>
-        <th>LTS End Date</th>
+      <th>Version</th>
+      <th>Status</th>
+      <th>Release Date</th>
+      <th>LTS Start Date</th>
+      <th>LTS End Date</th>
     </tr>
+  </thead>
 
-    <tr>
-        <td>^4.0.0</td>
-        <td>LTS</td>
-        <td>March 23, 2017</td>
-        <td>September 23, 2017</td>
-        <td>September 23, 2018</td>
-    </tr>
+  <tr>
+    <td>^4.0.0</td>
+    <td>LTS</td>
+    <td>March 23, 2017</td>
+    <td>September 23, 2017</td>
+    <td>September 23, 2018</td>
+  </tr>
 
-    <tr>
-        <td>^5.0.0</td>
-        <td>LTS</td>
-        <td>November 1, 2017</td>
-        <td>May 1, 2018</td>
-        <td>May 1, 2019</td>
-    </tr>
+  <tr>
+    <td>^5.0.0</td>
+    <td>LTS</td>
+    <td>November 1, 2017</td>
+    <td>May 1, 2018</td>
+    <td>May 1, 2019</td>
+  </tr>
 
-    <tr>
-        <td>^6.0.0</td>
-        <td>Active</td>
-        <td>May 3, 2018</td>
-        <td>November 3, 2018</td>
-        <td>November 3, 2019</td>
-    </tr>
+  <tr>
+    <td>^6.0.0</td>
+    <td>Active</td>
+    <td>May 3, 2018</td>
+    <td>November 3, 2018</td>
+    <td>November 3, 2019</td>
+  </tr>
 
 </table>
 
@@ -132,11 +129,11 @@ The following table provides the support status and key dates for Angular versio
 {@a deprecation}
 ## Deprecation practices
 
-Sometimes &quot;breaking changes&quot;, such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the (web) platform itself. 
+Sometimes &quot;breaking changes&quot;, such as the removal of support for select APIs and features, are necessary to innovate and stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
 
 To make these transitions as easy as possible, we make two commitments to you:
 
-* We work hard to minimize the number of breaking changes and to provide migration tools when possible. 
+* We work hard to minimize the number of breaking changes and to provide migration tools when possible.
 
 * We follow the deprecation policy described here, so you have time to update your apps to the latest APIs and best practices.
 
@@ -146,11 +143,11 @@ To help ensure that you have sufficient time and a clear path to update, this is
 
 * When we announce a deprecation, we also announce a recommended update path.
 
-* We support existing use of a stable API during the deprecation period, so  your code will keep working during that period. 
+* We support existing use of a stable API during the deprecation period, so  your code will keep working during that period.
 
 * We support each deprecated API for at least two subsequent major releases, which means at least 12 months after deprecation.
 
-* We only make peer dependency updates that require changes to your apps in a major release. In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. 
+* We only make peer dependency updates that require changes to your apps in a major release. In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version.
 
 
 {@a public-api}

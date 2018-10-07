@@ -1,8 +1,8 @@
 # Introduction to forms in Angular
 
-Handling user input with forms is the cornerstone of many common applications. Applications use forms to enable users log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
+Handling user input with forms is the cornerstone of many common applications. Applications use forms to enable users log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks.
 
-Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes. 
+Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes.
 
 Reactive and template-driven forms differ, however, in how they do the work of processing and managing forms and form data. Each offers different advantages.
 
@@ -25,7 +25,6 @@ The table below summarizes the key differences between reactive and template-dri
 
 <style>
   table {width: 100%};
-  td, th {vertical-align: top};
 </style>
 
 ||Reactive|Template-driven|
@@ -39,7 +38,7 @@ The table below summarizes the key differences between reactive and template-dri
 
 ## Common foundation
 
-Both reactive and template-driven forms share underlying building blocks. 
+Both reactive and template-driven forms share underlying building blocks.
 
 - A `FormControl` instance that tracks the value and validation status of an individual form control.
 - A `FormGroup` instance that tracks the same values and status for a collection of form controls.
@@ -65,7 +64,7 @@ The source of truth provides the value and status of the form element at a given
   <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
 </figure>
 
-With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing form control instance to a specific form element in the view using a value accessor (instance of `ControlValueAccessor`). 
+With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing form control instance to a specific form element in the view using a value accessor (instance of `ControlValueAccessor`).
 
 ### Setup in template-driven forms
 
@@ -80,7 +79,7 @@ In template-driven forms, the source of truth is the template.
   <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
 </figure>
 
-The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the form control instance for a given form element. It is less explicit, but you no longer have direct control over the form model. 
+The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the form control instance for a given form element. It is less explicit, but you no longer have direct control over the form model.
 
 ## Data flow in forms
 
@@ -129,7 +128,7 @@ The steps below outline the view to model data flow.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor also calls the `NgModel.viewToModel()` method which emits an `ngModelChange` event.
-1. Because the component template uses two-way data binding for the `favoriteColor`, the `favoriteColor` property in the component 
+1. Because the component template uses two-way data binding for the `favoriteColor`, the `favoriteColor` property in the component
 is updated to the value emitted  by the `ngModelChange` event ("Blue").
 
 <figure>
@@ -157,7 +156,7 @@ Validation is an integral part of managing any set of forms. Whether you’re ch
 
 For more on form validation, see the [Form Validation](guide/form-validation) guide.
 
-## Testing 
+## Testing
 
 Testing also plays a large part in complex applications and an easier testing strategy is always welcomed. One difference in testing reactive forms and template-driven forms is their reliance on rendering the UI in order to perform assertions based on form control and form field changes. The following examples demonstrate the process of testing forms with reactive and template-driven forms.
 
@@ -227,7 +226,7 @@ How changes are tracked plays a role in the efficiency of your application.
 - **Reactive forms** keep the data model pure by providing it as an immutable data structure. Each time a change is triggered on the data model, the `FormControl` instance returns a new data model rather than updating the data model directly. This gives you the ability track unique changes to the data model through the control's observable. This allows change detection to be more efficient because it only needs to update on unique changes. It also follows reactive patterns that integrate with observable operators to transform data.
 - **Template-driven** forms rely on mutability with two-way data binding to update the data model in the component as changes are made in the template. Because there are no unique changes to track on the data model when using two-way data binding, change detection is less efficient at determining when updates are required.
 
-The difference is demonstrated in the examples above using the **favorite color** input element. 
+The difference is demonstrated in the examples above using the **favorite color** input element.
 
 - With reactive forms, the **`FormControl` instance** always returns a new value when the control's value is updated.
 - With template-driven forms, the **favorite color property** is always modified to its new value.

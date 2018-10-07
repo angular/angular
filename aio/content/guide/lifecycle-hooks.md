@@ -35,17 +35,20 @@ Angular only calls a directive/component hook method *if it is defined*.
 *After* creating a component/directive by calling its constructor, Angular
 calls the lifecycle hook methods in the following sequence at specific moments:
 
-<table width="100%">
+<table class="is-full-width">
+
   <col width="20%"></col>
   <col width="80%"></col>
+
+  <thead>
+    <tr>
+      <th>Hook</th>
+      <th>Purpose and Timing</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>Hook</th>
-    <th>Purpose and Timing</th>
-  </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngOnChanges()</code>
-    </td>
+    <td><code>ngOnChanges()</code></td>
     <td>
 
       Respond when Angular (re)sets data-bound input properties.
@@ -55,10 +58,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngOnInit()</code>
-    </td>
+
+  <tr>
+    <td><code>ngOnInit()</code></td>
     <td>
 
       Initialize the directive/component after Angular first displays the data-bound properties
@@ -68,10 +70,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngDoCheck()</code>
-    </td>
+
+  <tr>
+    <td><code>ngDoCheck()</code></td>
     <td>
 
       Detect and act upon changes that Angular can't or won't detect on its own.
@@ -80,10 +81,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngAfterContentInit()</code>
-    </td>
+
+  <tr>
+    <td><code>ngAfterContentInit()</code></td>
     <td>
 
       Respond after Angular projects external content into the component's view / the view that a directive is in.
@@ -92,10 +92,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngAfterContentChecked()</code>
-    </td>
+
+  <tr>
+    <td><code>ngAfterContentChecked()</code></td>
     <td>
 
       Respond after Angular checks the content projected into the directive/component.
@@ -104,10 +103,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngAfterViewInit()</code>
-    </td>
+
+  <tr>
+    <td><code>ngAfterViewInit()</code></td>
     <td>
 
       Respond after Angular initializes the component's views and child views / the view that a directive is in.
@@ -116,10 +114,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngAfterViewChecked()</code>
-    </td>
+
+  <tr>
+    <td><code>ngAfterViewChecked()</code></td>
     <td>
 
       Respond after Angular checks the component's views and child views / the view that a directive is in.
@@ -128,10 +125,9 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <code>ngOnDestroy()</code>
-    </td>
+
+  <tr>
+    <td><code>ngOnDestroy()</code></td>
     <td>
 
       Cleanup just before Angular destroys the directive/component.
@@ -141,6 +137,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
     </td>
   </tr>
+
 </table>
 
 {@a interface-optional}
@@ -182,17 +179,20 @@ a *child* component that illustrates one or more of the lifecycle hook methods.
 
 Here's a brief description of each exercise:
 
-<table width="100%">
+<table class="is-full-width">
+
   <col width="20%"></col>
   <col width="80%"></col>
+
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
   <tr>
-    <th>Component</th>
-    <th>Description</th>
-  </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#peek-a-boo">Peek-a-boo</a>
-    </td>
+    <td><a href="#peek-a-boo">Peek-a-boo</a></td>
     <td>
 
       Demonstrates every lifecycle hook.
@@ -200,10 +200,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#spy">Spy</a>
-    </td>
+
+  <tr>
+    <td><a href="#spy">Spy</a></td>
     <td>
 
       Directives have lifecycle hooks too.
@@ -215,10 +214,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#onchanges">OnChanges</a>
-    </td>
+
+  <tr>
+    <td><a href="#onchanges">OnChanges</a></td>
     <td>
 
       See how Angular calls the `ngOnChanges()` hook with a `changes` object
@@ -227,10 +225,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#docheck">DoCheck</a>
-    </td>
+
+  <tr>
+    <td><a href="#docheck">DoCheck</a></td>
     <td>
 
       Implements an `ngDoCheck()` method with custom change detection.
@@ -238,10 +235,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#afterview">AfterView</a>
-    </td>
+
+  <tr>
+    <td><a href="#afterview">AfterView</a></td>
     <td>
 
       Shows what Angular means by a *view*.
@@ -249,10 +245,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      <a href="#aftercontent">AfterContent</a>
-    </td>
+
+  <tr>
+    <td><a href="#aftercontent">AfterContent</a></td>
     <td>
 
       Shows how to project external content into a component and
@@ -261,10 +256,9 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
-  <tr style='vertical-align:top'>
-    <td>
-      Counter
-    </td>
+
+  <tr>
+    <td>Counter</td>
     <td>
 
       Demonstrates a combination of a component and a directive
@@ -277,6 +271,7 @@ Here's a brief description of each exercise:
 
     </td>
   </tr>
+
 </table>
 
 The remainder of this page discusses selected exercises in further detail.

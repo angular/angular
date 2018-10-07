@@ -10,42 +10,24 @@ They rarely change and you may never view or modify them.
 If you do, this page can help you understand their purpose.
 
 
-<style>
-  td, th {vertical-align: top}
-</style>
 
 
 
-<table width="100%">
+<table class="is-full-width">
 
-  <col width="10%">
+  <col width="10%"></col>
+  <col width="90%"></col>
 
-  </col>
-
-  <col width="90%">
-
-  </col>
-
-  <tr>
-
-    <th>
-      File
-    </th>
-
-    <th>
-      Purpose
-    </th>
-
-  </tr>
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
 
   <tr>
-
+    <td><code>src/app/</code></td>
     <td>
-      <code>src/app/</code>
-    </td>
-
-    <td>
-
 
       Angular application files go here.
 
@@ -56,18 +38,13 @@ If you do, this page can help you understand their purpose.
       Try the <live-example name="setup">sample application</live-example>
       and the <live-example name="setup" stackblitz="quickstart-specs">unit test</live-example>
       as _live examples_.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>e2e/</code> </td>
     <td>
-      <code>e2e/</code>
-    </td>
-
-    <td>
-
 
       _End-to-end_ (e2e) tests of the application,
       written in Jasmine and run by the
@@ -75,79 +52,56 @@ If you do, this page can help you understand their purpose.
       e2e test runner.
 
       Initialized with an e2e test for the "Hello Angular" sample.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>node_modules/</code></td>
     <td>
-      <code>node_modules/</code>
-    </td>
-
-    <td>
-
 
       The _npm_ packages installed with the `npm install` command.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
     <td>
       <code>.editorconfig<br>
 .git/<br>
 .gitignore<br>
 .travis.yml</code>
     </td>
-
     <td>
-
 
       Tooling configuration files and folders.
       Ignore them until you have a compelling reason to do otherwise.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>CHANGELOG.md</code></td>
     <td>
-      <code>CHANGELOG.md</code>
-    </td>
-
-    <td>
-
 
       The history of changes to the _QuickStart_ repository.
       Delete or ignore.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>favicon.ico</code></td>
     <td>
-      <code>favicon.ico</code>
-    </td>
-
-    <td>
-
 
       The application icon that appears in the browser tab.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>index.html</code></td>
     <td>
-      <code>index.html</code>
-    </td>
-
-    <td>
-
 
       The application host page.
       It loads a few essential scripts in a prescribed order.
@@ -155,80 +109,55 @@ If you do, this page can help you understand their purpose.
       in the custom `<my-app>` body tag.
 
       The same `index.html` satisfies all documentation application samples.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>karma.conf.js</code></td>
     <td>
-      <code>karma.conf.js</code>
-    </td>
-
-    <td>
-
 
       Configuration for the <a href="https://karma-runner.github.io/1.0/index.html" title="Karma unit test runner">karma</a>
       test runner described in the [Testing](guide/testing) guide.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>karma-test-shim.js</code></td>
     <td>
-      <code>karma-test-shim.js</code>
-    </td>
-
-    <td>
-
 
       Script to run <a href="https://karma-runner.github.io/1.0/index.html" title="Karma unit test runner">karma</a>
       with SystemJS as described in the [Testing](guide/testing) guide.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>non-essential-files.txt</code></td>
     <td>
-      <code>non-essential-files.txt</code>
-    </td>
-
-    <td>
-
 
       A list of files that you can delete if you want to purge your setup of the
       original QuickStart Seed testing and git maintenance artifacts.
       See instructions in the optional
       [_Deleting non-essential files_](guide/setup#non-essential "Setup: Deleting non-essential files") section.
       *Do this only in the beginning to avoid accidentally deleting your own tests and git setup!*
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>LICENSE</code></td>
     <td>
-      <code>LICENSE</code>
-    </td>
-
-    <td>
-
 
       The open source MIT license to use this setup code in your application.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>package.json</code></td>
     <td>
-      <code>package.json</code>
-    </td>
-
-    <td>
-
 
       Identifies `npm `package dependencies for the project.
 
@@ -236,64 +165,43 @@ If you do, this page can help you understand their purpose.
       running tests, and more. Enter `npm run` for a listing.
       <a href="https://github.com/angular/quickstart/blob/master/README.md#npm-scripts"
          title="npm scripts for Angular documentation samples">Read more</a> about them.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>protractor.config.js</code></td>
     <td>
-      <code>protractor.config.js</code>
-    </td>
-
-    <td>
-
 
       Configuration for the
       <a href="http://www.protractortest.org/" title="Protractor: end-to-end testing for Angular">protractor</a>
       _end-to-end_ (e2e) test runner.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>README.md</code></td>
     <td>
-      <code>README.md</code>
-    </td>
-
-    <td>
-
 
       Instruction for using this git repository in your project.
       Worth reading before deleting.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>styles.css</code></td>
     <td>
-      <code>styles.css</code>
-    </td>
-
-    <td>
-
 
       Global styles for the application. Initialized with an `<h1>` style for the QuickStart demo.
 
     </td>
-
   </tr>
 
   <tr>
-
+    <td><code>systemjs<br>.config.js</code></td>
     <td>
-      <code>systemjs<br>.config.js</code>
-    </td>
-
-    <td>
-
 
       Tells the **SystemJS** module loader where to find modules
       referenced in JavaScript `import` statements. For example:
@@ -303,58 +211,42 @@ If you do, this page can help you understand their purpose.
 
 
       Don't touch this file unless you are fully versed in SystemJS configuration.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>systemjs<br>.config.extras.js</code></td>
     <td>
-      <code>systemjs<br>.config.extras.js</code>
-    </td>
-
-    <td>
-
 
       Optional extra SystemJS configuration.
       A way to add SystemJS mappings, such as for application _barrels_,
       without changing the original `system.config.js`.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>tsconfig.json</code></td>
     <td>
-      <code>tsconfig.json</code>
-    </td>
-
-    <td>
-
 
       Tells the TypeScript compiler how to transpile TypeScript source files
       into JavaScript files that run in all modern browsers.
-    </td>
 
+    </td>
   </tr>
 
   <tr>
-
+    <td><code>tslint.json</code></td>
     <td>
-      <code>tslint.json</code>
-    </td>
-
-    <td>
-
 
       The `npm` installed TypeScript linter inspects your TypeScript code
       and complains when you violate one of its rules.
 
       This file defines linting rules favored by the
       [Angular style guide](guide/styleguide) and by the authors of the documentation.
-    </td>
 
+    </td>
   </tr>
 
 </table>
-
