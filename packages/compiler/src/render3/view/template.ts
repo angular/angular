@@ -498,28 +498,25 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this.creationInstruction(element.sourceSpan, R3.disableBindings);
       }
 
-      if (i18nInputs.length > 0) {
-        for (let i = 0; i < i18nInputs.length; i++) {
-          const input = i18nInputs[i];
-          const value = input.value.visit(this._valueConverter);
-          const indexLiteral: o.Expression = o.literal(this.allocateDataSlot());
+      // process i18n element attributes
+      i18nInputs.forEach(input => {
+        const value = input.value.visit(this._valueConverter);
+        const indexLiteral: o.Expression = o.literal(this.allocateDataSlot());
 
-          const meta = parseI18nMeta(attrI18nMetas[input.name]);
-          const label = assembleI18nTemplate(value.strings);
-          const attrValue = this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
-          const params: o.Expression[] = [indexLiteral, o.literal(input.name), attrValue];
-          this.creationInstruction(element.sourceSpan, R3.i18nAttribute, params);
+        const meta = parseI18nMeta(attrI18nMetas[input.name]);
+        const label = assembleI18nTemplate(value.strings);
+        const attrValue = this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
+        const params: o.Expression[] = [indexLiteral, o.literal(input.name), attrValue];
+        this.creationInstruction(element.sourceSpan, R3.i18nAttribute, params);
 
-          if (value instanceof Interpolation) {
-            for (let i = 0; i < value.expressions.length; i++) {
-              const expression = value.expressions[i];
-              const binding = this.convertExpressionBinding(implicit, expression);
-              this.updateInstruction(element.sourceSpan, R3.i18nExp, [binding]);
-            }
-            this.updateInstruction(element.sourceSpan, R3.i18nApply, [indexLiteral]);
-          }
+        if (value instanceof Interpolation) {
+          value.expressions.forEach(expression => {
+            const binding = this.convertExpressionBinding(implicit, expression);
+            this.updateInstruction(element.sourceSpan, R3.i18nExp, [binding]);
+          });
+          this.updateInstruction(element.sourceSpan, R3.i18nApply, [indexLiteral]);
         }
-      }
+      });
 
       // initial styling for static style="..." attributes
       if (hasStylingInstructions) {
