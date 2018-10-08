@@ -337,8 +337,7 @@ function addMatch(query: LQuery<any>, matchingValue: any): void {
   query.list.setDirty();
 }
 
-function createPredicate<T>(
-    predicate: Type<T>| string[], read: Type<T>| null): QueryPredicate<T> {
+function createPredicate<T>(predicate: Type<T>| string[], read: Type<T>| null): QueryPredicate<T> {
   const isArray = Array.isArray(predicate);
   return {
     type: isArray ? null : predicate as Type<T>,
