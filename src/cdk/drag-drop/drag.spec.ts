@@ -1726,17 +1726,18 @@ class StandaloneDraggableWithMultipleHandles {
 
 @Component({
   template: `
-    <cdk-drop
-      style="display: block; width: 100px; background: pink;"
+    <div
+      cdkDrop
+      style="width: 100px; background: pink;"
       [id]="dropZoneId"
-      [data]="items"
-      (dropped)="droppedSpy($event)">
+      [cdkDropData]="items"
+      (cdkDropDropped)="droppedSpy($event)">
       <div
         *ngFor="let item of items"
         cdkDrag
         [cdkDragData]="item"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">{{item}}</div>
-    </cdk-drop>
+    </div>
   `
 })
 class DraggableInDropZone {
@@ -1770,12 +1771,13 @@ class DraggableInDropZone {
     }
   `],
   template: `
-    <cdk-drop
-      orientation="horizontal"
-      [data]="items"
-      (dropped)="droppedSpy($event)">
+    <div
+      cdkDrop
+      cdkDropOrientation="horizontal"
+      [cdkDropData]="items"
+      (cdkDropDropped)="droppedSpy($event)">
       <div *ngFor="let item of items" cdkDrag>{{item}}</div>
-    </cdk-drop>
+    </div>
   `
 })
 class DraggableInHorizontalDropZone {
@@ -1789,13 +1791,13 @@ class DraggableInHorizontalDropZone {
 
 @Component({
   template: `
-    <cdk-drop style="display: block; width: 100px; background: pink;">
+    <div cdkDrop style="width: 100px; background: pink;">
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
           <div class="custom-preview" *cdkDragPreview>Custom preview</div>
       </div>
-    </cdk-drop>
+    </div>
   `
 })
 class DraggableInDropZoneWithCustomPreview {
@@ -1807,13 +1809,13 @@ class DraggableInDropZoneWithCustomPreview {
 
 @Component({
   template: `
-    <cdk-drop style="display: block; width: 100px; background: pink;">
+    <div cdkDrop style="width: 100px; background: pink;">
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
           <div class="custom-placeholder" *cdkDragPlaceholder>Custom placeholder</div>
       </div>
-    </cdk-drop>
+    </div>
   `
 })
 class DraggableInDropZoneWithCustomPlaceholder {
@@ -1839,21 +1841,23 @@ class DraggableInDropZoneWithCustomPlaceholder {
     }
   `],
   template: `
-    <cdk-drop
-      #todoZone
-      [data]="todo"
-      [connectedTo]="[doneZone]"
-      (dropped)="droppedSpy($event)">
+    <div
+      cdkDrop
+      #todoZone="cdkDrop"
+      [cdkDropData]="todo"
+      [cdkDropConnectedTo]="[doneZone]"
+      (cdkDropDropped)="droppedSpy($event)">
       <div [cdkDragData]="item" *ngFor="let item of todo" cdkDrag>{{item}}</div>
-    </cdk-drop>
+    </div>
 
-    <cdk-drop
-      #doneZone
-      [data]="done"
-      [connectedTo]="[todoZone]"
-      (dropped)="droppedSpy($event)">
+    <div
+      cdkDrop
+      #doneZone="cdkDrop"
+      [cdkDropData]="done"
+      [cdkDropConnectedTo]="[todoZone]"
+      (cdkDropDropped)="droppedSpy($event)">
       <div [cdkDragData]="item" *ngFor="let item of done" cdkDrag>{{item}}</div>
-    </cdk-drop>
+    </div>
   `
 })
 class ConnectedDropZones implements AfterViewInit {
@@ -1912,13 +1916,21 @@ class DraggableWithAlternateRoot {
     }
   `],
   template: `
-    <cdk-drop #todoZone [connectedTo]="[doneZone]" (dropped)="droppedSpy($event)">
+    <div
+      cdkDrop
+      #todoZone="cdkDrop"
+      [cdkDropConnectedTo]="[doneZone]"
+      (cdkDropDropped)="droppedSpy($event)">
       <div cdkDrag>One</div>
-    </cdk-drop>
+    </div>
 
-    <cdk-drop #doneZone [connectedTo]="[todoZone]" (dropped)="droppedSpy($event)">
+    <div
+      cdkDrop
+      #doneZone="cdkDrop"
+      [cdkDropConnectedTo]="[todoZone]"
+      (cdkDropDropped)="droppedSpy($event)">
       <div cdkDrag>Two</div>
-    </cdk-drop>
+    </div>
   `
 })
 class ConnectedDropZonesWithSingleItems {

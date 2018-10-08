@@ -8,8 +8,6 @@
 
 import {coerceArray} from '@angular/cdk/coercion';
 import {
-  ChangeDetectionStrategy,
-  Component,
   ContentChildren,
   ElementRef,
   EventEmitter,
@@ -19,8 +17,8 @@ import {
   OnInit,
   Output,
   QueryList,
-  ViewEncapsulation,
   Optional,
+  Directive,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
@@ -40,14 +38,9 @@ let _uniqueIdCounter = 0;
 const DROP_PROXIMITY_THRESHOLD = 0.05;
 
 /** Container that wraps a set of draggable items. */
-@Component({
-  moduleId: module.id,
-  selector: 'cdk-drop',
+@Directive({
+  selector: '[cdkDrop], cdk-drop',
   exportAs: 'cdkDrop',
-  template: '<ng-content></ng-content>',
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['drop.css'],
   providers: [
     {provide: CDK_DROP_CONTAINER, useExisting: CdkDrop},
   ],
@@ -66,13 +59,13 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * container's items can be transferred. Can either be references to other drop containers,
    * or their unique IDs.
    */
-  @Input() connectedTo: (CdkDrop | string)[] | CdkDrop | string = [];
+  @Input('cdkDropConnectedTo') connectedTo: (CdkDrop | string)[] | CdkDrop | string = [];
 
   /** Arbitrary data to attach to this container. */
-  @Input() data: T;
+  @Input('cdkDropData') data: T;
 
   /** Direction in which the list is oriented. */
-  @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
+  @Input('cdkDropOrientation') orientation: 'horizontal' | 'vertical' = 'vertical';
 
   /**
    * Unique ID for the drop zone. Can be used as a reference
@@ -81,27 +74,31 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   @Input() id: string = `cdk-drop-${_uniqueIdCounter++}`;
 
   /** Locks the position of the draggable elements inside the container along the specified axis. */
-  @Input() lockAxis: 'x' | 'y';
+  @Input('cdkDropLockAxis') lockAxis: 'x' | 'y';
 
   /**
    * Function that is used to determine whether an item
    * is allowed to be moved into a drop container.
    */
-  @Input() enterPredicate: (drag?: CdkDrag, drop?: CdkDrop) => boolean = () => true;
+  @Input('cdkDropEnterPredication')
+  enterPredicate: (drag?: CdkDrag, drop?: CdkDrop) => boolean = () => true
 
   /** Emits when the user drops an item inside the container. */
-  @Output() dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
+  @Output('cdkDropDropped')
+  dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
 
   /**
    * Emits when the user has moved a new drag item into this container.
    */
-  @Output() entered: EventEmitter<CdkDragEnter<T>> = new EventEmitter<CdkDragEnter<T>>();
+  @Output('cdkDropEntered')
+  entered: EventEmitter<CdkDragEnter<T>> = new EventEmitter<CdkDragEnter<T>>();
 
   /**
    * Emits when the user removes an item from the container
    * by dragging it into another container.
    */
-  @Output() exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
+  @Output('cdkDropExited')
+  exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
 
   constructor(
     public element: ElementRef<HTMLElement>,

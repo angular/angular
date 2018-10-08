@@ -7,6 +7,7 @@
  */
 
 import {Directive, ElementRef} from '@angular/core';
+import {toggleNativeDragInteractions} from './drag-styling';
 
 /** Handle that can be used to drag and CdkDrag instance. */
 @Directive({
@@ -16,5 +17,7 @@ import {Directive, ElementRef} from '@angular/core';
   }
 })
 export class CdkDragHandle {
-  constructor(public element: ElementRef<HTMLElement>) {}
+  constructor(public element: ElementRef<HTMLElement>) {
+    toggleNativeDragInteractions(element.nativeElement, false);
+  }
 }

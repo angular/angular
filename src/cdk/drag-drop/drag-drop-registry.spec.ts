@@ -155,25 +155,15 @@ describe('DragDropRegistry', () => {
     expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(true);
   });
 
-  it('should disable the native interactions on the body while dragging', () => {
-    const firstItem = testComponent.dragItems.first;
-
-    registry.startDragging(firstItem, createMouseEvent('mousedown'));
-    expect(document.body.classList).toContain('cdk-drag-drop-disable-native-interactions');
-
-    registry.stopDragging(firstItem);
-    expect(document.body.classList).not.toContain('cdk-drag-drop-disable-native-interactions');
-  });
-
 });
 
 @Component({
   template: `
-    <cdk-drop id="items" [data]="items">
+    <div cdkDrop id="items" [cdkDropData]="items">
       <div *ngFor="let item of items" cdkDrag>{{item}}</div>
-    </cdk-drop>
+    </div>
 
-    <cdk-drop id="items" *ngIf="showDuplicateContainer"></cdk-drop>
+    <div cdkDrop id="items" *ngIf="showDuplicateContainer"></div>
   `
 })
 class SimpleDropZone {

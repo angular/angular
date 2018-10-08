@@ -44,6 +44,7 @@ import {CdkDragPlaceholder} from './drag-placeholder';
 import {CdkDragPreview} from './drag-preview';
 import {CDK_DROP_CONTAINER, CdkDropContainer} from './drop-container';
 import {getTransformTransitionDurationInMs} from './transition-duration';
+import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
 
 
 // TODO(crisbeto): add auto-scrolling functionality.
@@ -255,6 +256,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       const rootElement = this._rootElement = this._getRootElement();
       rootElement.addEventListener('mousedown', this._pointerDown);
       rootElement.addEventListener('touchstart', this._pointerDown);
+      toggleNativeDragInteractions(rootElement , false);
     });
   }
 
@@ -525,6 +527,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       preview.style.height = `${elementRect.height}px`;
       this._setTransform(preview, elementRect.left, elementRect.top);
     }
+
+    extendStyles(preview.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      zIndex: '1000'
+    });
 
     preview.classList.add('cdk-drag-preview');
     preview.setAttribute('dir', this._dir ? this._dir.value : 'ltr');

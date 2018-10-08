@@ -1,48 +1,51 @@
 <div>
   <div class="list">
     <h2>To do</h2>
-    <cdk-drop
-      #one
-      (dropped)="drop($event)"
-      [lockAxis]="axisLock"
-      [data]="todo"
-      [connectedTo]="[two]">
+    <div
+      cdkDrop
+      #one="cdkDrop"
+      (cdkDropDropped)="drop($event)"
+      [cdkDropLockAxis]="axisLock"
+      [cdkDropData]="todo"
+      [cdkDropConnectedTo]="[two]">
       <div *ngFor="let item of todo" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
       </div>
-    </cdk-drop>
+    </div>
   </div>
 
   <div class="list">
     <h2>Done</h2>
-    <cdk-drop
-      #two
-      (dropped)="drop($event)"
-      [lockAxis]="axisLock"
-      [data]="done"
-      [connectedTo]="[one]">
+    <div
+      cdkDrop
+      #two="cdkDrop"
+      (cdkDropDropped)="drop($event)"
+      [cdkDropLockAxis]="axisLock"
+      [cdkDropData]="done"
+      [cdkDropConnectedTo]="[one]">
       <div *ngFor="let item of done" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
       </div>
-    </cdk-drop>
+    </div>
   </div>
 </div>
 
 <div>
   <div class="list horizontal">
     <h2>Horizontal list</h2>
-    <cdk-drop
-      orientation="horizontal"
-      (dropped)="drop($event)"
-      [lockAxis]="axisLock"
-      [data]="horizontalData">
+    <div
+      cdkDrop
+      cdkDropOrientation="horizontal"
+      (cdkDropDropped)="drop($event)"
+      [cdkDropLockAxis]="axisLock"
+      [cdkDropData]="horizontalData">
       <div *ngFor="let item of horizontalData" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
       </div>
-    </cdk-drop>
+    </div>
   </div>
 </div>
 

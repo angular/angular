@@ -8,7 +8,6 @@ ng_module(
   name = "drag-drop",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/drag-drop",
-  assets = [":drop.css"],
   deps = [
     "@rxjs",
     "//src/cdk/platform",
@@ -30,11 +29,6 @@ ts_library(
     "//src/cdk/bidi",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",
-)
-
-sass_binary(
-  name = "drop_scss",
-  src = "drop.scss",
 )
 
 ts_web_test(
