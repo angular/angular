@@ -61,7 +61,6 @@ export {
   listener,
   store,
   load,
-  loadDirective,
 
   namespaceHTML,
   namespaceMathML,

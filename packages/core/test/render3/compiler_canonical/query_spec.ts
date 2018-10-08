@@ -121,7 +121,7 @@ describe('queries', () => {
         contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(
             dirIndex: $number$, queryStartIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵloadDirective<ContentQueryComponent>(dirIndex);
+          const $instance$ = $r3$.ɵload<ContentQueryComponent>(dirIndex);
           $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex)) &&
               ($instance$.someDir = $tmp$.first);
           $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex + 1)) &&

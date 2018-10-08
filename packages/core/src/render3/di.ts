@@ -20,10 +20,10 @@ import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {_getViewData, assertPreviousIsParent, getPreviousOrParentTNode, resolveDirective, setEnvironment} from './instructions';
 import {DirectiveDef} from './interfaces/definition';
-import {INJECTOR_SIZE, InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injector';
+import {InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {isProceduralRenderer} from './interfaces/renderer';
-import {DECLARATION_VIEW, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, PARENT, RENDERER, TData, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, PARENT, RENDERER, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 
 /**
@@ -104,12 +104,10 @@ export function getOrCreateNodeInjectorForNode(
 
   const tView = hostView[TVIEW];
   if (tView.firstTemplatePass) {
-    // TODO(kara): Store node injector with host bindings for that node (see VIEW_DATA.md)
     tNode.injectorIndex = hostView.length;
     setUpBloom(tView.data, tNode);  // foundation for node bloom
     setUpBloom(hostView, null);     // foundation for cumulative bloom
     setUpBloom(tView.blueprint, null);
-    tView.hostBindingStartIndex += INJECTOR_SIZE;
   }
 
   const parentLoc = getParentInjectorLocation(tNode, hostView);
@@ -244,7 +242,9 @@ export function directiveInject<T>(token: Type<T>| InjectionToken<T>): T;
 export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
 export function directiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
-  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), _getViewData(), token, flags);
+  const hostTNode =
+      getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode;
+  return getOrCreateInjectable<T>(hostTNode, _getViewData(), token, flags);
 }
 
 export function injectRenderer2(): Renderer2 {
@@ -320,8 +320,8 @@ function getOrCreateRenderer2(view: LViewData): Renderer2 {
  * @returns the value from the injector or `null` when not found
  */
 export function getOrCreateInjectable<T>(
-    startInjectorIndex: number, hostView: LViewData, token: Type<T>| InjectionToken<T>,
-    flags: InjectFlags = InjectFlags.Default): T|null {
+    hostTNode: TElementNode | TContainerNode | TElementContainerNode, hostView: LViewData,
+    token: Type<T>| InjectionToken<T>, flags: InjectFlags = InjectFlags.Default): T|null {
   const bloomHash = bloomHashBitOrFactory(token);
   // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
   // so just call the factory function to create it.
@@ -330,13 +330,24 @@ export function getOrCreateInjectable<T>(
   // If the token has a bloom hash, then it is a directive that is public to the injection system
   // (diPublic) otherwise fall back to the module injector.
   if (bloomHash != null) {
+    const startInjectorIndex = getInjectorIndex(hostTNode, hostView);
+
     let injectorIndex = startInjectorIndex;
     let injectorView = hostView;
+    let parentLocation: number = -1;
 
-    if (flags & InjectFlags.SkipSelf) {
-      const parentLocation = injectorView[injectorIndex + PARENT_INJECTOR];
-      injectorIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
-      injectorView = getParentInjectorView(parentLocation, injectorView);
+    // If we should skip this injector or if an injector doesn't exist on this node (e.g. all
+    // directives on this node are private), start by searching the parent injector.
+    if (flags & InjectFlags.SkipSelf || injectorIndex === -1) {
+      parentLocation = injectorIndex === -1 ? getParentInjectorLocation(hostTNode, hostView) :
+                                              injectorView[injectorIndex + PARENT_INJECTOR];
+
+      if (shouldNotSearchParent(flags, parentLocation)) {
+        injectorIndex = -1;
+      } else {
+        injectorIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
+        injectorView = getParentInjectorView(parentLocation, injectorView);
+      }
     }
 
     while (injectorIndex !== -1) {
@@ -348,9 +359,8 @@ export function getOrCreateInjectable<T>(
           break;
         }
 
-        if (flags & InjectFlags.Self ||
-            flags & InjectFlags.Host &&
-                !sameHostView(injectorView[injectorIndex + PARENT_INJECTOR])) {
+        parentLocation = injectorView[injectorIndex + PARENT_INJECTOR];
+        if (shouldNotSearchParent(flags, parentLocation)) {
           injectorIndex = -1;
           break;
         }
@@ -359,7 +369,6 @@ export function getOrCreateInjectable<T>(
         // up to find the specific injector. If the ancestor bloom filter does not have the bit, we
         // can abort.
         if (injectorHasToken(bloomHash, injectorIndex, injectorView)) {
-          const parentLocation = injectorView[injectorIndex + PARENT_INJECTOR];
           injectorIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
           injectorView = getParentInjectorView(parentLocation, injectorView);
         } else {
@@ -390,7 +399,6 @@ export function getOrCreateInjectable<T>(
 
       // The def wasn't found anywhere on this node, so it was a false positive.
       // Traverse up the tree and continue searching.
-      const parentLocation = injectorView[injectorIndex + PARENT_INJECTOR];
       injectorIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
       injectorView = getParentInjectorView(parentLocation, injectorView);
     }
@@ -411,7 +419,7 @@ function searchMatchesQueuedForCreation<T>(token: any, hostTView: TView): T|null
     for (let i = 0; i < matches.length; i += 2) {
       const def = matches[i] as DirectiveDef<any>;
       if (def.type === token) {
-        return resolveDirective(def, i + 1, matches, hostTView);
+        return resolveDirective(def, i + 1, matches);
       }
     }
   }
@@ -427,14 +435,14 @@ function searchDirectivesOnInjector<T>(
   if (count !== 0) {
     const start = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
     const end = start + count;
-    const defs = injectorView[TVIEW].directives !;
+    const defs = injectorView[TVIEW].data;
 
     for (let i = start; i < end; i++) {
       // Get the definition for the directive at this index and, if it is injectable (diPublic),
       // and matches the given token, return the directive instance.
       const directiveDef = defs[i] as DirectiveDef<any>;
       if (directiveDef.type === token && directiveDef.diPublic) {
-        return injectorView[DIRECTIVES] ![i];
+        return injectorView[i];
       }
     }
   }
@@ -486,15 +494,10 @@ export function injectorHasToken(
   return !!(value & mask);
 }
 
-
-/**
- * Checks whether the current injector and its parent are in the same host view.
- *
- * This is necessary to support @Host() decorators. If @Host() is set, we should stop searching once
- * the injector and its parent view don't match because it means we'd cross the view boundary.
- */
-function sameHostView(parentLocation: number): boolean {
-  return !!parentLocation && (parentLocation >> InjectorLocationFlags.ViewOffsetShift) === 0;
+/** Returns true if flags prevent parent injector from being searched for tokens */
+function shouldNotSearchParent(flags: InjectFlags, parentLocation: number): boolean|number {
+  return flags & InjectFlags.Self ||
+      (flags & InjectFlags.Host && (parentLocation >> InjectorLocationFlags.ViewOffsetShift) > 0);
 }
 
 export class NodeInjector implements Injector {
@@ -512,7 +515,7 @@ export class NodeInjector implements Injector {
     }
 
     setEnvironment(this._tNode, this._hostView);
-    return getOrCreateInjectable(this._injectorIndex, this._hostView, token);
+    return getOrCreateInjectable(this._tNode, this._hostView, token);
   }
 }
 export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {

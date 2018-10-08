@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, getRendererFactory, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TViewNode} from './interfaces/node';
-import {DIRECTIVES, FLAGS, LViewData, LViewFlags, PARENT} from './interfaces/view';
+import {FLAGS, LViewData, LViewFlags, PARENT} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
 
@@ -256,7 +256,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
 
   private _lookUpContext(): T {
-    return this._context = this._view[PARENT] ![DIRECTIVES] ![this._componentIndex] as T;
+    return this._context = this._view[PARENT] ![this._componentIndex] as T;
   }
 }
 

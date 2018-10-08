@@ -16,11 +16,10 @@ import {assertComponentType, assertDefined} from './assert';
 import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {PlayerHandler} from './interfaces/player';
-
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
+import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, hostElement, leaveView, locateHostElement, prefillHostVars, setHostBindings} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
-import {LElementNode} from './interfaces/node';
+import {LElementNode, TNodeFlags} from './interfaces/node';
+import {PlayerHandler} from './interfaces/player';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {getRootView, stringify} from './util';
@@ -151,15 +150,16 @@ export function renderComponent<T>(
 export function createRootComponent<T>(
     elementNode: LElementNode, componentDef: ComponentDef<T>, rootView: LViewData,
     rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
-  // Create directive instance with factory() and store at index 0 in directives array
-  const component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef, elementNode);
+  // Create directive instance with factory() and store at next index in viewData
+  const component =
+      baseDirectiveCreate(rootView.length, componentDef.factory() as T, componentDef, elementNode);
 
-  if (componentDef.hostBindings) queueHostBindingForCheck(0, componentDef.hostVars);
   rootContext.components.push(component);
   (elementNode.data as LViewData)[CONTEXT] = component;
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
-  setHostBindings(rootView[TVIEW].hostBindings);
+  if (rootView[TVIEW].firstTemplatePass) prefillHostVars(componentDef.hostVars);
+  setHostBindings();
   return component;
 }
 
@@ -190,11 +190,10 @@ export function createRootContext(
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
   const rootTView = readPatchedLViewData(component) ![TVIEW];
+  const dirIndex = rootTView.data.length - 1;
 
-  // Root component is always created at dir index 0
-  queueInitHooks(0, def.onInit, def.doCheck, rootTView);
-  // Directive starting index 0, directive count 1 -> directive flags: 1
-  queueLifecycleHooks(1, rootTView);
+  queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
+  queueLifecycleHooks(dirIndex << TNodeFlags.DirectiveStartingIndexShift | 1, rootTView);
 }
 
 /**

@@ -463,17 +463,14 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     expect(jsContents)
-        .toContain(
-            `i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵloadDirective(dirIndex).foo));`);
+        .toContain(`i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
+    expect(jsContents)
+        .toContain(`i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵload(dirIndex).bar));`);
     expect(jsContents)
         .toContain(
-            `i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵloadDirective(dirIndex).bar));`);
-    expect(jsContents)
-        .toContain(
-            'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵloadDirective(dirIndex).someClass))');
-    expect(jsContents).toContain('i0.ɵloadDirective(dirIndex).onClick($event)');
-    expect(jsContents)
-        .toContain('i0.ɵloadDirective(dirIndex).onChange(i0.ɵloadDirective(dirIndex).arg)');
+            'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵload(dirIndex).someClass))');
+    expect(jsContents).toContain('i0.ɵload(dirIndex).onClick($event)');
+    expect(jsContents).toContain('i0.ɵload(dirIndex).onChange(i0.ɵload(dirIndex).arg)');
   });
 
   it('should correctly recognize local symbols', () => {

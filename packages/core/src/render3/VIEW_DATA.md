@@ -128,8 +128,6 @@ NOTE:
 
 ## `EXPANDO`
 
-*TODO*: This section is to be implemented.
-
 `EXPANDO` contains information on data which size is not known at compile time.
 Examples include:
 - `Component`/`Directives` since we don't know at compile time which directives will match.
@@ -203,7 +201,7 @@ The `EXPANDO` section needs additional information for information stored in `TV
 
 | Index | `TView.expandoInstructions`         | Meaning
 | ----: | ---------------------------:        | -------
-| 0     | -10                                 | Negative numbers signifies pointers to elements. In this case 10 (`<child>`)
+| 0     | -10                                 | Negative numbers signify pointers to elements. In this case 10 (`<child>`)
 | 1     | 2                                   | Injector size. Number of values to skip to get to Host Bindings.
 | 2     | Child.ngComponentDef.hostBindings   | The function to call. (Only when `hostVars` is not `0`)
 | 3     | Child.ngComponentDef.hostVars       | Number of host bindings to process. (Only when `hostVars` is not `0`)
@@ -215,9 +213,9 @@ The reason for this layout is to make the host binding update efficient using th
 let currentDirectiveIndex = -1;
 let currentElementIndex = -1;
 // This is global state which is used internally by hostBindings to know where the offset is
-let bindingRootIndex = tView.expandoStart;
-for(var i = 0; i < tview.expandoInstructions.length; i++) {
-  let instruction = tview.expandoInstructions[i];
+let bindingRootIndex = tView.expandoStartIndex;
+for(var i = 0; i < tView.expandoInstructions.length; i++) {
+  let instruction = tView.expandoInstructions[i];
   if (typeof instruction === 'number') {
     // Numbers are used to update the indices.
     if (instruction < 0) {

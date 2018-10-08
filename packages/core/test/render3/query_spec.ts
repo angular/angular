@@ -14,7 +14,7 @@ import {directiveInject} from '../../src/render3/di';
 
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
@@ -1914,7 +1914,7 @@ describe('query', () => {
         contentQueries: () => { registerContentQuery(query(null, ['foo'], true)); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
-          withContentInstance = loadDirective<WithContentDirective>(dirIndex);
+          withContentInstance = load<WithContentDirective>(dirIndex);
           queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
               (withContentInstance.foos = tmp);
         }
@@ -1935,7 +1935,7 @@ describe('query', () => {
         contentQueries: () => { registerContentQuery(query(null, ['foo'], false)); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
-          shallowCompInstance = loadDirective<ShallowComp>(dirIndex);
+          shallowCompInstance = load<ShallowComp>(dirIndex);
           queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
               (shallowCompInstance.foos = tmp);
         }
@@ -2116,7 +2116,7 @@ describe('query', () => {
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            const instance = loadDirective<QueryDirective>(dirIndex);
+            const instance = load<QueryDirective>(dirIndex);
             queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                 (instance.fooBars = tmp);
           },
@@ -2180,7 +2180,7 @@ describe('query', () => {
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            const instance = loadDirective<QueryDirective>(dirIndex);
+            const instance = load<QueryDirective>(dirIndex);
             queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                 (instance.fooBars = tmp);
           },
@@ -2233,7 +2233,7 @@ describe('query', () => {
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<ShallowQueryDirective>(dirIndex);
+               const instance = load<ShallowQueryDirective>(dirIndex);
                queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                    (instance.foos = tmp);
              },
@@ -2253,7 +2253,7 @@ describe('query', () => {
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<DeepQueryDirective>(dirIndex);
+               const instance = load<DeepQueryDirective>(dirIndex);
                queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                    (instance.foos = tmp);
              },

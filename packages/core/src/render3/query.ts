@@ -24,7 +24,7 @@ import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfac
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {LViewData, TVIEW} from './interfaces/view';
 import {flatten, isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -251,7 +251,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  */
 function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: Type<any>): number|
     null {
-  const defs = currentView[TVIEW].directives;
+  const defs = currentView[TVIEW].data;
   if (defs) {
     const flags = tNode.flags;
     const count = flags & TNodeFlags.DirectiveCountMask;
@@ -275,7 +275,7 @@ function queryRead(tNode: TNode, currentView: LViewData, read: any): any {
   } else {
     const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
     if (matchingIdx !== null) {
-      return currentView[DIRECTIVES] ![matchingIdx];
+      return currentView[matchingIdx];
     }
   }
   return null;
@@ -314,7 +314,7 @@ function add(
             result = queryRead(tNode, currentView, predicate.read);
           } else {
             if (directiveIdx > -1) {
-              result = currentView[DIRECTIVES] ![directiveIdx];
+              result = currentView[directiveIdx];
             } else {
               // if read token and / or strategy is not specified,
               // detect it using appropriate tNode type
