@@ -103,11 +103,15 @@ const appModule =
         })
         .directive('ng2A', downgradeComponent({
                      component: Ng2AComponent,
+                     // Since there are more than one downgraded Angular module,
+                     // specify which module this component belongs to.
                      downgradedModule: downgradedNg2AModule,
                      propagateDigest: false,
                    }))
         .directive('ng2B', downgradeComponent({
                      component: Ng2BComponent,
+                     // Since there are more than one downgraded Angular module,
+                     // specify which module this component belongs to.
                      downgradedModule: downgradedNg2BModule,
                      propagateDigest: false,
                    }))

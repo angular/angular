@@ -7,7 +7,9 @@
  */
 
 import {Injector} from '@angular/core';
-import {INJECTOR_KEY} from './constants';
+import * as angular from './angular1';
+import {$INJECTOR, INJECTOR_KEY} from './constants';
+import {getTypeName, isFunction, validateInjectionKey} from './util';
 
 /**
  * @description
@@ -70,8 +72,17 @@ import {INJECTOR_KEY} from './constants';
  * @publicApi
  */
 export function downgradeInjectable(token: any, downgradedModule: string = ''): Function {
-  const factory = function(i: Injector) { return i.get(token); };
-  (factory as any)['$inject'] = [`${INJECTOR_KEY}${downgradedModule}`];
+  const factory = function($injector: angular.IInjectorService) {
+    const injectorKey = `${INJECTOR_KEY}${downgradedModule}`;
+    const injectableName = isFunction(token) ? getTypeName(token) : String(token);
+    const attemptedAction = `instantiating injectable '${injectableName}'`;
+
+    validateInjectionKey($injector, downgradedModule, injectorKey, attemptedAction);
+
+    const injector: Injector = $injector.get(injectorKey);
+    return injector.get(token);
+  };
+  (factory as any)['$inject'] = [$INJECTOR];
 
   return factory;
 }
