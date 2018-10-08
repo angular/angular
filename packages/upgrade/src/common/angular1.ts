@@ -218,6 +218,8 @@ function noNg() {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
+const noNgElement: typeof angular.element = (e => noNg()) as typeof angular.element;
+noNgElement.cleanData = noNg;
 
 let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
@@ -233,7 +235,7 @@ let angular: {
 } = <any>{
   bootstrap: noNg,
   module: noNg,
-  element: Object.assign(() => noNg(), {cleanData: noNg}),
+  element: noNgElement,
   version: undefined,
   resumeBootstrap: noNg,
   getTestability: noNg
@@ -284,9 +286,10 @@ export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
 export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
-export const element: typeof angular.element = Object.assign(
-    (e: string | Element | Document | IAugmentedJQuery) => angular.element(e),
-    {cleanData: (nodes: Node[] | NodeList) => angular.element.cleanData(nodes)});
+const angularElement: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
+angularElement.cleanData = nodes => angular.element.cleanData(nodes);
+
+export const element: typeof angular.element = angularElement;
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
