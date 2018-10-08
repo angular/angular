@@ -1150,7 +1150,7 @@ describe('compiler compliance', () => {
             @Component({
               selector: 'view-query-component',
               template: \`
-              <div someDir></div>
+                <div someDir></div>
               \`
             })
             export class ViewQueryComponent {
@@ -1206,8 +1206,8 @@ describe('compiler compliance', () => {
             @Component({
               selector: 'view-query-component',
               template: \`
-              <div #myRef></div>
-              <div #myRef1></div>
+                <div #myRef></div>
+                <div #myRef1></div>
               \`
             })
             export class ViewQueryComponent {
@@ -1258,9 +1258,9 @@ describe('compiler compliance', () => {
             @Component({
               selector: 'view-query-component',
               template: \`
-              <div someDir></div>
-              <div #myRef></div>
-              <div #myRef1></div>
+                <div someDir></div>
+                <div #myRef></div>
+                <div #myRef1></div>
               \`
             })
             export class ViewQueryComponent {
@@ -1386,8 +1386,8 @@ describe('compiler compliance', () => {
             @Component({
               selector: 'content-query-component',
               template: \`
-              <div #myRef></div>
-              <div #myRef1></div>
+                <div #myRef></div>
+                <div #myRef1></div>
               \`
             })
             export class ContentQueryComponent {
@@ -1436,9 +1436,9 @@ describe('compiler compliance', () => {
             @Component({
               selector: 'content-query-component',
               template: \`
-              <div someDir></div>
-              <div #myRef></div>
-              <div #myRef1></div>
+                <div someDir></div>
+                <div #myRef></div>
+                <div #myRef1></div>
               \`
             })
             export class ContentQueryComponent {
