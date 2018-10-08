@@ -124,8 +124,10 @@ export class PreActivation {
       }
 
       if (shouldRunGuardsAndResolvers) {
-        const outlet = context !.outlet !;
-        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
+        const outlet = context ? context.outlet : null;
+        if (outlet && outlet.component) {
+          this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
+        }
       }
     } else {
       if (curr) {
