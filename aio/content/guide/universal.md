@@ -540,6 +540,10 @@ The console window should say
 Node server listening on http://localhost:4000
 </code-example>
 
+<div class="alert is-helpful">
+Webpack CLI should be installed.
+</div>
+
 ## Universal in action
 
 Open a browser to http://localhost:4000/.
