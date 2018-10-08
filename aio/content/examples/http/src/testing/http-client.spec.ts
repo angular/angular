@@ -150,7 +150,7 @@ describe('HttpClient testing', () => {
 
     // Create mock ErrorEvent, raised when something goes wrong at the network level.
     // Connection timeout, DNS error, offline, etc
-    const errorEvent = new ErrorEvent('so sad', {
+    const mockError = new ErrorEvent('Network error', {
       message: emsg,
       // #enddocregion network-error
       // The rest of this is optional and not used.
@@ -162,7 +162,7 @@ describe('HttpClient testing', () => {
     });
 
     // Respond with mock error
-    req.error(errorEvent);
+    req.error(mockError);
   });
   // #enddocregion network-error
 

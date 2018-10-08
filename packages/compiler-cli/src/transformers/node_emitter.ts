@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {error} from './util';
 
 export interface Node { sourceSpan: ParseSourceSpan|null; }
@@ -20,7 +21,7 @@ const _VALID_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 export class TypeScriptNodeEmitter {
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
       [ts.SourceFile, Map<ts.Node, Node>] {
-    const converter = new _NodeEmitterVisitor();
+    const converter = new NodeEmitterVisitor();
     // [].concat flattens the result so that each `visit...` method can also return an array of
     // stmts.
     const statements: any[] = [].concat(
@@ -62,7 +63,7 @@ export class TypeScriptNodeEmitter {
 export function updateSourceFile(
     sourceFile: ts.SourceFile, module: PartialModule,
     context: ts.TransformationContext): [ts.SourceFile, Map<ts.Node, Node>] {
-  const converter = new _NodeEmitterVisitor();
+  const converter = new NodeEmitterVisitor();
   converter.loadExportedVariableIdentifiers(sourceFile);
 
   const prefixStatements = module.statements.filter(statement => !(statement instanceof ClassStmt));
@@ -148,7 +149,7 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 // A recorded node is a subtype of the node that is marked as being recorded. This is used
 // to ensure that NodeEmitterVisitor.record has been called on all nodes returned by the
 // NodeEmitterVisitor
-type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
+export type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any;}) | null;
 
 function escapeLiteral(value: string): string {
   return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
@@ -183,7 +184,7 @@ function isExportTypeStatement(statement: ts.Statement): boolean {
 /**
  * Visits an output ast and produces the corresponding TypeScript synthetic nodes.
  */
-class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
+export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _nodeMap = new Map<ts.Node, Node>();
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
@@ -460,6 +461,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     ts.setSyntheticLeadingComments(commentStmt, [{kind, text, pos: -1, end: -1}]);
     return commentStmt;
   }
+
+  // ExpressionVisitor
+  visitWrappedNodeExpr(expr: WrappedNodeExpr<any>) { return this.record(expr, expr.node); }
 
   // ExpressionVisitor
   visitReadVarExpr(expr: ReadVarExpr) {

@@ -1,3 +1,16 @@
+<a name="6.0.0-rc.6"></a>
+# [6.0.0-rc.6](https://github.com/angular/angular/compare/6.0.0-rc.5...6.0.0-rc.6) (2018-04-27)
+
+
+### Bug Fixes
+
+* **compiler:** avoid a crash in ngc-wrapped. ([#23468](https://github.com/angular/angular/issues/23468)) ([0bc8443](https://github.com/angular/angular/commit/0bc8443))
+* **compiler:** handle undefined annotation metadata ([#23349](https://github.com/angular/angular/issues/23349)) ([b9431e8](https://github.com/angular/angular/commit/b9431e8))
+* **router:** cache route handle if found ([#22475](https://github.com/angular/angular/issues/22475)) ([d8de648](https://github.com/angular/angular/commit/d8de648)), closes [#22474](https://github.com/angular/angular/issues/22474)
+* **service-worker:** add badge to NOTIFICATION_OPTION_NAMES ([#23241](https://github.com/angular/angular/issues/23241)) ([fb59b2d](https://github.com/angular/angular/commit/fb59b2d)), closes [#23196](https://github.com/angular/angular/issues/23196)
+
+
+
 <a name="5.2.10"></a>
 ## [5.2.10](https://github.com/angular/angular/compare/5.2.9...5.2.10) (2018-04-16)
 

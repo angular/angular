@@ -268,6 +268,10 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     }
   }
 
+  // If compilation fails unexpectedly, performCompilation returns no program.
+  // Make sure not to crash but report the diagnostics.
+  if (!program) return {program, diagnostics};
+
   if (!bazelOpts.nodeModulesPrefix) {
     // If there is no node modules, then metadata.json should be emitted since
     // there is no other way to obtain the information

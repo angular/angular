@@ -987,7 +987,7 @@ import { configuration } from './configuration';
 The compiler encountered a type and can't determine which module exports that type.
 
 This can happen if you refer to an ambient type.
-For example, the `Window` type is an ambiant type declared in the global `.d.ts` file.
+For example, the `Window` type is an ambient type declared in the global `.d.ts` file.
 
 You'll get an error if you reference it in the component constructor,
 which the compiler must statically analyze.
@@ -999,17 +999,17 @@ export class MyComponent {
   constructor (private win: Window) { ... }
 }
 ```
-TypeScript understands ambiant types so you don't import them.
+TypeScript understands ambient types so you don't import them.
 The Angular compiler does not understand a type that you neglect to export or import.
 
 In this case, the compiler doesn't understand how to inject something with the `Window` token.
 
 Do not refer to ambient types in metadata expressions.
 
-If you must inject an instance of an ambiant type,
+If you must inject an instance of an ambient type,
 you can finesse the problem in four steps:
 
-1. Create an injection token for an instance of the ambiant type.
+1. Create an injection token for an instance of the ambient type.
 1. Create a factory function that returns that instance.
 1. Add a `useFactory` provider with that factory function.
 1. Use `@Inject` to inject the instance.

@@ -2436,6 +2436,94 @@ describe('lifecycles', () => {
 
     });
 
+    // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-ng
+    it('should call all hooks in correct order with view and content', () => {
+      const Content = createAllHooksComponent('content', (rf: RenderFlags, ctx: any) => {});
+
+      const View = createAllHooksComponent('view', (rf: RenderFlags, ctx: any) => {});
+
+      /** <ng-content></ng-content><view [val]="val"></view> */
+      const Parent = createAllHooksComponent('parent', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          projectionDef(0);
+          projection(1, 0);
+          elementStart(2, 'view');
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(2, 'val', bind(ctx.val));
+        }
+      }, [View]);
+
+      /**
+       * <parent [val]="1">
+       *   <content [val]="1"></content>
+       * </parent>
+       * <parent [val]="2">
+       *   <content [val]="2"></content>
+       * </parent>
+       */
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'parent');
+          {
+            elementStart(1, 'content');
+            elementEnd();
+          }
+          elementEnd();
+          elementStart(2, 'parent');
+          {
+            elementStart(3, 'content');
+            elementEnd();
+          }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'val', bind(1));
+          elementProperty(1, 'val', bind(1));
+          elementProperty(2, 'val', bind(2));
+          elementProperty(3, 'val', bind(2));
+        }
+      }
+
+      const defs = [Parent, Content];
+      renderToHtml(Template, {}, defs);
+      expect(events).toEqual([
+        'changes parent1',      'init parent1',
+        'check parent1',        'changes content1',
+        'init content1',        'check content1',
+        'changes parent2',      'init parent2',
+        'check parent2',        'changes content2',
+        'init content2',        'check content2',
+        'contentInit content1', 'contentCheck content1',
+        'contentInit parent1',  'contentCheck parent1',
+        'contentInit content2', 'contentCheck content2',
+        'contentInit parent2',  'contentCheck parent2',
+        'changes view1',        'init view1',
+        'check view1',          'contentInit view1',
+        'contentCheck view1',   'viewInit view1',
+        'viewCheck view1',      'changes view2',
+        'init view2',           'check view2',
+        'contentInit view2',    'contentCheck view2',
+        'viewInit view2',       'viewCheck view2',
+        'viewInit content1',    'viewCheck content1',
+        'viewInit parent1',     'viewCheck parent1',
+        'viewInit content2',    'viewCheck content2',
+        'viewInit parent2',     'viewCheck parent2'
+      ]);
+
+      events = [];
+      renderToHtml(Template, {}, defs);
+      expect(events).toEqual([
+        'check parent1', 'check content1', 'check parent2', 'check content2',
+        'contentCheck content1', 'contentCheck parent1', 'contentCheck content2',
+        'contentCheck parent2', 'check view1', 'contentCheck view1', 'viewCheck view1',
+        'check view2', 'contentCheck view2', 'viewCheck view2', 'viewCheck content1',
+        'viewCheck parent1', 'viewCheck content2', 'viewCheck parent2'
+      ]);
+
+    });
+
   });
 
 });

@@ -1,0 +1,13 @@
+{
+  "name": "@angular/core",
+  "version": "0.0.0-FAKE-FOR-TESTS",
+  "description": "Fake version of core for ngtsc tests",
+  "main": "./bundles/fake_core.umd.js",
+  "module": "./fesm5/fake_core.js",
+  "es2015": "./fesm2015/fake_core.js",
+  "esm5": "./esm5/index.js",
+  "esm2015": "./esm2015/index.js",
+  "fesm5": "./fesm5/fake_core.js",
+  "fesm2015": "./fesm2015/fake_core.js",
+  "typings": "./index.d.ts"
+}

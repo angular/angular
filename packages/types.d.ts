@@ -19,3 +19,9 @@
 
 declare let isNode: boolean;
 declare let isBrowser: boolean;
+
+declare namespace jasmine {
+  interface Matchers {
+    toHaveProperties(obj: any): boolean;
+  }
+}

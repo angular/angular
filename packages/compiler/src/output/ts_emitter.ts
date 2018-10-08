@@ -169,6 +169,10 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+    throw new Error('Cannot visit a WrappedNodeExpr when outputting Typescript.');
+  }
+
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
     ctx.print(ast, `(<`);
     ast.type !.visitType(this, ctx);

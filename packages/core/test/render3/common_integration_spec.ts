@@ -9,8 +9,9 @@
 import {NgForOfContext} from '@angular/common';
 
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, elementEnd, elementProperty, elementStart, interpolation3, text, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, elementEnd, elementProperty, elementStart, interpolation1, interpolation3, listener, text, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {NgForOf, NgIf} from './common_with_def';
 import {ComponentFixture} from './render_util';
 
@@ -123,6 +124,81 @@ describe('@angular/common integration', () => {
           .toEqual('<ul><li>0 of 3: first</li><li>1 of 3: middle</li><li>2 of 3: second</li></ul>');
     });
 
+
+    it('should retain parent view listeners when the NgFor destroy views', () => {
+
+      class MyApp {
+        private _data: number[] = [1, 2, 3];
+        items: number[] = [];
+
+        toggle() {
+          if (this.items.length) {
+            this.items = [];
+          } else {
+            this.items = this._data;
+          }
+        }
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // <button (click)="toggle()">Toggle List</button>
+          // <ul>
+          //   <li *ngFor="let item of items">{{index}}</li>
+          // </ul>
+          template: (rf: RenderFlags, myApp: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'button');
+              {
+                listener('click', function() { return myApp.toggle(); });
+                text(1, 'Toggle List');
+              }
+              elementEnd();
+              elementStart(2, 'ul');
+              { container(3, liTemplate, undefined, ['ngForOf', '']); }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(3, 'ngForOf', bind(myApp.items));
+            }
+
+            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'li');
+                { text(1); }
+                elementEnd();
+              }
+              if (rf1 & RenderFlags.Update) {
+                textBinding(1, interpolation1('', row.$implicit, ''));
+              }
+            }
+          },
+          directives: () => [NgForOf]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      const button = fixture.hostElement.querySelector('button') !;
+
+      expect(fixture.html).toEqual('<button>Toggle List</button><ul></ul>');
+
+      // this will fill the list
+      fixture.component.toggle();
+      fixture.update();
+      expect(fixture.html)
+          .toEqual('<button>Toggle List</button><ul><li>1</li><li>2</li><li>3</li></ul>');
+
+      button.click();
+      fixture.update();
+
+      expect(fixture.html).toEqual('<button>Toggle List</button><ul></ul>');
+
+      button.click();
+      fixture.update();
+      expect(fixture.html)
+          .toEqual('<button>Toggle List</button><ul><li>1</li><li>2</li><li>3</li></ul>');
+    });
   });
 
   describe('ngIf', () => {

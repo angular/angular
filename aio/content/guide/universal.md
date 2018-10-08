@@ -16,7 +16,7 @@ Meanwhile, the browser downloads the full client version and switches to it auto
 <div class="l-sub-section">
 
 [Download the finished sample code](generated/zips/universal/universal.zip),
-which runs in a [node express](https://expressjs.com/) server.
+which runs in a [Node.js® Express](https://expressjs.com/) server.
 
 </div>
 
@@ -123,7 +123,7 @@ You'll add more files to support building and serving with Universal.
 
 In this example, the Angular CLI compiles and bundles the Universal version of the app with the
 [AOT (Ahead-of-Time) compiler](guide/aot-compiler).
-A node/express web server turns client requests into the HTML pages rendered by Universal.
+A Node.js® Express web server turns client requests into the HTML pages rendered by Universal.
 
 You will create:
 

@@ -1030,10 +1030,18 @@ you are responsible for flushing and verifying them.
 
 You should test the app's defenses against HTTP requests that fail.
 
-Call `request.error()` with an `ErrorEvent` instead of `request.flush()`, as in this example.
+Call `request.flush()` with an error message, as seen in the following example.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="404" 
+  linenums="false">
+</code-example>
+
+Alternatively, you can call `request.error()` with an `ErrorEvent`.
+
+<code-example
+  path="http/src/testing/http-client.spec.ts"
+  region="network-error"
   linenums="false">
 </code-example>

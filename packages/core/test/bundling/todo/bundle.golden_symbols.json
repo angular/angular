@@ -555,10 +555,10 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDirectives"
+    "name": "refreshDynamicChildren"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshView"
   },
   {
     "name": "removeListeners"
@@ -583,6 +583,9 @@
   },
   {
     "name": "resolveRendererType2"
+  },
+  {
+    "name": "sameHostView"
   },
   {
     "name": "saveNameToExportMap"
