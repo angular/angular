@@ -10,7 +10,7 @@ import './ng_dev_mode';
 import {assertEqual} from './assert';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
-import {CONTEXT, DIRECTIVES, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
 
 /**
  * This property will be monkey-patched on elements, components and directives
@@ -306,21 +306,17 @@ function findViaDirective(lViewData: LViewData, directiveInstance: {}): number {
   // element bound to the directive being search lives somewhere
   // in the view data. We loop through the nodes and check their
   // list of directives for the instance.
-  const directivesAcrossView = lViewData[DIRECTIVES];
   let tNode = lViewData[TVIEW].firstChild;
-  if (directivesAcrossView != null) {
-    while (tNode) {
-      const directiveIndexStart = getDirectiveStartIndex(tNode);
-      const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
-      for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-        if (directivesAcrossView[i] === directiveInstance) {
-          return tNode.index;
-        }
+  while (tNode) {
+    const directiveIndexStart = getDirectiveStartIndex(tNode);
+    const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
+    for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
+      if (lViewData[i] === directiveInstance) {
+        return tNode.index;
       }
-      tNode = traverseNextElement(tNode);
     }
+    tNode = traverseNextElement(tNode);
   }
-
   return -1;
 }
 
@@ -341,24 +337,20 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
 }
 
 /**
- * Returns a list of directives extracted from the given view. Does not contain
- * the component.
+ * Returns a list of directives extracted from the given view based on the
+ * provided list of directive index values.
  *
- * @param nodeIndex Index of node to search
+ * @param nodeIndex The node index
  * @param lViewData The target view data
  * @param includeComponents Whether or not to include components in returned directives
  */
 export function discoverDirectives(
     nodeIndex: number, lViewData: LViewData, includeComponents: boolean): any[]|null {
-  const directivesAcrossView = lViewData[DIRECTIVES];
-  if (directivesAcrossView != null) {
-    const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
-    let directiveStartIndex = getDirectiveStartIndex(tNode);
-    const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
-    if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
-    return directivesAcrossView.slice(directiveStartIndex, directiveEndIndex);
-  }
-  return null;
+  const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
+  let directiveStartIndex = getDirectiveStartIndex(tNode);
+  const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
+  if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
+  return lViewData.slice(directiveStartIndex, directiveEndIndex);
 }
 
 /**
@@ -375,7 +367,7 @@ export function discoverLocalRefs(lViewData: LViewData, lNodeIndex: number): {[k
       const directiveIndex = tNode.localNames[i + 1] as number;
       result[localRefName] = directiveIndex === -1 ?
           getLNodeFromViewData(lViewData, lNodeIndex) !.native :
-          lViewData[DIRECTIVES] ![directiveIndex];
+          lViewData[directiveIndex];
     }
     return result;
   }

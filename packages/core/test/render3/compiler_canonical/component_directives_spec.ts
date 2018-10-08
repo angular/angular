@@ -105,7 +105,7 @@ describe('components & directives', () => {
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementProperty(
-              elIndex, 'id', $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).dirId));
+              elIndex, 'id', $r3$.ɵbind($r3$.ɵload<HostBindingDir>(dirIndex).dirId));
         }
       });
       // /NORMATIVE
@@ -256,8 +256,7 @@ describe('components & directives', () => {
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementAttribute(
-              elIndex, 'aria-label',
-              $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).label));
+              elIndex, 'aria-label', $r3$.ɵbind($r3$.ɵload<HostBindingDir>(dirIndex).label));
         }
       });
       // /NORMATIVE
@@ -752,7 +751,7 @@ describe('components & directives', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           consts: 1,
-          vars: 10,
+          vars: 11,
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');

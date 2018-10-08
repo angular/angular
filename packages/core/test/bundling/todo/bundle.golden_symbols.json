@@ -30,9 +30,6 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "DIRECTIVES"
-  },
-  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -154,6 +151,9 @@
   },
   {
     "name": "RENDER_PARENT"
+  },
+  {
+    "name": "ROOT_EXPANDO_INSTRUCTIONS"
   },
   {
     "name": "RecordViewTuple"
@@ -579,6 +579,9 @@
     "name": "firstTemplatePass"
   },
   {
+    "name": "generateExpandoBlock"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -855,6 +858,9 @@
     "name": "pointers"
   },
   {
+    "name": "prefillHostVars"
+  },
+  {
     "name": "prepareInitialFlag"
   },
   {
@@ -933,9 +939,6 @@
     "name": "restoreView"
   },
   {
-    "name": "sameHostView"
-  },
-  {
     "name": "saveNameToExportMap"
   },
   {
@@ -991,6 +994,9 @@
   },
   {
     "name": "setValue"
+  },
+  {
+    "name": "shouldNotSearchParent"
   },
   {
     "name": "storeCleanupFn"

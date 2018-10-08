@@ -11,17 +11,19 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBind
 /**
  * Bindings for pure functions are stored after regular bindings.
  *
- * |--------consts--------|----------------vars----------------|------ hostVars (dir1) ------|
- * ---------------------------------------------------------------------------------------------
- * | nodes / refs / pipes | bindings | pure function bindings  | host bindings  | host slots |
- * ---------------------------------------------------------------------------------------------
- *                        ^                                    ^
- *             TView.bindingStartIndex            TView.hostBindingStartIndex
+ * |------consts------|---------vars---------|                 |----- hostVars (dir1) ------|
+ * ------------------------------------------------------------------------------------------
+ * | nodes/refs/pipes | bindings | fn slots  | injector | dir1 | host bindings | host slots |
+ * ------------------------------------------------------------------------------------------
+ *                    ^                      ^
+ *      TView.bindingStartIndex      TView.expandoStartIndex
  *
  * Pure function instructions are given an offset from the binding root. Adding the offset to the
  * binding root gives the first index where the bindings are stored. In component views, the binding
- * root is the bindingStartIndex. In host bindings, the binding root is the hostBindingStartIndex +
- * any hostVars in directives evaluated before it.
+ * root is the bindingStartIndex. In host bindings, the binding root is the expandoStartIndex +
+ * any directive instances + any hostVars in directives evaluated before it.
+ *
+ * See VIEW_DATA.md for more information about host binding resolution.
  */
 
 /**

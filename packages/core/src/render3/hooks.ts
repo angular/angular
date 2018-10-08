@@ -9,7 +9,7 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
-import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
 
 
 /**
@@ -20,7 +20,7 @@ import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './inter
  * directive index), then saved in the even indices of the initHooks array. The odd indices
  * hold the hook functions themselves.
  *
- * @param index The index of the directive in LViewData[DIRECTIVES]
+ * @param index The index of the directive in LViewData
  * @param hooks The static hooks map on the directive def
  * @param tView The current TView
  */
@@ -52,7 +52,7 @@ export function queueLifecycleHooks(flags: number, tView: TView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start; i < end; i++) {
-      const def: DirectiveDef<any> = tView.directives ![i];
+      const def = tView.data[i] as DirectiveDef<any>;
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -99,7 +99,7 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
 export function executeInitHooks(
     currentView: LViewData, tView: TView, creationMode: boolean): void {
   if (currentView[FLAGS] & LViewFlags.RunInit) {
-    executeHooks(currentView[DIRECTIVES] !, tView.initHooks, tView.checkHooks, creationMode);
+    executeHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
     currentView[FLAGS] &= ~LViewFlags.RunInit;
   }
 }
@@ -110,7 +110,7 @@ export function executeInitHooks(
  * @param currentView The current view
  */
 export function executeHooks(
-    data: any[], allHooks: HookData | null, checkHooks: HookData | null,
+    data: LViewData, allHooks: HookData | null, checkHooks: HookData | null,
     creationMode: boolean): void {
   const hooksToCall = creationMode ? allHooks : checkHooks;
   if (hooksToCall) {
@@ -125,8 +125,8 @@ export function executeHooks(
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  */
-export function callHooks(data: any[], arr: HookData): void {
+export function callHooks(currentView: any[], arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    (arr[i + 1] as() => void).call(data[arr[i] as number]);
+    (arr[i + 1] as() => void).call(currentView[arr[i] as number]);
   }
 }

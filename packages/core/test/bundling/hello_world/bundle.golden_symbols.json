@@ -24,9 +24,6 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "DIRECTIVES"
-  },
-  {
     "name": "EMPTY$1"
   },
   {
@@ -94,6 +91,9 @@
   },
   {
     "name": "RENDER_PARENT"
+  },
+  {
+    "name": "ROOT_EXPANDO_INSTRUCTIONS"
   },
   {
     "name": "SANITIZER"
@@ -301,6 +301,9 @@
   },
   {
     "name": "nextNgElementId"
+  },
+  {
+    "name": "prefillHostVars"
   },
   {
     "name": "queueHostBindingForCheck"

@@ -41,7 +41,6 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵnextContext': r3.nextContext,
   'ɵcontainerRefreshStart': r3.containerRefreshStart,
   'ɵcontainerRefreshEnd': r3.containerRefreshEnd,
-  'ɵloadDirective': r3.loadDirective,
   'ɵloadQueryList': r3.loadQueryList,
   'ɵnamespaceHTML': r3.namespaceHTML,
   'ɵnamespaceMathML': r3.namespaceMathML,

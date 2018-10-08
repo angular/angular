@@ -11,10 +11,10 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, CONTEXT, DIRECTIVES} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
@@ -449,8 +449,7 @@ describe('render3 integration test', () => {
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
             elementProperty(
-                elementIndex, 'title',
-                bind(loadDirective<TodoComponentHostBinding>(directiveIndex).title));
+                elementIndex, 'title', bind(load<TodoComponentHostBinding>(directiveIndex).title));
           }
         });
       }
@@ -750,7 +749,7 @@ describe('render3 integration test', () => {
              type: TestDirective,
              selectors: [['', 'testDirective', '']],
              factory:
-                 () => new TestDirective(
+                 () => testDirective = new TestDirective(
                      directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
            });
          }
@@ -776,9 +775,6 @@ describe('render3 integration test', () => {
            if (rf & RenderFlags.Create) {
              template(
                  0, embeddedTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
-           }
-           if (rf & RenderFlags.Update) {
-             testDirective = loadDirective<TestDirective>(0);
            }
          }, 1, 0, [TestDirective]);
 
@@ -845,6 +841,7 @@ describe('render3 integration test', () => {
     });
 
     it('should render inside another ng-container at the root of a delayed view', () => {
+      let testDirective: TestDirective;
 
       class TestDirective {
         constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
@@ -857,12 +854,11 @@ describe('render3 integration test', () => {
           type: TestDirective,
           selectors: [['', 'testDirective', '']],
           factory:
-              () => new TestDirective(
+              () => testDirective = new TestDirective(
                   directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
         });
       }
 
-      let testDirective: TestDirective;
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -895,9 +891,6 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           template(0, embeddedTemplate, 4, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
         }
-        if (rf & RenderFlags.Update) {
-          testDirective = loadDirective<TestDirective>(0);
-        }
       }, 1, 0, [TestDirective]);
 
       function App() { element(0, 'test-cmpt'); }
@@ -926,7 +919,7 @@ describe('render3 integration test', () => {
         static ngDirectiveDef = defineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory: () => new Directive(directiveInject(ElementRef)),
+          factory: () => directive = new Directive(directiveInject(ElementRef)),
         });
       }
 
@@ -940,7 +933,6 @@ describe('render3 integration test', () => {
         {
           elementContainerStart(1, [AttributeMarker.SelectOnly, 'dir']);
           elementContainerEnd();
-          directive = loadDirective<Directive>(0);
         }
         elementEnd();
       }
@@ -1277,8 +1269,7 @@ describe('render3 integration test', () => {
             },
             hostVars: 1,
             hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
-              elementAttribute(
-                  elIndex, 'aria-label', bind(loadDirective<HostBindingDir>(dirIndex).label));
+              elementAttribute(elIndex, 'aria-label', bind(load<HostBindingDir>(dirIndex).label));
             }
           });
         }
@@ -2112,11 +2103,10 @@ describe('render3 integration test', () => {
          const context = getContext(hostElm) !;
          const elementNode = context.lViewData[context.nodeIndex];
          const elmData = elementNode.data !;
-         const dirs = elmData[DIRECTIVES];
 
-         expect(dirs).toContain(myDir1Instance);
-         expect(dirs).toContain(myDir2Instance);
-         expect(dirs).toContain(myDir3Instance);
+         expect(elmData).toContain(myDir1Instance);
+         expect(elmData).toContain(myDir2Instance);
+         expect(elmData).toContain(myDir3Instance);
 
          expect(Array.isArray((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
          expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
