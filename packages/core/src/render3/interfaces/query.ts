@@ -69,10 +69,8 @@ export interface LQueries {
    */
   track<T>(
       queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: QueryReadType<T>|Type<T>): void;
+      read?: Type<T>): void;
 }
-
-export class QueryReadType<T> { private defeatStructuralTyping: any; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
