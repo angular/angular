@@ -110,7 +110,11 @@ export function getDirectives(target: {}): Array<{}> {
   return context.directives || [];
 }
 
-function loadContext(target: {}): LContext {
+/**
+ * Returns LContext associated with a target passed as an argument.
+ * Throws if a given target doesn't have associated LContext.
+ */
+export function loadContext(target: {}): LContext {
   const context = getContext(target);
   if (!context) {
     throw new Error(

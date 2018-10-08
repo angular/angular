@@ -395,8 +395,8 @@ export function detachView(lContainer: LContainer, removeIndex: number, detached
 export function removeView(
     lContainer: LContainer, tContainer: TContainerNode, removeIndex: number) {
   const view = lContainer[VIEWS][removeIndex];
-  destroyLView(view);
   detachView(lContainer, removeIndex, !!tContainer.detached);
+  destroyLView(view);
 }
 
 /** Gets the child of the given LViewData */
