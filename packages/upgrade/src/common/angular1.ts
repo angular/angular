@@ -223,17 +223,14 @@ let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
                  IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
-  element: {
-    (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
-    cleanData: (nodes: Node[] | NodeList) => void;
-  },
+  element: (e: string | Element | Document | IAugmentedJQuery) => IAugmentedJQuery,
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
 } = <any>{
   bootstrap: noNg,
   module: noNg,
-  element: Object.assign(() => noNg(), {cleanData: noNg}),
+  element: noNg,
   version: undefined,
   resumeBootstrap: noNg,
   getTestability: noNg
@@ -284,9 +281,7 @@ export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
 export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
-export const element: typeof angular.element = Object.assign(
-    (e: string | Element | Document | IAugmentedJQuery) => angular.element(e),
-    {cleanData: (nodes: Node[] | NodeList) => angular.element.cleanData(nodes)});
+export const element: typeof angular.element = e => angular.element(e);
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
