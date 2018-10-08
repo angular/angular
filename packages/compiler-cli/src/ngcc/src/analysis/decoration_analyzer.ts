@@ -9,26 +9,29 @@ import {ConstantPool} from '@angular/compiler';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
-import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
+import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
+import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
 
-import {NgccReflectionHost} from './host/ngcc_host';
-import {ParsedClass} from './parsing/parsed_class';
-import {ParsedFile} from './parsing/parsed_file';
-import {isDefined} from './utils';
+import {DecoratedClass} from '../host/decorated_class';
+import {DecoratedFile} from '../host/decorated_file';
+import {NgccReflectionHost} from '../host/ngcc_host';
+import {isDefined} from '../utils';
 
-export interface AnalyzedClass<A = any, M = any> extends ParsedClass {
+export interface AnalyzedClass<A = any, M = any> extends DecoratedClass {
   handler: DecoratorHandler<A, M>;
   analysis: any;
   diagnostics?: ts.Diagnostic[];
   compilation: CompileResult[];
 }
 
-export interface AnalyzedFile {
+export interface DecorationAnalysis {
   analyzedClasses: AnalyzedClass[];
   sourceFile: ts.SourceFile;
   constantPool: ConstantPool;
 }
+
+export type DecorationAnalyses = Map<ts.SourceFile, DecorationAnalysis>;
+export const DecorationAnalyses = Map;
 
 export interface MatchingHandler<A, M> {
   handler: DecoratorHandler<A, M>;
@@ -42,32 +45,55 @@ export class FileResourceLoader implements ResourceLoader {
   load(url: string): string { return fs.readFileSync(url, 'utf8'); }
 }
 
-export class Analyzer {
+/**
+ * This Analyzer will analyze the files that have decorated classes that need to be transformed.
+ */
+export class DecorationAnalyzer {
   resourceLoader = new FileResourceLoader();
   scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.host);
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.typeChecker, this.host),
     new ComponentDecoratorHandler(
-        this.typeChecker, this.host, this.scopeRegistry, false, this.resourceLoader, this.rootDirs),
-    new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
-    new InjectableDecoratorHandler(this.host, false),
-    new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
-    new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, false),
+        this.typeChecker, this.host, this.scopeRegistry, this.isCore, this.resourceLoader,
+        this.rootDirs),
+    new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new InjectableDecoratorHandler(this.host, this.isCore),
+    new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
   ];
 
   constructor(
       private typeChecker: ts.TypeChecker, private host: NgccReflectionHost,
-      private rootDirs: string[]) {}
+      private rootDirs: string[], private isCore: boolean) {}
 
   /**
-   * Analyize a parsed file to generate the information about decorated classes that
+   * Analyze a program to find all the decorated files should be transformed.
+   * @param program The program whose files should be analysed.
+   * @returns a map of the source files to the analysis for those files.
+   */
+  analyzeProgram(program: ts.Program): DecorationAnalyses {
+    const analyzedFiles = new DecorationAnalyses();
+    program.getSourceFiles().forEach(file => {
+      if (!analyzedFiles.has(file)) {
+        const decoratedFiles = this.host.findDecoratedFiles(file);
+        decoratedFiles.forEach(
+            decoratedFile =>
+                analyzedFiles.set(decoratedFile.sourceFile, this.analyzeFile(decoratedFile, analyzedFiles)));
+      }
+    });
+    return analyzedFiles;
+  }
+
+  /**
+   * Analyze a decorated file to generate the information about decorated classes that
    * should be converted to use ivy definitions.
    * @param file The file to be analysed for decorated classes.
+   * @returns the analysis of the file
    */
-  analyzeFile(file: ParsedFile): AnalyzedFile {
+  protected analyzeFile(file: DecoratedFile, analyzedFiles: DecorationAnalyses): DecorationAnalysis {
     const constantPool = new ConstantPool();
     const analyzedClasses =
-        file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
+        file.decoratedClasses.map(clazz => analyzedFiles.has(clazz.declaration.getSourceFile()) ? undefined : this.analyzeClass(constantPool, clazz))
             .filter(isDefined);
 
     return {
@@ -76,7 +102,7 @@ export class Analyzer {
     };
   }
 
-  protected analyzeClass(pool: ConstantPool, clazz: ParsedClass): AnalyzedClass|undefined {
+  protected analyzeClass(pool: ConstantPool, clazz: DecoratedClass): AnalyzedClass|undefined {
     const matchingHandlers = this.handlers
                                  .map(handler => ({
                                         handler,
