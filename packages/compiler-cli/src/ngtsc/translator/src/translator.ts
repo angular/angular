@@ -53,9 +53,9 @@ export class ImportManager {
   private moduleToIndex = new Map<string, string>();
   private nextIndex = 0;
 
-  constructor(private isCore: boolean, private prefix = 'i') {}
+  constructor(protected isCore: boolean, private prefix = 'i') {}
 
-  generateNamedImport(moduleName: string, symbol: string): string {
+  generateNamedImport(moduleName: string, symbol: string): string|null {
     if (!this.moduleToIndex.has(moduleName)) {
       this.moduleToIndex.set(moduleName, `${this.prefix}${this.nextIndex++}`);
     }
@@ -206,13 +206,18 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     }
   }
 
-  visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression {
+  visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression
+      |ts.Identifier {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
-    return ts.createPropertyAccess(
-        ts.createIdentifier(this.imports.generateNamedImport(ast.value.moduleName, ast.value.name)),
-        ts.createIdentifier(ast.value.name));
+    const importIdentifier = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    if (importIdentifier === null) {
+      return ts.createIdentifier(ast.value.name);
+    } else {
+      return ts.createPropertyAccess(
+          ts.createIdentifier(importIdentifier), ts.createIdentifier(ast.value.name));
+    }
   }
 
   visitConditionalExpr(ast: ConditionalExpr, context: Context): ts.ParenthesizedExpression {

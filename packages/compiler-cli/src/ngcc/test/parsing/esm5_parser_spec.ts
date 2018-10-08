@@ -15,6 +15,7 @@ import {makeProgram} from '../helpers/utils';
 const BASIC_FILE = {
   name: '/primary.js',
   contents: `
+  import {Directive} from '@angular/core';
   var A = (function() {
     function A() {}
     A.decorators = [
@@ -48,7 +49,7 @@ describe('Esm5FileParser', () => {
   describe('getDecoratedClasses()', () => {
     it('should return an array of object for each class that is exported and decorated', () => {
       const program = makeProgram(BASIC_FILE);
-      const host = new Esm5ReflectionHost(program.getTypeChecker());
+      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
       const parser = new Esm5FileParser(program, host);
 
       const parsedFiles = parser.parseFile(program.getSourceFile(BASIC_FILE.name) !);

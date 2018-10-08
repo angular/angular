@@ -18,6 +18,7 @@ describe('getEntryPointInfo()', () => {
      () => {
        const entryPoint = getEntryPointInfo('/some_package', '/some_package/valid_entry_point');
        expect(entryPoint).toEqual({
+         name: 'some-package',
          package: '/some_package',
          path: '/some_package/valid_entry_point',
          typings: `/some_package/valid_entry_point/valid_entry_point.d.ts`,
@@ -83,6 +84,7 @@ function restoreRealFileSystem() {
 
 function createPackageJson(packageName: string, {exclude}: {exclude?: string} = {}): string {
   const packageJson: any = {
+    name: 'some-package',
     typings: `./${packageName}.d.ts`,
     fesm2015: `./fesm2015/${packageName}.js`,
     esm2015: `./esm2015/${packageName}.js`,
