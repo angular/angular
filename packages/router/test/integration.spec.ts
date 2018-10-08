@@ -193,7 +193,6 @@ describe('Integration', () => {
 
       it('should not warn when triggered outside Angular zone',
          fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
-
            ngZone.runOutsideAngular(() => { router.navigateByUrl('/simple'); });
 
            expect(warnings.length).toBe(0);
@@ -288,7 +287,6 @@ describe('Integration', () => {
              'child2 constructor',
            ]);
          })));
-
     });
 
     it('should execute navigations serialy',
@@ -1031,7 +1029,6 @@ describe('Integration', () => {
          // we do not trigger another navigation to /simple
          expect(events).toEqual(['/simple', '/throwing']);
        }));
-
   });
 
   it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
@@ -1253,7 +1250,6 @@ describe('Integration', () => {
 
   it('should update url and router state before activating components',
      fakeAsync(inject([Router], (router: Router) => {
-
        const fixture = createRoot(router, RootCmp);
 
        router.resetConfig([{path: 'cmp', component: ComponentRecordingRoutePathAndUrl}]);
@@ -1561,7 +1557,6 @@ describe('Integration', () => {
        }));
 
     it('should update hrefs when query params or fragment change', fakeAsync(() => {
-
          @Component({
            selector: 'someRoot',
            template:
@@ -1591,7 +1586,6 @@ describe('Integration', () => {
        }));
 
     it('should correctly use the preserve strategy', fakeAsync(() => {
-
          @Component({
            selector: 'someRoot',
            template:
@@ -1613,7 +1607,6 @@ describe('Integration', () => {
        }));
 
     it('should correctly use the merge strategy', fakeAsync(() => {
-
          @Component({
            selector: 'someRoot',
            template:
@@ -1863,6 +1856,23 @@ describe('Integration', () => {
                })));
           });
 
+      describe('should activate a child wildcard route router outlet has yet to be mounted', () => {
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{
+               path: 'teams',
+               component: BlankCmp,
+               children: [{path: ':team-id', children: [{path: '**', component: BlankCmp}]}]
+             }]);
+             router.navigateByUrl('/teams/22/members');
+             advance(fixture);
+             expect(location.path()).toEqual('/teams/22/members');
+             router.navigateByUrl('/teams/22/manage');
+             advance(fixture);
+             expect(location.path()).toEqual('/teams/22/manage');
+           })));
+      });
+
       describe('should activate a route when CanActivate returns true', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
@@ -1991,7 +2001,6 @@ describe('Integration', () => {
              location.go('/two');
              advance(fixture);
              expect(location.path()).toEqual('/one');
-
            })));
       });
 
@@ -2637,7 +2646,6 @@ describe('Integration', () => {
          fakeAsync(inject(
              [Router, Location, NgModuleFactoryLoader],
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-
                @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
                class AdminComponent {
                }
@@ -2705,7 +2713,6 @@ describe('Integration', () => {
          fakeAsync(inject(
              [Router, Location, NgModuleFactoryLoader],
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-
                @Component({selector: 'lazy', template: 'lazy-loaded'})
                class LazyLoadedComponent {
                }
@@ -2773,7 +2780,6 @@ describe('Integration', () => {
 
       it('should support navigating from within the guard',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-
            const fixture = createRoot(router, RootCmp);
 
            router.resetConfig([
@@ -2807,7 +2813,6 @@ describe('Integration', () => {
          fakeAsync(inject(
              [Router, Location, NgModuleFactoryLoader],
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-
                @Component({selector: 'lazy', template: 'lazy-loaded'})
                class LazyLoadedComponent {
                }
@@ -2842,7 +2847,6 @@ describe('Integration', () => {
     });
 
     describe('order', () => {
-
       class Logger {
         logs: string[] = [];
         add(thing: string) { this.logs.push(thing); }
@@ -3120,7 +3124,6 @@ describe('Integration', () => {
          advance(fixture);
          expect(paragraph.textContent).toEqual('false');
        }));
-
   });
 
   describe('lazy loading', () => {
@@ -3467,7 +3470,6 @@ describe('Integration', () => {
     it('should allow lazy loaded module in named outlet',
        fakeAsync(inject(
            [Router, NgModuleFactoryLoader], (router: Router, loader: SpyNgModuleFactoryLoader) => {
-
              @Component({selector: 'lazy', template: 'lazy-loaded'})
              class LazyComponent {
              }
@@ -3507,7 +3509,6 @@ describe('Integration', () => {
     it('should allow componentless named outlet to render children',
        fakeAsync(inject(
            [Router, NgModuleFactoryLoader], (router: Router, loader: SpyNgModuleFactoryLoader) => {
-
              const fixture = createRoot(router, RootCmp);
 
              router.resetConfig([{
@@ -3767,7 +3768,6 @@ describe('Integration', () => {
                expect(secondConfig).toBeDefined();
                expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
              })));
-
     });
 
     describe('custom url handling strategies', () => {
@@ -4114,7 +4114,6 @@ describe('Testing router options', () => {
   });
 
   describe('malformedUriErrorHandler', () => {
-
     function malformedUriErrorHandler(e: URIError, urlSerializer: UrlSerializer, url: string) {
       return urlSerializer.parse('/error');
     }
