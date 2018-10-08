@@ -12,7 +12,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
-
 import {$apply, $digest, html, multiTrim, withEachNg1Version} from './test_helpers';
 
 declare global {
@@ -2178,10 +2177,9 @@ withEachNg1Version(() => {
              });
            }));
 
-        it('should emit `$destroy` on `$element` and descendants', fakeAsync(() => {
+        it('should emit `$destroy` on `$element`', fakeAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
-             const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
              let ng2ComponentInstance: Ng2Component;
 
              @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
@@ -2196,13 +2194,9 @@ withEachNg1Version(() => {
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module('ng1', ['ngAnimateMock'])
                  .component('ng1', {
-                   controller: class {
-                     constructor(private $element: angular.IAugmentedJQuery) {} $onInit() {
-                       this.$element.on !('$destroy', elementDestroyListener);
-                       this.$element.contents !().on !('$destroy', descendantDestroyListener);
-                     }
+                   controller: function($element: angular.IAugmentedJQuery) {
+                     $element.on !('$destroy', elementDestroyListener);
                    },
-                   template: '<div></div>'
                  })
                  .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
@@ -2216,150 +2210,14 @@ withEachNg1Version(() => {
              const element = html('<ng2></ng2>');
              adapter.bootstrap(element, ['ng1']).ready((ref) => {
                const $rootScope = ref.ng1RootScope as any;
-               tick();
-               $rootScope.$digest();
 
                expect(elementDestroyListener).not.toHaveBeenCalled();
-               expect(descendantDestroyListener).not.toHaveBeenCalled();
 
                ng2ComponentInstance.ng2Destroy = true;
                tick();
                $rootScope.$digest();
 
                expect(elementDestroyListener).toHaveBeenCalledTimes(1);
-               expect(descendantDestroyListener).toHaveBeenCalledTimes(1);
-             });
-           }));
-
-        it('should clear data on `$element` and descendants', fakeAsync(() => {
-             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-             let ng1ComponentElement: angular.IAugmentedJQuery;
-             let ng2ComponentAInstance: Ng2ComponentA;
-
-             // Define `ng1Component`
-             const ng1Component: angular.IComponent = {
-               controller: class {
-                 constructor(private $element: angular.IAugmentedJQuery) {} $onInit() {
-                   this.$element.data !('test', 1);
-                   this.$element.contents !().data !('test', 2);
-
-                   ng1ComponentElement = this.$element;
-                 }
-               },
-               template: '<div></div>'
-             };
-
-             // Define `Ng2Component`
-             @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
-             class Ng2ComponentA {
-               destroyIt = false;
-
-               constructor() { ng2ComponentAInstance = this; }
-             }
-
-             @Component({selector: 'ng2B', template: '<ng1></ng1>'})
-             class Ng2ComponentB {
-             }
-
-             // Define `ng1Module`
-             angular.module('ng1Module', [])
-                 .component('ng1', ng1Component)
-                 .directive('ng2A', adapter.downgradeNg2Component(Ng2ComponentA));
-
-             // Define `Ng2Module`
-             @NgModule({
-               declarations: [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB],
-               entryComponents: [Ng2ComponentA],
-               imports: [BrowserModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
-
-             // Bootstrap
-             const element = html(`<ng2-a></ng2-a>`);
-
-             adapter.bootstrap(element, ['ng1Module']).ready((ref) => {
-               const $rootScope = ref.ng1RootScope as any;
-               tick();
-               $rootScope.$digest();
-               expect(ng1ComponentElement.data !('test')).toBe(1);
-               expect(ng1ComponentElement.contents !().data !('test')).toBe(2);
-
-               ng2ComponentAInstance.destroyIt = true;
-               tick();
-               $rootScope.$digest();
-
-               expect(ng1ComponentElement.data !('test')).toBeUndefined();
-               expect(ng1ComponentElement.contents !().data !('test')).toBeUndefined();
-             });
-           }));
-
-        it('should clear dom listeners on `$element` and descendants`', fakeAsync(() => {
-             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-             const elementClickListener = jasmine.createSpy('elementClickListener');
-             const descendantClickListener = jasmine.createSpy('descendantClickListener');
-             let ng1DescendantElement: angular.IAugmentedJQuery;
-             let ng2ComponentAInstance: Ng2ComponentA;
-
-             // Define `ng1Component`
-             const ng1Component: angular.IComponent = {
-               controller: class {
-                 constructor(private $element: angular.IAugmentedJQuery) {} $onInit() {
-                   ng1DescendantElement = this.$element.contents !();
-
-                   this.$element.on !('click', elementClickListener);
-                   ng1DescendantElement.on !('click', descendantClickListener);
-                 }
-               },
-               template: '<div></div>'
-             };
-
-             // Define `Ng2Component`
-             @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
-             class Ng2ComponentA {
-               destroyIt = false;
-
-               constructor() { ng2ComponentAInstance = this; }
-             }
-
-             @Component({selector: 'ng2B', template: '<ng1></ng1>'})
-             class Ng2ComponentB {
-             }
-
-             // Define `ng1Module`
-             angular.module('ng1Module', [])
-                 .component('ng1', ng1Component)
-                 .directive('ng2A', adapter.downgradeNg2Component(Ng2ComponentA));
-
-             // Define `Ng2Module`
-             @NgModule({
-               declarations: [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB],
-               entryComponents: [Ng2ComponentA],
-               imports: [BrowserModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
-
-             // Bootstrap
-             const element = html(`<ng2-a></ng2-a>`);
-
-             adapter.bootstrap(element, ['ng1Module']).ready((ref) => {
-               const $rootScope = ref.ng1RootScope as any;
-               tick();
-               $rootScope.$digest();
-               (ng1DescendantElement[0] as HTMLElement).click();
-               expect(elementClickListener).toHaveBeenCalledTimes(1);
-               expect(descendantClickListener).toHaveBeenCalledTimes(1);
-
-               ng2ComponentAInstance.destroyIt = true;
-               tick();
-               $rootScope.$digest();
-
-               (ng1DescendantElement[0] as HTMLElement).click();
-               expect(elementClickListener).toHaveBeenCalledTimes(1);
-               expect(descendantClickListener).toHaveBeenCalledTimes(1);
              });
            }));
       });
