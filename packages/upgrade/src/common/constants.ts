@@ -23,10 +23,12 @@ export const $TEMPLATE_REQUEST = '$templateRequest';
 export const $$TESTABILITY = '$$testability';
 
 export const COMPILER_KEY = '$$angularCompiler';
+export const DOWNGRADED_MODULE_COUNT_KEY = '$$angularDowngradedModuleCount';
 export const GROUP_PROJECTABLE_NODES_KEY = '$$angularGroupProjectableNodes';
 export const INJECTOR_KEY = '$$angularInjector';
 export const LAZY_MODULE_REF = '$$angularLazyModuleRef';
 export const NG_ZONE_KEY = '$$angularNgZone';
+export const UPGRADE_APP_TYPE_KEY = '$$angularUpgradeAppType';
 
 export const REQUIRE_INJECTOR = '?^^' + INJECTOR_KEY;
 export const REQUIRE_NG_MODEL = '?ngModel';

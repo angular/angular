@@ -11,7 +11,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import * as angular from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, controllerKey, getComponentName, isFunction} from './util';
+import {LazyModuleRef, controllerKey, getTypeName, isFunction, validateInjectionKey} from './util';
 
 
 interface Thenable<T> {
@@ -104,6 +104,10 @@ export function downgradeComponent(info: {
         if (!parentInjector) {
           const downgradedModule = info.downgradedModule || '';
           const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
+          const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
+
+          validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
+
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
           needsNgZone = lazyModuleRef.needsNgZone;
           parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
@@ -116,7 +120,7 @@ export function downgradeComponent(info: {
               componentFactoryResolver.resolveComponentFactory(info.component) !;
 
           if (!componentFactory) {
-            throw new Error('Expecting ComponentFactory for: ' + getComponentName(info.component));
+            throw new Error(`Expecting ComponentFactory for: ${getTypeName(info.component)}`);
           }
 
           const injectorPromise = new ParentInjectorPromise(element);
