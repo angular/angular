@@ -13,8 +13,8 @@ describe('Element E2E Tests', function () {
       browser.get('hello-world.html');
       const helloWorldEl = element(by.css('hello-world-el'));
       const input = element(by.css('input[type=text]'));
-      input.sendKeys('F', 'o', 'o');
-      expect(helloWorldEl.getText()).toEqual('Hello Foo!');
+      input.sendKeys('B', 'a', 'r');
+      expect(helloWorldEl.getText()).toEqual('Hello Bar!');
     });
   });
 });
