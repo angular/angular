@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, InjectionToken, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef} from '../../../src/core';
+import {Component, Directive, Input, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {PublicFeature} from '../../../src/render3';
 import {ComponentDef} from '../../../src/render3/interfaces/definition';
-import {ComponentFixture, containerEl, renderComponent, toHtml} from '../render_util';
+import {containerEl, renderComponent, toHtml} from '../render_util';
 
 
 
@@ -215,86 +214,4 @@ describe('pipes', () => {
     expect(myPurePipeTransformCalls).toEqual(3);
     expect(myPipeTransformCalls).toEqual(0);
   });
-
-  describe('injection mechanism', () => {
-    class ServiceA {
-      title = 'ServiceA Title';
-    }
-
-    class ServiceB {
-      title = 'ServiceB Title';
-
-      static ngInjectableDef =
-          defineInjectable({providedIn: 'root', factory: () => new ServiceB()});
-    }
-
-    class ModuleA {
-      static ngInjectorDef = defineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
-      static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
-    }
-
-    const generatePipe = (InjectionType: any) => {
-      return class MyConcatPipe implements PipeTransform {
-        constructor(public obj: any) {}
-
-        transform(value: string): string { return `${value} - ${this.obj.title}`; }
-
-        static ngPipeDef = $r3$.ɵdefinePipe({
-          name: 'myConcatPipe',
-          type: MyConcatPipe,
-          factory: () => new MyConcatPipe($r3$.ɵdirectiveInject(InjectionType)),
-          pure: false
-        });
-      };
-    };
-
-    const generateComponent = (overrides: any) => {
-      return class MyComponent {
-        title = 'MyComponent Title';
-
-        static ngComponentDef = $r3$.ɵdefineComponent({
-          type: MyComponent,
-          selectors: [['my-app']],
-          features: [PublicFeature],
-          factory: function MyApp_Factory() { return new MyComponent(); },
-          consts: 2,
-          vars: 1,
-          // '{{ title | myPipe }}'
-          template: (rf: $RenderFlags$, ctx: MyComponent) => {
-            if (rf & 1) {
-              $r3$.ɵtext(0);
-              $r3$.ɵpipe(1, 'myConcatPipe');
-            }
-            if (rf & 2) {
-              $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind1(1, 3, ctx.title), ''));
-            }
-          },
-          ...overrides
-        });
-      };
-    };
-
-    it('should be able to handle Service injection', () => {
-      const Comp = generateComponent({providers: [ServiceB], pipes: [generatePipe(ServiceB)]});
-      const fixture = new ComponentFixture(Comp);
-      expect(fixture.html).toEqual('MyComponent Title - ServiceB Title');
-    });
-
-    it('should be able to handle Token injections', () => {
-      const provider = new InjectionToken<ServiceA>(
-          'token', {providedIn: 'root', factory: () => new ServiceB()});
-      const Comp = generateComponent({providers: [provider], pipes: [generatePipe(provider)]});
-      const fixture = new ComponentFixture(Comp);
-      expect(fixture.html).toEqual('MyComponent Title - ServiceB Title');
-    });
-
-    it('should be able to handle Module injection', () => {
-      const injector = createInjector(ModuleA);
-      const Comp = generateComponent({providers: [], pipes: [generatePipe(ServiceA)]});
-      const fixture = new ComponentFixture(Comp, {injector});
-      expect(fixture.html).toEqual('MyComponent Title - ServiceA Title');
-    });
-
-  });
-
 });
