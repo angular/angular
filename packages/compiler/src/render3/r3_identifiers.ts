@@ -96,7 +96,6 @@ export class Identifiers {
   static pipeBindV: o.ExternalReference = {name: 'ɵpipeBindV', moduleName: CORE};
 
   static load: o.ExternalReference = {name: 'ɵload', moduleName: CORE};
-  static loadDirective: o.ExternalReference = {name: 'ɵloadDirective', moduleName: CORE};
   static loadQueryList: o.ExternalReference = {name: 'ɵloadQueryList', moduleName: CORE};
 
   static pipe: o.ExternalReference = {name: 'ɵpipe', moduleName: CORE};
