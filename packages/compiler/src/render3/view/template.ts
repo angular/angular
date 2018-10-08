@@ -533,7 +533,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
           }
         }
-      }
+      });
 
       // initial styling for static style="..." attributes
       if (hasStylingInstructions) {
