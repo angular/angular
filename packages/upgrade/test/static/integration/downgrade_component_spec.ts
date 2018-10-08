@@ -784,5 +784,37 @@ withEachNg1Version(() => {
          });
 
        }));
+
+    it('should throw if `downgradedModule` is specified', async(() => {
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+         }
+
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+
+         const ng1Module = angular.module('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component, downgradedModule: 'foo'}));
+
+         const element = html('<ng2></ng2>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module)
+             .then(
+                 () => { throw new Error('Expected bootstraping to fail.'); },
+                 err =>
+                     expect(err.message)
+                         .toBe(
+                             'Error while instantiating component \'Ng2Component\': \'downgradedModule\' ' +
+                             'unexpectedly specified.\n' +
+                             'You should not specify a value for \'downgradedModule\', unless you are ' +
+                             'downgrading more than one Angular module (via \'downgradeModule()\').'));
+       }));
   });
 });

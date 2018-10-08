@@ -11,7 +11,7 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, Event
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getComponentName, hookupNgModel, strictEquals} from './util';
+import {getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -208,7 +208,7 @@ export class DowngradeComponentAdapter {
       });
     } else {
       throw new Error(
-          `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+          `Missing emitter '${output.prop}' on component '${getTypeName(this.componentFactory.componentType)}'!`);
     }
   }
 

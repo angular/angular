@@ -8,6 +8,7 @@
 
 import {Injector, Type} from '@angular/core';
 import * as angular from './angular1';
+import {DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
 const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
@@ -32,13 +33,64 @@ export function directiveNormalize(name: string): string {
       .replace(DIRECTIVE_SPECIAL_CHARS_REGEXP, (_, letter) => letter.toUpperCase());
 }
 
-export function getComponentName(component: Type<any>): string {
-  // Return the name of the component or the first line of its stringified version.
-  return (component as any).overriddenName || component.name || component.toString().split('\n')[0];
+export function getTypeName(type: Type<any>): string {
+  // Return the name of the type or the first line of its stringified version.
+  return (type as any).overriddenName || type.name || type.toString().split('\n')[0];
+}
+
+export function getDowngradedModuleCount($injector: angular.IInjectorService): number {
+  return $injector.has(DOWNGRADED_MODULE_COUNT_KEY) ? $injector.get(DOWNGRADED_MODULE_COUNT_KEY) :
+                                                      0;
+}
+
+export function getUpgradeAppType($injector: angular.IInjectorService): UpgradeAppType {
+  return $injector.has(UPGRADE_APP_TYPE_KEY) ? $injector.get(UPGRADE_APP_TYPE_KEY) :
+                                               UpgradeAppType.None;
 }
 
 export function isFunction(value: any): value is Function {
   return typeof value === 'function';
+}
+
+export function validateInjectionKey(
+    $injector: angular.IInjectorService, downgradedModule: string, injectionKey: string,
+    attemptedAction: string): void {
+  const upgradeAppType = getUpgradeAppType($injector);
+  const downgradedModuleCount = getDowngradedModuleCount($injector);
+
+  // Check for common errors.
+  switch (upgradeAppType) {
+    case UpgradeAppType.Dynamic:
+    case UpgradeAppType.Static:
+      if (downgradedModule) {
+        throw new Error(
+            `Error while ${attemptedAction}: 'downgradedModule' unexpectedly specified.\n` +
+            'You should not specify a value for \'downgradedModule\', unless you are downgrading ' +
+            'more than one Angular module (via \'downgradeModule()\').');
+      }
+      break;
+    case UpgradeAppType.Lite:
+      if (!downgradedModule && (downgradedModuleCount >= 2)) {
+        throw new Error(
+            `Error while ${attemptedAction}: 'downgradedModule' not specified.\n` +
+            'This application contains more than one downgraded Angular module, thus you need to ' +
+            'always specify \'downgradedModule\' when downgrading components and injectables.');
+      }
+
+      if (!$injector.has(injectionKey)) {
+        throw new Error(
+            `Error while ${attemptedAction}: Unable to find the specified downgraded module.\n` +
+            'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
+            'application?');
+      }
+
+      break;
+    default:
+      throw new Error(
+          `Error while ${attemptedAction}: Not a valid '@angular/upgrade' application.\n` +
+          'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
+          'application?');
+  }
 }
 
 export class Deferred<R> {
@@ -62,6 +114,20 @@ export interface LazyModuleRef {
   needsNgZone: boolean;
   injector?: Injector;
   promise?: Promise<Injector>;
+}
+
+export const enum UpgradeAppType {
+  // App NOT using `@angular/upgrade`. (This should never happen in an `ngUpgrade` app.)
+  None,
+
+  // App using the deprecated `@angular/upgrade` APIs (a.k.a. dynamic `ngUpgrade`).
+  Dynamic,
+
+  // App using `@angular/upgrade/static` with `UpgradeModule`.
+  Static,
+
+  // App using @angular/upgrade/static` with `downgradeModule()` (a.k.a `ngUpgrade`-lite ).
+  Lite,
 }
 
 /**
