@@ -1863,6 +1863,23 @@ describe('Integration', () => {
                })));
           });
 
+      describe('should activate a child wildcard route router outlet has yet to be mounted', () => {
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{
+               path: 'teams',
+               component: BlankCmp,
+               children: [{path: ':team-id', children: [{path: '**', component: BlankCmp}]}]
+             }]);
+             router.navigateByUrl('/teams/22/members');
+             advance(fixture);
+             expect(location.path()).toEqual('/teams/22/members');
+             router.navigateByUrl('/teams/22/manage');
+             advance(fixture);
+             expect(location.path()).toEqual('/teams/22/manage');
+           })));
+      });
+
       describe('should activate a route when CanActivate returns true', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
