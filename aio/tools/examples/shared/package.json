@@ -60,7 +60,7 @@
     "canonical-path": "0.0.2",
     "concurrently": "^3.0.0",
     "http-server": "^0.9.0",
-    "jasmine-core": "^3.2.0",
+    "jasmine-core": "~2.99.1",
     "jasmine-marbles": "^0.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.0.0",
