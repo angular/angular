@@ -214,11 +214,11 @@ export interface INgModelController {
   $name: string;
 }
 
-function noNg() {
+function noNg(): never {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
-const noNgElement: typeof angular.element = (e => noNg()) as typeof angular.element;
+const noNgElement: typeof angular.element = () => noNg();
 noNgElement.cleanData = noNg;
 
 let angular: {
@@ -232,11 +232,11 @@ let angular: {
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
-} = <any>{
+} = {
   bootstrap: noNg,
   module: noNg,
   element: noNgElement,
-  version: undefined,
+  version: undefined as any,
   resumeBootstrap: noNg,
   getTestability: noNg
 };
@@ -286,10 +286,8 @@ export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
 export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
-const angularElement: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
-angularElement.cleanData = nodes => angular.element.cleanData(nodes);
-
-export const element: typeof angular.element = angularElement;
+export const element: typeof angular.element = e => angular.element(e);
+element.cleanData = nodes => angular.element.cleanData(nodes);
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
