@@ -10,7 +10,7 @@ import {assertDefined} from './assert';
 import {attachPatchData, readElementValue} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementContainerNode, LElementNode, LTextNode, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementContainerNode, LElementNode, LTextNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -393,9 +393,10 @@ export function detachView(lContainer: LContainer, removeIndex: number, detached
  * @param removeIndex The index of the view to remove
  */
 export function removeView(
-    lContainer: LContainer, tContainer: TContainerNode, removeIndex: number) {
+    lContainer: LContainer, containerHost: TElementNode | TContainerNode | TElementContainerNode,
+    removeIndex: number) {
   const view = lContainer[VIEWS][removeIndex];
-  detachView(lContainer, removeIndex, !!tContainer.detached);
+  detachView(lContainer, removeIndex, !!containerHost.detached);
   destroyLView(view);
 }
 

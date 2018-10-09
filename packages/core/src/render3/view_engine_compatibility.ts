@@ -105,13 +105,14 @@ export function createTemplateRef<T>(
       }
 
       createEmbeddedView(
-          context: T, container?: LContainer, tContainerNode?: TContainerNode, hostView?: LViewData,
+          context: T, container?: LContainer,
+          hostTNode?: TElementNode|TContainerNode|TElementContainerNode, hostView?: LViewData,
           index?: number): viewEngine_EmbeddedViewRef<T> {
         const lView = createEmbeddedViewAndNode(
             this._tView, context, this._declarationParentView, this._renderer, this._queries,
             this._injectorIndex);
         if (container) {
-          insertView(lView, container, hostView !, index !, tContainerNode !.parent !.index);
+          insertView(lView, container, hostView !, index !, hostTNode !.index);
         }
         renderEmbeddedTemplate(lView, this._tView, context, RenderFlags.Create);
         const viewRef = new ViewRef(lView, context, -1);
@@ -132,9 +133,8 @@ export function createTemplateRef<T>(
 
 let R3ViewContainerRef: {
   new (
-      lContainer: LContainer, tContainerNode: TContainerNode,
-      hostTNode: TElementNode | TContainerNode | TElementContainerNode, hostView: LViewData):
-      ViewEngine_ViewContainerRef
+      lContainer: LContainer, hostTNode: TElementNode | TContainerNode | TElementContainerNode,
+      hostView: LViewData): ViewEngine_ViewContainerRef
 };
 
 /**
@@ -172,7 +172,7 @@ export function createContainerRef(
       private _viewRefs: viewEngine_ViewRef[] = [];
 
       constructor(
-          private _lContainer: LContainer, private _tContainerNode: TContainerNode,
+          private _lContainer: LContainer,
           private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
           private _hostView: LViewData) {
         super();
@@ -210,7 +210,7 @@ export function createContainerRef(
         const adjustedIdx = this._adjustIndex(index);
         const viewRef = (templateRef as any)
                             .createEmbeddedView(
-                                context || <any>{}, this._lContainer, this._tContainerNode,
+                                context || <any>{}, this._lContainer, this._hostTNode,
                                 this._hostView, adjustedIdx);
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
         this._viewRefs.splice(adjustedIdx, 0, viewRef);
@@ -239,9 +239,7 @@ export function createContainerRef(
         const lView = (viewRef as ViewRef<any>)._view !;
         const adjustedIdx = this._adjustIndex(index);
 
-        insertView(
-            lView, this._lContainer, this._hostView, adjustedIdx,
-            this._tContainerNode.parent !.index);
+        insertView(lView, this._lContainer, this._hostView, adjustedIdx, this._hostTNode.index);
 
         const container = this._getHostNode().dynamicLContainerNode !;
         const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], container);
@@ -264,13 +262,13 @@ export function createContainerRef(
 
       remove(index?: number): void {
         const adjustedIdx = this._adjustIndex(index, -1);
-        removeView(this._lContainer, this._tContainerNode as TContainerNode, adjustedIdx);
+        removeView(this._lContainer, this._hostTNode, adjustedIdx);
         this._viewRefs.splice(adjustedIdx, 1);
       }
 
       detach(index?: number): viewEngine_ViewRef|null {
         const adjustedIdx = this._adjustIndex(index, -1);
-        detachView(this._lContainer, adjustedIdx, !!this._tContainerNode.detached);
+        detachView(this._lContainer, adjustedIdx, !!this._hostTNode.detached);
         return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
       }
 
@@ -302,17 +300,10 @@ export function createContainerRef(
   lContainer[RENDER_PARENT] = getRenderParent(hostTNode, hostView);
 
   appendChild(comment, hostTNode, hostView);
-
-  if (!hostTNode.dynamicContainerNode) {
-    hostTNode.dynamicContainerNode =
-        createTNode(TNodeType.Container, -1, null, null, hostTNode, null);
-  }
-
   hostLNode.dynamicLContainerNode = lContainerNode;
   addToViewTree(hostView, hostTNode.index as number, lContainer);
 
-  return new R3ViewContainerRef(
-      lContainer, hostTNode.dynamicContainerNode as TContainerNode, hostTNode, hostView);
+  return new R3ViewContainerRef(lContainer, hostTNode, hostView);
 }
 
 

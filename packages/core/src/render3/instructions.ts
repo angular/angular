@@ -496,8 +496,6 @@ export function createNodeAtIndex(
           createTNode(type, adjustedIndex, name, attrs, tParent, null);
       if (!isParent && previousOrParentTNode) {
         previousOrParentTNode.next = tNode;
-        if (previousOrParentTNode.dynamicContainerNode)
-          previousOrParentTNode.dynamicContainerNode.next = tNode;
       }
     }
 
@@ -1518,7 +1516,6 @@ export function createTNode(
     next: null,
     child: null,
     parent: parent,
-    dynamicContainerNode: null,
     detached: null,
     stylingTemplate: null,
     projection: null
