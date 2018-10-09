@@ -1238,80 +1238,64 @@ Angular [NgModel](guide/template-syntax#ngModel).
 
 ## Built-in directives
 
-Earlier versions of Angular included over seventy built-in directives.
-The community contributed many more, and countless private directives
-have been created for internal applications.
+Angular offers two kinds of built-in directives: attribute
+directives and structural directives. This segment reviews some of the most common built-in directives,
+classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives) and has its own <live-example name="built-in-directives">built-in directives example</live-example>.
 
-You don't need many of those directives in Angular.
-You can often achieve the same results with the more capable and expressive Angular binding system.
-Why create a directive to handle a click when you can write a simple binding such as this?
-
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-You still benefit from directives that simplify complex tasks.
-Angular still ships with built-in directives; just not as many.
-You'll write your own directives, just not as many.
-
-This segment reviews some of the most frequently used built-in directives,
-classified as either [_attribute_ directives](guide/template-syntax#attribute-directives) or [_structural_ directives](guide/template-syntax#structural-directives).
+For more detail, including how to build your own custom directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
 
 <hr/>
 
 {@a attribute-directives}
 
-## Built-in _attribute_ directives
+### Built-in attribute directives
 
 Attribute directives listen to and modify the behavior of
 other HTML elements, attributes, properties, and components.
-They are usually applied to elements as if they were HTML attributes, hence the name.
+You usually apply them to elements as if they were HTML attributes, hence the name.
 
-Many details are covered in the [_Attribute Directives_](guide/attribute-directives) guide.
 Many NgModules such as the [`RouterModule`](guide/router "Routing and Navigation")
 and the [`FormsModule`](guide/forms "Forms") define their own attribute directives.
-This section is an introduction to the most commonly used attribute directives:
+The most common attribute directives are as follows:
 
-* [`NgClass`](guide/template-syntax#ngClass) - add and remove a set of CSS classes
-* [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
-* [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
-
+* [`NgClass`](guide/template-syntax#ngClass)&mdash;adds and removes a set of CSS classes.
+* [`NgStyle`](guide/template-syntax#ngStyle)&mdash;adds and removes a set of HTML styles.
+* [`NgModel`](guide/template-syntax#ngModel)&mdash;adds two-way data binding to an HTML form element.
 
 <hr/>
 
 {@a ngClass}
 
-### NgClass
+### `NgClass`
 
-You typically control how elements appear
-by adding and removing CSS classes dynamically.
-You can bind to the `ngClass` to add or remove several classes simultaneously.
+Add or remove several CSS classes simultaneously with `ngClass`.
 
-A [class binding](guide/template-syntax#class-binding) is a good way to add or remove a *single* class.
-
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-To add or remove *many* CSS classes at the same time, the `NgClass` directive may be the better choice.
-
-Try binding `ngClass` to a key:value control object.
-Each key of the object is a CSS class name; its value is `true` if the class should be added,
-`false` if it should be removed.
-
-Consider a `setCurrentClasses` component method that sets a component property,
-`currentClasses` with an object that adds or removes three classes based on the
-`true`/`false` state of three other component properties:
-
-<code-example path="template-syntax/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
-</code-example>
-
-Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="special-div" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
-It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
+To add or remove a *single* class, use [class binding](guide/template-syntax#class-binding) rather than `NgClass`.
+
+</div>
+
+Consider a `setCurrentClasses()` component method that sets a component property,
+`currentClasses`, with an object that adds or removes three classes based on the
+`true`/`false` state of three other component properties. Each key of the object is a CSS class name; its value is `true` if the class should be added,
+`false` if it should be removed.
+
+<code-example path="built-in-directives/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+Adding an `ngClass` property binding to `currentClasses` sets the element's classes accordingly:
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+<div class="alert is-helpful">
+
+Remember that in this situation you'd call `setCurrentClasses()`,
+both initially and when the dependent properties change.
 
 </div>
 
@@ -1319,35 +1303,34 @@ It's up to you to call `setCurrentClasses()`, both initially and when the depend
 
 {@a ngStyle}
 
-### NgStyle
+### `NgStyle`
 
-You can set inline styles dynamically, based on the state of the component.
-With `NgStyle` you can set many inline styles simultaneously.
+Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
 
-A [style binding](guide/template-syntax#style-binding) is an easy way to set a *single* style value.
+#### Without `NgStyle`
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" header="src/app/app.component.html" linenums="false">
+For context, consider setting a *single* style value with [style binding](guide/template-syntax#style-binding), without `NgStyle`.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="without-ng-style" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-To set *many* inline styles at the same time, the `NgStyle` directive may be the better choice.
+However, to set *many* inline styles at the same time, use the `NgStyle` directive.
 
-Try binding `ngStyle` to a key:value control object.
-Each key of the object is a style name; its value is whatever is appropriate for that style.
+The following is a `setCurrentStyles()` method that sets a component
+property, `currentStyles`, with an object that defines three styles,
+based on the state of three other component properties:
 
-Consider a `setCurrentStyles` component method that sets a component property, `currentStyles`
-with an object that defines three styles, based on the state of three other component properties:
-
-<code-example path="template-syntax/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 Adding an `ngStyle` property binding to `currentStyles` sets the element's styles accordingly:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
-It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
+Remember to call `setCurrentStyles()`, both initially and when the dependent properties change.
 
 </div>
 
@@ -1356,92 +1339,78 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 
 {@a ngModel}
 
-### NgModel - Two-way binding to form elements with <span class="syntax">[(ngModel)]</span>
+### `[(ngModel)]`: Two-way binding
 
-When developing data entry forms, you often both display a data property and
-update that property when the user makes changes.
+The `NgModel` directive allows you to display a data property and
+update that property when the user makes changes. Here's an example:
 
-Two-way data binding with the `NgModel` directive makes that easy. Here's an example:
-
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel-1)" region="NgModel-1">
+<code-example path="built-in-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel example)" region="NgModel-1">
 </code-example>
 
-#### _FormsModule_ is required to use _ngModel_
+
+#### Import `FormsModule` to use `ngModel`
 
 Before using the `ngModel` directive in a two-way data binding,
 you must import the `FormsModule` and add it to the NgModule's `imports` list.
-Learn more about the `FormsModule` and `ngModel` in the
-[Forms](guide/forms#ngModel) guide.
+Learn more about the `FormsModule` and `ngModel` in [Forms](guide/forms#ngModel).
 
-Here's how to import the `FormsModule` to make `[(ngModel)]` available.
+Remember to import the `FormsModule` to make `[(ngModel)]` available as follows:
 
-<code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)">
+<code-example path="built-in-directives/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)" region="import-forms-module">
 </code-example>
 
-#### Inside <span class="syntax">[(ngModel)]</span>
 
-Looking back at the `name` binding, note that
-you could have achieved the same result with separate bindings to
-the `<input>` element's  `value` property and `input` event.
+You could achieve the same result with separate bindings to
+the `<input>` element's  `value` property and `input` event:
 
-<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-That's cumbersome. Who can remember which element property to set and which element event emits user changes?
-How do you extract the currently displayed text from the input box so you can update the data property?
-Who wants to look that up each time?
+To streamline the syntax, the `ngModel` directive hides the details behind its own `ngModel` input and `ngModelChange` output properties:
 
-That `ngModel` directive hides these onerous details behind its own  `ngModel` input and `ngModelChange` output properties.
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModelChange" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-<div class="alert is-helpful">
 
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
 
+#### `NgModel` and value accessors
+
 The details are specific to each kind of element and therefore the `NgModel` directive only works for an element
 supported by a [ControlValueAccessor](api/forms/ControlValueAccessor)
 that adapts an element to this protocol.
-The `<input>` box is one of those elements.
 Angular provides *value accessors* for all of the basic HTML form elements and the
-[_Forms_](guide/forms) guide shows how to bind to them.
+[Forms](guide/forms) guide shows how to bind to them.
 
-You can't apply `[(ngModel)]` to a non-form native element or a third-party custom component
-until you write a suitable *value accessor*,
-a technique that is beyond the scope of this guide.
+You can't apply `[(ngModel)]` to a non-form native element or a
+third-party custom component until you write a suitable value accessor. For more information, see
+the API documentation on [DefaultValueAccessor](https://angular.io/api/forms/DefaultValueAccessor).
 
-You don't need a _value accessor_ for an Angular component that you write because you
-can name the value and event properties
-to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way) and skip `NgModel` altogether.
-The [`sizer` shown above](guide/template-syntax#two-way) is an example of this technique.
+You don't need a value accessor for an Angular component that
+you write because you can name the value and event properties
+to suit Angular's basic [two-way binding syntax](guide/template-syntax#two-way)
+and skip `NgModel` altogether.
+The `sizer` in the
+[Two-way Binding](guide/template-syntax#two-way) section is an example of this technique.
 
-</div>
+Separate `ngModel` bindings are an improvement over binding to the
+element's native properties, but you can streamline the binding with a
+single declaration using the `[(ngModel)]` syntax:
 
-Separate `ngModel` bindings is an improvement over binding to the element's native properties. You can do better.
-
-You shouldn't have to mention the data property twice. Angular should be able to capture
-the component's data property and set it
-with a single declaration, which it can with the `[(ngModel)]` syntax:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Is `[(ngModel)]` all you need? Is there ever a reason to fall back to its expanded form?
+This `[(ngModel)]` syntax can only _set_ a data-bound property.
+If you need to do something more, you can write the expanded form;
+for example, the following changes the `<input>` value to uppercase:
 
-The `[(ngModel)]` syntax can only _set_ a data-bound property.
-If you need to do something more or something different, you can write the expanded form.
-
-The following contrived example forces the input value to uppercase:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="uppercase" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Here are all variations in action, including the uppercase version:
 
 <figure>
-  <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations">
+  <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
 </figure>
 
 <hr/>
@@ -1451,25 +1420,29 @@ Here are all variations in action, including the uppercase version:
 ## Built-in _structural_ directives
 
 Structural directives are responsible for HTML layout.
-They shape or reshape the DOM's _structure_, typically by adding, removing, and manipulating
+They shape or reshape the DOM's structure, typically by adding, removing, and manipulating
 the host elements to which they are attached.
 
+This section is an introduction to the common built-in structural directives:
+
+* [`NgIf`](guide/template-syntax#ngIf)&mdash;conditionally creates or destroys subviews from the template.
+* [`NgFor`](guide/template-syntax#ngFor)&mdash;repeat a node for each item in a list.
+* [`NgSwitch`](guide/template-syntax#ngSwitch)&mdash;a set of directives that switch among alternative views.
+
+<div class="alert is-helpful">
+
 The deep details of structural directives are covered in the
-[_Structural Directives_](guide/structural-directives) guide
-where you'll learn:
+[Structural Directives](guide/structural-directives) guide,
+which explains the following:
 
-* why you
-[_prefix the directive name with an asterisk_ (\*)](guide/structural-directives#asterisk "The * in *ngIf").
-* to use [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
+* Why you
+[prefix the directive name with an asterisk (\*)](guide/structural-directives#the-asterisk--prefix).
+* Using [`<ng-container>`](guide/structural-directives#ngcontainer "<ng-container>")
 to group elements when there is no suitable host element for the directive.
-* how to write your own structural directive.
-* that you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
+* How to write your own structural directive.
+* That you can only apply [one structural directive](guide/structural-directives#one-per-element "one per host element") to an element.
 
-_This_ section is an introduction to the common structural directives:
-
-* [`NgIf`](guide/template-syntax#ngIf) - conditionally add or remove an element from the DOM
-* [`NgSwitch`](guide/template-syntax#ngSwitch) - a set of directives that switch among alternative views
-* [NgForOf](guide/template-syntax#ngFor) - repeat a template for each item in a list
+</div>
 
 <hr/>
 
@@ -1478,85 +1451,93 @@ _This_ section is an introduction to the common structural directives:
 ### NgIf
 
 You can add or remove an element from the DOM by applying an `NgIf` directive to
-that element (called the _host element_).
+a host element.
 Bind the directive to a condition expression like `isActive` in this example.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-critical">
+<div class="alert is-helpful">
 
-Don't forget the asterisk (`*`) in front of `ngIf`.
+Don't forget the asterisk (`*`) in front of `ngIf`. For more information
+on the asterisk, see the [asterisk (*) prefix](guide/structural-directives#the-asterisk--prefix) section of
+[Structural Directives](guide/structural-directives).
 
 </div>
 
-When the `isActive` expression returns a truthy value, `NgIf` adds the `HeroDetailComponent` to the DOM.
-When the expression is falsy, `NgIf` removes the `HeroDetailComponent`
+When the `isActive` expression returns a truthy value, `NgIf` adds the
+`ItemDetailComponent` to the DOM.
+When the expression is falsy, `NgIf` removes the `ItemDetailComponent`
 from the DOM, destroying that component and all of its sub-components.
 
-#### Show/hide is not the same thing
 
-You can control the visibility of an element with a
-[class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding:
+#### Show/hide vs. `NgIf`
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
+Hiding an element is different from removing it with `NgIf`.
+For comparison, the following example shows how to control
+the visibility of an element with a
+[class](guide/template-syntax#class-binding) or [style](guide/template-syntax#style-binding) binding.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Hiding an element is quite different from removing an element with `NgIf`.
-
-When you hide an element, that element and all of its descendents remain in the DOM.
+When you hide an element, that element and all of its descendants remain in the DOM.
 All components for those elements stay in memory and
 Angular may continue to check for changes.
-You could be holding onto considerable computing resources and degrading performance,
-for something the user can't see.
+You could be holding onto considerable computing resources and degrading performance
+unnecessarily.
 
-When `NgIf` is `false`, Angular removes the element and its descendents from the DOM.
-It destroys their components, potentially freeing up substantial resources,
-resulting in a more responsive user experience.
+`NgIf` works differently. When `NgIf` is `false`, Angular removes the element and its descendants from the DOM.
+It destroys their components, freeing up resources, which
+results in a better user experience.
 
-The show/hide technique is fine for a few elements with few children.
-You should be wary when hiding large component trees; `NgIf` may be the safer choice.
+If you are hiding large component trees, consider `NgIf` as a more
+efficient alternative to showing/hiding.
+
+<div class="alert is-helpful">
+
+**Note:** For more information on `NgIf` and `ngIfElse`, see the [API documentation about NgIf](api/common/NgIf).
+
+</div>
 
 #### Guard against null
 
-The `ngIf` directive is often used to guard against null.
-Show/hide is useless as a guard.
-Angular will throw an error if a nested expression tries to access a property of `null`.
+Another advantage of `ngIf` is that you can use it to guard against null. Show/hide
+is best suited for very simple use cases, so when you need a guard, opt instead for `ngIf`. Angular will throw an error if a nested expression tries to access a property of `null`.
 
-Here we see `NgIf` guarding two `<div>`s.
-The `currentHero` name will appear only when there is a `currentHero`.
-The `nullHero` will never be displayed.
+The following shows `NgIf` guarding two `<div>`s.
+The `currentCustomer` name appears only when there is a `currentCustomer`.
+The `nullCustomer` will not be displayed as long as it is `null`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
 See also the
-[_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)")
-described below.
+[safe navigation operator](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)") below.
 
 </div>
-
-
 <hr/>
 
 {@a ngFor}
+### `NgFor`
 
-### NgForOf
+`NgFor` is a repeater directive&mdash;a way to present a list of items.
+You define a block of HTML that defines how a single item should be displayed
+and then you tell Angular to use that block as a template for rendering each item in the list.
 
-`NgForOf` is a _repeater_ directive &mdash; a way to present a list of items.
-You define a block of HTML that defines how a single item should be displayed.
-You tell Angular to use that block as a template for rendering each item in the list.
+Here is an example of `NgFor` applied to a simple `<div>`:
 
-Here is an example of `NgForOf` applied to a simple `<div>`:
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You can also apply an `NgForOf` to a component element, as in this example:
+You can also apply an `NgFor` to a component element, as in this example:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
@@ -1569,50 +1550,53 @@ The text assigned to `*ngFor` is the instruction that guides the repeater proces
 
 {@a microsyntax}
 
-#### *ngFor microsyntax
+#### `*ngFor` microsyntax
 
-The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions).
-It's a *microsyntax* &mdash; a little language of its own that Angular interprets.
-The string `"let hero of heroes"` means:
+The string assigned to `*ngFor` is not a [template expression](guide/template-syntax#template-expressions). Rather,
+it's a *microsyntax*&mdash;a little language of its own that Angular interprets.
+The string `"let item of items"` means:
 
-> *Take each hero in the `heroes` array, store it in the local `hero` looping variable, and
+> *Take each item in the `items` array, store it in the local `item` looping variable, and
 make it available to the templated HTML for each iteration.*
 
-Angular translates this instruction into a `<ng-template>` around the host element,
-then uses this template repeatedly to create a new set of elements and bindings for each `hero`
+Angular translates this instruction into an `<ng-template>` around the host element,
+then uses this template repeatedly to create a new set of elements and bindings for each `item`
 in the list.
 
-Learn about the _microsyntax_ in the [_Structural Directives_](guide/structural-directives#microsyntax) guide.
+For more information about microsyntax, see the [Structural Directives](guide/structural-directives#microsyntax) guide.
+
 
 {@a template-input-variable}
 
 {@a template-input-variables}
 
-### Template input variables
 
-The `let` keyword before `hero` creates a _template input variable_ called `hero`.
-The `NgForOf` directive iterates over the `heroes` array returned by the parent component's `heroes` property
-and sets `hero` to the current item from the array during each iteration.
+#### Template input variables
 
-You reference the `hero` input variable within the `NgForOf` host element
-(and within its descendants) to access the hero's properties.
-Here it is referenced first in an interpolation
-and then passed in a binding to the `hero` property of the `<hero-detail>` component.
+The `let` keyword before `item` creates a template input variable called `item`.
+The `ngFor` directive iterates over the `items` array returned by the parent component's `items` property
+and sets `item` to the current item from the array during each iteration.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
+Reference `item` within the `ngFor` host element
+as well as within its descendants to access the item's properties.
+The following example references `item` first in an interpolation
+and then passes in a binding to the `item` property of the `<app-item-detail>` component.
+
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Learn more about _template input variables_ in the
-[_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+For more information about template input variables, see
+[Structural Directives](guide/structural-directives#template-input-variable).
 
-#### *ngFor with _index_
+#### `*ngFor` with `index`
 
-The `index` property of the `NgForOf` directive context returns the zero-based index of the item in each iteration.
+The `index` property of the `NgFor` directive context
+returns the zero-based index of the item in each iteration.
 You can capture the `index` in a template input variable and use it in the template.
 
-The next example captures the `index` in a variable named `i` and displays it with the hero name like this.
+The next example captures the `index` in a variable named `i` and displays it with the item name.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1623,87 +1607,79 @@ and `odd` in the [NgForOf API reference](api/common/NgForOf).
 </div>
 
 {@a trackBy}
+#### *ngFor with `trackBy`
 
-#### *ngFor with _trackBy_
+If you use `NgFor` with large lists, a small change to one item, such as removing or adding an item, can trigger a cascade of DOM manipulations. For example, re-querying the server could reset a list with all new item objects, even when those items were previously displayed. In this case, Angular sees only a fresh list of new object references and has no choice but to replace the old DOM elements with all new DOM elements.
 
-The `NgForOf` directive may perform poorly, especially with large lists.
-A small change to one item, an item removed, or an item added can trigger a cascade of DOM manipulations.
+You can make this more efficient with `trackBy`.
+Add a method to the component that returns the value `NgFor` should track.
+In this case, that value is the hero's `id`. If the `id` has already been rendered,
+Angular keeps track of it and doesn't re-query the server for the same `id`.
 
-For example, re-querying the server could reset the list with all new hero objects.
-
-Most, if not all, are previously displayed heroes.
-*You* know this because the `id` of each hero hasn't changed.
-But Angular sees only a fresh list of new object references.
-It has no choice but to tear down the old DOM elements and insert all new DOM elements.
-
-Angular can avoid this churn with `trackBy`.
-Add a method to the component that returns the value `NgForOf` _should_ track.
-In this case, that value is the hero's `id`.
-
-<code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" header="src/app/app.component.ts" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.ts" region="trackByItems" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-In the microsyntax expression, set `trackBy` to this method.
+In the microsyntax expression, set `trackBy` to the `trackByItems()` method.
 
-<code-example path="template-syntax/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Here is an illustration of the _trackBy_ effect.
-"Reset heroes" creates new heroes with the same `hero.id`s.
-"Change ids" creates new heroes with new `hero.id`s.
+Here is an illustration of the `trackBy` effect.
+"Reset items" creates new items with the same `item.id`s.
+"Change ids" creates new items with new `item.id`s.
 
 * With no `trackBy`, both buttons trigger complete DOM element replacement.
 * With `trackBy`, only changing the `id` triggers element replacement.
 
 <figure>
-  <img src="generated/images/guide/template-syntax/ng-for-track-by-anim.gif" alt="trackBy">
+  <img src="generated/images/guide/built-in-directives/ngfor-trackby.gif" alt="Animation of trackBy">
 </figure>
-
 
 <hr/>
 
 {@a ngSwitch}
+## The `NgSwitch` directives
 
-### The _NgSwitch_ directives
+NgSwitch is like the JavaScript `switch` statement.
+It displays one element from among several possible elements, based on a switch condition.
+Angular puts only the selected element into the DOM.
+<!-- API Flagged -->
+`NgSwitch` is actually a set of three, cooperating directives:
+`NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as in the following example.
 
-*NgSwitch* is like the JavaScript `switch` statement.
-It can display _one_ element from among several possible elements, based on a _switch condition_.
-Angular puts only the *selected* element into the DOM.
-
-*NgSwitch* is actually a set of three, cooperating directives:
-`NgSwitch`, `NgSwitchCase`, and `NgSwitchDefault` as seen in this example.
-
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
+ <code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <figure>
-  <img src="generated/images/guide/template-syntax/switch-anim.gif" alt="trackBy">
+  <img src="generated/images/guide/built-in-directives/ngswitch.gif" alt="Animation of NgSwitch">
 </figure>
 
-`NgSwitch` is the controller directive. Bind it to an expression that returns the *switch value*.
-The `emotion` value in this example is a string, but the switch value can be of any type.
+`NgSwitch` is the controller directive. Bind it to an expression that returns
+the *switch value*, such as `feature`. Though the `feature` value in this
+example is a string, the switch value can be of any type.
 
 **Bind to `[ngSwitch]`**. You'll get an error if you try to set `*ngSwitch` because
 `NgSwitch` is an *attribute* directive, not a *structural* directive.
-It changes the behavior of its companion directives.
-It doesn't touch the DOM directly.
+Rather than touching the DOM directly, it changes the behavior of its companion directives.
 
 **Bind to `*ngSwitchCase` and `*ngSwitchDefault`**.
 The `NgSwitchCase` and `NgSwitchDefault` directives are _structural_ directives
 because they add or remove elements from the DOM.
 
-* `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value.
+* `NgSwitchCase` adds its element to the DOM when its bound value equals the switch value and removes
+its bound value when it doesn't equal the switch value.
+
 * `NgSwitchDefault` adds its element to the DOM when there is no selected `NgSwitchCase`.
 
 The switch directives are particularly useful for adding and removing *component elements*.
-This example switches among four "emotional hero" components defined in the `hero-switch.components.ts` file.
-Each component has a `hero` [input property](guide/template-syntax#inputs-outputs "Input property")
-which is bound to the `currentHero` of the parent component.
+This example switches among four `item` components defined in the `item-switch.components.ts` file.
+Each component has an `item` [input property](guide/template-syntax#inputs-outputs "Input property")
+which is bound to the `currentItem` of the parent component.
 
 Switch directives work as well with native elements and web components too.
-For example, you could replace the `<confused-hero>` switch case with the following.
+For example, you could replace the `<app-best-item>` switch case with the following.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
+<code-example path="built-in-directives/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <hr/>
