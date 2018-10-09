@@ -85,7 +85,7 @@ having to import it directly into the `@NgModule` decorator.
 <!--
 ### Using components vs services from other modules.
 -->
-### 다른 모듈의 컴포넌트 사용하기 vs 서비스 사용하기
+## 다른 모듈의 컴포넌트 사용하기 vs 서비스 사용하기
 
 <!--
 There is an important distinction between using another module's component and
