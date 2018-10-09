@@ -164,10 +164,10 @@ describe('AppComponent', () => {
 
     describe('onScroll', () => {
       it('should update `tocMaxHeight` accordingly', () => {
-        expect(component.tocMaxHeight).toBeUndefined();
-
+        component.tocMaxHeight = '';
         component.onScroll();
-        expect(component.tocMaxHeight).toBeGreaterThan(0);
+
+        expect(component.tocMaxHeight).toMatch(/^\d+\.\d{2}$/);
       });
     });
 

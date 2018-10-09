@@ -349,12 +349,17 @@ export class AppComponent implements OnInit {
   @HostListener('window:scroll')
   onScroll() {
     if (!this.tocMaxHeightOffset) {
-      // Must wait until now for mat-toolbar to be measurable.
+      // Must wait until `mat-toolbar` is measurable.
       const el = this.hostElement.nativeElement as Element;
-      this.tocMaxHeightOffset =
-          el.querySelector('footer')!.clientHeight +
-          el.querySelector('.app-toolbar')!.clientHeight +
-          24; //  fudge margin
+      const headerEl = el.querySelector('.app-toolbar');
+      const footerEl = el.querySelector('footer');
+
+      if (headerEl && footerEl) {
+        this.tocMaxHeightOffset =
+            (headerEl ? headerEl.clientHeight : 0) +
+            (footerEl ? footerEl.clientHeight : 0) +
+            24; //  fudge margin
+      }
     }
 
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
