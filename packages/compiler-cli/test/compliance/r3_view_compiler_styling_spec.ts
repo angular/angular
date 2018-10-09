@@ -133,7 +133,7 @@ describe('compiler compliance: styling', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
-          animations: [{name: "foo123"}, {name: "trigger123"}]
+          animations: [{name: 'foo123'}, {name: 'trigger123'}]
         });
       `;
 

@@ -244,9 +244,8 @@ export function compileComponentFromMetadata(
   }
 
   // e.g. `animations: [trigger('123', [])]`
-  if (meta.animations) {
-    const animationValues = meta.animations.map(entry => mapToExpression(entry));
-    definitionMap.set('animations', o.literalArr(animationValues));
+  if (meta.animations !== null) {
+    definitionMap.set('animations', meta.animations);
   }
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -301,7 +300,6 @@ export function compileComponentFromRender2(
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
 
   const summary = component.toSummary();
-  const animations = summary.template && summary.template.animations || null;
 
   // Compute the R3ComponentMetadata from the CompileDirectiveMetadata
   const meta: R3ComponentMetadata = {
@@ -320,7 +318,7 @@ export function compileComponentFromRender2(
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
-    animations
+    animations: null,
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
