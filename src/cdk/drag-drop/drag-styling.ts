@@ -6,6 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
+// Helper type that ignores `readonly` properties. This is used in
+// `extendStyles` to ignore the readonly properties on CSSStyleDeclaration
+// since we won't be touching those anyway.
+type Writeable<T> = { -readonly [P in keyof T]-?: T[P] };
+
 /**
  * Extended CSSStyleDeclaration that includes a couple of drag-related
  * properties that aren't in the built-in TS typings.
@@ -19,10 +25,12 @@ interface DragCSSStyleDeclaration extends CSSStyleDeclaration {
  * Shallow-extends a stylesheet object with another stylesheet object.
  * @docs-private
  */
-export function extendStyles(dest: CSSStyleDeclaration, source: Partial<DragCSSStyleDeclaration>) {
+export function extendStyles(
+    dest: Writeable<CSSStyleDeclaration>,
+    source: Partial<DragCSSStyleDeclaration>) {
   for (let key in source) {
     if (source.hasOwnProperty(key)) {
-      dest[key!] = source[key];
+      dest[key as keyof CSSStyleDeclaration] = source[key as keyof CSSStyleDeclaration];
     }
   }
 
