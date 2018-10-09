@@ -24,7 +24,7 @@
     "api": "gulp api-docs",
     "breaking-changes": "gulp breaking-changes"
   },
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0-rc.1",
   "requiredAngularVersion": ">=7.0.0-rc.0",
   "dependencies": {
     "@angular/animations": "7.0.0-rc.0",
