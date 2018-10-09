@@ -61,7 +61,7 @@ The generated `src/app/highlight.directive.ts` is as follows:
 
 <code-example path="attribute-directives/src/app/highlight.directive.0.ts" title="src/app/highlight.directive.ts"></code-example>
 
-The imported `Directive` symbol provides the Angular the `@Directive` decorator.
+The imported `Directive` symbol provides Angular the `@Directive` decorator.
 
 The `@Directive` decorator's lone configuration property specifies the directive's
 [CSS attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
