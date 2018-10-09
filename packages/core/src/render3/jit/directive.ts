@@ -65,6 +65,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               `Errors during JIT compilation of template for ${stringify(type)}: ${errors}`);
         }
 
+        const animations =
+            metadata.animations !== null ? new WrappedNodeExpr(metadata.animations) : null;
+
         // Compile the component metadata, including template, into an expression.
         // TODO(alxhub): implement inputs, outputs, queries, etc.
         const res = compileR3Component(
@@ -76,8 +79,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               viewQueries: [],
               wrapDirectivesInClosure: false,
               styles: metadata.styles || [],
-              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
-              animations: metadata.animations || null
+              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated, animations,
             },
             constantPool, makeBindingParser());
         const preStatements = [...constantPool.statements, ...res.statements];
