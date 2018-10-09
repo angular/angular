@@ -245,7 +245,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nTranslate(label: string, meta?: string): o.Expression {
     return this.constantPool.getTranslation(label, parseI18nMeta(meta), this.fileBasedI18nSuffix);
-  };
+  }
 
   visitContent(ngContent: t.Content) {
     const slot = this.allocateDataSlot();
