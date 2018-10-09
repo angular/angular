@@ -45,6 +45,12 @@
 // import 'classlist.js';  // Run `npm install --save classlist.js`.
 
 /** IE10 and IE11 requires the following for the Reflect API. */
+/**
+ * DO NOT REMOVE
+ * By default, Reflect polyfills are auto-included by the CLI and
+ * are required for JIT compilation.  StackBlitz examples are
+ * compiled using JIT.
+ */
 import 'core-js/es6/reflect';
 import 'core-js/es7/reflect';
 
