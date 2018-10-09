@@ -10,10 +10,10 @@ import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, O
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
-import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateInjectable, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
+import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
 import {PublicFeature, defineDirective, directiveInject, elementProperty, injectRenderer2, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd, _getViewData, getTNode} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
 
@@ -21,7 +21,7 @@ import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
+import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
 import {TNODE} from '../../src/render3/interfaces/injector';
 
@@ -677,8 +677,7 @@ describe('di', () => {
             factory: () => hostBindingDir = new HostBindingDir(),
             hostVars: 1,
             hostBindings: (directiveIndex: number, elementIndex: number) => {
-              elementProperty(
-                  elementIndex, 'id', bind(loadDirective<HostBindingDir>(directiveIndex).id));
+              elementProperty(elementIndex, 'id', bind(load<HostBindingDir>(directiveIndex).id));
             }
           });
         }
@@ -1298,7 +1297,8 @@ describe('di', () => {
               projectionDef();
               projection(0);
             }
-          }
+          },
+          features: [PublicFeature]
         });
       }
 
@@ -1323,7 +1323,8 @@ describe('di', () => {
           type: DirectiveSameInstance,
           selectors: [['', 'dirSame', '']],
           factory: () => dirSameInstance =
-                       new DirectiveSameInstance(directiveInject(ChangeDetectorRef as any))
+                       new DirectiveSameInstance(directiveInject(ChangeDetectorRef as any)),
+          features: [PublicFeature]
         });
       }
 
@@ -1419,7 +1420,8 @@ describe('di', () => {
                    textBinding(3, bind(tmp.value));
                  }
                },
-               directives: directives
+               directives: directives,
+               features: [PublicFeature]
              });
            }
 
@@ -1563,6 +1565,7 @@ describe('di', () => {
   });
 
   describe('@Attribute', () => {
+    let myDirectiveInstance !: MyDirective | null;
 
     class MyDirective {
       exists = 'wrong' as string | undefined;
@@ -1577,9 +1580,12 @@ describe('di', () => {
       static ngDirectiveDef = defineDirective({
         type: MyDirective,
         selectors: [['', 'myDirective', '']],
-        factory: () => new MyDirective(injectAttribute('exist'), injectAttribute('myDirective'))
+        factory: () => myDirectiveInstance =
+                     new MyDirective(injectAttribute('exist'), injectAttribute('myDirective'))
       });
     }
+
+    beforeEach(() => myDirectiveInstance = null);
 
     it('should inject attribute', () => {
       let exist = 'wrong' as string | undefined;
@@ -1610,7 +1616,7 @@ describe('di', () => {
               ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
         }
         if (rf & RenderFlags.Update) {
-          myDirectiveInstance = loadDirective(0);
+          myDirectiveInstance = getDirectiveOnNode(0);
         }
       }, 1, 0, [MyDirective]);
 
@@ -1631,7 +1637,7 @@ describe('di', () => {
           elementContainerEnd();
         }
         if (rf & RenderFlags.Update) {
-          myDirectiveInstance = loadDirective(0);
+          myDirectiveInstance = getDirectiveOnNode(0);
         }
       }, 1, 0, [MyDirective]);
 
@@ -1843,7 +1849,7 @@ describe('di', () => {
         (parentTNode as{parent: any}).parent = undefined;
 
         const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
-        expect(injector).not.toBe(null);
+        expect(injector).not.toEqual(-1);
       } finally {
         leaveView(oldView);
       }

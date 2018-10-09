@@ -473,10 +473,9 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
     // var $tmp$: any;
     const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
 
-    // const $instance$ = $r3$.ɵloadDirective(dirIndex);
-    statements.push(
-        directiveInstanceVar.set(o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]))
-            .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+    // const $instance$ = $r3$.ɵload(dirIndex);
+    statements.push(directiveInstanceVar.set(o.importExpr(R3.load).callFn([o.variable('dirIndex')]))
+                        .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
 
     meta.queries.forEach((query: R3QueryMetadata, idx: number) => {
       const loadQLArg = o.variable('queryStartIndex');
@@ -580,7 +579,7 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
-  const bindingContext = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
+  const bindingContext = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
   if (bindings) {
     const valueConverter = new ValueConverter(
         constantPool,

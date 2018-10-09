@@ -588,7 +588,7 @@ describe('compiler compliance', () => {
           selectors: [["", "hostBindingDir", ""]],
           factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
           hostBindings: function HostBindingDir_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵloadDirective(dirIndex).dirId));
+            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵload(dirIndex).dirId));
           },
           hostVars: 1,
           features: [$r3$.ɵPublicFeature]
@@ -632,7 +632,7 @@ describe('compiler compliance', () => {
           selectors: [["host-binding-comp"]],
           factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
           hostBindings: function HostBindingComp_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, $r3$.ɵloadDirective(dirIndex).id)));
+            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, $r3$.ɵload(dirIndex).id)));
           },
           hostVars: 3,
           features: [$r3$.ɵPublicFeature],
@@ -1343,7 +1343,7 @@ describe('compiler compliance', () => {
               $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
-              const instance = $r3$.ɵloadDirective(dirIndex);
+              const instance = $r3$.ɵload(dirIndex);
               var $tmp$;
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
@@ -1403,7 +1403,7 @@ describe('compiler compliance', () => {
             $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef1", "myRef2", "myRef3"], false));
           },
           contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
-            const instance = $r3$.ɵloadDirective(dirIndex);
+            const instance = $r3$.ɵload(dirIndex);
             var $tmp$;
             ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
             ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.myRefs = $tmp$));
@@ -1452,7 +1452,7 @@ describe('compiler compliance', () => {
             $r3$.ɵregisterContentQuery($r3$.ɵquery(null, ["myRef1", "myRef2", "myRef3"], false, ElementRef));
           },
           contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
-            const instance = $r3$.ɵloadDirective(dirIndex);
+            const instance = $r3$.ɵload(dirIndex);
             var $tmp$;
             ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
             ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.myRefs = $tmp$));

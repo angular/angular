@@ -47,7 +47,6 @@ export {
   embeddedViewStart as ɵembeddedViewStart,
   query as ɵquery,
   registerContentQuery as ɵregisterContentQuery,
-  loadDirective as ɵloadDirective,
   projection as ɵprojection,
   bind as ɵbind,
   interpolation1 as ɵinterpolation1,

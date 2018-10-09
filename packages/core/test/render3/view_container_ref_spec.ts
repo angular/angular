@@ -9,9 +9,9 @@
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 import {directiveInject} from '../../src/render3/di';
-import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver} from '../../src/render3/index';
+import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
@@ -19,7 +19,7 @@ import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
@@ -161,8 +161,8 @@ describe('ViewContainerRef', () => {
           element(3, 'div', ['vcref', '']);
 
           // for testing only:
-          firstDir = loadDirective(0);
-          secondDir = loadDirective(1);
+          firstDir = getDirectiveOnNode(2);
+          secondDir = getDirectiveOnNode(3);
         }
 
         function update() {
@@ -1728,7 +1728,7 @@ describe('ViewContainerRef', () => {
           hostVars: 1,
           attributes: ['id', 'attribute'],
           hostBindings: function(dirIndex, elIndex) {
-            const cmptInstance = loadDirective<HostBindingCmpt>(dirIndex);
+            const cmptInstance = load<HostBindingCmpt>(dirIndex);
             elementProperty(elIndex, 'title', bind(cmptInstance.title));
           },
         });

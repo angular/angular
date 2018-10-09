@@ -14,13 +14,13 @@ import {directiveInject} from '../../src/render3/di';
 
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
-import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent, getDirectiveOnNode} from './render_util';
 
 
 
@@ -76,8 +76,8 @@ describe('query', () => {
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            child1 = loadDirective(0);
-            child2 = loadDirective(1);
+            child1 = getDirectiveOnNode(2);
+            child2 = getDirectiveOnNode(3);
           }
         },
         4, 0, [Child], [],
@@ -151,7 +151,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 elementStart(1, 'div', ['child', '', 'otherChild', '']);
-                { otherChildInstance = loadDirective(1); }
+                { otherChildInstance = getDirectiveOnNode(1, 1); }
                 elementEnd();
               }
             },
@@ -684,7 +684,7 @@ describe('query', () => {
                 element(1, 'child', null, ['foo', '']);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(1);
               }
             },
             3, 0, [Child], [],
@@ -767,7 +767,7 @@ describe('query', () => {
                    element(1, 'div', ['child', ''], ['foo', 'child']);
                  }
                  if (rf & RenderFlags.Update) {
-                   childInstance = loadDirective(0);
+                   childInstance = getDirectiveOnNode(1);
                  }
                },
                3, 0, [Child], [],
@@ -806,8 +806,8 @@ describe('query', () => {
                 element(1, 'div', ['child1', '', 'child2', ''], ['foo', 'child1', 'bar', 'child2']);
               }
               if (rf & RenderFlags.Update) {
-                child1Instance = loadDirective(0);
-                child2Instance = loadDirective(1);
+                child1Instance = getDirectiveOnNode(1, 0);
+                child2Instance = getDirectiveOnNode(1, 1);
               }
             },
             4, 0, [Child1, Child2], [],
@@ -846,7 +846,7 @@ describe('query', () => {
                 element(2, 'div', ['child', ''], ['foo', 'child', 'bar', 'child']);
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(2);
               }
             },
             5, 0, [Child], [],
@@ -928,7 +928,7 @@ describe('query', () => {
                 div = loadElement(1).native;
               }
               if (rf & RenderFlags.Update) {
-                childInstance = loadDirective(0);
+                childInstance = getDirectiveOnNode(1);
               }
             },
             4, 0, [Child], [],
@@ -1914,7 +1914,7 @@ describe('query', () => {
         contentQueries: () => { registerContentQuery(query(null, ['foo'], true)); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
-          withContentInstance = loadDirective<WithContentDirective>(dirIndex);
+          withContentInstance = load<WithContentDirective>(dirIndex);
           queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
               (withContentInstance.foos = tmp);
         }
@@ -1935,7 +1935,7 @@ describe('query', () => {
         contentQueries: () => { registerContentQuery(query(null, ['foo'], false)); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
-          shallowCompInstance = loadDirective<ShallowComp>(dirIndex);
+          shallowCompInstance = load<ShallowComp>(dirIndex);
           queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
               (shallowCompInstance.foos = tmp);
         }
@@ -2116,7 +2116,7 @@ describe('query', () => {
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            const instance = loadDirective<QueryDirective>(dirIndex);
+            const instance = load<QueryDirective>(dirIndex);
             queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                 (instance.fooBars = tmp);
           },
@@ -2180,7 +2180,7 @@ describe('query', () => {
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            const instance = loadDirective<QueryDirective>(dirIndex);
+            const instance = load<QueryDirective>(dirIndex);
             queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                 (instance.fooBars = tmp);
           },
@@ -2233,7 +2233,7 @@ describe('query', () => {
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<ShallowQueryDirective>(dirIndex);
+               const instance = load<ShallowQueryDirective>(dirIndex);
                queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                    (instance.foos = tmp);
              },
@@ -2253,7 +2253,7 @@ describe('query', () => {
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<DeepQueryDirective>(dirIndex);
+               const instance = load<DeepQueryDirective>(dirIndex);
                queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
                    (instance.foos = tmp);
              },

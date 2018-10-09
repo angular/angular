@@ -192,9 +192,6 @@
     "name": "DIGIT_CHAR"
   },
   {
-    "name": "DIRECTIVES"
-  },
-  {
     "name": "DOCUMENT"
   },
   {
@@ -691,6 +688,9 @@
   },
   {
     "name": "ROOT_CONTEXT"
+  },
+  {
+    "name": "ROOT_EXPANDO_INSTRUCTIONS"
   },
   {
     "name": "RecordViewTuple"
@@ -1578,6 +1578,9 @@
     "name": "fromPromise"
   },
   {
+    "name": "generateExpandoBlock"
+  },
+  {
     "name": "generateInitialInputs"
   },
   {
@@ -2166,6 +2169,9 @@
     "name": "pointers"
   },
   {
+    "name": "prefillHostVars"
+  },
+  {
     "name": "prepareInitialFlag"
   },
   {
@@ -2274,9 +2280,6 @@
     "name": "rxSubscriber"
   },
   {
-    "name": "sameHostView"
-  },
-  {
     "name": "sanitizeSrcset"
   },
   {
@@ -2356,6 +2359,9 @@
   },
   {
     "name": "shimHostAttribute"
+  },
+  {
+    "name": "shouldNotSearchParent"
   },
   {
     "name": "staticError"

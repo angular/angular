@@ -70,7 +70,7 @@ class Render3DebugContext implements DebugContext {
   // TODO(vicb): add view providers when supported
   get providerTokens(): any[] {
     // TODO(vicb): why/when
-    const directiveDefs = this.view[TVIEW].directives;
+    const directiveDefs = this.view[TVIEW].data;
     if (this.nodeIndex === null || directiveDefs == null) {
       return [];
     }
