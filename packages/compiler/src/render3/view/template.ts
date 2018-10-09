@@ -350,7 +350,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const classInputs: t.BoundAttribute[] = [];
     const allOtherInputs: t.BoundAttribute[] = [];
 
-    const i18nAttrs: Array<{name: string, value: string|AST}> = [];
+    const i18nAttrs: Array<{name: string, value: string | AST}> = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
       switch (input.type) {
@@ -367,7 +367,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             // this should always go first in the compilation (for [class])
             classInputs.splice(0, 0, input);
           } else if (attrI18nMetas.hasOwnProperty(input.name)) {
-            i18nAttrs.push({ name: input.name, value: input.value });
+            i18nAttrs.push({name: input.name, value: input.value});
           } else {
             allOtherInputs.push(input);
           }
@@ -403,7 +403,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         });
       } else {
         if (attrI18nMetas.hasOwnProperty(name)) {
-          i18nAttrs.push({ name, value });
+          i18nAttrs.push({name, value});
         } else {
           attributes.push(o.literal(name), o.literal(value));
         }
@@ -513,9 +513,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           } else {
             const converted = value.visit(this._valueConverter);
             if (converted instanceof Interpolation) {
-              const { strings, expressions } = converted;
+              const {strings, expressions} = converted;
               const label = assembleI18nTemplate(strings);
-              i18nAttrArgs.push(o.literal(name), this.i18nTranslate(label, meta), o.literal(expressions.length));
+              i18nAttrArgs.push(
+                  o.literal(name), this.i18nTranslate(label, meta), o.literal(expressions.length));
               expressions.forEach(expression => {
                 hasBindings = true;
                 const binding = this.convertExpressionBinding(implicit, expression);
