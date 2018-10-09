@@ -326,11 +326,6 @@ export interface TNode {
   parent: TElementNode|TContainerNode|null;
 
   /**
-   * A pointer to a TContainerNode created by directives requesting ViewContainerRef
-   */
-  dynamicContainerNode: TNode|null;
-
-  /**
    * If this node is part of an i18n block, it indicates whether this container is part of the DOM
    * If this node is not part of an i18n block, this field is null.
    */

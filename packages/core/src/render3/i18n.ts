@@ -277,7 +277,6 @@ function appendI18nNode(
   // Template containers also have a comment node for the `ViewContainerRef` that should be moved
   if (tNode.type === TNodeType.Container && node.dynamicLContainerNode) {
     appendChild(node.dynamicLContainerNode.native, tNode, viewData);
-    return tNode.dynamicContainerNode !;
   }
 
   return tNode;
@@ -376,7 +375,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         // For template containers we also need to remove their `ViewContainerRef` from the DOM
         if (removedTNode.type === TNodeType.Container && removedNode.dynamicLContainerNode) {
           removeChild(removedTNode, removedNode.dynamicLContainerNode.native || null, viewData);
-          removedTNode.dynamicContainerNode !.detached = true;
+          removedTNode.detached = true;
           removedNode.dynamicLContainerNode.data[RENDER_PARENT] = null;
         }
         break;
