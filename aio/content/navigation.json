@@ -473,6 +473,22 @@
           "url": "guide/universal",
           "title": "Server-side Rendering",
           "tooltip": "Render HTML server-side with Angular Universal."
+        },
+        {
+          "title": "Upgrading from AngularJS",
+          "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
+          "children": [
+            {
+              "url": "guide/upgrade",
+              "title": "Upgrading Instructions",
+              "tooltip": "Incrementally upgrade an AngularJS application to Angular."
+            },
+            {
+              "url": "guide/ajs-quick-reference",
+              "title": "AngularJS-Angular Concepts",
+              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+            }
+          ]
         }
       ]
     },
@@ -487,8 +503,13 @@
           "title": "Setup for local development",
           "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine.",
           "hidden": true
+        },   
+        {
+          "url": "guide/setup-systemjs-anatomy",
+          "title": "Anatomy of the Setup",
+          "tooltip": "Inside the local development environment for SystemJS.",
+          "hidden": true
         },
-        
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
@@ -548,15 +569,47 @@
         },
 
         {
-          "url": "guide/setup-systemjs-anatomy",
-          "title": "Anatomy of the Setup",
-          "tooltip": "Inside the local development environment for SystemJS.",
-          "hidden": true
+          "url": "guide/file-structure.md",
+          "title": "Project File Structure",
+          "tooltip": "Inside the local development environment for SystemJS."
+        },
+        {
+          "url": "guide/npm-packages",
+          "title": "Packages",
+          "tooltip": "Explanation of npm packages installed into a project by default."
+        },
+        {
+          "url": "guide/typescript-configuration",
+          "title": "TypeScript Configuration",
+          "tooltip": "TypeScript configuration for Angular developers."
+        }, 
+        {
+          "url": "guide/aot-compiler",
+          "title": "Ahead-of-Time Compilation",
+          "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+        },
+        {
+          "url": "guide/build",
+          "title": "Building & Serving",
+          "tooltip": "Building and serving Angular apps."
+        },
+        {
+          "url": "guide/testing",
+          "title": "Testing",
+          "tooltip": "Techniques and practices for testing an Angular app."
+        },
+        {
+          "url": "guide/deployment",
+          "title": "Deployment",
+          "tooltip": "Learn how to deploy your Angular app."
+        }, 
+        {
+          "url": "guide/browser-support",
+          "title": "Browser Support",
+          "tooltip": "Browser support and polyfills guide."
         }
      ]
     },
-
-
     {
       "title": "Release Information",
       "tooltip": "Angular release practices, updating, and upgrading.",
@@ -570,22 +623,6 @@
            "url": "guide/updating",
             "title": "Keeping Up-to-Date",
             "tooltip": "Information about updating Angular applications and libraries to the latest version."
-        },       
-        {
-          "title": "Upgrading from AngularJS",
-          "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
-          "children": [
-            {
-              "url": "guide/upgrade",
-              "title": "Upgrading Instructions",
-              "tooltip": "Incrementally upgrade an AngularJS application to Angular."
-            },
-            {
-              "url": "guide/ajs-quick-reference",
-              "title": "AngularJS-Angular Concepts",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
-            }
-          ]
         }
       ]
     },
