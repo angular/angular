@@ -11,7 +11,7 @@ import {makeProgram} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
+import {EsmRenderer} from '../../src/rendering/esm_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
@@ -20,7 +20,7 @@ function setup(file: {name: string, contents: string}) {
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new Esm5Renderer(host, false, null, '', '');
+  const renderer = new EsmRenderer(host, false, null, '', '', null);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
