@@ -1142,7 +1142,6 @@ export function createTView(
     childIndex: -1,           // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
     expandoStartIndex: initialViewLength,
-    directives: null,
     expandoInstructions: null,
     firstTemplatePass: true,
     initHooks: null,
