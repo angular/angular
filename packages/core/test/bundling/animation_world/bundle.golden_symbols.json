@@ -168,9 +168,6 @@
     "name": "RecordViewTuple"
   },
   {
-    "name": "Renderer2"
-  },
-  {
     "name": "RendererStyleFlags3"
   },
   {
@@ -616,9 +613,6 @@
   },
   {
     "name": "getOrCreatePlayerContext"
-  },
-  {
-    "name": "getOrCreateRenderer2"
   },
   {
     "name": "getOrCreateTView"
