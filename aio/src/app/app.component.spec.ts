@@ -654,12 +654,13 @@ describe('AppComponent', () => {
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
         setHasFloatingToc(true);
 
-        expect(tocContainer!.style['max-height']).toBe('');
-
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-
         expect(tocContainer!.style['max-height']).toBe('100px');
+
+        component.tocMaxHeight = '200';
+        fixture.detectChanges();
+        expect(tocContainer!.style['max-height']).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
