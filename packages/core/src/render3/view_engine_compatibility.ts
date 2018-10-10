@@ -14,6 +14,7 @@ import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
+import {Renderer2} from '../render/api';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {NodeInjector, getParentInjectorLocation, getParentInjectorView} from './di';
@@ -23,7 +24,7 @@ import {RenderFlags} from './interfaces/definition';
 import {InjectorLocationFlags} from './interfaces/injector';
 import {LContainerNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {RComment, RElement, Renderer3} from './interfaces/renderer';
+import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
@@ -339,4 +340,18 @@ export function createViewRef(
     return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
   }
   return null !;
+}
+
+function getOrCreateRenderer2(view: LViewData): Renderer2 {
+  const renderer = view[RENDERER];
+  if (isProceduralRenderer(renderer)) {
+    return renderer as Renderer2;
+  } else {
+    throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
+  }
+}
+
+/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
+export function injectRenderer2(): Renderer2 {
+  return getOrCreateRenderer2(_getViewData());
 }

@@ -22,7 +22,6 @@ import {_getViewData, assertPreviousIsParent, getPreviousOrParentTNode, resolveD
 import {DirectiveDef} from './interfaces/definition';
 import {InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {isProceduralRenderer} from './interfaces/renderer';
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, PARENT, RENDERER, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 
@@ -246,9 +245,6 @@ export function directiveInject<T>(
   return getOrCreateInjectable<T>(hostTNode, _getViewData(), token, flags);
 }
 
-export function injectRenderer2(): Renderer2 {
-  return getOrCreateRenderer2(_getViewData());
-}
 /**
  * Inject static attribute value into directive constructor.
  *
@@ -298,14 +294,6 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
   return undefined;
 }
 
-function getOrCreateRenderer2(view: LViewData): Renderer2 {
-  const renderer = view[RENDERER];
-  if (isProceduralRenderer(renderer)) {
-    return renderer as Renderer2;
-  } else {
-    throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
-  }
-}
 
 /**
  * Returns the value associated to the given token from the injectors.
@@ -509,10 +497,6 @@ export class NodeInjector implements Injector {
   }
 
   get(token: any): any {
-    if (token === Renderer2) {
-      return getOrCreateRenderer2(this._hostView);
-    }
-
     setEnvironment(this._tNode, this._hostView);
     return getOrCreateInjectable(this._tNode, this._hostView, token);
   }

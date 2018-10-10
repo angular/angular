@@ -11,7 +11,7 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
-import {PublicFeature, defineDirective, directiveInject, elementProperty, injectRenderer2, load, templateRefExtractor} from '../../src/render3/index';
+import {PublicFeature, defineDirective, directiveInject, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
@@ -1535,15 +1535,13 @@ describe('di', () => {
   });
 
   describe('Renderer2', () => {
-    let comp: MyComp;
-
     class MyComp {
       constructor(public renderer: Renderer2) {}
 
       static ngComponentDef = defineComponent({
         type: MyComp,
         selectors: [['my-comp']],
-        factory: () => comp = new MyComp(injectRenderer2()),
+        factory: () => new MyComp(directiveInject(Renderer2 as any)),
         consts: 1,
         vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
@@ -1556,8 +1554,8 @@ describe('di', () => {
 
     it('should inject the Renderer2 used by the application', () => {
       const rendererFactory = getRendererFactory2(document);
-      new ComponentFixture(MyComp, {rendererFactory: rendererFactory});
-      expect(isProceduralRenderer(comp.renderer)).toBeTruthy();
+      const fixture = new ComponentFixture(MyComp, {rendererFactory: rendererFactory});
+      expect(isProceduralRenderer(fixture.component.renderer)).toBeTruthy();
     });
 
     it('should throw when injecting Renderer2 but the application is using Renderer3',
