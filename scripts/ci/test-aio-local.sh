@@ -16,10 +16,28 @@ source ${thisDir}/_travis-fold.sh
   # (Run before unit and e2e tests, which destroy the `dist/` directory.)
   travisFoldStart "test.aio.pwaScore"
     yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
   travisFoldEnd "test.aio.pwaScore"
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
+    yarn test --watch=false
     yarn test --watch=false
   travisFoldEnd "test.aio.unit"
 
