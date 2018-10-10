@@ -1,8 +1,8 @@
-import {task} from 'gulp';
+import {dest, task} from 'gulp';
 import {ngcBuildTask, tsBuildTask, copyTask, execTask} from '../util/task_helpers';
 import {join} from 'path';
 import {copySync} from 'fs-extra';
-import {buildConfig, sequenceTask} from 'material2-build-tools';
+import {buildConfig, buildScssPipeline, sequenceTask} from 'material2-build-tools';
 
 const {outputDir, packagesDir} = buildConfig;
 
@@ -36,12 +36,15 @@ task('universal:build', sequenceTask(
   'clean',
   ['material:build-release', 'cdk:build-release'],
   ['universal:copy-release', 'universal:copy-files'],
-  'universal:build-app-ts',
-  'universal:build-prerender-ts'
+  ['universal:build-app-ts', 'universal:build-app-scss'],
+  'universal:build-prerender-ts',
 ));
 
 /** Task that builds the universal app in the output directory. */
 task('universal:build-app-ts', ngcBuildTask(tsconfigAppPath));
+
+/** Task that builds the universal app styles in the output directory. */
+task('universal:build-app-scss', () => buildScssPipeline(appDir).pipe(dest(outDir)));
 
 /** Task that copies all files to the output directory. */
 task('universal:copy-files', copyTask(appDir, outDir));
