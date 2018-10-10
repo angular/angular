@@ -207,4 +207,77 @@ describe('ng-add schematic', () => {
           'Expected the project app module to not import the "NoopAnimationsModule".');
     });
   });
+
+  describe('theme files', () => {
+
+    /** Path to the default prebuilt theme file that will be added when running ng-add. */
+    const defaultPrebuiltThemePath =
+      './node_modules/@angular/material/prebuilt-themes/indigo-pink.css';
+
+    /** Writes a specific style file to the workspace in the given tree */
+    function writeStyleFileToWorkspace(tree: Tree, stylePath: string) {
+      const workspace = getWorkspace(tree);
+      const project = getProjectFromWorkspace(workspace);
+      const buildOptions = getProjectTargetOptions(project, 'build');
+
+      if (!buildOptions.styles) {
+        buildOptions.styles = [stylePath];
+      } else {
+        buildOptions.styles.push(stylePath);
+      }
+
+      tree.overwrite('/angular.json', JSON.stringify(workspace, null, 2));
+    }
+
+    it('should replace existing prebuilt theme files', () => {
+      const existingThemePath =
+          './node_modules/@angular/material/prebuilt-themes/purple-green.css';
+      writeStyleFileToWorkspace(appTree, existingThemePath);
+
+      const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
+      const workspace = getWorkspace(tree);
+      const project = getProjectFromWorkspace(workspace);
+      const styles = getProjectTargetOptions(project, 'build').styles;
+
+      expect(styles).not.toContain(existingThemePath,
+          'Expected the existing prebuilt theme file to be removed.');
+      expect(styles).toContain(defaultPrebuiltThemePath,
+          'Expected the default prebuilt theme to be added.');
+    });
+
+    it('should not replace existing custom theme files', () => {
+      spyOn(console, 'warn');
+      writeStyleFileToWorkspace(appTree, './projects/material/custom-theme.scss');
+
+      const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
+      const workspace = getWorkspace(tree);
+      const project = getProjectFromWorkspace(workspace);
+      const styles = getProjectTargetOptions(project, 'build').styles;
+
+      expect(styles).not.toContain(defaultPrebuiltThemePath,
+          'Expected the default prebuilt theme to be not configured.');
+      expect(console.warn).toHaveBeenCalledWith(
+          jasmine.stringMatching(/Cannot add.*already a custom theme/));
+    });
+
+    it('should not add a theme file multiple times', () => {
+      writeStyleFileToWorkspace(appTree, defaultPrebuiltThemePath);
+
+      const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
+      const workspace = getWorkspace(tree);
+      const project = getProjectFromWorkspace(workspace);
+      const styles = getProjectTargetOptions(project, 'build').styles;
+
+      expect(styles).toEqual(['projects/material/src/styles.css', defaultPrebuiltThemePath],
+          'Expected the "styles.css" file and default prebuilt theme to be the only styles');
+    });
+
+    it('should not overwrite existing custom theme files', () => {
+      appTree.create('/projects/material/custom-theme.scss', 'custom-theme');
+      const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
+
+      expect(tree.readContent('/projects/material/custom-theme.scss')).toBe('custom-theme',
+          'Expected the old custom theme content to be unchanged.');
+    });
+  });
 });

@@ -19,7 +19,13 @@ import {getWorkspace} from '@schematics/angular/utility/config';
 import {join} from 'path';
 import {Schema} from '../schema';
 import {createCustomTheme} from './custom-theme';
+import {red, bold} from 'chalk';
 
+/** Path segment that can be found in paths that refer to a prebuilt theme. */
+const prebuiltThemePathSegment = '@angular/material/prebuilt-themes';
+
+/** Default file name of the custom theme that can be generated. */
+const defaultCustomThemeFilename = 'custom-theme.scss';
 
 /** Add pre-built styles to the main project style file. */
 export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
@@ -60,11 +66,17 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
 
     // Normalize the path through the devkit utilities because we want to avoid having
     // unnecessary path segments and windows backslash delimiters.
-    const customThemePath = normalize(join(project.sourceRoot, 'custom-theme.scss'));
+    const customThemePath = normalize(join(project.sourceRoot, defaultCustomThemeFilename));
+
+    if (host.exists(customThemePath)) {
+      console.warn(red(`Cannot create a custom Angular Material theme because
+          "${customThemePath}" already exists. Skipping custom theme generation.`));
+      return;
+    }
 
     host.create(customThemePath, themeContent);
-
-    return addStyleToTarget(project, 'build', host, customThemePath, workspace);
+    addThemeStyleToTarget(project, 'build', host, customThemePath, workspace);
+    return;
   }
 
   const insertion = new InsertChange(stylesPath, 0, themeContent);
@@ -81,25 +93,42 @@ function insertPrebuiltTheme(project: WorkspaceProject, host: Tree, theme: strin
   // Path needs to be always relative to the `package.json` or workspace root.
   const themePath =  `./node_modules/@angular/material/prebuilt-themes/${theme}.css`;
 
-  addStyleToTarget(project, 'build', host, themePath, workspace);
-  addStyleToTarget(project, 'test', host, themePath, workspace);
+  addThemeStyleToTarget(project, 'build', host, themePath, workspace);
+  addThemeStyleToTarget(project, 'test', host, themePath, workspace);
 }
 
-/** Adds a style entry to the given project target. */
-function addStyleToTarget(project: WorkspaceProject, targetName: string, host: Tree,
+/** Adds a theming style entry to the given project target options. */
+function addThemeStyleToTarget(project: WorkspaceProject, targetName: string, host: Tree,
                           assetPath: string, workspace: WorkspaceSchema) {
+
   const targetOptions = getProjectTargetOptions(project, targetName);
 
   if (!targetOptions.styles) {
     targetOptions.styles = [assetPath];
   } else {
     const existingStyles = targetOptions.styles.map(s => typeof s === 'string' ? s : s.input);
-    const hasGivenTheme = existingStyles.find(s => s.includes(assetPath));
-    const hasOtherTheme = existingStyles.find(s => s.includes('material/prebuilt'));
 
-    if (!hasGivenTheme && !hasOtherTheme) {
-      targetOptions.styles.unshift(assetPath);
+    for (let [index, stylePath] of existingStyles.entries()) {
+      // If the given asset is already specified in the styles, we don't need to do anything.
+      if (stylePath === assetPath) {
+        return;
+      }
+
+      // In case a prebuilt theme is already set up, we can safely replace the theme with the new
+      // theme file. If a custom theme is set up, we are not able to safely replace the custom
+      // theme because these files can contain custom styles, while prebuilt themes are
+      // always packaged and considered replaceable.
+      if (stylePath.includes(defaultCustomThemeFilename)) {
+        console.warn(red(`Cannot add "${bold(assetPath)} to the CLI project configuration ` +
+            `because there is already a custom theme file referenced. Please manually add ` +
+            `the "${bold(assetPath)}" style file to your configuration.`));
+        return;
+      } else if (stylePath.includes(prebuiltThemePathSegment)) {
+        targetOptions.styles.splice(index, 1);
+      }
     }
+
+    targetOptions.styles.unshift(assetPath);
   }
 
   host.overwrite('angular.json', JSON.stringify(workspace, null, 2));
