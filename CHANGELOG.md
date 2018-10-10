@@ -1,3 +1,11 @@
+<a name="7.0.0-rc.1"></a>
+# [7.0.0-rc.1](https://github.com/angular/angular/compare/7.0.0-rc.0...7.0.0-rc.1) (2018-10-10)
+
+
+This version includes Ivy features and internal refactorings. There are no user-facing changes.
+
+
+
 <a name="6.1.10"></a>
 ## [6.1.10](https://github.com/angular/angular/compare/6.1.9...6.1.10) (2018-10-10)
 
