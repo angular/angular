@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {MEANING_SEPARATOR, unsupported} from './view/util';
+import {unsupported} from './view/util';
 
 
 /**
@@ -100,11 +100,6 @@ export enum R3ResolvedDependencyType {
    * The dependency is for the `Injector` type itself.
    */
   Injector = 2,
-
-  /**
-   * The dependency is for `Renderer2`.
-   */
-  Renderer2 = 3,
 }
 
 /**
@@ -262,8 +257,6 @@ function compileInjectDependency(
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
-    case R3ResolvedDependencyType.Renderer2:
-      return o.importExpr(R3.injectRenderer2).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
@@ -280,11 +273,7 @@ export function dependenciesFromGlobalMetadata(
   // Use the `CompileReflector` to look up references to some well-known Angular types. These will
   // be compared with the token to statically determine whether the token has significance to
   // Angular, and set the correct `R3ResolvedDependencyType` as a result.
-  const elementRef = reflector.resolveExternalReference(Identifiers.ElementRef);
-  const templateRef = reflector.resolveExternalReference(Identifiers.TemplateRef);
-  const viewContainerRef = reflector.resolveExternalReference(Identifiers.ViewContainerRef);
   const injectorRef = reflector.resolveExternalReference(Identifiers.Injector);
-  const renderer2 = reflector.resolveExternalReference(Identifiers.Renderer2);
 
   // Iterate through the type's DI dependencies and produce `R3DependencyMetadata` for each of them.
   const deps: R3DependencyMetadata[] = [];
@@ -294,8 +283,6 @@ export function dependenciesFromGlobalMetadata(
       let resolved: R3ResolvedDependencyType = R3ResolvedDependencyType.Token;
       if (tokenRef === injectorRef) {
         resolved = R3ResolvedDependencyType.Injector;
-      } else if (tokenRef === renderer2) {
-        resolved = R3ResolvedDependencyType.Renderer2;
       } else if (dependency.isAttribute) {
         resolved = R3ResolvedDependencyType.Attribute;
       }

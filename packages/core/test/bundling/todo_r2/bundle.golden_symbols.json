@@ -672,6 +672,9 @@
     "name": "R3_ELEMENT_REF_FACTORY"
   },
   {
+    "name": "R3_RENDERER2_FACTORY"
+  },
+  {
     "name": "R3_TEMPLATE_REF_FACTORY"
   },
   {
