@@ -23,8 +23,8 @@ import {_getViewData, assertPreviousIsParent, getOrCreateCurrentQueries, store, 
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
-import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {LViewData, TVIEW} from './interfaces/view';
 import {flatten, isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
