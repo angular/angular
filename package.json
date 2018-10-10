@@ -54,6 +54,7 @@
     "@angular/upgrade": "7.0.0-rc.0",
     "@bazel/ibazel": "0.3.1",
     "@bazel/typescript": "^0.19.1",
+    "@firebase/app-types": "^0.3.2",
     "@google-cloud/storage": "^1.1.1",
     "@octokit/rest": "^15.9.4",
     "@schematics/angular": "7.0.0-rc.1",

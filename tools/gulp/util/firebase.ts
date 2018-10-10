@@ -1,5 +1,7 @@
+import {initializeApp} from 'firebase';
+
+// This import lacks type definitions.
 const firebaseAdmin = require('firebase-admin');
-const firebase = require('firebase');
 
 /** Database URL of the dashboard firebase project. */
 const dashboardDatabaseUrl = 'https://material2-board.firebaseio.com';
@@ -22,7 +24,7 @@ export function openFirebaseDashboardApp() {
 
 /** Opens a connection to the Firebase dashboard app with no authentication. */
 export function openFirebaseDashboardAppAsGuest() {
-  return firebase.initializeApp({ databaseURL: dashboardDatabaseUrl });
+  return initializeApp({ databaseURL: dashboardDatabaseUrl });
 }
 
 /** Decodes a Travis CI variable that is public in favor for PRs. */
