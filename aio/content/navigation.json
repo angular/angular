@@ -553,7 +553,7 @@
 
         { 
           "title": "Dev Tool Integration",
-          "tooltip": "Integration with your development environment and tool information.",
+          "tooltip": "Integrate with your development environment and tools.",
           "children": [
            {
              "url": "guide/language-service",
@@ -562,8 +562,9 @@
            },
            {
              "url": "guide/visual-studio-2015",
-             "title": "Visual Studio 2015 QuickStart",
-             "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+             "title": "Visual Studio 2015",
+             "tooltip": "Using Angular with Visual Studio 2015.",
+             "hidden": true
            }
           ]
         },
