@@ -56,6 +56,7 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
+    - env: "CI_MODE=aio_local"
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
 
