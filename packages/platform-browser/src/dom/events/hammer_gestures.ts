@@ -52,6 +52,7 @@ const EVENT_NAMES = {
   'swipedown': true,
   // tap
   'tap': true,
+  'doubletap': true
 };
 
 /**
