@@ -344,15 +344,6 @@ export interface TView {
   currentMatches: CurrentMatchesList|null;
 
   /**
-   * Directive and component defs that have already been matched to nodes on
-   * this view.
-   *
-   * Defs are stored at the same index in TView.directives[] as their instances
-   * are stored in LView.directives[]. This simplifies lookup in DI.
-   */
-  directives: DirectiveDefList|null;
-
-  /**
    * Set of instructions used to process host bindings efficiently.
    *
    * See VIEW_DATA.md for more information.
