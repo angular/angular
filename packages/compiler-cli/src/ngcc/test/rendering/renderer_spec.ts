@@ -17,7 +17,7 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
-  constructor(host: Esm2015ReflectionHost) { super(host, false, null, '/src', '/dist'); }
+  constructor(host: Esm2015ReflectionHost) { super(host, false, null, '/src', '/dist', null); }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
