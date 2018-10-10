@@ -58,8 +58,11 @@ class Walker extends Lint.RuleWalker {
   visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._enabled && node.decorators) {
       node.decorators
-        .map(decorator => decorator.expression as any)
-        .filter(expression => expression.arguments.length && expression.arguments[0].properties)
+        .map(decorator => decorator.expression as ts.CallExpression)
+        .filter(expression => {
+          const args = expression.arguments;
+          return args && args.length && (args[0] as ts.ObjectLiteralExpression).properties;
+        })
         .forEach(expression => this._validatedDecorator(expression));
     }
 
@@ -80,11 +83,13 @@ class Walker extends Lint.RuleWalker {
     }
 
     // Extract the property names and values.
-    const props = decorator.arguments[0].properties.map((node: ts.PropertyAssignment) => ({
-      name: node.name.getText(),
-      value: node.initializer.getText(),
-      node
-    }));
+    const props = decorator.arguments[0].properties
+      .filter((node: ts.PropertyAssignment) => node.name && node.initializer)
+      .map((node: ts.PropertyAssignment) => ({
+        name: node.name.getText(),
+        value: node.initializer.getText(),
+        node
+      }));
 
     // Find all of the required rule properties that are missing from the decorator.
     const missing = Object.keys(rules.required)
