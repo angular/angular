@@ -283,7 +283,7 @@ function appendI18nNode(
   return tNode;
 }
 
-export function i18nAttribute(index: number, attrName: string, attrValue: string): void {
+export function i18nAttribute(index: number, attrs: any[]): void {
   // placeholder for i18nAttribute function
 }
 
