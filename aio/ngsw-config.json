@@ -117,6 +117,8 @@
     "!/guide/webpack",
     "!/guide/webpack.html",
     "!/guide/webpack/",
+    "!/guide/setup-systemjs-anatomy",
+    "!/guide/setup-systemjs-anatomy.html",
     "!/news",
     "!/news.html",
     "!/news/",
