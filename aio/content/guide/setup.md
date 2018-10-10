@@ -125,7 +125,7 @@ Open a terminal window in the project folder and enter the following commands fo
 The **QuickStart seed** contains the same application as the QuickStart playground.
 But its true purpose is to provide a solid foundation for _local_ development.
 Consequently, there are _many more files_ in the project folder on your machine,
-most of which you can [learn about later](guide/setup-systemjs-anatomy "Setup Anatomy").
+most of which you can [learn about later](guide/file-structure).
 
 
 
