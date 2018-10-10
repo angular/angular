@@ -14,11 +14,13 @@ import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
+import {DtsFileTransformer} from '../../../ngtsc/transform';
 import {translateStatement} from '../../../ngtsc/translator';
 import {NgccImportManager} from './ngcc_import_manager';
 import {AnalyzedClass, DecorationAnalysis, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
+import {DtsMapper} from '../host/dts_mapper';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
 
 interface SourceMapInfo {
@@ -65,22 +67,26 @@ export abstract class Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
       protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-      protected targetPath: string) {}
+      protected targetPath: string, protected dtsMapper: DtsMapper|null) {}
 
   renderProgram(
       program: ts.Program, decorationAnalyses: DecorationAnalyses,
       switchMarkerAnalyses: SwitchMarkerAnalyses): FileInfo[] {
     const renderedFiles: FileInfo[] = [];
-    // Transform the source files and source maps.
+
+    // Transform the source files, source maps and typings files.
     program.getSourceFiles().map(sourceFile => {
       const decorationAnalysis = decorationAnalyses.get(sourceFile);
       const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
 
-      // Transform the source files and source maps.
       if (decorationAnalysis || switchMarkerAnalysis) {
         const targetPath = resolve(this.targetPath, relative(this.sourcePath, sourceFile.fileName));
         renderedFiles.push(
             ...this.renderFile(sourceFile, decorationAnalysis, switchMarkerAnalysis, targetPath));
+      }
+
+      if (decorationAnalyses) {
+        renderedFiles.push(...this.renderTypings(decorationAnalyses));
       }
     });
     return renderedFiles;
@@ -243,6 +249,27 @@ export abstract class Renderer {
         map: {path: outputMapPath, contents: mergedMap.toJSON()}
       };
     }
+  }
+
+  // TODO(gkalpak): What about `.d.ts` source maps? (See
+  // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
+  renderTypings(decorationAnalyses: DecorationAnalyses): FileInfo[] {
+    const renderedFiles: FileInfo[] = [];
+    if (this.dtsMapper) {
+      const dtsTransformer = new DtsFileTransformer(this.rewriteCoreImportsTo, IMPORT_PREFIX);
+      decorationAnalyses.forEach((analysis, sourceFile) => {
+        const sourceFileName = sourceFile.fileName;
+        const dtsFileName = this.dtsMapper !.getDtsFileNameFor(sourceFileName);
+        const dtsContents = readFileSync(dtsFileName, 'utf8');
+        analysis.analyzedClasses.forEach(analyzedClass => dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
+        const newDtsFileName = resolve(this.targetPath, relative(this.sourcePath, dtsFileName));
+        const newDtsContents = dtsTransformer.transform(dtsContents, sourceFileName);
+        renderedFiles.push({path: newDtsFileName, contents: newDtsContents});
+      });
+    }
+    return renderedFiles;
+
+    // }
   }
 }
 

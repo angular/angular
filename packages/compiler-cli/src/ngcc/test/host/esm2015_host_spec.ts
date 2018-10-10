@@ -1208,8 +1208,7 @@ describe('Fesm2015ReflectionHost', () => {
     it('should return a collection of all the switchable variable declarations in the given module',
        () => {
          const program = makeProgram(MARKER_FILE);
-         const dtsMapper = new DtsMapper('/src', '/typings');
-         const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
          const file = program.getSourceFile(MARKER_FILE.name) !;
          const declarations = host.getSwitchableDeclarations(file);
          expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
@@ -1222,8 +1221,7 @@ describe('Fesm2015ReflectionHost', () => {
     it('should return an array of objects for each file that has exported and decorated classes',
        () => {
          const program = makeProgram(...DECORATED_FILES);
-         const dtsMapper = new DtsMapper('/src', '/typings');
-         const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
          const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
          const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
          const decoratedFiles = host.findDecoratedFiles(primaryFile);
