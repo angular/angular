@@ -26,13 +26,11 @@ and which pieces are blocked) and make a comment.
 Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label.
 
-High level stuff planned for Q3 2018 (July - September):
-* Finishing cdk virtual-scroll
-* Finishing cdk drag-and-drop
-* New cdk/collections selection directives
-* Ongoing migration to bazel
-* Improve docs for cdk
-* Bug fixes and code health improvements, especially around accessibility.
+High level stuff planned for Q4 2018 (October - Dec):
+* Improve our own build and automation tooling
+* Fix bugs and reduce some technical debt inside Google
+* Working on long-term plans on how to collaborate with the MDC Web team
+* Designs for advanced table improvements (column resize, selection directives, inline-edit)
 
 
 #### Available features
@@ -51,11 +49,12 @@ High level stuff planned for Q3 2018 (July - September):
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
 | divider          |                                                        |   [Docs][35] |
+| drag-drop        |                                          Landing in v7 |              |
 | expansion-panel  |                                                        |   [Docs][32] |
 | grid-list        |                                                        |   [Docs][9]  |
 | icon             |                                                        |   [Docs][10] |
 | input            |                                                        |   [Docs][5]  |
-| list             |                               Action list planned 2018 |   [Docs][8]  |
+| list             |                                                        |   [Docs][8]  |
 | menu             |                                                        |   [Docs][17] |
 | paginator        |                                                        |   [Docs][29] |
 | progress-bar     |                                                        |   [Docs][12] |
@@ -74,6 +73,7 @@ High level stuff planned for Q3 2018 (July - September):
 | toolbar          |                                                        |   [Docs][7]  |
 | tooltip          |                                                        |   [Docs][18] |
 | tree             |                                                        |   [Docs][36] |
+| virtual-scroll   |                                          Landing in v7 |              |
 | ---------------- | ------------------------------------------------------ | ------------ |
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
@@ -85,7 +85,6 @@ High level stuff planned for Q3 2018 (July - September):
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| virtual-repeat   |        In-progress, planned Q3 2018 |           -  |   [#823][0823] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
