@@ -16,9 +16,7 @@ import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Esm2015Renderer} from '../rendering/esm2015_renderer';
-import {Esm5Renderer} from '../rendering/esm5_renderer';
-import {Fesm2015Renderer} from '../rendering/fesm2015_renderer';
+import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
@@ -122,18 +120,13 @@ export class Transformer {
 
   getRenderer(
       format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null, dtsMapper: DtsMapper): Renderer {
+      rewriteCoreImportsTo: ts.SourceFile|null, dtsMapper: DtsMapper|null): Renderer {
     switch (format) {
       case 'esm2015':
-        return new Esm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, dtsMapper);
-      case 'fesm2015':
-        return new Fesm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
       case 'esm5':
+      case 'fesm2015':
       case 'fesm5':
-        return new Esm5Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+        return new EsmRenderer(host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, dtsMapper);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
