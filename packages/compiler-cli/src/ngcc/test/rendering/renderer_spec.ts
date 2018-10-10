@@ -13,11 +13,11 @@ import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {AnalyzedClass, DecorationAnalyzer, DecorationAnalyses} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
-  constructor(host: Fesm2015ReflectionHost) { super(host, false, null, '/src', '/dist'); }
+  constructor(host: Esm2015ReflectionHost) { super(host, false, null, '/src', '/dist'); }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
@@ -37,7 +37,7 @@ class TestRenderer extends Renderer {
 
 function createTestRenderer(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
+  const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
