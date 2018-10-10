@@ -218,7 +218,7 @@ function noNg(): never {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
-const noNgElement: typeof angular.element = () => noNg();
+const noNgElement: typeof angular.element = (() => noNg()) as any;
 noNgElement.cleanData = noNg;
 
 let angular: {
@@ -286,7 +286,7 @@ export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
 export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
-export const element: typeof angular.element = e => angular.element(e);
+export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
 element.cleanData = nodes => angular.element.cleanData(nodes);
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
