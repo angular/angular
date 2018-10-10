@@ -15,7 +15,6 @@ import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
-import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
@@ -111,9 +110,8 @@ export class Transformer {
       NgccReflectionHost {
     switch (format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(isCore, program.getTypeChecker());
+        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsMapper);
       case 'esm5':
       case 'fesm5':
         return new Esm5ReflectionHost(isCore, program.getTypeChecker());

@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {ClassMemberKind, Import} from '../../../ngtsc/host';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {getDeclaration, makeProgram} from '../helpers/utils';
 
 const SOME_DIRECTIVE_FILE = {
@@ -1153,7 +1153,7 @@ describe('Esm5ReflectionHost', () => {
     let superGetClassSymbolSpy: jasmine.Spy;
 
     beforeEach(() => {
-      superGetClassSymbolSpy = spyOn(Fesm2015ReflectionHost.prototype, 'getClassSymbol');
+      superGetClassSymbolSpy = spyOn(Esm2015ReflectionHost.prototype, 'getClassSymbol');
     });
 
     it('should return the class symbol returned by the superclass (if any)', () => {
@@ -1221,7 +1221,7 @@ describe('Esm5ReflectionHost', () => {
       host = new Esm5ReflectionHost(false, null as any);
       mockNode = {} as any;
 
-      superIsClassSpy = spyOn(Fesm2015ReflectionHost.prototype, 'isClass');
+      superIsClassSpy = spyOn(Esm2015ReflectionHost.prototype, 'isClass');
       getClassSymbolSpy = spyOn(Esm5ReflectionHost.prototype, 'getClassSymbol');
     });
 

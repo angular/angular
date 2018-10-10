@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {Decorator} from '../../../ngtsc/host';
 import {DecoratorHandler} from '../../../ngtsc/transform';
 import {DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 
 import {makeProgram} from '../helpers/utils';
 
@@ -57,7 +57,7 @@ describe('DecorationAnalyzer', () => {
     beforeEach(() => {
       program = makeProgram(TEST_PROGRAM);
       const analyzer = new DecorationAnalyzer(
-          program.getTypeChecker(), new Fesm2015ReflectionHost(false, program.getTypeChecker()),
+          program.getTypeChecker(), new Esm2015ReflectionHost(false, program.getTypeChecker()),
           [''], false);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
