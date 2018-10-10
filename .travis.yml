@@ -56,7 +56,7 @@ before_install:
   - if [[ "$TRAVIS_EVENT_TYPE" == "cron" ]]; then ./scripts/install-angular-snapshot.sh --only-save; fi
 
 install:
-  - yarn install --frozen-lockfile --non-interactive
+  - ./scripts/ci/travis-install.sh
 
 before_script:
   - mkdir -p $LOGS_DIR
