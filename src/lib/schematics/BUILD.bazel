@@ -1,8 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package", "jasmine_node_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 filegroup(
   name = "schematics_assets",
@@ -21,7 +22,7 @@ ts_library(
     "//src/cdk/schematics",
     "@npm//:@angular-devkit/schematics",
     "@npm//:@schematics/angular",
-    # TODO(devversion): Only include jasmine for test sources.
+    # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
     "@npm//:@types/jasmine",
     "@npm//:@types/node",
     "@npm//:parse5",
@@ -45,7 +46,6 @@ jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
   data = [":node_loader_workaround", ":schematics_assets", ":schematics_test_cases"],
-  deps = ["@npm//:jasmine"]
 )
 
 ts_library(
