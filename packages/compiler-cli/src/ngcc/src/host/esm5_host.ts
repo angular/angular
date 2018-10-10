@@ -14,7 +14,7 @@ import {getNameText, getOriginalSymbol, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
 import {DecoratedFile} from './decorated_file';
-import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './fesm2015_host';
+import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 
 
 /**
@@ -34,7 +34,7 @@ import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignm
  *   a static method called `ctorParameters`.
  *
  */
-export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
+export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   constructor(isCore: boolean, checker: ts.TypeChecker) { super(isCore, checker); }
 
   /**
