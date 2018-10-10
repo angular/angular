@@ -2205,7 +2205,7 @@ seen in the `AppComponent` template.
 
 The URL bound to the `[routerLink]` attribute flows in to the directive's `linkParams` property.
 
-The `host` metadata property wires the click event of the host element
+The `HostListener` wires the click event of the host element
 (the `<a>` anchor elements in `AppComponent`) to the stub directive's `onClick` method.
 
 Clicking the anchor should trigger the `onClick()` method,
