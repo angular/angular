@@ -7,16 +7,17 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import {DtsMapper} from '../host/dts_mapper';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {AnalyzedClass} from '../analysis/decoration_analyzer';
 import {Renderer} from './renderer';
 
-export class Fesm2015Renderer extends Renderer {
+export class EsmRenderer extends Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
       protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-      protected targetPath: string) {
-    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath);
+        protected targetPath: string, dtsMapper: DtsMapper|null) {
+    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath, dtsMapper);
   }
 
   /**

@@ -14,18 +14,17 @@ import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {DtsMapper} from '../../src/host/dts_mapper';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
+import {EsmRenderer} from '../../src/rendering/esm_renderer';
 
 function setup(file: {name: string, contents: string}, transformDts: boolean = false) {
   const dir = dirname(file.name);
-  const dtsMapper = new DtsMapper(dir, dir);
   const program = makeProgram(file);
   const sourceFile = program.getSourceFile(file.name) !;
   const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new Esm2015Renderer(host, false, null, dir, dir, dtsMapper);
+  const renderer = new EsmRenderer(host, false, null, dir, dir, null);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
