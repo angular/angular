@@ -310,22 +310,22 @@ _This_ "Authors Doc Style Guide" has its own sample application, located in the 
 
 The following _code-example_ displays the sample's `app.module.ts`.
 
-<code-example path="docs-style-guide/src/app/app.module.ts" title="src/app/app.module.ts"></code-example>
+<code-example path="docs-style-guide/src/app/app.module.ts" header="src/app/app.module.ts"></code-example>
 
 Here's the brief markup that produced that lengthy snippet:
 
 ```html
 <code-example
   path="docs-style-guide/src/app/app.module.ts"
-  title="src/app/app.module.ts">
+  header="src/app/app.module.ts">
 </code-example>
 ```
 
 You identified the snippet's source file by setting the `path` attribute to sample folder's location _within_ `content/examples`.
 In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 
-You added a header to tell the reader where to find the file by setting the `title` attribute.
-Following convention, you set the `title` attribute to the file's location within the sample's root folder.
+You added a header to tell the reader where to find the file by setting the `header` attribute.
+Following convention, you set the `header` attribute to the file's location within the sample's root folder.
 
 <div class="alert is-helpful">
 
@@ -343,7 +343,7 @@ If you want to include an ignored code file in your project and display it in a 
 
 The preferred way to un-ignore a file is to update the `content/examples/.gitignore` like this:
 
-<code-example title="content/examples/.gitignore">
+<code-example header="content/examples/.gitignore">
   # my-guide
   !my-guide/src/something.js
   !my-guide/more-javascript*.js
@@ -357,7 +357,7 @@ You control the _code-example_ output by setting one or more of its attributes:
 
 * `path`- the path to the file in the `content/examples` folder.
 
-* `title`- the header of the code listing.
+* `header`- the header of the code listing.
 
 * `region`- displays the source file fragment with that region name; regions are identified by _docregion_ markup in the source file, as explained [below](#region "Displaying a code fragment").
 
@@ -395,7 +395,7 @@ A couple of observations:
 
 1. The `region` value, `"class"`, is the name of the `#docregion` in the source file. Confirm that by looking at `content/examples/docs-style-guide/src/app/app.module.ts`
 
-1. Omitting the `title` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
+1. Omitting the `header` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
 There's no need to repeat the header.
 
 1. The line numbers disappeared. By default, the doc viewer omits line numbers when there are fewer than 10 lines of code; it adds line numbers after that. You can turn line numbers on or off explicitly by setting the `linenums` attribute.
@@ -415,11 +415,11 @@ Here's the markup for an "avoid" example in the
 <code-example
   path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts"
   region="example"
-  title="app/heroes/hero-button/hero-button.component.ts">
+  header="app/heroes/hero-button/hero-button.component.ts">
 </code-example>
 ```
 
-<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/hero-button/hero-button.component.ts">
 </code-example>
 
 {@a code-tabs}
@@ -434,29 +434,29 @@ Code tabs display code much like _code examples_ do.  The added advantage is tha
 #### Code-pane attributes
 
 * `path` - a file in the content/examples folder
-* `title` - seen in the header of a tab
+* `header` - seen in the header of a tab
 * `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when the number of lines of code are greater than 10.
 
-The next example displays multiple code tabs, each with its own title.
+The next example displays multiple code tabs, each with its own header.
 It demonstrates control over display of line numbers at both the `<code-tabs>` and `<code-pane>` levels.
 
 <code-tabs linenums="false">
   <code-pane
-    title="app.component.html"
+    header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
   </code-pane>
   <code-pane
-    title="app.component.ts"
+    header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
     linenums="true">
   </code-pane>
   <code-pane
-    title="app.component.css (heroes)"
+    header="app.component.css (heroes)"
     path="docs-style-guide/src/app/app.component.css"
     region="heroes">
   </code-pane>
   <code-pane
-    title="package.json (scripts)"
+    header="package.json (scripts)"
     path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
@@ -469,21 +469,21 @@ The `linenums` attribute in the second pane restores line numbering for _itself 
 ```html
 <code-tabs linenums="false">
   <code-pane
-    title="app.component.html"
+    header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
   </code-pane>
   <code-pane
-    title="app.component.ts"
+    header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
     linenums="true">
   </code-pane>
   <code-pane
-    title="app.component.css (heroes)"
+    header="app.component.css (heroes)"
     path="docs-style-guide/src/app/app.component.css"
     region="heroes">
   </code-pane>
   <code-pane
-    title="package.json (scripts)"
+    header="package.json (scripts)"
     path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
@@ -548,7 +548,7 @@ The `src/main.ts` is a simple example of a file with a single _#docregion_ at th
 
 <code-example
   path="docs-style-guide/src/main.ts"
-  title="src/main.ts"></code-example>
+  header="src/main.ts"></code-example>
 
 </div>
 
@@ -622,12 +622,12 @@ Here's are the two corresponding code snippets displayed side-by-side.
 
 <code-tabs>
   <code-pane
-    title="app.component.ts (class)"
+    header="app.component.ts (class)"
     path="docs-style-guide/src/app/app.component.ts"
     region="class">
   </code-pane>
   <code-pane
-    title="app.component.ts (class-skeleton)"
+    header="app.component.ts (class-skeleton)"
     path="docs-style-guide/src/app/app.component.ts"
     region="class-skeleton">
   </code-pane>
@@ -660,12 +660,12 @@ Here's an example that excerpts certain scripts from `package.json` into a parti
 
 <code-example
   path="docs-style-guide/package.1.json"
-  title="package.json (selected scripts)"></code-example>
+  header="package.json (selected scripts)"></code-example>
 
 ```html
 <code-example
   path="docs-style-guide/package.1.json"
-  title="package.json (selected scripts)"></code-example>
+  header="package.json (selected scripts)"></code-example>
 ```
 
 #### Partial file naming
@@ -689,7 +689,7 @@ Remember to exclude these files from stackblitz by listing them in the `stackbli
 
 <code-example
   path="docs-style-guide/stackblitz.json"
-  title="stackblitz.json"></code-example>
+  header="stackblitz.json"></code-example>
 
 {@a live-examples}
 ## Live examples

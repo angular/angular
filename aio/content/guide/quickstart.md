@@ -126,13 +126,13 @@ As part of the initial app, the CLI created the first Angular component for you.
 
 2. Change the `title` property from `'my-app'` to `'My First Angular App'`.
 
-    <code-example path="cli-quickstart/src/app/app.component.ts" region="component" title="src/app/app.component.ts" linenums="false"></code-example>
+    <code-example path="cli-quickstart/src/app/app.component.ts" region="component" header="src/app/app.component.ts" linenums="false"></code-example>
 
     The browser reloads automatically with the revised title. That's nice, but it could look better.
 
 3. Open `./src/app/app.component.css` and give the component some style.
 
-    <code-example path="cli-quickstart/src/app/app.component.css" title="src/app/app.component.css" linenums="false"></code-example>
+    <code-example path="cli-quickstart/src/app/app.component.css" header="src/app/app.component.css" linenums="false"></code-example>
 
 Looking good! 
 

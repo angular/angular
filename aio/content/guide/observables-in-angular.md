@@ -16,7 +16,7 @@ A good example of usage can be found on the [EventEmitter](https://angular.io/ap
 
 Here is the component definition:
 
-<code-example path="observables-in-angular/src/main.ts" title="EventEmitter" region="eventemitter"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="EventEmitter" region="eventemitter"></code-example>
 
 ## HTTP
 Angular’s `HttpClient` returns observables from HTTP method calls. For instance, `http.get(‘/api’)` returns an observable. This provides several advantages over promise-based HTTP APIs:
@@ -32,20 +32,20 @@ The [AsyncPipe](https://angular.io/api/common/AsyncPipe) subscribes to an observ
 
 The following example binds the `time` observable to the component's view. The observable continuously updates the view with the current time.
 
-<code-example path="observables-in-angular/src/main.ts" title="Using async pipe" region="pipe"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Using async pipe" region="pipe"></code-example>
 
 ## Router
 
 [`Router.events`](https://angular.io/api/router/Router#events) provides events as observables. You can use the `filter()` operator from RxJS to look for events of interest, and subscribe to them in order to make decisions based on the sequence of events in the navigation process. Here's an example:
 
-<code-example path="observables-in-angular/src/main.ts" title="Router events" region="router"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Router events" region="router"></code-example>
 
 The [ActivatedRoute](https://angular.io/api/router/ActivatedRoute) is an injected router service that makes use of observables to get information about a route path and parameters. For example, `ActivateRoute.url` contains an observable that reports the route path or paths. Here's an example:
 
-<code-example path="observables-in-angular/src/main.ts" title="ActivatedRoute" region="activated_route"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="ActivatedRoute" region="activated_route"></code-example>
 
 ## Reactive forms
 
 Reactive forms have properties that use observables to monitor form control values. The [`FormControl`](https://angular.io/api/forms/FormControl) properties `valueChanges` and `statusChanges` contain observables that raise change events. Subscribing to an observable form-control property is a way of triggering application logic within the component class. For example:
 
-<code-example path="observables-in-angular/src/main.ts" title="Reactive forms" region="forms"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Reactive forms" region="forms"></code-example>
