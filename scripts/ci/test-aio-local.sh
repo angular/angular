@@ -15,13 +15,41 @@ source ${thisDir}/_travis-fold.sh
   # Run PWA-score tests
   # (Run before unit and e2e tests, which destroy the `dist/` directory.)
   travisFoldStart "test.aio.pwaScore"
-    yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    # yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE
+    count1=0
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
+    `yarn test-pwa-score-localhost $AIO_MIN_PWA_SCORE` || count1=$(($count1 + 1))
   travisFoldEnd "test.aio.pwaScore"
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
-    yarn test --watch=false
+    # yarn test --watch=false
+    count2=0
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
+    `yarn test --watch=false` || count2=$(($count2 + 1))
   travisFoldEnd "test.aio.unit"
+
+  if [[ $count1 > 0 ]] || [[ $count2 > 0 ]]; then
+    echo "test.aio.pwaScore failures: $count1 / 10";
+    echo "test.aio.unit failures: $count2 / 10";
+    exit 1;
+  fi
 
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
