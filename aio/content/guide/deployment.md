@@ -1,7 +1,7 @@
 # Deployment
 
 When you are ready to deploy your Angular application to a remote server, you have various options for
-deployment. You may need to configure
+deployment. 
 
 {@a dev-deploy}
 {@a copy-files}
@@ -10,7 +10,7 @@ deployment. You may need to configure
 
 For the simplest deployment, build for development and copy the output directory to a web server.
 
-1. Start with the development build
+1. Start with the development build:
 
   <code-example language="none" class="code-shell">
     ng build
@@ -20,9 +20,9 @@ For the simplest deployment, build for development and copy the output directory
 2. Copy _everything_ within the output folder (`dist/` by default) to a folder on the server.
 
 3. Configure the server to redirect requests for missing files to `index.html`.
-Learn more about server-side redirects [below](guide/deployment#fallback).
+Learn more about server-side redirects [below](#fallback).
 
-This is _not_ a production deployment. It's not optimized and it won't be fast for users.
+This is _not_ a production deployment. It's not optimized, and it won't be fast for users.
 It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders. For the next steps in deployment, see [Optimize for production](#optimize).
 
 {@a deploy-to-github}
@@ -31,7 +31,7 @@ It might be good enough for sharing your progress and ideas internally with mana
 
 Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
 
-1. You will need to [create a GitHub account](https://github.com/join) if you don't have one, then [create a repository](https://help.github.com/articles/create-a-repo/) for your project. 
+1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project. 
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the following CLI command:
@@ -392,7 +392,7 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development. 
 When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
-Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `build` command writes the generated build artifacts to the output folder.
+Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
 
 <div class="alert is-helpful">
 
@@ -401,13 +401,13 @@ To output to a different folder, change the `outputPath` in `angular.json`.
 
 </div>
 
-The`serve` command builds, watches, and serves the application from local memory, using a local development server.
+The `ng serve` command builds, watches, and serves the application from local memory, using a local development server.
 When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it. 
-You can do this by adding the `--watch` option to the `build` command.
+You can do this by adding the `--watch` option to the `ng build` command.
 
 ```
 ng build --watch
 ```
-Like the `serve` command, this regenerates output files when source files change. 
+Like the `ng serve` command, this regenerates output files when source files change. 
 
-For complete details of the CLI commands and configuration options, see the *CLI Reference (link TBD)*.
+For complete details of the CLI commands and configuration options, see the [CLI command reference](cli).
