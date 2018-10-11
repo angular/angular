@@ -9,7 +9,7 @@
 import {NgZone, PlatformRef, Type} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
-import {$ROOT_SCOPE} from '@angular/upgrade/static/src/common/constants';
+import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '@angular/upgrade/static/src/common/constants';
 
 import {createWithEachNg1VersionFn} from '../common/test_helpers';
 export * from '../common/test_helpers';
@@ -22,7 +22,7 @@ export function bootstrap(
     const ngZone = ref.injector.get<NgZone>(NgZone);
     const upgrade = ref.injector.get(UpgradeModule);
     const failHardModule: any = ($provide: angular.IProvideService) => {
-      $provide.value('$exceptionHandler', (err: any) => { throw err; });
+      $provide.value($EXCEPTION_HANDLER, (err: any) => { throw err; });
     };
 
     // The `bootstrap()` helper is used for convenience in tests, so that we don't have to inject

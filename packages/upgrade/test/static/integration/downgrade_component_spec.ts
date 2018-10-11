@@ -22,18 +22,15 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     it('should bind properties, events', async(() => {
-         const ng1Module =
-             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
-                                        throw err;
-                                      }).run(($rootScope: angular.IScope) => {
-               $rootScope['name'] = 'world';
-               $rootScope['dataA'] = 'A';
-               $rootScope['dataB'] = 'B';
-               $rootScope['modelA'] = 'initModelA';
-               $rootScope['modelB'] = 'initModelB';
-               $rootScope['eventA'] = '?';
-               $rootScope['eventB'] = '?';
-             });
+         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+           $rootScope['name'] = 'world';
+           $rootScope['dataA'] = 'A';
+           $rootScope['dataB'] = 'B';
+           $rootScope['modelA'] = 'initModelA';
+           $rootScope['modelB'] = 'initModelB';
+           $rootScope['eventA'] = '?';
+           $rootScope['eventB'] = '?';
+         });
 
          @Component({
            selector: 'ng2',
@@ -149,12 +146,8 @@ withEachNg1Version(() => {
        }));
 
     it('should bind properties to onpush components', async(() => {
-         const ng1Module =
-             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
-                                        throw err;
-                                      }).run(($rootScope: angular.IScope) => {
-               $rootScope['dataB'] = 'B';
-             });
+         const ng1Module = angular.module('ng1', []).run(
+             ($rootScope: angular.IScope) => { $rootScope['dataB'] = 'B'; });
 
          @Component({
            selector: 'ng2',
