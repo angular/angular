@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LElementNode} from './node';
+import {LContainerNode, LElementContainerNode, LElementNode} from './node';
 import {LQueries} from './query';
+import {RComment} from './renderer';
+import {StylingContext} from './styling';
 import {LViewData, NEXT, PARENT, QUERIES} from './view';
 
 /**
@@ -18,8 +20,10 @@ import {LViewData, NEXT, PARENT, QUERIES} from './view';
 export const ACTIVE_INDEX = 0;
 // PARENT, NEXT, and QUERIES are indices 1, 2, and 3.
 // As we already have these constants in LViewData, we don't need to re-create them.
-export const VIEWS = 4;
-export const RENDER_PARENT = 5;
+export const HOST_NATIVE = 4;
+export const NATIVE = 5;
+export const VIEWS = 6;
+export const RENDER_PARENT = 7;
 
 /**
  * The state associated with an LContainerNode.
@@ -37,7 +41,7 @@ export interface LContainer extends Array<any> {
    * it is set to null to identify this scenario, as indices are "absolute" in that case,
    * i.e. provided directly by the user of the ViewContainerRef API.
    */
-  [ACTIVE_INDEX]: number|null;
+  [ACTIVE_INDEX]: number;
 
   /**
    * Access to the parent view is necessary so we can propagate back
@@ -56,6 +60,13 @@ export interface LContainer extends Array<any> {
    * this container are reported to queries referenced here.
    */
   [QUERIES]: LQueries|null;
+
+  /** The host node of this LContainer. */
+  // TODO: Should contain just the native element once LNode is removed.
+  [HOST_NATIVE]: LElementNode|LContainerNode|LElementContainerNode|StylingContext;
+
+  /** The comment element that serves as an anchor for this LContainer. */
+  [NATIVE]: RComment;
 
   /**
    * A list of the container's currently active child views. Views will be inserted

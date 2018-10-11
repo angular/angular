@@ -71,18 +71,12 @@ export interface LNode {
   readonly native: RComment|RElement|RText|null;
 
   /**
-   * If regular LElementNode, LTextNode, and LProjectionNode then `data` will be null.
+   * If regular LElementNode, LTextNode, LContainerNode, and LProjectionNode then `data` will be
+   * null.
    * If LElementNode with component, then `data` contains LViewData.
    * If LViewNode, then `data` contains the LViewData.
-   * If LContainerNode, then `data` contains LContainer.
    */
-  readonly data: LViewData|LContainer|null;
-
-  /**
-   * A pointer to an LContainerNode created by directives requesting ViewContainerRef
-   */
-  // TODO(kara): Remove when removing LNodes
-  dynamicLContainerNode: LContainerNode|null;
+  readonly data: LViewData|null;
 }
 
 
@@ -107,14 +101,12 @@ export interface LTextNode extends LNode {
   /** The text node associated with this node. */
   native: RText;
   readonly data: null;
-  dynamicLContainerNode: null;
 }
 
 /** Abstract node which contains root nodes of a view. */
 export interface LViewNode extends LNode {
   readonly native: null;
   readonly data: LViewData;
-  dynamicLContainerNode: null;
 }
 
 /** Abstract node container which contains other views. */
@@ -127,14 +119,13 @@ export interface LContainerNode extends LNode {
    * until the parent view is processed.
    */
   native: RComment;
-  readonly data: LContainer;
+  readonly data: null;
 }
 
 
 export interface LProjectionNode extends LNode {
   readonly native: null;
   readonly data: null;
-  dynamicLContainerNode: null;
 }
 
 /**

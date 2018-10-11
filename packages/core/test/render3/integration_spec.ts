@@ -9,7 +9,7 @@
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
-import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1349,6 +1349,7 @@ describe('render3 integration test', () => {
     describe('elementClass', () => {
 
       it('should support CSS class toggle', () => {
+        /** <span [class.active]="class"></span> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
@@ -1412,6 +1413,72 @@ describe('render3 integration test', () => {
         fixture.update();
         expect(fixture.html).toEqual('<span class="existing"></span>');
       });
+
+      it('should apply classes properly when nodes have LContainers', () => {
+        let structuralComp !: StructuralComp;
+
+        class StructuralComp {
+          tmp !: TemplateRef<any>;
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { this.vcr.createEmbeddedView(this.tmp); }
+
+          static ngComponentDef = defineComponent({
+            type: StructuralComp,
+            selectors: [['structural-comp']],
+            factory: () => structuralComp =
+                         new StructuralComp(directiveInject(ViewContainerRef as any)),
+            inputs: {tmp: 'tmp'},
+            consts: 1,
+            vars: 0,
+            template: (rf: RenderFlags, ctx: StructuralComp) => {
+              if (rf & RenderFlags.Create) {
+                text(0, 'Comp Content');
+              }
+            }
+          });
+        }
+
+        function FooTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Temp Content');
+          }
+        }
+
+        /**
+         * <ng-template #foo>
+         *     Content
+         * </ng-template>
+         * <structural-comp [class.active]="class" [tmp]="foo"></structural-comp>
+         */
+        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
+            elementStart(2, 'structural-comp');
+            elementStyling(['active']);
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            const foo = reference(1) as any;
+            elementClassProp(2, 0, ctx.class);
+            elementStylingApply(2);
+            elementProperty(2, 'tmp', bind(foo));
+          }
+        }, 3, 1, [StructuralComp]);
+
+        const fixture = new ComponentFixture(App);
+        fixture.component.class = true;
+        fixture.update();
+        expect(fixture.html)
+            .toEqual('<structural-comp class="active">Comp Content</structural-comp>');
+
+        structuralComp.create();
+        fixture.update();
+        expect(fixture.html)
+            .toEqual('<structural-comp class="active">Comp Content</structural-comp>Temp Content');
+      });
+
     });
   });
 

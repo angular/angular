@@ -10,9 +10,10 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 
 import {assertDefined, assertLessThan} from './assert';
 import {readElementValue, readPatchedLViewData} from './context_discovery';
-import {LContainerNode, LElementContainerNode, LElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {ACTIVE_INDEX, LContainer} from './interfaces/container';
+import {LContainerNode, LElementContainerNode, LElementNode, LNode, TNode, TNodeFlags} from './interfaces/node';
+import {StylingContext} from './interfaces/styling';
 import {CONTEXT, FLAGS, HEADER_OFFSET, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
-
 
 
 /**
@@ -103,6 +104,12 @@ export function isContentQueryHost(tNode: TNode): boolean {
 export function isComponent(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }
+
+export function isLContainer(value: LNode | LContainer | StylingContext): boolean {
+  // Styling contexts are also arrays, but their first index contains an element node
+  return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
+}
+
 /**
  * Retrieve the root view from any component by walking the parent `LViewData` until
  * reaching the root `LViewData`.
