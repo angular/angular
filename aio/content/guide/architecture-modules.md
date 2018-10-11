@@ -23,7 +23,7 @@ An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()
 
 Here's a simple root NgModule definition.
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts" linenums="false"></code-example>
 
 <div class="alert is-helpful">
 

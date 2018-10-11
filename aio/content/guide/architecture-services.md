@@ -28,11 +28,11 @@ available to components through *dependency injection*.
 
 Here's an example of a service class that logs to the browser console.
 
-<code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/logger.service.ts" linenums="false" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
 Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
 
-<code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero.service.ts" linenums="false" header="src/app/hero.service.ts (class)" region="class"></code-example>
 
 ## Dependency injection (DI)
 
@@ -62,7 +62,7 @@ A dependency doesn't have to be a service&mdash;it could be a function, for exam
 
 When Angular creates a new instance of a component class, it determines which services or other dependencies that component needs by looking at the constructor parameter types. For example, the constructor of `HeroListComponent` needs `HeroService`.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
 When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
 
@@ -111,6 +111,6 @@ or in the `@NgModule()` or `@Component()` metadata
 service with each new instance of that component. 
 At the component level, register a service provider in the `providers` property of the `@Component()` metadata.
 
-   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
+   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
 
 For more detailed information, see the [Dependency Injection](guide/dependency-injection) section.

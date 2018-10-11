@@ -79,7 +79,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Calls method <code>readRainbow</code> when a click event is triggered on this button element (or its children) and passes in the event object.</p>
 </td>
 </tr><tr>
-<td><code>&lt;div title="Hello <b>{{ponyName}}</b>"&gt;</code></td>
+<td><code>&lt;div header="Hello <b>{{ponyName}}</b>"&gt;</code></td>
 <td><p>Binds a property to an interpolated string, for example, "Hello Seabiscuit". Equivalent to:
 <code>&lt;div [title]="'Hello ' + ponyName"&gt;</code></p>
 </td>

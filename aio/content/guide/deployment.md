@@ -216,7 +216,7 @@ and to
 ### Requesting services from a different server (CORS)
 
 Angular developers may encounter a
-<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
+<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" header="Cross-origin resource sharing">
 <i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request)
 to a server other than the application's own host server.
 Browsers forbid such requests unless the server permits them explicitly.
@@ -224,7 +224,7 @@ Browsers forbid such requests unless the server permits them explicitly.
 There isn't anything the client application can do about these errors.
 The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
-<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
+<a href="http://enable-cors.org/server.html" header="Enabling CORS server">enable-cors.org</a>.
 
 <hr>
 
@@ -314,7 +314,7 @@ You can waste a lot of time and money optimizing something that has no tangible 
 You should measure the app's actual behavior when running in the environments that are important to you.
 
 The
-<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
+<a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" header="Chrome DevTools Network Performance">
 Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
 
 The [WebPageTest](https://www.webpagetest.org/) tool is another good choice

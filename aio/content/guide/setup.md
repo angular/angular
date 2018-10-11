@@ -45,7 +45,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 ## Download
-<a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
+<a href="https://github.com/angular/quickstart/archive/master.zip" header="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 
 
@@ -171,15 +171,15 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="setup/src/app/app.component.ts">
+  <code-pane header="src/app/app.component.ts" path="setup/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="setup/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="setup/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="src/main.ts" path="setup/src/main.ts">
+  <code-pane header="src/main.ts" path="setup/src/main.ts">
 
   </code-pane>
 
@@ -308,7 +308,7 @@ If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour 
 Node.js powers client development and build tools.
 The _npm_ package manager, which is itself a _Node.js_ application, installs JavaScript libraries.
 
-<a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
+<a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" header="Installing Node.js and updating npm">
 Get them now</a> if they're not already installed on your machine.
 
 **Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
@@ -325,7 +325,7 @@ You may need [nvm](https://github.com/creationix/nvm) if you already have projec
 
 ## Appendix: Why develop locally
 
-<live-example title="QuickStart Seed in Stackblitz">Live coding</live-example> in the browser is a great way to explore Angular.
+<live-example header="QuickStart Seed in Stackblitz">Live coding</live-example> in the browser is a great way to explore Angular.
 
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
@@ -342,11 +342,11 @@ As much fun as this is ...
 * transpiling TypeScript in the browser is slow
 * the type support, refactoring, and code completion only work in your local IDE
 
-Use the <live-example title="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
+Use the <live-example header="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
 a place to try the documentation samples and experiment on your own.
 It's the perfect place to reproduce a bug when you want to
-<a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or
-<a href="https://github.com/angular/angular/issues/new" title="File an Angular issue">file an issue with Angular itself</a>.
+<a href="https://github.com/angular/angular/issues/new" header="File a documentation issue">file a documentation issue</a> or
+<a href="https://github.com/angular/angular/issues/new" header="File an Angular issue">file an issue with Angular itself</a>.
 
 For real development, we strongly recommend [developing locally](guide/setup#develop-locally).
 
@@ -354,7 +354,7 @@ For real development, we strongly recommend [developing locally](guide/setup#dev
 
 If you develop angular locally with `ng serve`, there will be `websocket` connection being setup automatically between browser and local dev server, so when your code change, browser can automatically refresh.
 
-In windows, by default one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
+In windows, by default one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" header="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
 So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the websocket will not close properly, when websocket connections exceed limitations, `SecurityError` will be thrown, this error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
 
 ## Appendix: test using `fakeAsync()/async()`

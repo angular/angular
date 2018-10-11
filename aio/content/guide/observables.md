@@ -17,7 +17,7 @@ To execute the observable you have created and begin receiving notifications, yo
 
 Here's an example that demonstrates the basic usage model by showing how an observable could be used to provide geolocation updates.
 
-<code-example path="observables/src/geolocation.ts" title="Observe geolocation updates"></code-example>
+<code-example path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
 
 ## Defining observers
 
@@ -49,11 +49,11 @@ Here's an example of creating and subscribing to a simple observable, with an ob
 <code-example
   path="observables/src/subscribing.ts"
   region="observer"
-  title="Subscribe using observer"></code-example>
+  header="Subscribe using observer"></code-example>
 
 Alternatively, the `subscribe()` method can accept callback function definitions in line, for `next`, `error`, and `complete` handlers. For example, the following `subscribe()` call is the same as the one that specifies the predefined observer:
 
-<code-example path="observables/src/subscribing.ts" region="sub_fn" title="Subscribe with positional arguments"></code-example>
+<code-example path="observables/src/subscribing.ts" region="sub_fn" header="Subscribe with positional arguments"></code-example>
 
 In either case, a `next` handler is required. The `error` and `complete` handlers are optional.
 
@@ -65,15 +65,15 @@ Use the `Observable` constructor to create an observable stream of any type. The
 
 For example, to create an observable equivalent to the `of(1, 2, 3)` above, you could do something like this:
 
-<code-example path="observables/src/creating.ts" region="subscriber" title="Create observable with constructor"></code-example>
+<code-example path="observables/src/creating.ts" region="subscriber" header="Create observable with constructor"></code-example>
 
 To take this example a little further, we can create an observable that publishes events. In this example, the subscriber function is defined inline.
 
-<code-example path="observables/src/creating.ts" region="fromevent" title="Create with custom fromEvent function"></code-example>
+<code-example path="observables/src/creating.ts" region="fromevent" header="Create with custom fromEvent function"></code-example>
 
 Now you can use this function to create an observable that publishes keydown events:
 
-<code-example path="observables/src/creating.ts" region="fromevent_use" title="Use custom fromEvent function"></code-example>
+<code-example path="observables/src/creating.ts" region="fromevent_use" header="Use custom fromEvent function"></code-example>
 
 ## Multicasting
 
@@ -87,15 +87,15 @@ When creating an observable you should determine how you want that observable to
 
 Let’s look at an example that counts from 1 to 3, with a one-second delay after each number emitted.
 
-<code-example path="observables/src/multicasting.ts" region="delay_sequence" title="Create a delayed sequence"></code-example>
+<code-example path="observables/src/multicasting.ts" region="delay_sequence" header="Create a delayed sequence"></code-example>
 
 Notice that if you subscribe twice, there will be two separate streams, each emitting values every second. It looks something like this:
 
-<code-example path="observables/src/multicasting.ts" region="subscribe_twice" title="Two subscriptions"></code-example>
+<code-example path="observables/src/multicasting.ts" region="subscribe_twice" header="Two subscriptions"></code-example>
 
  Changing the observable to be multicasting could look something like this:
 
-<code-example path="observables/src/multicasting.ts" region="multicast_sequence" title="Create a multicast subscriber"></code-example>
+<code-example path="observables/src/multicasting.ts" region="multicast_sequence" header="Create a multicast subscriber"></code-example>
 
 <div class="alert is-helpful">
    Multicasting observables take a bit more setup, but they can be useful for certain applications. Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.

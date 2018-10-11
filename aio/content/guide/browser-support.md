@@ -140,7 +140,7 @@ For example, [if you need the web animations polyfill](http://caniuse.com/#feat=
 
 Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
 
-<code-example title="src/polyfills.ts">
+<code-example header="src/polyfills.ts">
   /**
   * Required to support Web Animations `@angular/platform-browser/animations`.
   * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
@@ -553,7 +553,7 @@ computed with the <a href="http://closure-compiler.appspot.com/home">closure com
 
 If you are not using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
 
-<code-example title="src/index.html">
+<code-example header="src/index.html">
   &lt;!-- pre-zone polyfills -->
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>

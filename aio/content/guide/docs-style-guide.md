@@ -310,14 +310,14 @@ _This_ "Authors Doc Style Guide" has its own sample application, located in the 
 
 The following _code-example_ displays the sample's `app.module.ts`.
 
-<code-example path="docs-style-guide/src/app/app.module.ts" title="src/app/app.module.ts"></code-example>
+<code-example path="docs-style-guide/src/app/app.module.ts" header="src/app/app.module.ts"></code-example>
 
 Here's the brief markup that produced that lengthy snippet:
 
 ```html
 <code-example
   path="docs-style-guide/src/app/app.module.ts"
-  title="src/app/app.module.ts">
+  header="src/app/app.module.ts">
 </code-example>
 ```
 
@@ -343,7 +343,7 @@ If you want to include an ignored code file in your project and display it in a 
 
 The preferred way to un-ignore a file is to update the `content/examples/.gitignore` like this:
 
-<code-example title="content/examples/.gitignore">
+<code-example header="content/examples/.gitignore">
   # my-guide
   !my-guide/src/something.js
   !my-guide/more-javascript*.js
@@ -415,11 +415,11 @@ Here's the markup for an "avoid" example in the
 <code-example
   path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts"
   region="example"
-  title="app/heroes/hero-button/hero-button.component.ts">
+  header="app/heroes/hero-button/hero-button.component.ts">
 </code-example>
 ```
 
-<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/hero-button/hero-button.component.ts">
+<code-example path="styleguide/src/05-03/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" header="app/heroes/hero-button/hero-button.component.ts">
 </code-example>
 
 {@a code-tabs}
@@ -442,21 +442,21 @@ It demonstrates control over display of line numbers at both the `<code-tabs>` a
 
 <code-tabs linenums="false">
   <code-pane
-    title="app.component.html"
+    header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
   </code-pane>
   <code-pane
-    title="app.component.ts"
+    header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
     linenums="true">
   </code-pane>
   <code-pane
-    title="app.component.css (heroes)"
+    header="app.component.css (heroes)"
     path="docs-style-guide/src/app/app.component.css"
     region="heroes">
   </code-pane>
   <code-pane
-    title="package.json (scripts)"
+    header="package.json (scripts)"
     path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
@@ -469,21 +469,21 @@ The `linenums` attribute in the second pane restores line numbering for _itself 
 ```html
 <code-tabs linenums="false">
   <code-pane
-    title="app.component.html"
+    header="app.component.html"
     path="docs-style-guide/src/app/app.component.html">
   </code-pane>
   <code-pane
-    title="app.component.ts"
+    header="app.component.ts"
     path="docs-style-guide/src/app/app.component.ts"
     linenums="true">
   </code-pane>
   <code-pane
-    title="app.component.css (heroes)"
+    header="app.component.css (heroes)"
     path="docs-style-guide/src/app/app.component.css"
     region="heroes">
   </code-pane>
   <code-pane
-    title="package.json (scripts)"
+    header="package.json (scripts)"
     path="docs-style-guide/package.1.json">
   </code-pane>
 </code-tabs>
@@ -548,7 +548,7 @@ The `src/main.ts` is a simple example of a file with a single _#docregion_ at th
 
 <code-example
   path="docs-style-guide/src/main.ts"
-  title="src/main.ts"></code-example>
+  header="src/main.ts"></code-example>
 
 </div>
 
@@ -622,12 +622,12 @@ Here's are the two corresponding code snippets displayed side-by-side.
 
 <code-tabs>
   <code-pane
-    title="app.component.ts (class)"
+    header="app.component.ts (class)"
     path="docs-style-guide/src/app/app.component.ts"
     region="class">
   </code-pane>
   <code-pane
-    title="app.component.ts (class-skeleton)"
+    header="app.component.ts (class-skeleton)"
     path="docs-style-guide/src/app/app.component.ts"
     region="class-skeleton">
   </code-pane>
@@ -660,12 +660,12 @@ Here's an example that excerpts certain scripts from `package.json` into a parti
 
 <code-example
   path="docs-style-guide/package.1.json"
-  title="package.json (selected scripts)"></code-example>
+  header="package.json (selected scripts)"></code-example>
 
 ```html
 <code-example
   path="docs-style-guide/package.1.json"
-  title="package.json (selected scripts)"></code-example>
+  header="package.json (selected scripts)"></code-example>
 ```
 
 #### Partial file naming
@@ -689,7 +689,7 @@ Remember to exclude these files from stackblitz by listing them in the `stackbli
 
 <code-example
   path="docs-style-guide/stackblitz.json"
-  title="stackblitz.json"></code-example>
+  header="stackblitz.json"></code-example>
 
 {@a live-examples}
 ## Live examples
@@ -723,10 +723,10 @@ You can change the appearance and behavior of the live example with attributes a
 
 Give the live example anchor a custom label and tooltip by setting the `title` attribute.
 
-<live-example title="Live Example with title"></live-example>
+<live-example header="Live Example with title"></live-example>
 
 ```html
-<live-example title="Live Example with title"></live-example>
+<live-example header="Live Example with title"></live-example>
 ```
 
 You can achieve the same effect by putting the label between the `<live-example>` tags:
@@ -1216,7 +1216,7 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
-<a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
+<a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" header="Click to view larger image">
   <figure>
     <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
   </figure>
