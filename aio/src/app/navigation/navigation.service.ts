@@ -95,7 +95,7 @@ export class NavigationService {
       this.location.currentPath,
 
       (navMap, url) => {
-        const matchSpecialUrls = /^api|^cli/.exec(url);
+        const matchSpecialUrls = /^api/.exec(url);
         if (matchSpecialUrls) {
           url = matchSpecialUrls[0];
         }
