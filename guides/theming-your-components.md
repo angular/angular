@@ -30,7 +30,7 @@ Second, create another Sass mixin that accepts an Angular Material typography de
 typographic styles. For example:
 
 ```scss
-@mixin candy-caroursel-typography($config) {
+@mixin candy-carousel-typography($config) {
   .candy-carousel {
     font: {
       family: mat-font-family($config, body-1);
