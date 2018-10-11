@@ -208,7 +208,7 @@
 {% set nonInternalMembers = ancestor.doc[collectionName] | filterByPropertyValue('internal', undefined) %}
 {% if nonInternalMembers.length -%}
 <section class="inherited-members-list">
-  <h3>Inherited from <code>{$ ancestor.doc.id $}</code></h3>
+  <h3>Inherited from <code><a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.name $}</a></code></h3>
   <ul>
   {% for member in nonInternalMembers %}
     <li>
