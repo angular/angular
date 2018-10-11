@@ -19,7 +19,7 @@ This page describes techniques for deploying your Angular application to a remot
 <!--
 For the simplest deployment, build for development and copy the output directory to a web server.
 -->
-가장 간단한 방법은 개발하던 애플리케이션을 빌드하고 빌드 결과물을 웹 서버로 복사하는 것입니다.
+애플리케이션을 배포하는 방법중 가장 간단한 것은 애플리케이션을 빌드한 후에 생성되는 빌드 결과물을 웹 서버로 복사하는 것입니다.
 
 <!--
 1. Start with the development build
@@ -58,7 +58,7 @@ For the simplest deployment, build for development and copy the output directory
     ng build --base-href=/my/app/
   </code-example>
 
-  이 옵션을 지정하면 `index.html` 파일 안의 `<base href>`의 위치가 지정하나 값으로 변경됩니다.
+  이 옵션을 지정하면 `index.html` 파일 안의 `<base href>` 위치가 지정한 값으로 변경됩니다.
   서버의 최상위 폴더에 빌드 결과물이 위치한다면 이 단계를 건너뛰고 `<base href>`는 그대로 두면 됩니다.<br><br>
   자세한 내용은 [아래](guide/deployment#base-tag)에서 설명하는 `<base href>` 내용을 참고하세요.
 
@@ -123,7 +123,7 @@ The `--prod` _meta-flag_ engages the following optimization features.
 <!---
 The remaining [copy deployment steps](#copy-files) are the same as before.
 -->
-애플리케이션 빌드 이후에 [복사하는 과정](#copy-files)은 옵션을 사용하지 않을 때와 같습니다.
+애플리케이션이 빌드된 이후에 [복사되는 과정](#copy-files)은 옵션을 사용하지 않을 때와 같습니다.
 
 <!--
 You may further reduce bundle sizes by adding the `build-optimizer` flag.
@@ -160,13 +160,13 @@ console:
 <!--
 Switching to _production mode_ can make it run faster by disabling development specific checks such as the dual change detection cycles.
 -->
-애플리케이션이 동작하는 환경을 _운영_ 모드_ 로 변경하면 개발 모드에서 동작하는 이중 변화 감지 로직이 생략되기 때문에 애플리케이션 실행속도가 조금 더 빨라집니다.
+애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경하면 개발 모드에서 동작하는 이중 변화 감지 로직이 생략되기 때문에 애플리케이션 실행속도가 조금 더 빨라집니다.
 
 <!--
 Building for production (or appending the `--environment=prod` flag) enables _production mode_
 Look at the CLI-generated `main.ts` to see how this works.
 -->
-애플리케이션을 운영 모드로 빌드하거나 `--environment=prod` 플래그로 실행하면 _운영 모드_ 를 활성화할 수 있습니다.
+_운영 모드_ 는 애플리케이션을 운영 모드로 빌드하거나 `--environment=prod` 플래그로 실행하면 활성화할 수 있습니다.
 
 {@a lazy-loading}
 
@@ -187,12 +187,12 @@ Configure the Angular Router to defer loading of all other modules (and their as
 or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 -->
-애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있습니다.
+그리고 애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있습니다.
 
 <!--
 #### Don't eagerly import something from a lazy loaded module
 -->
-#### 지연로딩 모듈되는 모듈에 있는 것을 직접 로드하지 마세요.
+#### 지연로딩 모듈에 있는 것을 직접 로드하지 마세요.
 
 <!--
 It's a common mistake.
@@ -221,7 +221,7 @@ The CLI runs the
 [Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)
 which automatically recognizes lazy loaded `NgModules` and creates separate bundles for them.
 -->
-Angular CLI는 [Angular AoT Webpack 플러그인](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)을 사용하기 때문에 지연로딩되는 `NgModule`을 인식할 수 있고 개별 모듈마다 번들링 파일을 생성합니다.
+Angular CLI는 [Angular AoT Webpack 플러그인](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)을 사용하기 때문에 지연로딩되는 `NgModule`을 자동으로 인식하고 번들링 파일을 생성합니다.
 
 {@a measure}
 
@@ -238,8 +238,8 @@ You can waste a lot of time and money optimizing something that has no tangible 
 You should measure the app's actual behavior when running in the environments that are important to you.
 -->
 애플리케이션의 동작 성능을 최적화하려면 애플리케이션의 어떤 부분을 어떻게 수정해야 하는지 정확하게 알고 있는 것이 좋습니다.
-하지만 예상치 못한 결과는 언제든지 생길 수 있습니다.
-그리고 수많은 시간과 자금을 들여 애플리케이션을 최적화한다고 해도 이전과 크게 차이나지 않거나 오히려 더 느려질 수도 있습니다.
+하지만 애플리케이션을 잘 알고 있다고 해도 예상치 못한 결과는 언제든지 생길 수 있습니다.
+수많은 시간과 자금을 들여 애플리케이션을 최적화했는데 이전과 크게 차이나지 않거나 오히려 더 느려질 수도 있습니다.
 그래서 애플리케이션을 최적화 할 때는 실제로 동작하는 환경에서 어떻게 동작하는지 측정해야 합니다.
 
 <!--
@@ -476,7 +476,7 @@ _딥 링크_ 는 애플리케이션에 있는 컴포넌트를 URL로 직접 가�
 There is no issue when the user navigates to that URL from within a running client.
 The Angular router interprets the URL and routes to that page and hero.
 -->
-사용자가 애플리케이션을 통해 이 주소로 이동하는 경우에는 아무 문제가 없습니다.
+사용자가 애플리케이션 안에서 이 주소로 이동하는 경우에는 아무 문제가 없습니다.
 Angular 라우터는 URL을 해석해서 원하는 페이지로 이동하고 조건에 맞는 히어로의 정보를 화면에 표시할 것입니다.
 
 <!--
@@ -493,7 +493,7 @@ A static server routinely returns `index.html` when it receives a request for `h
 But it rejects `http://www.mysite.com/heroes/42` and returns a `404 - Not Found` error *unless* it is
 configured to return `index.html` instead.
 -->
-보통 서버는 `http://www.mysite.com/` 요청을 받았을 때 `index.html`을 반환합니다.
+서버는 `http://www.mysite.com/` 요청을 받았을 때 일반적으로 `index.html`을 반환합니다.
 하지만 `http://www.mysite.com/heroes/42`라는 요청을 받으면 이 위치에 `index.html` 파일이 *있지 않는 한* `404 - Not Found` 에러를 발생시킵니다.
 
 <!--
@@ -618,7 +618,7 @@ It's also a good idea to
 and to
 [create a `.nojekyll` file](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)
 -->
-* [GitHub Pages](https://pages.github.com/): GitHub 페잉지에서는 서버 설정을 [직접 변경](https://github.com/isaacs/github/issues/408)할 수 없습니다. 대신 404 페이지는 수정할 수 있습니다.
+* [GitHub Pages](https://pages.github.com/): GitHub 페이지에서는 서버 설정을 [직접 변경](https://github.com/isaacs/github/issues/408)할 수 없습니다. 대신 404 페이지는 수정할 수 있습니다.
 `index.html`의 내용을 `404.html` 파일 안에 복사해서 붙여넣습니다.
 그러면 브라우저에서 404 응답을 받더라도 애플리케이션은 정상적으로 동작합니다.
 [master 브랜치의 `docs/` 폴더를 활용](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)하거나 [`.nojekyll` 파일을 생성하는 방법](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)도 참고하세요.
