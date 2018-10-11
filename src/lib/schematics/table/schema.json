@@ -23,7 +23,8 @@
       "$default": {
         "$source": "argv",
         "index": 0
-      }
+      },
+      "x-prompt": "What should be the name of the component?"
     },
     "inlineStyle": {
       "description": "Specifies if the style will be in the ts file.",
