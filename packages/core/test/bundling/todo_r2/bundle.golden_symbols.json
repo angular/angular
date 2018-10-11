@@ -324,6 +324,9 @@
     "name": "HOST_ATTR$1"
   },
   {
+    "name": "HOST_NATIVE"
+  },
+  {
     "name": "HOST_NODE"
   },
   {
@@ -442,6 +445,9 @@
   },
   {
     "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NATIVE"
   },
   {
     "name": "NATIVE_ADD_LISTENER"
@@ -1605,9 +1611,6 @@
     "name": "getComponentDef"
   },
   {
-    "name": "getContainerNode"
-  },
-  {
     "name": "getContainerRenderParent"
   },
   {
@@ -1666,6 +1669,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getLContainer"
   },
   {
     "name": "getLElementFromComponent"
@@ -1977,6 +1983,9 @@
     "name": "isJsObject"
   },
   {
+    "name": "isLContainer"
+  },
+  {
     "name": "isListLikeIterable"
   },
   {
@@ -2038,9 +2047,6 @@
   },
   {
     "name": "listener"
-  },
-  {
-    "name": "load"
   },
   {
     "name": "loadElement"

@@ -13,7 +13,7 @@ import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
 import {PublicFeature, defineDirective, directiveInject, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd, loadElement} from '../../src/render3/instructions';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
 
@@ -24,6 +24,7 @@ import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
 import {TNODE} from '../../src/render3/interfaces/injector';
+import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -1136,7 +1137,7 @@ describe('di', () => {
       it('should create ElementRef with comment if requesting directive is on <ng-template> node',
          () => {
            let dir !: Directive;
-           let commentNode !: LContainerNode;
+           let lContainer !: LContainer;
 
            class Directive {
              value: string;
@@ -1156,13 +1157,13 @@ describe('di', () => {
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
                template(0, () => {}, 0, 0, null, ['dir', '']);
-               commentNode = load(0);
+               lContainer = load(0) as any;
              }
            }, 1, 0, [Directive]);
 
            const fixture = new ComponentFixture(App);
            expect(dir.value).toContain('ElementRef');
-           expect(dir.elementRef.nativeElement).toEqual(commentNode.native);
+           expect(dir.elementRef.nativeElement).toEqual(lContainer[NATIVE]);
          });
     });
 
