@@ -73,7 +73,6 @@ To learn about the release highlights and our new CLI-powered update workflow fo
 ### Bug Fixes
 
 * **platform-browser:** fix [#22155](https://github.com/angular/angular/issues/22155), destroy hammer manager when `HammerInstance.off()` is run ([#22156](https://github.com/angular/angular/issues/22156)) ([3b4d9dc](https://github.com/angular/angular/commit/3b4d9dc))
-* **upgrade:** properly destroy upgraded component elements and descendants ([#26209](https://github.com/angular/angular/issues/26209)) ([623adbb](https://github.com/angular/angular/commit/623adbb)), closes [#26208](https://github.com/angular/angular/issues/26208)
 
 
 
