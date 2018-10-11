@@ -613,19 +613,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         let i = mapBasedStyleInput ? 1 : 0;
         for (i; i < styleInputs.length; i++) {
           const input = styleInputs[i];
-          const params: any[] = [];
-          const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
-          if (sanitizationRef) params.push(sanitizationRef);
-
           const key = input.name;
           const styleIndex: number = stylesIndexMap[key] !;
           const value = input.value.visit(this._valueConverter);
-          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, () => {
-            return [
-              indexLiteral, o.literal(styleIndex),
-              this.convertPropertyBinding(implicit, value, true), ...params
-            ];
-          });
+          const params: o.Expression[] = [
+            indexLiteral, o.literal(styleIndex), this.convertPropertyBinding(implicit, value, true)
+          ];
+
+          if (input.unit != null) {
+            params.push(o.literal(input.unit));
+          }
+
+          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, params);
         }
 
         lastInputCommand = styleInputs[styleInputs.length - 1];
