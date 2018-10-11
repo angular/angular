@@ -5,26 +5,28 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {dirname} from 'canonical-path';
 import * as ts from 'typescript';
+
 import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
-import {Analyzer} from '../../src/analyzer';
+import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {DtsMapper} from '../../src/host/dts_mapper';
 import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
-import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
 
-function setup(file: {name: string, contents: string}) {
+function setup(file: {name: string, contents: string}, transformDts: boolean = false) {
+  const dir = dirname(file.name);
+  const dtsMapper = new DtsMapper(dir, dir);
   const program = makeProgram(file);
+  const sourceFile = program.getSourceFile(file.name) !;
   const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
-  const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host, [''], false);
-  const renderer = new Esm2015Renderer(host, false, null);
-  return {analyzer, host, parser, program, renderer};
-}
-
-function analyze(parser: Esm2015FileParser, analyzer: Analyzer, file: ts.SourceFile) {
-  const parsedFiles = parser.parseFile(file);
-  return parsedFiles.map(file => analyzer.analyzeFile(file))[0];
+  const decorationAnalyses =
+      new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
+  const renderer = new Esm2015Renderer(host, false, null, dir, dir, dtsMapper);
+  return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
 const PROGRAM = {
@@ -135,13 +137,14 @@ export class A {}`);
 
   describe('rewriteSwitchableDeclarations', () => {
     it('should switch marked declaration initializers', () => {
-      const {renderer, program} = setup(PROGRAM);
+      const {renderer, program, switchMarkerAnalyses, sourceFile} = setup(PROGRAM);
       const file = program.getSourceFile('some/file.js');
       if (file === undefined) {
         throw new Error(`Could not find source file`);
       }
       const output = new MagicString(PROGRAM.contents);
-      renderer.rewriteSwitchableDeclarations(output, file);
+      renderer.rewriteSwitchableDeclarations(
+          output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
       expect(output.toString())
           .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
       expect(output.toString())
@@ -159,10 +162,10 @@ export class A {}`);
 
   describe('addDefinitions', () => {
     it('should insert the definitions directly after the class declaration', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM);
-      const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      renderer.addDefinitions(output, analyzedFile.analyzedClasses[0], 'SOME DEFINITION TEXT');
+      const analyzedClass = decorationAnalyses.get(sourceFile) !.analyzedClasses[0];
+      renderer.addDefinitions(output, analyzedClass, 'SOME DEFINITION TEXT');
       expect(output.toString()).toContain(`
 export class A {}
 SOME DEFINITION TEXT
@@ -177,10 +180,10 @@ A.decorators = [
     describe('[static property declaration]', () => {
       it('should delete the decorator (and following comma) that was matched in the analysis',
          () => {
-           const {analyzer, parser, program, renderer} = setup(PROGRAM);
-           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const {decorationAnalyses, sourceFile, renderer} = setup(PROGRAM);
            const output = new MagicString(PROGRAM.contents);
-           const analyzedClass = analyzedFile.analyzedClasses[0];
+           const analyzedClass =
+               decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'A') !;
            const decorator = analyzedClass.decorators[0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
            decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
@@ -196,10 +199,10 @@ A.decorators = [
 
       it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
          () => {
-           const {analyzer, parser, program, renderer} = setup(PROGRAM);
-           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const {decorationAnalyses, sourceFile, renderer} = setup(PROGRAM);
            const output = new MagicString(PROGRAM.contents);
-           const analyzedClass = analyzedFile.analyzedClasses[1];
+           const analyzedClass =
+               decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'B') !;
            const decorator = analyzedClass.decorators[0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
            decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
@@ -215,10 +218,10 @@ A.decorators = [
 
       it('should delete the decorator (and its container if there are no other decorators left) that was matched in the analysis',
          () => {
-           const {analyzer, parser, program, renderer} = setup(PROGRAM);
-           const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
+           const {decorationAnalyses, sourceFile, renderer} = setup(PROGRAM);
            const output = new MagicString(PROGRAM.contents);
-           const analyzedClass = analyzedFile.analyzedClasses[2];
+           const analyzedClass =
+               decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'C') !;
            const decorator = analyzedClass.decorators[0];
            const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
            decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
@@ -236,11 +239,10 @@ A.decorators = [
 
   describe('[__decorate declarations]', () => {
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-      const analyzedFile =
-          analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
       const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-      const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'A') !;
+      const analyzedClass =
+          decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'A') !;
       const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
@@ -254,11 +256,10 @@ A.decorators = [
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-         const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'B') !;
+         const analyzedClass =
+             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'B') !;
          const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
@@ -273,11 +274,10 @@ A.decorators = [
 
     it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
        () => {
-         const {analyzer, parser, program, renderer} = setup(PROGRAM_DECORATE_HELPER);
-         const analyzedFile =
-             analyze(parser, analyzer, program.getSourceFile(PROGRAM_DECORATE_HELPER.name) !);
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass = analyzedFile.analyzedClasses.find(c => c.name === 'C') !;
+         const analyzedClass =
+             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'C') !;
          const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
