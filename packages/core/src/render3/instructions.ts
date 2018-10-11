@@ -1434,17 +1434,15 @@ export function elementProperty<T>(
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
     if (tNode.type === TNodeType.Element) markDirtyIfOnPush(node as LElementNode);
-  } else {
+  } else if (tNode.type === TNodeType.Element) {
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value) as any) : value;
-    if (tNode.type === TNodeType.Element) {
-      const native = node.native as RElement;
-      ngDevMode && ngDevMode.rendererSetProperty++;
-      isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
-                                       (native.setProperty ? native.setProperty(propName, value) :
-                                                             (native as any)[propName] = value);
-    }
+    const native = node.native as RElement;
+    ngDevMode && ngDevMode.rendererSetProperty++;
+    isProceduralRenderer(renderer) ? renderer.setProperty(native, propName, value) :
+                                     (native.setProperty ? native.setProperty(propName, value) :
+                                                           (native as any)[propName] = value);
   }
 }
 
