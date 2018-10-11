@@ -150,7 +150,7 @@ no authentication, and no hosting. Pick the template and options appropriate for
 
 
 <h2 id='copy'>
-  Step 3: Copy the Angular project files into the ASP.NET project folder
+  Step 3: Copy the Angular Getting Started project files into the ASP.NET project folder
 </h2>
 
 Copy the files you downloaded from [Getting Started](guide/quickstart) into the folder containing the `.csproj` file.
