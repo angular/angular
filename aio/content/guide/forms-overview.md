@@ -169,7 +169,7 @@ The following tests use the favorite color components mentioned earlier to verif
 
 The following test verifies the view to model data flow:
 
-<code-example path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="view-to-model" title="Favorite color test - view to model">
+<code-example path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="view-to-model" header="Favorite color test - view to model">
 </code-example>
 
 The steps performed in the view to model test.
@@ -180,7 +180,7 @@ The steps performed in the view to model test.
 
 The following test verifies the model to view data flow:
 
-<code-example path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="model-to-view" title="Favorite color test - model to view">
+<code-example path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="model-to-view" header="Favorite color test - model to view">
 </code-example>
 
 The steps performed in the model to view test.
@@ -197,7 +197,7 @@ The following tests use the favorite color components mentioned earlier to verif
 
 The following test verifies the view to model data flow:
 
-<code-example path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="view-to-model" title="Favorite color test - view to model">
+<code-example path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="view-to-model" header="Favorite color test - view to model">
 </code-example>
 
 The steps performed in the view to model test.
@@ -209,7 +209,7 @@ The steps performed in the view to model test.
 
 The following test verifies the model to view data flow:
 
-<code-example path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="model-to-view" title="Favorite color test - model to view">
+<code-example path="forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="model-to-view" header="Favorite color test - model to view">
 </code-example>
 
 The steps performed in the model to view test.

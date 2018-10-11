@@ -42,7 +42,7 @@ So replace "selectedHero" with "hero" everywhere in the template.
 
 When you're done, the `HeroDetailComponent` template should look like this:
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.html" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.html" header="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
 </code-example>
 
@@ -54,7 +54,7 @@ which is of type `Hero`.
 Open the `HeroDetailComponent` class file and import the `Hero` symbol.
 
 <code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts"
-region="import-hero" title="src/app/hero-detail/hero-detail.component.ts (import Hero)">
+region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (import Hero)">
 </code-example>
 
 The `hero` property
@@ -67,7 +67,7 @@ because the _external_ `HeroesComponent` [will bind to it](#heroes-component-tem
 
 Amend the `@angular/core` import statement to include the `Input` symbol.
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" title="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="import-input" header="src/app/hero-detail/hero-detail.component.ts (import Input)" linenums="false">
 </code-example>
 
 Add a `hero` property, preceded by the `@Input()` decorator.
@@ -101,7 +101,7 @@ Add an `<app-hero-detail>` element near the bottom of the `HeroesComponent` temp
 
 Bind the `HeroesComponent.selectedHero` to the element's `hero` property like this.
 
-<code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" title="heroes.component.html (HeroDetail binding)">
+<code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" header="heroes.component.html (HeroDetail binding)">
 
 </code-example>
 
@@ -117,7 +117,7 @@ and the `HeroDetailComponent` displays the new hero.
 The revised `HeroesComponent` template should look like this:
 
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
-  title="heroes.component.html" linenums="false">
+  header="heroes.component.html" linenums="false">
 </code-example>
 
 The browser refreshes and the app starts working again as it did before.
@@ -145,16 +145,16 @@ Here are the code files discussed on this page and your app should look like thi
 
 <code-tabs>
 
-  <code-pane title="src/app/hero-detail/hero-detail.component.ts" path="toh-pt3/src/app/hero-detail/hero-detail.component.ts">
+  <code-pane header="src/app/hero-detail/hero-detail.component.ts" path="toh-pt3/src/app/hero-detail/hero-detail.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/hero-detail/hero-detail.component.html" path="toh-pt3/src/app/hero-detail/hero-detail.component.html">
+  <code-pane header="src/app/hero-detail/hero-detail.component.html" path="toh-pt3/src/app/hero-detail/hero-detail.component.html">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.html" path="toh-pt3/src/app/heroes/heroes.component.html">
+  <code-pane header="src/app/heroes/heroes.component.html" path="toh-pt3/src/app/heroes/heroes.component.html">
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="toh-pt3/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="toh-pt3/src/app/app.module.ts">
   </code-pane>
 
 </code-tabs>
