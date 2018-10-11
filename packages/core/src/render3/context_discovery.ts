@@ -402,14 +402,16 @@ function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
  * @param value The initial value in `LViewData`
  */
 export function readElementValue(value: LElementNode | StylingContext | LContainer): LElementNode {
-  if (!Array.isArray(value)) return value;  // Regular LNode is stored here
-
-  if (typeof value[ACTIVE_INDEX] === 'number') {
-    // This is an LContainer. It may also have a styling context.
-    value = value[HOST_NATIVE] as LElementNode | StylingContext;
-    return Array.isArray(value) ? value[StylingIndex.ElementPosition] ! : value;
+  if (Array.isArray(value)) {
+    if (typeof value[ACTIVE_INDEX] === 'number') {
+      // This is an LContainer. It may also have a styling context.
+      value = value[HOST_NATIVE] as LElementNode | StylingContext;
+      return Array.isArray(value) ? value[StylingIndex.ElementPosition] ! : value;
+    } else {
+      // This is a StylingContext, which stores the element node at 0.
+      return value[StylingIndex.ElementPosition] as LElementNode;
+    }
   } else {
-    // This is a StylingContext, which stores the element node at 0.
-    return value[StylingIndex.ElementPosition] as LElementNode;
+    return value;  // Regular LNode is stored here
   }
 }
