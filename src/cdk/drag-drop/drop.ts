@@ -80,7 +80,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * Function that is used to determine whether an item
    * is allowed to be moved into a drop container.
    */
-  @Input('cdkDropEnterPredication')
+  @Input('cdkDropEnterPredicate')
   enterPredicate: (drag?: CdkDrag, drop?: CdkDrop) => boolean = () => true
 
   /** Emits when the user drops an item inside the container. */
