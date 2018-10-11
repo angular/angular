@@ -3,7 +3,7 @@
     "master": {
       "uncompressed": {
         "runtime": 3173,
-        "main": 483129,
+        "main": 494475,
         "polyfills": 53926,
         "prettify": 14917
       }
