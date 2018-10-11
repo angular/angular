@@ -128,7 +128,7 @@ The steps below outline the view to model data flow.
 1. The control value accessor attached to the input triggers the `setValue()` method on the `FormControl` instance.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
-1. The control value accessor also calls the `NgModel.viewToModel()` method which emits an `ngModelChange` event.
+1. The control value accessor also calls the `NgModel.viewToModelUpdate()` method which emits an `ngModelChange` event.
 1. Because the component template uses two-way data binding for the `favoriteColor`, the `favoriteColor` property in the component 
 is updated to the value emitted  by the `ngModelChange` event ("Blue").
 
