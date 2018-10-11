@@ -40,7 +40,7 @@ In the following example, the parent `AlexComponent` has several children includ
 {@a alex}
 
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-1" title="parent-finder.component.ts (AlexComponent v.1)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-1" header="parent-finder.component.ts (AlexComponent v.1)" linenums="false">
 
 </code-example>
 
@@ -49,7 +49,7 @@ In the following example, the parent `AlexComponent` has several children includ
 *Cathy* reports whether or not she has access to *Alex*
 after injecting an `AlexComponent` into her constructor:
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="cathy" title="parent-finder.component.ts (CathyComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="cathy" header="parent-finder.component.ts (CathyComponent)" linenums="false">
 
 </code-example>
 
@@ -98,7 +98,7 @@ inject its parent via the parent's base class*.
 The sample's `CraigComponent` explores this question. [Looking back](#alex),
 you see that the `Alex` component *extends* (*inherits*) from a class named `Base`.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (Alex class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (Alex class signature)" linenums="false">
 
 </code-example>
 
@@ -106,7 +106,7 @@ you see that the `Alex` component *extends* (*inherits*) from a class named `Bas
 
 The `CraigComponent` tries to inject `Base` into its `alex` constructor parameter and reports if it succeeded.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="craig" title="parent-finder.component.ts (CraigComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="craig" header="parent-finder.component.ts (CraigComponent)" linenums="false">
 
 </code-example>
 
@@ -138,7 +138,7 @@ and add that provider to the `providers` array of the `@Component()` metadata fo
 {@a alex-providers}
 
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)" linenums="false">
 
 </code-example>
 
@@ -149,7 +149,7 @@ The [*forwardRef*](guide/dependency-injection-in-action#forwardref) breaks the c
 *Carol*, the third of *Alex*'s child components, injects the parent into its `parent` parameter,
 the same way you've done it before.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" title="parent-finder.component.ts (CarolComponent class)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-class" header="parent-finder.component.ts (CarolComponent class)" linenums="false">
 
 </code-example>
 
@@ -177,7 +177,7 @@ That means he must both *inject* the `Parent` class interface to get *Alice* and
 
 Here's *Barry*.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry" title="parent-finder.component.ts (BarryComponent)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry" header="parent-finder.component.ts (BarryComponent)" linenums="false">
 
 </code-example>
 
@@ -190,11 +190,11 @@ For now, focus on *Barry*'s constructor.
 
 <code-tabs>
 
-  <code-pane title="Barry's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry-ctor">
+  <code-pane header="Barry's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="barry-ctor">
 
   </code-pane>
 
-  <code-pane title="Carol's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-ctor">
+  <code-pane header="Carol's constructor" path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="carol-ctor">
 
   </code-pane>
 
@@ -229,7 +229,7 @@ You [learned earlier](guide/dependency-injection-in-action#class-interface) that
 
 The example defines a `Parent` class interface.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" title="parent-finder.component.ts (Parent class-interface)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="parent" header="parent-finder.component.ts (Parent class-interface)" linenums="false">
 
 </code-example>
 
@@ -241,7 +241,7 @@ Such a narrow interface helps decouple the child component class from its parent
 
 A component that could serve as a parent *should* implement the class interface as the `AliceComponent` does.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" title="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-class-signature" header="parent-finder.component.ts (AliceComponent class signature)" linenums="false">
 
 </code-example>
 
@@ -251,7 +251,7 @@ Doing so adds clarity to the code.  But it's not technically necessary.
 Although `AlexComponent` has a `name` property, as required by its `Base` class,
 its class signature doesn't mention `Parent`.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" title="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-class-signature" header="parent-finder.component.ts (AlexComponent class signature)" linenums="false">
 
 </code-example>
 
@@ -277,19 +277,19 @@ It doesn't in this example *only* to demonstrate that the code will compile and 
 Writing variations of the same parent *alias provider* gets old quickly,
 especially this awful mouthful with a [*forwardRef*](guide/dependency-injection-in-action#forwardref).
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 You can extract that logic into a helper function like the following.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-the-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 Now you can add a simpler, more meaningful parent provider to your components.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alice-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
@@ -299,14 +299,14 @@ The application might have a variety of parent types, each with its own class in
 
 Here's a revised version that defaults to `parent` but also accepts an optional second parameter for a different parent class interface.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="provide-parent" header="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 
 
 And here's how you could use it with a different parent type.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" title="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="beth-providers" header="dependency-injection-in-action/src/app/parent-finder.component.ts" linenums="false">
 
 </code-example>
 

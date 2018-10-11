@@ -222,13 +222,13 @@ instructions in the [Setup](guide/setup) guide, selectively copying code from th
 You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
 
-<code-example title="system.config.js">
+<code-example header="system.config.js">
 '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
 </code-example>
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
-<code-example title="app.module.ts">
+<code-example header="app.module.ts">
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -257,7 +257,7 @@ declaration on its `NgModule` decorator.
 
 You can now link the AngularJS and Angular modules together using `downgradeModule()`.
 
-<code-example title="app.module.ts">
+<code-example header="app.module.ts">
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { downgradeModule } from '@angular/upgrade/static';
 
@@ -314,7 +314,7 @@ An easy way to copy them is to add each to the `copy-dist-files.js`file.
 You also need to pass the generated `MainAngularModuleFactory` to `downgradeModule()` instead of the
 custom bootstrap function:
 
-<code-example title="app/main-aot.ts">
+<code-example header="app/main-aot.ts">
 import { downgradeModule } from '@angular/upgrade/static';
 import { MainAngularModuleNgFactory } from '../aot/app/app.module.ngfactory';
 

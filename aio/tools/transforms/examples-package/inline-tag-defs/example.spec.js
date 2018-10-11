@@ -49,14 +49,14 @@ describe('example inline-tag-def', function() {
       expect(handler({}, 'example', 'test/url region-1')).toEqual('<code-example>\nregion 1 contents\n</code-example>');
     });
 
-    it('should add a title if specified', () => {
-      expect(handler({}, 'example', 'test/url region-1 \'Some Title\'')).toEqual('<code-example title="Some Title">\nregion 1 contents\n</code-example>');
-      expect(handler({}, 'example', 'test/url region-1 Some Title')).toEqual('<code-example title="Some Title">\nregion 1 contents\n</code-example>');
+    it('should add a header if specified', () => {
+      expect(handler({}, 'example', 'test/url region-1 \'Some Header\'')).toEqual('<code-example header="Some Header">\nregion 1 contents\n</code-example>');
+      expect(handler({}, 'example', 'test/url region-1 Some Header')).toEqual('<code-example header="Some Header">\nregion 1 contents\n</code-example>');
     });
 
     it('should contain the whole contents from the example file if an empty ("") region is specified', () => {
       expect(handler({}, 'example', 'test/url \'\'')).toEqual('<code-example>\nwhole file\n</code-example>');
-      expect(handler({}, 'example', 'test/url \'\' Some Title')).toEqual('<code-example title="Some Title">\nwhole file\n</code-example>');
+      expect(handler({}, 'example', 'test/url \'\' Some Header')).toEqual('<code-example header="Some Header">\nwhole file\n</code-example>');
     });
 
     it('should add in linenum attribute if specified', () => {

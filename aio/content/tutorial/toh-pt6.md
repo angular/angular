@@ -21,7 +21,7 @@ To make `HttpClient` available everywhere in the app:
 <code-example
   path="toh-pt6/src/app/app.module.ts"
   region="import-http-client"
-  title="src/app/app.module.ts (Http Client import)">
+  header="src/app/app.module.ts (Http Client import)">
 </code-example>
 
 * add it to the `@NgModule.imports` array
@@ -62,7 +62,7 @@ which you will create in a moment.
 <code-example 
   path="toh-pt6/src/app/app.module.ts" 
   region="import-in-mem-stuff" 
-  title="src/app/app.module.ts (In-memory Web API imports)">
+  header="src/app/app.module.ts (In-memory Web API imports)">
 </code-example>
 
 Add the `HttpClientInMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
@@ -80,7 +80,7 @@ that primes the in-memory database.
 The _Tour of Heroes_ sample creates such a class 
 `src/app/in-memory-data.service.ts` which has the following content:
 
-<code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" title="src/app/in-memory-data.service.ts" linenums="false"></code-example>
+<code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" header="src/app/in-memory-data.service.ts" linenums="false"></code-example>
 
 This file replaces `mock-heroes.ts`, which is now safe to delete.
 
@@ -96,7 +96,7 @@ Import some HTTP symbols that you'll need:
 <code-example
   path="toh-pt6/src/app/hero.service.ts" 
   region="import-httpclient" 
-  title="src/app/hero.service.ts (import HTTP symbols)">
+  header="src/app/hero.service.ts (import HTTP symbols)">
 </code-example>
 
 Inject `HttpClient` into the constructor in a private property called `http`.
@@ -132,7 +132,7 @@ as an `Observable<Hero[]>`.
 <code-example 
   path="toh-pt4/src/app/hero.service.ts" 
   region="getHeroes-1" 
-  title="src/app/hero.service.ts (getHeroes with RxJs 'of()')">
+  header="src/app/hero.service.ts (getHeroes with RxJs 'of()')">
 </code-example>
 
 Convert that method to use `HttpClient`
@@ -251,7 +251,7 @@ the number of the hero that you want to retrieve. For example, `api/heroes/11`.
 
 Add a `HeroService.getHero()` method to make that request:
 
-<code-example path="toh-pt6/src/app/hero.service.ts" region="getHero" title="src/app/hero.service.ts"></code-example>
+<code-example path="toh-pt6/src/app/hero.service.ts" region="getHero" header="src/app/hero.service.ts"></code-example>
 
 There are three significant differences from  `getHeroes()`.
 
@@ -272,12 +272,12 @@ the server.
 At the end of the hero detail template, add a save button with a `click` event
 binding that invokes a new component method named `save()`.
 
-<code-example path="toh-pt6/src/app/hero-detail/hero-detail.component.html" region="save" title="src/app/hero-detail/hero-detail.component.html (save)"></code-example>
+<code-example path="toh-pt6/src/app/hero-detail/hero-detail.component.html" region="save" header="src/app/hero-detail/hero-detail.component.html (save)"></code-example>
 
 Add the following `save()` method, which persists hero name changes using the hero service
 `updateHero()` method and then navigates back to the previous view.
 
-<code-example path="toh-pt6/src/app/hero-detail/hero-detail.component.ts" region="save" title="src/app/hero-detail/hero-detail.component.ts (save)"></code-example>
+<code-example path="toh-pt6/src/app/hero-detail/hero-detail.component.ts" region="save" header="src/app/hero-detail/hero-detail.component.ts (save)"></code-example>
 
 #### Add _HeroService.updateHero()_
 
@@ -288,7 +288,7 @@ on the server.
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="updateHero" 
-  title="src/app/hero.service.ts (update)">
+  header="src/app/hero.service.ts (update)">
 </code-example>
 
 The `HttpClient.put()` method takes three parameters
@@ -304,7 +304,7 @@ That header is in the `httpOptions` constant defined in the `HeroService`.
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="http-options"
-  title="src/app/hero.service.ts">
+  header="src/app/hero.service.ts">
 </code-example>
 
 Refresh the browser, change a hero name and save your change. Navigating to the previous view is implemented in the `save()` method defined in `HeroDetailComponent`.
@@ -318,12 +318,12 @@ element paired with an add button.
 Insert the following into the `HeroesComponent` template, just after
 the heading:
 
-<code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="add" title="src/app/heroes/heroes.component.html (add)"></code-example>
+<code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="add" header="src/app/heroes/heroes.component.html (add)"></code-example>
 
 In response to a click event, call the component's click handler and then
 clear the input field so that it's ready for another name.
 
-<code-example path="toh-pt6/src/app/heroes/heroes.component.ts" region="add" title="src/app/heroes/heroes.component.ts (add)"></code-example>
+<code-example path="toh-pt6/src/app/heroes/heroes.component.ts" region="add" header="src/app/heroes/heroes.component.ts (add)"></code-example>
 
 When the given name is non-blank, the handler creates a `Hero`-like object
 from the name (it's only missing the `id`) and passes it to the services `addHero()` method.
@@ -337,7 +337,7 @@ You'll write `HeroService.addHero` in the next section.
 
 Add the following `addHero()` method to the `HeroService` class.
 
-<code-example path="toh-pt6/src/app/hero.service.ts" region="addHero" title="src/app/hero.service.ts (addHero)"></code-example>
+<code-example path="toh-pt6/src/app/hero.service.ts" region="addHero" header="src/app/hero.service.ts (addHero)"></code-example>
 
 `HeroService.addHero()` differs from `updateHero` in two ways.
 
@@ -358,7 +358,7 @@ name in the repeated `<li>` element.
 
 The HTML for the list of heroes should look like this:
 
-<code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="list" title="src/app/heroes/heroes.component.html (list of heroes)"></code-example>
+<code-example path="toh-pt6/src/app/heroes/heroes.component.html" region="list" header="src/app/heroes/heroes.component.html (list of heroes)"></code-example>
 
 To position the delete button at the far right of the hero entry,
 add some CSS to the `heroes.component.css`.  You'll find that CSS
@@ -366,7 +366,7 @@ in the [final review code](#heroescomponent) below.
 
 Add the `delete()` handler to the component.
 
-<code-example path="toh-pt6/src/app/heroes/heroes.component.ts" region="delete" title="src/app/heroes/heroes.component.ts (delete)"></code-example>
+<code-example path="toh-pt6/src/app/heroes/heroes.component.ts" region="delete" header="src/app/heroes/heroes.component.ts (delete)"></code-example>
 
 Although the component delegates hero deletion to the `HeroService`,
 it remains responsible for updating its own list of heroes.
@@ -391,7 +391,7 @@ There's really nothing for the component to do with the `Observable` returned by
 
 Add a `deleteHero()` method to `HeroService` like this.
 
-<code-example path="toh-pt6/src/app/hero.service.ts" region="deleteHero" title="src/app/hero.service.ts (delete)"></code-example>
+<code-example path="toh-pt6/src/app/hero.service.ts" region="deleteHero" header="src/app/hero.service.ts (delete)"></code-example>
 
 Note that
 
@@ -420,7 +420,7 @@ Start by adding a `searchHeroes` method to the `HeroService`.
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="searchHeroes"
-  title="src/app/hero.service.ts">
+  header="src/app/hero.service.ts">
 </code-example>
 
 The method returns immediately with an empty array if there is no search term.
@@ -434,7 +434,7 @@ Open the `DashboardComponent` _template_ and
 Add the hero search element, `<app-hero-search>`, to the bottom of the `DashboardComponent` template.
 
 <code-example 
-  path="toh-pt6/src/app/dashboard/dashboard.component.html" title="src/app/dashboard/dashboard.component.html" linenums="false">
+  path="toh-pt6/src/app/dashboard/dashboard.component.html" header="src/app/dashboard/dashboard.component.html" linenums="false">
 </code-example>
 
 This template looks a lot like the `*ngFor` repeater in the `HeroesComponent` template.
@@ -456,7 +456,7 @@ The CLI generates the three `HeroSearchComponent` files and adds the component t
 
 Replace the generated `HeroSearchComponent` _template_ with a text box and a list of matching search results like this.
 
-<code-example path="toh-pt6/src/app/hero-search/hero-search.component.html" title="src/app/hero-search/hero-search.component.html"></code-example>
+<code-example path="toh-pt6/src/app/hero-search/hero-search.component.html" header="src/app/hero-search/hero-search.component.html"></code-example>
 
 Add private CSS styles to `hero-search.component.css`
 as listed in the [final code review](#herosearchcomponent) below.
@@ -487,7 +487,7 @@ do so in the component class.
 
 Replace the generated `HeroSearchComponent` class and metadata as follows.
 
-<code-example path="toh-pt6/src/app/hero-search/hero-search.component.ts" title="src/app/hero-search/hero-search.component.ts"></code-example>
+<code-example path="toh-pt6/src/app/hero-search/hero-search.component.ts" header="src/app/hero-search/hero-search.component.ts"></code-example>
 
 Notice the declaration of `heroes$` as an `Observable`
 <code-example 
@@ -589,15 +589,15 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
 
 <code-tabs>
   <code-pane 
-    title="hero.service.ts" 
+    header="hero.service.ts" 
     path="toh-pt6/src/app/hero.service.ts">
   </code-pane>
   <code-pane 
-    title="in-memory-data.service.ts"
+    header="in-memory-data.service.ts"
     path="toh-pt6/src/app/in-memory-data.service.ts">
   </code-pane>
   <code-pane 
-    title="app.module.ts" 
+    header="app.module.ts" 
     path="toh-pt6/src/app/app.module.ts">
   </code-pane>
 </code-tabs>
@@ -607,15 +607,15 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
 
 <code-tabs>
   <code-pane 
-    title="heroes/heroes.component.html" 
+    header="heroes/heroes.component.html" 
     path="toh-pt6/src/app/heroes/heroes.component.html">
   </code-pane>
   <code-pane 
-    title="heroes/heroes.component.ts" 
+    header="heroes/heroes.component.ts" 
     path="toh-pt6/src/app/heroes/heroes.component.ts">
   </code-pane>
   <code-pane 
-    title="heroes/heroes.component.css" 
+    header="heroes/heroes.component.css" 
     path="toh-pt6/src/app/heroes/heroes.component.css">
   </code-pane>
 </code-tabs>
@@ -625,11 +625,11 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
 
 <code-tabs>
   <code-pane 
-    title="hero-detail/hero-detail.component.html"
+    header="hero-detail/hero-detail.component.html"
     path="toh-pt6/src/app/hero-detail/hero-detail.component.html">
   </code-pane>
   <code-pane 
-    title="hero-detail/hero-detail.component.ts" 
+    header="hero-detail/hero-detail.component.ts" 
     path="toh-pt6/src/app/hero-detail/hero-detail.component.ts">
   </code-pane>
 </code-tabs>
@@ -639,7 +639,7 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
 
 <code-tabs>
   <code-pane 
-    title="src/app/dashboard/dashboard.component.html"
+    header="src/app/dashboard/dashboard.component.html"
     path="toh-pt6/src/app/dashboard/dashboard.component.html">
   </code-pane>
 </code-tabs>
@@ -649,15 +649,15 @@ Here are the code files discussed on this page (all in the `src/app/` folder).
 
 <code-tabs>
   <code-pane 
-    title="hero-search/hero-search.component.html"
+    header="hero-search/hero-search.component.html"
     path="toh-pt6/src/app/hero-search/hero-search.component.html">
   </code-pane>
   <code-pane 
-    title="hero-search/hero-search.component.ts"
+    header="hero-search/hero-search.component.ts"
     path="toh-pt6/src/app/hero-search/hero-search.component.ts">
   </code-pane>
   <code-pane 
-    title="hero-search/hero-search.component.css"
+    header="hero-search/hero-search.component.css"
     path="toh-pt6/src/app/hero-search/hero-search.component.css">
   </code-pane>
 </code-tabs>
