@@ -617,22 +617,21 @@
         }
       ]
     },
-
-    {
-      "title": "API",
-      "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
-      "url": "api"
-    },
     {
       "title": "CLI Commands",
       "tooltip": "Angular CLI command reference.",
       "children": [
         {
           "title": "Using the CLI",
-          "tooltip": "An overview of how to use the CLI tool",
+          "tooltip": "An overview of how to use the CLI tool.",
           "url": "cli"
         }
       ]
+    },
+    {
+      "title": "API",
+      "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
+      "url": "api"
     },
     {
       "url": "guide/change-log",
