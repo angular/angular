@@ -3,11 +3,11 @@
 Welcome to Angular! Angular helps you build modern applications for the web, mobile, or desktop.  
 
 This guide shows you how to build and run a simple Angular
-app, using the Angular CLI to accelerate development, 
+app, using the [Angular CLI](cli) to accelerate development, 
 while adhering to the [Style Guide](guide/styleguide) recommendations that
 benefit _every_ Angular project.
 
-The end of this guide includes a link to download an example of the final code. It also recommends next steps for learning and using Angular. 
+The end of this guide includes a link to download a copy of the app that you create in this Getting Started. It also recommends next steps for learning and using Angular. 
 
 
 {@a devenv}
@@ -20,16 +20,18 @@ Before you begin, make sure your development environment includes `Node.js®` an
 
 Angular requires `Node.js` version 8.x or 10.x.
 
-* To get `Node.js`, go to [nodejs.org](https://nodejs.org) and download the installer.
-
 * To check your version, run `node -v` in a terminal/console window.
+
+* To get `Node.js`, go to [nodejs.org](https://nodejs.org), download the installer, and follow the instructions on that site.
+
+
 
 
 ### npm package manager
 
 Angular, the Angular CLI, and Angular apps depend upon features and functionality provided by libraries that are available as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm). To download and install npm packages, you must have an npm package manager. 
 
-This Quick Start uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with Node.js by default. 
+This Quick Start uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default. 
 
 To check that you have `npm` installed, run `npm -v` in a terminal/console window.
 
@@ -45,7 +47,7 @@ that makes it easy to create a project, add files, and perform a variety of ongo
 
 Install the Angular CLI globally. 
 
-Open a terminal window, and enter the following command to install the CLI using the `npm` package manager.
+To install the CLI using the `npm` package manager, open a terminal window and enter the following command:
 
 
 <code-example language="sh" class="code-shell">
