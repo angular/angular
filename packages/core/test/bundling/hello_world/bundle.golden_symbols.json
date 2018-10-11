@@ -39,6 +39,9 @@
     "name": "HEADER_OFFSET"
   },
   {
+    "name": "HOST_NATIVE"
+  },
+  {
     "name": "HOST_NODE"
   },
   {
@@ -49,6 +52,9 @@
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
+    "name": "NATIVE"
   },
   {
     "name": "NEXT"
@@ -225,9 +231,6 @@
     "name": "getComponentDef"
   },
   {
-    "name": "getContainerNode"
-  },
-  {
     "name": "getContainerRenderParent"
   },
   {
@@ -241,6 +244,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getLContainer"
   },
   {
     "name": "getLNode"
