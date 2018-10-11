@@ -159,9 +159,6 @@
     "name": "RecordViewTuple"
   },
   {
-    "name": "Renderer2"
-  },
-  {
     "name": "RendererStyleFlags3"
   },
   {
@@ -655,9 +652,6 @@
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
-  },
-  {
-    "name": "getOrCreateRenderer2"
   },
   {
     "name": "getOrCreateTView"

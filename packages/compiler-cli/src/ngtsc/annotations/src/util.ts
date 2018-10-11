@@ -71,9 +71,6 @@ export function getConstructorDependencies(
           case 'Injector':
             resolved = R3ResolvedDependencyType.Injector;
             break;
-          case 'Renderer2':
-            resolved = R3ResolvedDependencyType.Renderer2;
-            break;
           default:
             // Leave as a Token or Attribute.
         }

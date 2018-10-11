@@ -8,7 +8,9 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
+import {R3_RENDERER2_FACTORY} from '../ivy_switch/runtime/index';
 import {ViewEncapsulation} from '../metadata/view';
+
 
 /**
  * @deprecated Use `RendererType2` (and `Renderer2`) instead.
@@ -21,7 +23,7 @@ export class RenderComponentType {
 }
 
 /**
- * @deprecated Debug info is handeled internally in the view engine now.
+ * @deprecated Debug info is handled internally in the view engine now.
  */
 export abstract class RenderDebugInfo {
   abstract get injector(): Injector;
@@ -366,4 +368,7 @@ export abstract class Renderer2 {
   abstract listen(
       target: 'window'|'document'|'body'|any, eventName: string,
       callback: (event: any) => boolean | void): () => void;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__: () => Renderer2 = () => R3_RENDERER2_FACTORY();
 }
