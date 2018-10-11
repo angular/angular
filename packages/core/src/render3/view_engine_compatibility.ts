@@ -18,17 +18,17 @@ import {Renderer2} from '../render/api';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {NodeInjector, getParentInjectorLocation, getParentInjectorView} from './di';
-import {_getViewData, addToViewTree, createEmbeddedViewAndNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentTNode, getRenderer, renderEmbeddedTemplate} from './instructions';
-import {LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
+import {_getViewData, addToViewTree, createEmbeddedViewAndNode, createLContainer, getPreviousOrParentTNode, getRenderer, renderEmbeddedTemplate} from './instructions';
+import {ACTIVE_INDEX, LContainer, NATIVE, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {RenderFlags} from './interfaces/definition';
 import {InjectorLocationFlags} from './interfaces/injector';
-import {LContainerNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
-import {getLNode, isComponent} from './util';
+import {getLNode, isComponent, isLContainer} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -122,13 +122,12 @@ export function createTemplateRef<T>(
     };
   }
 
-
-  const hostNode = getLNode(hostTNode, hostView);
+  const hostContainer: LContainer = hostView[hostTNode.index];
   ngDevMode && assertNodeType(hostTNode, TNodeType.Container);
   ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
   return new R3TemplateRef(
       hostView, createElementRef(ElementRefToken, hostTNode, hostView), hostTNode.tViews as TView,
-      getRenderer(), hostNode.data ![QUERIES], hostTNode.injectorIndex);
+      getRenderer(), hostContainer[QUERIES], hostTNode.injectorIndex);
 }
 
 let R3ViewContainerRef: {
@@ -241,8 +240,8 @@ export function createContainerRef(
 
         insertView(lView, this._lContainer, this._hostView, adjustedIdx, this._hostTNode.index);
 
-        const container = this._getHostNode().dynamicLContainerNode !;
-        const beforeNode = getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], container);
+        const beforeNode =
+            getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], this._lContainer[NATIVE]);
         addRemoveViewFromContainer(lView, true, beforeNode);
 
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
@@ -283,25 +282,27 @@ export function createContainerRef(
         }
         return index;
       }
-
-      private _getHostNode() { return getLNode(this._hostTNode, this._hostView); }
     };
   }
 
-  const hostLNode = getLNode(hostTNode, hostView);
   ngDevMode && assertNodeOfPossibleTypes(
                    hostTNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
 
-  const lContainer = createLContainer(hostView, true);
-  const comment = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
-  const lContainerNode: LContainerNode =
-      createLNodeObject(TNodeType.Container, comment, lContainer);
+  let lContainer: LContainer;
+  const slotValue = hostView[hostTNode.index];
+  if (isLContainer(slotValue)) {
+    // If the host is a container, we don't need to create a new LContainer
+    lContainer = slotValue;
+    lContainer[ACTIVE_INDEX] = -1;
+  } else {
+    const comment = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
+    ngDevMode && ngDevMode.rendererCreateComment++;
+    hostView[hostTNode.index] = lContainer =
+        createLContainer(slotValue, hostTNode, hostView, comment, true);
 
-  lContainer[RENDER_PARENT] = getRenderParent(hostTNode, hostView);
-
-  appendChild(comment, hostTNode, hostView);
-  hostLNode.dynamicLContainerNode = lContainerNode;
-  addToViewTree(hostView, hostTNode.index as number, lContainer);
+    appendChild(comment, hostTNode, hostView);
+    addToViewTree(hostView, hostTNode.index as number, lContainer);
+  }
 
   return new R3ViewContainerRef(lContainer, hostTNode, hostView);
 }

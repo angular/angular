@@ -8,11 +8,13 @@
 
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, getTNode, load, loadElement, resetComponentState} from './instructions';
-import {RENDER_PARENT} from './interfaces/container';
+import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
-import {stringify} from './util';
+import {getLNode, isLContainer, stringify} from './util';
+
 
 /**
  * A list of flags to encode the i18n instructions used to translate the template.
@@ -245,9 +247,7 @@ function generateMappingInstructions(
   return partIndex;
 }
 
-// TODO: Remove LNode arg when we remove dynamicContainerNode
-function appendI18nNode(
-    node: LNode, tNode: TNode, parentTNode: TNode, previousTNode: TNode): TNode {
+function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode): TNode {
   if (ngDevMode) {
     ngDevMode.rendererMoveNode++;
   }
@@ -272,11 +272,13 @@ function appendI18nNode(
     }
   }
 
-  appendChild(node.native, tNode, viewData);
+  const native = getLNode(tNode, viewData).native;
+  appendChild(native, tNode, viewData);
 
-  // Template containers also have a comment node for the `ViewContainerRef` that should be moved
-  if (tNode.type === TNodeType.Container && node.dynamicLContainerNode) {
-    appendChild(node.dynamicLContainerNode.native, tNode, viewData);
+  const slotValue = viewData[tNode.index];
+  if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
+    // Nodes that inject ViewContainerRef also have a comment node that should be moved
+    appendChild(slotValue[NATIVE], tNode, viewData);
   }
 
   return tNode;
@@ -327,20 +329,16 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
     const instruction = instructions[i] as number;
     switch (instruction & I18nInstructions.InstructionMask) {
       case I18nInstructions.Element:
-        const elementIndex = instruction & I18nInstructions.IndexMask;
-        const element: LNode = load(elementIndex);
-        const elementTNode = getTNode(elementIndex);
-        localPreviousTNode =
-            appendI18nNode(element, elementTNode, localParentTNode, localPreviousTNode);
+        const elementTNode = getTNode(instruction & I18nInstructions.IndexMask);
+        localPreviousTNode = appendI18nNode(elementTNode, localParentTNode, localPreviousTNode);
         localParentTNode = elementTNode;
         break;
       case I18nInstructions.Expression:
       case I18nInstructions.TemplateRoot:
       case I18nInstructions.Any:
         const nodeIndex = instruction & I18nInstructions.IndexMask;
-        const node: LNode = load(nodeIndex);
         localPreviousTNode =
-            appendI18nNode(node, getTNode(nodeIndex), localParentTNode, localPreviousTNode);
+            appendI18nNode(getTNode(nodeIndex), localParentTNode, localPreviousTNode);
         break;
       case I18nInstructions.Text:
         if (ngDevMode) {
@@ -352,11 +350,9 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         // Create text node at the current end of viewData. Must subtract header offset because
         // createNodeAtIndex takes a raw index (not adjusted by header offset).
         adjustBlueprintForNewNode(viewData);
-        const lastNodeIndex = viewData.length - 1 - HEADER_OFFSET;
-        const textTNode =
-            createNodeAtIndex(lastNodeIndex, TNodeType.Element, textRNode, null, null);
-        localPreviousTNode = appendI18nNode(
-            loadElement(lastNodeIndex), textTNode, localParentTNode, localPreviousTNode);
+        const textTNode = createNodeAtIndex(
+            viewData.length - 1 - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
+        localPreviousTNode = appendI18nNode(textTNode, localParentTNode, localPreviousTNode);
         resetComponentState();
         break;
       case I18nInstructions.CloseNode:
@@ -368,15 +364,18 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
           ngDevMode.rendererRemoveNode++;
         }
         const removeIndex = instruction & I18nInstructions.IndexMask;
-        const removedNode: LNode|LContainerNode = load(removeIndex);
+        const removedNode: LNode|LContainerNode = loadElement(removeIndex);
         const removedTNode = getTNode(removeIndex);
         removeChild(removedTNode, removedNode.native || null, viewData);
 
-        // For template containers we also need to remove their `ViewContainerRef` from the DOM
-        if (removedTNode.type === TNodeType.Container && removedNode.dynamicLContainerNode) {
-          removeChild(removedTNode, removedNode.dynamicLContainerNode.native || null, viewData);
+        const slotValue = load(removeIndex) as LNode | LContainer | StylingContext;
+        if (isLContainer(slotValue)) {
+          const lContainer = slotValue as LContainer;
+          if (removedTNode.type !== TNodeType.Container) {
+            removeChild(removedTNode, lContainer[NATIVE] || null, viewData);
+          }
           removedTNode.detached = true;
-          removedNode.dynamicLContainerNode.data[RENDER_PARENT] = null;
+          lContainer[RENDER_PARENT] = null;
         }
         break;
     }

@@ -8,8 +8,10 @@
 import './ng_dev_mode';
 
 import {assertEqual} from './assert';
+import {ACTIVE_INDEX, HOST_NATIVE, LContainer} from './interfaces/container';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
+import {StylingContext, StylingIndex} from './interfaces/styling';
 import {CONTEXT, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
 
 /**
@@ -390,6 +392,26 @@ function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
   return count ? (startIndex + count) : -1;
 }
 
-export function readElementValue(value: LElementNode | any[]): LElementNode {
-  return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
+/**
+ * Takes the value of a slot in `LViewData` and returns the element node.
+ *
+ * Normally, element nodes are stored flat, but if the node has styles/classes on it,
+ * it might be wrapped in a styling context. Or if that node has a directive that injects
+ * ViewContainerRef, it may be wrapped in an LContainer.
+ *
+ * @param value The initial value in `LViewData`
+ */
+export function readElementValue(value: LElementNode | StylingContext | LContainer): LElementNode {
+  if (Array.isArray(value)) {
+    if (typeof value[ACTIVE_INDEX] === 'number') {
+      // This is an LContainer. It may also have a styling context.
+      value = value[HOST_NATIVE] as LElementNode | StylingContext;
+      return Array.isArray(value) ? value[StylingIndex.ElementPosition] ! : value;
+    } else {
+      // This is a StylingContext, which stores the element node at 0.
+      return value[StylingIndex.ElementPosition] as LElementNode;
+    }
+  } else {
+    return value;  // Regular LNode is stored here
+  }
 }
