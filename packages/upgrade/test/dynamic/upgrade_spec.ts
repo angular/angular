@@ -11,6 +11,7 @@ import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
+import {$EXCEPTION_HANDLER} from '@angular/upgrade/src/common/constants';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
 
 import {$apply, $digest, html, multiTrim, withEachNg1Version} from './test_helpers';
@@ -318,7 +319,7 @@ withEachNg1Version(() => {
       it('should bind properties, events', async(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module =
-               angular.module('ng1', []).value('$exceptionHandler', (err: any) => { throw err; });
+               angular.module('ng1', []).value($EXCEPTION_HANDLER, (err: any) => { throw err; });
 
            ng1Module.run(($rootScope: any) => {
              $rootScope.name = 'world';
@@ -2904,7 +2905,7 @@ withEachNg1Version(() => {
              // Define `ng1Module`
              const ng1Module =
                  angular.module('ng1Module', [])
-                     .value('$exceptionHandler', (error: Error) => errorMessage = error.message)
+                     .value($EXCEPTION_HANDLER, (error: Error) => errorMessage = error.message)
                      .component('ng1', ng1Component)
                      .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
