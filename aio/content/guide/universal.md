@@ -538,7 +538,7 @@ inject it into the service, and prepend the origin to the request URL.
 
 Start by changing the `HeroService` constructor to take a second `origin` parameter that is optionally injected via the `APP_BASE_HREF` token.
 
-<code-example path="universal/src/app/hero.service.ts" region="ctor" title="src/app/hero.service.ts (constructor with optional origin)">
+<code-example path="universal/src/app/hero.service.ts" region="ctor" header="src/app/hero.service.ts (constructor with optional origin)">
 </code-example>
 
 The constructor uses the `@Optional()` directive to prepend the origin to `heroesUrl` _if it exists_.
@@ -555,7 +555,7 @@ You don't provide `APP_BASE_HREF` in the browser version, so `heroesUrl` remains
 
 The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 
-<code-example path="universal/server.ts" title="server.ts" region="ngExpressEngine">
+<code-example path="universal/server.ts" header="server.ts" region="ngExpressEngine">
 </code-example>
 
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModuleFactory()` function which turns a client's requests into server-rendered HTML pages.
@@ -602,7 +602,7 @@ Because we use routing, we can easily recognize the three types of requests and 
 A Node Express server is a pipeline of middleware that filters and processes URL requests one after the other. 
 You configure the Node Express server pipeline with calls to `app.get()` like this one for data requests.
 
-<code-example path="universal/server.ts" title="server.ts (data URL)" region="data-request" linenums="false">
+<code-example path="universal/server.ts" header="server.ts (data URL)" region="data-request" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -617,7 +617,7 @@ You configure the Node Express server pipeline with calls to `app.get()` like th
 
 The following code filters for request URLs with no extensions and treats them as navigation requests.
 
-<code-example path="universal/server.ts" title="server.ts (navigation)" region="navigation-request" linenums="false">
+<code-example path="universal/server.ts" header="server.ts (navigation)" region="navigation-request" linenums="false">
 </code-example>
 
 ### Serving static files safely
@@ -629,7 +629,7 @@ To ensure that clients can only download the files that they are permitted to se
 
 The following Node Express code routes all remaining requests to `/dist`, and returns a `404 - NOT FOUND` error if the file isn't found.
 
-<code-example path="universal/server.ts" title="server.ts (static files)" region="static" linenums="false">
+<code-example path="universal/server.ts" header="server.ts (static files)" region="static" linenums="false">
 </code-example>
 
 

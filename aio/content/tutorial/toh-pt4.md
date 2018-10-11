@@ -34,7 +34,7 @@ The command generates skeleton `HeroService` class in `src/app/hero.service.ts`
 The `HeroService` class should look like the following example.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
- title="src/app/hero.service.ts (new service)" linenums="false">
+ header="src/app/hero.service.ts (new service)" linenums="false">
 </code-example>
 
 ### _@Injectable()_ services
@@ -110,7 +110,7 @@ Open the `HeroesComponent` class file.
 Delete the `HEROES` import, because you won't need that anymore.
 Import the `HeroService` instead.
 
-<code-example path="toh-pt4/src/app/heroes/heroes.component.ts" title="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
+<code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
 Replace the definition of the `heroes` property with a simple declaration.
@@ -197,7 +197,7 @@ In this tutorial, you'll simulate getting data from the server with the RxJS `of
 Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" 
-title="src/app/hero.service.ts (Observable imports)" region="import-observable">
+header="src/app/hero.service.ts (Observable imports)" region="import-observable">
 </code-example>
 
 Replace the `getHeroes` method with this one.
@@ -224,11 +224,11 @@ Find the `getHeroes` method and replace it with the following code
 
 <code-tabs>
 
-  <code-pane title="heroes.component.ts (Observable)" 
+  <code-pane header="heroes.component.ts (Observable)" 
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-  <code-pane title="heroes.component.ts (Original)" 
+  <code-pane header="heroes.component.ts (Original)" 
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
 
@@ -272,7 +272,7 @@ The CLI creates the component files in the `src/app/messages` folder and declare
 Modify the `AppComponent` template to display the generated `MessagesComponent`
 
 <code-example
-  title = "/src/app/app.component.html"
+  header = "/src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
 </code-example>
 
@@ -289,7 +289,7 @@ Use the CLI to create the `MessageService` in `src/app`.
 Open `MessageService` and replace its contents with the following.
 
 <code-example
-  title = "/src/app/message.service.ts"
+  header = "/src/app/message.service.ts"
   path="toh-pt4/src/app/message.service.ts">
 </code-example>
 
@@ -301,7 +301,7 @@ The service exposes its cache of `messages` and two methods: one to `add()` a me
 Re-open the `HeroService` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/hero.service.ts (import MessageService)"
+  header = "/src/app/hero.service.ts (import MessageService)"
   path="toh-pt4/src/app/hero.service.ts" region="import-message-service">
 </code-example>
 
@@ -335,7 +335,7 @@ including the message sent by the `HeroService` when it fetches heroes.
 Open `MessagesComponent` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/messages/messages.component.ts (import MessageService)"
+  header = "/src/app/messages/messages.component.ts (import MessageService)"
   path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
 </code-example>
 
@@ -360,7 +360,7 @@ Angular only binds to _public_ component properties.
 Replace the CLI-generated `MessagesComponent` template with the following.
 
 <code-example
-  title = "src/app/messages/messages.component.html"
+  header = "src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
 </code-example>
 
@@ -390,35 +390,35 @@ Here are the code files discussed on this page and your app should look like thi
 
 <code-tabs>
 
-  <code-pane title="src/app/hero.service.ts" 
+  <code-pane header="src/app/hero.service.ts" 
   path="toh-pt4/src/app/hero.service.ts">
   </code-pane>
 
-  <code-pane title="src/app/message.service.ts" 
+  <code-pane header="src/app/message.service.ts" 
   path="toh-pt4/src/app/message.service.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.ts"
+  <code-pane header="src/app/heroes/heroes.component.ts"
   path="toh-pt4/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.ts"
+  <code-pane header="src/app/messages/messages.component.ts"
   path="toh-pt4/src/app/messages/messages.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.html"
+  <code-pane header="src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.css"
+  <code-pane header="src/app/messages/messages.component.css"
   path="toh-pt4/src/app/messages/messages.component.css">
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts"
+  <code-pane header="src/app/app.module.ts"
   path="toh-pt4/src/app/app.module.ts">
   </code-pane>
 
-  <code-pane title="src/app/app.component.html"
+  <code-pane header="src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
   </code-pane>
 

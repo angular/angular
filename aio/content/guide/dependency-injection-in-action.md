@@ -21,7 +21,7 @@ constructor, and lets the framework provide them.
 
 The following example shows that `AppComponent` declares its dependence on `LoggerService` and `UserContext`.
 
-<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
@@ -30,7 +30,7 @@ The following example shows that `AppComponent` declares its dependence on `Logg
 `UserService`, another service that gathers information about a particular user.
 
 
-<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" title="user-context.service.ts (injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (injection)" linenums="false">
 
 </code-example>
 
@@ -68,7 +68,7 @@ by providing that service *at the sub-root component for that branch*.
 This example shows how to make a different instance of `HeroService` available to `HeroesBaseComponent`
 by adding it to the `providers` array of the `@Component()` decorator of the sub-component.
 
-<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" header="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 
 </code-example>
 
@@ -103,7 +103,7 @@ This is called *sandboxing* because each service and component instance has its 
 
 In this example, `HeroBiosComponent` presents three instances of `HeroBioComponent`.
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple" title="ap/hero-bios.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple" header="ap/hero-bios.component.ts">
 
 </code-example>
 
@@ -111,7 +111,7 @@ In this example, `HeroBiosComponent` presents three instances of `HeroBioCompone
 Each `HeroBioComponent` can edit a single hero's biography.
 `HeroBioComponent` relies on `HeroCacheService` to fetch, cache, and perform other persistence operations on that hero.
 
-<code-example path="dependency-injection-in-action/src/app/hero-cache.service.ts" region="service" title="src/app/hero-cache.service.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-cache.service.ts" region="service" header="src/app/hero-cache.service.ts">
 
 </code-example>
 
@@ -122,7 +122,7 @@ as they'd be competing with each other to determine which hero to cache.
 Instead, each `HeroBioComponent` gets its *own* `HeroCacheService` instance
 by listing `HeroCacheService` in its metadata `providers` array.
 
-<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="component" title="src/app/hero-bio.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="component" header="src/app/hero-bio.component.ts">
 
 </code-example>
 
@@ -179,13 +179,13 @@ that parent component becomes the host. The following example covers this second
 These decorators can be used individually or together, as shown in the example.
 This `HeroBiosAndContactsComponent` is a revision of `HeroBiosComponent` which you looked at [above](guide/dependency-injection-in-action#hero-bios-component).
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" title="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" header="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
 
 </code-example>
 
 Focus on the template:
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" title="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" header="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
 
 </code-example>
 
@@ -193,7 +193,7 @@ Now there's a new `<hero-contact>` element between the `<hero-bio>` tags.
 Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` into the `HeroBioComponent` view,
 placing it in the `<ng-content>` slot of the `HeroBioComponent` template.
 
-<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" title="src/app/hero-bio.component.ts (template)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (template)" linenums="false">
 
 </code-example>
 
@@ -206,13 +206,13 @@ The result is shown below, with the hero's telephone number from `HeroContactCom
 
 Here's `HeroContactComponent`, which demonstrates the qualifying decorators.
 
-<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" title="src/app/hero-contact.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" header="src/app/hero-contact.component.ts">
 
 </code-example>
 
 Focus on the constructor parameters.
 
-<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" title="src/app/hero-contact.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" header="src/app/hero-contact.component.ts" linenums="false">
 
 </code-example>
 
@@ -256,7 +256,7 @@ the app throws an exception when it cannot find the required logger at the host 
 
 Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs. The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`. 
 
-<code-example path="dependency-injection-in-action/src/app/storage.service.ts" title="src/app/storage.service.ts">
+<code-example path="dependency-injection-in-action/src/app/storage.service.ts" header="src/app/storage.service.ts">
 
 </code-example>
 
@@ -266,7 +266,7 @@ The `factory` function returns the `localStorage` property that is attached to t
 
 Providers can also be scoped by injector through constructor parameter decorators. The following example overrides the `BROWSER_STORAGE` token in the `Component` class `providers` with the `sessionStorage` browser API. The same `BrowserStorageService` is injected twice in the constructor, decorated with `@Self` and `@SkipSelf` to define which injector handles the provider dependency.
 
-<code-example path="dependency-injection-in-action/src/app/storage.component.ts" title="src/app/storage.component.ts">
+<code-example path="dependency-injection-in-action/src/app/storage.component.ts" header="src/app/storage.component.ts">
 
 </code-example>
 
@@ -283,7 +283,7 @@ As a result, you might need to access a component's DOM element.
 To illustrate, here's a simplified version of `HighlightDirective` from
 the [Attribute Directives](guide/attribute-directives) page.
 
-<code-example path="dependency-injection-in-action/src/app/highlight.directive.ts" title="src/app/highlight.directive.ts">
+<code-example path="dependency-injection-in-action/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts">
 
 </code-example>
 
@@ -297,7 +297,7 @@ whose `nativeElement` property exposes the DOM element for the directive to mani
 The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
 first without a value (yielding the default color) and then with an assigned color value.
 
-<code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" title="src/app/app.component.html (highlight)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" header="src/app/app.component.html (highlight)" linenums="false">
 
 </code-example>
 
@@ -323,7 +323,7 @@ Angular passes this token to the injector and assigns the result to the paramete
 The following is a typical example.
 
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
 
 </code-example>
 
@@ -366,7 +366,7 @@ It's visually simple: a few properties and the logs produced by a logger.
 The code behind it customizes how and where the DI framework provides dependencies.
 The use cases illustrate different ways to use the [*provide* object literal](guide/dependency-injection-providers#provide) to associate a definition object with a DI token. 
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" title="hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" header="hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -384,7 +384,7 @@ You can also use a value provider in a unit test to provide mock data in place o
 
 The `HeroOfTheMonthComponent` example has two value providers.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -405,7 +405,7 @@ The title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file as shown below.
 You can't use a variable whose value will be defined later.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -425,7 +425,7 @@ extend the default class, or emulate the behavior of the real class in a test ca
 
 The following code shows two examples in `HeroOfTheMonthComponent`.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -446,7 +446,7 @@ Components outside the tree continue to receive the original `LoggerService` ins
 
 `DateLoggerService` inherits from `LoggerService`; it appends the current date/time to each message:
 
-<code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" title="src/app/date-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" header="src/app/date-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -458,7 +458,7 @@ The `useExisting` provider key lets you map one token to another.
 In effect, the first token is an *alias* for the service associated with the second token,
 creating two ways to access the same service object.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -470,13 +470,13 @@ You might want to shrink that API surface to just the members you actually need.
 In this example, the `MinimalLogger` [class-interface](#class-interface) reduces the API to two members:
 
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
 The following example puts `MinimalLogger` to use in a simplified version of `HeroOfTheMonthComponent`.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" title="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
 
 </code-example>
 
@@ -507,7 +507,7 @@ This is illustrated in the following image, which displays the logging date.
 The `useFactory` provider key lets you create a dependency object by calling a factory function,
 as in the following example.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
@@ -530,7 +530,7 @@ The `runnersUpFactory()` returns the *provider factory function*, which can use 
 the passed-in state value and the injected services `Hero` and `HeroService`.
 
 
-<code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" title="runners-up.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" header="runners-up.ts (excerpt)" linenums="false">
 
 </code-example>
 
@@ -570,13 +570,13 @@ That's the subject of the next section.
 The previous *Hero of the Month* example used the `MinimalLogger` class
 as the token for a provider of `LoggerService`.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
 `MinimalLogger` is an abstract class.
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -604,7 +604,7 @@ Using a class as an interface gives you the characteristics of an interface in a
 To minimize memory cost, however, the class should have *no implementation*.
 The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for a constructor function.
 
-<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" title="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
@@ -633,13 +633,13 @@ another token that happens to have the same name.
 You encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
 You created the `TITLE` token like this:
 
-<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" title="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
@@ -667,7 +667,7 @@ The `HeroesBaseComponent` can stand on its own.
 It demands its own instance of `HeroService` to get heroes
 and displays them in the order they arrive from the database.
 
-<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="heroes-base" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="heroes-base" header="src/app/sorted-heroes.component.ts (HeroesBaseComponent)">
 
 </code-example>
 
@@ -693,7 +693,7 @@ You must provide the `HeroService` again for *this* component,
 then pass it down to the base class inside the constructor.
 
 
-<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="sorted-heroes" title="src/app/sorted-heroes.component.ts (SortedHeroesComponent)">
+<code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="sorted-heroes" header="src/app/sorted-heroes.component.ts (SortedHeroesComponent)">
 
 </code-example>
 
@@ -731,7 +731,7 @@ appear *above* the class definition.
 
 Break the circularity with `forwardRef`.
 
-<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" title="parent-finder.component.ts (AlexComponent providers)" linenums="false">
+<code-example path="dependency-injection-in-action/src/app/parent-finder.component.ts" region="alex-providers" header="parent-finder.component.ts (AlexComponent providers)" linenums="false">
 
 </code-example>
 

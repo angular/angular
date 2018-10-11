@@ -142,19 +142,19 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
 <code-tabs>
 
-  <code-pane title="popup.component.ts" path="elements/src/app/popup.component.ts">
+  <code-pane header="popup.component.ts" path="elements/src/app/popup.component.ts">
 
   </code-pane>
 
-  <code-pane title="popup.service.ts" path="elements/src/app/popup.service.ts">
+  <code-pane header="popup.service.ts" path="elements/src/app/popup.service.ts">
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="elements/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="elements/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="app.component.ts" path="elements/src/app/app.component.ts">
+  <code-pane header="app.component.ts" path="elements/src/app/app.component.ts">
 
   </code-pane>
 </code-tabs>
