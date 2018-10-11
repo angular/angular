@@ -46,3 +46,7 @@ build --workspace_status_command=./tools/bazel-stamp-vars.sh
 # Make TypeScript and Angular compilation fast, by keeping a few copies of the compiler
 # running as daemons, and cache SourceFile AST's to reduce parse time.
 build --strategy=TypeScriptCompile=worker --strategy=AngularTemplateCompile=worker
+
+# Use the new "ngtsc" compiler strategy. We don't want to compile with Ivy nor with the
+# legacy compiler that doesn't handle `providedIn` properly.
+build --define=compile=local

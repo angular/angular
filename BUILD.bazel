@@ -1,14 +1,5 @@
 package(default_visibility = ["//visibility:public"])
 
-# TODO(jelbourn): figure out if these workarounds are still needed
-
-# TODO: Replace with fine-grained node_modules using `npm_install` / `yarn_install`.
-# TODO: See https://github.com/bazelbuild/rules_nodejs/wiki#migrating-to-rules_nodejs-013
-alias(
-  name = "node_modules",
-  actual = "@npm//:node_modules",
-)
-
 # Glob pattern that matches all Angular testing bundles.
 ANGULAR_TESTING = [
   "node_modules/@angular/*/bundles/*-testing.umd.js",

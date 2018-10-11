@@ -28,15 +28,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/bazel@7.0.0-rc.0":
-  version "7.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.0.0-rc.0.tgz#3d624c7a2c9ec9a2a00a8cdbb6d1d1137f94fdf8"
-  integrity sha512-yO9y1Fvveenlp3MYQglfAwFJObA0RZTO1JQEYzh4OVDifw67pGMR0c9tED5U1Gh0HxTjzxn5zVlqLwQbCgTJAw==
-  dependencies:
-    "@bazel/typescript" "^0.15.0"
-    "@types/node" "6.0.84"
-    protobufjs "5.0.0"
-
 "@angular/common@7.0.0-rc.0":
   version "7.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@angular/common/-/common-7.0.0-rc.0.tgz#4872a430838653cbddfba759ccf1f9332c065171"
@@ -253,15 +244,6 @@
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.3.1.tgz#5f02f208f138e581bbdb1534d5c013d7a0ac9799"
   integrity sha1-XwLyCPE45YG72xU01cAT16Csl5k=
-
-"@bazel/typescript@^0.15.0":
-  version "0.15.3"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.15.3.tgz#5c32b3bf664b268f9ffb634b86f40004a50e7ef9"
-  integrity sha512-YWKX1cLGjWx2OdYBU0WeV7DlemlEaXuMcPKkeB3p2D7jiso5YYHaaOevWOQVJXKS4E/fbjd8nw7RGtRWsX8Myg==
-  dependencies:
-    protobufjs "5.0.0"
-    tsickle "0.25.x"
-    tsutils "2.20.0"
 
 "@bazel/typescript@^0.19.1":
   version "0.19.1"
@@ -760,11 +742,6 @@
   version "10.11.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.4.tgz#e8bd933c3f78795d580ae41d86590bfc1f4f389d"
   integrity sha512-ojnbBiKkZFYRfQpmtnnWTMw+rzGp/JiystjluW9jgN3VzRwilXddJ6aGQ9V/7iuDG06SBgn7ozW9k3zcAnYjYQ==
-
-"@types/node@6.0.84":
-  version "6.0.84"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.84.tgz#193ffe5a9f42864d425ffd9739d95b753c6a1eab"
-  integrity sha512-1SvEazClhUBRNroJM3oB3xf3u2r6xGmHDGbdigqNPHvNKLl8/BtATgO9eC04ZLuovpSh0B20BF1QJxdi+qmTlg==
 
 "@types/node@^6.0.46":
   version "6.0.118"
@@ -9728,7 +9705,7 @@ source-map-support@0.5.9, source-map-support@^0.5.0, source-map-support@^0.5.9:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
 
-source-map-support@^0.4.0, source-map-support@^0.4.15, source-map-support@^0.4.2, source-map-support@~0.4.0:
+source-map-support@^0.4.0, source-map-support@^0.4.15, source-map-support@~0.4.0:
   version "0.4.18"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.18.tgz#0286a6de8be42641338594e97ccea75f0a2c585f"
   integrity sha512-try0/JqxPLF9nOjvSta7tVondkP5dwgyLDjVoyMDlmjugT2lRZ1OfsrYTkCd2hkDnJTKRbO/Rl3orm8vlsUzbA==
@@ -10600,16 +10577,6 @@ tsconfig@^6.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-tsickle@0.25.x:
-  version "0.25.6"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.6.tgz#b595db16b236721824eeeda8bb262365b47ef334"
-  integrity sha1-tZXbFrI2chgk7u2ouyYjZbR+8zQ=
-  dependencies:
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    source-map "^0.5.6"
-    source-map-support "^0.4.2"
-
 tsickle@0.28.0:
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.28.0.tgz#6cd6fa004766c6ad9261b599c83866ee97cc7875"
@@ -10658,13 +10625,6 @@ tslint@^5.11.0:
     semver "^5.3.0"
     tslib "^1.8.0"
     tsutils "^2.27.2"
-
-tsutils@2.20.0:
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.20.0.tgz#303394064bc80be8ee04e10b8609ae852e9312d3"
-  integrity sha512-qPOBy1/hwLdBxh/TNIpim5qL1WRMR0tgVGBB6shjnpw6/SuS5ZKYyXXxKDYsMsMtVdFOcL+XPGZVEuc+eCOo4A==
-  dependencies:
-    tslib "^1.8.1"
 
 tsutils@2.27.2:
   version "2.27.2"

@@ -24,7 +24,7 @@
     "target": "es2015",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
-    "types": ["jasmine", "tslib"],
+    "types": ["tslib"],
     "paths": {
       "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }

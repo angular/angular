@@ -6,12 +6,19 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 ts_library(
   name = "sass_bundle_lib",
   srcs = ["sass_bundle.ts"],
+  deps = [
+    "@npm//@types/node",
+    "@npm//scss-bundle",
+  ],
   tsconfig = "bazel-tools-tsconfig.json",
 )
 
 # Executable for the custom sass_bundle rule (see sass_bundle.bzl).
 nodejs_binary(
   name = "sass_bundle",
-  data = [":sass_bundle_lib"],
+  data = [
+   "@npm//scss-bundle",
+    ":sass_bundle_lib",
+  ],
   entry_point = "angular_material/tools/sass_bundle.js",
 )

@@ -1,13 +1,16 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "bidi",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/bidi",
-  deps = ["@rxjs"],
+  deps = [
+    "@angular//packages/common",
+    "@angular//packages/core",
+  ],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
@@ -15,10 +18,7 @@ ts_library(
   name = "bidi_test_sources",
   testonly = 1,
   srcs = glob(["**/*.spec.ts"]),
-  deps = [
-    ":bidi",
-    "@rxjs",
-  ],
+  deps = [":bidi"],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )
 

@@ -19,16 +19,16 @@ ts_library(
   srcs = glob(["**/*.ts"], exclude=["**/files/**/*.ts", "**/*.spec.ts"]),
   tsconfig = ":tsconfig.json",
   deps = [
-    "@npm//:@schematics/angular",
-    "@npm//:@angular-devkit/schematics",
+    "@npm//@schematics/angular",
+    "@npm//@angular-devkit/schematics",
      # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
-    "@npm//:@types/jasmine",
-    "@npm//:@types/node",
-    "@npm//:glob",
-    "@npm//:parse5",
-    "@npm//:rxjs",
-    "@npm//:tslint",
-    "@npm//:typescript"
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//glob",
+    "@npm//parse5",
+    "@npm//rxjs",
+    "@npm//tslint",
+    "@npm//typescript"
   ],
 )
 
@@ -53,13 +53,13 @@ ts_library(
   srcs = glob(["**/*.spec.ts"], exclude = ["**/files/**/*.spec.ts"]),
   deps = [
     ":schematics",
-    "@npm//:@schematics/angular",
-    "@npm//:@angular-devkit/schematics",
-    "@npm//:@types/jasmine",
-    "@npm//:@types/node",
-    "@npm//:mock-fs",
-    "@npm//:tslint",
-    "@npm//:typescript",
+    "@npm//@schematics/angular",
+    "@npm//@angular-devkit/schematics",
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//mock-fs",
+    "@npm//tslint",
+    "@npm//typescript",
   ],
   tsconfig = ":tsconfig.json",
   testonly = True,

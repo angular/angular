@@ -1,4 +1,5 @@
-// This file exists to be consumed by bazel
+// This file exists to be consumed by Bazel
+// Note that there is no build tsconfig because the cdk/testing entry-point is internal-only.
 {
   "extends": "../tsconfig-build",
   "files": [
