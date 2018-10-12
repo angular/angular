@@ -87,7 +87,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _unsupported = unsupported;
 
   // i18n context local to this template
-  private _i18nContext: any;
+  private i18n: I18nContext|null = null;
 
   // Number of slots to reserve for pureFunctions
   private _pureFunctionSlots = 0;
@@ -256,10 +256,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   i18nStart(span: ParseSourceSpan|null): void {
     // console.log('[i18nStart]', this.templateIndex);
     const index = this.allocateDataSlot();
-    const [ref, level] = this.i18nContext
-      ? [this.i18nContext.getRef(), this.i18nContext.getLevel() + 1]
+    const context = this.i18nContext;
+    const [ref, level] = context
+      ? [context.getRef(), context.getLevel() + 1]
       : [this.i18nAllocateRef(), 0];
-    this._i18nContext = new I18nContext(index, ref, level);
+    this.i18n = new I18nContext(index, ref, level);
 
     // generate i18nStart instruction
     const params: o.Expression[] = [o.literal(index), ref];
@@ -272,10 +273,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   i18nEnd(span: ParseSourceSpan|null): void {
     // console.log('[i18nEnd]', this.templateIndex);
     if (this.i18nContext) {
-      this.i18nContext.reconcile(this.templateIndex, this._i18nContext.getContent());
+      this.i18nContext.reconcile(this.templateIndex, this.i18n !.getContent());
     }
-    this.i18nUpdateRef(this.i18nContext || this._i18nContext);
-    this._i18nContext = null; // reset local i18n context
+    this.i18nUpdateRef(this.i18nContext || this.i18n!);
+    this.i18n = null; // reset local i18n context
     this.creationInstruction(span, R3.i18nEnd);
   }
 
@@ -339,7 +340,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (name === NON_BINDABLE_ATTR) {
         isNonBindableMode = true;
       } else if (name === I18N_ATTR) {
-        if (this._i18nContext) {
+        if (this.i18n) {
           throw new Error(
               `Could not mark an element as translatable inside of a translatable section`);
         }
@@ -524,8 +525,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this.i18nStart(element.sourceSpan);
       }
 
-      if (this._i18nContext) {
-        this._i18nContext.appendElement(elementIndex, this.templateIndex);
+      if (this.i18n) {
+        this.i18n.appendElement(elementIndex, this.templateIndex);
       }
 
       // process i18n element attributes
@@ -721,9 +722,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     t.visitAll(this, element.children);
 
     if (!createSelfClosingInstruction) {
-      if (this._i18nContext) {
+      if (this.i18n) {
         // const templateIndex = this.templateIndex ? `:${this.templateIndex}` : '';
-        this._i18nContext.appendElement(elementIndex, this.templateIndex, true);
+        this.i18n.appendElement(elementIndex, this.templateIndex, true);
       }
       // Finish element construction mode.
       const span = element.endSourceSpan || element.sourceSpan;
@@ -740,8 +741,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitTemplate(template: t.Template) {
     const templateIndex = this.allocateDataSlot();
 
-    if (this._i18nContext) {
-      this._i18nContext.appendTemplate(templateIndex, this.templateIndex);
+    if (this.i18n) {
+      this.i18n.appendTemplate(templateIndex, this.templateIndex);
     }
 
     let elName = '';
@@ -792,7 +793,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
-        this.constantPool, this._bindingScope, this.level + 1, contextName, this._i18nContext, templateIndex, templateName, [],
+        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, templateIndex, templateName, [],
         this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes, this._namespace,
         this.fileBasedI18nSuffix);
 
@@ -830,18 +831,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitBoundEvent = invalid;
 
   visitBoundText(text: t.BoundText) {
-    if (this._i18nContext) {
+    if (this.i18n) {
       // TODO: avoid duplication with i18nAttrs logic
       const value = text.value.visit(this._valueConverter);
       if (value instanceof Interpolation) {
         const {strings, expressions} = value;
         const label = assembleI18nTemplate(strings);
-        this._i18nContext.appendText(label);
+        this.i18n.appendText(label);
         expressions.forEach(expression => {
           const binding = this.convertExpressionBinding(o.variable(CONTEXT_NAME), expression);
           this.updateInstruction(text.sourceSpan, R3.i18nExp, [binding]);
         });
-        const index: o.Expression = o.literal(this._i18nContext.getIndex());
+        const index: o.Expression = o.literal(this.i18n.getIndex());
         this.updateInstruction(text.sourceSpan, R3.i18nApply, [index]);
       }
       return;
@@ -859,8 +860,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitText(text: t.Text) {
-    if (this._i18nContext) {
-      this._i18nContext.appendText(text.value);
+    if (this.i18n) {
+      this.i18n.appendText(text.value);
       return;
     }
     this.creationInstruction(
