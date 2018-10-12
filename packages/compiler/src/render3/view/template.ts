@@ -30,7 +30,8 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, assembleI18nTemplate, getAttrsForDirectiveMatching, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported, wrapI18nPlaceholder} from './util';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nTemplate, parseI18nMeta} from './i18n';
+import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -52,51 +53,6 @@ export function renderFlagCheckIfStmt(
   return o.ifStmt(o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(flags), null, false), statements);
 }
 
-// TODO: move this class outside (to 'i18n.ts')
-class I18nContext {
-  private content: string = '';
-
-  constructor(private index: number, private ref: any, private level: number = 0) {}
-
-  getIndex() {
-    return this.index;
-  }
-  getRef() {
-    return this.ref;
-  }
-  getLevel() {
-    return this.level;
-  }
-  getContent() {
-    return this.content;
-  }
-  wrap(symbol: string, elementIndex: number, templateIndex?: number, closed?: boolean) {
-    const state = closed ? '/' : '';
-    const tmplIndex = templateIndex ? `:${templateIndex}` : '';
-    return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${tmplIndex}`);
-
-  }
-  append(content: string) {
-    this.content += content;
-  }
-  appendText(content: string) {
-    this.append(content);
-  }
-  appendElement(elementIndex: number, templateIndex?: number, closed?: boolean) {
-    this.append(this.wrap('#', elementIndex, templateIndex, closed));
-  }
-  appendTemplate(index: number, templateIndex?: number) {
-    this.append(this.wrap('*', index, templateIndex));
-    this.append(`tmpl${index}`);
-    this.append(this.wrap('*', index, templateIndex, true));
-  }
-  resolved() {
-    return !/tmpl/g.test(this.content);
-  }
-  reconcile(templateIndex: any, templateContent: any) {
-    this.content = this.content.replace(new RegExp(`tmpl${templateIndex}`), templateContent);
-  }
-}
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
@@ -1429,31 +1385,6 @@ function createCssSelector(tag: string, attributes: {[name: string]: string}): C
   });
 
   return cssSelector;
-}
-
-// Parse i18n metas like:
-// - "@@id",
-// - "description[@@id]",
-// - "meaning|description[@@id]"
-function parseI18nMeta(i18n?: string): {description?: string, id?: string, meaning?: string} {
-  let meaning: string|undefined;
-  let description: string|undefined;
-  let id: string|undefined;
-
-  if (i18n) {
-    // TODO(vicb): figure out how to force a message ID with closure ?
-    const idIndex = i18n.indexOf(ID_SEPARATOR);
-
-    const descIndex = i18n.indexOf(MEANING_SEPARATOR);
-    let meaningAndDesc: string;
-    [meaningAndDesc, id] =
-        (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
-    [meaning, description] = (descIndex > -1) ?
-        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-        ['', meaningAndDesc];
-  }
-
-  return {description, id, meaning};
 }
 
 function interpolate(args: o.Expression[]): o.Expression {
