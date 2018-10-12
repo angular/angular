@@ -309,6 +309,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "noSideEffects"
+  },
+  {
     "name": "prefillHostVars"
   },
   {
