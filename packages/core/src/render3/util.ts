@@ -9,11 +9,12 @@
 import {devModeEqual} from '../change_detection/change_detection_util';
 
 import {assertDefined, assertLessThan} from './assert';
-import {readElementValue, readPatchedLViewData} from './context_discovery';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
+import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {LContainerNode, LElementContainerNode, LElementNode, LNode, TNode, TNodeFlags} from './interfaces/node';
+import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, FLAGS, HEADER_OFFSET, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 
 
 /**
@@ -92,9 +93,43 @@ export function loadElementInternal(index: number, arr: LViewData): LElementNode
   return readElementValue(value);
 }
 
+/**
+ * Takes the value of a slot in `LViewData` and returns the element node.
+ *
+ * Normally, element nodes are stored flat, but if the node has styles/classes on it,
+ * it might be wrapped in a styling context. Or if that node has a directive that injects
+ * ViewContainerRef, it may be wrapped in an LContainer. Or if that node is a component,
+ * it will be wrapped in LViewData. It could even have all three, so we keep looping
+ * until we find something that isn't an array.
+ *
+ * @param value The initial value in `LViewData`
+ */
+export function readElementValue(value: LElementNode | StylingContext | LContainer | LViewData):
+    LElementNode {
+  while (Array.isArray(value)) {
+    value = value[HOST] as any;
+  }
+  return value;
+}
+
+export function getNative(tNode: TNode, hostView: LViewData): RElement|RText|RComment {
+  return getLNode(tNode, hostView).native;
+}
+
+// TODO(kara): remove when removing LNode.native
 export function getLNode(tNode: TNode, hostView: LViewData): LElementNode|LContainerNode|
     LElementContainerNode {
   return readElementValue(hostView[tNode.index]);
+}
+
+export function getTNode(index: number, view: LViewData): TNode {
+  return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
+}
+
+export function getComponentViewByIndex(nodeIndex: number, hostView: LViewData): LViewData {
+  // Could be an LViewData or an LContainer. If LContainer, unwrap to find LViewData.
+  const slotValue = hostView[nodeIndex];
+  return slotValue.length >= HEADER_OFFSET ? slotValue : slotValue[HOST];
 }
 
 export function isContentQueryHost(tNode: TNode): boolean {
@@ -127,4 +162,20 @@ export function getRootView(target: LViewData | {}): LViewData {
 
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
   return getRootView(viewOrComponent)[CONTEXT] as RootContext;
+}
+
+/**
+ * Returns the monkey-patch value data present on the target (which could be
+ * a component, directive or a DOM node).
+ */
+export function readPatchedData(target: any): LViewData|LContext|null {
+  return target[MONKEY_PATCH_KEY_NAME];
+}
+
+export function readPatchedLViewData(target: any): LViewData|null {
+  const value = readPatchedData(target);
+  if (value) {
+    return Array.isArray(value) ? value : (value as LContext).lViewData;
+  }
+  return null;
 }

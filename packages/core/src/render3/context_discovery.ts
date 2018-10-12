@@ -8,59 +8,12 @@
 import './ng_dev_mode';
 
 import {assertEqual} from './assert';
-import {ACTIVE_INDEX, HOST_NATIVE, LContainer} from './interfaces/container';
+import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
-import {StylingContext, StylingIndex} from './interfaces/styling';
-import {CONTEXT, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, HOST, LViewData, TVIEW} from './interfaces/view';
+import {getComponentViewByIndex, readElementValue, readPatchedData} from './util';
 
-/**
- * This property will be monkey-patched on elements, components and directives
- */
-export const MONKEY_PATCH_KEY_NAME = '__ngContext__';
-
-/**
- * The internal view context which is specific to a given DOM element, directive or
- * component instance. Each value in here (besides the LViewData and element node details)
- * can be present, null or undefined. If undefined then it implies the value has not been
- * looked up yet, otherwise, if null, then a lookup was executed and nothing was found.
- *
- * Each value will get filled when the respective value is examined within the getContext
- * function. The component, element and each directive instance will share the same instance
- * of the context.
- */
-export interface LContext {
-  /**
-   * The component's parent view data.
-   */
-  lViewData: LViewData;
-
-  /**
-   * The index instance of the node.
-   */
-  nodeIndex: number;
-
-  /**
-   * The instance of the DOM node that is attached to the lNode.
-   */
-  native: RElement;
-
-  /**
-   * The instance of the Component node.
-   */
-  component: {}|null|undefined;
-
-  /**
-   * The list of active directives that exist on this element.
-   */
-  directives: any[]|null|undefined;
-
-  /**
-   * The map of local references (local reference name => element or directive instance) that exist
-   * on this element.
-   */
-  localRefs: {[key: string]: any}|null|undefined;
-}
 
 /** Returns the matching `LContext` data for a given DOM node, directive or component instance.
  *
@@ -187,29 +140,27 @@ function createLContext(lViewData: LViewData, lNodeIndex: number, native: REleme
 }
 
 /**
- * A simplified lookup function for finding the LElementNode from a component instance.
+ * Takes a component instance and returns the view for that component.
  *
- * This function exists for tree-shaking purposes to avoid having to pull in everything
- * that `getContext` has in the event that an Angular application doesn't need to have
- * any programmatic access to an element's context (only change detection uses this function).
+ * @param componentInstance
+ * @returns The component's view
  */
-export function getLElementFromComponent(componentInstance: {}): LElementNode {
+export function getComponentViewByInstance(componentInstance: {}): LViewData {
   let lViewData = readPatchedData(componentInstance);
-  let lNode: LElementNode;
+  let view: LViewData;
 
   if (Array.isArray(lViewData)) {
     const lNodeIndex = findViaComponent(lViewData, componentInstance);
-    lNode = readElementValue(lViewData[lNodeIndex]);
-    const context = createLContext(lViewData, lNodeIndex, lNode.native);
+    view = getComponentViewByIndex(lNodeIndex, lViewData);
+    const context = createLContext(lViewData, lNodeIndex, (view[HOST] as LElementNode).native);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
     const context = lViewData as any as LContext;
-    lNode = readElementValue(context.lViewData[context.nodeIndex]);
+    view = getComponentViewByIndex(context.nodeIndex, context.lViewData);
   }
-
-  return lNode;
+  return view;
 }
 
 /**
@@ -218,22 +169,6 @@ export function getLElementFromComponent(componentInstance: {}): LElementNode {
  */
 export function attachPatchData(target: any, data: LViewData | LContext) {
   target[MONKEY_PATCH_KEY_NAME] = data;
-}
-
-/**
- * Returns the monkey-patch value data present on the target (which could be
- * a component, directive or a DOM node).
- */
-export function readPatchedData(target: any): LViewData|LContext|null {
-  return target[MONKEY_PATCH_KEY_NAME];
-}
-
-export function readPatchedLViewData(target: any): LViewData|null {
-  const value = readPatchedData(target);
-  if (value) {
-    return Array.isArray(value) ? value : (value as LContext).lViewData;
-  }
-  return null;
 }
 
 export function isComponentInstance(instance: any): boolean {
@@ -282,14 +217,14 @@ function findViaComponent(lViewData: LViewData, componentInstance: {}): number {
   if (componentIndices) {
     for (let i = 0; i < componentIndices.length; i++) {
       const elementComponentIndex = componentIndices[i];
-      const lNodeData = readElementValue(lViewData[elementComponentIndex] !).data !;
-      if (lNodeData[CONTEXT] === componentInstance) {
+      const componentView = getComponentViewByIndex(elementComponentIndex, lViewData);
+      if (componentView[CONTEXT] === componentInstance) {
         return elementComponentIndex;
       }
     }
   } else {
-    const rootNode = lViewData[HEADER_OFFSET];
-    const rootComponent = rootNode.data[CONTEXT];
+    const rootComponentView = getComponentViewByIndex(HEADER_OFFSET, lViewData);
+    const rootComponent = rootComponentView[CONTEXT];
     if (rootComponent === componentInstance) {
       // we are dealing with the root element here therefore we know that the
       // element is the very first element after the HEADER data in the lView
@@ -390,28 +325,4 @@ function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
   // values are used).
   const count = tNode.flags & TNodeFlags.DirectiveCountMask;
   return count ? (startIndex + count) : -1;
-}
-
-/**
- * Takes the value of a slot in `LViewData` and returns the element node.
- *
- * Normally, element nodes are stored flat, but if the node has styles/classes on it,
- * it might be wrapped in a styling context. Or if that node has a directive that injects
- * ViewContainerRef, it may be wrapped in an LContainer.
- *
- * @param value The initial value in `LViewData`
- */
-export function readElementValue(value: LElementNode | StylingContext | LContainer): LElementNode {
-  if (Array.isArray(value)) {
-    if (typeof value[ACTIVE_INDEX] === 'number') {
-      // This is an LContainer. It may also have a styling context.
-      value = value[HOST_NATIVE] as LElementNode | StylingContext;
-      return Array.isArray(value) ? value[StylingIndex.ElementPosition] ! : value;
-    } else {
-      // This is a StylingContext, which stores the element node at 0.
-      return value[StylingIndex.ElementPosition] as LElementNode;
-    }
-  } else {
-    return value;  // Regular LNode is stored here
-  }
 }

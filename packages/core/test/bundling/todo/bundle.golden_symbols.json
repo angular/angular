@@ -54,7 +54,7 @@
     "name": "HEADER_OFFSET"
   },
   {
-    "name": "HOST_NATIVE"
+    "name": "HOST"
   },
   {
     "name": "HOST_NODE"
@@ -438,9 +438,6 @@
     "name": "createLContext"
   },
   {
-    "name": "createLNodeObject"
-  },
-  {
     "name": "createLViewData"
   },
   {
@@ -451,6 +448,9 @@
   },
   {
     "name": "createRootComponent"
+  },
+  {
+    "name": "createRootComponentView"
   },
   {
     "name": "createRootContext"
@@ -603,6 +603,12 @@
     "name": "getComponentDef"
   },
   {
+    "name": "getComponentViewByIndex"
+  },
+  {
+    "name": "getComponentViewByInstance"
+  },
+  {
     "name": "getContainerRenderParent"
   },
   {
@@ -636,9 +642,6 @@
     "name": "getLContainer"
   },
   {
-    "name": "getLElementFromComponent"
-  },
-  {
     "name": "getLNode"
   },
   {
@@ -649,6 +652,9 @@
   },
   {
     "name": "getMultiStartIndex"
+  },
+  {
+    "name": "getNative"
   },
   {
     "name": "getOrCreateInjectable"
@@ -682,9 +688,6 @@
   },
   {
     "name": "getPreviousIndex"
-  },
-  {
-    "name": "getPreviousOrParentNode"
   },
   {
     "name": "getPreviousOrParentTNode"
@@ -732,9 +735,6 @@
     "name": "hasValueChanged"
   },
   {
-    "name": "hostElement"
-  },
-  {
     "name": "inject"
   },
   {
@@ -760,6 +760,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "isComponent"
   },
   {
     "name": "isContentQueryHost"
@@ -799,6 +802,9 @@
   },
   {
     "name": "isProceduralRenderer"
+  },
+  {
+    "name": "isStylingContext"
   },
   {
     "name": "iterateListLike"
@@ -844,9 +850,6 @@
   },
   {
     "name": "nativeInsertBefore"
-  },
-  {
-    "name": "nativeNodeLocalRefExtractor"
   },
   {
     "name": "nextContext"

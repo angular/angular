@@ -10,7 +10,8 @@ import {LContainerNode, LElementContainerNode, LElementNode} from './node';
 import {LQueries} from './query';
 import {RComment} from './renderer';
 import {StylingContext} from './styling';
-import {LViewData, NEXT, PARENT, QUERIES} from './view';
+import {HOST, LViewData, NEXT, PARENT, QUERIES} from './view';
+
 
 /**
  * Below are constants for LContainer indices to help us look up LContainer members
@@ -18,11 +19,10 @@ import {LViewData, NEXT, PARENT, QUERIES} from './view';
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 export const ACTIVE_INDEX = 0;
-// PARENT, NEXT, and QUERIES are indices 1, 2, and 3.
+export const VIEWS = 1;
+// PARENT, NEXT, QUERIES, and HOST are indices 2, 3, 4, and 5.
 // As we already have these constants in LViewData, we don't need to re-create them.
-export const HOST_NATIVE = 4;
-export const NATIVE = 5;
-export const VIEWS = 6;
+export const NATIVE = 6;
 export const RENDER_PARENT = 7;
 
 /**
@@ -44,6 +44,15 @@ export interface LContainer extends Array<any> {
   [ACTIVE_INDEX]: number;
 
   /**
+   * A list of the container's currently active child views. Views will be inserted
+   * here as they are added and spliced from here when they are removed. We need
+   * to keep a record of current views so we know which views are already in the DOM
+   * (and don't need to be re-added) and so we can remove views from the DOM when they
+   * are no longer required.
+   */
+  [VIEWS]: LViewData[];
+
+  /**
    * Access to the parent view is necessary so we can propagate back
    * up from inside a container to parent[NEXT].
    */
@@ -63,19 +72,10 @@ export interface LContainer extends Array<any> {
 
   /** The host node of this LContainer. */
   // TODO: Should contain just the native element once LNode is removed.
-  [HOST_NATIVE]: LElementNode|LContainerNode|LElementContainerNode|StylingContext;
+  [HOST]: LElementNode|LContainerNode|LElementContainerNode|StylingContext|LViewData;
 
   /** The comment element that serves as an anchor for this LContainer. */
   [NATIVE]: RComment;
-
-  /**
-   * A list of the container's currently active child views. Views will be inserted
-   * here as they are added and spliced from here when they are removed. We need
-   * to keep a record of current views so we know which views are already in the DOM
-   * (and don't need to be re-added) and so we can remove views from the DOM when they
-   * are no longer required.
-   */
-  [VIEWS]: LViewData[];
 
   /**
    * Parent Element which will contain the location where all of the Views will be
