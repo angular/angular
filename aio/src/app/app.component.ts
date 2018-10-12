@@ -234,7 +234,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width: number) {
-    this.isSideBySide = width > this.sideBySideWidth;
+    this.isSideBySide = width >= this.sideBySideWidth;
     this.showFloatingToc.next(width > this.showFloatingTocWidth);
 
     if (this.isSideBySide && !this.isSideNavDoc) {
