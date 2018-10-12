@@ -78,6 +78,7 @@ class FixupExpression extends o.Expression {
 export class ConstantPool {
   statements: o.Statement[] = [];
   private translations = new Map<string, o.Expression>();
+  private deferredTranslations = new Map<o.ReadVarExpr, number>();
   private literals = new Map<string, FixupExpression>();
   private literalFactories = new Map<string, o.Expression>();
   private injectorDefinitions = new Map<any, FixupExpression>();
@@ -113,6 +114,23 @@ export class ConstantPool {
     return fixup;
   }
 
+  getDeferredTranslationConst(suffix: string): o.ReadVarExpr {
+    const index = this.statements.push(new o.ExpressionStatement(o.NULL_EXPR)) - 1;
+    const variable = o.variable(this.freshTranslationName(suffix));
+    this.deferredTranslations.set(variable, index);
+    return variable;
+  }
+
+  setDeferredTranslationConst(variable: o.ReadVarExpr, message: string): void {
+    const index = this.deferredTranslations.get(variable)!;
+    this.statements[index] = this.getTranslationDeclStmt(variable, message);
+  }
+
+  getTranslationDeclStmt(variable: o.ReadVarExpr, message: string): o.DeclareVarStmt {
+    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
+    return variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+  }
+
   // Generates closure specific code for translation.
   //
   // ```
@@ -133,16 +151,12 @@ export class ConstantPool {
       return exp;
     }
 
+    const variable = o.variable(this.freshTranslationName(suffix));
     const docStmt = i18nMetaToDocStmt(meta);
     if (docStmt) {
       this.statements.push(docStmt);
     }
-
-    // Call closure to get the translation
-    const variable = o.variable(this.freshTranslationName(suffix));
-    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
-    const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
-    this.statements.push(msgStmt);
+    this.statements.push(this.getTranslationDeclStmt(variable, message));
 
     this.translations.set(key, variable);
     return variable;

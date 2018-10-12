@@ -437,9 +437,10 @@ describe('i18n support in the view compiler', () => {
     });
   });
 
-  // TODO(vicb): this feature is not supported yet
-  xdescribe('nested nodes', () => {
-    it('should generate the placeholders maps', () => {
+  describe('nested nodes', () => {
+    // TODO: test with ng-template:
+    // <ng-template i18n><span title="a">My Template Test</span></ng-template>
+    fit('should generate i18nStart and i18nEnd instructions', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -448,26 +449,41 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n>Hello <b>{{name}}<i>!</i><i>!</i></b></div>
-                <div>Other</div>
-                <div i18n>2nd</div>
-                <div i18n><i>3rd</i></div>
+                <div id="a" i18n>Test1</div>
+                <div id="b">Test2</div>
+                <div id="c" i18n>Test with binding {{ valueA }} and {{ valueB }}</div>
+                <div i18n>
+                  <div id="c" i18n-title="m|d" title="inside i18n">Test3</div>
+                  <div *ngFor="let outer of items">
+                    <div i18n-title="m|d" title="different scope {{ outer | uppercase }}">different scope</div>
+                    <span *ngIf="!outer2">Not outer 2!</span>
+                    <span *ngIf="!outer">
+                      Not outer
+                      <span *ngIf="!outer1">
+                        Not outer 1
+                      </span>
+                    </span>
+                    Some additional text! {{ valueC }}
+                    <div>Additional div</div>
+                  </div>
+                </div>
               \`
             })
             export class MyComponent {}
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-        `
+          `
         }
       };
 
       const template = `
-      const $r1$ = {"b":[2], "i":[4, 6]};
-      const $r2$ = {"i":[13]};
-    `;
+        const $r1$ = {"b":[2], "i":[4, 6]};
+        const $r2$ = {"i":[13]};
+      `;
 
       const result = compile(files, angularFiles);
+      console.log(result.source);
       expectEmit(result.source, template, 'Incorrect template');
     });
   });
