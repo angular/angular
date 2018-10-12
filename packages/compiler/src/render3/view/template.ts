@@ -176,7 +176,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (this.i18nContext) {
-      this.i18nStart(null);
+      this.i18nStart();
     }
 
     // This is the initial pass through the nodes of this template. In this pass, we
@@ -199,7 +199,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
     if (this.i18nContext) {
-      this.i18nEnd(null);
+      this.i18nEnd();
     }
 
     // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
@@ -239,7 +239,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // LocalResolver
   getLocal(name: string): o.Expression|null { return this._bindingScope.get(name); }
 
-  i18nTranslate(label: string, meta?: string): any {
+  i18nTranslate(label: string, meta?: string): o.Expression {
     return this.constantPool.getTranslation(label, parseI18nMeta(meta), this.fileBasedI18nSuffix);
   }
 
@@ -253,7 +253,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  i18nStart(span: ParseSourceSpan|null): void {
+  i18nStart(span: ParseSourceSpan|null = null): void {
     // console.log('[i18nStart]', this.templateIndex);
     const index = this.allocateDataSlot();
     const context = this.i18nContext;
@@ -270,10 +270,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.creationInstruction(span, R3.i18nStart, params);
   }
 
-  i18nEnd(span: ParseSourceSpan|null): void {
+  i18nEnd(span: ParseSourceSpan|null = null): void {
     // console.log('[i18nEnd]', this.templateIndex);
     if (this.i18nContext) {
-      this.i18nContext.reconcile(this.templateIndex, this.i18n !.getContent());
+      this.i18nContext.reconcile(this.templateIndex as number, this.i18n !.getContent());
     }
     this.i18nUpdateRef(this.i18nContext || this.i18n!);
     this.i18n = null; // reset local i18n context
@@ -723,7 +723,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       if (this.i18n) {
-        // const templateIndex = this.templateIndex ? `:${this.templateIndex}` : '';
         this.i18n.appendElement(elementIndex, this.templateIndex, true);
       }
       // Finish element construction mode.
