@@ -3,12 +3,12 @@
 Welcome to Angular! Angular helps you build modern applications for the web, mobile, or desktop.  
 
 This guide shows you how to build and run a simple Angular
-app. You'll use the [Angular CLI](cli "CLI command reference") to accelerate development, 
+app. You'll use the [Angular CLI tool](cli "CLI command reference") to accelerate development, 
 while adhering to the [Style Guide](guide/styleguide "Angular style guide") recommendations that
 benefit _every_ Angular project.
 
 This guide takes less than 30 minutes to complete. 
-At the end of this guide, you can download a copy of the final application code.
+At the end of this guide&mdash;as part of final code review&mdash;there is a link to download a copy of the final application code. (If you don't execute the commands in this guide, you can still download the final application code.)
 
 
 {@a devenv}
@@ -40,8 +40,8 @@ To check that you have the npm client installed, run `npm -v` in a terminal/cons
 
 ## Step 1: Install the Angular CLI
 
-The [**Angular CLI**](guide/glossary#command-line-interface-cli) is a **_command line interface_** tool
-that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+You use the Angular CLI 
+to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
 Install the Angular CLI globally. 
 
@@ -147,21 +147,20 @@ Looking good!
 
 ## Final code review
 
-You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download an example</a> of this modified Getting Started app. 
-Most Angular guides include links to download example files or run live examples in [Stackblitz](http://www.stackblitz.com), so that you can see Angular concepts and code in action. 
+You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download an example</a> of the app that you created in this Getting Started guide. 
 
-These are the files that you modified in this Getting Started:
 
-<code-tabs>
-  <code-pane title="src/app/app.component.ts" path="cli-quickstart/src/app/app.component.ts">
-  </code-pane>
+<div class="alert is-helpful">
 
-  <code-pane title="src/app/app.component.css" path="cli-quickstart/src/app/app.component.css">
-  </code-pane>
+**Tip:** Most Angular guides include links to download example files and run live examples in [Stackblitz](http://www.stackblitz.com), so that you can see Angular concepts and code in action. 
 
-</code-tabs>
 
-For details about Angular project files and the file structure, see [Workspace and project file struture](guide/file-structure).
+</div>
+
+
+For more information about Angular project files and the file structure, see [Workspace and project file struture](guide/file-structure).
+
+
 
 
 ## Next steps
@@ -178,8 +177,8 @@ It has many of the features you'd expect to find in a data-driven application:
         - Navigating among different views of the data
 
 
-* The [Architecture guide](guide/architecture "Architecture guide")  describes key concepts such as modules, components, services, and dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
+* The [Architecture guide](guide/architecture "Architecture guide") describes key concepts such as modules, components, services, and dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
 
-After the Tutorial and Architecture guide, you'll be ready to continue exploring Angular on your own, focusing on the features most important for your apps. 
+After the Tutorial and Architecture guide, you'll be ready to continue exploring Angular on your own through the other guides and references in this documentation set, focusing on the features most important for your apps. 
 
 
