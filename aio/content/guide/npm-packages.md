@@ -1,30 +1,20 @@
 # Npm Packages
 
- The [**Angular CLI**](https://cli.angular.io/), Angular applications, and Angular itself depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
+ The [**Angular CLI**](cli), Angular applications, and Angular itself depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
 
-You can download and install these npm packages with the [**npm client**](https://docs.npmjs.com/cli/install), which runs as a Node.js® application.
+You can download and install these npm packages by using the [**npm CLI client**](https://docs.npmjs.com/cli/install), which is installed with and runs as a Node.js® application. By default, the Angular CLI uses the npm client to install npm packages when you create a new project.
 
-The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for downloading and installing npm packages.
-The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
 
 <div class="alert is-helpful">
 
-Node.js and npm are essential to Angular development.
+See [Getting Started](guide/quickstart#prerequisites) for information about the required versions and installation of Node.js and npm.
 
-[Get them now](https://docs.npmjs.com/getting-started/installing-node "Installing Node.js and updating npm")
-if they're not already installed on your machine.
-
-**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
-by running the commands `node -v` and `npm -v` in a terminal/console window.
-Older versions produce errors.
-
-Consider using [nvm](https://github.com/creationix/nvm) for managing multiple
-versions of Node.js and npm. You may need [nvm](https://github.com/creationix/nvm) if
-you already have projects running on your machine that use other versions of Node.js and npm.
+If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm. 
 
 </div>
 
-## _package.json_
+
+## `package.json`
 
 Both `npm` and `yarn` install packages that are identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
 
@@ -37,17 +27,17 @@ You may even remove some.
 
 This guide focuses on the most important packages in the starter set.
 
-#### *dependencies* and *devDependencies*
+#### Dependencies and devDependencies
 
 The `package.json` includes two sets of packages,
 [dependencies](guide/npm-packages#dependencies) and [devDependencies](guide/npm-packages#dev-dependencies).
 
-The *dependencies* are essential to *running* the application.
-The *devDependencies* are only necessary to *develop* the application.
+* The *dependencies* are essential to *running* the application.
+* The *devDependencies* are only necessary to *develop* the application.
 
 {@a dependencies}
 
-## *Dependencies*
+## Dependencies
 The `dependencies` section of `package.json` contains:
 
 * **Angular packages**: Angular core and optional modules; their package names begin `@angular/`.
@@ -58,18 +48,20 @@ The `dependencies` section of `package.json` contains:
 
 ### Angular Packages
 
+For a complete list of Angular packages (and links to package overviews), see the [API reference](http://angular.io/api?type=package). The following packages are included as dependencies in the initial `package.json` file. 
+
 **@angular/animations**: Angular's animations library makes it easy to define and apply animation effects such as page and list transitions.
 Read about it in the [Animations guide](guide/animations).
 
 **@angular/common**: The commonly needed services, pipes, and directives provided by the Angular team.
 The [`HttpClientModule`](guide/http) is also here, in the '@angular/common/http' subfolder.
 
-**@angular/core**: Critical runtime parts of the framework needed by every application.
-Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.
-
 **@angular/compiler**: Angular's *Template Compiler*.
 It understands templates and can convert them to code that makes the application run and render.
 Typically you don’t interact with the compiler directly; rather, you use it indirectly via `platform-browser-dynamic` when [JIT compiling](guide/aot-compiler) in the browser.
+
+**@angular/core**: Critical runtime parts of the framework needed by every application.
+Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.
 
 **@angular/forms**: support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms).
 
@@ -85,8 +77,6 @@ and methods to compile and run the app on the client
 using the [JIT compiler](guide/aot-compiler).
 
 **@angular/router**: The [router module](/guide/router) navigates among your app pages when the browser URL changes.
-
-**@angular/upgrade**: Set of utilities for upgrading AngularJS applications to Angular.
 
 {@a polyfills}
 
@@ -113,11 +103,13 @@ which polyfills missing features for several popular browser.
 
 {@a dev-dependencies}
 
-## *DevDependencies*
+## DevDependencies
 
 The packages listed in the *devDependencies* section of the `package.json` help you develop the application on your local machine.
 
-You don't deploy them with the production application although there is no harm in doing so.
+You don't deploy them with the production application, although there is no harm in doing so.
+
+**@angular-devkit/build-angular: The Angular build tools.
 
 **[@angular/cli](https://github.com/angular/angular-cli/)**: The Angular CLI tools.
 
@@ -155,19 +147,18 @@ Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDri
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
 
-## So many packages! So many files!
+## Managing packages and files
 
 The default `package.json` installs more packages than you'll need for your project.
 
 A given package may contain tens, hundreds, even thousands of files,
 all of them in your local machine's `node_modules` directory.
-The sheer volume of files is intimidating, 
 
-You can remove packages that you don't need but how can you be sure that you won't need it?
+You can remove any package that you don't need, but how can you be sure that you won't need it?
 As a practical matter, it's better to install a package you don't need than worry about it.
 Extra packages and package files on your local development machine are harmless.
 
-By default the Angular CLI build process bundles into a single file just the few "vendor" library files that your application actually needs.
+By default, the Angular CLI build process bundles into a single file just the few "vendor" library files that your application actually needs.
 The browser downloads this bundle, not the original package files.
 
-See the [Deployment](guide/deployment) to learn more.
+See [Deployment](guide/deployment) to learn more.
