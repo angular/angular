@@ -513,8 +513,14 @@
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
-          "tooltip": "How your Angular workspace looks in your filesystem."
+          "tooltip": "How your Angular workspace looks on your filesystem."
         },
+        {
+          "url": "guide/workspace-config",
+          "title": "Workspace Configuration",
+          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+        },
+
         {
           "url": "guide/npm-packages",
           "title": "npm Dependencies",
