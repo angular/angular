@@ -2121,6 +2121,9 @@
     "name": "noComponentFactoryError"
   },
   {
+    "name": "noSideEffects"
+  },
+  {
     "name": "noop$1"
   },
   {

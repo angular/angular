@@ -12,7 +12,8 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/provider';
 import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
-import {Type} from '../type';
+import {Mutable, Type} from '../type';
+import {noSideEffects} from '../util';
 
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
@@ -265,13 +266,9 @@ export function defineComponent<T>(componentDefinition: {
   pipes?: PipeTypesOrFactory | null;
 }): never {
   const type = componentDefinition.type;
-  const pipeTypes = componentDefinition.pipes !;
-  const directiveTypes = componentDefinition.directives !;
+  const typePrototype = type.prototype;
   const declaredInputs: {[key: string]: string} = {} as any;
-  const encapsulation = componentDefinition.encapsulation || ViewEncapsulation.Emulated;
-  const styles: string[] = componentDefinition.styles || EMPTY_ARRAY;
-  const data = componentDefinition.data || {};
-  const def: ComponentDef<any> = {
+  const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
     type: type,
     diPublic: null,
     consts: componentDefinition.consts,
@@ -283,38 +280,49 @@ export function defineComponent<T>(componentDefinition: {
     contentQueries: componentDefinition.contentQueries || null,
     contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
     attributes: componentDefinition.attributes || null,
-    inputs: invertObject(componentDefinition.inputs, declaredInputs),
     declaredInputs: declaredInputs,
-    outputs: invertObject(componentDefinition.outputs),
+    inputs: null !,   // assigned in noSideEffects
+    outputs: null !,  // assigned in noSideEffects
     exportAs: componentDefinition.exportAs || null,
-    onInit: type.prototype.ngOnInit || null,
-    doCheck: type.prototype.ngDoCheck || null,
-    afterContentInit: type.prototype.ngAfterContentInit || null,
-    afterContentChecked: type.prototype.ngAfterContentChecked || null,
-    afterViewInit: type.prototype.ngAfterViewInit || null,
-    afterViewChecked: type.prototype.ngAfterViewChecked || null,
-    onDestroy: type.prototype.ngOnDestroy || null,
+    onInit: typePrototype.ngOnInit || null,
+    doCheck: typePrototype.ngDoCheck || null,
+    afterContentInit: typePrototype.ngAfterContentInit || null,
+    afterContentChecked: typePrototype.ngAfterContentChecked || null,
+    afterViewInit: typePrototype.ngAfterViewInit || null,
+    afterViewChecked: typePrototype.ngAfterViewChecked || null,
+    onDestroy: typePrototype.ngOnDestroy || null,
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-    directiveDefs: directiveTypes ?
-        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
-                  .map(extractDirectiveDef) :
-        null,
-    pipeDefs: pipeTypes ?
-        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
-        null,
+    directiveDefs: null !,  // assigned in noSideEffects
+    pipeDefs: null !,       // assigned in noSideEffects
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features || null,
-    data,
+    data: componentDefinition.data || {},
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
-    encapsulation,
+    encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
     providers: EMPTY_ARRAY,
     viewProviders: EMPTY_ARRAY,
-    id: `c${_renderCompCount++}`, styles,
+    id: 'c',
+    styles: componentDefinition.styles || EMPTY_ARRAY,
+    _: null as never,
   };
-  const feature = componentDefinition.features;
-  feature && feature.forEach((fn) => fn(def));
+  def._ = noSideEffects(() => {
+    const directiveTypes = componentDefinition.directives !;
+    const feature = componentDefinition.features;
+    const pipeTypes = componentDefinition.pipes !;
+    def.id += _renderCompCount++;
+    def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
+    def.outputs = invertObject(componentDefinition.outputs),
+    feature && feature.forEach((fn) => fn(def));
+    def.directiveDefs = directiveTypes ?
+        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                  .map(extractDirectiveDef) :
+        null;
+    def.pipeDefs = pipeTypes ?
+        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+        null;
+  }) as never;
   return def as never;
 }
 
