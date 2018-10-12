@@ -24,7 +24,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
     afterEach(() => { console.warn = originalLog; });
 
     t.it('reports unsafe URLs', () => {
-      t.expect(_sanitizeUrl('javascript:evil()')).toBe('unsafe:javascript:evil()');
+      t.expect(_sanitizeUrl('javascript:evil()')).toBe('about:javascript:evil()');
       t.expect(logMsgs.join('\n')).toMatch(/sanitizing unsafe URL value/);
     });
 
@@ -73,7 +73,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         'data:application/x-msdownload;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       ];
       for (const url of invalidUrls) {
-        t.it(`valid ${url}`, () => t.expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
+        t.it(`valid ${url}`, () => t.expect(_sanitizeUrl(url)).toMatch(/^about:/));
       }
     });
 
@@ -110,7 +110,9 @@ import {_sanitizeUrl, sanitizeSrcset} from '../../src/sanitization/url_sanitizer
         'http://angular.io/images/test.png, ht:tp://angular.io/images/test.png',
       ];
       for (const srcset of invalidSrcsets) {
-        t.it(`valid ${srcset}`, () => t.expect(sanitizeSrcset(srcset)).toMatch(/unsafe:/));
+        t.it(
+            `valid ${srcset}`,
+            () => t.expect(sanitizeSrcset(srcset)).toMatch(/about:invalid#unsafe&url=/));
       }
     });
 

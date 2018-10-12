@@ -44,7 +44,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<a xlink:href="something">t</a>');
       expect(_sanitizeHtml(defaultDoc, '<a xlink:evil="something">t</a>')).toEqual('<a>t</a>');
       expect(_sanitizeHtml(defaultDoc, '<a xlink:href="javascript:foo()">t</a>'))
-          .toEqual('<a xlink:href="unsafe:javascript:foo()">t</a>');
+          .toEqual('<a xlink:href="about:javascript:foo()">t</a>');
     });
 
     it('supports HTML5 elements', () => {
@@ -54,7 +54,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
 
     it('sanitizes srcset attributes', () => {
       expect(_sanitizeHtml(defaultDoc, '<img srcset="/foo.png 400px, javascript:evil() 23px">'))
-          .toEqual('<img srcset="/foo.png 400px, unsafe:javascript:evil() 23px">');
+          .toEqual('<img srcset="/foo.png 400px, about:javascript:evil() 23px">');
     });
 
     it('supports sanitizing plain text',
@@ -163,7 +163,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
       it('should prevent mXSS attacks', function() {
         // In Chrome Canary 62, the ideographic space character is kept as a stringified HTML entity
         expect(_sanitizeHtml(defaultDoc, '<a href="&#x3000;javascript:alert(1)">CLICKME</a>'))
-            .toMatch(/<a href="unsafe:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
+            .toMatch(/<a href="about:(&#12288;)?javascript:alert\(1\)">CLICKME<\/a>/);
       });
     }
   });

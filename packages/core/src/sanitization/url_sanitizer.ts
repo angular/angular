@@ -51,7 +51,7 @@ export function _sanitizeUrl(url: string): string {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see http://g.co/ng/security#xss)`);
   }
 
-  return 'unsafe:' + url;
+  return 'about:invalid#unsafe&url=' + encodeURI(url);
 }
 
 export function sanitizeSrcset(srcset: string): string {
