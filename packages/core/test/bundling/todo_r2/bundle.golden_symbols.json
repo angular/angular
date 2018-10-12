@@ -321,10 +321,10 @@
     "name": "HEADER_OFFSET"
   },
   {
-    "name": "HOST_ATTR$1"
+    "name": "HOST"
   },
   {
-    "name": "HOST_NATIVE"
+    "name": "HOST_ATTR$1"
   },
   {
     "name": "HOST_NODE"
@@ -1320,9 +1320,6 @@
     "name": "createLContext"
   },
   {
-    "name": "createLNodeObject"
-  },
-  {
     "name": "createLViewData"
   },
   {
@@ -1339,6 +1336,9 @@
   },
   {
     "name": "createRootComponent"
+  },
+  {
+    "name": "createRootComponentView"
   },
   {
     "name": "createRootContext"
@@ -1611,6 +1611,12 @@
     "name": "getComponentDef"
   },
   {
+    "name": "getComponentViewByIndex"
+  },
+  {
+    "name": "getComponentViewByInstance"
+  },
+  {
     "name": "getContainerRenderParent"
   },
   {
@@ -1674,9 +1680,6 @@
     "name": "getLContainer"
   },
   {
-    "name": "getLElementFromComponent"
-  },
-  {
     "name": "getLNode"
   },
   {
@@ -1737,6 +1740,9 @@
     "name": "getNamedFormat"
   },
   {
+    "name": "getNative"
+  },
+  {
     "name": "getNgModuleDef"
   },
   {
@@ -1792,9 +1798,6 @@
   },
   {
     "name": "getPreviousIndex"
-  },
-  {
-    "name": "getPreviousOrParentNode"
   },
   {
     "name": "getPreviousOrParentTNode"
@@ -1864,9 +1867,6 @@
   },
   {
     "name": "hasValueChanged"
-  },
-  {
-    "name": "hostElement"
   },
   {
     "name": "hostReportError"
@@ -2019,6 +2019,9 @@
     "name": "isScheduler"
   },
   {
+    "name": "isStylingContext"
+  },
+  {
     "name": "isTemplateElement"
   },
   {
@@ -2110,9 +2113,6 @@
   },
   {
     "name": "nativeInsertBefore"
-  },
-  {
-    "name": "nativeNodeLocalRefExtractor"
   },
   {
     "name": "nextContext"

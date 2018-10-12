@@ -17,13 +17,14 @@ import {RendererFactory2} from '../render/api';
 import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
-import {LifecycleHooksFeature, createRootComponent, createRootContext} from './component';
+import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
-import {adjustBlueprintForNewNode, createLViewData, createNodeAtIndex, createTView, elementCreate, enterView, getTNode, hostElement, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {adjustBlueprintForNewNode, createLViewData, createNodeAtIndex, createTView, elementCreate, enterView, locateHostElement, renderEmbeddedTemplate} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
-import {LElementNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -109,7 +110,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       rendererFactory = domRendererFactory3;
     }
 
-    const hostNode = isInternalRootView ?
+    const hostRNode = isInternalRootView ?
         elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
         locateHostElement(rendererFactory, rootSelectorOrNode);
 
@@ -122,24 +123,23 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         ngModule.injector.get(ROOT_CONTEXT) :
         createRootContext(requestAnimationFrame.bind(window));
 
+    const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
-        rendererFactory.createRenderer(hostNode, this.componentDef),
-        createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
+        renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
     rootView[INJECTOR] = ngModule && ngModule.injector || null;
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
 
     let component: T;
-    let elementNode: LElementNode;
     let tElementNode: TElementNode;
     try {
       if (rendererFactory.begin) rendererFactory.begin();
 
-      // Create element node at index 0 in data array
-      elementNode = hostElement(componentTag, hostNode, this.componentDef);
-      tElementNode = getTNode(0) as TElementNode;
+      const componentView =
+          createRootComponentView(hostRNode, this.componentDef, rootView, renderer);
+      tElementNode = getTNode(0, rootView) as TElementNode;
 
       // Transform the arrays of native nodes into a LNode structure that can be consumed by the
       // projection instruction. This is needed to support the reprojection of these nodes.
@@ -165,10 +165,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // executed here?
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
-          elementNode, this.componentDef, rootView, rootContext, [LifecycleHooksFeature]);
+          hostRNode, componentView, this.componentDef, rootView, rootContext,
+          [LifecycleHooksFeature]);
 
       // Execute the template in creation mode only, and then turn off the CreationMode flag
-      const componentView = elementNode.data as LViewData;
       renderEmbeddedTemplate(componentView, componentView[TVIEW], component, RenderFlags.Create);
       componentView[FLAGS] &= ~LViewFlags.CreationMode;
     } finally {
