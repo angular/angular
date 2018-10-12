@@ -22,14 +22,14 @@
     display: flex;
     flex-wrap: wrap;
 
-    @media (max-width: 600px) {
+    @include bp-up-to(teeny) {
       flex-direction: column;
     }
 
     .feature {
       max-width: 300px;
-      margin: 0 16px;  
-      
+      margin: 0 16px;
+
       @media (max-width: 768px) {
         max-width: 100%;
       }

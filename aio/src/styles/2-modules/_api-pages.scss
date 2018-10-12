@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
 
-  @media screen and (max-width: 600px) {
+  @include bp-up-to(teeny) {
     flex-direction: column;
     align-items: flex-start;
   }

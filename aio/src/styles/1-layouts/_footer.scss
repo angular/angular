@@ -44,7 +44,7 @@ footer {
     text-align: center;
     margin: 10px 0px 5px;
 
-    @media (max-width: 480px) {
+    @include bp-up-to(xsmall) {
       text-align: left;
     }
   }
@@ -71,7 +71,7 @@ footer {
       }
     }
 
-    @media (max-width: 480px) {
+    @include bp-up-to(xsmall) {
       flex-direction: column;
       .footer-block {
         margin: 8px 24px;
@@ -87,7 +87,7 @@ footer {
       font-size: 110%;
     }
   }
-  @media (max-width: 600px) {
+  @include bp-up-to(teeny) {
     h3 {
       font-size: 100%;
     }

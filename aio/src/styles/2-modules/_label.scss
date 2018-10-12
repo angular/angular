@@ -8,7 +8,7 @@ label.raised, .api-header label {
     font-weight: 500;
     text-transform: uppercase;
 
-    @media screen and (max-width: 600px) {
+    @include bp-up-to(teeny, screen) {
         display: block;
         margin: 8px 0;
     }
@@ -42,7 +42,7 @@ label.raised, .api-header label {
     padding: 2px 10px;
     font-size: 12px;
 
-    @media screen and (max-width: 600px) {
+    @include bp-up-to(teeny, screen) {
         margin: 4px 0;
     }
 

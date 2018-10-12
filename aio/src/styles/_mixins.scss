@@ -1,44 +1,127 @@
 /************************************
 
-             Media queries
+              Media queries
 
- To use these, put this snippet in the appropriate selector:
+  To use these, put this snippet in the appropriate selector:
 
-     @include bp(tiny) {
-         background-color: purple;
-     }
+      @include bp-starting-at(tiny) {
+        background-color: purple;
+      }
 
-     Replace "tiny" with "medium" or "big" as necessary.
+  or
+
+      @include bp-up-to(tiny) {
+        background-color: purple;
+      }
+
+  Replace "tiny" one of (xxsmall, xsmall, teeny, tiny, small, medium, big) as necessary.
+
+  bp-starting-at(<size>) => creates a Media Query including <size> and any breakpoint bigger than <size>
+  bp-up-to(<size>) => creates a Media Query including <size> and any breakpoint smaller than <size>
+
 *************************************/
 
-@mixin bp($point) {
+@mixin bp-starting-at($point, $mediatype:null) {
+  // Makes no sense to call this mixin with 'xxsmall' as parameter
+  // $breakpoint-xxsmall-min: $breakpoint-xxsmall;
+  $breakpoint-xsmall-min: $breakpoint-xsmall;
+  $breakpoint-teeny-min:  $breakpoint-teeny;
+  $breakpoint-tiny-min:   $breakpoint-tiny;
+  $breakpoint-small-min:  $breakpoint-small;
+  $breakpoint-medium-min: $breakpoint-medium;
+  $breakpoint-big-min:    $breakpoint-big;
 
-  $bp-xsmall: "(min-width: 320px)";
-  $bp-teeny: "(min-width: 480px)";
-  $bp-tiny: "(min-width: 600px)";
-  $bp-small: "(min-width: 650px)";
-  $bp-medium: "(min-width: 800px)";
-  $bp-big: "(min-width: 1000px)";
+  $map: (
+    // xxsmall: $breakpoint-xxsmall-min,
+    xsmall: $breakpoint-xsmall-min,
+    teeny: $breakpoint-teeny-min,
+    tiny: $breakpoint-tiny-min,
+    small: $breakpoint-small-min,
+    medium: $breakpoint-medium-min,
+    big: $breakpoint-big-min,
+  );
 
-  @if $point == big {
-    @media #{$bp-big} { @content; }
+  @if not map-has-key($map, $point) {
+    @error "Invalid breakpoint key `#{$point}` for mixin `bp-starting-at`"
   }
-  @else if $point == medium {
-    @media #{$bp-medium} { @content; }
+
+  $breakpoint-size: "(min-width: #{map-get($map, $point)})";
+
+  @if $mediatype {
+    $breakpoint-size: "#{$mediatype} and #{$breakpoint-size}";
   }
-  @else if $point == small {
-    @media #{$bp-small}  { @content; }
-  }
-  @else if $point == tiny {
-    @media #{$bp-tiny}  { @content; }
-  }
-  @else if $point == teeny {
-    @media #{$bp-teeny}  { @content; }
-  }
-  @else if $point == xsmall {
-    @media #{$bp-xsmall}  { @content; }
-  }
+
+  @media #{$breakpoint-size} { @content; }
 }
+
+@mixin bp-up-to($point, $mediatype:null) {
+  // Makes no sense to call this mixin with 'big' as parameter
+  $breakpoint-xxsmall-max: $breakpoint-xsmall - 1px;
+  $breakpoint-xsmall-max:  $breakpoint-teeny  - 1px;
+  $breakpoint-teeny-max:   $breakpoint-tiny   - 1px;
+  $breakpoint-tiny-max:    $breakpoint-small  - 1px;
+  $breakpoint-small-max:   $breakpoint-medium - 1px;
+  $breakpoint-medium-max:  $breakpoint-big    - 1px;
+  // $breakpoint-big-max:  infinite;
+
+  $map: (
+    xxsmall: $breakpoint-xxsmall-max,
+    xsmall: $breakpoint-xsmall-max,
+    teeny: $breakpoint-teeny-max,
+    tiny: $breakpoint-tiny-max,
+    small: $breakpoint-small-max,
+    medium: $breakpoint-medium-max,
+    // big: $breakpoint-big-max,
+  );
+
+  @if not map-has-key($map, $point) {
+    @error "Invalid breakpoint key `#{$point}` for mixin `bp-up-to`"
+  }
+
+  $breakpoint-size: "(max-width: #{map-get($map, $point)})";
+
+  @if $mediatype {
+    $breakpoint-size: "#{$mediatype} and #{$breakpoint-size}";
+  }
+
+  @media #{$breakpoint-size} { @content; }
+}
+
+// @mixin bp-handheld {
+//   @media handheld and (max-width: 480px),
+//          screen and (max-width: 480px),
+//          screen and (max-width: 900px) {
+//            @content;
+//          }
+// }
+
+@mixin bp-handheld($handheld: default, $screen1: default, $screen2: default) {
+
+  @if $handheld == default {
+    $handheld: #{$breakpoint-teeny - 1px};
+  }
+  @if $screen1 == default {
+    $screen1: #{$breakpoint-teeny - 1px};
+  }
+  @if $screen2 == default {
+    $screen2: 900px;
+  }
+
+  $val: ();
+
+  @if $handheld {
+    $val: append($val, "handheld and (max-width: #{$handheld})", comma);
+  }
+  @if $screen1 {
+    $val: append($val, "screen and (max-width: #{$screen1})", comma);
+  }
+  @if $screen2 {
+    $val: append($val, "screen and (max-width: #{$screen2})", comma);
+  }
+
+  @media #{$val} { @content; }
+}
+
 
 @mixin rotate($degrees) {
   -moz-transform: rotate($degrees);

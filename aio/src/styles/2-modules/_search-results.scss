@@ -20,7 +20,7 @@ aio-search-results {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
 
-    @media (max-width: 480px) {
+    @include bp-up-to(xsmall) {
         display: block;
         .search-area {
             display: block;
@@ -93,7 +93,7 @@ aio-search-results.embedded .search-results {
         }
     }
 
-    @include bp(tiny) {
+    @include bp-starting-at(tiny) {
         display: block;
     }
 }

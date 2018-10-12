@@ -20,7 +20,7 @@
       height: auto;
     }
 
-    @media (max-width: 600px) {
+    @include bp-up-to(teeny) {
       float: none !important;
       &.right {
         margin-left: 0;

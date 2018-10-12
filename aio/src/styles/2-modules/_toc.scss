@@ -9,7 +9,7 @@
 }
 
 aio-toc.embedded {
-  @media (min-width: 801px) {
+  @include bp-starting-at(medium) {
     display: none;
   }
 
@@ -111,7 +111,7 @@ aio-toc.embedded {
     margin: 0;
     padding: 0 8px 0 0;
 
-    @media (max-width: 800px) {
+    @include bp-up-to(small) {
       width: auto;
     }
 

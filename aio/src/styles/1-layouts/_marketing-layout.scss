@@ -14,7 +14,7 @@
   transform: skewY(8deg);
   transform-origin: 100%;
 
-  @media (max-width: 480px) {
+  @include bp-up-to(xsmall) {
     max-height: 486px;
     padding-top: 40px;
     transform: none;
@@ -133,7 +133,7 @@ section#intro {
   box-sizing: border-box;
   transition: all 0.3s ease-in;
 
-  @media (max-width: 992px) {
+  @include bp-up-to(medium) {
     flex-direction: column;
     text-align: center;
     padding: 32px 16px;
@@ -202,7 +202,7 @@ section#intro {
   padding: 24px;
   box-shadow: 0 6px 6px rgba(10, 16, 20, 0.15), 0 0 52px rgba(10, 16, 20, 0.12);
 
-  @media (max-width: 600px) {
+  @include bp-up-to(teeny) {
     margin: 16px auto 0;
 
     h2 {
@@ -283,7 +283,7 @@ aio-shell {
     article {
       padding: 32px;
 
-      @media (max-width: 800px) {
+      @include bp-up-to(small) {
         padding: 24px;
       }
     }
@@ -307,7 +307,7 @@ aio-shell {
       max-width: 70px;
     }
 
-    @media (max-width: 600px) {
+    @include bp-up-to(teeny) {
       mat-sidenav-container.sidenav-container {
         padding-top: 0;
       }
@@ -344,7 +344,7 @@ div[layout=row]{
     align-items: center;
     box-sizing: border-box;
 
-    @media (max-width: 480px) {
+    @include bp-up-to(xsmall) {
       display: block;
   }
 }
@@ -355,7 +355,7 @@ div[layout=row]{
 
 .home-rows {
     overflow: hidden;
-    @media (max-width: 600px) {
+    @include bp-up-to(teeny) {
       margin: 0;
     }
 }
@@ -372,7 +372,7 @@ div[layout=row]{
   .promo-img-container, .text-container {
     max-width: 50%;
 
-    @media(max-width: 480px) {
+    @include bp-up-to(xsmall) {
       max-width: 100%;
       text-align: center;
 
@@ -385,7 +385,7 @@ div[layout=row]{
   .text-block {
     padding-right: 15%;
 
-    @media(max-width: 600px) {
+    @include bp-up-to(teeny) {
       padding: 0;
     }
   }
@@ -404,7 +404,7 @@ div[layout=row]{
       max-width: 90%;
 
 
-      @media (max-width: 599px) {
+      @include bp-up-to(teeny) {
         max-width: 100%;
         float: initial !important;
       }
@@ -417,7 +417,7 @@ div[layout=row]{
   margin-top: 64px;
   padding: 32px;
 
-  @media (max-width: 600px) {
+  @include bp-up-to(teeny) {
     margin-top: 56px;
     padding: 18px;
   }
@@ -431,7 +431,7 @@ div[layout=row]{
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
 
-    @media (max-width: 600px) {
+    @include bp-up-to(teeny) {
       font-size: 18px;
       font-weight: 400;
     }

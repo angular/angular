@@ -13,7 +13,7 @@ h1 {
   font-weight: 500;
   margin: 8px 0px;
 
-  @media screen and (max-width: 600px) {
+  @include bp-up-to(teeny, screen) {
     margin-top: 0;
   }
 }
@@ -59,7 +59,7 @@ h2, h3, h4, h5, h6 {
     font-size: inherit;
   }
 
-  @media screen and (max-width: 600px) {
+  @include bp-up-to(teeny, screen) {
     margin: 8px 0;
   }
 }

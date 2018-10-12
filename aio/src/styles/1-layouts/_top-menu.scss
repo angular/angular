@@ -24,7 +24,7 @@ mat-toolbar.mat-toolbar {
 aio-shell.page-home mat-toolbar.mat-toolbar {
   background-color: $blue;
 
-  @media (min-width: 481px) {
+  @include bp-starting-at(teeny) {
     &:not(.transitioning) {
       background-color: transparent;
       transition: background-color 0.2s linear;
@@ -40,7 +40,7 @@ aio-shell.page-resources mat-toolbar.mat-toolbar {
   box-shadow: none;
 
   // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (min-width: 481px) {
+  @include bp-starting-at(teeny) {
     position: absolute;
   }
 }
@@ -50,7 +50,7 @@ aio-shell.folder-api mat-toolbar.mat-toolbar,
 aio-shell.folder-docs mat-toolbar.mat-toolbar,
 aio-shell.folder-guide mat-toolbar.mat-toolbar,
 aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
-  @media (min-width: 992px) {
+  @include bp-starting-at(big) {
     .hamburger.mat-button {
       // Hamburger shown on non-marketing pages on large screens.
       margin: $hamburgerShownMargin;
@@ -64,13 +64,13 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   margin: $hamburgerShownMargin;
   padding: 0;
 
-  @media (min-width: 992px) {
+  @include bp-starting-at(big) {
     // Hamburger hidden by default on large screens.
     // (Will be shown per doc.)
     margin: $hamburgerHiddenMargin;
   }
 
-  @media (max-width: 480px) {
+  @include bp-up-to(xsmall) {
     min-width: 15%;
   }
 
@@ -96,7 +96,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   margin: 0 16px 0 0;
   padding: 21px 0;
 
-  @media screen and (max-width: 480px) {
+  @include bp-up-to(xsmall, screen) {
     margin-right: 8px;
   }
 
@@ -106,7 +106,7 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
     top: 12px;
     height: 40px;
 
-    @media (max-width: 992px) {
+    @include bp-up-to(medium) {
       &:hover {
         transform: scale(1.1);
       }
@@ -184,14 +184,14 @@ aio-search-box.search-container {
       outline: none;
     }
 
-    @include bp(big) {
+    @include bp-starting-at(big) {
       transition: width 0.4s ease-in-out;
 
       &:focus {
         width: 50%;
       }
     }
-    @media (max-width: 480px) {
+    @include bp-up-to(xsmall) {
       width: 150px;
     }
   }
@@ -209,7 +209,7 @@ aio-search-box.search-container {
       align-items: center;
       margin-left: 16px;
 
-      @media screen and (max-width: 480px) {
+      @include bp-up-to(xsmall, screen) {
         margin-left: 8px;
       }
 

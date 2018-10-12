@@ -43,7 +43,7 @@ table {
       line-height: 24px;
       vertical-align: top;
 
-      @media (max-width: 480px) {
+      @include bp-up-to(xsmall) {
         &:before {
           // content: **ADD TABLE HEADER**;
           display: inline-block;
@@ -56,7 +56,7 @@ table {
       letter-spacing: 0.30px;
 
     tr td:first-child {
-      @media (max-width: 480px) {
+      @include bp-up-to(xsmall) {
         background-color: $lightgray;
       }
     }
@@ -73,7 +73,7 @@ table {
     &:last-child td {
       border: none;
 
-      @media (max-width: 480px) {
+      @include bp-up-to(xsmall) {
         border-bottom: 1px solid $lightgray;
       }
     }
@@ -86,7 +86,7 @@ table {
     overflow: auto;
   }
 
-  @media only screen and (max-width: 990px) {
+  @include bp-up-to(medium, only screen) {
 
     /* Force table to not be like tables anymore */
     table, thead, tbody, tfoot, tr, th, td {

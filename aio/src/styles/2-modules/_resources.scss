@@ -22,13 +22,13 @@
   height: 0;
 }
 
-@media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
+@include bp-handheld {
   .grid-fixed {
     width: auto;
   }
 }
 
-@media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
+@include bp-handheld {
   .grid-fixed .c3, .grid-fixed .c8 {
     margin-left: 20px;
     margin-right: 20px;
@@ -38,7 +38,7 @@
   }
 }
 
-@media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 480px) {
+@include bp-handheld(default, default, null) {
   .grid-fixed .c3, .grid-fixed .c8 {
     margin-left: 0px;
     margin-right: 0px;

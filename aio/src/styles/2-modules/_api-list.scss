@@ -32,7 +32,7 @@ aio-api-list {
   display: flex;
   margin: 0 auto;
 
-  @media (max-width: 600px) {
+  @include bp-up-to(teeny) {
       flex-direction: column;
       margin: 16px auto;
   }
@@ -165,7 +165,7 @@ aio-api-list {
   padding: 0;
   overflow: hidden;
 
-  @media screen and (max-width: 600px) {
+  @include bp-up-to(teeny, screen) {
         margin: 0 0 0 -8px;
     }
 
@@ -303,7 +303,7 @@ p {
   }
 }
 
-@media screen and (max-width: 600px) {
+@include bp-up-to(teeny, screen) {
   .docs-content {
     // Overrides display flex from angular material.
     // This was added because Safari doesn't play nice with layout="column".

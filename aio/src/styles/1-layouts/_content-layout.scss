@@ -10,7 +10,7 @@ aio-shell.page-docs {
   padding: 80px 3rem 1rem;
 }
 
-@media (max-width: 600px) {
+@include bp-up-to(teeny) {
   aio-menu {
     display: none;
   }

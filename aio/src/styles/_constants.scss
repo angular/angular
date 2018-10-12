@@ -117,6 +117,17 @@ $api-symbols: (
 );
 
 // OTHER
+
+// pattern:
+// $breakpoint-<size>: <minimum value that is inside that size>;
+$breakpoint-xxsmall: 0;
+$breakpoint-xsmall: 320px;
+$breakpoint-teeny: 480px;
+$breakpoint-tiny: 600px;
+$breakpoint-small: 650px;
+$breakpoint-medium: 800px;
+$breakpoint-big: 993px;
+
 $small-breakpoint-width: 840px;
-$phone-breakpoint: 480px;
-$tablet-breakpoint: 800px;
+$phone-breakpoint: $breakpoint-teeny;
+$tablet-breakpoint: $breakpoint-medium;
