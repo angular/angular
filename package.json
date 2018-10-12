@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@bazel/ibazel": "^0.1.1",
+    "@bazel/typescript": "0.19.1",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
     "@types/chai": "^4.1.2",
@@ -126,7 +127,7 @@
     "tsickle": "0.32",
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
-    "tsutils": "2.20.0",
+    "tsutils": "2.27.2",
     "typescript": "~3.1.1",
     "uglify-es": "^3.3.9",
     "universal-analytics": "0.4.15",

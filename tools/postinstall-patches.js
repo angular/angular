@@ -40,4 +40,12 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
+log('\n# patch: reactive/rxjs#4213 conform with http://tsetse.info/ban-promise-as-condition');
+sed('-i', 'if \\\(duration\\\)', 'if (!!duration)',
+    'node_modules/rxjs/src/internal/operators/throttle.ts');
+sed('-i', 'if \\\(next\\\)', 'if (!!next)',
+    'node_modules/rxjs/src/internal/operators/onErrorResumeNext.ts');
+sed('-i', 'if \\\(result \&\&', 'if (!!result &&',
+    'node_modules/rxjs/src/internal/util/subscribeTo.ts');
+
 log('===== finished running the postinstall-patches.js script =====');
