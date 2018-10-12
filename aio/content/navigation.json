@@ -622,8 +622,8 @@
       "tooltip": "Angular CLI command reference.",
       "children": [
         {
-          "title": "Using the CLI",
-          "tooltip": "An overview of how to use the CLI tool.",
+          "title": "Overview",
+          "tooltip": "An introduction to the CLI tool, commands, and syntax.",
           "url": "cli"
         }
       ]
