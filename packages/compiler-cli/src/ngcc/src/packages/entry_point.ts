@@ -41,11 +41,13 @@ interface EntryPointPackageJson {
   name: string;
   fesm2015?: string;
   fesm5?: string;
+  es2015?: string;  // ESM2015 (or FESM2015 if there is also `esm2015`)
   esm2015?: string;
   esm5?: string;
-  main?: string;
-  types?: string;
-  typings?: string;
+  main?: string;     // UMD
+  module?: string;   // ESM5 (or FESM5 if there is also `esm5`)
+  types?: string;    // Alternative to `typings` property - see https://bit.ly/2OgWp2H
+  typings?: string;  // TypeScript .d.ts files
 }
 
 /**
@@ -60,10 +62,17 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
     return null;
   }
 
-  // According to https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html,
-  // `types` and `typings` are interchangeable.
-  const {name, fesm2015, fesm5, esm2015, esm5, main, types, typings = types}:
-      EntryPointPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  // If there is `esm2015` then `es2015` will be FESM2015, otherwise ESM2015.
+  // If there is `esm5` then `module` will be FESM5, otherwise it will be ESM5.
+  // The `typings` and `types` properties are synonymous.
+  const {
+    name,
+    fesm2015,
+    fesm5,
+    es2015,
+    esm2015 = es2015,
+    module: moduleFormat, esm5 = moduleFormat, main, types, typings = types
+  }: EntryPointPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   // Minimum requirement is that we have esm2015 format and typings.
   if (!typings || !esm2015) {
