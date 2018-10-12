@@ -3,8 +3,8 @@
 Welcome to Angular! Angular helps you build modern applications for the web, mobile, or desktop.  
 
 This guide shows you how to build and run a simple Angular
-app, using the [Angular CLI](cli) to accelerate development, 
-while adhering to the [Style Guide](guide/styleguide) recommendations that
+app, using the [Angular CLI](cli "CLI command reference") command line interface tool to accelerate development, 
+while adhering to the [Style Guide](guide/styleguide "Angular style guide") recommendations that
 benefit _every_ Angular project.
 
 The end of this guide includes a link to download a copy of the app that you create in this Getting Started. It also recommends next steps for learning and using Angular. 
@@ -22,14 +22,14 @@ Angular requires `Node.js` version 8.x or 10.x.
 
 * To check your version, run `node -v` in a terminal/console window.
 
-* To get `Node.js`, go to [nodejs.org](https://nodejs.org), download the installer, and follow the instructions on that site.
+* To get `Node.js`, go to [nodejs.org](https://nodejs.org "Nodejs.org"), download the installer, and follow the instructions on that site.
 
 
 
 
 ### npm package manager
 
-Angular, the Angular CLI, and Angular apps depend upon features and functionality provided by libraries that are available as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm). To download and install npm packages, you must have an npm package manager. 
+Angular, the Angular CLI, and Angular apps depend upon features and functionality provided by libraries that are available as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm "What is npm?"). To download and install npm packages, you must have an npm package manager. 
 
 This Quick Start uses the [npm client](https://docs.npmjs.com/cli/install) command line interface, which is installed with `Node.js` by default. 
 
@@ -59,21 +59,31 @@ To install the CLI using the `npm` package manager, open a terminal window and e
 
 {@a create-proj}
 
-## Step 2: Create a new project
+## Step 2: Create a workspace and initial application
 
+Your develop your apps in the context of an Angular [**workspace**](guide/glossary#workspace). A workspace contains the files for one or more [**projects**](guide/glossary/#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) test. 
 
-Generate a new project and default app by running the Angular CLI command `ng new` and specifying the name of your project. 
+To create a new workspace and initial app project: 
 
-The following command creates a new project called `my-app`:
-
+1. Run the CLI command `ng new` as shown here: 
 
 <code-example language="sh" class="code-shell">
   ng new my-app
 
 </code-example>
 
-The Angular CLI installs the necessary `npm` packages, creates the project files, and populates the project with a simple default app. This can take a few minutes.
+2. The `ng new` command prompts you for information about features to include in the initial app project. Accept the defaults by typing `Enter` or `Return`. 
 
+The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes. 
+
+It also creates the following workspace and starter project files: 
+
+* A new workspace, with a root folder named `my-app`
+* An initial skeleton app project, also called `my-app` (in the `src` subfolder)
+* An end-to-end test project (in the `e2e` subfolder)
+* Related configuration files
+
+The initial app project is already a complete app, ready to run. 
 
 {@a serve}
 
@@ -81,7 +91,7 @@ The Angular CLI installs the necessary `npm` packages, creates the project files
 
 Angular includes a server, so that you can easily build and serve your app locally.
 
-1. Go to the project directory (`my-app`).
+1. Go to the workspace folder (`my-app`).
 
 1. Launch the server by using the CLI command `ng serve`, with the `--open` option.
 
@@ -100,7 +110,7 @@ Your app greets you with a message:
 
 
 <figure>
-  <img src='generated/images/guide/cli-quickstart/app-works.png' alt="The app works!">
+  <img src='generated/images/guide/cli-quickstart/app-works.png' alt="Welcome to my-app!">
 </figure>
 
 
@@ -112,37 +122,32 @@ Your app greets you with a message:
 [**_Components_**](guide/glossary#component) are the fundamental building blocks of Angular applications. 
 They display data on the screen, listen for user input, and take action based on that input. 
 
-The CLI created the first component for you. 
-
-
-Your app resides in the `src` folder.
-All Angular components, templates, styles, images, and anything else your app needs go here.
+In the initial app, the CLI created the first Angular component for you. It is the _root component_, and it is named `app-root`. 
 
 1. Open `./src/app/app.component.ts`. 
 
-Every app has a _root component_, named `app-root`.
-The root component connects a component hierarchy with the page document object model (DOM). 
+2. Find the `app-root` component. 
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="metadata" title="src/app/app.component.ts" linenums="false"></code-example>
 
-2. The `@Component()` decorator identifies the class immediately below it (`AppComponent`) as a component. Change the `title` property from `'my-app'` to `'My First Angular App'`.
+
+3. Change the `title` property from `'my-app'` to `'My First Angular App'`.
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="component" title="src/app/app.component.ts" linenums="false"></code-example>
 
-    The browser reloads automatically with the revised title. That's nice, but it could look better.
+The browser reloads automatically with the revised title. That's nice, but it could look better.
 
-3. Open `src/app/app.component.css` and give the component some style.
+4. Open `src/app/app.component.css` and give the component some style.
 
 
 <code-example path="cli-quickstart/src/app/app.component.css" title="src/app/app.component.css" linenums="false"></code-example>
-
 
 
 <figure>
   <img src='generated/images/guide/cli-quickstart/my-first-app.png' alt="Output of Getting Started app">
 </figure>
 
-That's all you need to do. You've created your first Angular app!
+Looking good! 
 
 
 
@@ -151,7 +156,7 @@ That's all you need to do. You've created your first Angular app!
 ## Final code review
 
 You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download an example</a> of the final app that was created in this Quick Start. 
-Many Angular guides include links to download or run live examples of an app, so that you can see Angular concepts and code in action. 
+Most Angular guides include links to download example files or run live examples in Stackblitz, so that you can see Angular concepts and code in action. 
 
 Here are the code files discussed on this page:
 
@@ -164,9 +169,7 @@ Here are the code files discussed on this page:
 
 </code-tabs>
 
-
-For more details about Angular project files and the file structure, see [Anatomy of the setup](guide/setup-systemjs-anatomy).
-
+For details about Angular project files and the file structure, see [Workspace and project file struture](guide/file-structure).
 
 ## Next steps
 
@@ -184,6 +187,6 @@ It has many of the features you'd expect to find in a data-driven application:
 
 * The [Architecture guide](guide/architecture "Architecture guide")  describes key concepts such as modules, components, services, and dependency injection (DI). It provides a foundation for more in-depth guides about specific Angular concepts and features.  
 
-Both the Tutorial and Architecture guide are intended to give you the foundation to continue exploring Angular on your own, focusing on the features most important for your apps. 
+After you read the Tutorial and Architecture guide, you're ready to continue exploring Angular on your own, focusing on the features most important for your apps. 
 
 
