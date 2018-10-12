@@ -106,7 +106,7 @@ To install TypeScript 3.1:
 
  * OR install it with npm: `npm install -g typescript@3.1`.
 
-You can find out more about TypeScript 3.1 support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/2018/09/13/announcing-typescript-3-1-rc/)**.
+You can find out more about TypeScript 3.1 support in Visual Studio **[here](https://blogs.msdn.microsoft.com/typescript/announcing-typescript-3-1/)**.
 
 At this point, Visual Studio is ready. It’s a good idea to close Visual Studio and 
 restart it to make sure everything is clean.

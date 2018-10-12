@@ -563,7 +563,7 @@
            {
              "url": "guide/visual-studio-2015",
              "title": "Visual Studio 2015",
-             "tooltip": "Use Visual Studio 2015 with the QuickStart files.",
+             "tooltip": "Using Angular with Visual Studio 2015.",
              "hidden": true
            }
           ]
