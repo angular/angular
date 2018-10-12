@@ -7,6 +7,7 @@
  */
 
 import * as o from './output/output_ast';
+import {I18nMeta, parseI18nMeta} from './render3/view/i18n';
 import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
@@ -78,6 +79,7 @@ class FixupExpression extends o.Expression {
 export class ConstantPool {
   statements: o.Statement[] = [];
   private translations = new Map<string, o.Expression>();
+  private deferredTranslations = new Map<o.ReadVarExpr, number>();
   private literals = new Map<string, FixupExpression>();
   private literalFactories = new Map<string, o.Expression>();
   private injectorDefinitions = new Map<any, FixupExpression>();
@@ -113,6 +115,31 @@ export class ConstantPool {
     return fixup;
   }
 
+  getDeferredTranslationConst(suffix: string): o.ReadVarExpr {
+    const index = this.statements.push(new o.ExpressionStatement(o.NULL_EXPR)) - 1;
+    const variable = o.variable(this.freshTranslationName(suffix));
+    this.deferredTranslations.set(variable, index);
+    return variable;
+  }
+
+  setDeferredTranslationConst(variable: o.ReadVarExpr, message: string): void {
+    const index = this.deferredTranslations.get(variable) !;
+    this.statements[index] = this.getTranslationDeclStmt(variable, message);
+  }
+
+  getTranslationDeclStmt(variable: o.ReadVarExpr, message: string): o.DeclareVarStmt {
+    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
+    return variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+  }
+
+  appendTranslationMeta(meta: string|I18nMeta) {
+    const parsedMeta = typeof meta === 'string' ? parseI18nMeta(meta) : meta;
+    const docStmt = i18nMetaToDocStmt(parsedMeta);
+    if (docStmt) {
+      this.statements.push(docStmt);
+    }
+  }
+
   // Generates closure specific code for translation.
   //
   // ```
@@ -122,10 +149,11 @@ export class ConstantPool {
   //  */
   // const MSG_XYZ = goog.getMsg('message');
   // ```
-  getTranslation(message: string, meta: {description?: string, meaning?: string}, suffix: string):
-      o.Expression {
+  getTranslation(message: string, meta: string, suffix: string): o.Expression {
+    const parsedMeta = parseI18nMeta(meta);
+
     // The identity of an i18n message depends on the message and its meaning
-    const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
+    const key = parsedMeta.meaning ? `${message}\u0000\u0000${parsedMeta.meaning}` : message;
 
     const exp = this.translations.get(key);
 
@@ -133,16 +161,9 @@ export class ConstantPool {
       return exp;
     }
 
-    const docStmt = i18nMetaToDocStmt(meta);
-    if (docStmt) {
-      this.statements.push(docStmt);
-    }
-
-    // Call closure to get the translation
     const variable = o.variable(this.freshTranslationName(suffix));
-    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
-    const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
-    this.statements.push(msgStmt);
+    this.appendTranslationMeta(parsedMeta);
+    this.statements.push(this.getTranslationDeclStmt(variable, message));
 
     this.translations.set(key, variable);
     return variable;
@@ -330,14 +351,14 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
   return e instanceof o.ReadVarExpr;
 }
 
-// Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
-// formatted as expected by the Closure compiler.
-function i18nMetaToDocStmt(meta: {description?: string, id?: string, meaning?: string}):
-    o.JSDocCommentStmt|null {
+// Converts i18n meta informations for a message (id, description, meaning)
+// to a JsDoc statement formatted as expected by the Closure compiler.
+function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   const tags: o.JSDocTag[] = [];
 
-  if (meta.description) {
-    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
+  if (meta.id || meta.description) {
+    const text = meta.id ? `[BACKUP_MESSAGE_ID:${meta.id}] ${meta.description}` : meta.description;
+    tags.push({tagName: o.JSDocTagName.Desc, text: text !.trim()});
   }
 
   if (meta.meaning) {
