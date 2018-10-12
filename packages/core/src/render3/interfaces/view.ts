@@ -13,32 +13,34 @@ import {PlayerHandler} from '../interfaces/player';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
-import {TElementNode, TNode, TViewNode} from './node';
+import {LContainerNode, LElementContainerNode, LElementNode, TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
+import {StylingContext} from './styling';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 16;
+export const HEADER_OFFSET = 17;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
 export const TVIEW = 0;
-export const PARENT = 1;
-export const NEXT = 2;
-export const QUERIES = 3;
-export const FLAGS = 4;
-export const HOST_NODE = 5;
-export const BINDING_INDEX = 6;
-export const CLEANUP = 7;
-export const CONTEXT = 8;
-export const INJECTOR = 9;
-export const RENDERER = 10;
-export const SANITIZER = 11;
-export const TAIL = 12;
-export const CONTAINER_INDEX = 13;
-export const CONTENT_QUERIES = 14;
-export const DECLARATION_VIEW = 15;
+export const FLAGS = 1;
+export const PARENT = 2;
+export const NEXT = 3;
+export const QUERIES = 4;
+export const HOST = 5;
+export const HOST_NODE = 6;
+export const BINDING_INDEX = 7;
+export const CLEANUP = 8;
+export const CONTEXT = 9;
+export const INJECTOR = 10;
+export const RENDERER = 11;
+export const SANITIZER = 12;
+export const TAIL = 13;
+export const CONTAINER_INDEX = 14;
+export const CONTENT_QUERIES = 15;
+export const DECLARATION_VIEW = 16;
 
 // This interface replaces the real LViewData interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -66,6 +68,9 @@ export interface LViewData extends Array<any> {
    */
   [TVIEW]: TView;
 
+  /** Flags for this view. See LViewFlags for more info. */
+  [FLAGS]: LViewFlags;
+
   /**
    * The parent view is needed when we exit the view and must restore the previous
    * `LViewData`. Without this, the render method would have to keep a stack of
@@ -90,8 +95,13 @@ export interface LViewData extends Array<any> {
   /** Queries active for this view - nodes from a view are reported to those queries. */
   [QUERIES]: LQueries|null;
 
-  /** Flags for this view. See LViewFlags for more info. */
-  [FLAGS]: LViewFlags;
+  /**
+   * The host node for this LViewData instance, if this is a component view.
+   *
+   * If this is an embedded view, HOST will be null.
+   */
+  // TODO: should store native elements directly when we remove LNode
+  [HOST]: LElementNode|LContainerNode|LElementContainerNode|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.

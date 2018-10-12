@@ -7,13 +7,14 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, getTNode, load, loadElement, resetComponentState} from './instructions';
+import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, loadElement, resetComponentState} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
-import {getLNode, isLContainer, stringify} from './util';
+import {getNative, getTNode, isLContainer, stringify} from './util';
+
 
 
 /**
@@ -272,8 +273,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode):
     }
   }
 
-  const native = getLNode(tNode, viewData).native;
-  appendChild(native, tNode, viewData);
+  appendChild(getNative(tNode, viewData), tNode, viewData);
 
   const slotValue = viewData[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
@@ -320,7 +320,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
   }
 
   const renderer = getRenderer();
-  const startTNode = getTNode(startIndex);
+  const startTNode = getTNode(startIndex, viewData);
   let localParentTNode: TNode = startTNode.parent || viewData[HOST_NODE] !;
   let localPreviousTNode: TNode = localParentTNode;
   resetComponentState();  // We don't want to add to the tree with the wrong previous node
@@ -329,7 +329,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
     const instruction = instructions[i] as number;
     switch (instruction & I18nInstructions.InstructionMask) {
       case I18nInstructions.Element:
-        const elementTNode = getTNode(instruction & I18nInstructions.IndexMask);
+        const elementTNode = getTNode(instruction & I18nInstructions.IndexMask, viewData);
         localPreviousTNode = appendI18nNode(elementTNode, localParentTNode, localPreviousTNode);
         localParentTNode = elementTNode;
         break;
@@ -338,7 +338,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
       case I18nInstructions.Any:
         const nodeIndex = instruction & I18nInstructions.IndexMask;
         localPreviousTNode =
-            appendI18nNode(getTNode(nodeIndex), localParentTNode, localPreviousTNode);
+            appendI18nNode(getTNode(nodeIndex, viewData), localParentTNode, localPreviousTNode);
         break;
       case I18nInstructions.Text:
         if (ngDevMode) {
@@ -365,7 +365,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         }
         const removeIndex = instruction & I18nInstructions.IndexMask;
         const removedNode: LNode|LContainerNode = loadElement(removeIndex);
-        const removedTNode = getTNode(removeIndex);
+        const removedTNode = getTNode(removeIndex, viewData);
         removeChild(removedTNode, removedNode.native || null, viewData);
 
         const slotValue = load(removeIndex) as LNode | LContainer | StylingContext;

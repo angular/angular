@@ -69,14 +69,6 @@ export interface LNode {
    *  - retrieve the sibling elements of text nodes whose creation / insertion has been delayed
    */
   readonly native: RComment|RElement|RText|null;
-
-  /**
-   * If regular LElementNode, LTextNode, LContainerNode, and LProjectionNode then `data` will be
-   * null.
-   * If LElementNode with component, then `data` contains LViewData.
-   * If LViewNode, then `data` contains the LViewData.
-   */
-  readonly data: LViewData|null;
 }
 
 
@@ -84,30 +76,22 @@ export interface LNode {
 export interface LElementNode extends LNode {
   /** The DOM element associated with this node. */
   readonly native: RElement;
-
-  /** If Component then data has LView (light DOM) */
-  readonly data: LViewData|null;
 }
 
 /** LNode representing <ng-container>. */
 export interface LElementContainerNode extends LNode {
   /** The DOM comment associated with this node. */
   readonly native: RComment;
-  readonly data: null;
 }
 
 /** LNode representing a #text node. */
 export interface LTextNode extends LNode {
   /** The text node associated with this node. */
   native: RText;
-  readonly data: null;
 }
 
 /** Abstract node which contains root nodes of a view. */
-export interface LViewNode extends LNode {
-  readonly native: null;
-  readonly data: LViewData;
-}
+export interface LViewNode extends LNode { readonly native: null; }
 
 /** Abstract node container which contains other views. */
 export interface LContainerNode extends LNode {
@@ -119,14 +103,10 @@ export interface LContainerNode extends LNode {
    * until the parent view is processed.
    */
   native: RComment;
-  readonly data: null;
 }
 
 
-export interface LProjectionNode extends LNode {
-  readonly native: null;
-  readonly data: null;
-}
+export interface LProjectionNode extends LNode { readonly native: null; }
 
 /**
  * A set of marker values to be used in the attributes arrays. Those markers indicate that some

@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TemplateRef, ViewContainerRef} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {directiveInject} from '../../src/render3/di';
-import {LifecycleHooksFeature, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
+import {LifecycleHooksFeature, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 
-import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
+import {ComponentFixture, containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
@@ -86,6 +87,73 @@ describe('change detection', () => {
          await whenRendered(myComp);
          expect(getRenderedText(myComp)).toEqual('updated');
        }));
+
+    it('should support detectChanges on components that have LContainers', () => {
+      let structuralComp !: StructuralComp;
+
+      class StructuralComp {
+        tmp !: TemplateRef<any>;
+        value = 'one';
+
+        constructor(public vcr: ViewContainerRef) {}
+
+        create() { this.vcr.createEmbeddedView(this.tmp); }
+
+        static ngComponentDef = defineComponent({
+          type: StructuralComp,
+          selectors: [['structural-comp']],
+          factory: () => structuralComp =
+                       new StructuralComp(directiveInject(ViewContainerRef as any)),
+          inputs: {tmp: 'tmp'},
+          consts: 1,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: StructuralComp) => {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, bind(ctx.value));
+            }
+          }
+        });
+      }
+
+      function FooTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Temp content');
+        }
+      }
+
+      /**
+       * <ng-template #foo>
+       *     Temp content
+       * </ng-template>
+       * <structural-comp [tmp]="foo"></structural-comp>
+       */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
+          element(2, 'structural-comp');
+        }
+        if (rf & RenderFlags.Update) {
+          const foo = reference(1) as any;
+          elementProperty(2, 'tmp', bind(foo));
+        }
+      }, 3, 1, [StructuralComp]);
+
+      const fixture = new ComponentFixture(App);
+      fixture.update();
+      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+      structuralComp.create();
+      fixture.update();
+      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Temp content');
+
+      structuralComp.value = 'two';
+      detectChanges(structuralComp);
+      expect(fixture.html).toEqual('<structural-comp>two</structural-comp>Temp content');
+    });
+
   });
 
   describe('onPush', () => {

@@ -7,16 +7,15 @@
  */
 
 import {assertDefined} from './assert';
-import {attachPatchData, readElementValue} from './context_discovery';
+import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
-import {HOST_NATIVE, LContainer, NATIVE, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementContainerNode, LElementNode, LTextNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainer, NATIVE, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {LContainerNode, LElementContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {StylingIndex} from './interfaces/styling';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {getLNode, isLContainer, stringify} from './util';
+import {getLNode, getNative, isLContainer, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -104,8 +103,7 @@ function walkTNodeTree(
     let nextTNode: TNode|null = null;
     const parent = renderParentNode ? renderParentNode.native : null;
     if (tNode.type === TNodeType.Element) {
-      const elementNode = getLNode(tNode, currentView);
-      executeNodeAction(action, renderer, parent, elementNode.native !, beforeNode);
+      executeNodeAction(action, renderer, parent, getNative(tNode, currentView), beforeNode);
       const nodeOrContainer = currentView[tNode.index];
       if (isLContainer(nodeOrContainer)) {
         // This element has an LContainer, and its comment needs to be handled
@@ -397,13 +395,7 @@ export function removeView(
 /** Gets the child of the given LViewData */
 export function getLViewChild(viewData: LViewData): LViewData|LContainer|null {
   const childIndex = viewData[TVIEW].childIndex;
-  if (childIndex === -1) return null;
-
-  const value: LElementNode|LContainerNode|LContainer = viewData[childIndex];
-
-  // If it's an array, it's an LContainer. Otherwise, it's a component node, so LViewData
-  // is stored in data.
-  return Array.isArray(value) ? value : value.data;
+  return childIndex === -1 ? null : viewData[childIndex];
 }
 
 /**
@@ -668,7 +660,7 @@ export function getBeforeNodeForView(index: number, views: LViewData[], containe
   if (index + 1 < views.length) {
     const view = views[index + 1] as LViewData;
     const viewTNode = view[HOST_NODE] as TViewNode;
-    return viewTNode.child ? getLNode(viewTNode.child, view).native : containerNative;
+    return viewTNode.child ? getNative(viewTNode.child, view) : containerNative;
   } else {
     return containerNative;
   }
@@ -706,7 +698,7 @@ export function removeChild(tNode: TNode, child: RNode | null, currentView: LVie
 export function appendProjectedNode(
     projectedTNode: TNode, tProjectionNode: TNode, currentView: LViewData,
     projectionView: LViewData): void {
-  const native = getLNode(projectedTNode, projectionView).native;
+  const native = getNative(projectedTNode, projectionView);
   appendChild(native, tProjectionNode, currentView);
 
   // the projected contents are processed while in the shadow view (which is the currentView)

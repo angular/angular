@@ -25,7 +25,7 @@ import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTyp
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LViewData} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
 
@@ -55,7 +55,7 @@ function noop() {}
  * - access to the render `html`.
  */
 export class TemplateFixture extends BaseFixture {
-  hostNode: LElementNode;
+  hostView: LViewData;
   private _directiveDefs: DirectiveDefList|null;
   private _pipeDefs: PipeDefList|null;
   private _sanitizer: Sanitizer|null;
@@ -78,7 +78,7 @@ export class TemplateFixture extends BaseFixture {
     this._pipeDefs = toDefs(pipes, extractPipeDef);
     this._sanitizer = sanitizer || null;
     this._rendererFactory = rendererFactory || domRendererFactory3;
-    this.hostNode = renderTemplate(
+    this.hostView = renderTemplate(
         this.hostElement,
         (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
@@ -99,8 +99,8 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostNode.native, updateBlock || this.updateBlock, 0, this.vars, null !,
-        this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
+        this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
 }
 
@@ -152,7 +152,7 @@ export class ComponentFixture<T> extends BaseFixture {
 
 export const document = ((typeof global == 'object' && global || window) as any).document;
 export let containerEl: HTMLElement = null !;
-let host: LElementNode|null;
+let hostView: LViewData|null;
 const isRenderer2 =
     typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
@@ -181,7 +181,7 @@ export function resetDOM() {
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
   document.body.appendChild(containerEl);
-  host = null;
+  hostView = null;
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
 
@@ -192,9 +192,9 @@ export function renderToHtml(
     template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
     providedRendererFactory?: RendererFactory3 | null) {
-  host = renderTemplate(
+  hostView = renderTemplate(
       containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
-      host, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
+      hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
   return toHtml(containerEl);
 }
 

@@ -28,7 +28,7 @@ import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/
 import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
-import {getLNode, isComponent, isLContainer} from './util';
+import {getComponentViewByIndex, getNative, isComponent, isLContainer} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -60,7 +60,7 @@ export function createElementRef(
     // TODO: Fix class name, should be ElementRef, but there appears to be a rollup bug
     R3ElementRef = class ElementRef_ extends ElementRefToken {};
   }
-  return new R3ElementRef(getLNode(tNode, view).native);
+  return new R3ElementRef(getNative(tNode, view));
 }
 
 let R3TemplateRef: {
@@ -325,7 +325,7 @@ export function createViewRef(
     hostTNode: TNode, hostView: LViewData, context: any): ViewEngine_ChangeDetectorRef {
   if (isComponent(hostTNode)) {
     const componentIndex = hostTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
-    const componentView = getLNode(hostTNode, hostView).data as LViewData;
+    const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, context, componentIndex);
   } else if (hostTNode.type === TNodeType.Element) {
     const hostComponentView = findComponentView(hostView);

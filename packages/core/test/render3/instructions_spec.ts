@@ -81,7 +81,7 @@ describe('instructions', () => {
         element(0, 'div', ['id', 'test', 'title', 'Hello']);
       }, () => {}, 1);
 
-      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const div = (t.hostElement as HTMLElement).querySelector('div') !;
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
       expect(ngDevMode).toHaveProperties({
@@ -109,7 +109,7 @@ describe('instructions', () => {
         ]);
       }, () => {}, 1);
 
-      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const div = (t.hostElement as HTMLElement).querySelector('div') !;
       const attrs: any = div.attributes;
 
       expect(attrs['id'].name).toEqual('id');
@@ -179,7 +179,7 @@ describe('instructions', () => {
 
       t.update(() => elementProperty(0, 'hidden', false));
       // The hidden property would be true if `false` was stringified into `"false"`.
-      expect((t.hostNode.native as HTMLElement).querySelector('div') !.hidden).toEqual(false);
+      expect((t.hostElement as HTMLElement).querySelector('div') !.hidden).toEqual(false);
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
