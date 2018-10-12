@@ -738,6 +738,12 @@
     "name": "I18NHtmlParser"
   },
   {
+    "name": "I18N_ID_SEPARATOR"
+  },
+  {
+    "name": "I18N_MEANING_SEPARATOR"
+  },
+  {
     "name": "I18nError"
   },
   {
@@ -3448,6 +3454,9 @@
   },
   {
     "name": "parseCookieValue"
+  },
+  {
+    "name": "parseI18nMeta"
   },
   {
     "name": "parseIntAutoRadix"

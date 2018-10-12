@@ -205,8 +205,8 @@ export function compileComponentFromMetadata(
 
   const template = meta.template;
   const templateBuilder = new TemplateDefinitionBuilder(
-      constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName, meta.viewQueries,
-      directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
+      constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, null, null, templateName,
+      meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
       meta.template.relativeContextFilePath);
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(
