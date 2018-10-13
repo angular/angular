@@ -30,7 +30,7 @@
       max-width: 300px;
       margin: 0 16px;
 
-      @media (max-width: 768px) {
+      @include bp-up-to(small) {
         max-width: 100%;
       }
     }

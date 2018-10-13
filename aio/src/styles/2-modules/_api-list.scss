@@ -53,9 +53,7 @@ aio-api-list {
   max-width: 1100px;
   margin: 0;
 
-  @media handheld and (max-width: $phone-breakpoint),
-  screen and (max-device-width: $phone-breakpoint),
-  screen and (max-width: $tablet-breakpoint) {
+  @include bp-handheld(default, default, $tablet-breakpoint) {
     padding: 24px 0 0;
   }
 }

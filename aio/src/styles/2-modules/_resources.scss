@@ -48,7 +48,7 @@
   }
 }
 
-@media handheld and (max-width: 900px), screen and (max-width: 900px) {
+@include bp-handheld(900px, 900px, null) {
   /* line 6, ../scss/_responsive.scss */
   .grid-fixed{
     margin: 0 auto;
@@ -67,7 +67,7 @@
   }
 }
 
-@media handheld and (max-width: 480px), screen and (max-width: 480px) {
+@include bp-handheld(default, default, null) {
   /* line 6, ../scss/_responsive.scss */
   .grid-fixed {
     margin: 0 auto;

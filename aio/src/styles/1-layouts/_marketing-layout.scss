@@ -44,10 +44,13 @@ section#intro {
   padding: 48px 0 0;
   color: white;
 
-  @media (max-width: 780px) {
+  @include bp-up-to(medium) {
+    width: 100%;
+  }
+
+  @include bp-up-to(small) {
     flex-direction: column;
     justify-content: center;
-    width: 100%;
     max-width: 100vw;
     padding: 40px 0 32px;
 
@@ -65,7 +68,7 @@ section#intro {
     padding-top: 0;
     padding-bottom: 0;
 
-    @media  (max-width: 780px) {
+    @include bp-up-to(small) {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -85,11 +88,11 @@ section#intro {
       display: none;
     }
 
-    @media (max-width: 780px) {
+    @include bp-up-to(small) {
       text-align: center;
     }
 
-    @media (max-width: 575px) {
+    @include bp-up-to(teeny) {
       font-size: 32px;
       line-height: 50px;
     }
@@ -99,7 +102,11 @@ section#intro {
     display: flex;
     width: 400px;
 
-    @media (max-width: 780px) {
+    @include bp-up-to(xsmall) {
+      width: 100%;
+      max-width: 400px;
+    }
+    @include bp-up-to(small) {
       justify-content: center;
     }
 
@@ -110,7 +117,7 @@ section#intro {
       padding: 0;
       filter: drop-shadow(0 2px 2px rgba($black, 0.24));
 
-      @media (max-width: 780px) {
+      @include bp-up-to(small) {
         width: 250px;
         height: 250px;
       }
@@ -139,7 +146,7 @@ section#intro {
     padding: 32px 16px;
   }
 
-  @media (max-width: 768px) {
+  @include bp-up-to(small) {
     width: 100%;
     max-width: none;
   }
@@ -202,28 +209,27 @@ section#intro {
   padding: 24px;
   box-shadow: 0 6px 6px rgba(10, 16, 20, 0.15), 0 0 52px rgba(10, 16, 20, 0.12);
 
+  @include bp-up-to(xsmall) {
+    width: 100%;
+    min-width: 0;
+  }
+
   @include bp-up-to(teeny) {
     margin: 16px auto 0;
 
     h2 {
       margin: 0;
     }
-
-    img {
-      max-width: none;
-      height: 70px;
-    }
-  }
-
-  @media (max-width: 1300px) {
-    img {
-      height: 70px;
-      max-width: none;
-    }
   }
 
   img {
-    margin: 16px ;
+    margin: 16px;
+    height: 70px;
+
+    @include bp-up-to(xsmall) {
+      margin: 8px;
+      height: 45px;
+    }
   }
 
   .card-text-container {
@@ -354,7 +360,6 @@ div[layout=row]{
 }
 
 .home-rows {
-    overflow: hidden;
     @include bp-up-to(teeny) {
       margin: 0;
     }

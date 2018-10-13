@@ -82,7 +82,7 @@ footer {
 
 
 
-  @media (max-width: 700px) {
+  @include bp-up-to(small) {
     h3 {
       font-size: 110%;
     }

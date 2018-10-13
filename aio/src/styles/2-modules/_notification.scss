@@ -16,7 +16,7 @@ aio-notification {
   height: $notificationHeight;
   justify-content: center;
 
-  @media (max-width: 430px) {
+  @include bp-up-to(xsmall) {
     justify-content: flex-start;
     padding-left: 10px;
   }
@@ -41,7 +41,7 @@ aio-notification {
 
     .icon {
       margin-right: 10px;
-      @media (max-width: 464px) {
+      @include bp-up-to(xsmall) {
         display: none;
       }
     }
@@ -58,7 +58,7 @@ aio-notification {
       text-transform: uppercase;
       padding: 0 10px;
       font-size: 12px;
-      @media (max-width: 780px) {
+      @include bp-up-to(small) {
         display: none;
       }
     }
