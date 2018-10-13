@@ -62,15 +62,26 @@ export function assembleI18nTemplate(strings: Array<string>): string {
   return acc;
 }
 
+function getSeqNubmerGenerator(startsAt: number = 0): () => number {
+  let current = startsAt;
+  return () => current++;
+}
 export class I18nContext {
   private content: string = '';
+  private id: number;
+  private _uniqueIdGen: () => number;
 
-  constructor(private index: number, private ref: any, private level: number = 0) {}
+  constructor(
+      private index: number, private ref: any, private level: number = 0,
+      private uniqueIdGen: (() => number) | null) {
+    this._uniqueIdGen = uniqueIdGen || getSeqNubmerGenerator();
+    this.id = this._uniqueIdGen();
+  }
 
-  private wrap(symbol: string, elementIndex: number, templateIndex: number|null, closed?: boolean) {
+  private wrap(symbol: string, elementIndex: number, contextIdx: number, closed?: boolean) {
     const state = closed ? '/' : '';
-    const tmplIndex = templateIndex ? `:${templateIndex}` : '';
-    return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${tmplIndex}`);
+    const blockIndex = contextIdx > 0 ? `:${contextIdx}` : '';
+    return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${blockIndex}`);
   }
   private append(content: string) { this.content += content; }
 
@@ -78,20 +89,24 @@ export class I18nContext {
   getRef() { return this.ref; }
   getLevel() { return this.level; }
   getContent() { return this.content; }
+  getId() { return this.id; }
+  getUniqueIdGen() { return this._uniqueIdGen; }
   appendText(content: string) { this.append(content); }
-  appendElement(elementIndex: number, templateIndex: number|null, closed?: boolean) {
-    this.append(this.wrap('#', elementIndex, templateIndex, closed));
+  appendElement(elementIndex: number, closed?: boolean) {
+    this.append(this.wrap('#', elementIndex, this.id, closed));
   }
-  appendTemplate(index: number, templateIndex: number|null) {
-    this.append(this.wrap('*', index, templateIndex));
-    this.append(`tmpl${index}`);
-    this.append(this.wrap('*', index, templateIndex, true));
-  }
+  appendTemplate(index: number) { this.append(`[tmpl:${this.id}:${index}]`); }
   resolved() {
-    // TODO: WIP, come up with better approach
+    // TODO: WIP, define more precise regexp
     return !/tmpl/g.test(this.content);
   }
-  reconcile(templateIndex: number, templateContent: string) {
-    this.content = this.content.replace(new RegExp(`tmpl${templateIndex}`), templateContent);
+  reconcileTemplate(templateIndex: number, fromContext: I18nContext|null) {
+    if (!fromContext) return;
+    const id = fromContext.getId();
+    const content = fromContext.getContent();
+    const pattern = new RegExp(`\\[tmpl\\:${this.id}\\:${templateIndex}\\]`);
+    const replacement =
+        `${this.wrap('*', templateIndex, id)}${content}${this.wrap('*', templateIndex, id, true)}`;
+    this.content = this.content.replace(pattern, replacement);
   }
 }

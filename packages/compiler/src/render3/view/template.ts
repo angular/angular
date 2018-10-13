@@ -254,29 +254,28 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nStart(span: ParseSourceSpan|null = null): void {
-    // console.log('[i18nStart]', this.templateIndex);
     const index = this.allocateDataSlot();
     const context = this.i18nContext;
-    const [ref, level] =
-        context ? [context.getRef(), context.getLevel() + 1] : [this.i18nAllocateRef(), 0];
-    this.i18n = new I18nContext(index, ref, level);
+    const [ref, level, uniqueIdGen] = context ?
+        [context.getRef(), context.getLevel() + 1, context.getUniqueIdGen()] :
+        [this.i18nAllocateRef(), 0, null];
+    this.i18n = new I18nContext(index, ref, level, uniqueIdGen);
 
     // generate i18nStart instruction
     const params: o.Expression[] = [o.literal(index), ref];
-    if (this.templateIndex !== null) {
-      params.push(o.literal(this.templateIndex));
+    if (this.i18n.getId() > 0) {
+      params.push(o.literal(this.i18n.getId()));
     }
     this.creationInstruction(span, R3.i18nStart, params);
   }
 
   i18nEnd(span: ParseSourceSpan|null = null): void {
-    // console.log('[i18nEnd]', this.templateIndex);
     if (this.i18nContext) {
-      this.i18nContext.reconcile(this.templateIndex as number, this.i18n !.getContent());
+      this.i18nContext.reconcileTemplate(this.templateIndex !, this.i18n);
     }
-    this.i18nUpdateRef(this.i18nContext || this.i18n !);
-    this.i18n = null;  // reset local i18n context
+    this.i18nUpdateRef(this.i18nContext || this.i18n as I18nContext);
     this.creationInstruction(span, R3.i18nEnd);
+    this.i18n = null;  // reset local i18n context
   }
 
   visitContent(ngContent: t.Content) {
@@ -525,7 +524,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       if (this.i18n) {
-        this.i18n.appendElement(elementIndex, this.templateIndex);
+        this.i18n.appendElement(elementIndex);
       }
 
       // process i18n element attributes
@@ -722,7 +721,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       if (this.i18n) {
-        this.i18n.appendElement(elementIndex, this.templateIndex, true);
+        this.i18n.appendElement(elementIndex, true);
       }
       // Finish element construction mode.
       const span = element.endSourceSpan || element.sourceSpan;
@@ -740,7 +739,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateIndex = this.allocateDataSlot();
 
     if (this.i18n) {
-      this.i18n.appendTemplate(templateIndex, this.templateIndex);
+      this.i18n.appendTemplate(templateIndex);
     }
 
     let elName = '';
