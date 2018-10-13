@@ -122,7 +122,7 @@ export class ConstantPool {
   }
 
   setDeferredTranslationConst(variable: o.ReadVarExpr, message: string): void {
-    const index = this.deferredTranslations.get(variable)!;
+    const index = this.deferredTranslations.get(variable) !;
     this.statements[index] = this.getTranslationDeclStmt(variable, message);
   }
 

@@ -21,7 +21,8 @@ export const I18N_PLACEHOLDER_SYMBOL = '�';
 // - "@@id",
 // - "description[@@id]",
 // - "meaning|description[@@id]"
-export function parseI18nMeta(i18n?: string): {description?: string, id?: string, meaning?: string} {
+export function parseI18nMeta(i18n?: string):
+    {description?: string, id?: string, meaning?: string} {
   let meaning: string|undefined;
   let description: string|undefined;
   let id: string|undefined;
@@ -66,42 +67,31 @@ export class I18nContext {
 
   constructor(private index: number, private ref: any, private level: number = 0) {}
 
-  getIndex() {
-    return this.index;
-  }
-  getRef() {
-    return this.ref;
-  }
-  getLevel() {
-    return this.level;
-  }
-  getContent() {
-    return this.content;
-  }
-  wrap(symbol: string, elementIndex: number, templateIndex?: number, closed?: boolean) {
+  private wrap(symbol: string, elementIndex: number, templateIndex: number|null, closed?: boolean) {
     const state = closed ? '/' : '';
     const tmplIndex = templateIndex ? `:${templateIndex}` : '';
     return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${tmplIndex}`);
+  }
+  private append(content: string) { this.content += content; }
 
-  }
-  append(content: string) {
-    this.content += content;
-  }
-  appendText(content: string) {
-    this.append(content);
-  }
-  appendElement(elementIndex: number, templateIndex?: number, closed?: boolean) {
+  getIndex() { return this.index; }
+  getRef() { return this.ref; }
+  getLevel() { return this.level; }
+  getContent() { return this.content; }
+  appendText(content: string) { this.append(content); }
+  appendElement(elementIndex: number, templateIndex: number|null, closed?: boolean) {
     this.append(this.wrap('#', elementIndex, templateIndex, closed));
   }
-  appendTemplate(index: number, templateIndex?: number) {
+  appendTemplate(index: number, templateIndex: number|null) {
     this.append(this.wrap('*', index, templateIndex));
     this.append(`tmpl${index}`);
     this.append(this.wrap('*', index, templateIndex, true));
   }
   resolved() {
+    // TODO: WIP, come up with better approach
     return !/tmpl/g.test(this.content);
   }
-  reconcile(templateIndex: any, templateContent: any) {
+  reconcile(templateIndex: number, templateContent: string) {
     this.content = this.content.replace(new RegExp(`tmpl${templateIndex}`), templateContent);
   }
 }

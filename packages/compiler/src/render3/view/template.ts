@@ -29,8 +29,8 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
-import {parseStyle} from './styling';
 import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nTemplate, parseI18nMeta} from './i18n';
+import {parseStyle} from './styling';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
@@ -99,8 +99,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
-      private contextName: string|null, private i18nContext: I18nContext|null, private templateIndex: number|null,
-      private templateName: string|null,
+      private contextName: string|null, private i18nContext: I18nContext|null,
+      private templateIndex: number|null, private templateName: string|null,
       private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
       private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
       private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
@@ -257,9 +257,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // console.log('[i18nStart]', this.templateIndex);
     const index = this.allocateDataSlot();
     const context = this.i18nContext;
-    const [ref, level] = context
-      ? [context.getRef(), context.getLevel() + 1]
-      : [this.i18nAllocateRef(), 0];
+    const [ref, level] =
+        context ? [context.getRef(), context.getLevel() + 1] : [this.i18nAllocateRef(), 0];
     this.i18n = new I18nContext(index, ref, level);
 
     // generate i18nStart instruction
@@ -275,8 +274,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18nContext) {
       this.i18nContext.reconcile(this.templateIndex as number, this.i18n !.getContent());
     }
-    this.i18nUpdateRef(this.i18nContext || this.i18n!);
-    this.i18n = null; // reset local i18n context
+    this.i18nUpdateRef(this.i18nContext || this.i18n !);
+    this.i18n = null;  // reset local i18n context
     this.creationInstruction(span, R3.i18nEnd);
   }
 
@@ -792,9 +791,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
-        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, templateIndex, templateName, [],
-        this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes, this._namespace,
-        this.fileBasedI18nSuffix);
+        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
+        templateIndex, templateName, [], this.directiveMatcher, this.directives,
+        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
