@@ -1,29 +1,58 @@
+<!--
 # The Ahead-of-Time (AOT) Compiler
+-->
+# Ahead-of-Time (AOT) 컴파일러
 
+<!--
 The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code.
+-->
+Angular Ahead-of-Time (AOT) 컴파일러는 Angular 문법이 사용된 HTML 문서와 TypeScript 코드를 JavaScript 코드로 변환하는 툴입니다. 이 때 변환과정은 브라우저가 코드를 다운받기 _전에_ 실행됩니다.
 
+<!--
 This guide explains how to build with the AOT compiler using different compiler options and how to write Angular metadata that AOT can compile.
+-->
+이 문서에서는 AOT 컴파일러를 사용할 때 어떤 옵션을 사용할 수 있는지, AOT 컴파일러로 컴파일할 때 주의해야할 내용은 어떤 것이 있는지 안내합니다.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
+  <!--
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
+  -->
+  Angular 컴파일러를 만드는 Tobias Bosch가 <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">AngularConnect 2016에서 발표한 내용</a>도 참고하세요.
 
 </div>
 
 {@a overview}
 
+<!--
 ## Angular compilation
+-->
+## Angular의 컴파일
 
+<!--
 An Angular application consists largely of components and their HTML templates.
 Before the browser can render the application,
 the components and templates must be converted to executable JavaScript by an _Angular compiler_.
+-->
+Angular 애플리케이션에는 수많은 컴포넌트와 HTML 컴포넌트 템플릿이 있습니다.
+그리고 이 파일들은 _Angular 컴파일러_ 를 통해 브라우저가 실행할 수 있는 JavaScript 코드로 변환되어야 합니다.
 
+<!--
 Angular offers two ways to compile your application:
+-->
+Angular는 두 종류의 컴파일 방식을 제공합니다:
 
+<!--
 1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime
 1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
+-->
+1. **_Just-in-Time_ (JIT)**: 브라우저에서 애플리케이션을 실행하면서 코드를 직접 컴파일하는 방식입니다.
+1. **_Ahead-of-Time_ (AOT)**: 브라우저에 애플리케이션 코드를 보내기 전에 미리 컴파일하는 방식입니다.
 
+<!--
 JIT compilation is the default when you run the _build-only_ or the _build-and-serve-locally_ CLI commands:
+-->
+_옵션 없이 빌드_ 하거나 _개발 서버를 띄우기 위해_ Angular CLI를 사용하면 JIT 방식으로 컴파일됩니다. 다음 두 명령이 이 경우에 해당됩니다:
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -32,7 +61,10 @@ JIT compilation is the default when you run the _build-only_ or the _build-and-s
 
 {@a compile}
 
+<!--
 For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-and-serve-locally_ CLI commands:
+-->
+그리고 두 경우 모두 `--aot` 플래그를 붙여 실행하면 AOT 방식으로 컴파일됩니다.
 
 <code-example language="sh" class="code-shell">
   ng build --aot
@@ -41,48 +73,91 @@ For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-
 
 <div class="alert is-helpful">
 
+<!--
 The `--prod` meta-flag compiles with AOT by default.
+-->
+`--prod` 메타 플래그를 사용해도 AOT 방식으로 컴파일됩니다.
 
+<!--
 See the [CLI documentation](https://github.com/angular/angular-cli/wiki) for details, especially the [`build` topic](https://github.com/angular/angular-cli/wiki/build).
+-->
+더 자세한 내용은 [CLI 문서](https://github.com/angular/angular-cli/wiki)의 [`build` 섹션](https://github.com/angular/angular-cli/wiki/build)을 참고하세요.
 
 </div>
 
 {@a why-aot}
 
+<!--
 ## Why compile with AOT?
+-->
+## 왜 AOT 컴파일 하나요?
 
+<!--
 *Faster rendering*
 
 With AOT, the browser downloads a pre-compiled version of the application.
 The browser loads executable code so it can render the application immediately, without waiting to compile the app first.
+-->
+*렌더링 시간 단축*
 
+AOT 방식으로 컴파일하면 브라우저가 미리 컴파일된 애플리케이션 코드를 내려받습니다.
+그런데 이 코드는 브라우저가 직접 실행할 수 있도록 변환된 코드이기 때문에, 브라우저는 코드를 컴파일하는 과정없이 바로 실행할 수 있습니다.
+
+<!--
 *Fewer asynchronous requests*
 
 The compiler _inlines_ external HTML templates and CSS style sheets within the application JavaScript,
 eliminating separate ajax requests for those source files.
+-->
+*일부 비동기 요청 생략*
 
+AOT 방식으로 컴파일된 애플리케이션 JavaScript에는 HTML 템플릿이나 CSS 스타일 시트가 모두 _인라인_ 으로 포함되어 있습니다. 결과적으로 이 파일들을 내려받기 위해 필요한 AJAX 요청을 생략할 수 있습니다.
+
+<!--
 *Smaller Angular framework download size*
 
 There's no need to download the Angular compiler if the app is already compiled.
 The compiler is roughly half of Angular itself, so omitting it dramatically reduces the application payload.
+-->
+*내려받는 Angular 프레임워크 크기 감소*
 
+AOT 컴파일 방식을 사용하면 클라이언트가 애플리케이션 코드를 내려받기 전에 미리 애플리케이션을 빌드하기 때문에 클라이언트에서 Angular 컴파일러를 내려받지 않아도 됩니다.
+Angular 컴파일러의 크기는 Angular 프레임워크 전체 크기의 반 정도를 차지합니다. AOT 컴파일 방식을 사용하면 이 용량을 내려받지 않아도 됩니다.
+
+<!--
 *Detect template errors earlier*
 
 The AOT compiler detects and reports template binding errors during the build step
 before users can see them.
+-->
+*템플릿 에러를 미리 검증*
 
+AOT 컴파일러를 사용하면 실행 단계가 아니라 빌드 단계에서 템플릿 바인딩 에러를 검사합니다.
+
+<!--
 *Better security*
 
 AOT compiles HTML templates and components into JavaScript files long before they are served to the client.
 With no templates to read and no risky client-side HTML or JavaScript evaluation,
 there are fewer opportunities for injection attacks.
+-->
+*더 나은 보안*
+
+AOT 컴파일 방식을 사용하면 HTML 템플릿과 컴포넌트 코드가 모두 JavaScript로 변환되어 클라이언트에 제공됩니다.
+그래서 클라이언트에 존재하는 HTML 문서나 JavaScript가 없기 떄문에, 인젝션 공격의 기회를 상당수 차단할 수 있습니다.
 
 {@a compiler-options}
 
+<!--
 ## Angular Compiler Options
+-->
+## Angular 컴파일러 옵션
 
+<!--
 You can control your app compilation by providing template compiler options in the `tsconfig.json` file along with the options supplied to the TypeScript compiler. The template compiler options are specified as members of
 `"angularCompilerOptions"` object as shown below:
+-->
+Angular 컴파일 과정은 `tsconfig.json` 파일에 옵션을 지정하는 방식으로 조정할 수 있습니다. 이 옵션들은 TypeScript 컴파일러와 관련된 것도 있으며, Angular 컴파일러와 관련된 것도 있습니다:
 
 ```json
 {
@@ -97,12 +172,18 @@ You can control your app compilation by providing template compiler options in t
   }
 }
 ```
+
 ### *enableResourceInlining*
+<!--
 This options tell the compiler to replace the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
 When enabled, the `.js` output of ngc will have no lazy-loaded `templateUrl` or `styleUrls`.
+-->
+이 옵션을 사용하면 `@Component` 데코레이터에 사용된 `templateUrl`과 `styleUrls`가 `template`과 `styles`로 변경됩니다.
+그래서 템플릿 파일과 스타일시트 파일은 `.js` 파일로 합쳐지며, 추가 AJAX 요청은 생략됩니다.
 
 ### *skipMetadataEmit*
 
+<!--
 This option tells the compiler not to produce `.metadata.json` files.
 The option is `false` by default.
 
@@ -117,6 +198,13 @@ Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
 
 This option can also be set to `true` when using factory summaries as the factory summaries
 include a copy of the information that is in the `.metadata.json` file.
+-->
+이 옵션을 사용하면 `.metadata.json` 파일이 생성되는 것을 생략할 수 있으며, 기본값은 `false` 입니다.
+
+`.metadata.json` 파일은 `.d.ts` 파일에 포함되지 않은 타입 정보를 추가로 제공하는 파일입니다.
+예를 들면 컴포넌트 템플릿과 같은 어노테이션 정보는 `.js` 파일에 포함되지만 `.d.ts` 파일에는 포함되지 않는데, 이 내용은 `.metadata.json`에 포함됩니다.
+
+이 옵션을 `true`로 지정하면 추가 메타데이터를 생성해야 하기 때문에 TypeScript 컴파일 옵션 `--outFile`과 함께 사용해야 하지만, Angular는 공식적으로 `--outFile` 옵션을 사용하는 것을 권장하지 않습니다. 이 기능이 필요하면 TypeScript 대신 [webpack](https://webpack.js.org/)과 같은 번들러를 사용하는 것을 권장합니다.
 
 ### *strictMetadataEmit*
 
