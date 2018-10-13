@@ -7,13 +7,14 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, loadElement, resetComponentState} from './instructions';
+import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
-import {getNative, getTNode, isLContainer, stringify} from './util';
+import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
 
 
 
@@ -273,7 +274,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode):
     }
   }
 
-  appendChild(getNative(tNode, viewData), tNode, viewData);
+  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
 
   const slotValue = viewData[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
@@ -364,11 +365,11 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
           ngDevMode.rendererRemoveNode++;
         }
         const removeIndex = instruction & I18nInstructions.IndexMask;
-        const removedNode: LNode|LContainerNode = loadElement(removeIndex);
+        const removedElement: RElement|RComment = getNativeByIndex(removeIndex, viewData);
         const removedTNode = getTNode(removeIndex, viewData);
-        removeChild(removedTNode, removedNode.native || null, viewData);
+        removeChild(removedTNode, removedElement || null, viewData);
 
-        const slotValue = load(removeIndex) as LNode | LContainer | StylingContext;
+        const slotValue = load(removeIndex) as RElement | RComment | LContainer | StylingContext;
         if (isLContainer(slotValue)) {
           const lContainer = slotValue as LContainer;
           if (removedTNode.type !== TNodeType.Container) {

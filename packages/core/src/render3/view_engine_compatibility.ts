@@ -28,7 +28,7 @@ import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/
 import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
-import {getComponentViewByIndex, getNative, isComponent, isLContainer} from './util';
+import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -60,7 +60,7 @@ export function createElementRef(
     // TODO: Fix class name, should be ElementRef, but there appears to be a rollup bug
     R3ElementRef = class ElementRef_ extends ElementRefToken {};
   }
-  return new R3ElementRef(getNative(tNode, view));
+  return new R3ElementRef(getNativeByTNode(tNode, view));
 }
 
 let R3TemplateRef: {

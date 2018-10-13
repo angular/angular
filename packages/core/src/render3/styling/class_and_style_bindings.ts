@@ -8,7 +8,6 @@
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {InitialStylingFlags} from '../interfaces/definition';
-import {LElementNode} from '../interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 
@@ -388,7 +387,7 @@ export function renderStyling(
     context: StylingContext, renderer: Renderer3, styleStore?: {[key: string]: any},
     classStore?: {[key: string]: boolean}) {
   if (isContextDirty(context)) {
-    const native = context[StylingIndex.ElementPosition] !.native;
+    const native = context[StylingIndex.ElementPosition] !;
     const multiStartIndex = getMultiStartIndex(context);
     const styleSanitizer = getStyleSanitizer(context);
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;

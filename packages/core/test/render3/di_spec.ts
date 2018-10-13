@@ -13,10 +13,10 @@ import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjector, injectAttribute, injectorHasToken} from '../../src/render3/di';
 import {PublicFeature, defineDirective, directiveInject, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd, loadElement} from '../../src/render3/instructions';
-import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
-import {AttributeMarker, LContainerNode, LElementNode, TNodeType} from '../../src/render3/interfaces/node';
-
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd, _getViewData} from '../../src/render3/instructions';
+import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
+import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
+import {getNativeByIndex} from '../../src/render3/util';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
@@ -1086,7 +1086,7 @@ describe('di', () => {
       it('should create directive with ElementRef dependencies', () => {
         let dir !: Directive;
         let dirSameInstance !: DirectiveSameInstance;
-        let divNode !: LElementNode;
+        let div !: RElement;
 
         class Directive {
           value: string;
@@ -1121,14 +1121,14 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dir', '', 'dirSame', '']);
             elementEnd();
-            divNode = load(0);
+            div = getNativeByIndex(0, _getViewData());
           }
         }, 1, 0, [Directive, DirectiveSameInstance]);
 
         const fixture = new ComponentFixture(App);
         expect(dir.value).toContain('ElementRef');
-        expect(dir.elementRef.nativeElement).toEqual(divNode.native);
-        expect(dirSameInstance.elementRef.nativeElement).toEqual(divNode.native);
+        expect(dir.elementRef.nativeElement).toEqual(div);
+        expect(dirSameInstance.elementRef.nativeElement).toEqual(div);
 
         // Each ElementRef instance should be unique
         expect(dirSameInstance.isSameInstance).toBe(false);
@@ -1841,7 +1841,7 @@ describe('di', () => {
           null !, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null);
       try {
-        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null, null);
+        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
