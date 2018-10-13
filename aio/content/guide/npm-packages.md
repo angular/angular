@@ -1,8 +1,9 @@
 # Npm Packages
 
- The [**Angular CLI**](cli), Angular applications, and Angular itself depend upon features and functionality provided by libraries that are available as [**npm**](https://docs.npmjs.com/) packages.
+ The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [**npm packages**](https://docs.npmjs.com/getting-started/what-is-npm "What is npm?") and distributed via the [npm registry](https://docs.npmjs.com/).
 
 You can download and install these npm packages by using the [**npm CLI client**](https://docs.npmjs.com/cli/install), which is installed with and runs as a Node.js® application. By default, the Angular CLI uses the npm client to install npm packages when you create a new project.
+
 
 
 <div class="alert is-helpful">
@@ -27,7 +28,6 @@ You may even remove some.
 
 This guide focuses on the most important packages in the starter set.
 
-#### Dependencies and devDependencies
 
 The `package.json` includes two sets of packages,
 [dependencies](guide/npm-packages#dependencies) and [devDependencies](guide/npm-packages#dev-dependencies).
@@ -45,6 +45,9 @@ The `dependencies` section of `package.json` contains:
 * **Support packages**: 3rd party libraries that must be present for Angular apps to run.
 
 * **Polyfill packages**: Polyfills plug gaps in a browser's JavaScript implementation.
+
+To add a new dependency, use the [`ng add`](cli/add) command.
+
 
 ### Angular Packages
 
@@ -93,8 +96,8 @@ which polyfills missing features for several popular browser.
 
 ### Support packages
 
-**[rxjs](https://github.com/benlesh/RxJS)**: Many Angular APIs return _observables_. RxJS is an implementation of the proposed [Observables specification](https://github.com/zenparsing/es-observable) currently before the
-[TC39](http://www.ecma-international.org/memento/TC39.htm) committee that determines standards for the JavaScript language.
+**[rxjs](https://github.com/ReactiveX/rxjs)**: Many Angular APIs return [_observables_](guide/glossary#observable). RxJS is an implementation of the proposed [Observables specification](https://github.com/zenparsing/es-observable) currently before the
+[TC39](http://www.ecma-international.org/memento/TC39.htm) committee, which determines standards for the JavaScript language.
 
 
 **[zone.js](https://github.com/angular/zone.js)**: Angular relies on zone.js to run Angular's change detection processes when native JavaScript operations raise events.  Zone.js is an implementation of a [specification](https://gist.github.com/mhevery/63fdcdf7c65886051d55) currently before the
@@ -105,9 +108,14 @@ which polyfills missing features for several popular browser.
 
 ## DevDependencies
 
-The packages listed in the *devDependencies* section of the `package.json` help you develop the application on your local machine.
+The packages listed in the `devDependencies` section of `package.json` help you develop the application on your local machine. You don't deploy them with the production application.
 
-You don't deploy them with the production application, although there is no harm in doing so.
+To add a new `devDependency`, use either one of the following commands, depending on which package manager you use:
+
+* `npm install --dev` 
+* `yarn add --dev` 
+
+The following `devDependencies` are provided in the initial `package.json` file.
 
 **@angular-devkit/build-angular: The Angular build tools.
 
@@ -146,17 +154,7 @@ Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDri
 **[typescript](https://www.npmjs.com/package/typescript)**:
 the TypeScript language server, including the *tsc* TypeScript compiler.
 
-
-## Managing packages and files
-
-The default `package.json` installs more packages than you'll need for your project.
-
-A given package may contain tens, hundreds, even thousands of files,
-all of them in your local machine's `node_modules` directory.
-
-You can remove any package that you don't need, but how can you be sure that you won't need it?
-As a practical matter, it's better to install a package you don't need than worry about it.
-Extra packages and package files on your local development machine are harmless.
+## Related information
 
 By default, the Angular CLI build process bundles into a single file just the few "vendor" library files that your application actually needs.
 The browser downloads this bundle, not the original package files.
