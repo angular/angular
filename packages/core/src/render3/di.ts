@@ -11,18 +11,17 @@
 
 import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
-import {Renderer2} from '../render';
+import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
 import {Type} from '../type';
 
 import {assertDefined} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
-import {_getViewData, assertPreviousIsParent, getPreviousOrParentTNode, resolveDirective, setEnvironment} from './instructions';
+import {_getViewData, getPreviousOrParentTNode, resolveDirective, setEnvironment} from './instructions';
 import {DirectiveDef} from './interfaces/definition';
 import {InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, PARENT, RENDERER, TData, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 
 /**

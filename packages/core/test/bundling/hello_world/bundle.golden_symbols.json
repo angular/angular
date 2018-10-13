@@ -243,7 +243,7 @@
     "name": "getHighestElementContainer"
   },
   {
-    "name": "getHostElementNode"
+    "name": "getHostNative"
   },
   {
     "name": "getInjectorIndex"
@@ -252,13 +252,10 @@
     "name": "getLContainer"
   },
   {
-    "name": "getLNode"
-  },
-  {
     "name": "getLViewChild"
   },
   {
-    "name": "getNative"
+    "name": "getNativeByTNode"
   },
   {
     "name": "getOrCreateNodeInjector"
@@ -276,7 +273,7 @@
     "name": "getParentInjectorView"
   },
   {
-    "name": "getParentLNode"
+    "name": "getParentNative"
   },
   {
     "name": "getPipeDef"

@@ -7,8 +7,8 @@
  */
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {RElement} from '../interfaces/renderer';
 
-import {LElementNode} from './node';
 import {PlayerContext} from './player';
 
 
@@ -118,9 +118,8 @@ import {PlayerContext} from './player';
  * `updateStyleProp` or `updateClassProp` cannot be called with a new property (only
  * `updateStylingMap` can include new CSS properties that will be added to the context).
  */
-export interface StylingContext extends
-    Array<InitialStyles|{[key: string]: any}|number|string|boolean|LElementNode|StyleSanitizeFn|
-          PlayerContext|null> {
+export interface StylingContext extends Array<InitialStyles|{[key: string]: any}|number|string|
+                                              boolean|RElement|StyleSanitizeFn|PlayerContext|null> {
   /**
    * Location of animation context (which contains the active players) for this element styling
    * context.
@@ -154,7 +153,7 @@ export interface StylingContext extends
   /**
    * Location of element that is used as a target for this context.
    */
-  [StylingIndex.ElementPosition]: LElementNode|null;
+  [StylingIndex.ElementPosition]: RElement|null;
 
   /**
    * The last class value that was interpreted by elementStylingMap. This is cached

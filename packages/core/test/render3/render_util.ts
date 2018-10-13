@@ -22,7 +22,6 @@ import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {_getViewData, renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
-import {LElementNode} from '../../src/render3/interfaces/node';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LViewData} from '../../src/render3/interfaces/view';

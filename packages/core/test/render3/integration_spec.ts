@@ -1970,7 +1970,7 @@ describe('render3 integration test', () => {
 
          const elementResult = result1[HEADER_OFFSET];  // first element
          expect(Array.isArray(elementResult)).toBeTruthy();
-         expect(elementResult[StylingIndex.ElementPosition].native).toBe(section);
+         expect(elementResult[StylingIndex.ElementPosition]).toBe(section);
 
          const context = getContext(section) !;
          const result2 = section[MONKEY_PATCH_KEY_NAME];
