@@ -1,4 +1,4 @@
-FROM circleci/node:10.9.0-browsers
+FROM circleci/node:10.12-browsers
 
 USER root
 
@@ -60,7 +60,7 @@ RUN mkdir ~/.npm-global \
 # in the circleci/*-browsers base image above.
 # This variable is intended to be used by passing it as an argument to
 # "postinstall": "webdriver-manager update ..."
-ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
+ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.42"
 
 WORKDIR /home/circleci
 ENTRYPOINT ["/bin/bash", "--login"]
