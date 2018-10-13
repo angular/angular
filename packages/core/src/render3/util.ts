@@ -11,10 +11,10 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDefined, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
-import {LContainerNode, LElementContainerNode, LElementNode, LNode, TNode, TNodeFlags} from './interfaces/node';
+import {TNode, TNodeFlags} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
 
 
 /**
@@ -36,16 +36,6 @@ export function stringify(value: any): string {
   if (typeof value == 'string') return value;
   if (value == null) return '';
   return '' + value;
-}
-
-/**
- *  Function that throws a "not implemented" error so it's clear certain
- *  behaviors/methods aren't yet ready.
- *
- * @returns Not implemented error
- */
-export function notImplemented(): Error {
-  return new Error('NotImplemented');
 }
 
 /**
@@ -83,16 +73,6 @@ export function assertDataInRangeInternal(index: number, arr: any[]) {
   assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
 }
 
-/** Retrieves an element value from the provided `viewData`.
-  *
-  * Elements that are read may be wrapped in a style context,
-  * therefore reading the value may involve unwrapping that.
-  */
-export function loadElementInternal(index: number, arr: LViewData): LElementNode {
-  const value = loadInternal<LElementNode>(index, arr);
-  return readElementValue(value);
-}
-
 /**
  * Takes the value of a slot in `LViewData` and returns the element node.
  *
@@ -104,21 +84,23 @@ export function loadElementInternal(index: number, arr: LViewData): LElementNode
  *
  * @param value The initial value in `LViewData`
  */
-export function readElementValue(value: LElementNode | StylingContext | LContainer | LViewData):
-    LElementNode {
+export function readElementValue(value: RElement | StylingContext | LContainer | LViewData):
+    RElement {
   while (Array.isArray(value)) {
     value = value[HOST] as any;
   }
   return value;
 }
 
-export function getNative(tNode: TNode, hostView: LViewData): RElement|RText|RComment {
-  return getLNode(tNode, hostView).native;
+/**
+ * Retrieves an element value from the provided `viewData`, by unwrapping
+ * from any containers, component views, or style contexts.
+ */
+export function getNativeByIndex(index: number, arr: LViewData): RElement {
+  return readElementValue(arr[index + HEADER_OFFSET]);
 }
 
-// TODO(kara): remove when removing LNode.native
-export function getLNode(tNode: TNode, hostView: LViewData): LElementNode|LContainerNode|
-    LElementContainerNode {
+export function getNativeByTNode(tNode: TNode, hostView: LViewData): RElement|RText|RComment {
   return readElementValue(hostView[tNode.index]);
 }
 
@@ -140,7 +122,7 @@ export function isComponent(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }
 
-export function isLContainer(value: LNode | LContainer | StylingContext): boolean {
+export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
   return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
 }

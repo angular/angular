@@ -474,6 +474,9 @@
     "name": "createViewBlueprint"
   },
   {
+    "name": "createViewNode"
+  },
+  {
     "name": "createViewQuery"
   },
   {
@@ -624,7 +627,7 @@
     "name": "getHighestElementContainer"
   },
   {
-    "name": "getHostElementNode"
+    "name": "getHostNative"
   },
   {
     "name": "getInitialIndex"
@@ -642,9 +645,6 @@
     "name": "getLContainer"
   },
   {
-    "name": "getLNode"
-  },
-  {
     "name": "getLViewChild"
   },
   {
@@ -654,7 +654,10 @@
     "name": "getMultiStartIndex"
   },
   {
-    "name": "getNative"
+    "name": "getNativeByIndex"
+  },
+  {
+    "name": "getNativeByTNode"
   },
   {
     "name": "getOrCreateInjectable"
@@ -675,7 +678,7 @@
     "name": "getParentInjectorView"
   },
   {
-    "name": "getParentLNode"
+    "name": "getParentNative"
   },
   {
     "name": "getParentState"
@@ -814,12 +817,6 @@
   },
   {
     "name": "listener"
-  },
-  {
-    "name": "loadElement"
-  },
-  {
-    "name": "loadElementInternal"
   },
   {
     "name": "loadInternal"

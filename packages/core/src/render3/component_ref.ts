@@ -19,7 +19,7 @@ import {Type} from '../type';
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
-import {adjustBlueprintForNewNode, createLViewData, createNodeAtIndex, createTView, elementCreate, enterView, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {adjustBlueprintForNewNode, createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, enterView, locateHostElement, renderEmbeddedTemplate} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -141,7 +141,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
           createRootComponentView(hostRNode, this.componentDef, rootView, renderer);
       tElementNode = getTNode(0, rootView) as TElementNode;
 
-      // Transform the arrays of native nodes into a LNode structure that can be consumed by the
+      // Transform the arrays of native nodes into a structure that can be consumed by the
       // projection instruction. This is needed to support the reprojection of these nodes.
       if (projectableNodes) {
         let index = 0;
@@ -223,7 +223,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     super();
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(rootView);
-    this.hostView._tViewNode = createNodeAtIndex(-1, TNodeType.View, null, null, null, rootView);
+    this.hostView._tViewNode = createViewNode(-1, rootView);
     this.injector = injector;
     this.componentType = componentType;
   }

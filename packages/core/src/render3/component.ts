@@ -18,10 +18,10 @@ import {getComponentDef} from './definition';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getOrCreateTView, leaveView, locateHostElement, prefillHostVars, resetComponentState, setHostBindings} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
-import {TNodeFlags, TNodeType} from './interfaces/node';
+import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
@@ -166,7 +166,7 @@ export function createRootComponentView(
       getOrCreateTView(
           def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
       null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer);
-  const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null, componentView);
+  const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
 
   if (tView.firstTemplatePass) {
     tView.expandoInstructions = ROOT_EXPANDO_INSTRUCTIONS.slice();
@@ -177,9 +177,9 @@ export function createRootComponentView(
 
   // Store component view at node index, with node as the HOST
   componentView[HOST] = rootView[HEADER_OFFSET];
+  componentView[HOST_NODE] = tNode as TElementNode;
   return rootView[HEADER_OFFSET] = componentView;
 }
-
 
 /**
  * Creates a root component and sets it up with features and host bindings. Shared by
@@ -255,7 +255,7 @@ function getRootContext(component: any): RootContext {
  * @param component Component for which the host element should be retrieved.
  */
 export function getHostElement<T>(component: T): HTMLElement {
-  return readElementValue(getComponentViewByInstance(component)).native as HTMLElement;
+  return readElementValue(getComponentViewByInstance(component)) as HTMLElement;
 }
 
 /**
