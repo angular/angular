@@ -29,7 +29,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
-import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nTemplate, parseI18nMeta} from './i18n';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nBoundString, parseI18nMeta} from './i18n';
 import {parseStyle} from './styling';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
@@ -554,7 +554,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             const converted = value.visit(this._valueConverter);
             if (converted instanceof Interpolation) {
               const {strings, expressions} = converted;
-              const label = assembleI18nTemplate(strings);
+              const label = assembleI18nBoundString(strings);
               i18nAttrArgs.push(
                   o.literal(name), this.i18nTranslate(label, meta), o.literal(expressions.length));
               expressions.forEach(expression => {
@@ -845,7 +845,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const value = text.value.visit(this._valueConverter);
       if (value instanceof Interpolation) {
         const {strings, expressions} = value;
-        const label = assembleI18nTemplate(strings);
+        const label = assembleI18nBoundString(strings, this.i18n.getBindings().size, this.i18n.getId());
         const implicit = o.variable(CONTEXT_NAME);
         expressions.forEach(expression => {
           const binding = this.convertExpressionBinding(implicit, expression);

@@ -48,16 +48,17 @@ export function isI18NAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
 }
 
-export function wrapI18nPlaceholder(content: string | number): string {
-  return `${I18N_PLACEHOLDER_SYMBOL}${content}${I18N_PLACEHOLDER_SYMBOL}`;
+export function wrapI18nPlaceholder(content: string | number, contextId: number = 0): string {
+  const blockId = contextId > 0 ? `:${contextId}` : '';
+  return `${I18N_PLACEHOLDER_SYMBOL}${content}${blockId}${I18N_PLACEHOLDER_SYMBOL}`;
 }
 
-export function assembleI18nTemplate(strings: Array<string>): string {
+export function assembleI18nBoundString(strings: Array<string>, bindingStartIndex: number = 0, contextId: number = 0): string {
   if (!strings.length) return '';
   let acc = '';
   const lastIdx = strings.length - 1;
   for (let i = 0; i < lastIdx; i++) {
-    acc += `${strings[i]}${wrapI18nPlaceholder(i)}`;
+    acc += `${strings[i]}${wrapI18nPlaceholder(bindingStartIndex + i, contextId)}`;
   }
   acc += strings[lastIdx];
   return acc;
@@ -79,10 +80,9 @@ export class I18nContext {
     this.id = this.uniqueIdGen();
   }
 
-  private wrap(symbol: string, elementIndex: number, contextIdx: number|null, closed?: boolean) {
+  private wrap(symbol: string, elementIndex: number, contextId: number, closed?: boolean) {
     const state = closed ? '/' : '';
-    const blockIndex = contextIdx && contextIdx > 0 ? `:${contextIdx}` : '';
-    return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${blockIndex}`);
+    return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}`, contextId);
   }
   private append(content: string) { this.content += content; }
 

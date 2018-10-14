@@ -555,7 +555,7 @@ describe('i18n support in the view compiler', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    fit('should handle i18n attributes with bindings and nested elements in content', () => {
+    it('should handle i18n attributes with bindings and nested elements in content', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -618,6 +618,193 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 0, ctx.two)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
             $r3$.ɵi18nApply(4);
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should handle i18n attributes in nested templates', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div>
+                  Some content
+                  <div *ngIf="visible">
+                    <div i18n>
+                      Some other content {{ valueA }}
+                      <div>
+                        More nested levels with bindings {{ valueB | uppercase }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $_c0$ = [1, "ngIf"];
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("\uFFFD#1\uFFFD Some other content \uFFFD0\uFFFD \uFFFD#3\uFFFD More nested levels with bindings \uFFFD1\uFFFD \uFFFD/#3\uFFFD\uFFFD/#1\uFFFD");
+        …
+        function MyComponent_div_Template_2(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵelementStart(1, "div");
+            $r3$.ɵi18nStart(2, $MSG_APP_SPEC_TS__1$);
+            $r3$.ɵelementStart(3, "div");
+            $r3$.ɵpipe(4, "uppercase");
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            const $$ctx_r0$$ = $r3$.ɵnextContext();
+            $r3$.ɵi18nExp($r3$.ɵbind($$ctx_r0$$.valueA));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 0, $$ctx_r0$$.valueB)));
+            $r3$.ɵi18nApply(2);
+          }
+        }
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵtext(1, " Some content ");
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 2, null, $_c0$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    fit('should handle i18n context in nested templates', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>
+                  Some content
+                  <div *ngIf="visible">
+                    Some other content {{ valueA }}
+                    <div>
+                      More nested levels with bindings {{ valueB | uppercase }}
+                      <div *ngIf="exists">
+                        Content inside sub-template {{ valueC }}
+                        <div>
+                          Bottom level element {{ valueD }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="!visible">
+                    Some other content {{ valueE + valueF }}
+                    <div>
+                      More nested levels with bindings {{ valueG | uppercase }}
+                    </div>
+                  </div>
+                </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD Some content \uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD Some other content \uFFFD0:1\uFFFD \uFFFD#2:1\uFFFD More nested levels with bindings \uFFFD1:1\uFFFD \uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD Content inside sub-template \uFFFD0:2\uFFFD \uFFFD#2:2\uFFFD Bottom level element \uFFFD1:2\uFFFD \uFFFD/#2:2\uFFFD\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD\uFFFD/#2:1\uFFFD\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD Some other content \uFFFD0:3\uFFFD \uFFFD#2:3\uFFFD More nested levels with bindings \uFFFD1:3\uFFFD \uFFFD/#2:3\uFFFD\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD\uFFFD/#0\uFFFD");
+        const $_c1$ = [1, "ngIf"];
+        …
+        function MyComponent_div_div_Template_4(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 2);
+            $r3$.ɵelementStart(1, "div");
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+          }
+          if (rf & 2) {
+            const $ctx_r2$ = $r3$.ɵnextContext(2);
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r2$.valueC));
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r2$.valueD));
+            $r3$.ɵi18nApply(0);
+          }
+        }
+        function MyComponent_div_Template_2(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 1);
+            $r3$.ɵelementStart(1, "div");
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵpipe(3, "uppercase");
+            $r3$.ɵtemplate(4, MyComponent_div_div_Template_4, 3, 0, null, $_c1$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+          }
+          if (rf & 2) {
+            const $ctx_r0$ = $r3$.ɵnextContext();
+            $r3$.ɵelementProperty(4, "ngIf", $r3$.ɵbind($ctx_r0$.exists));
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 0, $ctx_r0$.valueB)));
+            $r3$.ɵi18nApply(0);
+          }
+        }
+        function MyComponent_div_Template_3(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 3);
+            $r3$.ɵelementStart(1, "div");
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵpipe(3, "uppercase");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+          }
+          if (rf & 2) {
+            const $ctx_r1$ = $r3$.ɵnextContext();
+            $r3$.ɵi18nExp($r3$.ɵbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 0, $ctx_r1$.valueG)));
+            $r3$.ɵi18nApply(0);
+          }
+        }
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 3, null, $_c1$);
+            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 2, null, $_c1$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(!ctx.visible));
           }
         }
       `;
