@@ -440,6 +440,63 @@ describe('i18n support in the view compiler', () => {
   describe('nested nodes', () => {
     // TODO: test with ng-template:
     // <ng-template i18n><span title="a">My Template Test</span></ng-template>
+    it('should handle top level i18n attributes', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>My i18n block #1</div>
+                <div>My non-i18n block #1</div>
+                <div i18n>My i18n block #2</div>
+                <div>My non-i18n block #2</div>
+                <div i18n>My i18n block #3</div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFDMy i18n block #1\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#4\uFFFDMy i18n block #2\uFFFD/#4\uFFFD");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("\uFFFD#8\uFFFDMy i18n block #3\uFFFD/#8\uFFFD");
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵtext(3, "My non-i18n block #1");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(4, "div");
+            $r3$.ɵi18nStart(5, $MSG_APP_SPEC_TS_1$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(6, "div");
+            $r3$.ɵtext(7, "My non-i18n block #2");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(8, "div");
+            $r3$.ɵi18nStart(9, $MSG_APP_SPEC_TS_2$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
     fit('should generate i18nStart and i18nEnd instructions', () => {
       const files = {
         app: {

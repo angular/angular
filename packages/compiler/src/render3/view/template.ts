@@ -262,6 +262,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // generate i18nStart instruction
     const params: o.Expression[] = [o.literal(index), this.i18n.getRef()];
     if (this.i18n.getId() > 0) {
+      // do not push 3rd argument (sub-block id)
+      // into i18nStart call for top level i18n context
       params.push(o.literal(this.i18n.getId()));
     }
     this.creationInstruction(span, R3.i18nStart, params);
