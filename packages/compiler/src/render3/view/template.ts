@@ -248,7 +248,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nUpdateRef(context: I18nContext): void {
-    if (context.resolved() && context.getLevel() === 0) {
+    if (context.isRoot() && context.isResolved()) {
       this.constantPool.setDeferredTranslationConst(context.getRef(), context.getContent());
     }
   }

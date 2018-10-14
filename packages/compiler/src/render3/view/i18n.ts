@@ -86,9 +86,11 @@ export class I18nContext {
   getId() { return this.id; }
   getRef() { return this.ref; }
   getIndex() { return this.index; }
-  getLevel() { return this.level; }
   getContent() { return this.content; }
   getTemplateIndex() { return this.templateIndex; }
+
+  isRoot() { return this.level === 0; }
+  isResolved() { return !/\[tmpl:\d+:\d+\]/.test(this.content); }
 
   appendText(content: string) { this.append(content); }
   appendTemplate(index: number) { this.append(`[tmpl:${this.id}:${index}]`); }
@@ -96,7 +98,6 @@ export class I18nContext {
     this.append(this.wrap('#', elementIndex, this.id, closed));
   }
 
-  resolved() { return !/\[tmpl:\d+:\d+\]/.test(this.content); }
   forkChildContext(index: number, templateIndex: number) {
     return new I18nContext(index, templateIndex, this.ref, this.level + 1, this.uniqueIdGen);
   }
