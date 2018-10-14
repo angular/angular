@@ -2,7 +2,7 @@
   <h4>Hero Search</h4>
 
   <!-- #docregion input -->
-  <input #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+  <input #searchBox id="search-box" (input)="search(searchBox.value)" />
   <!-- #enddocregion input -->
 
   <ul class="search-result">
