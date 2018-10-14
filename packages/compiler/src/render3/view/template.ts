@@ -276,6 +276,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     } else {
       this.i18nUpdateRef(this.i18n !);
     }
+
+    // setup accumulated bindings
+    const bindings = this.i18n !.getBindings();
+    if (bindings.size) {
+      bindings.forEach(binding => {
+        this.updateInstruction(span, R3.i18nExp, [binding]);
+      });
+      const index: o.Expression = o.literal(this.i18n !.getIndex());
+      this.updateInstruction(span, R3.i18nApply, [index]);
+    }
+
     this.creationInstruction(span, R3.i18nEnd);
     this.i18n = null;  // reset local i18n context
   }
@@ -831,18 +842,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {
-      // TODO: avoid duplication with i18nAttrs logic
       const value = text.value.visit(this._valueConverter);
       if (value instanceof Interpolation) {
         const {strings, expressions} = value;
         const label = assembleI18nTemplate(strings);
-        this.i18n.appendText(label);
+        const implicit = o.variable(CONTEXT_NAME);
         expressions.forEach(expression => {
-          const binding = this.convertExpressionBinding(o.variable(CONTEXT_NAME), expression);
-          this.updateInstruction(text.sourceSpan, R3.i18nExp, [binding]);
+          const binding = this.convertExpressionBinding(implicit, expression);
+          this.i18n !.appendBinding(binding);
         });
-        const index: o.Expression = o.literal(this.i18n.getIndex());
-        this.updateInstruction(text.sourceSpan, R3.i18nApply, [index]);
+        this.i18n.appendText(label);
       }
       return;
     }

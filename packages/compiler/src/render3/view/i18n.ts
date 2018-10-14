@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as o from '../../output/output_ast';
+
 /** I18n separators for metadata **/
 const I18N_MEANING_SEPARATOR = '|';
 const I18N_ID_SEPARATOR = '@@';
@@ -68,6 +70,7 @@ function getSeqNubmerGenerator(startsAt: number = 0): () => number {
 export class I18nContext {
   private id: number;
   private content: string = '';
+  private bindings = new Set<o.Expression>();
 
   constructor(
       private index: number, private templateIndex: number|null = null, private ref: any,
@@ -88,6 +91,9 @@ export class I18nContext {
   getIndex() { return this.index; }
   getContent() { return this.content; }
   getTemplateIndex() { return this.templateIndex; }
+
+  getBindings() { return this.bindings; }
+  appendBinding(binding: o.Expression) { this.bindings.add(binding); }
 
   isRoot() { return this.level === 0; }
   isResolved() { return !/\[tmpl:\d+:\d+\]/.test(this.content); }

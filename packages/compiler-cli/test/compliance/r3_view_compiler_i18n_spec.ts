@@ -440,7 +440,7 @@ describe('i18n support in the view compiler', () => {
   describe('nested nodes', () => {
     // TODO: test with ng-template:
     // <ng-template i18n><span title="a">My Template Test</span></ng-template>
-    it('should handle top level i18n attributes', () => {
+    it('should handle i18n attributes with plain-text content', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -497,7 +497,137 @@ describe('i18n support in the view compiler', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    fit('should generate i18nStart and i18nEnd instructions', () => {
+    it('should handle i18n attributes with bindings in content', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>My i18n block #{{ one }}</div>
+                <div i18n>My i18n block #{{ two | uppercase }}</div>
+                <div i18n>My i18n block #{{ three + four + five }}</div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#2\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#2\uFFFD");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("\uFFFD#5\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#5\uFFFD");
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵi18nStart(3, $MSG_APP_SPEC_TS_1$);
+            $r3$.ɵpipe(4, "uppercase");
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(5, "div");
+            $r3$.ɵi18nStart(6, $MSG_APP_SPEC_TS_2$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
+            $r3$.ɵi18nApply(1);
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 0, ctx.two)));
+            $r3$.ɵi18nApply(3);
+            $r3$.ɵi18nExp($r3$.ɵbind(((ctx.three + ctx.four) + ctx.five)));
+            $r3$.ɵi18nApply(6);
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    fit('should handle i18n attributes with bindings and nested elements in content', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>
+                  My i18n block #{{ one }}
+                  <span>Plain text in nested element</span>
+                </div>
+                <div i18n>
+                  My i18n block #{{ two | uppercase }}
+                  <div>
+                    <div>
+                      <span>
+                        More bindings in more nested element: {{ nestedInBlockTwo }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#2\uFFFDPlain text in nested element\uFFFD/#2\uFFFD\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#3\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#6\uFFFD\uFFFD#7\uFFFD\uFFFD#8\uFFFD More bindings in more nested element: \uFFFD0\uFFFD \uFFFD/#8\uFFFD\uFFFD/#7\uFFFD\uFFFD/#6\uFFFD\uFFFD/#3\uFFFD");
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementStart(2, "span");
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(3, "div");
+            $r3$.ɵi18nStart(4, $MSG_APP_SPEC_TS_1$);
+            $r3$.ɵpipe(5, "uppercase");
+            $r3$.ɵelementStart(6, "div");
+            $r3$.ɵelementStart(7, "div");
+            $r3$.ɵelementStart(8, "span");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
+            $r3$.ɵi18nApply(1);
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 0, ctx.two)));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
+            $r3$.ɵi18nApply(4);
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      console.log(result.source);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate i18nStart and i18nEnd instructions', () => {
       const files = {
         app: {
           'spec.ts': `
