@@ -461,7 +461,7 @@ Replace the generated `HeroSearchComponent` _template_ with a text box and a lis
 Add private CSS styles to `hero-search.component.css`
 as listed in the [final code review](#herosearchcomponent) below.
 
-As the user types in the search box, a *keyup* event binding calls the component's `search()`
+As the user types in the search box, an *input* event binding calls the component's `search()`
 method with the new search box value.
 
 {@a asyncpipe}
@@ -511,7 +511,7 @@ You can also push values into that `Observable` by calling its `next(value)` met
 as the `search()` method does.
 
 The `search()` method is called via an _event binding_ to the
-textbox's `keystroke` event.
+textbox's `input` event.
 
 <code-example path="toh-pt6/src/app/hero-search/hero-search.component.html" region="input"></code-example>
 
