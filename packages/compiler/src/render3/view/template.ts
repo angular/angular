@@ -247,7 +247,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this.constantPool.getDeferredTranslationConst(this.fileBasedI18nSuffix);
   }
 
-  i18nUpdateRef(context: I18nContext) {
+  i18nUpdateRef(context: I18nContext): void {
     if (context.resolved() && context.getLevel() === 0) {
       this.constantPool.setDeferredTranslationConst(context.getRef(), context.getContent());
     }
@@ -255,14 +255,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nStart(span: ParseSourceSpan|null = null): void {
     const index = this.allocateDataSlot();
-    const context = this.i18nContext;
-    const [ref, level, uniqueIdGen] = context ?
-        [context.getRef(), context.getLevel() + 1, context.getUniqueIdGen()] :
-        [this.i18nAllocateRef(), 0, null];
-    this.i18n = new I18nContext(index, ref, level, uniqueIdGen);
+    this.i18n = this.i18nContext ?
+        this.i18nContext.forkChildContext(index, this.templateIndex !) :
+        new I18nContext(index, this.templateIndex, this.i18nAllocateRef());
 
     // generate i18nStart instruction
-    const params: o.Expression[] = [o.literal(index), ref];
+    const params: o.Expression[] = [o.literal(index), this.i18n.getRef()];
     if (this.i18n.getId() > 0) {
       params.push(o.literal(this.i18n.getId()));
     }
@@ -271,9 +269,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nEnd(span: ParseSourceSpan|null = null): void {
     if (this.i18nContext) {
-      this.i18nContext.reconcileTemplate(this.templateIndex !, this.i18n);
+      this.i18nContext.reconcileChildContext(this.i18n !);
+      this.i18nUpdateRef(this.i18nContext);
+    } else {
+      this.i18nUpdateRef(this.i18n !);
     }
-    this.i18nUpdateRef(this.i18nContext || this.i18n as I18nContext);
     this.creationInstruction(span, R3.i18nEnd);
     this.i18n = null;  // reset local i18n context
   }

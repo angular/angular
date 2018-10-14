@@ -30,7 +30,6 @@ export function parseI18nMeta(i18n?: string):
   if (i18n) {
     // TODO(vicb): figure out how to force a message ID with closure ?
     const idIndex = i18n.indexOf(I18N_ID_SEPARATOR);
-
     const descIndex = i18n.indexOf(I18N_MEANING_SEPARATOR);
     let meaningAndDesc: string;
     [meaningAndDesc, id] =
@@ -67,43 +66,44 @@ function getSeqNubmerGenerator(startsAt: number = 0): () => number {
   return () => current++;
 }
 export class I18nContext {
-  private content: string = '';
   private id: number;
-  private _uniqueIdGen: () => number;
+  private content: string = '';
 
   constructor(
-      private index: number, private ref: any, private level: number = 0,
-      private uniqueIdGen: (() => number) | null) {
-    this._uniqueIdGen = uniqueIdGen || getSeqNubmerGenerator();
-    this.id = this._uniqueIdGen();
+      private index: number, private templateIndex: number|null = null, private ref: any,
+      private level: number = 0, private uniqueIdGen?: (() => number)) {
+    this.uniqueIdGen = uniqueIdGen || getSeqNubmerGenerator();
+    this.id = this.uniqueIdGen();
   }
 
-  private wrap(symbol: string, elementIndex: number, contextIdx: number, closed?: boolean) {
+  private wrap(symbol: string, elementIndex: number, contextIdx: number|null, closed?: boolean) {
     const state = closed ? '/' : '';
-    const blockIndex = contextIdx > 0 ? `:${contextIdx}` : '';
+    const blockIndex = contextIdx && contextIdx > 0 ? `:${contextIdx}` : '';
     return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}${blockIndex}`);
   }
   private append(content: string) { this.content += content; }
 
-  getIndex() { return this.index; }
+  getId() { return this.id; }
   getRef() { return this.ref; }
+  getIndex() { return this.index; }
   getLevel() { return this.level; }
   getContent() { return this.content; }
-  getId() { return this.id; }
-  getUniqueIdGen() { return this._uniqueIdGen; }
+  getTemplateIndex() { return this.templateIndex; }
+
   appendText(content: string) { this.append(content); }
+  appendTemplate(index: number) { this.append(`[tmpl:${this.id}:${index}]`); }
   appendElement(elementIndex: number, closed?: boolean) {
     this.append(this.wrap('#', elementIndex, this.id, closed));
   }
-  appendTemplate(index: number) { this.append(`[tmpl:${this.id}:${index}]`); }
-  resolved() {
-    // TODO: WIP, define more precise regexp
-    return !/tmpl/g.test(this.content);
+
+  resolved() { return !/\[tmpl:\d+:\d+\]/.test(this.content); }
+  forkChildContext(index: number, templateIndex: number) {
+    return new I18nContext(index, templateIndex, this.ref, this.level + 1, this.uniqueIdGen);
   }
-  reconcileTemplate(templateIndex: number, fromContext: I18nContext|null) {
-    if (!fromContext) return;
-    const id = fromContext.getId();
-    const content = fromContext.getContent();
+  reconcileChildContext(context: I18nContext) {
+    const id = context.getId();
+    const content = context.getContent();
+    const templateIndex = context.getTemplateIndex() !;
     const pattern = new RegExp(`\\[tmpl\\:${this.id}\\:${templateIndex}\\]`);
     const replacement =
         `${this.wrap('*', templateIndex, id)}${content}${this.wrap('*', templateIndex, id, true)}`;
