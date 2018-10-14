@@ -280,9 +280,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // setup accumulated bindings
     const bindings = this.i18n !.getBindings();
     if (bindings.size) {
-      bindings.forEach(binding => {
-        this.updateInstruction(span, R3.i18nExp, [binding]);
-      });
+      bindings.forEach(binding => { this.updateInstruction(span, R3.i18nExp, [binding]); });
       const index: o.Expression = o.literal(this.i18n !.getIndex());
       this.updateInstruction(span, R3.i18nApply, [index]);
     }
@@ -845,7 +843,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const value = text.value.visit(this._valueConverter);
       if (value instanceof Interpolation) {
         const {strings, expressions} = value;
-        const label = assembleI18nBoundString(strings, this.i18n.getBindings().size, this.i18n.getId());
+        const label =
+            assembleI18nBoundString(strings, this.i18n.getBindings().size, this.i18n.getId());
         const implicit = o.variable(CONTEXT_NAME);
         expressions.forEach(expression => {
           const binding = this.convertExpressionBinding(implicit, expression);

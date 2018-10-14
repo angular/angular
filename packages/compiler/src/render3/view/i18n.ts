@@ -53,7 +53,8 @@ export function wrapI18nPlaceholder(content: string | number, contextId: number 
   return `${I18N_PLACEHOLDER_SYMBOL}${content}${blockId}${I18N_PLACEHOLDER_SYMBOL}`;
 }
 
-export function assembleI18nBoundString(strings: Array<string>, bindingStartIndex: number = 0, contextId: number = 0): string {
+export function assembleI18nBoundString(
+    strings: Array<string>, bindingStartIndex: number = 0, contextId: number = 0): string {
   if (!strings.length) return '';
   let acc = '';
   const lastIdx = strings.length - 1;
