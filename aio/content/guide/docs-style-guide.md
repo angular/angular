@@ -723,10 +723,10 @@ You can change the appearance and behavior of the live example with attributes a
 
 Give the live example anchor a custom label and tooltip by setting the `title` attribute.
 
-<live-example header="Live Example with title"></live-example>
+<live-example title="Live Example with title"></live-example>
 
 ```html
-<live-example header="Live Example with title"></live-example>
+<live-example title="Live Example with title"></live-example>
 ```
 
 You can achieve the same effect by putting the label between the `<live-example>` tags:
@@ -1216,7 +1216,7 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
-<a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" header="Click to view larger image">
+<a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
   <figure>
     <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
   </figure>

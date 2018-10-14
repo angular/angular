@@ -4,19 +4,19 @@ Angular is a platform that makes it easy to build applications with the web. Ang
 
 <div class="card-container">
   <a href="generated/live-examples/toh-pt1/stackblitz.html" target="_blank" class="docs-card"
-    header="Experience Angular in a live coding environment">
+    title="Experience Angular in a live coding environment">
       <section>Get a Glimpse of Angular</section>
       <p>A quick look at an Angular "hello world" application.</p>
       <p class="card-footer">Angular in Action</p>
   </a>
 
-  <a href="guide/quickstart" class="docs-card" header="Angular Getting Started">
+  <a href="guide/quickstart" class="docs-card" title="Angular Getting Started">
       <section>Get Going with Angular</section>
       <p>Get going on your own environment with the Getting Started.</p>
       <p class="card-footer">Quickstart</p>
   </a>
 
-  <a href="guide/architecture" class="docs-card" header="Angular Architecture">
+  <a href="guide/architecture" class="docs-card" title="Angular Architecture">
       <section>Fundamentals</section>
       <p>Learn Angular application fundamentals, starting with an architecture overview.</p>
       <p class="card-footer">Architecture</p>

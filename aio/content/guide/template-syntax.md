@@ -16,7 +16,7 @@ This page is a comprehensive technical reference to the Angular template languag
 It explains basic principles of the template language and describes most of the syntax that you'll encounter elsewhere in the documentation.
 
 Many code snippets illustrate the points and concepts, all of them available
-in the <live-example header="Template Syntax Live Code"></live-example>.
+in the <live-example title="Template Syntax Live Code"></live-example>.
 
 
 {@a html}
@@ -1595,7 +1595,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 A **template reference variable** is often a reference to a DOM element within a template.
 It can also be a reference to an Angular component or directive or a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" header="MDN: Web Components">web component</a>.
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
 
 Use the hash symbol (#) to declare a reference variable.
 The `#phone` declares a `phone` variable on an `<input>` element.

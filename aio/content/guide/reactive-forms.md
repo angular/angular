@@ -6,7 +6,7 @@
 
 {@a toc}
 
-Try the <live-example header="Reactive Forms in Stackblitz">Reactive Forms live-example</live-example>.
+Try the <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-example</live-example>.
 
 {@a intro}
 

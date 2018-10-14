@@ -200,7 +200,7 @@ describe('CodeComponent', () => {
       expect(getButton().getAttribute('aria-label')).toBe('');
     });
 
-    it('should have aria-label explaining what is being copied when title passed in', () => {
+    it('should have aria-label explaining what is being copied when header passed in', () => {
       hostComponent.header = 'a/b/c/foo.ts';
       fixture.detectChanges();
       expect(getButton().getAttribute('aria-label')).toContain(hostComponent.header);

@@ -766,7 +766,7 @@ The application has three main feature areas:
 1. A *Heroes* area for maintaining the list of heroes employed by the agency.
 1. An *Admin* area to manage the list of crises and heroes.
 
-Try it by clicking on this <live-example header="Hero Employment Agency Live Example">live example link</live-example>.
+Try it by clicking on this <live-example title="Hero Employment Agency Live Example">live example link</live-example>.
 
 Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
@@ -1379,7 +1379,7 @@ Now you'll learn the following:
 This example recreates the heroes feature in the "Services" episode of the
 [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"),
 and you'll be copying much of the code
-from the <live-example name="toh-pt4" header="Tour of Heroes: Services example code"></live-example>.
+from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
 Here's how the user will experience this version of the app:
 
@@ -1416,7 +1416,7 @@ Follow these steps:
 
 * Move the placeholder `hero-list` folder that's in the `app` into the `heroes` folder.
 * Copy the contents of the `heroes/heroes.component.html` from
-  the <live-example name="toh-pt4" header="Tour of Heroes: Services example code">"Services" tutorial</live-example> into the `hero-list.component.html` template.
+  the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example> into the `hero-list.component.html` template.
 
   * Relabel the `<h2>` to `<h2>HEROES</h2>`.
   * Delete the `<app-hero-detail>` component at the bottom of the template.
@@ -2577,7 +2577,7 @@ and decide later if the differences are worthwhile.
 
 
 In keeping with the
-<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" header="Separation of Concerns">*Separation of Concerns* principle</a>,
+<a href="https://blog.8thlight.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html" title="Separation of Concerns">*Separation of Concerns* principle</a>,
 changes to the *Crisis Center* won't affect the `AppModule` or
 any other feature's component.
 
@@ -4320,7 +4320,7 @@ to see the finished route configuration.
 ## Wrap up and final app
 
 You've covered a lot of ground in this guide and the application is too big to reprint here.
-Please visit the <live-example header="Router Sample in Stackblitz"></live-example>
+Please visit the <live-example title="Router Sample in Stackblitz"></live-example>
 where you can download the final source code.
 
 
@@ -4441,7 +4441,7 @@ This is a strictly local URL. The browser shouldn't send this URL to the server
 and should not reload the page.
 
 Modern HTML5 browsers support
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" header="HTML5 browser history push-state">history.pushState</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>,
 a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from
 one that would otherwise require a page load.
@@ -4517,7 +4517,7 @@ resort to hash routes.
 #### The *&lt;base href>*
 
 The router uses the browser's
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" header="HTML5 browser history push-state">history.pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>
 for navigation. Thanks to `pushState`, you can make in-app URL paths look the way you want them to
 look, e.g. `localhost:4200/crisis-center`. The in-app URLs can be indistinguishable from server URLs.
 
@@ -4540,7 +4540,7 @@ older hash (#) style, if necessary.
 
 
 You must **add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" header="base href">&lt;base href&gt; element</a>**
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix *relative* URLs when referencing
 CSS files, scripts, and images.
@@ -4557,11 +4557,11 @@ set the `href` value in **`index.html`** *exactly* as shown here.
 #### HTML5 URLs and the  *&lt;base href>*
 
 While the router uses the
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" header="Browser history push-state">HTML5 pushState</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a>
 style by default, you *must* configure that strategy with a **base href**.
 
 The preferred way to configure the strategy is to add a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" header="base href">&lt;base href&gt; element</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
 
 

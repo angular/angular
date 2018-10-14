@@ -272,7 +272,7 @@ The CLI creates the component files in the `src/app/messages` folder and declare
 Modify the `AppComponent` template to display the generated `MessagesComponent`
 
 <code-example
-  title = "/src/app/app.component.html"
+  header = "/src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
 </code-example>
 
@@ -289,7 +289,7 @@ Use the CLI to create the `MessageService` in `src/app`.
 Open `MessageService` and replace its contents with the following.
 
 <code-example
-  title = "/src/app/message.service.ts"
+  header = "/src/app/message.service.ts"
   path="toh-pt4/src/app/message.service.ts">
 </code-example>
 
@@ -301,7 +301,7 @@ The service exposes its cache of `messages` and two methods: one to `add()` a me
 Re-open the `HeroService` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/hero.service.ts (import MessageService)"
+  header = "/src/app/hero.service.ts (import MessageService)"
   path="toh-pt4/src/app/hero.service.ts" region="import-message-service">
 </code-example>
 
@@ -335,7 +335,7 @@ including the message sent by the `HeroService` when it fetches heroes.
 Open `MessagesComponent` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/messages/messages.component.ts (import MessageService)"
+  header = "/src/app/messages/messages.component.ts (import MessageService)"
   path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
 </code-example>
 
@@ -360,7 +360,7 @@ Angular only binds to _public_ component properties.
 Replace the CLI-generated `MessagesComponent` template with the following.
 
 <code-example
-  title = "src/app/messages/messages.component.html"
+  header = "src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
 </code-example>
 

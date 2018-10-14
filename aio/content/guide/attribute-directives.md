@@ -2,7 +2,7 @@
 
 An **Attribute** directive changes the appearance or behavior of a DOM element.
 
-Try the <live-example header="Attribute Directive example"></live-example>.
+Try the <live-example title="Attribute Directive example"></live-example>.
 
 {@a directive-overview}
 
@@ -329,7 +329,7 @@ The final source code follows:
 
 
 
-You can also experience and download the <live-example header="Attribute Directive example"></live-example>.
+You can also experience and download the <live-example title="Attribute Directive example"></live-example>.
 
 {@a why-input}
 

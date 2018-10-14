@@ -92,7 +92,7 @@ Initialize it with an `id` of `1` and the name `Windstorm`.
 The revised `HeroesComponent` class file should look like this:
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" linenums="false"
-  title= "src/app/heroes/heroes.component.ts">
+  header= "src/app/heroes/heroes.component.ts">
 </code-example>
 
 The page no longer displays properly because you changed the hero from a string to an object.
