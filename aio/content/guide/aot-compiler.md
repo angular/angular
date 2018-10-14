@@ -208,11 +208,18 @@ include a copy of the information that is in the `.metadata.json` file.
 
 ### *strictMetadataEmit*
 
+<!--
 This option tells the template compiler to report an error to the `.metadata.json`
 file if `"skipMetadataEmit"` is `false` . This option is `false` by default. This should only be used when `"skipMetadataEmit"` is `false` and `"skipTemplateCodegen"` is `true`.
+-->
+`"skipMetadataEmit"` 옵션값이 `false`인 상태에서 이 옵션을 설정하면 템플릿을 컴파일하다가 에러가 발생했을 때 `.metadata.json`에 에러를 남길 수 있습니다. 이 옵션의 기본값은 `false`이며, `"skipMetadataEmit"` 옵션값을 `false`로 지정하려면 `"skipTemplateCodegen"` 옵션값은 `true`여야 합니다.
 
+<!--
 It is intended to validate the `.metadata.json` files emitted for bundling with an `npm` package. The validation is overly strict and can emit errors for metadata that would never produce an error when used by the template compiler. You can choose to suppress the error emitted by this option for an exported symbol by including `@dynamic` in the comment documenting the symbol.
+-->
+이 옵션은 `npm` 패키지를 번들링할 때 생성되는 `.metadata.json` 파일의 유효성을 검증하기 위해 도입되었습니다. 유효성 검사 결과로 발생한 에러는 메타데이터에 기록되지만 템플릿 컴파일러 자체에서 에러가 발생하지는 않습니다. 예를 들면 문서화에 주석을 사용하는 경우에 `@dynamic`과 같은 심볼을 사용할 수 있는데, 이 심볼은 템플릿 컴파일러가 알 수 없기 때문에 에러가 발생합니다. 이 때 이 옵션을 사용하면 에러가 발생하는 것을 무시할 수 있습니다.
 
+<!--
 It is valid for `.metadata.json` files to contain errors. The template compiler reports these errors
 if the metadata is used to determine the contents of an annotation. The metadata
 collector cannot predict the symbols that are designed to use in an annotation, so it will preemptively
@@ -220,15 +227,21 @@ include error nodes in the metadata for the exported symbols. The template compi
 nodes to report an error if these symbols are used. If the client of a library intends to use a symbol in an annotation, the template compiler will not normally report
 this until the client uses the symbol. This option allows detecting these errors during the build phase of
 the library and is used, for example, in producing Angular libraries themselves.
+-->
+사실 `.metadata.json` 파일에 에러가 있다고 해도 문제가 되지는 않습니다. 템플릿 컴파일러는 메타데이터에서 사용하는 어떤 것에 문제가 있을 수 있다고만 알릴 뿐입니다. 템플릿 컴파일러는 미리 알고 있는 어노테이션이 아니라면 이 어노테이션이 적절하게 사용되었는지 알 수 없기 때문에 이 어노테이션이 사용된 노드에 문제가 있다고 알릴 수밖에 없습니다. 개발자는 이 에러를 보고 라이브러리를 제대로 사용했는지 점검하는 용도로 사용하면 됩니다. 간단하게 정리하면, 이 옵션은 라이브러리가 제대로 사용되었는지 빌드 단계에서 확인할 수 있는 기회를 제공하는 옵션입니다.
 
 ### *skipTemplateCodegen*
 
+<!--
 This option tells the compiler to suppress emitting `.ngfactory.js` and `.ngstyle.js` files. When set,
 this turns off most of the template compiler and disables reporting template diagnostics.
 This option can be used to instruct the
 template compiler to produce `.metadata.json` files for distribution with an `npm` package while
 avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to
 `npm`.
+-->
+이 옵션을 사용하면 `.ngfactory.js` 파일과 `.ngstyle.js` 파일을 생성하지 않도록 지정할 수 있습니다. 이 옵션이 `true`로 설정되면 템플릿 컴파일러의 기능 일부를 생략하며, 템플릿을 분석하는 단계도 생략합니다.
+`npm`에 패키지를 배포할 때 `.ngfactory.js` 파일과 `.ngstyle.js` 파일은 사용할 수 없기 때문에 `.metadata.json` 파일을 대신 생성하도록 할 때 이 옵션을 사용합니다.
 
 ### *strictInjectionParameters*
 
