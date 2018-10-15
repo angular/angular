@@ -6,7 +6,7 @@ USER root
 # Bazel install
 # See https://bazel.build/versions/master/docs/install-ubuntu.html#using-bazel-custom-apt-repository-recommended
 # Note, only the latest release is available, see https://github.com/bazelbuild/bazel/issues/4947
-RUN BAZEL_VERSION="0.17.1" \
+RUN BAZEL_VERSION="0.18.0" \
  && wget -q -O - https://bazel.build/bazel-release.pub.gpg | apt-key add - \
  && echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" > /etc/apt/sources.list.d/bazel.list \
  && apt-get update \
