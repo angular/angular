@@ -58,7 +58,7 @@ ng_package(
 ##
 ## NOTE: `--define=compile=jit` works with any `bazel` command or target across the repo.
 ##
-## See: `//tools/bazel.rc` where `--define=ivy=false` is defined as default.
+## See: `//.bazelrc` where `--define=ivy=false` is defined as default.
 ## See: `./src/ivy_switch/compiler/index.ts` for more details.
 genrule(
     name = "ivy_switch_compiler",
