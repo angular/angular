@@ -1,5 +1,11 @@
-<table mat-table [dataSource]="dataSource">
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <ng-content></ng-content>
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="position">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> No. </th>
+    <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+  </ng-container>
 
   <!-- Weight Column -->
   <ng-container matColumnDef="weight">

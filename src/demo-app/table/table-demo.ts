@@ -12,7 +12,7 @@ import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'table-demo.html',
+  template: '<material-example-list [ids]="examples"></material-example-list>',
 })
 export class TableDemo {
   examples = Object.keys(EXAMPLE_COMPONENTS)

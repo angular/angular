@@ -1,0 +1,12 @@
+<wrapper-table [dataSource]="dataSource" [columns]="displayedColumns"
+               matSort #sort="matSort">
+  <!-- Custom column definition to be provided to the wrapper table. -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <!-- Custom row definitions to be provided to the wrapper table. -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns; "></tr>
+</wrapper-table>
