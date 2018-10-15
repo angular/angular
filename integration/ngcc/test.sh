@@ -39,6 +39,8 @@ ivy-ngcc
 # Now try compiling the app using the ngcc compiled libraries
 ngc -p tsconfig-app.json
 
-# Did it compile the main.ts correctly?
-  grep "directives: \[\S*\.NgIf\]" dist/src/main.js
+# Did it compile the main.ts correctly (including the ngIf and MatButton directives)?
+  grep "directives: \[.*\.NgIf.*\]" dist/src/main.js
+  if [[ $? != 0 ]]; then exit 1; fi
+  grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
   if [[ $? != 0 ]]; then exit 1; fi
