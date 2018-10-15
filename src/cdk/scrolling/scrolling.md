@@ -25,7 +25,7 @@ rest.
 #### Creating items in the viewport
 `*cdkVirtualFor` replaces `*ngFor` inside of a `<cdk-virtual-scroll-viewport>`, supporting the exact
 same API as [`*ngFor`](https://angular.io/api/common/NgForOf). The simplest usage just specifies the
-list of items:
+list of items (note that the `itemSize` property on the viewport must be set):
 
 <!-- example(cdk-virtual-scroll-overview) -->
 
@@ -111,3 +111,13 @@ that the parent does not introduce additional space (e.g. via `margin` or `paddi
 interfere with the scrolling.
 
 <!-- example(cdk-virtual-scroll-dl) -->
+
+### Scrolling strategies
+In order to determine how large the overall content is and what portion of it actually needs to be
+rendered at any given time the viewport relies on a `VirtualScrollStrategy` being provided. The
+simplest way to provide it is to use the `itemSize` directive on the viewport
+(e.g. `<cdk-virtual-scroll-viewport itemSize="50">`). However it is also possible to provide a 
+custom strategy by creating a class that implements the `VirtualScrollStrategy` interface and
+providing it as the `VIRTUAL_SCROLL_STRATEGY` on the component containing your viewport.
+
+<!-- example(cdk-virtual-scroll-custom-strategy) -->

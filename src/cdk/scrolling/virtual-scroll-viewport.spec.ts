@@ -717,6 +717,20 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.elementRef.nativeElement.scrollWidth).toBe(10000);
     }));
   });
+
+  describe('with no VirtualScrollStrategy', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [VirtualScrollWithNoStrategy],
+      }).compileComponents();
+    });
+
+    it('should fail on construction', fakeAsync(() => {
+      expect(() => TestBed.createComponent(VirtualScrollWithNoStrategy)).toThrowError(
+          'Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
+    }));
+  });
 });
 
 
@@ -847,4 +861,15 @@ class FixedSizeVirtualScrollWithRtlDirection {
   get viewportHeight() {
     return this.orientation == 'horizontal' ? this.viewportCrossSize : this.viewportSize;
   }
+}
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport>
+      <div *cdkVirtualFor="let item of items">{{item}}</div>
+    </cdk-virtual-scroll-viewport>
+  `
+})
+class VirtualScrollWithNoStrategy {
+  items = [];
 }

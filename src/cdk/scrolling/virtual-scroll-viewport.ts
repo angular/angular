@@ -124,10 +124,15 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   constructor(public elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               ngZone: NgZone,
-              @Inject(VIRTUAL_SCROLL_STRATEGY) private _scrollStrategy: VirtualScrollStrategy,
+              @Optional() @Inject(VIRTUAL_SCROLL_STRATEGY)
+                  private _scrollStrategy: VirtualScrollStrategy,
               @Optional() dir: Directionality,
               scrollDispatcher: ScrollDispatcher) {
     super(elementRef, scrollDispatcher, ngZone, dir);
+
+    if (!_scrollStrategy) {
+      throw Error('Error: cdk-virtual-scroll-viewport requires the "itemSize" property to be set.');
+    }
   }
 
   ngOnInit() {
@@ -183,6 +188,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
           this._dataLength = newLength;
           this._scrollStrategy.onDataLengthChanged();
         }
+        this._doChangeDetection();
       });
     });
   }
