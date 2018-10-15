@@ -1,4 +1,4 @@
-FROM circleci/node:10.9.0-browsers
+FROM circleci/node:10.12-browsers
 
 USER root
 
@@ -6,7 +6,7 @@ USER root
 # Bazel install
 # See https://bazel.build/versions/master/docs/install-ubuntu.html#using-bazel-custom-apt-repository-recommended
 # Note, only the latest release is available, see https://github.com/bazelbuild/bazel/issues/4947
-RUN BAZEL_VERSION="0.17.1" \
+RUN BAZEL_VERSION="0.18.0" \
  && wget -q -O - https://bazel.build/bazel-release.pub.gpg | apt-key add - \
  && echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" > /etc/apt/sources.list.d/bazel.list \
  && apt-get update \
@@ -60,7 +60,7 @@ RUN mkdir ~/.npm-global \
 # in the circleci/*-browsers base image above.
 # This variable is intended to be used by passing it as an argument to
 # "postinstall": "webdriver-manager update ..."
-ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
+ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.42"
 
 WORKDIR /home/circleci
 ENTRYPOINT ["/bin/bash", "--login"]
