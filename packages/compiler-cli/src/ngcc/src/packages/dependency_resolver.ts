@@ -79,9 +79,10 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     entryPoints.forEach(entryPoint => {
-      const entryPointPath = entryPoint.esm2015;
+      const entryPointPath = entryPoint.fesm2015 || entryPoint.esm2015;
       if (!entryPointPath) {
-        throw new Error(`Esm2015 format missing in '${entryPoint.path}' entry-point.`);
+        throw new Error(
+            `ESM2015 format (flat and non-flat) missing in '${entryPoint.path}' entry-point.`);
       }
 
       const dependencies = new Set<string>();
