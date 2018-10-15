@@ -436,4 +436,18 @@ export interface ReflectionHost {
    * if the value cannot be computed.
    */
   getVariableValue(declaration: ts.VariableDeclaration): ts.Expression|null;
+
+  /**
+   * Take an exported declaration of a class (maybe downleveled to a variable) and look up the
+   * declaration of its type in a separate .d.ts tree.
+   *
+   * This function is allowed to return `null` if the current compilation unit does not have a
+   * separate .d.ts tree. When compiling TypeScript code this is always the case, since .d.ts files
+   * are produced only during the emit of such a compilation. When compiling .js code, however,
+   * there is frequently a parallel .d.ts tree which this method exposes.
+   *
+   * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
+   * `ts.Program` as the input declaration.
+   */
+  getDtsDeclarationOfClass(declaration: ts.Declaration): ts.ClassDeclaration|null;
 }
