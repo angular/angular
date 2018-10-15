@@ -317,32 +317,57 @@ This option should be set to `false` when using factory summaries.
 
 ### *fullTemplateTypeCheck*
 
+<!--
 This option tells the compiler to enable the [binding expression validation](#binding-expression-validation)
 phase of the template compiler which uses TypeScript to validate binding expressions.
 
 This option is `false` by default.
 
 *Note*: It is recommended to set this to `true` as this option will default to `true` in the future.
+-->
+이 옵션을 사용하면 템플릿 컴파일러가 템플릿을 처리할 때 [바인딩 표현식에 적용되는 유효성 검사](#binding-expression-validation)를 활성화할 수 있습니다.
+
+이 옵션의 기본값은 `false`입니다.
+
+*참고*: 이 옵션은 이후에 `true`가 기본값이 될 것이기 때문에 지금부터 `true`로 설정하고 사용하는 것을 권장합니다.
 
 ### *annotateForClosureCompiler*
 
+<!--
 This option tells the compiler to use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted
 JavaScript with [JsDoc](http://usejsdoc.org/) comments needed by the
 [Closure Compiler](https://github.com/google/closure-compiler). This option defaults to `false`.
+-->
+[JsDoc](http://usejsdoc.org/)은 주석을 사용해서 문서를 생성하기 때문에 [Closure Compiler](https://github.com/google/closure-compiler)가 필요합니다. 이 옵션을 사용하면 Angular 애플리케이션 코드에 [Tsickle](https://github.com/angular/tsickle)를 적용할 수 있기 때문에 Closure Compiler를 사용할 수 있습니다.
+기본값은 `false` 입니다.
 
 ### *annotationsAs*
 
+<!--
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
 annotations and decorators are unaffected. Default is `static fields`.
+-->
+이 옵션을 사용하면 특정 어노테이션이 트리 셰이킹 대상이 되도록 지정할 수 있습니다.
+다만만 이 옵션을 지정해도 Angular가 제공하지 않는 데코레이터는 영향을 받지 않습니다.
+기본값은 `static fields` 입니다.
 
+<!--
 value           | description
 ----------------|-------------------------------------------------------------
 `decorators`    | Leave the Decorators in-place. This makes compilation faster. TypeScript will emit calls to the __decorate helper.  Use `--emitDecoratorMetadata` for runtime reflection.  However, the resulting code will not properly tree-shake.
 `static fields` | Replace decorators with a static field in the class. Allows advanced tree-shakers like [Closure Compiler](https://github.com/google/closure-compiler) to remove unused classes.
+-->
+값           | 설명
+----------------|-------------------------------------------------------------
+`decorators`    | 데코레이터를 그대로 놔두고 __decorate 헬퍼를 사용해서 처리합니다. 이렇게 설정하면 컴파일 시간도 단축됩니다. 애플리케이션이 실행되는 시점에 이 데코레이터를 확인하려면  `--emitDecoratorMetadata` 옵션을 사용하면 됩니다. 사용하지 않는 데코레이터라도 트리 셰이킹되지 않습니다.
+`static fields` | 데코레이터를 클래스의 static 필드로 변환합니다. 그러면 [Closure Compiler](https://github.com/google/closure-compiler)와 같은 트리 셰이킹 툴이 동작할 수 있으며, 사용하지 않는 클래스 멤버를 최종 결과물에서 제거할 수 있습니다.
 
 ### *trace*
 
+<!--
 This tells the compiler to print extra information while compiling templates.
+-->
+이 옵션을 사용하면 템플릿을 컴파일하면서 출력하는 로그가 좀 더 자세해 집니다.
 
 ### *disableExpressionLowering*
 
