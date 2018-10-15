@@ -1,21 +1,15 @@
 import {join} from 'path';
-import {readFileContent, runTestCases} from '@angular/cdk/schematics';
+import {readFileContent, runTestCases} from '../../testing';
 import {migrationCollection} from './index.spec';
 
-describe('v6 upgrade test cases', () => {
+describe('v7 upgrade test cases', () => {
 
   /**
    * Name of test cases that will be used to verify that update schematics properly update
    * a developers application.
    */
   const testCases = [
-    'v6/attribute-selectors',
-    'v6/class-names',
-    'v6/css-selectors',
-    'v6/element-selectors',
-    'v6/input-names',
-    'v6/output-names',
-    'v6/property-names',
+    'v7/property-names',
   ];
 
   let testCasesOutputPath: string;
@@ -26,7 +20,7 @@ describe('v6 upgrade test cases', () => {
       return inputs;
     }, {} as {[name: string]: string});
 
-    const {tempPath} = await runTestCases('migration-v6', migrationCollection, testCaseInputs);
+    const {tempPath} = await runTestCases('migration-v7', migrationCollection, testCaseInputs);
 
     testCasesOutputPath = join(tempPath, 'projects/cdk-testing/src/test-cases/');
   });
@@ -42,5 +36,4 @@ describe('v6 upgrade test cases', () => {
     });
   });
 });
-
 

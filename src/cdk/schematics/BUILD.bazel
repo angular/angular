@@ -16,14 +16,20 @@ filegroup(
 ts_library(
   name = "schematics",
   module_name = "@angular/cdk/schematics",
-  srcs = glob(["**/*.ts"], exclude=["**/files/**/*.ts", "**/*.spec.ts"]),
+  srcs = glob(["**/*.ts"], exclude=[
+    "**/files/**/*.ts",
+    "**/*.spec.ts",
+    "ng-update/test-cases/**/*",
+  ]),
   tsconfig = ":tsconfig.json",
   deps = [
     "@npm//@schematics/angular",
     "@npm//@angular-devkit/schematics",
-     # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
+    # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
     "@npm//@types/jasmine",
     "@npm//@types/node",
+    # TODO(devversion): Similarly to "jasmine", we need to extract these into testing only.
+    "@npm//fs-extra",
     "@npm//glob",
     "@npm//parse5",
     "@npm//rxjs",
@@ -45,7 +51,7 @@ npm_package(
 jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
-  data = [":schematics_assets"],
+  data = [":schematics_assets", ":schematics_test_cases"],
 )
 
 ts_library(
@@ -62,5 +68,14 @@ ts_library(
     "@npm//typescript",
   ],
   tsconfig = ":tsconfig.json",
+  testonly = True,
+)
+
+filegroup(
+  name = "schematics_test_cases",
+  srcs = glob([
+    "ng-update/test-cases/**/*_input.ts",
+    "ng-update/test-cases/**/*_expected_output.ts"
+  ]),
   testonly = True,
 )

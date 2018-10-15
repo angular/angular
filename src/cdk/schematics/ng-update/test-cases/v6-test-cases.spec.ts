@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {readFileContent, runTestCases} from '@angular/cdk/schematics';
+import {readFileContent, runTestCases} from '../../testing';
 import {migrationCollection} from './index.spec';
 
 describe('v6 upgrade test cases', () => {
@@ -11,10 +11,7 @@ describe('v6 upgrade test cases', () => {
   const testCases = [
     'v6/attribute-selectors',
     'v6/class-names',
-    'v6/css-selectors',
-    'v6/element-selectors',
     'v6/input-names',
-    'v6/output-names',
     'v6/property-names',
   ];
 

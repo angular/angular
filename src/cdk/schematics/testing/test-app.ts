@@ -17,5 +17,5 @@ export function createTestApp(runner: SchematicTestRunner, appOptions = {}): Uni
   });
 
   return runner.runExternalSchematic('@schematics/angular', 'application',
-      {...appOptions, name: 'material'}, workspaceTree);
+      {name: 'material', ...appOptions}, workspaceTree);
 }

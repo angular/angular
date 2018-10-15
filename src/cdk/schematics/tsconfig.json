@@ -19,7 +19,8 @@
   },
   "exclude": [
     "**/files/**/*",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "ng-update/test-cases/**/*"
   ],
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

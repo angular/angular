@@ -1,10 +1,11 @@
-import {resolveBazelDataFile, runTestCases} from '../index.spec';
+import {migrationCollection} from '../index.spec';
+import {runTestCases} from '@angular/cdk/schematics';
 
 describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const {logOutput} = await runTestCases('migration-v6', {
-      'constructor-checks': resolveBazelDataFile(`misc/constructor-checks_input.ts`)
+    const {logOutput} = await runTestCases('migration-v6', migrationCollection, {
+      'constructor-checks': require.resolve('./constructor-checks_input.ts')
     });
 
     expect(logOutput).toMatch(/\[22.*Found "NativeDateAdapter"/,
