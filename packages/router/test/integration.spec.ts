@@ -2796,6 +2796,45 @@ describe('Integration', () => {
            ]);
          })));
 
+      // Regression where navigateByUrl with false CanLoad no longer resolved `false` value on
+      // navigateByUrl promise: https://github.com/angular/angular/issues/26284
+      it('should resolve navigateByUrl promise after CanLoad executes',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [LazyLoadedComponent],
+                 imports:
+                     [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([
+                 {path: 'lazy-false', canLoad: ['alwaysFalse'], loadChildren: 'lazy'},
+                 {path: 'lazy-true', canLoad: ['alwaysTrue'], loadChildren: 'lazy'},
+               ]);
+
+               let navFalseResult: any;
+               let navTrueResult: any;
+               router.navigateByUrl('/lazy-false').then(v => { navFalseResult = v; });
+               advance(fixture);
+               router.navigateByUrl('/lazy-true').then(v => { navTrueResult = v; });
+               advance(fixture);
+
+               expect(navFalseResult).toBe(false);
+               expect(navTrueResult).toBe(true);
+
+             })));
+
       it('should execute CanLoad only once',
          fakeAsync(inject(
              [Router, Location, NgModuleFactoryLoader],
