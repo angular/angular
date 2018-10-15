@@ -1486,45 +1486,46 @@ describe('compiler compliance', () => {
 
     describe('pipes', () => {
 
-      const files = {
-        app: {
-          'spec.ts': `
-              import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
-
-              @Pipe({
-                name: 'myPipe',
-                pure: false
-              })
-              export class MyPipe implements PipeTransform,
-                  OnDestroy {
-                transform(value: any, ...args: any[]) { return value; }
-                ngOnDestroy(): void {  }
-              }
-
-              @Pipe({
-                name: 'myPurePipe',
-                pure: true,
-              })
-              export class MyPurePipe implements PipeTransform {
-                transform(value: any, ...args: any[]) { return value; }
-              }
-
-              @Component({
-                selector: 'my-app',
-                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
-              })
-              export class MyApp {
-                name = 'World';
-                size = 0;
-              }
-
-              @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
-              export class MyModule {}
-          `
-        }
-      };
-
       it('should render pipes', () => {
+
+        const files = {
+          app: {
+            'spec.ts': `
+                import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
+  
+                @Pipe({
+                  name: 'myPipe',
+                  pure: false
+                })
+                export class MyPipe implements PipeTransform,
+                    OnDestroy {
+                  transform(value: any, ...args: any[]) { return value; }
+                  ngOnDestroy(): void {  }
+                }
+  
+                @Pipe({
+                  name: 'myPurePipe',
+                  pure: true,
+                })
+                export class MyPurePipe implements PipeTransform {
+                  transform(value: any, ...args: any[]) { return value; }
+                }
+  
+                @Component({
+                  selector: 'my-app',
+                  template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
+                })
+                export class MyApp {
+                  name = 'World';
+                  size = 0;
+                }
+  
+                @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
+                export class MyModule {}
+            `
+          }
+        };
+
         const MyPipeDefinition = `
             MyPipe.ngPipeDef = $r3$.ɵdefinePipe({
               name: "myPipe",
@@ -1577,6 +1578,73 @@ describe('compiler compliance', () => {
 
         expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
         expectEmit(source, MyPurePipeDefinition, 'Invalid pure pipe definition');
+        expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
+      });
+
+      it('should use appropriate function for a given no of pipe arguments', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+                import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
+  
+                @Pipe({
+                  name: 'myPipe',
+                  pure: false
+                })
+                export class MyPipe implements PipeTransform,
+                    OnDestroy {
+                  transform(value: any, ...args: any[]) { return value; }
+                  ngOnDestroy(): void {  }
+                }
+  
+                @Component({
+                  selector: 'my-app',
+                  template: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}'
+                })
+                export class MyApp {
+                }
+  
+                @NgModule({declarations:[MyPipe, MyApp]})
+                export class MyModule {}
+            `
+          }
+        };
+
+        const MyAppDefinition = `
+            // ...
+            MyApp.ngComponentDef = $r3$.ɵdefineComponent({
+              type: MyApp,
+              selectors: [["my-app"]],
+              factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
+              features: [$r3$.ɵPublicFeature],
+              consts: 6,
+              vars: 27,
+              template:  function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                  $r3$.ɵtext(0);
+                  $r3$.ɵpipe(1, "myPipe");
+                  $r3$.ɵpipe(2, "myPipe");
+                  $r3$.ɵpipe(3, "myPipe");
+                  $r3$.ɵpipe(4, "myPipe");
+                  $r3$.ɵpipe(5, "myPipe");
+                }
+                if (rf & 2) {
+                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation5(
+                    "0:", i0.ɵpipeBind1(1, 5, ctx.name), 
+                    "1:", i0.ɵpipeBind2(2, 7, ctx.name, 1), 
+                    "2:", i0.ɵpipeBind3(3, 10, ctx.name, 1, 2),
+                    "3:", i0.ɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
+                    "4:", i0.ɵpipeBindV(5, 19, $r3$.ɵpureFunction1(25, $c0$, ctx.name)),
+                    ""
+                  ));
+                }
+              },
+              pipes: [MyPipe]
+            });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
         expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
       });
     });
