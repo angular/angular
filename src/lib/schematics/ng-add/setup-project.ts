@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, noop, Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
 import {
   addModuleImportToRootModule,
   getProjectFromWorkspace,
@@ -17,7 +17,6 @@ import {
 import {red, bold} from 'chalk';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
-import * as parse5 from 'parse5';
 import {addFontsToIndex} from './fonts/material-fonts';
 import {addHammerJsToMain} from './gestures/hammerjs-import';
 import {Schema} from './schema';
@@ -36,11 +35,6 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  *  - Adds Browser Animation to app.module
  */
 export default function(options: Schema): Rule {
-  if (!parse5) {
-    throw new SchematicsException('Parse5 is required but could not be found! Please install ' +
-      '"parse5" manually in order to continue.');
-  }
-
   return chain([
     options && options.gestures ? addHammerJsToMain(options) : noop(),
     addAnimationsModule(options),

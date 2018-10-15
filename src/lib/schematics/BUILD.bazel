@@ -25,7 +25,6 @@ ts_library(
     # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
     "@npm//@types/jasmine",
     "@npm//@types/node",
-    "@npm//parse5",
     "@npm//tslint",
     "@npm//typescript",
   ],
