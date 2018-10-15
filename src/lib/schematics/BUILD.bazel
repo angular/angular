@@ -7,7 +7,7 @@ load("//tools:defaults.bzl", "jasmine_node_test")
 
 filegroup(
   name = "schematics_assets",
-  srcs = glob(["**/files/**/*", "**/*.json"]) + ["README.md"],
+  srcs = glob(["**/files/**/*", "**/*.json"]),
 )
 
 ts_library(

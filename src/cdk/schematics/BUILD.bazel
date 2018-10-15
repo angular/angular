@@ -10,7 +10,7 @@ exports_files(["#bazel_workaround.txt"])
 
 filegroup(
   name = "schematics_assets",
-  srcs = glob(["**/files/**/*", "**/*.json"]) + ["README.md"],
+  srcs = glob(["**/files/**/*", "**/*.json"]),
 )
 
 ts_library(
