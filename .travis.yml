@@ -52,10 +52,10 @@ env:
 before_install:
   - source ./scripts/ci/travis-env.sh
   - source ./scripts/ci/install-yarn.sh
-  - if [[ "$TRAVIS_EVENT_TYPE" == "cron" ]]; then ./scripts/install-angular-snapshot.sh --only-save; fi
 
 install:
   - ./scripts/ci/travis-install.sh
+  - if [[ "$TRAVIS_EVENT_TYPE" == "cron" ]]; then ./scripts/install-angular-snapshot.sh --only-save; fi
 
 before_script:
   - mkdir -p $LOGS_DIR
