@@ -243,6 +243,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this.constantPool.getTranslation(label, parseI18nMeta(meta), this.fileBasedI18nSuffix);
   }
 
+  i18nAppendTranslationMeta(meta?: string) {
+    this.constantPool.appendTranslationMeta(parseI18nMeta(meta));
+  }
+
   i18nAllocateRef(): o.ReadVarExpr {
     return this.constantPool.getDeferredTranslationConst(this.fileBasedI18nSuffix);
   }
@@ -253,11 +257,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  i18nStart(span: ParseSourceSpan|null = null): void {
+  i18nStart(span: ParseSourceSpan|null = null, meta?: string): void {
     const index = this.allocateDataSlot();
-    this.i18n = this.i18nContext ?
-        this.i18nContext.forkChildContext(index, this.templateIndex !) :
-        new I18nContext(index, this.templateIndex, this.i18nAllocateRef());
+    if (this.i18nContext) {
+      this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !);
+    } else {
+      this.i18nAppendTranslationMeta(meta);
+      const ref = this.i18nAllocateRef();
+      this.i18n = new I18nContext(index, this.templateIndex, ref);
+    }
 
     // generate i18nStart instruction
     const params: o.Expression[] = [o.literal(index), this.i18n.getRef()];
@@ -531,7 +539,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       if (isI18nRootElement) {
-        this.i18nStart(element.sourceSpan);
+        this.i18nStart(element.sourceSpan, i18nMeta);
       } else {
         if (this.i18n) {
           this.i18n.appendElement(elementIndex);

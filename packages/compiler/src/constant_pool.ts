@@ -131,6 +131,13 @@ export class ConstantPool {
     return variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
   }
 
+  appendTranslationMeta(meta: {description?: string, meaning?: string}) {
+    const docStmt = i18nMetaToDocStmt(meta);
+    if (docStmt) {
+      this.statements.push(docStmt);
+    }
+  }
+
   // Generates closure specific code for translation.
   //
   // ```
@@ -152,10 +159,7 @@ export class ConstantPool {
     }
 
     const variable = o.variable(this.freshTranslationName(suffix));
-    const docStmt = i18nMetaToDocStmt(meta);
-    if (docStmt) {
-      this.statements.push(docStmt);
-    }
+    this.appendTranslationMeta(meta);
     this.statements.push(this.getTranslationDeclStmt(variable, message));
 
     this.translations.set(key, variable);

@@ -26,7 +26,8 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n-title="meaning|desc@@id" title="introduction">Hello world</div>
+                <div i18n="meaningA|descA@@idA">Hello world (in i18n section)!</div>
+                <div i18n-title="meaningB|descB@@idB" title="introduction">Hello world</div>
               \`
             })
             export class MyComponent {}
@@ -39,17 +40,26 @@ describe('i18n support in the view compiler', () => {
 
       const template = `
         /**
-         * @desc desc
-         * @meaning meaning
+         * @desc descA
+         * @meaning meaningA
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("introduction");
-        const $_c1$ = ["title", $MSG_APP_SPEC_TS_0$, 0];
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Hello world (in i18n section)!");
+        /**
+         * @desc descB
+         * @meaning meaningB
+         */
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("introduction");
+        const $_c2$ = ["title", $MSG_APP_SPEC_TS_1$, 0];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nAttribute(1, $_c1$);
-            $r3$.ɵtext(2, "Hello world");
+            $r3$.ɵi18nStart(1, MSG_APP_SPEC_TS_0);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵi18nAttribute(3, _c2);
+            $r3$.ɵtext(4, "Hello world");
             $r3$.ɵelementEnd();
           }
         }
