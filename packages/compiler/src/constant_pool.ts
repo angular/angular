@@ -7,6 +7,7 @@
  */
 
 import * as o from './output/output_ast';
+import {I18nMeta, parseI18nMeta} from './render3/view/i18n';
 import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
@@ -131,8 +132,9 @@ export class ConstantPool {
     return variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
   }
 
-  appendTranslationMeta(meta: {description?: string, meaning?: string}) {
-    const docStmt = i18nMetaToDocStmt(meta);
+  appendTranslationMeta(meta: string|I18nMeta) {
+    const parsedMeta = typeof meta === 'string' ? parseI18nMeta(meta) : meta;
+    const docStmt = i18nMetaToDocStmt(parsedMeta);
     if (docStmt) {
       this.statements.push(docStmt);
     }
@@ -147,10 +149,11 @@ export class ConstantPool {
   //  */
   // const MSG_XYZ = goog.getMsg('message');
   // ```
-  getTranslation(message: string, meta: {description?: string, meaning?: string}, suffix: string):
-      o.Expression {
+  getTranslation(message: string, meta: string, suffix: string): o.Expression {
+    const parsedMeta = parseI18nMeta(meta);
+
     // The identity of an i18n message depends on the message and its meaning
-    const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
+    const key = parsedMeta.meaning ? `${message}\u0000\u0000${parsedMeta.meaning}` : message;
 
     const exp = this.translations.get(key);
 
@@ -159,7 +162,7 @@ export class ConstantPool {
     }
 
     const variable = o.variable(this.freshTranslationName(suffix));
-    this.appendTranslationMeta(meta);
+    this.appendTranslationMeta(parsedMeta);
     this.statements.push(this.getTranslationDeclStmt(variable, message));
 
     this.translations.set(key, variable);
@@ -350,8 +353,7 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
 
 // Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
 // formatted as expected by the Closure compiler.
-function i18nMetaToDocStmt(meta: {description?: string, id?: string, meaning?: string}):
-    o.JSDocCommentStmt|null {
+function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   const tags: o.JSDocTag[] = [];
 
   if (meta.description) {

@@ -29,7 +29,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
-import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nBoundString, parseI18nMeta} from './i18n';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nBoundString} from './i18n';
 import {parseStyle} from './styling';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
@@ -239,13 +239,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // LocalResolver
   getLocal(name: string): o.Expression|null { return this._bindingScope.get(name); }
 
-  i18nTranslate(label: string, meta?: string): o.Expression {
-    return this.constantPool.getTranslation(label, parseI18nMeta(meta), this.fileBasedI18nSuffix);
+  i18nTranslate(label: string, meta: string = ''): o.Expression {
+    return this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
   }
 
-  i18nAppendTranslationMeta(meta?: string) {
-    this.constantPool.appendTranslationMeta(parseI18nMeta(meta));
-  }
+  i18nAppendTranslationMeta(meta: string = '') { this.constantPool.appendTranslationMeta(meta); }
 
   i18nAllocateRef(): o.ReadVarExpr {
     return this.constantPool.getDeferredTranslationConst(this.fileBasedI18nSuffix);

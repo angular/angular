@@ -23,25 +23,24 @@ export const I18N_PLACEHOLDER_SYMBOL = '�';
 // - "@@id",
 // - "description[@@id]",
 // - "meaning|description[@@id]"
-export function parseI18nMeta(i18n?: string):
-    {description?: string, id?: string, meaning?: string} {
+export function parseI18nMeta(meta?: string): I18nMeta {
+  let id: string|undefined;
   let meaning: string|undefined;
   let description: string|undefined;
-  let id: string|undefined;
 
-  if (i18n) {
+  if (meta) {
     // TODO(vicb): figure out how to force a message ID with closure ?
-    const idIndex = i18n.indexOf(I18N_ID_SEPARATOR);
-    const descIndex = i18n.indexOf(I18N_MEANING_SEPARATOR);
+    const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
+    const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
     let meaningAndDesc: string;
     [meaningAndDesc, id] =
-        (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+        (idIndex > -1) ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
     [meaning, description] = (descIndex > -1) ?
         [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
         ['', meaningAndDesc];
   }
 
-  return {description, id, meaning};
+  return {id, meaning, description};
 }
 
 export function isI18NAttribute(name: string): boolean {
@@ -69,6 +68,13 @@ function getSeqNubmerGenerator(startsAt: number = 0): () => number {
   let current = startsAt;
   return () => current++;
 }
+
+export type I18nMeta = {
+  id?: string,
+  description?: string,
+  meaning?: string
+};
+
 export class I18nContext {
   private id: number;
   private content: string = '';
