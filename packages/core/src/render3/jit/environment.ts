@@ -78,7 +78,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵprojection': r3.projection,
   'ɵelementProperty': r3.elementProperty,
   'ɵpipeBind1': r3.pipeBind1,
-  'ɵpipeBind2': r3.pipeBind1,
+  'ɵpipeBind2': r3.pipeBind2,
   'ɵpipeBind3': r3.pipeBind3,
   'ɵpipeBind4': r3.pipeBind4,
   'ɵpipeBindV': r3.pipeBindV,
