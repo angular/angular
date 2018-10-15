@@ -6,7 +6,6 @@ ng_module(
   name = "testing",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/testing",
-  tsconfig = ":tsconfig-bazel.json",
   deps = [
     "@angular//packages/core",
   ],

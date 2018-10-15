@@ -82,3 +82,18 @@ rules_angular_dependencies()
 # Setup Angular workspace for building (Bazel managed node modules)
 load("@angular//:index.bzl", "ng_setup_workspace")
 ng_setup_workspace()
+
+# Setup Go toolchain (required for Bazel web testing rules)
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
+
+# Setup web testing. We need to setup a browser because the web testing rules for TypeScript need
+# a reference to a registered browser (ideally that's a hermetic version of a browser)
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories",
+  "web_test_repositories")
+
+web_test_repositories()
+browser_repositories(
+  chromium = True,
+)

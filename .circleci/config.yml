@@ -76,8 +76,8 @@ jobs:
       - *copy_bazel_config
 
       # TODO(jelbourn): Update this command to run all tests if the Bazel issues have been fixed.
-      - run: bazel build src/cdk:npm_package
-      - run: bazel test src/{cdk,lib}/schematics:unit_tests
+      - run: bazel build src/cdk/...
+      - run: bazel test src/cdk/...
 
       - *save_cache
 

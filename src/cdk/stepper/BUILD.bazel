@@ -17,5 +17,4 @@ ng_module(
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
   ],
-  tsconfig = "//src/cdk:tsconfig-build.json",
 )

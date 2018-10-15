@@ -1,0 +1,10 @@
+// TypeScript configuration that will be used to build the test sources for entry-points
+// of the CDK. To avoid duplicate logic, we decided to just have one package-wide tsconfig
+// file that will be  used by Bazel to build the test sources for an entry-point.
+{
+  "extends": "./bazel-tsconfig-build.json",
+  "compilerOptions": {
+    "importHelpers": false,
+    "types": ["jasmine"]
+  }
+}

@@ -47,6 +47,6 @@ build --workspace_status_command=./tools/bazel-stamp-vars.sh
 # running as daemons, and cache SourceFile AST's to reduce parse time.
 build --strategy=TypeScriptCompile=worker --strategy=AngularTemplateCompile=worker
 
-# Use the new "ngtsc" compiler strategy. We don't want to compile with Ivy nor with the
-# legacy compiler that doesn't handle `providedIn` properly.
-build --define=compile=local
+# Use the legacy AOT compiler strategy. We don't want to compile with Ivy nor with "ngtsc" which
+# does not generate factory files which are needed for AOT.
+build --define=compile=legacy

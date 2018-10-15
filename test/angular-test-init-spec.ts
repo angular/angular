@@ -1,12 +1,12 @@
-import {TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting,
 } from '@angular/platform-browser-dynamic/testing';
 
-
-/* Common setup / initialization for all unit tests in Angular Material and CDK. */
-
+/*
+ * Common setup / initialization for all unit tests in Angular Material and CDK.
+ */
 
 const testBed = TestBed.initTestEnvironment(
     [BrowserDynamicTestingModule], platformBrowserDynamicTesting());
@@ -31,7 +31,7 @@ patchTestBedToDestroyFixturesAfterEveryTest(testBed);
  *    aforementioned errors were thrown, they would be reported for the wrong test (the test that's
  *    about to start, not the test that just finished).
  */
-function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance) {
+function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance: TestBed) {
   // Original resetTestingModule function of the TestBed.
   const _resetTestingModule = testBedInstance.resetTestingModule;
 
@@ -40,7 +40,7 @@ function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance) {
   // errors when destroying components are no longer causing Jasmine to fail.
   testBedInstance.resetTestingModule = function() {
     try {
-      this._activeFixtures.forEach(fixture => fixture.destroy());
+      this._activeFixtures.forEach((fixture: ComponentFixture<any>) => fixture.destroy());
     } finally {
       this._activeFixtures = [];
       // Regardless of errors or not, run the original reset testing module function.

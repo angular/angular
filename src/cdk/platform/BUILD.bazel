@@ -9,6 +9,5 @@ ng_module(
   deps = [
     "@angular//packages/common",
     "@angular//packages/core",
-  ],
-  tsconfig = "//src/cdk:tsconfig-build.json",
+  ]
 )
