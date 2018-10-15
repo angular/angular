@@ -170,6 +170,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
+  getDtsDeclarationOfClass(_: ts.Declaration): ts.ClassDeclaration|null { return null; }
+
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
    *
@@ -312,7 +314,7 @@ export function reflectTypeEntityToDeclaration(
     type: ts.EntityName, checker: ts.TypeChecker): {node: ts.Declaration, from: string | null} {
   let realSymbol = checker.getSymbolAtLocation(type);
   if (realSymbol === undefined) {
-    throw new Error(`Cannot resolve type entity to symbol`);
+    throw new Error(`Cannot resolve type entity ${type.getText()} to symbol`);
   }
   while (realSymbol.flags & ts.SymbolFlags.Alias) {
     realSymbol = checker.getAliasedSymbol(realSymbol);

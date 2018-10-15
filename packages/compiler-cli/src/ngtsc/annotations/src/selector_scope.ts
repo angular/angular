@@ -14,7 +14,7 @@ import {AbsoluteReference, Reference, ResolvedReference, reflectTypeEntityToDecl
 import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
 import {TypeCheckableDirectiveMeta} from '../../typecheck';
 
-import {extractDirectiveGuards, toR3Reference} from './util';
+import {extractDirectiveGuards} from './util';
 
 
 /**
@@ -423,7 +423,11 @@ function convertDirectiveReferenceMap(
     context: ts.SourceFile): Map<string, ScopeDirective<Expression>> {
   const newMap = new Map<string, ScopeDirective<Expression>>();
   map.forEach((meta, selector) => {
-    newMap.set(selector, {...meta, directive: toR3Reference(meta.directive, context).value});
+    const directive = meta.directive.toExpression(context);
+    if (directive === null) {
+      throw new Error(`Could not write expression to reference ${meta.directive.node}`);
+    }
+    newMap.set(selector, {...meta, directive});
   });
   return newMap;
 }
@@ -431,7 +435,13 @@ function convertDirectiveReferenceMap(
 function convertPipeReferenceMap(
     map: Map<string, Reference>, context: ts.SourceFile): Map<string, Expression> {
   const newMap = new Map<string, Expression>();
-  map.forEach((meta, selector) => { newMap.set(selector, toR3Reference(meta, context).value); });
+  map.forEach((meta, selector) => {
+    const pipe = meta.toExpression(context);
+    if (pipe === null) {
+      throw new Error(`Could not write expression to reference ${meta.node}`);
+    }
+    newMap.set(selector, pipe);
+  });
   return newMap;
 }
 
