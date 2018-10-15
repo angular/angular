@@ -1437,6 +1437,28 @@ describe('CdkDrag', () => {
         });
       }));
 
+    it('should call the `enterPredicate` with the item and the container it is entering',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        const spy = jasmine.createSpy('enterPredicate spy').and.returnValue(true);
+        const groups = fixture.componentInstance.groupedDragItems.slice();
+        const dragItem = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        dropInstances[1].enterPredicate = spy;
+        fixture.detectChanges();
+
+        dragElementViaMouse(fixture, dragItem.element.nativeElement,
+              targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        expect(spy).toHaveBeenCalledWith(dragItem, dropInstances[1]);
+      }));
+
     it('should be able to start dragging after an item has been transferred', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
