@@ -342,7 +342,7 @@ As much fun as this is ...
 * transpiling TypeScript in the browser is slow
 * the type support, refactoring, and code completion only work in your local IDE
 
-Use the <live-example header="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
+Use the <live-example title="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
 a place to try the documentation samples and experiment on your own.
 It's the perfect place to reproduce a bug when you want to
 <a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or

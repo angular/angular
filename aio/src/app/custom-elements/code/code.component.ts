@@ -94,6 +94,11 @@ export class CodeComponent implements OnChanges {
   get header(): string { return this._header; }
   private _header: string;
 
+  @Input()
+  set title(title: string) {
+    console.warn('[title] should not be used. Use instead the [header] input');
+  }
+
   @Output() codeFormatted = new EventEmitter<void>();
 
   /** The element in the template that will display the formatted code. */
