@@ -9,14 +9,14 @@ import * as ts from 'typescript';
 import {ReflectionHost} from '../../../ngtsc/host';
 import {DecoratedFile} from './decorated_file';
 
-export const PRE_NGCC_MARKER = '__PRE_R3__';
-export const POST_NGCC_MARKER = '__POST_R3__';
+export const PRE_R3_MARKER = '__PRE_R3__';
+export const POST_R3_MARKER = '__POST_R3__';
 
 export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
 export function isSwitchableVariableDeclaration(node: ts.Node):
     node is SwitchableVariableDeclaration {
   return ts.isVariableDeclaration(node) && !!node.initializer &&
-      ts.isIdentifier(node.initializer) && node.initializer.text.endsWith(PRE_NGCC_MARKER);
+      ts.isIdentifier(node.initializer) && node.initializer.text.endsWith(PRE_R3_MARKER);
 }
 
 /**
@@ -33,7 +33,7 @@ export interface NgccReflectionHost extends ReflectionHost {
 
   /**
    * Search the given module for variable declarations in which the initializer
-   * is an identifier marked with the `PRE_NGCC_MARKER`.
+   * is an identifier marked with the `PRE_R3_MARKER`.
    * @param module The module in which to search for switchable declarations.
    * @returns An array of variable declarations that match.
    */
