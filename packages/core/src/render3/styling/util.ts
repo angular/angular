@@ -10,8 +10,8 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {getContext} from '../context_discovery';
 import {ACTIVE_INDEX, LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
-import {LElementNode} from '../interfaces/node';
 import {PlayerContext} from '../interfaces/player';
+import {RElement} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingIndex} from '../interfaces/styling';
 import {FLAGS, HEADER_OFFSET, HOST, LViewData} from '../interfaces/view';
 import {getTNode} from '../util';
@@ -20,7 +20,7 @@ export const EMPTY_ARR: any[] = [];
 export const EMPTY_OBJ: {[key: string]: any} = {};
 
 export function createEmptyStylingContext(
-    element?: LElementNode | null, sanitizer?: StyleSanitizeFn | null,
+    element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
     initialStylingValues?: InitialStyles): StylingContext {
   return [
     null,                            // PlayerContext
@@ -41,10 +41,10 @@ export function createEmptyStylingContext(
  * (instructions.ts has logic for caching this).
  */
 export function allocStylingContext(
-    lElement: LElementNode | null, templateStyleContext: StylingContext): StylingContext {
+    element: RElement | null, templateStyleContext: StylingContext): StylingContext {
   // each instance gets a copy
   const context = templateStyleContext.slice() as any as StylingContext;
-  context[StylingIndex.ElementPosition] = lElement;
+  context[StylingIndex.ElementPosition] = element;
   return context;
 }
 
@@ -61,12 +61,12 @@ export function allocStylingContext(
  */
 export function getStylingContext(index: number, viewData: LViewData): StylingContext {
   let storageIndex = index + HEADER_OFFSET;
-  let slotValue: LContainer|LViewData|StylingContext|LElementNode = viewData[storageIndex];
+  let slotValue: LContainer|LViewData|StylingContext|RElement = viewData[storageIndex];
   let wrapper: LContainer|LViewData|StylingContext = viewData;
 
   while (Array.isArray(slotValue)) {
     wrapper = slotValue;
-    slotValue = slotValue[HOST] as LViewData | StylingContext | LElementNode;
+    slotValue = slotValue[HOST] as LViewData | StylingContext | RElement;
   }
 
   if (isStylingContext(wrapper)) {
