@@ -9,8 +9,6 @@
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
-const TRANSLATION_NAME_REGEXP = /^MSG_[A-Z0-9]+/;
-
 describe('i18n support in the view compiler', () => {
   const angularFiles = setup({
     compileAngular: false,
@@ -18,56 +16,7 @@ describe('i18n support in the view compiler', () => {
     compileAnimations: false,
   });
 
-  describe('single text nodes', () => {
-    it('should translate single text nodes with the i18n attribute', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule} from '@angular/core';
-
-            @Component({
-              selector: 'my-component',
-              template: \`
-                <div i18n>Hello world</div>
-                <div>&</div>
-                <div i18n>farewell</div>
-                <div i18n>farewell</div>
-              \`
-            })
-            export class MyComponent {}
-
-            @NgModule({declarations: [MyComponent]})
-            export class MyModule {}
-          `
-        }
-      };
-
-      const template = `
-        const $msg_1$ = goog.getMsg("Hello world");
-        const $msg_2$ = goog.getMsg("farewell");
-        …
-        template: function MyComponent_Template(rf, ctx) {
-          if (rf & 1) {
-            …
-            $r3$.ɵtext(1, $msg_1$);
-            …
-            $r3$.ɵtext(3,"&");
-            …
-            $r3$.ɵtext(5, $msg_2$);
-            …
-            $r3$.ɵtext(7, $msg_2$);
-            …
-          }
-        }
-      `;
-
-      const result = compile(files, angularFiles);
-      expectEmit(result.source, template, 'Incorrect template', {
-        '$msg_1$': TRANSLATION_NAME_REGEXP,
-        '$msg_2$': TRANSLATION_NAME_REGEXP,
-      });
-    });
-
+  describe('element attributes', () => {
     it('should add the meaning and description as JsDoc comments', () => {
       const files = {
         app: {
@@ -77,7 +26,7 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n="meaning|desc@@id" i18n-title="desc" title="introduction">Hello world</div>
+                <div i18n-title="meaning|desc@@id" title="introduction">Hello world</div>
               \`
             })
             export class MyComponent {}
@@ -91,21 +40,16 @@ describe('i18n support in the view compiler', () => {
       const template = `
         /**
          * @desc desc
+         * @meaning meaning
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("introduction");
         const $_c1$ = ["title", $MSG_APP_SPEC_TS_0$, 0];
-        …
-        /**
-         * @desc desc
-         * @meaning meaning
-         */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("Hello world");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nAttribute(1, $_c1$);
-            $r3$.ɵtext(2, $MSG_APP_SPEC_TS_2$);
+            $r3$.ɵtext(2, "Hello world");
             $r3$.ɵelementEnd();
           }
         }
@@ -114,9 +58,6 @@ describe('i18n support in the view compiler', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
-  });
-
-  describe('element attributes', () => {
 
     it('should translate static attributes', () => {
       const files = {
@@ -127,7 +68,7 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n id="static" i18n-title="m|d" title="introduction"></div>
+                <div id="static" i18n-title="m|d" title="introduction"></div>
               \`
             })
             export class MyComponent {}
@@ -169,12 +110,12 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n id="dynamic-1"
+                <div id="dynamic-1"
                   i18n-title="m|d" title="intro {{ valueA | uppercase }}"
                   i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
                   i18n-aria-roledescription aria-roledescription="static text"
                 ></div>
-                <div i18n id="dynamic-2"
+                <div id="dynamic-2"
                   i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
                   i18n-aria-roledescription aria-roledescription="{{ valueC }}"
                 ></div>
@@ -184,7 +125,7 @@ describe('i18n support in the view compiler', () => {
 
             @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-        `
+          `
         }
       };
 
@@ -307,12 +248,12 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n id="dynamic-1"
+                <div id="dynamic-1"
                   i18n-title="m|d" title="intro {{ valueA | uppercase }}"
                   i18n-aria-label="m1|d1" aria-label="{{ valueB }}"
                   i18n-aria-roledescription aria-roledescription="static text"
                 ></div>
-                <div i18n id="dynamic-2"
+                <div id="dynamic-2"
                   i18n-title="m2|d2" title="{{ valueA }} and {{ valueB }} and again {{ valueA + valueB }}"
                   i18n-aria-roledescription aria-roledescription="{{ valueC }}"
                 ></div>
@@ -590,7 +531,7 @@ describe('i18n support in the view compiler', () => {
 
       const template = String.raw `
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#2\uFFFDPlain text in nested element\uFFFD/#2\uFFFD\uFFFD/#0\uFFFD");
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#3\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#6\uFFFD\uFFFD#7\uFFFD\uFFFD#8\uFFFD More bindings in more nested element: \uFFFD0\uFFFD \uFFFD/#8\uFFFD\uFFFD/#7\uFFFD\uFFFD/#6\uFFFD\uFFFD/#3\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#3\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#6\uFFFD\uFFFD#7\uFFFD\uFFFD#8\uFFFD More bindings in more nested element: \uFFFD1\uFFFD \uFFFD/#8\uFFFD\uFFFD/#7\uFFFD\uFFFD/#6\uFFFD\uFFFD/#3\uFFFD");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -618,6 +559,81 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 0, ctx.two)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
             $r3$.ɵi18nApply(4);
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should handle i18n attributes with bindings in content and element attributes', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n>
+                  My i18n block #1 with value: {{ valueA }}
+                  <span i18n-title title="Span title {{ valueB }} and {{ valueC }}">
+                    Plain text in nested element (block #1)
+                  </span>
+                </div>
+                <div i18n>
+                  My i18n block #2 with value {{ valueD | uppercase }}
+                  <span i18n-title title="Span title {{ valueE }}">
+                    Plain text in nested element (block #2)
+                  </span>
+                </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD My i18n block #1 with value: \uFFFD0\uFFFD \uFFFD#2\uFFFD Plain text in nested element (block #1) \uFFFD/#2\uFFFD\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("Span title \uFFFD0\uFFFD and \uFFFD1\uFFFD");
+        const $_c2$ = ["title", $MSG_APP_SPEC_TS_1$, 2];
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("\uFFFD#4\uFFFD My i18n block #2 with value \uFFFD0\uFFFD \uFFFD#7\uFFFD Plain text in nested element (block #2) \uFFFD/#7\uFFFD\uFFFD/#4\uFFFD");
+        const $MSG_APP_SPEC_TS_4$ = goog.getMsg("Span title \uFFFD0\uFFFD");
+        const $_c5$ = ["title", $MSG_APP_SPEC_TS_4$, 1];
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementStart(2, "span");
+            $r3$.ɵi18nAttribute(3, $_c2$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(4, "div");
+            $r3$.ɵi18nStart(5, $MSG_APP_SPEC_TS_3$);
+            $r3$.ɵpipe(6, "uppercase");
+            $r3$.ɵelementStart(7, "span");
+            $r3$.ɵi18nAttribute(8, $_c5$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueB));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueC));
+            $r3$.ɵi18nApply(3);
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
+            $r3$.ɵi18nApply(1);
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueE));
+            $r3$.ɵi18nApply(8);
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(6, 0, ctx.valueD)));
+            $r3$.ɵi18nApply(5);
           }
         }
       `;
@@ -679,6 +695,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(2);
           }
         }
+        …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -696,7 +713,7 @@ describe('i18n support in the view compiler', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    fit('should handle i18n context in nested templates', () => {
+    it('should handle i18n context in nested templates', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -810,54 +827,6 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const result = compile(files, angularFiles);
-      console.log(result.source);
-      expectEmit(result.source, template, 'Incorrect template');
-    });
-
-    it('should generate i18nStart and i18nEnd instructions', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule} from '@angular/core';
-
-            @Component({
-              selector: 'my-component',
-              template: \`
-                <div id="a" i18n>Test1</div>
-                <div id="b">Test2</div>
-                <div id="c" i18n>Test with binding {{ valueA }} and {{ valueB }}</div>
-                <div i18n>
-                  <div id="c" i18n-title="m|d" title="inside i18n">Test3</div>
-                  <div *ngFor="let outer of items">
-                    <div i18n-title="m|d" title="different scope {{ outer | uppercase }}">different scope</div>
-                    <span *ngIf="!outer2">Not outer 2!</span>
-                    <span *ngIf="!outer">
-                      Not outer
-                      <span *ngIf="!outer1">
-                        Not outer 1
-                      </span>
-                    </span>
-                    Some additional text! {{ valueC }}
-                    <div>Additional div</div>
-                  </div>
-                </div>
-              \`
-            })
-            export class MyComponent {}
-
-            @NgModule({declarations: [MyComponent]})
-            export class MyModule {}
-          `
-        }
-      };
-
-      const template = `
-        const $r1$ = {"b":[2], "i":[4, 6]};
-        const $r2$ = {"i":[13]};
-      `;
-
-      const result = compile(files, angularFiles);
-      console.log(result.source);
       expectEmit(result.source, template, 'Incorrect template');
     });
   });
