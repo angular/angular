@@ -379,8 +379,6 @@ describe('i18n support in the view compiler', () => {
   });
 
   describe('nested nodes', () => {
-    // TODO: test with ng-template:
-    // <ng-template i18n><span title="a">My Template Test</span></ng-template>
     it('should handle i18n attributes with plain-text content', () => {
       const files = {
         app: {
