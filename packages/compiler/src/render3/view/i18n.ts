@@ -86,6 +86,9 @@ export class I18nContext {
     return wrapI18nPlaceholder(`${state}${symbol}${elementIndex}`, contextId);
   }
   private append(content: string) { this.content += content; }
+  private genTemplatePattern(contextId: number|string, templateId: number|string): string {
+    return wrapI18nPlaceholder(`tmpl:${contextId}:${templateId}`);
+  }
 
   getId() { return this.id; }
   getRef() { return this.ref; }
@@ -97,10 +100,13 @@ export class I18nContext {
   appendBinding(binding: o.Expression) { this.bindings.add(binding); }
 
   isRoot() { return this.level === 0; }
-  isResolved() { return !/\[tmpl:\d+:\d+\]/.test(this.content); }
+  isResolved() {
+    const regex = new RegExp(this.genTemplatePattern('\\d+', '\\d+'));
+    return !regex.test(this.content);
+  }
 
   appendText(content: string) { this.append(content); }
-  appendTemplate(index: number) { this.append(`[tmpl:${this.id}:${index}]`); }
+  appendTemplate(index: number) { this.append(this.genTemplatePattern(this.id, index)); }
   appendElement(elementIndex: number, closed?: boolean) {
     this.append(this.wrap('#', elementIndex, this.id, closed));
   }
@@ -112,7 +118,7 @@ export class I18nContext {
     const id = context.getId();
     const content = context.getContent();
     const templateIndex = context.getTemplateIndex() !;
-    const pattern = new RegExp(`\\[tmpl\\:${this.id}\\:${templateIndex}\\]`);
+    const pattern = new RegExp(this.genTemplatePattern(this.id, templateIndex));
     const replacement =
         `${this.wrap('*', templateIndex, id)}${content}${this.wrap('*', templateIndex, id, true)}`;
     this.content = this.content.replace(pattern, replacement);
