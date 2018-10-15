@@ -17,7 +17,7 @@ Here are some key features.
 * [Server-side Rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular app on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
 
 * [Service Workers](guide/service-worker-intro): Use a service worker to reduce dependency on the network
-significantly improving the use experience.
+significantly improving the user experience.
 
 ## Domain-specific libraries
 
