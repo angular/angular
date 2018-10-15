@@ -105,7 +105,7 @@ export class I18nContext {
     return !regex.test(this.content);
   }
 
-  appendText(content: string) { this.append(content); }
+  appendText(content: string) { this.append(content.trim()); }
   appendTemplate(index: number) { this.append(this.genTemplatePattern(this.id, index)); }
   appendElement(elementIndex: number, closed?: boolean) {
     this.append(this.wrap('#', elementIndex, this.id, closed));

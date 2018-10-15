@@ -532,10 +532,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       if (isI18nRootElement) {
         this.i18nStart(element.sourceSpan);
-      }
-
-      if (this.i18n) {
-        this.i18n.appendElement(elementIndex);
+      } else {
+        if (this.i18n) {
+          this.i18n.appendElement(elementIndex);
+        }
       }
 
       // process i18n element attributes
@@ -731,13 +731,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     t.visitAll(this, element.children);
 
     if (!createSelfClosingInstruction) {
-      if (this.i18n) {
-        this.i18n.appendElement(elementIndex, true);
-      }
       // Finish element construction mode.
       const span = element.endSourceSpan || element.sourceSpan;
       if (isI18nRootElement) {
         this.i18nEnd(span);
+      } else {
+        if (this.i18n) {
+          this.i18n.appendElement(elementIndex, true);
+        }
       }
       if (isNonBindableMode) {
         this.creationInstruction(span, R3.enableBindings);

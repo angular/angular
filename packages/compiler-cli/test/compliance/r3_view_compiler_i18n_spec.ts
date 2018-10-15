@@ -379,6 +379,41 @@ describe('i18n support in the view compiler', () => {
   });
 
   describe('nested nodes', () => {
+    it('should not produce instructions for empty content', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: \`
+                <div i18n></div>
+                <div i18n>  </div>
+              \`
+            })
+            export class MyComponent {}
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = String.raw `
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelement(0, "div");
+            $r3$.ɵelement(1, "div");
+          }
+        }
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+
     it('should handle i18n attributes with plain-text content', () => {
       const files = {
         app: {
@@ -404,9 +439,9 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = String.raw `
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFDMy i18n block #1\uFFFD/#0\uFFFD");
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#4\uFFFDMy i18n block #2\uFFFD/#4\uFFFD");
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("\uFFFD#8\uFFFDMy i18n block #3\uFFFD/#8\uFFFD");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("My i18n block #2");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("My i18n block #3");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -459,9 +494,9 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = String.raw `
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#0\uFFFD");
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#2\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#2\uFFFD");
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("\uFFFD#5\uFFFDMy i18n block #\uFFFD0\uFFFD\uFFFD/#5\uFFFD");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #\uFFFD0\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("My i18n block #\uFFFD0\uFFFD");
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("My i18n block #\uFFFD0\uFFFD");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -528,8 +563,8 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = String.raw `
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#2\uFFFDPlain text in nested element\uFFFD/#2\uFFFD\uFFFD/#0\uFFFD");
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("\uFFFD#3\uFFFD My i18n block #\uFFFD0\uFFFD \uFFFD#6\uFFFD\uFFFD#7\uFFFD\uFFFD#8\uFFFD More bindings in more nested element: \uFFFD1\uFFFD \uFFFD/#8\uFFFD\uFFFD/#7\uFFFD\uFFFD/#6\uFFFD\uFFFD/#3\uFFFD");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #\uFFFD0\uFFFD\uFFFD#2\uFFFDPlain text in nested element\uFFFD/#2\uFFFD");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("My i18n block #\uFFFD0\uFFFD\uFFFD#6\uFFFD\uFFFD#7\uFFFD\uFFFD#8\uFFFDMore bindings in more nested element: \uFFFD1\uFFFD\uFFFD/#8\uFFFD\uFFFD/#7\uFFFD\uFFFD/#6\uFFFD");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -597,10 +632,10 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = String.raw `
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD My i18n block #1 with value: \uFFFD0\uFFFD \uFFFD#2\uFFFD Plain text in nested element (block #1) \uFFFD/#2\uFFFD\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1 with value: \uFFFD0\uFFFD\uFFFD#2\uFFFDPlain text in nested element (block #1)\uFFFD/#2\uFFFD");
         const $MSG_APP_SPEC_TS_1$ = goog.getMsg("Span title \uFFFD0\uFFFD and \uFFFD1\uFFFD");
         const $_c2$ = ["title", $MSG_APP_SPEC_TS_1$, 2];
-        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("\uFFFD#4\uFFFD My i18n block #2 with value \uFFFD0\uFFFD \uFFFD#7\uFFFD Plain text in nested element (block #2) \uFFFD/#7\uFFFD\uFFFD/#4\uFFFD");
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("My i18n block #2 with value \uFFFD0\uFFFD\uFFFD#7\uFFFDPlain text in nested element (block #2)\uFFFD/#7\uFFFD");
         const $MSG_APP_SPEC_TS_4$ = goog.getMsg("Span title \uFFFD0\uFFFD");
         const $_c5$ = ["title", $MSG_APP_SPEC_TS_4$, 1];
         …
@@ -672,7 +707,7 @@ describe('i18n support in the view compiler', () => {
 
       const template = String.raw `
         const $_c0$ = [1, "ngIf"];
-        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("\uFFFD#1\uFFFD Some other content \uFFFD0\uFFFD \uFFFD#3\uFFFD More nested levels with bindings \uFFFD1\uFFFD \uFFFD/#3\uFFFD\uFFFD/#1\uFFFD");
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("Some other content \uFFFD0\uFFFD\uFFFD#3\uFFFDMore nested levels with bindings \uFFFD1\uFFFD\uFFFD/#3\uFFFD");
         …
         function MyComponent_div_Template_2(rf, ctx) {
           if (rf & 1) {
@@ -752,7 +787,7 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = String.raw `
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\uFFFD#0\uFFFD Some content \uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD Some other content \uFFFD0:1\uFFFD \uFFFD#2:1\uFFFD More nested levels with bindings \uFFFD1:1\uFFFD \uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD Content inside sub-template \uFFFD0:2\uFFFD \uFFFD#2:2\uFFFD Bottom level element \uFFFD1:2\uFFFD \uFFFD/#2:2\uFFFD\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD\uFFFD/#2:1\uFFFD\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD Some other content \uFFFD0:3\uFFFD \uFFFD#2:3\uFFFD More nested levels with bindings \uFFFD1:3\uFFFD \uFFFD/#2:3\uFFFD\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD\uFFFD/#0\uFFFD");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some content\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFDSome other content \uFFFD0:1\uFFFD\uFFFD#2:1\uFFFDMore nested levels with bindings \uFFFD1:1\uFFFD\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFDContent inside sub-template \uFFFD0:2\uFFFD\uFFFD#2:2\uFFFDBottom level element \uFFFD1:2\uFFFD\uFFFD/#2:2\uFFFD\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD\uFFFD/#2:1\uFFFD\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFDSome other content \uFFFD0:3\uFFFD\uFFFD#2:3\uFFFDMore nested levels with bindings \uFFFD1:3\uFFFD\uFFFD/#2:3\uFFFD\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD");
         const $_c1$ = [1, "ngIf"];
         …
         function MyComponent_div_div_Template_4(rf, ctx) {
