@@ -30,6 +30,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {Subject} from 'rxjs';
+import {distinctUntilChanged} from 'rxjs/operators';
 import {DialogConfig} from './dialog-config';
 
 
@@ -61,7 +62,7 @@ export function throwDialogContentAlreadyAttachedError() {
   host: {
     '[@dialog]': '_state',
     '(@dialog.start)': '_onAnimationStart($event)',
-    '(@dialog.done)': '_onAnimationDone($event)',
+    '(@dialog.done)': '_animationDone.next($event)',
   },
 })
 export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
@@ -103,6 +104,9 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   /** A subject emitting after the dialog exits the view. */
   _afterExit: Subject<void> = new Subject();
 
+  /** Stream of animation `done` events. */
+  _animationDone = new Subject<AnimationEvent>();
+
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
     private _focusTrapFactory: FocusTrapFactory,
@@ -111,11 +115,30 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     /** The dialog configuration. */
     public _config: DialogConfig) {
     super();
+
+    // We use a Subject with a distinctUntilChanged, rather than a callback attached to .done,
+    // because some browsers fire the done event twice and we don't want to emit duplicate events.
+    // See: https://github.com/angular/angular/issues/24084
+    this._animationDone.pipe(distinctUntilChanged((x, y) => {
+      return x.fromState === y.fromState && x.toState === y.toState;
+    })).subscribe(event => {
+      // Emit lifecycle events based on animation `done` callback.
+      if (event.toState === 'enter') {
+        this._autoFocusFirstTabbableElement();
+        this._afterEnter.next();
+      }
+
+      if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
+        this._returnFocusAfterDialog();
+        this._afterExit.next();
+      }
+    });
   }
 
   /** Destroy focus trap to place focus back to the element focused before the dialog opened. */
   ngOnDestroy() {
     this._focusTrap.destroy();
+    this._animationDone.complete();
   }
 
   /**
@@ -151,19 +174,6 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
     }
     if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
       this._beforeExit.next();
-    }
-  }
-
-  /** Emit lifecycle events based on animation `done` callback. */
-  _onAnimationDone(event: AnimationEvent) {
-    if (event.toState === 'enter') {
-      this._autoFocusFirstTabbableElement();
-      this._afterEnter.next();
-    }
-
-    if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
-      this._returnFocusAfterDialog();
-      this._afterExit.next();
     }
   }
 
