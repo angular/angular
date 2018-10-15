@@ -225,11 +225,12 @@ export class Dialog implements OnDestroy {
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
     const dialogRef = new this.dialogRefConstructor(overlayRef, dialogContainer, config.id);
-
     const injector = this._createInjector<T>(config, dialogRef, dialogContainer);
     const contentRef = dialogContainer.attachComponentPortal(
         new ComponentPortal(componentOrTemplateRef, undefined, injector));
+
     dialogRef.componentInstance = contentRef.instance;
+    dialogRef.disableClose = config.disableClose;
 
     dialogRef.updateSize({width: config.width, height: config.height})
              .updatePosition(config.position);

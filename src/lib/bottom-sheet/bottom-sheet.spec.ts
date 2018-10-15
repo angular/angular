@@ -429,7 +429,7 @@ describe('MatBottomSheet', () => {
   });
 
   describe('disableClose option', () => {
-    it('should prevent closing via clicks on the backdrop', () => {
+    it('should prevent closing via clicks on the backdrop', fakeAsync(() => {
       bottomSheet.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
@@ -439,11 +439,13 @@ describe('MatBottomSheet', () => {
 
       let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
+      viewContainerFixture.detectChanges();
+      flush();
 
       expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
-    });
+    }));
 
-    it('should prevent closing via the escape key', () => {
+    it('should prevent closing via the escape key', fakeAsync(() => {
       bottomSheet.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
@@ -451,9 +453,11 @@ describe('MatBottomSheet', () => {
 
       viewContainerFixture.detectChanges();
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+      viewContainerFixture.detectChanges();
+      flush();
 
       expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
-    });
+    }));
 
   });
 

@@ -814,7 +814,7 @@ describe('MatDialog', () => {
   }));
 
   describe('disableClose option', () => {
-    it('should prevent closing via clicks on the backdrop', () => {
+    it('should prevent closing via clicks on the backdrop', fakeAsync(() => {
       dialog.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
@@ -824,11 +824,13 @@ describe('MatDialog', () => {
 
       let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
+      viewContainerFixture.detectChanges();
+      flush();
 
       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
-    });
+    }));
 
-    it('should prevent closing via the escape key', () => {
+    it('should prevent closing via the escape key', fakeAsync(() => {
       dialog.open(PizzaMsg, {
         disableClose: true,
         viewContainerRef: testViewContainerRef
@@ -836,9 +838,11 @@ describe('MatDialog', () => {
 
       viewContainerFixture.detectChanges();
       dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+      viewContainerFixture.detectChanges();
+      flush();
 
       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
-    });
+    }));
 
     it('should allow for the disableClose option to be updated while open', fakeAsync(() => {
       let dialogRef = dialog.open(PizzaMsg, {
