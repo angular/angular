@@ -114,7 +114,7 @@ export class DemoApp {
   }
 
   toggleTheme() {
-    const darkThemeClass = 'unicorn-dark-theme';
+    const darkThemeClass = 'demo-unicorn-dark-theme';
 
     this.dark = !this.dark;
 

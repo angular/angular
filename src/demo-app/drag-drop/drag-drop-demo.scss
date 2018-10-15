@@ -1,4 +1,4 @@
-.list {
+.demo-list {
   width: 500px;
   max-width: 100%;
   margin-bottom: 25px;
@@ -10,12 +10,12 @@
     margin-right: 0;
     margin-left: 25px;
   }
+}
 
-  &.horizontal {
-    width: 1000px;
-    margin-right: 0;
-    margin-left: 0;
-  }
+.demo-list-horizontal {
+  width: 1000px;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .cdk-drop {
@@ -23,7 +23,7 @@
   min-height: 60px;
   display: block;
 
-  .horizontal & {
+  .demo-list-horizontal & {
     display: flex;
     flex-direction: row;
   }
@@ -42,7 +42,7 @@
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  .horizontal & {
+  .demo-list-horizontal & {
     border: none;
     border-right: solid 1px #ccc;
     flex-grow: 1;
@@ -72,10 +72,6 @@
   opacity: 0;
 }
 
-.wrapper {
-  border: solid 1px red;
-}
-
 .cdk-drag-handle {
   cursor: move;
 
@@ -88,7 +84,7 @@ pre {
   white-space: normal;
 }
 
-.free-draggable {
+.demo-free-draggable {
   width: 200px;
   height: 200px;
   border: solid 1px #ccc;

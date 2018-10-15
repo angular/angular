@@ -67,7 +67,6 @@ export class TestEntryComponent {}
 @Component({
   selector: 'kitchen-sink',
   templateUrl: './kitchen-sink.html',
-  styleUrls: ['./kitchen-sink.css'],
 })
 export class KitchenSink {
 

@@ -1,4 +1,4 @@
-.container {
+.example-container {
   width: 400px;
   max-width: 100%;
   margin: 0 25px 25px 0;
@@ -6,7 +6,7 @@
   vertical-align: top;
 }
 
-.list {
+.example-list {
   border: solid 1px #ccc;
   min-height: 60px;
   background: white;
@@ -15,7 +15,7 @@
   display: block;
 }
 
-.box {
+.example-box {
   padding: 20px 10px;
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
@@ -45,10 +45,10 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.box:last-child {
+.example-box:last-child {
   border: none;
 }
 
-.list.cdk-drop-dragging .box:not(.cdk-drag-placeholder) {
+.example-list.cdk-drop-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

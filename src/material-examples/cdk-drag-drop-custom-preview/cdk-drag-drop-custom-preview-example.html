@@ -1,5 +1,5 @@
-<div cdkDrop class="list" (cdkDropDropped)="drop($event)">
-  <div class="box" *ngFor="let movie of movies" cdkDrag>
+<div cdkDrop class="example-list" (cdkDropDropped)="drop($event)">
+  <div class="example-box" *ngFor="let movie of movies" cdkDrag>
     {{movie.title}}
     <img *cdkDragPreview [src]="movie.poster" [alt]="movie.title">
   </div>

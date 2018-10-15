@@ -1,27 +1,27 @@
 <h2>Screen Type</h2>
 
 <mat-grid-list cols="6" rowHeight="1:2">
-  <mat-grid-tile [class.active]="(isHandset | async)?.matches"
+  <mat-grid-tile [class.demo-tile-active]="(isHandset | async)?.matches"
                 colspan="2">
     <mat-icon>smartphone</mat-icon>
     <p>Handset</p>
   </mat-grid-tile>
-  <mat-grid-tile [class.active]="(isTablet | async)?.matches"
+  <mat-grid-tile [class.demo-tile-active]="(isTablet | async)?.matches"
                 colspan="2">
     <mat-icon>tablet_android</mat-icon>
     <p>Tablet</p>
   </mat-grid-tile>
-  <mat-grid-tile [class.active]="(isWeb | async)?.matches"
+  <mat-grid-tile [class.demo-tile-active]="(isWeb | async)?.matches"
                 colspan="2">
     <mat-icon>laptop</mat-icon>
     <p>Web</p>
   </mat-grid-tile>
-  <mat-grid-tile [class.active]="(isPortrait | async)?.matches"
+  <mat-grid-tile [class.demo-tile-active]="(isPortrait | async)?.matches"
                 colspan="3">
     <mat-icon>stay_current_portrait</mat-icon>
     <p>Portrait</p>
   </mat-grid-tile>
-  <mat-grid-tile [class.active]="(isLandscape | async)?.matches"
+  <mat-grid-tile [class.demo-tile-active]="(isLandscape | async)?.matches"
                 colspan="3">
     <mat-icon>stay_current_landscape</mat-icon>
     <p>Landscape</p>

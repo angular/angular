@@ -20,12 +20,12 @@ export class MyTel {
 
 /** Custom `MatFormFieldControl` for telephone number input. */
 @Component({
-  selector: 'my-tel-input',
-  templateUrl: 'my-tel-input-example.html',
-  styleUrls: ['my-tel-input-example.css'],
+  selector: 'example-tel-input',
+  templateUrl: 'example-tel-input-example.html',
+  styleUrls: ['example-tel-input-example.css'],
   providers: [{provide: MatFormFieldControl, useExisting: MyTelInput}],
   host: {
-    '[class.floating]': 'shouldLabelFloat',
+    '[class.example-floating]': 'shouldLabelFloat',
     '[id]': 'id',
     '[attr.aria-describedby]': 'describedBy',
   }
@@ -38,8 +38,8 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
   focused = false;
   ngControl = null;
   errorState = false;
-  controlType = 'my-tel-input';
-  id = `my-tel-input-${MyTelInput.nextId++}`;
+  controlType = 'example-tel-input';
+  id = `example-tel-input-${MyTelInput.nextId++}`;
   describedBy = '';
 
   get empty() {

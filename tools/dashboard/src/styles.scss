@@ -6,7 +6,7 @@ body, html {
   min-height: 100vh;
 }
 
-.panel-loading-indicator {
+.dashboard-panel-loading-indicator {
   position: absolute;
 
   top: calc(50% - #{$panel-loading-indicator-diameter});

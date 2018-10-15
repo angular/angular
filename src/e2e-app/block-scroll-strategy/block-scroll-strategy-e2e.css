@@ -1,19 +1,19 @@
-.spacer {
+.demo-spacer {
   background: #3f51b5;
   margin-bottom: 10px;
 }
 
-.spacer.vertical {
+.demo-spacer-vertical {
   width: 100px;
   height: 3000px;
 }
 
-.spacer.horizontal {
+.demo-spacer-horizontal {
   width: 3000px;
   height: 100px;
 }
 
-.scroller {
+.demo-scroller {
   width: 100px;
   height: 100px;
   overflow: auto;
@@ -22,7 +22,7 @@
   left: 200px;
 }
 
-.scroller-spacer {
+.demo-scroller-spacer {
   width: 200px;
   height: 200px;
   background: #ff4081;

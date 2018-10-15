@@ -1,4 +1,4 @@
-.list {
+.example-list {
   width: 1000px;
   max-width: 100%;
   border: solid 1px #ccc;
@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-.box {
+.example-box {
   padding: 20px 10px;
   border-right: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
@@ -42,10 +42,10 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.box:last-child {
+.example-box:last-child {
   border: none;
 }
 
-.list.cdk-drop-dragging .box:not(.cdk-drag-placeholder) {
+.example-list.cdk-drop-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

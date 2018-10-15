@@ -10,10 +10,10 @@
   .mat-figure {
     flex-direction: column;
   }
+}
 
-  &.active {
-    background: rgba(0, 0, 0, 0.12);
-  }
+.demo-tile-active {
+  background: rgba(0, 0, 0, 0.12);
 }
 
 h2 {

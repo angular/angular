@@ -21,7 +21,7 @@ class MyTel {
 }
 
 @Component({
-  selector: 'my-tel-input',
+  selector: 'example-tel-input',
   template: `
     <div [formGroup]="parts">
       <input class="area" formControlName="area" size="3">
@@ -134,7 +134,7 @@ element and just generate a unique ID for it.
 ```ts
 static nextId = 0;
 
-@HostBinding() id = `my-tel-input-${MyTelInput.nextId++}`;
+@HostBinding() id = `example-tel-input-${MyTelInput.nextId++}`;
 ```
 
 #### `placeholder`
@@ -313,11 +313,11 @@ errorState = false;
 This property allows us to specify a unique string for the type of control in form field. The
 `<mat-form-field>` will add an additional class based on this type that can be used to easily apply
 special styles to a `<mat-form-field>` that contains a specific type of control. In this example
-we'll use `my-tel-input` as our control type which will result in the form field adding the class
-`mat-form-field-my-tel-input`.
+we'll use `example-tel-input` as our control type which will result in the form field adding the
+class `mat-form-field-example-tel-input`.
 
 ```ts
-controlType = 'my-tel-input';
+controlType = 'example-tel-input';
 ```
 
 #### `setDescribedByIds(ids: string[])`
@@ -356,7 +356,7 @@ do is place it inside of a `<mat-form-field>`
 
 ```html
 <mat-form-field>
-  <my-tel-input></my-tel-input>
+  <example-tel-input></example-tel-input>
 </mat-form-field>
 ```
 
@@ -366,7 +366,7 @@ the error state).
 
 ```html
 <mat-form-field>
-  <my-tel-input placeholder="Phone number" required></my-tel-input>
+  <example-tel-input placeholder="Phone number" required></example-tel-input>
   <mat-icon matPrefix>phone</mat-icon>
   <mat-hint>Include area code</mat-hint>
 </mat-form-field>
