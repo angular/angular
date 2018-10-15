@@ -1,7 +1,7 @@
 workspace(name = "angular")
 
 load(
-    "//packages/bazel:package.bzl", 
+    "//packages/bazel:package.bzl",
     "rules_angular_dependencies",
     "rules_angular_dev_dependencies",
 )
@@ -14,9 +14,11 @@ rules_angular_dev_dependencies()
 #
 # Point Bazel to WORKSPACEs that live in subdirectories
 #
-local_repository(
+http_archive(
     name = "rxjs",
-    path = "node_modules/rxjs/src",
+    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
+    strip_prefix = "package/src",
+    sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
 )
 
 # Point to the integration test workspace just so that Bazel doesn't descend into it
@@ -26,23 +28,12 @@ local_repository(
     path = "integration/bazel",
 )
 
-# Prevent Bazel from trying to build rxjs under angular devkit
-# TODO(alexeagle): remove after Bazel 0.18 upgrade
-local_repository(
-    name = "rxjs_ignore_nested_1",
-    path = "node_modules/@angular-devkit/core/node_modules/rxjs/src",
-)
-local_repository(
-    name = "rxjs_ignore_nested_2",
-    path = "node_modules/@angular-devkit/schematics/node_modules/rxjs/src",
-)
-
 #
 # Load and install our dependencies downloaded above.
 #
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.17.0", """
+check_bazel_version("0.18.0", """
 If you are on a Mac and using Homebrew, there is a breaking change to the installation in Bazel 0.16
 See https://blog.bazel.build/2018/08/22/bazel-homebrew.html
 

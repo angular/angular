@@ -83,9 +83,9 @@ def rules_angular_dev_dependencies():
     # Fetching the Bazel source code allows us to compile the Skylark linter
     http_archive(
         name = "io_bazel",
-        sha256 = "ace8cced3b21e64a8fdad68508e9b0644201ec848ad583651719841d567fc66d",
-        strip_prefix = "bazel-0.17.1",
-        url = "https://github.com/bazelbuild/bazel/archive/0.17.1.zip",
+        sha256 = "978f7e0440dd82182563877e2e0b7c013b26b3368888b57837e9a0ae206fd396",
+        strip_prefix = "bazel-0.18.0",
+        url = "https://github.com/bazelbuild/bazel/archive/0.18.0.zip",
     )
 
     # This commit matches the version of buildifier in angular/ngcontainer
