@@ -22,7 +22,8 @@
     "webdriver-manager": "webdriver-manager",
     "docs": "gulp docs",
     "api": "gulp api-docs",
-    "breaking-changes": "gulp breaking-changes"
+    "breaking-changes": "gulp breaking-changes",
+    "ci:lint": "gulp ci:lint"
   },
   "version": "7.0.0-rc.1",
   "requiredAngularVersion": ">=7.0.0-rc.0",

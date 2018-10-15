@@ -25,7 +25,6 @@ branches:
 
 jobs:
   include:
-    - env: "MODE=lint"
     - env: "MODE=aot"
     - env: "MODE=payload"
     - env: "MODE=prerender"

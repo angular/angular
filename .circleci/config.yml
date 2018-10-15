@@ -1,5 +1,6 @@
 # Configuration file for https://circleci.com/gh/angular/material2
 
+#
 # Note: YAML anchors allow an object to be re-used, reducing duplication.
 # The ampersand declares an alias for an object, then later the `<<: *name`
 # syntax dereferences it.
@@ -10,59 +11,111 @@
 var_1: &docker_image angular/ngcontainer:0.6.0
 var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.6.0
 
-# Define common ENV vars
-var_3: &define_env_vars
-  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
-
-# See remote cache documentation in /docs/BAZEL.md
-var_4: &setup-bazel-remote-cache
-  run:
-    name: Start up bazel remote cache proxy
-    command: ~/bazel-remote-proxy -backend circleci://
-    background: true
-
 # Settings common to each job
-anchor_1: &job_defaults
+var_3: &job_defaults
   working_directory: ~/ng
   docker:
     - image: *docker_image
 
-# After checkout, rebase on top of master.
-# Similar to travis behavior, but not quite the same.
-# By default, PRs are not rebased on top of master, which we want.
-# See https://discuss.circleci.com/t/1662
-anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+# Job step for checking out the source code from GitHub. This also ensures that the source code
+# is rebased on top of master.
+var_4: &checkout_code
+  checkout:
+    # After checkout, rebase on top of master. By default, PRs are not rebased on top of master,
+    # which we want. See https://discuss.circleci.com/t/1662
+    post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
 
+# Restores the cache that could be available for the current Yarn lock file. The cache usually
+# includes the node modules and the Bazel repository cache.
+var_5: &restore_cache
+  restore_cache:
+    key: *cache_key
+
+# Saves the cache for the current Yarn lock file. We store the node modules and the Bazel
+# repository cache in order to make subsequent builds faster.
+var_6: &save_cache
+  save_cache:
+    key: *cache_key
+    paths:
+      - "node_modules"
+      - "~/bazel_repository_cache"
+
+# Job step that ensures that the node module dependencies are installed and up-to-date. We use
+# Yarn with the frozen lockfile option in order to make sure that lock file and package.json are
+# in sync. Unlike in Travis, we don't need to manually purge the node modules if stale because
+# CircleCI automatically discards the cache if the checksum of the lock file has changed.
+var_7: &yarn_install
+  run: yarn install --frozen-lockfile --non-interactive
+
+# Copies the Bazel config which is specifically for CircleCI to a location where Bazel picks it
+# up and merges it with the project-wide bazel configuration (tools/bazel.rc)
+var_8: &copy_bazel_config
+  # Set up the CircleCI specific bazel configuration.
+  run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
+
+# -----------------------------
+# Container version of CircleCI
+# -----------------------------
 version: 2
+
+# -----------------------------------------------------------------------------------------
+# Job definitions. Jobs which are defined just here, will not run automatically. Each job
+# must be part of a workflow definition in order to run for PRs and push builds.
+# -----------------------------------------------------------------------------------------
 jobs:
-  build:
+
+  # -----------------------------------
+  # Build and test job that uses Bazel.
+  # -----------------------------------
+  bazel_build_test:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      # Set up the CircleCI specific bazel configuration.
-      - run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
+      - *checkout_code
+      - *restore_cache
+      - *copy_bazel_config
 
       # TODO(jelbourn): Update this command to run all tests if the Bazel issues have been fixed.
       - run: bazel build src/cdk:npm_package
       - run: bazel test src/{cdk,lib}/schematics:unit_tests
 
-      - save_cache:
-          key: *cache_key
-          paths:
-            - "node_modules"
-            - "~/bazel_repository_cache"
+      - *save_cache
 
+  # ----------------------------------
+  # Lint job. Runs the gulp lint task.
+  # ----------------------------------
+  lint:
+    <<: *job_defaults
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+
+      - run: yarn ci:lint
+
+      - *save_cache
+
+# ----------------------------------------------------------------------------------------
+# Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
+# one job depends on another.
+# ----------------------------------------------------------------------------------------
 workflows:
   version: 2
-  default_workflow:
-    jobs:
-      - build
 
+  # Build and test workflow. A workflow includes multiple jobs that run in parallel. All jobs
+  # that build and test source code should be part of this workflow
+  build_and_test:
+    jobs:
+      - bazel_build_test
+
+  # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
+  lint:
+    jobs:
+      - lint
+
+# ---------------------------
+# General setup for CircleCI
+# ---------------------------
 general:
   branches:
     only:
