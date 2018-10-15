@@ -15,7 +15,7 @@ import {findAll, getNameText, getOriginalSymbol, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
 import {DecoratedFile} from './decorated_file';
-import {NgccReflectionHost, PRE_NGCC_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
+import {NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -213,13 +213,13 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
 
   /**
    * Search the given module for variable declarations in which the initializer
-   * is an identifier marked with the `PRE_NGCC_MARKER`.
+   * is an identifier marked with the `PRE_R3_MARKER`.
    * @param module the module in which to search for switchable declarations.
    * @returns an array of variable declarations that match.
    */
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
     // Don't bother to walk the AST if the marker is not found in the text
-    return module.getText().indexOf(PRE_NGCC_MARKER) >= 0 ?
+    return module.getText().indexOf(PRE_R3_MARKER) >= 0 ?
         findAll(module, isSwitchableVariableDeclaration) :
         [];
   }

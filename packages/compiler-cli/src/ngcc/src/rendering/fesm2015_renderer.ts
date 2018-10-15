@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {NgccReflectionHost, POST_NGCC_MARKER, PRE_NGCC_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {AnalyzedClass} from '../analysis/decoration_analyzer';
 import {Renderer} from './renderer';
 
@@ -85,7 +85,7 @@ export class Fesm2015Renderer extends Renderer {
     declarations.forEach(declaration => {
       const start = declaration.initializer.getStart();
       const end = declaration.initializer.getEnd();
-      const replacement = declaration.initializer.text.replace(PRE_NGCC_MARKER, POST_NGCC_MARKER);
+      const replacement = declaration.initializer.text.replace(PRE_R3_MARKER, POST_R3_MARKER);
       outputText.overwrite(start, end, replacement);
     });
   }
