@@ -21,10 +21,10 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 export class DragAndDropDemo {
   axisLock: 'x' | 'y';
   todo = [
-    'Come up with catchy start-up name',
-    'Add "blockchain" to name',
-    'Sell out',
-    'Profit',
+    'Go out for Lunch',
+    'Make a cool app',
+    'Watch TV',
+    'Eat a healthy dinner',
     'Go to sleep'
   ];
   done = [

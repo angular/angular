@@ -6,62 +6,62 @@ in addition to horizontal lists and locking along an axis.
 ### Getting started
 Start by importing `DragDropModule` into the `NgModule` where you want to use drag-and-drop
 features. You can now add the `cdkDrag` directive to elements to make them draggable. When
-outside of a `cdkDrop` element, draggable elements can be freely moved around the page.
-You can add `cdkDrop` elements to constrain where elements may be dropped.
+outside of a `cdkDropList` element, draggable elements can be freely moved around the page.
+You can add `cdkDropList` elements to constrain where elements may be dropped.
 
 <!-- example(cdk-drag-drop-overview) -->
 
 ### Reordering lists
-Adding `cdkDrop` around a set of `cdkDrag` elements groups the draggables into a
+Adding `cdkDropList` around a set of `cdkDrag` elements groups the draggables into a
 reorderable collection. Items will automatically rearrange as an element moves. Note
-that this will *not* update your data model; you can listen to the `cdkDropDropped` event to
+that this will *not* update your data model; you can listen to the `cdkDropListDropped` event to
 update the data model once the user finishes dragging.
 
 <!-- example(cdk-drag-drop-sorting) -->
 
 ### Transferring items between lists
-The `cdkDrop` directive supports transferring dragged items between connected drop zones.
-You can connect one or more `cdkDrop` instances together by setting the `cdkDropConnectedTo`
+The `cdkDropList` directive supports transferring dragged items between connected drop zones.
+You can connect one or more `cdkDropList` instances together by setting the `cdkDropListConnectedTo`
 property.
 
 <!-- example(cdk-drag-drop-connected-sorting) -->
 
-Note that `cdkDropConnectedTo` works both with a direct reference to another `cdkDrop`, or by
+Note that `cdkDropListConnectedTo` works both with a direct reference to another `cdkDropList`, or by
 referencing the `id` of another drop container:
 
 ```html
 <!-- This is valid -->
-<div cdkDrop #listOne="cdkDrop" [cdkDropConnectedTo]="[listTwo]"></div>
-<div cdkDrop #listTwo="cdkDrop" [cdkDropConnectedTo]="[listOne]"></div>
+<div cdkDropList #listOne="cdkDropList" [cdkDropListConnectedTo]="[listTwo]"></div>
+<div cdkDropList #listTwo="cdkDropList" [cdkDropListConnectedTo]="[listOne]"></div>
 
 <!-- This is valid as well -->
-<div cdkDrop id="list-one" [cdkDropConnectedTo]="['list-two']"></div>
-<div cdkDrop id="list-two" [cdkDropConnectedTo]="['list-one']"></div>
+<div cdkDropList id="list-one" [cdkDropListConnectedTo]="['list-two']"></div>
+<div cdkDropList id="list-two" [cdkDropListConnectedTo]="['list-one']"></div>
 ```
 
 ### Attaching data
-You can associate some arbitrary data with both `cdkDrag` and `cdkDrop` by setting `cdkDragData`
-or `cdkDropData`, respectively. Events fired from both directives include this data, allowing
+You can associate some arbitrary data with both `cdkDrag` and `cdkDropList` by setting `cdkDragData`
+or `cdkDropListData`, respectively. Events fired from both directives include this data, allowing
 you to easily identify the origin of the drag or drop interaction.
 
 ```html
-<div cdkDrop [cdkDropData]="list" *ngFor="let list of lists" (cdkDropDropped)="drop($event)">
+<div cdkDropList [cdkDropListData]="list" *ngFor="let list of lists" (cdkDropListDropped)="drop($event)">
   <div cdkDrag [cdkDragData]="item" *ngFor="let item of list"></div>
 </div>
 ```
 
 ### Styling
-The `cdkDrag` and `cdkDrop` directive include only those styles strictly necessary for
+The `cdkDrag` and `cdkDropList` directive include only those styles strictly necessary for
 functionality. The application can then customize the elements by styling CSS classes added
 by the directives:
 
 | Selector            | Description                                                              |
 |---------------------|--------------------------------------------------------------------------|
-| `.cdk-drop`         | Corresponds to the `cdkDrop` container.                                  |
+| `.cdk-drop-list`         | Corresponds to the `cdkDropList` container.                                  |
 | `.cdk-drag`         | Corresponds to a `cdkDrag` instance.                                     |
 | `.cdk-drag-preview` | This is the element that will be rendered next to the user's cursor as they're dragging an item in a sortable list. By default the element looks exactly like the element that is being dragged. |
-| `.cdk-drag-placeholder` | This is element that will be shown instead of the real element as it's being dragged inside a `cdkDrop`. By default this will look exactly like the element that is being sorted. |
-| `.cdk-drop-dragging` | A class that is added to `cdkDrop` while the user is dragging an item.  |
+| `.cdk-drag-placeholder` | This is element that will be shown instead of the real element as it's being dragged inside a `cdkDropList`. By default this will look exactly like the element that is being sorted. |
+| `.cdk-drop-dragging` | A class that is added to `cdkDropList` while the user is dragging an item.  |
 
 ### Animations
 The drag-and-drop module supports animations both while sorting an element inside a list, as well as
@@ -73,7 +73,7 @@ following classes can be used for animations:
     through a list.
 * `.cdk-drag-animating` - This class is added to a `cdkDrag` when the user has stopped dragging.
     If you add a `transition` to it, the CDK will animate the element from its drop position to
-    the final position inside the `cdkDrop` container.
+    the final position inside the `cdkDropList` container.
 
 Example animations:
 
@@ -105,14 +105,14 @@ This preview can be customized, though, by providing a custom template via `*cdk
 <!-- example(cdk-drag-drop-custom-preview) -->
 
 ### List orientation
-The `cdkDrop` directive assumes that lists are vertical by default. This can be
+The `cdkDropList` directive assumes that lists are vertical by default. This can be
 changed by setting the `orientation` property to `"horizontal".
 
 <!-- example(cdk-drag-drop-horizontal-sorting) -->
 
 ### Restricting movement along an axis
 By default, `cdkDrag` allows free movement in all directions. To restrict dragging to a
-specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `lockAxis` on `cdkDrop`
+specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `lockAxis` on `cdkDropList`
 to either `"x"` or `"y"`.
 
 <!-- example(cdk-drag-drop-axis-lock) -->

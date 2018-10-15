@@ -25,7 +25,7 @@ import {CdkDrag} from './drag';
 import {DragDropRegistry} from './drag-drop-registry';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit} from './drag-events';
 import {moveItemInArray} from './drag-utils';
-import {CDK_DROP_CONTAINER} from './drop-container';
+import {CDK_DROP_LIST_CONTAINER} from './drop-list-container';
 
 
 /** Counter used to generate unique ids for drop zones. */
@@ -39,18 +39,18 @@ const DROP_PROXIMITY_THRESHOLD = 0.05;
 
 /** Container that wraps a set of draggable items. */
 @Directive({
-  selector: '[cdkDrop], cdk-drop',
-  exportAs: 'cdkDrop',
+  selector: '[cdkDropList], cdk-drop-list',
+  exportAs: 'cdkDropList',
   providers: [
-    {provide: CDK_DROP_CONTAINER, useExisting: CdkDrop},
+    {provide: CDK_DROP_LIST_CONTAINER, useExisting: CdkDropList},
   ],
   host: {
-    'class': 'cdk-drop',
+    'class': 'cdk-drop-list',
     '[id]': 'id',
-    '[class.cdk-drop-dragging]': '_dragging'
+    '[class.cdk-drop-list-dragging]': '_dragging'
   }
 })
-export class CdkDrop<T = any> implements OnInit, OnDestroy {
+export class CdkDropList<T = any> implements OnInit, OnDestroy {
   /** Draggable items in the container. */
   @ContentChildren(forwardRef(() => CdkDrag)) _draggables: QueryList<CdkDrag>;
 
@@ -59,51 +59,51 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * container's items can be transferred. Can either be references to other drop containers,
    * or their unique IDs.
    */
-  @Input('cdkDropConnectedTo') connectedTo: (CdkDrop | string)[] | CdkDrop | string = [];
+  @Input('cdkDropListConnectedTo')
+  connectedTo: (CdkDropList | string)[] | CdkDropList | string = [];
 
   /** Arbitrary data to attach to this container. */
-  @Input('cdkDropData') data: T;
+  @Input('cdkDropListData') data: T;
 
   /** Direction in which the list is oriented. */
-  @Input('cdkDropOrientation') orientation: 'horizontal' | 'vertical' = 'vertical';
+  @Input('cdkDropListOrientation') orientation: 'horizontal' | 'vertical' = 'vertical';
 
   /**
    * Unique ID for the drop zone. Can be used as a reference
-   * in the `connectedTo` of another `CdkDrop`.
+   * in the `connectedTo` of another `CdkDropList`.
    */
-  @Input() id: string = `cdk-drop-${_uniqueIdCounter++}`;
+  @Input() id: string = `cdk-drop-list-${_uniqueIdCounter++}`;
 
   /** Locks the position of the draggable elements inside the container along the specified axis. */
-  @Input('cdkDropLockAxis') lockAxis: 'x' | 'y';
+  @Input('cdkDropListLockAxis') lockAxis: 'x' | 'y';
 
   /**
-   * Function that is used to determine whether an item is allowed to be moved
-   * into a drop container. The function will be called with the item that is
-   * being dragged and the container that it's being moved into.
+   * Function that is used to determine whether an item
+   * is allowed to be moved into a drop container.
    */
-  @Input('cdkDropEnterPredicate')
-  enterPredicate: (drag: CdkDrag, drop: CdkDrop) => boolean = () => true
+  @Input('cdkDropListEnterPredicate')
+  enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean = () => true
 
   /** Emits when the user drops an item inside the container. */
-  @Output('cdkDropDropped')
+  @Output('cdkDropListDropped')
   dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
 
   /**
    * Emits when the user has moved a new drag item into this container.
    */
-  @Output('cdkDropEntered')
+  @Output('cdkDropListEntered')
   entered: EventEmitter<CdkDragEnter<T>> = new EventEmitter<CdkDragEnter<T>>();
 
   /**
    * Emits when the user removes an item from the container
    * by dragging it into another container.
    */
-  @Output('cdkDropExited')
+  @Output('cdkDropListExited')
   exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
 
   constructor(
     public element: ElementRef<HTMLElement>,
-    private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDrop<T>>,
+    private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>,
     @Optional() private _dir?: Directionality) {}
 
   ngOnInit() {
@@ -120,7 +120,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /** Cache of the dimensions of all the items and the sibling containers. */
   private _positionCache = {
     items: [] as {drag: CdkDrag, clientRect: ClientRect, offset: number}[],
-    siblings: [] as {drop: CdkDrop, clientRect: ClientRect}[],
+    siblings: [] as {drop: CdkDropList, clientRect: ClientRect}[],
     self: {} as ClientRect
   };
 
@@ -150,7 +150,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param currentIndex Index at which the item should be inserted.
    * @param previousContainer Container from which the item got dragged in.
    */
-  drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDrop): void {
+  drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList): void {
     this._reset();
     this.dropped.emit({
       item,
@@ -312,7 +312,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param x Position of the item along the X axis.
    * @param y Position of the item along the Y axis.
    */
-  _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDrop | null {
+  _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropList | null {
     const result = this._positionCache.siblings
         .find(sibling => isInsideClientRect(sibling.clientRect, x, y));
 

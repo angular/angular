@@ -9,12 +9,12 @@ import {
 import {DragDropRegistry} from './drag-drop-registry';
 import {DragDropModule} from './drag-drop-module';
 import {CdkDrag} from './drag';
-import {CdkDrop} from './drop';
+import {CdkDropList} from './drop-list';
 
 describe('DragDropRegistry', () => {
   let fixture: ComponentFixture<SimpleDropZone>;
   let testComponent: SimpleDropZone;
-  let registry: DragDropRegistry<CdkDrag, CdkDrop>;
+  let registry: DragDropRegistry<CdkDrag, CdkDropList>;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
@@ -26,7 +26,7 @@ describe('DragDropRegistry', () => {
     testComponent = fixture.componentInstance;
     fixture.detectChanges();
 
-    inject([DragDropRegistry], (c: DragDropRegistry<CdkDrag, CdkDrop>) => {
+    inject([DragDropRegistry], (c: DragDropRegistry<CdkDrag, CdkDropList>) => {
       registry = c;
     })();
   }));
@@ -159,16 +159,16 @@ describe('DragDropRegistry', () => {
 
 @Component({
   template: `
-    <div cdkDrop id="items" [cdkDropData]="items">
+    <div cdkDropList id="items" [cdkDropListData]="items">
       <div *ngFor="let item of items" cdkDrag>{{item}}</div>
     </div>
 
-    <div cdkDrop id="items" *ngIf="showDuplicateContainer"></div>
+    <div cdkDropList id="items" *ngIf="showDuplicateContainer"></div>
   `
 })
 class SimpleDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
-  @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
+  @ViewChildren(CdkDropList) dropInstances: QueryList<CdkDropList>;
   items = ['Zero', 'One', 'Two', 'Three'];
   showDuplicateContainer = false;
 }

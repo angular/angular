@@ -7,7 +7,7 @@
  */
 
 import {CdkDrag} from './drag';
-import {CdkDropContainer} from './drop-container';
+import {CdkDropListContainer} from './drop-list-container';
 
 /** Event emitted when the user starts dragging a draggable. */
 export interface CdkDragStart<T = any> {
@@ -24,7 +24,7 @@ export interface CdkDragEnd<T = any> {
 /** Event emitted when the user moves an item into a new drop container. */
 export interface CdkDragEnter<T = any, I = T> {
   /** Container into which the user has moved the item. */
-  container: CdkDropContainer<T>;
+  container: CdkDropListContainer<T>;
   /** Item that was removed from the container. */
   item: CdkDrag<I>;
 }
@@ -35,7 +35,7 @@ export interface CdkDragEnter<T = any, I = T> {
  */
 export interface CdkDragExit<T = any, I = T> {
   /** Container from which the user has a removed an item. */
-  container: CdkDropContainer<T>;
+  container: CdkDropListContainer<T>;
   /** Item that was removed from the container. */
   item: CdkDrag<I>;
 }
@@ -50,9 +50,9 @@ export interface CdkDragDrop<T, O = T> {
   /** Item that is being dropped. */
   item: CdkDrag;
   /** Container in which the item was dropped. */
-  container: CdkDropContainer<T>;
+  container: CdkDropListContainer<T>;
   /** Container from which the item was picked up. Can be the same as the `container`. */
-  previousContainer: CdkDropContainer<O>;
+  previousContainer: CdkDropListContainer<O>;
 }
 
 /** Event emitted as the user is dragging a draggable item. */

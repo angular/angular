@@ -18,7 +18,7 @@
   margin-left: 0;
 }
 
-.cdk-drop {
+.cdk-drop-list {
   border: solid 1px #ccc;
   min-height: 60px;
   display: block;
@@ -38,7 +38,7 @@
   justify-content: space-between;
   box-sizing: border-box;
 
-  .cdk-drop-dragging &:not(.cdk-drag-placeholder) {
+  .cdk-drop-list-dragging &:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
@@ -54,7 +54,7 @@
     }
   }
 
-  .cdk-drop &:last-child {
+  .cdk-drop-list &:last-child {
     border: none;
   }
 }

@@ -2,12 +2,12 @@
   <h2>To do</h2>
 
   <div
-    cdkDrop
-    #todoList="cdkDrop"
-    [cdkDropData]="todo"
-    [cdkDropConnectedTo]="[doneList]"
+    cdkDropList
+    #todoList="cdkDropList"
+    [cdkDropListData]="todo"
+    [cdkDropListConnectedTo]="[doneList]"
     class="example-list"
-    (cdkDropDropped)="drop($event)">
+    (cdkDropListDropped)="drop($event)">
     <div class="example-box" *ngFor="let item of todo" cdkDrag>{{item}}</div>
   </div>
 </div>
@@ -16,12 +16,12 @@
   <h2>Done</h2>
 
   <div
-    cdkDrop
-    #doneList="cdkDrop"
-    [cdkDropData]="done"
-    [cdkDropConnectedTo]="[todoList]"
+    cdkDropList
+    #doneList="cdkDropList"
+    [cdkDropListData]="done"
+    [cdkDropListConnectedTo]="[todoList]"
     class="example-list"
-    (cdkDropDropped)="drop($event)">
+    (cdkDropListDropped)="drop($event)">
     <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}}</div>
   </div>
 </div>

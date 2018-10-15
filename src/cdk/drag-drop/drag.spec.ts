@@ -22,7 +22,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag, CDK_DRAG_CONFIG, CdkDragConfig} from './drag';
 import {CdkDragDrop} from './drag-events';
 import {moveItemInArray} from './drag-utils';
-import {CdkDrop} from './drop';
+import {CdkDropList} from './drop-list';
 import {CdkDragHandle} from './drag-handle';
 
 const ITEM_HEIGHT = 25;
@@ -478,11 +478,11 @@ describe('CdkDrag', () => {
       const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
       const dropZone = fixture.componentInstance.dropInstance;
 
-      expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-dragging');
+      expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-list-dragging');
 
       startDraggingViaMouse(fixture, item);
 
-      expect(dropZone.element.nativeElement.classList).toContain('cdk-drop-dragging');
+      expect(dropZone.element.nativeElement.classList).toContain('cdk-drop-list-dragging');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -1749,11 +1749,11 @@ class StandaloneDraggableWithMultipleHandles {
 @Component({
   template: `
     <div
-      cdkDrop
+      cdkDropList
       style="width: 100px; background: pink;"
       [id]="dropZoneId"
-      [cdkDropData]="items"
-      (cdkDropDropped)="droppedSpy($event)">
+      [cdkDropListData]="items"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div
         *ngFor="let item of items"
         cdkDrag
@@ -1764,7 +1764,7 @@ class StandaloneDraggableWithMultipleHandles {
 })
 class DraggableInDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
-  @ViewChild(CdkDrop) dropInstance: CdkDrop;
+  @ViewChild(CdkDropList) dropInstance: CdkDropList;
   items = ['Zero', 'One', 'Two', 'Three'];
   dropZoneId = 'items';
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
@@ -1778,7 +1778,7 @@ class DraggableInDropZone {
   styles: [
   // Use inline blocks here to avoid flexbox issues and not to have to flip floats in rtl.
   `
-    .cdk-drop {
+    .cdk-drop-list {
       display: block;
       width: 300px;
       background: pink;
@@ -1794,17 +1794,17 @@ class DraggableInDropZone {
   `],
   template: `
     <div
-      cdkDrop
-      cdkDropOrientation="horizontal"
-      [cdkDropData]="items"
-      (cdkDropDropped)="droppedSpy($event)">
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      [cdkDropListData]="items"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div *ngFor="let item of items" cdkDrag>{{item}}</div>
     </div>
   `
 })
 class DraggableInHorizontalDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
-  @ViewChild(CdkDrop) dropInstance: CdkDrop;
+  @ViewChild(CdkDropList) dropInstance: CdkDropList;
   items = ['Zero', 'One', 'Two', 'Three'];
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
@@ -1813,7 +1813,7 @@ class DraggableInHorizontalDropZone {
 
 @Component({
   template: `
-    <div cdkDrop style="width: 100px; background: pink;">
+    <div cdkDropList style="width: 100px; background: pink;">
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
@@ -1823,7 +1823,7 @@ class DraggableInHorizontalDropZone {
   `
 })
 class DraggableInDropZoneWithCustomPreview {
-  @ViewChild(CdkDrop) dropInstance: CdkDrop;
+  @ViewChild(CdkDropList) dropInstance: CdkDropList;
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
 }
@@ -1831,7 +1831,7 @@ class DraggableInDropZoneWithCustomPreview {
 
 @Component({
   template: `
-    <div cdkDrop style="width: 100px; background: pink;">
+    <div cdkDropList style="width: 100px; background: pink;">
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
@@ -1849,7 +1849,7 @@ class DraggableInDropZoneWithCustomPlaceholder {
 @Component({
   encapsulation: ViewEncapsulation.None,
   styles: [`
-    .cdk-drop {
+    .cdk-drop-list {
       display: block;
       width: 100px;
       min-height: ${ITEM_HEIGHT}px;
@@ -1864,27 +1864,27 @@ class DraggableInDropZoneWithCustomPlaceholder {
   `],
   template: `
     <div
-      cdkDrop
-      #todoZone="cdkDrop"
-      [cdkDropData]="todo"
-      [cdkDropConnectedTo]="[doneZone]"
-      (cdkDropDropped)="droppedSpy($event)">
+      cdkDropList
+      #todoZone="cdkDropList"
+      [cdkDropListData]="todo"
+      [cdkDropListConnectedTo]="[doneZone]"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div [cdkDragData]="item" *ngFor="let item of todo" cdkDrag>{{item}}</div>
     </div>
 
     <div
-      cdkDrop
-      #doneZone="cdkDrop"
-      [cdkDropData]="done"
-      [cdkDropConnectedTo]="[todoZone]"
-      (cdkDropDropped)="droppedSpy($event)">
+      cdkDropList
+      #doneZone="cdkDropList"
+      [cdkDropListData]="done"
+      [cdkDropListConnectedTo]="[todoZone]"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div [cdkDragData]="item" *ngFor="let item of done" cdkDrag>{{item}}</div>
     </div>
   `
 })
 class ConnectedDropZones implements AfterViewInit {
   @ViewChildren(CdkDrag) rawDragItems: QueryList<CdkDrag>;
-  @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
+  @ViewChildren(CdkDropList) dropInstances: QueryList<CdkDropList>;
 
   groupedDragItems: CdkDrag[][] = [];
   todo = ['Zero', 'One', 'Two', 'Three'];
@@ -1924,7 +1924,7 @@ class DraggableWithAlternateRoot {
 @Component({
   encapsulation: ViewEncapsulation.None,
   styles: [`
-    .cdk-drop {
+    .cdk-drop-list {
       display: block;
       width: 100px;
       min-height: ${ITEM_HEIGHT}px;
@@ -1939,25 +1939,25 @@ class DraggableWithAlternateRoot {
   `],
   template: `
     <div
-      cdkDrop
-      #todoZone="cdkDrop"
-      [cdkDropConnectedTo]="[doneZone]"
-      (cdkDropDropped)="droppedSpy($event)">
+      cdkDropList
+      #todoZone="cdkDropList"
+      [cdkDropListConnectedTo]="[doneZone]"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div cdkDrag>One</div>
     </div>
 
     <div
-      cdkDrop
-      #doneZone="cdkDrop"
-      [cdkDropConnectedTo]="[todoZone]"
-      (cdkDropDropped)="droppedSpy($event)">
+      cdkDropList
+      #doneZone="cdkDropList"
+      [cdkDropListConnectedTo]="[todoZone]"
+      (cdkDropListDropped)="droppedSpy($event)">
       <div cdkDrag>Two</div>
     </div>
   `
 })
 class ConnectedDropZonesWithSingleItems {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
-  @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
+  @ViewChildren(CdkDropList) dropInstances: QueryList<CdkDropList>;
 
   droppedSpy = jasmine.createSpy('dropped spy');
 }

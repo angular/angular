@@ -42,7 +42,7 @@ import {
 import {CdkDragHandle} from './drag-handle';
 import {CdkDragPlaceholder} from './drag-placeholder';
 import {CdkDragPreview} from './drag-preview';
-import {CDK_DROP_CONTAINER, CdkDropContainer} from './drop-container';
+import {CDK_DROP_LIST_CONTAINER, CdkDropListContainer} from './drop-list-container';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
 
@@ -134,7 +134,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _hasMoved: boolean;
 
   /** Drop container in which the CdkDrag resided when dragging began. */
-  private _initialContainer: CdkDropContainer;
+  private _initialContainer: CdkDropListContainer;
 
   /** Cached scroll position on the page when the element was picked up. */
   private _scrollPosition: {top: number, left: number};
@@ -222,12 +222,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     /** Element that the draggable is attached to. */
     public element: ElementRef<HTMLElement>,
     /** Droppable container that the draggable is a part of. */
-    @Inject(CDK_DROP_CONTAINER) @Optional() @SkipSelf() public dropContainer: CdkDropContainer,
+    @Inject(CDK_DROP_LIST_CONTAINER) @Optional() @SkipSelf()
+    public dropContainer: CdkDropListContainer,
     @Inject(DOCUMENT) document: any,
     private _ngZone: NgZone,
     private _viewContainerRef: ViewContainerRef,
     private _viewportRuler: ViewportRuler,
-    private _dragDropRegistry: DragDropRegistry<CdkDrag<T>, CdkDropContainer>,
+    private _dragDropRegistry: DragDropRegistry<CdkDrag<T>, CdkDropListContainer>,
     @Inject(CDK_DRAG_CONFIG) private _config: CdkDragConfig,
     @Optional() private _dir: Directionality) {
       this._document = document;

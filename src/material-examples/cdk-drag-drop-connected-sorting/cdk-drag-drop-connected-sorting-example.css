@@ -49,6 +49,6 @@
   border: none;
 }
 
-.example-list.cdk-drop-dragging .example-box:not(.cdk-drag-placeholder) {
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
