@@ -606,6 +606,7 @@ export class Router {
                   const navCancel =
                       new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), e.message);
                   eventsSubject.next(navCancel);
+                  t.resolve(false);
                   /* All other errors should reset to the router's internal URL reference to the
                    * pre-error state. */
                 } else {
