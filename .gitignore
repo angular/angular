@@ -14,7 +14,6 @@ pubspec.lock
 .settings/
 *.swo
 modules/.settings
-.bazelrc
 .vscode
 modules/.vscode
 
