@@ -49,8 +49,18 @@ export class Transformer {
 
   transform(entryPoint: EntryPoint, format: EntryPointFormat): void {
     if (checkMarkerFile(entryPoint, format)) {
+      console.warn(`Skipping ${entryPoint.name} : ${format} (already built).`);
       return;
     }
+
+    const entryPointFilePath = entryPoint[format];
+    if (!entryPointFilePath) {
+      console.warn(
+          `Skipping ${entryPoint.name} : ${format} (no entry point file for this format).`);
+      return;
+    }
+
+    console.warn(`Compiling ${entryPoint.name} - ${format}`);
 
     const options: ts.CompilerOptions = {
       allowJs: true,
@@ -62,11 +72,6 @@ export class Transformer {
     // TODO : create a custom compiler host that reads from .bak files if available.
     const host = ts.createCompilerHost(options);
     const rootDirs = this.getRootDirs(host, options);
-    const entryPointFilePath = entryPoint[format];
-    if (!entryPointFilePath) {
-      throw new Error(
-          `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
-    }
     const isCore = entryPoint.name === '@angular/core';
     const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
     const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
