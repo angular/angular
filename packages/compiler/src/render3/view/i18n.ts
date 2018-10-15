@@ -64,7 +64,7 @@ export function assembleI18nBoundString(
   return acc;
 }
 
-function getSeqNubmerGenerator(startsAt: number = 0): () => number {
+function getSeqNumberGenerator(startsAt: number = 0): () => number {
   let current = startsAt;
   return () => current++;
 }
@@ -81,9 +81,9 @@ export class I18nContext {
   private bindings = new Set<o.Expression>();
 
   constructor(
-      private index: number, private templateIndex: number|null = null, private ref: any,
-      private level: number = 0, private uniqueIdGen?: (() => number)) {
-    this.uniqueIdGen = uniqueIdGen || getSeqNubmerGenerator();
+      private index: number, private templateIndex: number|null, private ref: any,
+      private level: number = 0, private uniqueIdGen?: () => number) {
+    this.uniqueIdGen = uniqueIdGen || getSeqNumberGenerator();
     this.id = this.uniqueIdGen();
   }
 
