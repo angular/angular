@@ -39,7 +39,7 @@
     "name": "HEADER_OFFSET"
   },
   {
-    "name": "HOST_NATIVE"
+    "name": "HOST"
   },
   {
     "name": "HOST_NODE"
@@ -156,9 +156,6 @@
     "name": "componentRefresh"
   },
   {
-    "name": "createLNodeObject"
-  },
-  {
     "name": "createLViewData"
   },
   {
@@ -166,6 +163,9 @@
   },
   {
     "name": "createRootComponent"
+  },
+  {
+    "name": "createRootComponentView"
   },
   {
     "name": "createRootContext"
@@ -231,6 +231,9 @@
     "name": "getComponentDef"
   },
   {
+    "name": "getComponentViewByIndex"
+  },
+  {
     "name": "getContainerRenderParent"
   },
   {
@@ -253,6 +256,9 @@
   },
   {
     "name": "getLViewChild"
+  },
+  {
+    "name": "getNative"
   },
   {
     "name": "getOrCreateNodeInjector"
@@ -283,9 +289,6 @@
   },
   {
     "name": "getRenderParent"
-  },
-  {
-    "name": "hostElement"
   },
   {
     "name": "invertObject"

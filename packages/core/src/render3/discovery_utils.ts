@@ -8,10 +8,13 @@
 import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
-import {LContext, discoverDirectives, discoverLocalRefs, getContext, isComponentInstance, readPatchedLViewData} from './context_discovery';
+import {discoverDirectives, discoverLocalRefs, getContext, isComponentInstance} from './context_discovery';
 import {NodeInjector} from './di';
-import {LElementNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {LContext} from './interfaces/context';
+import {TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
+import {getComponentViewByIndex, readPatchedLViewData} from './util';
+
 
 /**
  * NOTE: The following functions might not be ideal for core usage in Angular...
@@ -61,8 +64,8 @@ export function getHostComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target);
   const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TNode;
   if (tNode.flags & TNodeFlags.isComponent) {
-    const lNode = context.lViewData[context.nodeIndex] as LElementNode;
-    return lNode.data ![CONTEXT] as any as T;
+    const componentView = getComponentViewByIndex(context.nodeIndex, context.lViewData);
+    return componentView[CONTEXT] as any as T;
   }
   return null;
 }

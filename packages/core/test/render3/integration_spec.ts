@@ -20,8 +20,9 @@ import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
-import {MONKEY_PATCH_KEY_NAME, getContext} from '../../src/render3/context_discovery';
+import {getContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/interfaces/styling';
+import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {directiveInject} from '../../src/render3/di';
 
 describe('render3 integration test', () => {
@@ -1414,6 +1415,39 @@ describe('render3 integration test', () => {
         expect(fixture.html).toEqual('<span class="existing"></span>');
       });
 
+      it('should apply classes properly when nodes are components', () => {
+        const MyComp = createComponent('my-comp', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Comp Content');
+          }
+        }, 1, 0, []);
+
+        /**
+         * <my-comp [class.active]="class"></my-comp>
+         */
+        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'my-comp');
+            { elementStyling(['active']); }
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            elementClassProp(0, 0, ctx.class);
+            elementStylingApply(0);
+          }
+        }, 1, 0, [MyComp]);
+
+        const fixture = new ComponentFixture(App);
+        fixture.component.class = true;
+        fixture.update();
+        expect(fixture.html).toEqual('<my-comp class="active">Comp Content</my-comp>');
+
+        fixture.component.class = false;
+        fixture.update();
+        expect(fixture.html).toEqual('<my-comp class="">Comp Content</my-comp>');
+      });
+
+
       it('should apply classes properly when nodes have LContainers', () => {
         let structuralComp !: StructuralComp;
 
@@ -1448,7 +1482,7 @@ describe('render3 integration test', () => {
 
         /**
          * <ng-template #foo>
-         *     Content
+         *     Temp Content
          * </ng-template>
          * <structural-comp [class.active]="class" [tmp]="foo"></structural-comp>
          */
@@ -1477,8 +1511,12 @@ describe('render3 integration test', () => {
         fixture.update();
         expect(fixture.html)
             .toEqual('<structural-comp class="active">Comp Content</structural-comp>Temp Content');
-      });
 
+        fixture.component.class = false;
+        fixture.update();
+        expect(fixture.html)
+            .toEqual('<structural-comp class="">Comp Content</structural-comp>Temp Content');
+      });
     });
   });
 
@@ -2168,12 +2206,11 @@ describe('render3 integration test', () => {
          const div1 = hostElm.querySelector('div:first-child') !as any;
          const div2 = hostElm.querySelector('div:last-child') !as any;
          const context = getContext(hostElm) !;
-         const elementNode = context.lViewData[context.nodeIndex];
-         const elmData = elementNode.data !;
+         const componentView = context.lViewData[context.nodeIndex];
 
-         expect(elmData).toContain(myDir1Instance);
-         expect(elmData).toContain(myDir2Instance);
-         expect(elmData).toContain(myDir3Instance);
+         expect(componentView).toContain(myDir1Instance);
+         expect(componentView).toContain(myDir2Instance);
+         expect(componentView).toContain(myDir3Instance);
 
          expect(Array.isArray((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
          expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
@@ -2183,9 +2220,9 @@ describe('render3 integration test', () => {
          const d2Context = getContext(myDir2Instance) !;
          const d3Context = getContext(myDir3Instance) !;
 
-         expect(d1Context.lViewData).toEqual(elmData);
-         expect(d2Context.lViewData).toEqual(elmData);
-         expect(d3Context.lViewData).toEqual(elmData);
+         expect(d1Context.lViewData).toEqual(componentView);
+         expect(d2Context.lViewData).toEqual(componentView);
+         expect(d3Context.lViewData).toEqual(componentView);
 
          expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d1Context);
          expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
@@ -2349,7 +2386,7 @@ describe('render3 integration test', () => {
          const context = getContext(child) !;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-         const componentData = context.lViewData[context.nodeIndex].data;
+         const componentData = context.lViewData[context.nodeIndex];
          const component = componentData[CONTEXT];
          expect(component instanceof ChildComp).toBeTruthy();
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lViewData);

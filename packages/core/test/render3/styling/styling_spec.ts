@@ -10,10 +10,10 @@ import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/
 import {LElementNode} from '../../../src/render3/interfaces/node';
 import {Renderer3} from '../../../src/render3/interfaces/renderer';
 import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
-import {allocStylingContext, createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
+import {createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
+import {allocStylingContext} from '../../../src/render3/styling/util';
 import {defaultStyleSanitizer} from '../../../src/sanitization/sanitization';
 import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
-
 import {renderToHtml} from '../render_util';
 
 describe('styling', () => {
@@ -110,19 +110,19 @@ describe('styling', () => {
     describe('createStylingContextTemplate', () => {
       it('should initialize empty template', () => {
         const template = initContext();
-        expect(template).toEqual([element, null, null, [null], cleanStyle(0, 8), 0, null, null]);
+        expect(template).toEqual([null, null, [null], cleanStyle(0, 8), 0, element, null, null]);
       });
 
       it('should initialize static styles', () => {
         const template =
             initContext([InitialStylingFlags.VALUES_MODE, 'color', 'red', 'width', '10px']);
         expect(template).toEqual([
-          element,
           null,
           null,
           [null, 'red', '10px'],
           dirtyStyle(0, 14),  //
           0,
+          element,
           null,
           null,
 
@@ -321,12 +321,12 @@ describe('styling', () => {
         updateStyles(stylingContext, {width: '100px', height: '100px'});
 
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           dirtyStyle(0, 14),  //
           2,
+          element,
           null,
           {width: '100px', height: '100px'},
 
@@ -355,12 +355,12 @@ describe('styling', () => {
         updateStyles(stylingContext, {width: '200px', opacity: '0'});
 
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           dirtyStyle(0, 14),  //
           2,
+          element,
           null,
           {width: '200px', opacity: '0'},
 
@@ -392,12 +392,12 @@ describe('styling', () => {
 
         getStyles(stylingContext);
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           cleanStyle(0, 14),  //
           2,
+          element,
           null,
           {width: '200px', opacity: '0'},
 
@@ -431,12 +431,12 @@ describe('styling', () => {
         updateStyleProp(stylingContext, 0, '300px');
 
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           dirtyStyle(0, 14),  //
           2,
+          element,
           null,
           {width: null},
 
@@ -470,12 +470,12 @@ describe('styling', () => {
 
         updateStyleProp(stylingContext, 0, null);
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           dirtyStyle(0, 14),  //
           2,
+          element,
           null,
           {width: null},
 
@@ -514,12 +514,12 @@ describe('styling', () => {
            updateStyles(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
 
            expect(stylingContext).toEqual([
-             element,
              null,
              null,
              [null],
              dirtyStyle(0, 11),  //
              1,
+             element,
              null,
              {width: '100px', height: '100px', opacity: '0.5'},
 
@@ -553,12 +553,12 @@ describe('styling', () => {
 
            updateStyles(stylingContext, {});
            expect(stylingContext).toEqual([
-             element,
              null,
              null,
              [null],
              dirtyStyle(0, 11),  //
              1,
+             element,
              null,
              {},
 
@@ -594,12 +594,12 @@ describe('styling', () => {
            });
 
            expect(stylingContext).toEqual([
-             element,
              null,
              null,
              [null],
              dirtyStyle(0, 11),  //
              1,
+             element,
              null,
              {borderWidth: '5px'},
 
@@ -637,12 +637,12 @@ describe('styling', () => {
            updateStyleProp(stylingContext, 0, '200px');
 
            expect(stylingContext).toEqual([
-             element,
              null,
              null,
              [null],
              dirtyStyle(0, 11),  //
              1,
+             element,
              null,
              {borderWidth: '5px'},
 
@@ -680,12 +680,12 @@ describe('styling', () => {
            updateStyles(stylingContext, {borderWidth: '15px', borderColor: 'red'});
 
            expect(stylingContext).toEqual([
-             element,
              null,
              null,
              [null],
              dirtyStyle(0, 11),  //
              1,
+             element,
              null,
              {borderWidth: '15px', borderColor: 'red'},
 
@@ -737,12 +737,12 @@ describe('styling', () => {
         updateStyleProp(stylingContext, 0, '200px');
 
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           dirtyStyle(0, 11),  //
           1,
+          element,
           null,
           {width: '100px'},
 
@@ -765,12 +765,12 @@ describe('styling', () => {
         getStyles(stylingContext);
 
         expect(stylingContext).toEqual([
-          element,
           null,
           null,
           [null],
           cleanStyle(0, 11),  //
           1,
+          element,
           null,
           {width: '100px'},
 
@@ -802,12 +802,12 @@ describe('styling', () => {
            updateStyleProp(stylingContext, 1, '100px');
 
            expect(stylingContext).toEqual([
-             element,
              null,
              styleSanitizer,
              [null],
              dirtyStyle(0, 14),  //
              2,
+             element,
              null,
              null,
 
@@ -835,12 +835,12 @@ describe('styling', () => {
            updateStyles(stylingContext, {'background-image': 'unsafe'});
 
            expect(stylingContext).toEqual([
-             element,
              null,
              styleSanitizer,
              [null],
              dirtyStyle(0, 14),  //
              2,
+             element,
              null,
              {'background-image': 'unsafe'},
 
@@ -873,12 +873,12 @@ describe('styling', () => {
            getStyles(stylingContext);
 
            expect(stylingContext).toEqual([
-             element,
              null,
              styleSanitizer,
              [null],
              cleanStyle(0, 14),  //
              2,
+             element,
              null,
              {'background-image': 'unsafe'},
 
@@ -916,8 +916,8 @@ describe('styling', () => {
       const template =
           initContext(null, [InitialStylingFlags.VALUES_MODE, 'one', true, 'two', true]);
       expect(template).toEqual([
-        element, null, null, [null, true, true], dirtyStyle(0, 14),  //
-        0, null, null,
+        null, null, [null, true, true], dirtyStyle(0, 14),  //
+        0, element, null, null,
 
         // #8
         cleanClass(1, 14), 'one', null,
@@ -979,12 +979,12 @@ describe('styling', () => {
       const initialClasses = ['wide', 'tall', InitialStylingFlags.VALUES_MODE, 'wide', true];
       const stylingContext = initContext(initialStyles, initialClasses);
       expect(stylingContext).toEqual([
-        element,
         null,
         null,
         [null, '100px', true],
         dirtyStyle(0, 20),  //
         2,
+        element,
         null,
         null,
 
@@ -1033,12 +1033,12 @@ describe('styling', () => {
 
       updateStylingMap(stylingContext, 'tall round', {width: '200px', opacity: '0.5'});
       expect(stylingContext).toEqual([
-        element,
         null,
         null,
         [null, '100px', true],
         dirtyStyle(0, 20),  //
         2,
+        element,
         'tall round',
         {width: '200px', opacity: '0.5'},
 
@@ -1101,12 +1101,12 @@ describe('styling', () => {
       updateStyleProp(stylingContext, 0, '300px');
 
       expect(stylingContext).toEqual([
-        element,
         null,
         null,
         [null, '100px', true],
         dirtyStyle(0, 20),  //
         2,
+        element,
         {tall: true, wide: true},
         {width: '500px'},
 
@@ -1179,12 +1179,12 @@ describe('styling', () => {
     getStylesAndClasses(stylingContext);
 
     expect(stylingContext).toEqual([
-      element,
       null,
       null,
       [null],
       cleanStyle(0, 8),  //
       0,
+      element,
       {foo: true},
       {width: '200px'},
 
@@ -1208,12 +1208,12 @@ describe('styling', () => {
     getStylesAndClasses(stylingContext);
 
     expect(stylingContext).toEqual([
-      element,
       null,
       null,
       [null],
       cleanStyle(0, 8),  //
       0,
+      element,
       {foo: false},
       {width: '300px'},
 
@@ -1240,12 +1240,12 @@ describe('styling', () => {
     expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
 
     expect(stylingContext).toEqual([
-      element,
       null,
       null,
       [null],
       cleanStyle(0, 8),  //
       0,
+      element,
       'apple orange banana',
       null,
 

@@ -14,21 +14,6 @@ import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../inte
 
 import {EMPTY_ARR, EMPTY_OBJ, createEmptyStylingContext} from './util';
 
-
-/**
- * Used clone a copy of a pre-computed template of a styling context.
- *
- * A pre-computed template is designed to be computed once for a given element
- * (instructions.ts has logic for caching this).
- */
-export function allocStylingContext(
-    lElement: LElementNode | null, templateStyleContext: StylingContext): StylingContext {
-  // each instance gets a copy
-  const context = templateStyleContext.slice() as any as StylingContext;
-  context[StylingIndex.ElementPosition] = lElement;
-  return context;
-}
-
 /**
  * Creates a styling context template where styling information is stored.
  * Any styles that are later referenced using `updateStyleProp` must be

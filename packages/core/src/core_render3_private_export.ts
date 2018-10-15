@@ -158,7 +158,6 @@ export {
 } from './sanitization/bypass';
 
 export {
-  LContext as ɵLContext,
   getContext as ɵgetContext
 } from './render3/context_discovery';
 
@@ -167,6 +166,10 @@ export {
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
 } from './render3/interfaces/player';
+
+export {
+  LContext as ɵLContext,
+} from './render3/interfaces/context';
 
 export {
   addPlayer as ɵaddPlayer,
