@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+##### Test Debug Utility #####
+##############################
+
+# Use this script to run the ngcc integration test locally
+# in isolation from the other integration tests.
+# This is useful when debugging the ngcc code-base.
+
 set -u -e -o pipefail
 
 cd "$(dirname "$0")"
