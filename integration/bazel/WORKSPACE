@@ -41,7 +41,7 @@ check_bazel_version("0.17.0")
 node_repositories(
     package_json = ["//:package.json"],
     node_version = "10.9.0",
-    yarn_version = "1.9.2",
+    yarn_version = "1.10.0",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")

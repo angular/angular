@@ -111,7 +111,7 @@ node_repositories(
     node_version = "10.9.0",
     package_json = ["//:package.json"],
     preserve_symlinks = True,
-    yarn_version = "1.9.2",
+    yarn_version = "1.10.0",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
