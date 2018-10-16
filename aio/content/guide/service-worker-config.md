@@ -161,7 +161,15 @@ This section defines the policy by which matching requests will be cached.
 For example, the string `3d12h` will cache content for up to three and a half days.
 
 #### `timeout`
-This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so.
+This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so. `timeout` is a duration string, using the following unit suffixes:
+
+* `d`: days
+* `h`: hours
+* `m`: minutes
+* `s`: seconds
+* `u`: milliseconds
+
+For example, the string `5s30u` will translate to five seconds and 30 milliseconds of network timeout.
 
 #### `strategy`
 
