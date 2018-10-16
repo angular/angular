@@ -773,7 +773,8 @@ describe('MatInput without forms', () => {
       const fixture = createComponent(MatInputTextTestController);
       fixture.detectChanges();
 
-      const input = fixture.debugElement.query(By.directive(MatInput)).injector.get(MatInput);
+      const input = fixture.debugElement.query(By.directive(MatInput))
+          .injector.get<MatInput>(MatInput);
       const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
 
       // Call the focus handler directly to avoid flakyness where

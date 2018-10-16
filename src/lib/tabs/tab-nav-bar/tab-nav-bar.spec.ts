@@ -174,7 +174,7 @@ describe('MatTabNavBar', () => {
     it('should be able to disable ripples on a tab link', () => {
       const tabLinkDebug = fixture.debugElement.query(By.css('a'));
       const tabLinkElement = tabLinkDebug.nativeElement;
-      const tabLinkInstance = tabLinkDebug.injector.get(MatTabLink);
+      const tabLinkInstance = tabLinkDebug.injector.get<MatTabLink>(MatTabLink);
 
       tabLinkInstance.disableRipple = true;
 
@@ -264,7 +264,8 @@ describe('MatTabNavBar', () => {
       const fixture = TestBed.createComponent(TabLinkWithNativeTabindexAttr);
     fixture.detectChanges();
 
-    const tabLink = fixture.debugElement.query(By.directive(MatTabLink)).injector.get(MatTabLink);
+    const tabLink = fixture.debugElement.query(By.directive(MatTabLink))
+        .injector.get<MatTabLink>(MatTabLink);
 
     expect(tabLink.tabIndex)
       .toBe(5, 'Expected the tabIndex to be set from the native tabindex attribute.');
@@ -274,7 +275,8 @@ describe('MatTabNavBar', () => {
     const fixture = TestBed.createComponent(TabLinkWithTabIndexBinding);
     fixture.detectChanges();
 
-    const tabLink = fixture.debugElement.query(By.directive(MatTabLink)).injector.get(MatTabLink);
+    const tabLink = fixture.debugElement.query(By.directive(MatTabLink))
+        .injector.get<MatTabLink>(MatTabLink);
 
     expect(tabLink.tabIndex).toBe(0, 'Expected the tabIndex to be set to 0 by default.');
 

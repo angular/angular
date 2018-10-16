@@ -41,28 +41,28 @@ describe('SelectionModel', () => {
     beforeEach(() => model = new SelectionModel(true));
 
     it('should be able to select multiple options', () => {
-      const onChangeSpy = jasmine.createSpy('onChange spy');
+      const changedSpy = jasmine.createSpy('changed spy');
 
-      model.changed.subscribe(onChangeSpy);
+      model.changed.subscribe(changedSpy);
       model.select(1);
       model.select(2);
 
       expect(model.selected.length).toBe(2);
       expect(model.isSelected(1)).toBe(true);
       expect(model.isSelected(2)).toBe(true);
-      expect(onChangeSpy).toHaveBeenCalledTimes(2);
+      expect(changedSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should be able to select multiple options at the same time', () => {
-      const onChangeSpy = jasmine.createSpy('onChange spy');
+      const changedSpy = jasmine.createSpy('changed spy');
 
-      model.changed.subscribe(onChangeSpy);
+      model.changed.subscribe(changedSpy);
       model.select(1, 2);
 
       expect(model.selected.length).toBe(2);
       expect(model.isSelected(1)).toBe(true);
       expect(model.isSelected(2)).toBe(true);
-      expect(onChangeSpy).toHaveBeenCalledTimes(1);
+      expect(changedSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should be able to preselect multiple options', () => {
@@ -92,12 +92,12 @@ describe('SelectionModel', () => {
     });
   });
 
-  describe('onChange event', () => {
+  describe('changed event', () => {
     it('should return the model that dispatched the event', () => {
       let model = new SelectionModel();
       let spy = jasmine.createSpy('SelectionModel change event');
 
-      model.onChange.subscribe(spy);
+      model.changed.subscribe(spy);
       model.select(1);
 
       let event = spy.calls.mostRecent().args[0];
@@ -130,7 +130,7 @@ describe('SelectionModel', () => {
       // Note: this assertion is only here to run the getter.
       expect(model.selected).toEqual([]);
 
-      model.onChange.subscribe(() => spy(model.selected));
+      model.changed.subscribe(() => spy(model.selected));
       model.select(1);
 
       expect(spy).toHaveBeenCalledWith([1]);

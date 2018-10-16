@@ -23,9 +23,7 @@ describe('CdkAccordion', () => {
     const fixture = TestBed.createComponent(SetOfItems);
     const [firstPanel, secondPanel] = fixture.debugElement
       .queryAll(By.directive(CdkAccordionItem))
-      .map(el => {
-        return el.injector.get(CdkAccordionItem) as CdkAccordionItem;
-      });
+      .map(el => el.injector.get<CdkAccordionItem>(CdkAccordionItem));
 
     firstPanel.open();
     fixture.detectChanges();
@@ -42,9 +40,7 @@ describe('CdkAccordion', () => {
     const fixture = TestBed.createComponent(SetOfItems);
     const [firstPanel, secondPanel] = fixture.debugElement
       .queryAll(By.directive(CdkAccordionItem))
-      .map(el => {
-        return el.injector.get(CdkAccordionItem) as CdkAccordionItem;
-      });
+      .map(el => el.injector.get<CdkAccordionItem>(CdkAccordionItem));
 
     fixture.componentInstance.multi = true;
     fixture.detectChanges();

@@ -157,7 +157,8 @@ describe('CdkTextareaAutosize', () => {
     // detection should be triggered after a multiline content is set.
     fixture = TestBed.createComponent(AutosizeTextAreaWithContent);
     textarea = fixture.nativeElement.querySelector('textarea');
-    autosize = fixture.debugElement.query(By.css('textarea')).injector.get(CdkTextareaAutosize);
+    autosize = fixture.debugElement.query(By.css('textarea'))
+        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixture.componentInstance.content = `
       Line
@@ -223,7 +224,7 @@ describe('CdkTextareaAutosize', () => {
     const fixtureWithoutAutosize = TestBed.createComponent(AutosizeTextareaWithoutAutosize);
     textarea = fixtureWithoutAutosize.nativeElement.querySelector('textarea');
     autosize = fixtureWithoutAutosize.debugElement.query(By.css('textarea'))
-        .injector.get(CdkTextareaAutosize);
+        .injector.get<CdkTextareaAutosize>(CdkTextareaAutosize);
 
     fixtureWithoutAutosize.detectChanges();
 

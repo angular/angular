@@ -184,7 +184,8 @@ describe('MatTooltip', () => {
 
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
-      tooltipDirective = fixture.debugElement.query(By.css('button')).injector.get(MatTooltip);
+      tooltipDirective = fixture.debugElement.query(By.css('button'))
+          .injector.get<MatTooltip>(MatTooltip);
 
       tooltipDirective.show();
       fixture.detectChanges();

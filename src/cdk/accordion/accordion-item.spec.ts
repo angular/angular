@@ -28,7 +28,7 @@ describe('CdkAccordionItem', () => {
       fixture = TestBed.createComponent(SingleItem);
       item = fixture.debugElement
         .query(By.directive(CdkAccordionItem))
-        .injector.get(CdkAccordionItem);
+        .injector.get<CdkAccordionItem>(CdkAccordionItem);
     });
 
     describe('that is not disabled', () => {
@@ -182,9 +182,7 @@ describe('CdkAccordionItem', () => {
       fixture = TestBed.createComponent(ItemGroupWithoutAccordion);
       [firstItem, secondItem] = fixture.debugElement
         .queryAll(By.directive(CdkAccordionItem))
-        .map(el => {
-          return el.injector.get(CdkAccordionItem) as CdkAccordionItem;
-        });
+        .map(el => el.injector.get<CdkAccordionItem>(CdkAccordionItem));
     });
 
     it('should not change expanded state based on unrelated items', () => {
@@ -225,9 +223,7 @@ describe('CdkAccordionItem', () => {
       fixture = TestBed.createComponent(ItemGroupWithAccordion);
       [firstItem, secondItem] = fixture.debugElement
         .queryAll(By.directive(CdkAccordionItem))
-        .map(el => {
-          return el.injector.get(CdkAccordionItem) as CdkAccordionItem;
-        });
+        .map(el => el.injector.get<CdkAccordionItem>(CdkAccordionItem));
     });
 
     it('should change expanded state based on related items', () => {
