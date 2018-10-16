@@ -18,6 +18,7 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, generatedFactoryTransform} from './shims';
+import {SummaryGenerator} from './shims/src/summary';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
@@ -56,12 +57,11 @@ export class NgtscProgram implements api.Program {
     let rootFiles = [...rootNames];
     if (shouldGenerateShims) {
       // Summary generation.
+      const summaryGenerator = SummaryGenerator.forRootFiles(rootNames);
 
       // Factory generation.
       const factoryGenerator = FactoryGenerator.forRootFiles(rootNames);
       const factoryFileMap = factoryGenerator.factoryFileMap;
-      const factoryFileNames = Array.from(factoryFileMap.keys());
-      rootFiles.push(...factoryFileNames);
       this.factoryToSourceInfo = new Map<string, FactoryInfo>();
       this.sourceToFactorySymbols = new Map<string, Set<string>>();
       factoryFileMap.forEach((sourceFilePath, factoryPath) => {
@@ -69,7 +69,10 @@ export class NgtscProgram implements api.Program {
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
         this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
-      this.host = new GeneratedShimsHostWrapper(host, [factoryGenerator]);
+
+      const factoryFileNames = Array.from(factoryFileMap.keys());
+      rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
+      this.host = new GeneratedShimsHostWrapper(host, [summaryGenerator, factoryGenerator]);
     }
 
     this.tsProgram =

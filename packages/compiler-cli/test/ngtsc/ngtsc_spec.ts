@@ -572,6 +572,35 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 
+  it('should generate correct summary stubs for a test module', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        export class NotAModule {}
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    env.write('empty.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class NotAModule {}
+    `);
+
+    env.driveMain();
+
+    const summaryContents = env.getContents('test.ngsummary.js');
+    expect(summaryContents).toContain(`export var TestModuleNgSummary = null;`);
+    expect(summaryContents).not.toContain('NotAModuleNgSummary');
+
+    const emptySummary = env.getContents('empty.ngsummary.js');
+    expect(emptySummary).toContain(`export var ɵempty = null;`);
+  });
+
   it('should compile a banana-in-a-box inside of a template', () => {
     env.tsconfig();
     env.write('test.ts', `
