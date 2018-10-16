@@ -27,6 +27,34 @@ const TEST_PROGRAM = {
   `
 };
 
+const INTERNAL_COMPONENT_PROGRAM = [
+  {
+    name: 'entrypoint.js',
+    contents: `
+    import {Component, NgModule} from '@angular/core';
+    import {ImportedComponent} from './component';
+
+    export class LocalComponent {}
+    LocalComponent.decorators = [{type: Component}];
+
+    export class MyModule {}
+    MyModule.decorators = [{type: NgModule, args: [{
+                declarations: [ImportedComponent, LocalComponent],
+                exports: [ImportedComponent, LocalComponent],
+            },] }];
+  `
+  },
+  {
+    name: 'component.js',
+    contents: `
+    import {Component} from '@angular/core';
+    export class ImportedComponent {}
+    ImportedComponent.decorators = [{type: Component}];
+  `,
+    isRoot: false,
+  }
+];
+
 function createTestHandler() {
   const handler = jasmine.createSpyObj<DecoratorHandler<any, any>>('TestDecoratorHandler', [
     'detect',
@@ -79,9 +107,9 @@ describe('DecorationAnalyzer', () => {
 
     it('should return an object containing the classes that were analyzed', () => {
       const file = program.getSourceFile(TEST_PROGRAM.name) !;
-      const analysis = result.get(file) !;
-      expect(analysis.analyzedClasses.length).toEqual(1);
-      expect(analysis.analyzedClasses[0].name).toEqual('MyComponent');
+      const compiledFile = result.get(file) !;
+      expect(compiledFile.compiledClasses.length).toEqual(1);
+      expect(compiledFile.compiledClasses[0].name).toEqual('MyComponent');
     });
 
     it('should analyze and compile the classes that are detected', () => {
@@ -90,6 +118,42 @@ describe('DecorationAnalyzer', () => {
 
       expect(testHandler.compile).toHaveBeenCalledTimes(1);
       expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
+    });
+
+    describe('internal components', () => {
+      // The problem of exposing the type of these internal components in the .d.ts typing files
+      // is not yet solved.
+      it('should analyze an internally imported component, which is not publicly exported from the entry-point',
+         () => {
+           const program = makeProgram(...INTERNAL_COMPONENT_PROGRAM);
+           const analyzer = new DecorationAnalyzer(
+               program.getTypeChecker(), new Esm2015ReflectionHost(false, program.getTypeChecker()),
+               [''], false);
+           const testHandler = createTestHandler();
+           analyzer.handlers = [testHandler];
+           const result = analyzer.analyzeProgram(program);
+           const file = program.getSourceFile('component.js') !;
+           const analysis = result.get(file) !;
+           expect(analysis).toBeDefined();
+           const ImportedComponent =
+               analysis.compiledClasses.find(f => f.name === 'ImportedComponent') !;
+           expect(ImportedComponent).toBeDefined();
+         });
+
+      it('should analyze an internally defined component, which is not exported at all', () => {
+        const program = makeProgram(...INTERNAL_COMPONENT_PROGRAM);
+        const analyzer = new DecorationAnalyzer(
+            program.getTypeChecker(), new Esm2015ReflectionHost(false, program.getTypeChecker()),
+            [''], false);
+        const testHandler = createTestHandler();
+        analyzer.handlers = [testHandler];
+        const result = analyzer.analyzeProgram(program);
+        const file = program.getSourceFile('entrypoint.js') !;
+        const analysis = result.get(file) !;
+        expect(analysis).toBeDefined();
+        const LocalComponent = analysis.compiledClasses.find(f => f.name === 'LocalComponent') !;
+        expect(LocalComponent).toBeDefined();
+      });
     });
   });
 });

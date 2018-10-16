@@ -10,10 +10,8 @@ import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
 import {reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {getNameText, getOriginalSymbol, isDefined} from '../utils';
+import {getNameText} from '../utils';
 
-import {DecoratedClass} from './decorated_class';
-import {DecoratedFile} from './decorated_file';
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 
 
@@ -125,41 +123,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return {node, body: statements || null, parameters};
   }
 
-  /**
-     * Find all the files accessible via an entry-point, that contain decorated classes.
-     * @param entryPoint The starting point file for finding files that contain decorated classes.
-     * @returns A collection of files objects that hold info about the decorated classes and import
-     * information.
-     */
-  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile> {
-    const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
-    const map = new Map<ts.SourceFile, DecoratedFile>();
-    const getParsedClass = (declaration: ts.VariableDeclaration) => {
-      const decorators = this.getDecoratorsOfDeclaration(declaration);
-      if (decorators) {
-        return new DecoratedClass(getNameText(declaration.name), declaration, decorators);
-      }
-    };
-
-    if (moduleSymbol) {
-      const classDeclarations = this.checker.getExportsOfModule(moduleSymbol)
-                                    .map(getOriginalSymbol(this.checker))
-                                    .map(exportSymbol => exportSymbol.valueDeclaration)
-                                    .filter(isDefined)
-                                    .filter(ts.isVariableDeclaration);
-
-      const decoratedClasses = classDeclarations.map(getParsedClass).filter(isDefined);
-
-      decoratedClasses.forEach(clazz => {
-        const file = clazz.declaration.getSourceFile();
-        if (!map.has(file)) {
-          map.set(file, new DecoratedFile(file));
-        }
-        map.get(file) !.decoratedClasses.push(clazz);
-      });
-    }
-    return map;
-  }
 
   ///////////// Protected Helpers /////////////
 
