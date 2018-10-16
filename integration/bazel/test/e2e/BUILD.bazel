@@ -18,7 +18,7 @@ ts_library(
     srcs = ["on-prepare.ts"],
     tsconfig = ":tsconfig.json",
     deps = [
-        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//@angular/bazel",
         "@npm//@types",
         "@npm//protractor",
     ],
@@ -28,7 +28,7 @@ protractor_web_test_suite(
     name = "devserver_test",
     configuration = "//:protractor.conf.js",
     data = [
-        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//@angular/bazel",
         "@npm//protractor",
     ],
     on_prepare = ":ts_on_prepare",
@@ -40,7 +40,7 @@ protractor_web_test_suite(
     name = "prodserver_test",
     configuration = "//:protractor.conf.js",
     data = [
-        "@angular//packages/bazel/src/protractor/utils",
+        "@npm//@angular/bazel",
         "@npm//protractor",
     ],
     on_prepare = ":ts_on_prepare",

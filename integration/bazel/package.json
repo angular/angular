@@ -4,23 +4,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "reflect-metadata": "0.1.12",
-    "rxjs": "6.0.0",
-    "tslib": "1.9.3",
-    "zone.js": "0.8.26"
-  },
-  "devDependencies": {
-    "@bazel/karma": "0.20.2",
-    "@bazel/typescript": "0.20.2",
-    "@types/jasmine": "2.8.8",
-    "@types/source-map": "0.5.1",
-    "protractor": "5.1.2",
-    "shelljs": "^0.8.2",
-    "tsickle": "0.32.0",
-    "typescript": "3.0.1"
   },
   "scripts": {
-    "//": "TODO(gmagolan): figure out how to keep dependencies here up to date with the root package.json",
+    "//": "deps are listed in src/package.json which is used by yarn_install",
     "test": "bazel build ... --noshow_progress && bazel test ..."
   }
 }

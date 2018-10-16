@@ -16,6 +16,9 @@ load(
 )
 load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "collect_node_modules_aspect")
 
+_DEFAULT_COMPILER = "@angular//:@angular/bazel/ngc-wrapped"
+_DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
+
 def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
 
@@ -358,7 +361,7 @@ def ngc_compile_action(
         ctx.actions.run(
             inputs = list(inputs),
             outputs = messages_out,
-            executable = ctx.executable._ng_xi18n,
+            executable = ctx.executable.ng_xi18n,
             arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
                          [tsconfig_file.path] +
                          # The base path is bin_dir because of the way the ngc
@@ -521,12 +524,21 @@ NG_MODULE_ATTRIBUTES = {
     "inline_resources": attr.bool(default = True),
     "no_i18n": attr.bool(default = False),
     "compiler": attr.label(
-        default = Label("//packages/bazel/src/ngc-wrapped"),
+        doc = """Sets a different ngc compiler binary to use for this library.
+
+        The default ngc compiler depends on the `@npm//@angular/bazel`
+        target which is setup for projects that use bazel managed npm deps that
+        fetch the @angular/bazel npm package. It is recommended that you use
+        the workspace name `@npm` for bazel managed deps so the default
+        compiler works out of the box. Otherwise, you'll have to override
+        the compiler attribute manually.
+        """,
+        default = Label(_DEFAULT_COMPILER),
         executable = True,
         cfg = "host",
     ),
-    "_ng_xi18n": attr.label(
-        default = Label("//packages/bazel/src/ngc-wrapped:xi18n"),
+    "ng_xi18n": attr.label(
+        default = Label(_DEFAULT_NG_XI18N),
         executable = True,
         cfg = "host",
     ),
