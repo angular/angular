@@ -9,5 +9,5 @@
 /// <reference types="node" />
 
 export {FactoryGenerator} from './src/generator';
-export {GeneratedFactoryHostWrapper} from './src/host';
+export {GeneratedShimsHostWrapper} from './src/host';
 export {FactoryInfo, generatedFactoryTransform} from './src/transform';
