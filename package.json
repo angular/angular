@@ -113,7 +113,6 @@
     "mock-fs": "^4.5.0",
     "mutation-observer": "^1.0.3",
     "node-uuid": "1.4.8",
-    "protobufjs": "5.0.0",
     "protractor": "5.1.2",
     "rewire": "2.5.2",
     "rollup": "0.47.4",

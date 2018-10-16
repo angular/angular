@@ -52,6 +52,10 @@ protractor_web_test(
     data = [
         "//packages/bazel/src/protractor/utils",
         "//packages/benchpress",
+        "@ngdeps//node-uuid",
+        "@ngdeps//protractor",
+        "@ngdeps//reflect-metadata",
+        "@ngdeps//yargs",
     ],
     on_prepare = ":protractor.on-prepare.js",
     server = ":devserver",
