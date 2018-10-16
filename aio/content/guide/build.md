@@ -8,7 +8,7 @@
 
 You can define different named build configurations for your project, such as *stage* and *production*, with different defaults. 
 
-Each named build configuration can have defaults for any of the options that apply to the various build targets, such as `build`, `serve`, and `test`. The CLI `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
+Each named build configuration can have defaults for any of the options that apply to the various build targets, such as `build`, `serve`, and `test`. The [Angular CLI](cli) `build`, `serve`, and `test` commands can then replace files with appropriate versions for your intended target environment.
 
 The following figure shows how a project has multiple build targets, which can be executed using the named configurations that you define.
 
