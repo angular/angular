@@ -276,7 +276,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
    * compiler. The property should never be read.
    */
-  readonly _?: any;
+  readonly _?: never;
 }
 
 /**
