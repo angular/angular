@@ -68,7 +68,7 @@ See an example in the [DI Cookbook](guide/dependency-injection-in-action#forward
 
 ### Create an injectable service class
 
-The [**Angular CLI**](https://cli.angular.io/) can generate a new `HeroService` class in the `src/app/heroes` folder with this command.
+The [Angular CLI](cli) can generate a new `HeroService` class in the `src/app/heroes` folder with this command.
 
 <code-example language="sh" class="code-shell">
 ng generate service heroes/hero
