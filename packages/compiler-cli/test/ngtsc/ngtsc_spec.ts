@@ -469,7 +469,7 @@ describe('ngtsc behavioral tests', () => {
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('onChange', ['arg'])
+          @HostListener('change', ['arg1', 'arg2', 'arg3'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -483,8 +483,51 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents)
         .toContain(
             'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵload(dirIndex).someClass))');
-    expect(jsContents).toContain('i0.ɵload(dirIndex).onClick($event)');
-    expect(jsContents).toContain('i0.ɵload(dirIndex).onChange(i0.ɵload(dirIndex).arg)');
+
+    const factoryDef = `
+      factory: function FooCmp_Factory(t) {
+        var f = new (t || FooCmp)();
+        i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) {
+          return f.onClick($event);
+        });
+        i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) {
+          return f.onChange(f.arg1, f.arg2, f.arg3);
+        });
+        return f;
+      }
+    `;
+    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
+  });
+
+  it('should generate host listeners for directives with base factories', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Directive, HostListener} from '@angular/core';
+
+        class Base {}
+
+        @Directive({
+          selector: '[test]',
+        })
+        class Dir extends Base {
+          @HostListener('change', ['arg'])
+          onChange(event: any, arg: any): void {}
+        }
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    const factoryDef = `
+      factory: function Dir_Factory(t) {
+        var f = ɵDir_BaseFactory((t || Dir));
+        i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) {
+          return f.onChange(f.arg);
+        });
+        return f;
+      }
+    `;
+    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
+    expect(jsContents).toContain('var ɵDir_BaseFactory = i0.ɵgetInheritedFactory(Dir)');
   });
 
   it('should correctly recognize local symbols', () => {

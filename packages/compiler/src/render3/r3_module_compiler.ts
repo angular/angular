@@ -102,6 +102,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     type: meta.type,
     deps: meta.deps,
     injectFn: R3.inject,
+    extraStatementFn: null,
   });
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression({
     factory: result.factory,
