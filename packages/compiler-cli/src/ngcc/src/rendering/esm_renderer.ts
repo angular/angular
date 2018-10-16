@@ -7,17 +7,16 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {DtsMapper} from '../host/dts_mapper';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
-import {AnalyzedClass} from '../analysis/decoration_analyzer';
+import {CompiledClass} from '../analysis/decoration_analyzer';
 import {Renderer} from './renderer';
 
 export class EsmRenderer extends Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
       protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-        protected targetPath: string, dtsMapper: DtsMapper|null) {
-    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath, dtsMapper);
+      protected targetPath: string) {
+    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath);
   }
 
   /**
@@ -45,10 +44,10 @@ export class EsmRenderer extends Renderer {
   /**
    * Add the definitions to each decorated class
    */
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void {
-    const classSymbol = this.host.getClassSymbol(analyzedClass.declaration);
+  addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
+    const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
     if (!classSymbol) {
-      throw new Error(`Analyzed class does not have a valid symbol: ${analyzedClass.name}`);
+      throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
     }
     const insertionPoint = classSymbol.valueDeclaration !.getEnd();
     output.appendLeft(insertionPoint, '\n' + definitions);

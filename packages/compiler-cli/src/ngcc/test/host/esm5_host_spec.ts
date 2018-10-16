@@ -432,6 +432,7 @@ const DECORATED_FILES = [
     name: '/primary.js',
     contents: `
     import {Directive} from '@angular/core';
+    import { D } from '/secondary';
     var A = (function() {
       function A() {}
       A.decorators = [
@@ -453,7 +454,6 @@ const DECORATED_FILES = [
       return C;
     });
     export { A, x, C };
-    export { D } from '/secondary';
     `
   },
   {
@@ -1252,26 +1252,27 @@ describe('Esm5ReflectionHost', () => {
     });
   });
 
-  describe('fileDecoratedFiles()', () => {
-    it('should return an array of objects for each file that has exported and decorated classes',
-       () => {
-         const program = makeProgram(...DECORATED_FILES);
-         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
-         const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
-         const decoratedFiles = host.findDecoratedFiles(primary);
-         expect(decoratedFiles.size).toEqual(2);
-         const primaryClasses = decoratedFiles.get(primary) !.decoratedClasses;
-         expect(primaryClasses.length).toEqual(1);
-         const classA = primaryClasses.find(c => c.name === 'A') !;
-         expect(classA.name).toEqual('A');
-         expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+  describe('findDecoratedClasses()', () => {
+    it('should return an array of all decorated classes in the given source file', () => {
+      const program = makeProgram(...DECORATED_FILES);
+      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const primary = program.getSourceFile(DECORATED_FILES[0].name) !;
 
-         const secondary = program.getSourceFile(DECORATED_FILES[1].name) !;
-         const secondaryClasses = decoratedFiles.get(secondary) !.decoratedClasses;
-         expect(secondaryClasses.length).toEqual(1);
-         const classD = secondaryClasses.find(c => c.name === 'D') !;
-         expect(classD.name).toEqual('D');
-         expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-       });
+      const primaryDecoratedClasses = host.findDecoratedClasses(primary);
+      expect(primaryDecoratedClasses.length).toEqual(2);
+      const classA = primaryDecoratedClasses.find(c => c.name === 'A') !;
+      expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      // Note that `B` is not exported from `primary.js`
+      const classB = primaryDecoratedClasses.find(c => c.name === 'B') !;
+      expect(classB.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+
+      const secondary = program.getSourceFile(DECORATED_FILES[1].name) !;
+      const secondaryDecoratedClasses = host.findDecoratedClasses(secondary);
+      expect(secondaryDecoratedClasses.length).toEqual(1);
+      // Note that `D` is exported from `secondary.js` but not exported from `primary.js`
+      const classD = secondaryDecoratedClasses.find(c => c.name === 'D') !;
+      expect(classD.name).toEqual('D');
+      expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+    });
   });
 });
