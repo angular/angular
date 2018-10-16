@@ -85,8 +85,8 @@ export class Transformer {
 
     console.time(entryPoint.name + '(rendering)');
     // Transform the source files and source maps.
-    const renderer =
-        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile);
+    const renderer = this.getRenderer(
+        format, packageProgram, reflectionHost, isCore, r3SymbolsFile, transformDts);
     const renderedFiles =
         renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
     console.timeEnd(entryPoint.name + '(rendering)');
@@ -125,14 +125,14 @@ export class Transformer {
 
   getRenderer(
       format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null): Renderer {
+      rewriteCoreImportsTo: ts.SourceFile|null, transformDts: boolean): Renderer {
     switch (format) {
       case 'esm2015':
       case 'esm5':
       case 'fesm2015':
       case 'fesm5':
         return new EsmRenderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
