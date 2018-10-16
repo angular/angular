@@ -1,11 +1,18 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
 
 /* tslint:disable:quotemark */
 describe('Elements', () => {
   const messageInput = element(by.css('input'));
   const popupButtons = element.all(by.css('button'));
+
+  // Helpers
+  const click = (elem: ElementFinder) => {
+    // Waiting for the element to be clickable, makes the tests less flaky.
+    browser.wait(EC.elementToBeClickable(elem), 5000);
+    elem.click();
+  };
 
   beforeEach(() => browser.get(''));
 
@@ -17,7 +24,7 @@ describe('Elements', () => {
     it('should be displayed on button click', () => {
       expect(popupComponent.isPresent()).toBe(false);
 
-      popupComponentButton.click();
+      click(popupComponentButton);
       expect(popupComponent.isPresent()).toBe(true);
     });
 
@@ -25,7 +32,7 @@ describe('Elements', () => {
       messageInput.clear();
       messageInput.sendKeys('Angular rocks!');
 
-      popupComponentButton.click();
+      click(popupComponentButton);
       expect(popupComponent.getText()).toContain('Popup: Angular rocks!');
     });
 
@@ -33,7 +40,7 @@ describe('Elements', () => {
       popupComponentButton.click();
       expect(popupComponent.isPresent()).toBe(true);
 
-      closeButton.click();
+      click(closeButton);
       expect(popupComponent.isPresent()).toBe(false);
     });
   });
@@ -46,7 +53,7 @@ describe('Elements', () => {
     it('should be displayed on button click', () => {
       expect(popupElement.isPresent()).toBe(false);
 
-      popupElementButton.click();
+      click(popupElementButton);
       expect(popupElement.isPresent()).toBe(true);
     });
 
@@ -54,7 +61,7 @@ describe('Elements', () => {
       messageInput.clear();
       messageInput.sendKeys('Angular rocks!');
 
-      popupElementButton.click();
+      click(popupElementButton);
       expect(popupElement.getText()).toContain('Popup: Angular rocks!');
     });
 
@@ -62,7 +69,7 @@ describe('Elements', () => {
       popupElementButton.click();
       expect(popupElement.isPresent()).toBe(true);
 
-      closeButton.click();
+      click(closeButton);
       expect(popupElement.isPresent()).toBe(false);
     });
   });
