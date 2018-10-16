@@ -49,6 +49,11 @@ export interface R3ConstructorFactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
+
+  /**
+   * Function that allows extra statements to be inserted into factory function.
+   */
+  extraStatementFn: ((instance: o.Expression) => o.Statement[])|null;
 }
 
 export enum R3FactoryDelegateType {
@@ -189,8 +194,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
         ]);
 
     statements.push(delegateFactoryStmt);
-    const r = makeConditionalFactory(delegateFactory.callFn([]));
-    retExpr = r;
+    retExpr = makeConditionalFactory(delegateFactory.callFn([]));
   } else if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
@@ -204,8 +208,20 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   } else if (isExpressionFactoryMetadata(meta)) {
     // TODO(alxhub): decide whether to lower the value here or in the caller
     retExpr = makeConditionalFactory(meta.expression);
+  } else if (meta.extraStatementFn) {
+    // if extraStatementsFn is specified and the 'makeConditionalFactory' function
+    // was not invoked, we need to create a reference to the instance, so we can
+    // pass it as an argument to the 'extraStatementFn' function while calling it
+    const variable = o.variable('f');
+    body.push(variable.set(ctorExpr).toDeclStmt());
+    retExpr = variable;
   } else {
     retExpr = ctorExpr;
+  }
+
+  if (meta.extraStatementFn) {
+    const extraStmts = meta.extraStatementFn(retExpr);
+    body.push(...extraStmts);
   }
 
   return {
