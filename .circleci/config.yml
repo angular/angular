@@ -121,6 +121,9 @@ jobs:
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
 # one job depends on another.
+#
+# NOTE: When updating this configuration section, make sure to update GitHub robot
+#       config to match the new workflow jobs.
 # ----------------------------------------------------------------------------------------
 workflows:
   version: 2
