@@ -61,6 +61,7 @@ buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
     || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
 ]] && exit 0
 
+# TODO: do we actually need to query for jit and local targets? shouldn't this be all the packages that we publish to npm?
 IVY_JIT_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-jit.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 IVY_LOCAL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-local.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 

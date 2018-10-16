@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
     ),
@@ -22,7 +22,6 @@ jasmine_node_test(
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
     tags = [
-        "ivy-local",
         "ivy-only",
     ],
     deps = [

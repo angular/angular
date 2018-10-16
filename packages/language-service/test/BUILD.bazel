@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -22,7 +22,10 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "//packages/forms:npm_package",
     ],
-    # disable since tests are running but not yet passing
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
         "//tools/testing:node",

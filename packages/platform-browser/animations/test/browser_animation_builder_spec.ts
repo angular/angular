@@ -12,8 +12,8 @@ import {Component, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-import {BrowserAnimationBuilder} from '../../animations/src/animation_builder';
 import {el} from '../../testing/src/browser_util';
+import {BrowserAnimationBuilder} from '../src/animation_builder';
 
 {
   describe('BrowserAnimationBuilder', () => {
