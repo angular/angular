@@ -14,7 +14,7 @@ import {FactoryGenerator} from './generator';
 /**
  * A wrapper around a `ts.CompilerHost` which supports generated files.
  */
-export class GeneratedFactoryHostWrapper implements ts.CompilerHost {
+export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   constructor(
       private delegate: ts.CompilerHost, private generator: FactoryGenerator,
       private factoryToSourceMap: Map<string, string>) {
