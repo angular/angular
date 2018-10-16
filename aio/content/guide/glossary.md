@@ -130,10 +130,10 @@ A [decorator](guide/glossary#decorator) statement immediately before a field in 
 
 ## command-line interface (CLI)
 
-The [Angular CLI](https://cli.angular.io/) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
+The [Angular CLI](cli) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
 * To begin using the CLI for a new project, see [Getting Started](guide/quickstart).
-* To learn more about the full capabilities of the CLI, see the [Angular CLI documentation](https://github.com/angular/angular-cli/wiki).
+* To learn more about the full capabilities of the CLI, see the [CLI command reference](cli).
 
 {@a component}
 
@@ -621,8 +621,7 @@ For more information, see [Routing and Navigation](guide/router).
 A scaffolding library that defines how to generate or transform a programming project by creating, modifying, refactoring, or moving files and code. 
 The Angular [CLI](guide/glossary#cli) uses schematics to generate and modify [Angular projects](guide/glossary#project) and parts of projects.
 
-* Angular provides a set of schematics for use with the CLI. 
-For details, see [Angular CLI documentation](https://github.com/angular/angular-cli/wiki).
+* Angular provides a set of schematics for use with the CLI. See the [Angular CLI command reference](cli). The [`ng add`](cli/add) command runs schematics as part of adding a library to your project. The [`ng generate`](cli/generate) command runs schematics to create apps, libraries, and Angular code constructs. 
 
 * Library developers can create schematics that enable the CLI to generate their published libraries.
 For more information, see [devkit documentation](https://www.npmjs.com/package/@angular-devkit/schematics). 
@@ -785,7 +784,7 @@ See [custom element](guide/glossary#custom-element).
 ## workspace
 
 In Angular, a folder that contains [projects](guide/glossary#project) (that is, apps and libraries).
-The [CLI](guide/glossary#cli) `new` command creates a workspace to contain projects. 
+The [CLI](guide/glossary#cli) `ng new` command creates a workspace to contain projects. 
 Commands that create or operate on apps and libraries (such as `add` and `generate`) must be executed from within a workspace folder. 
 
 {@a X}
