@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as path from 'canonical-path';
-import {existsSync, lstatSync, readFileSync, readdirSync} from 'fs';
 import * as yargs from 'yargs';
 
 import {DependencyHost} from './packages/dependency_host';
@@ -48,8 +47,14 @@ export function mainNgcc(args: string[]): number {
 
   try {
     const {entryPoints} = finder.findEntryPoints(sourcePath);
-    entryPoints.forEach(
-        entryPoint => formats.forEach(format => transformer.transform(entryPoint, format)));
+    entryPoints.forEach(entryPoint => {
+      // We transform the d.ts typings files while transforming one of the formats.
+      // This variable decides with which of the available formats to do this transform.
+      // It is marginally faster to process via the flat file if available.
+      const dtsTranformFormat: EntryPointFormat = entryPoint.fesm2015 ? 'fesm2015' : 'esm2015';
+      formats.forEach(
+          format => transformer.transform(entryPoint, format, format === dtsTranformFormat));
+    });
   } catch (e) {
     console.error(e.stack);
     return 1;
