@@ -4,13 +4,11 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_sui
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [
             "**/*_node_only_spec.ts",
-            "render3/**/*.ts",
-            "ivy_local_empty_spec.ts",
         ],
     ),
     deps = [
@@ -36,17 +34,8 @@ ts_library(
 )
 
 ts_library(
-    name = "ivy_local_empty_lib",
-    testonly = 1,
-    srcs = ["ivy_local_empty_spec.ts"],
-    deps = [
-        "//packages:types",
-    ],
-)
-
-ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*_node_only_spec.ts"]),
     deps = [
         ":test_lib",
@@ -62,6 +51,10 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
@@ -74,21 +67,12 @@ jasmine_node_test(
     ],
 )
 
-jasmine_node_test(
-    name = "ivy_local_empty_test",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
-    tags = [
-        "ivy-local",
-        "ivy-only",
-    ],
-    deps = [
-        ":ivy_local_empty_lib",
-        "//tools/testing:node_no_angular",
-    ],
-)
-
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],

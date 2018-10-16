@@ -6,21 +6,28 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
-        "//packages/service-worker",
-        "//packages/service-worker/testing",
-        "//packages/service-worker/worker",
-        "//packages/service-worker/worker/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
         "@rxjs",
-        "@rxjs//operators",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    tags = ["fixme-ivy-local"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
         "//tools/testing:node",
@@ -29,7 +36,10 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "test_web",
-    tags = ["fixme-ivy-local"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],

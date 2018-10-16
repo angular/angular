@@ -23,8 +23,6 @@ ng_package(
     srcs = ["package.json"],
     entry_point = "packages/forms/index.js",
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
     ],
     deps = [
