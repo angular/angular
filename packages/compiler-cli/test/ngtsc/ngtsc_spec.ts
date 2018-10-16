@@ -469,7 +469,7 @@ describe('ngtsc behavioral tests', () => {
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('onChange', ['arg'])
+          @HostListener('onChange', ['arg1', 'arg2', 'arg3'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -488,12 +488,10 @@ describe('ngtsc behavioral tests', () => {
       factory: function FooCmp_Factory(t) {
         var f = new (t || FooCmp)();
         i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) {
-            var pd_b = (f.onClick($event) !== false);
-            return pd_b;
+          return f.onClick($event);
         });
         i0.ɵlistener("onChange", function FooCmp_onChange_HostBindingHandler($event) {
-            var pd_b = (f.onChange(f.arg) !== false);
-            return pd_b;
+          return f.onChange(f.arg1, f.arg2, f.arg3);
         });
         return f;
       }
@@ -501,7 +499,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
   });
 
-  it('should generate host bindings for directives with base factories', () => {
+  it('should generate host listeners for directives with base factories', () => {
     env.tsconfig();
     env.write(`test.ts`, `
         import {Directive, HostListener} from '@angular/core';
@@ -523,8 +521,7 @@ describe('ngtsc behavioral tests', () => {
       factory: function Dir_Factory(t) {
         var f = ɵDir_BaseFactory((t || Dir));
         i0.ɵlistener("onChange", function Dir_onChange_HostBindingHandler($event) {
-            var pd_b = (f.onChange(f.arg) !== false);
-            return pd_b;
+          return f.onChange(f.arg);
         });
         return f;
       }

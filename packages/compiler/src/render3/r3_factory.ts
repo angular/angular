@@ -351,7 +351,7 @@ function generateHostListeners(
         typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
     const handler = o.fn(
         [new o.FnParam('$event', o.DYNAMIC_TYPE)],
-        [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
+        [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
         null, functionName);
     return o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt();
   });
