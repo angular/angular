@@ -79,6 +79,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   private skippedWaiting = true;
 
   private selfMessageQueue: any[] = [];
+  autoAdvanceTime = false;
   // TODO(issue/24571): remove '!'.
   unregistered !: boolean;
   readonly notifications: {title: string, options: Object}[] = [];
@@ -228,7 +229,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }
 
   timeout(ms: number): Promise<void> {
-    return new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       this.timers.push({
         at: this.time + ms,
         duration: ms,
@@ -236,6 +237,12 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         fired: false,
       });
     });
+
+    if (this.autoAdvanceTime) {
+      this.advance(ms);
+    }
+
+    return promise;
   }
 
   advance(by: number): void {
