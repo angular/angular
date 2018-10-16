@@ -253,8 +253,7 @@ The `--prod` _meta-flag_ engages the following optimization features.
 
 The remaining [copy deployment steps](#copy-files) are the same as before.
 
-See [Building and serving Angular apps](guide/build) 
-for more about CLI build options and what they do.
+See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 {@a enable-prod-mode}
 
@@ -410,4 +409,4 @@ ng build --watch
 ```
 Like the `ng serve` command, this regenerates output files when source files change. 
 
-For complete details of the CLI commands and configuration options, see the [CLI command reference](cli).
+For complete details of the CLI commands, see the [CLI command reference](cli).
