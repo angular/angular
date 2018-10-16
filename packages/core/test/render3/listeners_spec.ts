@@ -479,6 +479,42 @@ describe('event listeners', () => {
     expect(events).toEqual(['click!', 'click!']);
   });
 
+  it('should support listeners with specified set of args', () => {
+    class MyComp {
+      counter = 0;
+      data = {a: 1, b: 2};
+
+      onClick(a: any, b: any) { this.counter += a + b; }
+
+      static ngComponentDef = defineComponent({
+        type: MyComp,
+        selectors: [['comp']],
+        consts: 2,
+        vars: 0,
+        /** <button (click)="onClick(data.a, data.b, data.c)"> Click me </button> */
+        template: function CompTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'button');
+            {
+              listener('click', function() { return ctx.onClick(ctx.data.a, ctx.data.b); });
+              text(1, 'Click me');
+            }
+            elementEnd();
+          }
+        },
+        factory: () => new MyComp()
+      });
+    }
+
+    const comp = renderComponent(MyComp);
+    const button = containerEl.querySelector('button') !;
+    button.click();
+    expect(comp.counter).toEqual(3);
+
+    button.click();
+    expect(comp.counter).toEqual(6);
+  });
+
   it('should destroy listeners in nested views', () => {
 
     /**
