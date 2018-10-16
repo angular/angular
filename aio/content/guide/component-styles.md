@@ -164,7 +164,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
+The Angular CLI command [`ng generate component`](cli/generate)] defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style

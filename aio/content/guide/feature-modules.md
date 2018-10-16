@@ -33,7 +33,7 @@ pipes that it shares.
 
 ## How to make a feature module
 
-Assuming you already have a CLI generated app, create a feature
+Assuming you already have an app that you created with the [Angular CLI](cli), create a feature
 module using the CLI by entering the following command in the
 root project directory. Replace `CustomerDashboard` with the
 name of your module. You can omit the "Module" suffix from the name because the CLI appends it:

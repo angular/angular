@@ -99,7 +99,7 @@ A model can be as simple as a "property bag" that holds facts about a thing of a
 That describes well the `Hero` class with its three required fields (`id`, `name`, `power`)
 and one optional field (`alterEgo`).
 
-Using the Angular CLI, generate a new class named `Hero`:
+Using the Angular CLI command [`ng generate class`](cli/generate), generate a new class named `Hero`:
 
 <code-example language="sh" class="code-shell">
 
@@ -132,7 +132,7 @@ An Angular form has two parts: an HTML-based _template_ and a component _class_
 to handle data and user interactions programmatically.
 Begin with the class because it states, in brief, what the hero editor can do.
 
-Using the Angular CLI, generate a new component named `HeroForm`:
+Using the Angular CLI command [`ng generate component`](cli/generate), generate a new component named `HeroForm`:
 
 <code-example language="sh" class="code-shell">
 

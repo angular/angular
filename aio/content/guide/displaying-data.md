@@ -135,7 +135,7 @@ In either style, the template data bindings have the same access to the componen
 
 <div class="alert is-helpful">
   
-  By default, the Angular CLI generates components with a template file. You can override that with:
+  By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
 
   <code-example hideCopy language="sh" class="code-shell">
     ng generate component hero -it
