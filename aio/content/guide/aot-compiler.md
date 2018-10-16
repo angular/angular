@@ -371,45 +371,80 @@ This tells the compiler to print extra information while compiling templates.
 
 ### *disableExpressionLowering*
 
+<!--
 The Angular template compiler transforms code that is used, or could be used, in an annotation
 to allow it to be imported from template factory modules. See
 [metadata rewriting](#metadata-rewriting) for more information.
 
 Setting this option to `false` disables this rewriting, requiring the rewriting to be
 done manually.
+-->
+Angular 템플릿 컴파일러는 어노테이션에 있는 코드 중 이미 사용된 코드나, 앞으로 사용될 수 있는 코드를 템플릿 팩토리 모듈에 처리하기 위해 변환합니다. 자세한 내용은 [메타데이터 재작성](#metadata-rewriting) 부분을 참고하세요.
+
+이 옵션을 `false`로 설정하면 이 동작을 하지 않습니다. 수동으로 이 동작을 해야 할 때 설정하세요.
 
 ### *preserveWhitespaces*
 
+<!--
 This option tells the compiler whether to remove blank text nodes from compiled templates.
 As of v6, this option is `false` by default, which results in smaller emitted template factory modules.
+-->
+이 옵션을 설정하면 컴파일된 템플릿에서 빈 텍스트 노드를 제거합니다. 이 옵션은 Angular v6 버전부터 `false`가 기본값이며, 이 옵션의 값을 `true`로 설정하면 템플릿 팩토리 모듈의 크기를 좀 더 작게 만들 수 있습니다.
 
 ### *allowEmptyCodegenFiles*
 
+<!--
 Tells the compiler to generate all the possible generated files even if they are empty. This option is
 `false` by default. This is an option used by `bazel` build rules and is needed to simplify
 how `bazel` rules track file dependencies. It is not recommended to use this option outside of the `bazel`
 rules.
+-->
+이 옵션을 사용하면 내용이 없는 파일도 컴파일 대상으로 포함할지 지정할 수 있으며, 기본값은 `false`입니다.
+이 옵션은 `bazel`로 빌드할 때 파일의 의존성 관계를 단순하게 만들기 위해 사용합니다. `bazel`로 빌드하지 않는 경우에는 사용하지 않는 것을 권장합니다.
 
 ### *enableIvy*
 
+<!--
 Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
 
 Not all features are supported with this option enabled. It is only supported
 for experimentation and testing of Render3 style code generation.
 
 *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
+-->
+코드를 Render3 스타일로 컴파일할 때 사용하며, 기본값은 `false` 입니다.
+
+아직까지는 이 옵션을 활성화해도 모든 기능을 커버하지 않습니다. Render3 스타일로 컴파일하는 것은 아직 실험중인 기능입니다.
+
+*참고*: Render3 스타일로 컴파일하는 것은 아직 Render2 스타일을 완전히 대체할 수 있는 정도는 아닙니다. 아직은 사용하지 않는 것을 권장합니다.
 
 
+<!--
 ## Angular Metadata and AOT
+-->
+## Angular 메타데이터와 AOT
 
+<!--
 The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.
+-->
+Angular **AOT 컴파일러**는 Angular 애플리케이션에서 관리해야 하는 **메타데이터**를 따로 추출해서 변환합니다.
 
+<!--
 Angular metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
+-->
+Angular의 메타데이터는 이 클래스를 어떻게 생성하는지, 실행 시점에는 이 클래스가 어떻게 동작해야 하는지 지정하는 정보입니다.
 
+<!--
 You specify the metadata with **decorators** such as `@Component()` and `@Input()`.
 You also specify metadata implicitly in the constructor declarations of these decorated classes.
+-->
+메타데이터는 `@Component()`나 `@Input()`과 같이 **데코레이터**를 사용해서 지정할 수 있습니다.
+그리고 클래스의 생성자에도 메타데이터를 지정할 수 있습니다.
 
+<!--
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
+-->
+아래 코드에서 `@Component()`에 지정하는 메타데이터 객체와 클래스 생성자는 Angular가 `TypicalComponent`의 인스턴스를 어떻게 생성하고 처리해야 할지 지정하는 용도로 사용됩니다.
 
 ```typescript
 @Component({
@@ -422,45 +457,91 @@ export class TypicalComponent {
 }
 ```
 
+<!--
 The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
 When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
+-->
+이 코드를 Angular 컴파일러가 처리하면 메타데이터를 추출해서 `TypicalComponent`에 대한 _팩토리_ 를 만듭니다.
+그러면 `TypicalComponent`의 인스턴스가 필요한 시점에 Angular가 팩토리를 실행해서 인스턴스를 생성하며, 이렇게 생성된 인스턴스를 의존성으로 주입합니다.
 
+<!--
 ## Metadata restrictions
+-->
+## 메타데이터의 제약사항
 
+<!--
 You write metadata in a _subset_ of TypeScript that must conform to the following general constraints:
+-->
+메타데이터는 TypeScript의 _하위 집합(subset)_ 이며 보통 다음과 같은 제약사항이 있습니다:
 
+<!--
 1. Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
 2. Only reference exported symbols after [code folding](#folding).
 3. Only call [functions supported](#supported-functions) by the compiler.
 4. Decorated and data-bound class members must be public.
+-->
+1. JavaScript 문법 중 [표현식(expression syntax)](#expression-syntax)은 일부만 사용할 수 있습니다.
+2. [코드를 폴딩](#folding)한 이후에 존재하는 심볼만 참조할 수 있습니다.
+3. 컴파일러가 지원하는 [일부 함수](#supported-functions)만 사용할 수 있습니다.
+4. 데코레이터가 사용되거나 데이터 바인딩되는 클래스 멤버는 public으로 지정되어야 합니다.
 
+<!--
 The next sections elaborate on these points.
+-->
+이 내용에 대해 자세하게 알아봅시다.
 
+<!--
 ## How AOT works
+-->
+## AOT가 동작하는 방식
 
+<!--
 It helps to think of the AOT compiler as having two phases: a code analysis phase in which it simply records a representation of the source; and a code generation phase in which the compiler's `StaticReflector` handles the interpretation as well as places restrictions on what it interprets.
+-->
+AOT 컴파일러의 동작은 두 단계로 나누어 보는 것이 이해하기 편합니다. 첫 번째 단계는 코드를 분석하는 단계이며, 두 번째 단계는 Angular 컴파일러 내부의 `StaticReflector`를 사용해서 코드를 생성하는 단계입니다.
 
+<!--
 ## Phase 1: analysis
+-->
+## 1단계: 분석
 
+<!--
 The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AOT compiler needs to generate application code.
 
 At the same time, the AOT **_collector_** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
 
 You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+-->
+첫번째 단계에서는 TypeScript 컴파일러가 분석과 관련된 작업을 합니다. TypeScript 컴파일러가 코드를 컴파일하고 나면 _타입 정의 파일_ 인 `.d.ts` 파일이 생성되며, 이 정보는 이후에 AOT 컴파일러가 애플리케이션 코드를 생성할 때 사용합니다.
+
+그리고 이 때 AOT **_콜렉터(collector)_**가 각 `.d.ts` 파일에 있는 Angular 데코레이터의 메타데이터를 분석하고 분석한 내용을 **`.metadata.json`** 파일로 생성합니다.
+
+`.metadata.json` 파일은 데코레이터의 메타데이터를 나타내는 청사진이라고도 볼 수 있습니다. [추상 구문 트리(abstract syntax tree, AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree)를 참고하세요.
 
 <div class="alert is-helpful">
 
+<!--
 Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts)
 describes the JSON format as a collection of TypeScript interfaces.
+-->
+Angular가 생성하는 [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts) 파일은 TypeScript 인터페이스를 JSON 형식으로 기술하는 파일입니다.
 
 </div>
 
 {@a expression-syntax}
+<!--
 ### Expression syntax
+-->
+### 표현식 (Expression syntax)
 
+<!--
 The _collector_ only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
+-->
+Angular _콜렉터(collector)_ 는 JavaScript의 하위집합이며 JavaScript 문법 중 일부만 처리할 수 있습니다.
+그래서 메타데이터에는 다음과 같은 문법만 허용됩니다:
 
+<!--
 Syntax                             | Example
 -----------------------------------|-----------------------------------
 Literal object                     | `{cherry: true, apple: true, mincemeat: false}`
@@ -480,13 +561,39 @@ Supported prefix operator          | `!cake`
 Supported Binary operator          | `a + b`
 Conditional operator               | `a ? b : c`
 Parentheses                        | `(a + b)`
+-->
+문법                               | 예제
+-----------------------------------|-----------------------------------
+객체 리터럴                     | `{cherry: true, apple: true, mincemeat: false}`
+배열 리터럴                      | `['cherries', 'flour', 'sugar']`
+배열의 전개연산자            | `['apples', 'flour', ...the_rest]`
+함수 실행                              | `bake(ingredients)`
+new 키워드                                | `new Oven()`
+프로퍼티 참조                    | `pie.slice`
+배열의 인덱스 참조                        | `ingredients[0]`
+심볼 참조               | `Component`
+템플릿 문자열                  | <code>&#96;pie is ${multiplier} times better than cake&#96;</code>
+문자열 리터럴                     | `'pi'`
+숫자 리터럴                     | `3.14153265`
+불리언 리터럴                    | `true`
+null 리터럴                       | `null`
+접두사로 사용하는 연산자          | `!cake`
+이진 연산자          | `a + b`
+삼항연산자               | `a ? b : c`
+괄호                        | `(a + b)`
 
+<!--
 If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
 piece of metadata to generate the application code.
+-->
+만약 이 목록에 해당되지 않은 표현식이 사용되면 _콜렉터_ 가 처리할 수 없기 때문에 에러기 발생하며 `.metadata.json` 파일도 정상적으로 생성되지 않습니다. 결국 애플리케이션 코드를 빌드할 때 에러가 발생합니다.
 
 <div class="alert is-helpful">
 
+<!--
  If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in `tsconfig`.
+-->
+`.metadata.json` 파일에 에러를 출력하는 대신 `ngc`에서 직접 문법 에러가 발생하게 하려면 `tsconfig` 옵션에 `strictMetadataEmit` 옵션을 다음과 같이 설정하세요.
 
 ```
   "angularCompilerOptions": {
@@ -495,18 +602,30 @@ piece of metadata to generate the application code.
  }
  ```
 
+<!--
 Angular libraries have this option to ensure that all Angular `.metadata.json` files are clean and it is a best practice to do the same when building your own libraries.
+-->
+Angular가 제공하는 라이브러리는 모두 이 옵션을 사용하기 때문에 Angular에서 제공하는 모든 `.metadata.json` 파일은 에러 없이 깔끔한 상태입니다. 커스텀 라이브러리를 만드는 경우에도 활용해 보세요.
 
 </div>
 
 {@a function-expression}
 {@a arrow-functions}
+<!--
 ### No arrow functions
+-->
+### 화살표 함수는 사용할 수 없습니다.
 
+<!--
 The AOT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
 and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions.
+-->
+AOT 컴파일러는 [함수 표현식](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)과 [화살표 함수 (람다 함수)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)를 지원하지 않습니다.
 
+<!--
 Consider the following component decorator:
+-->
+다음과 같은 컴포넌트 데코레이터가 있다고 합시다:
 
 ```typescript
 @Component({
@@ -515,12 +634,22 @@ Consider the following component decorator:
 })
 ```
 
+<!--
 The AOT _collector_ does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
+-->
+이 코드에는 AOT _콜렉터_ 가 지원하지 않는 화살표 함수가 `() => new Server()`와 같이 사용되었습니다.
+그러면 이 코드는 제대로 변환되지 못하고 에러 노드로 처리됩니다.
 
+<!--
 When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
+-->
+그리고 이후에 컴파일러가 이 노드를 처리할 때 에러가 발생하기 때문에, 이 화살표 함수는 _export가 사용된 함수_ 로 변경되어야 합니다.
 
+<!--
 You can fix the error by converting to this:
+-->
+이 에러는 다음과 같이 수정하면 해결할 수 있습니다:
 
 ```typescript
 export function serverFactory() {
@@ -533,7 +662,10 @@ export function serverFactory() {
 })
 ```
 
+<!--
 Beginning in version 5, the compiler automatically performs this rewriting while emitting the `.js` file.
+-->
+Angular v5 버전 초기에는 화살표 함수를 변환하는 과정을 컴파일러가 직접 처리했었습니다.
 
 {@a function-calls}
 ### Limited function calls

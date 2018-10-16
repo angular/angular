@@ -580,7 +580,7 @@
             {
               "url": "guide/aot-compiler",
               "title!": "Ahead-of-Time Compilation",
-              "title": "Ahead-of-Time 컴파일",
+              "title": "Ahead-of-Time 컴파일러",
               "tooltip!": "Learn why and how to use the Ahead-of-Time (AOT) compiler.",
               "tooltip": "Ahead-of-Time (AOT) 컴파일러를 왜 사용해야 하는지, 어떻게 사용하는지 알아봅니다."
             },
