@@ -9,15 +9,26 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {FactoryGenerator} from './generator';
+export interface ShimGenerator {
+  /**
+   * Get the original source file for the given shim path, the contents of which determine the
+   * contents of the shim file.
+   *
+   * If this returns `null` then the given file was not a shim file handled by this generator.
+   */
+  getOriginalSourceOfShim(fileName: string): string|null;
+
+  /**
+   * Generate a shim's `ts.SourceFile` for the given original file.
+   */
+  generate(original: ts.SourceFile, genFileName: string): ts.SourceFile;
+}
 
 /**
  * A wrapper around a `ts.CompilerHost` which supports generated files.
  */
 export class GeneratedShimsHostWrapper implements ts.CompilerHost {
-  constructor(
-      private delegate: ts.CompilerHost, private generator: FactoryGenerator,
-      private factoryToSourceMap: Map<string, string>) {
+  constructor(private delegate: ts.CompilerHost, private shimGenerators: ShimGenerator[]) {
     if (delegate.resolveTypeReferenceDirectives) {
       // Backward compatibility with TypeScript 2.9 and older since return
       // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
@@ -38,14 +49,20 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
       onError?: ((message: string) => void)|undefined,
       shouldCreateNewSourceFile?: boolean|undefined): ts.SourceFile|undefined {
     const canonical = this.getCanonicalFileName(fileName);
-    if (this.factoryToSourceMap.has(canonical)) {
-      const sourceFileName = this.getCanonicalFileName(this.factoryToSourceMap.get(canonical) !);
-      const sourceFile = this.delegate.getSourceFile(
-          sourceFileName, languageVersion, onError, shouldCreateNewSourceFile);
-      if (sourceFile === undefined) {
-        return undefined;
+    for (let i = 0; i < this.shimGenerators.length; i++) {
+      const generator = this.shimGenerators[i];
+      const originalFile = generator.getOriginalSourceOfShim(canonical);
+      if (originalFile !== null) {
+        // This shim generator has recognized the filename being requested, and is now responsible
+        // for generating its contents, based on the contents of the original file it has requested.
+        const originalSource = this.delegate.getSourceFile(
+            originalFile, languageVersion, onError, shouldCreateNewSourceFile);
+        if (originalSource === undefined) {
+          // The original requested file doesn't exist, so the shim cannot exist either.
+          return undefined;
+        }
+        return generator.generate(originalSource, fileName);
       }
-      return this.generator.factoryFor(sourceFile, fileName);
     }
     return this.delegate.getSourceFile(
         fileName, languageVersion, onError, shouldCreateNewSourceFile);
@@ -75,7 +92,11 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   getNewLine(): string { return this.delegate.getNewLine(); }
 
   fileExists(fileName: string): boolean {
-    return this.factoryToSourceMap.has(fileName) || this.delegate.fileExists(fileName);
+    const canonical = this.getCanonicalFileName(fileName);
+    // Consider the file as existing whenever 1) it really does exist in the delegate host, or
+    // 2) at least one of the shim generators recognizes it.
+    return this.delegate.fileExists(fileName) ||
+        this.shimGenerators.some(gen => gen.getOriginalSourceOfShim(canonical) !== null);
   }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }

@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="node" />
+const TS_FILE = /\.tsx?$/;
+const D_TS_FILE = /\.d\.ts$/;
 
-export {FactoryGenerator, FactoryInfo, generatedFactoryTransform} from './src/factory_generator';
-export {GeneratedShimsHostWrapper} from './src/host';
+export function isNonDeclarationTsFile(file: string): boolean {
+  return TS_FILE.exec(file) !== null && D_TS_FILE.exec(file) === null;
+}
