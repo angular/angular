@@ -15,9 +15,9 @@ import {nocollapseHack} from '../transformers/nocollapse_hack';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
-import {FactoryGenerator, FactoryInfo, GeneratedFactoryHostWrapper, generatedFactoryTransform} from './factories';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
+import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
@@ -65,7 +65,7 @@ export class NgtscProgram implements api.Program {
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
         this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
-      this.host = new GeneratedFactoryHostWrapper(host, generator, factoryFileMap);
+      this.host = new GeneratedShimsHostWrapper(host, generator, factoryFileMap);
     }
 
     this.tsProgram =
