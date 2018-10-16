@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {readFileSync} from 'fs';
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import} from '../../../ngtsc/host';
@@ -14,8 +13,6 @@ import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/met
 import {findAll, getNameText, getOriginalSymbol, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
-import {DecoratedFile} from './decorated_file';
-import {DtsMapper} from './dts_mapper';
 import {NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -51,8 +48,14 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  *   a static method called `ctorParameters`.
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
-  constructor(protected isCore: boolean, checker: ts.TypeChecker, protected dtsMapper?: DtsMapper) {
+  protected dtsClassMap: Map<string, ts.ClassDeclaration>|null;
+  constructor(
+      protected isCore: boolean, checker: ts.TypeChecker, dtsRootFileName?: string,
+      dtsProgram?: ts.Program|null) {
     super(checker);
+    this.dtsClassMap = (dtsRootFileName && dtsProgram) ?
+        this.computeDtsClassMap(dtsRootFileName, dtsProgram) :
+        null;
   }
 
   /**
@@ -73,12 +76,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (!symbol) {
       return null;
     }
-    const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
-    if (decoratorsProperty) {
-      return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
-    } else {
-      return this.getClassDecoratorsFromHelperCall(symbol);
-    }
+    return this.getDecoratorsOfSymbol(symbol);
   }
 
   /**
@@ -206,10 +204,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (ts.isClassDeclaration(declaration)) {
       return declaration.name && this.checker.getSymbolAtLocation(declaration.name);
     }
-    if (ts.isVariableDeclaration(declaration) && declaration.initializer &&
-        ts.isClassExpression(declaration.initializer)) {
-      return declaration.initializer.name &&
-          this.checker.getSymbolAtLocation(declaration.initializer.name);
+    if (ts.isVariableDeclaration(declaration) && declaration.initializer) {
+      declaration = declaration.initializer;
+    }
+    if (ts.isClassExpression(declaration)) {
+      return declaration.name && this.checker.getSymbolAtLocation(declaration.name);
     }
     return undefined;
   }
@@ -299,46 +298,29 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return super.getImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
   }
 
-  /*
-   * Find all the files accessible via an entry-point, that contain decorated classes.
-   * @param entryPoint The starting point file for finding files that contain decorated classes.
-   * @returns A collection of files objects that hold info about the decorated classes and import
-   * information.
+  /**
+   * Find all the classes that contain decorations in a given file.
+   * @param sourceFile The source file to search for decorated classes.
+   * @returns An array of decorated classes.
    */
-  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile> {
-    const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
-    const map = new Map<ts.SourceFile, DecoratedFile>();
-    if (moduleSymbol) {
-      const exportedSymbols =
-          this.checker.getExportsOfModule(moduleSymbol).map(getOriginalSymbol(this.checker));
-      const exportedDeclarations =
-          exportedSymbols.map(exportSymbol => exportSymbol.valueDeclaration).filter(isDefined);
-
-      const decoratedClasses =
-          exportedDeclarations
-              .map(declaration => {
-                if (ts.isClassDeclaration(declaration) || ts.isVariableDeclaration(declaration)) {
-                  const name = declaration.name && ts.isIdentifier(declaration.name) ?
-                      declaration.name.text :
-                      undefined;
-                  const decorators = this.getDecoratorsOfDeclaration(declaration);
-                  return decorators && isDefined(name) ?
-                      new DecoratedClass(name, declaration, decorators) :
-                      undefined;
-                }
-                return undefined;
-              })
-              .filter(isDefined);
-
-      decoratedClasses.forEach(clazz => {
-        const file = clazz.declaration.getSourceFile();
-        if (!map.has(file)) {
-          map.set(file, new DecoratedFile(file));
+  findDecoratedClasses(sourceFile: ts.SourceFile): DecoratedClass[] {
+    const classes: DecoratedClass[] = [];
+    sourceFile.statements.map(statement => {
+      if (ts.isVariableStatement(statement)) {
+        statement.declarationList.declarations.forEach(declaration => {
+          const decoratedClass = this.getDecoratedClassFromSymbol(this.getClassSymbol(declaration));
+          if (decoratedClass) {
+            classes.push(decoratedClass);
+          }
+        });
+      } else if (ts.isClassDeclaration(statement)) {
+        const decoratedClass = this.getDecoratedClassFromSymbol(this.getClassSymbol(statement));
+        if (decoratedClass) {
+          classes.push(decoratedClass);
         }
-        map.get(file) !.decoratedClasses.push(clazz);
-      });
-    }
-    return map;
+      }
+    });
+    return classes;
   }
 
   /**
@@ -348,21 +330,38 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * is not a class or has an unknown number of type parameters.
    */
   getGenericArityOfClass(clazz: ts.Declaration): number|null {
-    if (this.dtsMapper && ts.isClassDeclaration(clazz) && clazz.name) {
-      const sourcePath = clazz.getSourceFile();
-      const dtsPath = this.dtsMapper.getDtsFileNameFor(sourcePath.fileName);
-      const dtsContents = readFileSync(dtsPath, 'utf8');
-      // TODO: investigate caching parsed .d.ts files as they're needed for several different
-      // purposes in ngcc.
-      const dtsFile = ts.createSourceFile(
-          dtsPath, dtsContents, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+    const dtsClass = this.getDtsDeclarationOfClass(clazz);
+    if (dtsClass) {
+      return dtsClass.typeParameters ? dtsClass.typeParameters.length : 0;
+    }
+    return null;
+  }
 
-      for (let i = dtsFile.statements.length - 1; i >= 0; i--) {
-        const stmt = dtsFile.statements[i];
-        if (ts.isClassDeclaration(stmt) && stmt.name !== undefined &&
-            stmt.name.text === clazz.name.text) {
-          return stmt.typeParameters ? stmt.typeParameters.length : 0;
+  /**
+   * Take an exported declaration of a class (maybe downleveled to a variable) and look up the
+   * declaration of its type in a separate .d.ts tree.
+   *
+   * This function is allowed to return `null` if the current compilation unit does not have a
+   * separate .d.ts tree. When compiling TypeScript code this is always the case, since .d.ts files
+   * are produced only during the emit of such a compilation. When compiling .js code, however,
+   * there is frequently a parallel .d.ts tree which this method exposes.
+   *
+   * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
+   * `ts.Program` as the input declaration.
+   */
+  getDtsDeclarationOfClass(declaration: ts.Declaration): ts.ClassDeclaration|null {
+    if (this.dtsClassMap) {
+      if (ts.isClassDeclaration(declaration)) {
+        if (!declaration.name || !ts.isIdentifier(declaration.name)) {
+          throw new Error(
+              `Cannot get the dts file for a class declaration that has no indetifier: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
         }
+        const dtsDeclaration = this.dtsClassMap.get(declaration.name.text);
+        if (!dtsDeclaration) {
+          throw new Error(
+              `Unable to find matching typings (.d.ts) declaration for ${declaration.name.text} in ${declaration.getSourceFile().fileName}`);
+        }
+        return dtsDeclaration;
       }
     }
     return null;
@@ -370,6 +369,25 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
 
   ///////////// Protected Helpers /////////////
+
+  protected getDecoratorsOfSymbol(symbol: ts.Symbol): Decorator[]|null {
+    const decoratorsProperty = this.getStaticProperty(symbol, DECORATORS);
+    if (decoratorsProperty) {
+      return this.getClassDecoratorsFromStaticProperty(decoratorsProperty);
+    } else {
+      return this.getClassDecoratorsFromHelperCall(symbol);
+    }
+  }
+
+  protected getDecoratedClassFromSymbol(symbol: ts.Symbol|undefined): DecoratedClass|null {
+    if (symbol) {
+      const decorators = this.getDecoratorsOfSymbol(symbol);
+      if (decorators && decorators.length) {
+        return new DecoratedClass(symbol.name, symbol.valueDeclaration, decorators);
+      }
+    }
+    return null;
+  }
 
   /**
    * Walk the AST looking for an assignment to the specified symbol.
@@ -691,7 +709,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     let value: ts.Expression|null = null;
     let name: string|null = null;
     let nameNode: ts.Identifier|null = null;
-    let type = null;
 
 
     const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
@@ -744,6 +761,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
     }
 
+    const type: ts.TypeNode = (node as any).type || null;
     return {
       node,
       implementation: node, kind, type, name, nameNode, value, isStatic,
@@ -967,12 +985,40 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @param decorator the decorator to test.
    */
-  isFromCore(decorator: Decorator): boolean {
+  protected isFromCore(decorator: Decorator): boolean {
     if (this.isCore) {
       return !decorator.import || /^\./.test(decorator.import.from);
     } else {
       return !!decorator.import && decorator.import.from === '@angular/core';
     }
+  }
+
+  protected computeDtsClassMap(dtsRootFileName: string, dtsProgram: ts.Program):
+      Map<string, ts.ClassDeclaration> {
+    const dtsClassMap = new Map<string, ts.ClassDeclaration>();
+    const checker = dtsProgram.getTypeChecker();
+    const dtsRootFile = dtsProgram.getSourceFile(dtsRootFileName);
+    const rootModule = dtsRootFile && checker.getSymbolAtLocation(dtsRootFile);
+    const moduleExports = rootModule && checker.getExportsOfModule(rootModule);
+    if (moduleExports) {
+      moduleExports.forEach(exportedSymbol => {
+        if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
+          exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
+        }
+        const declaration = exportedSymbol.declarations[0];
+        if (declaration && ts.isClassDeclaration(declaration)) {
+          const name = exportedSymbol.name;
+          const previousDeclaration = dtsClassMap.get(name);
+          if (previousDeclaration && previousDeclaration !== declaration) {
+            console.warn(
+                `Ambiguous class name ${name} in typings files: ${previousDeclaration.getSourceFile().fileName} and ${declaration.getSourceFile().fileName}`);
+          } else {
+            dtsClassMap.set(name, declaration);
+          }
+        }
+      });
+    }
+    return dtsClassMap;
   }
 }
 

@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as ts from 'typescript';
 import {ClassMemberKind, Import} from '../../../ngtsc/host';
-import {DtsMapper} from '../../src/host/dts_mapper';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {getDeclaration, makeProgram} from '../helpers/utils';
 
@@ -399,6 +397,7 @@ const DECORATED_FILES = [
     name: '/primary.js',
     contents: `
     import {Directive} from '@angular/core';
+    import {D} from '/secondary';
     class A {}
     A.decorators = [
       { type: Directive, args: [{ selector: '[a]' }] }
@@ -411,7 +410,6 @@ const DECORATED_FILES = [
     ];
     class C {}
     export { A, x, C };
-    export { D } from '/secondary';
     `
   },
   {
@@ -422,7 +420,7 @@ const DECORATED_FILES = [
     D.decorators = [
       { type: Directive, args: [{ selector: '[d]' }] }
     ];
-    export { D };
+    export {D};
     `
   }
 ];
@@ -439,11 +437,36 @@ const ARITY_CLASSES = [
   {
     name: '/typings/class.d.ts',
     contents: `
-      export class NoTypeParam {}
-      export class OneTypeParam<T> {}
-      export class TwoTypeParams<T, K> {}
+      export declare class NoTypeParam {}
+      export declare class OneTypeParam<T> {}
+      export declare class TwoTypeParams<T, K> {}
     `,
   },
+];
+
+const TYPINGS_SRC_FILES = [
+  {name: '/src/index.js', contents: `export * from './class1'; export * from './class2';`},
+  {name: '/src/class1.js', contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
+  {name: '/src/class2.js', contents: 'export class Class2 {}'},
+  {name: '/src/missing-class.js', contents: 'export class MissingClass2 {}'}, {
+    name: '/src/flat-file.js',
+    contents:
+        'export class Class1 {}\nexport class MissingClass1 {}\nexport class MissingClass2 {}\class Class3 {}\nexport {Class3 as xClass3};',
+  }
+];
+
+const TYPINGS_DTS_FILES = [
+  {name: '/typings/index.d.ts', contents: `export * from './class1'; export * from './class2';`},
+  {
+    name: '/typings/class1.d.ts',
+    contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
+  },
+  {
+    name: '/typings/class2.d.ts',
+    contents:
+        `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
+  },
+  {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
 ];
 
 describe('Fesm2015ReflectionHost', () => {
@@ -1186,12 +1209,10 @@ describe('Fesm2015ReflectionHost', () => {
 
   describe('getGenericArityOfClass()', () => {
     it('should properly count type parameters', () => {
-      // Mock out reading the `d.ts` file from disk
-      const readFileSyncSpy = spyOn(fs, 'readFileSync').and.returnValue(ARITY_CLASSES[1].contents);
+      const dtsProgram = makeProgram(ARITY_CLASSES[1]);
       const program = makeProgram(ARITY_CLASSES[0]);
-
-      const dtsMapper = new DtsMapper('/src', '/typings');
-      const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
+      const host = new Esm2015ReflectionHost(
+          false, program.getTypeChecker(), ARITY_CLASSES[1].name, dtsProgram);
       const noTypeParamClass =
           getDeclaration(program, '/src/class.js', 'NoTypeParam', ts.isClassDeclaration);
       expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
@@ -1217,30 +1238,95 @@ describe('Fesm2015ReflectionHost', () => {
        });
   });
 
-  describe('findDecoratedFiles()', () => {
-    it('should return an array of objects for each file that has exported and decorated classes',
-       () => {
-         const program = makeProgram(...DECORATED_FILES);
-         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-         const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
-         const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
-         const decoratedFiles = host.findDecoratedFiles(primaryFile);
+  describe('findDecoratedClasses()', () => {
+    it('should return an array of all decorated classes in the given source file', () => {
+      const program = makeProgram(...DECORATED_FILES);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
+      const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
 
-         expect(decoratedFiles.size).toEqual(2);
+      const primaryDecoratedClasses = host.findDecoratedClasses(primaryFile);
+      expect(primaryDecoratedClasses.length).toEqual(2);
+      const classA = primaryDecoratedClasses.find(c => c.name === 'A') !;
+      expect(ts.isClassDeclaration(classA.declaration)).toBeTruthy();
+      expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+      // Note that `B` is not exported from `primary.js`
+      const classB = primaryDecoratedClasses.find(c => c.name === 'B') !;
+      expect(ts.isClassDeclaration(classB.declaration)).toBeTruthy();
+      expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
 
-         const primary = decoratedFiles.get(primaryFile) !;
-         expect(primary.decoratedClasses.length).toEqual(1);
-         const classA = primary.decoratedClasses.find(c => c.name === 'A') !;
-         expect(classA.name).toEqual('A');
-         expect(ts.isClassDeclaration(classA.declaration)).toBeTruthy();
-         expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-
-         const secondary = decoratedFiles.get(secondaryFile) !;
-         expect(secondary.decoratedClasses.length).toEqual(1);
-         const classD = secondary.decoratedClasses.find(c => c.name === 'D') !;
-         expect(classD.name).toEqual('D');
-         expect(ts.isClassDeclaration(classD.declaration)).toBeTruthy();
-         expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
-       });
+      const secondaryDecoratedClasses = host.findDecoratedClasses(secondaryFile) !;
+      expect(secondaryDecoratedClasses.length).toEqual(1);
+      // Note that `D` is exported from `secondary.js` but not exported from `primary.js`
+      const classD = secondaryDecoratedClasses.find(c => c.name === 'D') !;
+      expect(classD.name).toEqual('D');
+      expect(ts.isClassDeclaration(classD.declaration)).toBeTruthy();
+      expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+    });
   });
+
+  describe('getDtsDeclarationsOfClass()', () => {
+    it('should find the dts declaration that has the same relative path to the source file', () => {
+      const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+      const class1 = getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isClassDeclaration);
+      const host = new Esm2015ReflectionHost(
+          false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+      const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+    });
+
+    it('should throw an error if there is no matching class in the matching dts file', () => {
+      const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+      const missingClass =
+          getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isClassDeclaration);
+      const host = new Esm2015ReflectionHost(
+          false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+      expect(() => host.getDtsDeclarationOfClass(missingClass))
+          .toThrowError(
+              'Unable to find matching typings (.d.ts) declaration for MissingClass1 in /src/class1.js');
+    });
+
+    it('should throw an error if there is no matching dts file', () => {
+      const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+      const missingClass = getDeclaration(
+          srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isClassDeclaration);
+      const host = new Esm2015ReflectionHost(
+          false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+      expect(() => host.getDtsDeclarationOfClass(missingClass))
+          .toThrowError(
+              'Unable to find matching typings (.d.ts) declaration for MissingClass2 in /src/missing-class.js');
+    });
+
+    it('should find the dts file that contains a matching class declaration, even if the source files do not match',
+       () => {
+         const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+         const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+         const class1 =
+             getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isClassDeclaration);
+         const host = new Esm2015ReflectionHost(
+             false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+         const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+       });
+
+    it('should find aliased exports', () => {
+      const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+      const class3 =
+          getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isClassDeclaration);
+      const host = new Esm2015ReflectionHost(
+          false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+      const dtsDeclaration = host.getDtsDeclarationOfClass(class3);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
+    });
+  });
+
 });
