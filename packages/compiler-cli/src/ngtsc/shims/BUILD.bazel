@@ -3,12 +3,12 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "factories",
+    name = "shims",
     srcs = glob([
         "index.ts",
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/factories",
+    module_name = "@angular/compiler-cli/src/ngtsc/shims",
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/host",
