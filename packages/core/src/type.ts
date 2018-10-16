@@ -23,3 +23,7 @@ export function isType(v: any): v is Type<any> {
 }
 
 export interface Type<T> extends Function { new (...args: any[]): T; }
+
+export type Mutable<T extends{[x: string]: any}, K extends string> = {
+  [P in K]: T[P];
+};

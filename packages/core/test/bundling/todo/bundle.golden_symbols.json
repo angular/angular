@@ -855,6 +855,9 @@
     "name": "nextNgElementId"
   },
   {
+    "name": "noSideEffects"
+  },
+  {
     "name": "pointers"
   },
   {
