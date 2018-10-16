@@ -3,9 +3,11 @@ load("//packages/bazel:index.bzl", "ng_module")
 ng_module(
     name = "test_module",
     srcs = glob(["*.ts"]),
+    compiler = "//packages/bazel/src/ngc-wrapped",
     entry_point = "index.ts",
     flat_module_out_file = "flat_module_filename",
     module_name = "some_npm_module",
+    ng_xi18n = "//packages/bazel/src/ngc-wrapped:xi18n",
     node_modules = "@ngdeps//typescript:typescript__typings",
     deps = [
         "//packages/core",
