@@ -224,7 +224,7 @@
             "desc": "The official Angular CLI makes it easy to create and develop applications from initial commit to production deployment. It already follows our best practices right out of the box!",
             "rev": true,
             "title": "Angular CLI",
-            "url": "https://cli.angular.io"
+            "url": "https://angular.io/cli"
           },
           "d1": {
             "desc": "Static analysis for Angular projects.",
