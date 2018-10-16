@@ -1,6 +1,6 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser } from 'protractor';
+import { browser, ExpectedConditions as EC } from 'protractor';
 import { logging } from 'selenium-webdriver';
 import * as openClose from './open-close.po';
 import * as statusSlider from './status-slider.po';
@@ -25,6 +25,8 @@ describe('Animation Tests', () => {
   });
 
   describe('Open/Close Component', () => {
+    const closedHeight = '100px';
+    const openHeight = '200px';
 
     beforeAll(async () => {
       await openCloseHref.click();
@@ -32,37 +34,37 @@ describe('Animation Tests', () => {
     });
 
     it('should be open', async () => {
-      let text = await openClose.getComponentText();
       const toggleButton = openClose.getToggleButton();
       const container = openClose.getComponentContainer();
+      let text = await container.getText();
 
       if (text.includes('Closed')) {
         await toggleButton.click();
-        sleepFor();
+        await browser.wait(async () => await container.getCssValue('height') === openHeight, 2000);
       }
 
-      text = await openClose.getComponentText();
+      text = await container.getText();
       const containerHeight = await container.getCssValue('height');
 
       expect(text).toContain('The box is now Open!');
-      expect(containerHeight).toBe('200px');
+      expect(containerHeight).toBe(openHeight);
     });
 
     it('should be closed', async () => {
-      let text = await openClose.getComponentText();
       const toggleButton = openClose.getToggleButton();
       const container = openClose.getComponentContainer();
+      let text = await container.getText();
 
       if (text.includes('Open')) {
         await toggleButton.click();
-        sleepFor();
+        await browser.wait(async () => await container.getCssValue('height') === closedHeight, 2000);
       }
 
-      text = await openClose.getComponentText();
+      text = await container.getText();
       const containerHeight = await container.getCssValue('height');
 
       expect(text).toContain('The box is now Closed!');
-      expect(containerHeight).toBe('100px');
+      expect(containerHeight).toBe(closedHeight);
     });
 
     it('should log animation events', async () => {
@@ -72,8 +74,7 @@ describe('Animation Tests', () => {
       await toggleButton.click();
 
       const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-
-      const animationMessages = logs.filter(({ message }) => message.indexOf('Animation') !== -1 ? true : false);
+      const animationMessages = logs.filter(({ message }) => message.includes('Animation'));
 
       expect(animationMessages.length).toBeGreaterThan(0);
     });
@@ -89,16 +90,16 @@ describe('Animation Tests', () => {
     });
 
     it('should be inactive with an orange background', async () => {
-      let text = await statusSlider.getComponentText();
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
+      let text = await container.getText();
 
       if (text === 'Active') {
         await toggleButton.click();
-        sleepFor(2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 2000);
       }
 
-      text = await statusSlider.getComponentText();
+      text = await container.getText();
       const bgColor = await container.getCssValue('backgroundColor');
 
       expect(text).toBe('Inactive');
@@ -106,16 +107,16 @@ describe('Animation Tests', () => {
     });
 
     it('should be active with a blue background', async () => {
-      let text = await statusSlider.getComponentText();
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
+      let text = await container.getText();
 
       if (text === 'Inactive') {
         await toggleButton.click();
-        sleepFor(2000);
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 2000);
       }
 
-      text = await statusSlider.getComponentText();
+      text = await container.getText();
       const bgColor = await container.getCssValue('backgroundColor');
 
       expect(text).toBe('Active');
@@ -163,10 +164,7 @@ describe('Animation Tests', () => {
       const hero = heroesList.get(0);
 
       await hero.click();
-      await sleepFor(100);
-      const newTotal = await heroesList.count();
-
-      expect(newTotal).toBeLessThan(total);
+      await browser.wait(async () => await heroesList.count() < total, 2000);
     });
   });
 
@@ -190,10 +188,7 @@ describe('Animation Tests', () => {
       const hero = heroesList.get(0);
 
       await hero.click();
-      await sleepFor(250);
-      const newTotal = await heroesList.count();
-
-      expect(newTotal).toBeLessThan(total);
+      await browser.wait(async () => await heroesList.count() < total, 2000);
     });
   });
 
@@ -213,14 +208,14 @@ describe('Animation Tests', () => {
     it('should filter down the list when a search is performed', async () => {
       const heroesList = filterStagger.getHeroesList();
       const total = await heroesList.count();
+
       const formInput = filterStagger.getFormInput();
-
       await formInput.sendKeys('Mag');
-      await sleepFor(500);
-      const newTotal = await heroesList.count();
 
+      await browser.wait(async () => await heroesList.count() === 2, 2000);
+
+      const newTotal = await heroesList.count();
       expect(newTotal).toBeLessThan(total);
-      expect(newTotal).toBe(2);
     });
   });
 
@@ -248,10 +243,7 @@ describe('Animation Tests', () => {
       const hero = heroesList.get(0);
 
       await hero.click();
-      await sleepFor(300);
-      const newTotal = await heroesList.count();
-
-      expect(newTotal).toBeLessThan(total);
+      await browser.wait(async () => await heroesList.count() < total, 2000);
     });
   });
 });
