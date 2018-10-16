@@ -23,9 +23,9 @@ rules_typescript_dependencies()
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
-  url = "https://github.com/bazelbuild/rules_sass/archive/1.13.4.zip",
-  strip_prefix = "rules_sass-1.13.4",
-  sha256 = "5ddde0d3df96978fa537f76e766538c031dee4d29f91a895f4b1345b5e3f9b16",
+  url = "https://github.com/bazelbuild/rules_sass/archive/1.14.1.zip",
+  strip_prefix = "rules_sass-1.14.1",
+  sha256 = "d8b89e47b05092a6eed3fa199f2de7cf671a4b9165d0bf38f12a0363dda928d3",
 )
 
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
