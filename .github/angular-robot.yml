@@ -124,3 +124,23 @@ triage:
     -
       - "type: RFC / Discussion / question"
       - "comp: *"
+
+# options for the triage PR plugin
+triagePR:
+  # set to true to disable
+  disabled: false
+  # number of the milestone to apply when the PR has not been triaged yet
+  needsTriageMilestone: 83,
+  # number of the milestone to apply when the PR is triaged
+  defaultMilestone: 82,
+  # arrays of labels that determine if a PR has been triaged by the caretaker
+  l1TriageLabels:
+    -
+      - "comp: *"
+  # arrays of labels that determine if a PR has been fully triaged
+  l2TriageLabels:
+    -
+      - "type: *"
+      - "effort*"
+      - "risk*"
+      - "comp: *"
