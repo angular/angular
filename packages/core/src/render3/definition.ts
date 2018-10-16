@@ -263,11 +263,6 @@ export function defineComponent<T>(componentDefinition: {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipes?: PipeTypesOrFactory | null;
-
-  /**
-   * Registry of the animation triggers present on the component that will be used by the view.
-   */
-  animations?: any[] | null;
 }): never {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
@@ -275,11 +270,7 @@ export function defineComponent<T>(componentDefinition: {
   const declaredInputs: {[key: string]: string} = {} as any;
   const encapsulation = componentDefinition.encapsulation || ViewEncapsulation.Emulated;
   const styles: string[] = componentDefinition.styles || EMPTY_ARRAY;
-  const animations: any[]|null = componentDefinition.animations || null;
-  let data = componentDefinition.data || {};
-  if (animations) {
-    data.animations = animations;
-  }
+  const data = componentDefinition.data || {};
   const def: ComponentDef<any> = {
     type: type,
     diPublic: null,
