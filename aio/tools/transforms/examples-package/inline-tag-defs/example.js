@@ -15,7 +15,7 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
   return {
     name: 'example',
     description:
-        'Process inline example tags (of the form {@example some/uri Some header}), replacing them with HTML anchors',
+        'Process inline example tags (of the form {@example some/uri some-region Some header}), replacing them with HTML anchors',
 
 
     handler: function(doc, tagName, tagDescription) {

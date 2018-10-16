@@ -77,11 +77,6 @@ export class CodeExampleComponent implements AfterViewInit {
     this.hidecopy = hidecopy;
   }
 
-  @Input()
-  set title(title: string) {
-    console.warn('[title] should not be used. Use instead the [header] input');
-  }
-
   @HostBinding('class.avoidFile') isAvoid = false;
 
   @ViewChild('content') content: ElementRef;
