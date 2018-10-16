@@ -20,7 +20,6 @@ import {OutputContext, error} from '../util';
 import {unsupported} from './view/util';
 
 
-
 /**
  * Metadata required by the factory generator to generate a `factory` function for a type.
  */
