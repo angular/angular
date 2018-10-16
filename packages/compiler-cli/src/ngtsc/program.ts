@@ -51,13 +51,17 @@ export class NgtscProgram implements api.Program {
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
-    const shouldGenerateFactories = options.allowEmptyCodegenFiles || false;
+    const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
     let rootFiles = [...rootNames];
-    if (shouldGenerateFactories) {
-      const generator = new FactoryGenerator();
-      const factoryFileMap = generator.computeFactoryFileMap(rootNames);
-      rootFiles.push(...Array.from(factoryFileMap.keys()));
+    if (shouldGenerateShims) {
+      // Summary generation.
+
+      // Factory generation.
+      const factoryGenerator = FactoryGenerator.forRootFiles(rootNames);
+      const factoryFileMap = factoryGenerator.factoryFileMap;
+      const factoryFileNames = Array.from(factoryFileMap.keys());
+      rootFiles.push(...factoryFileNames);
       this.factoryToSourceInfo = new Map<string, FactoryInfo>();
       this.sourceToFactorySymbols = new Map<string, Set<string>>();
       factoryFileMap.forEach((sourceFilePath, factoryPath) => {
@@ -65,7 +69,7 @@ export class NgtscProgram implements api.Program {
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
         this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
-      this.host = new GeneratedShimsHostWrapper(host, generator, factoryFileMap);
+      this.host = new GeneratedShimsHostWrapper(host, [factoryGenerator]);
     }
 
     this.tsProgram =
