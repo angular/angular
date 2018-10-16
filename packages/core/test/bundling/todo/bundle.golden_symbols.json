@@ -531,9 +531,6 @@
     "name": "directiveInject"
   },
   {
-    "name": "discoverDirectives"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -600,12 +597,6 @@
     "name": "findViaComponent"
   },
   {
-    "name": "findViaDirective"
-  },
-  {
-    "name": "findViaNativeElement"
-  },
-  {
     "name": "firstTemplatePass"
   },
   {
@@ -639,9 +630,6 @@
     "name": "getContainerRenderParent"
   },
   {
-    "name": "getContext"
-  },
-  {
     "name": "getCurrentSanitizer"
   },
   {
@@ -649,12 +637,6 @@
   },
   {
     "name": "getDirectiveDef"
-  },
-  {
-    "name": "getDirectiveEndIndex"
-  },
-  {
-    "name": "getDirectiveStartIndex"
   },
   {
     "name": "getHighestElementContainer"
@@ -756,13 +738,7 @@
     "name": "getRootContext"
   },
   {
-    "name": "getRootContext$1"
-  },
-  {
     "name": "getRootView"
-  },
-  {
-    "name": "getRootView$1"
   },
   {
     "name": "getStyleSanitizer"
@@ -825,9 +801,6 @@
     "name": "isComponent"
   },
   {
-    "name": "isComponentInstance"
-  },
-  {
     "name": "isContentQueryHost"
   },
   {
@@ -841,9 +814,6 @@
   },
   {
     "name": "isDifferent"
-  },
-  {
-    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -880,9 +850,6 @@
   },
   {
     "name": "listener"
-  },
-  {
-    "name": "loadContext"
   },
   {
     "name": "loadInternal"
@@ -1111,9 +1078,6 @@
   },
   {
     "name": "trackByIdentity"
-  },
-  {
-    "name": "traverseNextElement"
   },
   {
     "name": "updateClassProp"
