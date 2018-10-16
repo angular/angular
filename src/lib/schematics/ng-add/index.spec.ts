@@ -4,11 +4,11 @@ import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {
   addModuleImportToRootModule,
-  createTestApp,
   getProjectFromWorkspace,
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
+import {createTestApp} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {getIndexHtmlPath} from './fonts/project-index-html';

@@ -19,7 +19,8 @@ ts_library(
   srcs = glob(["**/*.ts"], exclude=[
     "**/files/**/*.ts",
     "**/*.spec.ts",
-    "ng-update/test-cases/**/*",
+    "ng-update/test-cases/**/*.ts",
+    "testing/**/*.ts"
   ]),
   tsconfig = ":tsconfig.json",
   deps = [
@@ -28,11 +29,8 @@ ts_library(
     # TODO(devversion): Only include jasmine for test sources (See: tsconfig types).
     "@npm//@types/jasmine",
     "@npm//@types/node",
-    # TODO(devversion): Similarly to "jasmine", we need to extract these into testing only.
-    "@npm//fs-extra",
     "@npm//glob",
     "@npm//parse5",
-    "@npm//rxjs",
     "@npm//tslint",
     "@npm//typescript"
   ],
@@ -58,7 +56,7 @@ ts_library(
   name = "schematics_test_sources",
   srcs = glob(["**/*.spec.ts"], exclude = ["**/files/**/*.spec.ts"]),
   deps = [
-    ":schematics",
+    "//src/cdk/schematics/testing",
     "@npm//@schematics/angular",
     "@npm//@angular-devkit/schematics",
     "@npm//@types/jasmine",
@@ -66,6 +64,7 @@ ts_library(
     "@npm//mock-fs",
     "@npm//tslint",
     "@npm//typescript",
+    ":schematics",
   ],
   tsconfig = ":tsconfig.json",
   testonly = True,

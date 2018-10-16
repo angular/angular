@@ -1,4 +1,4 @@
-import {runTestCases} from '@angular/cdk/schematics';
+import {runTestCases} from '@angular/cdk/schematics/testing';
 import {migrationCollection} from '../index.spec';
 
 describe('v6 import misc checks', () => {

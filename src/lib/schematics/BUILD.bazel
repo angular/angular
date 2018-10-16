@@ -53,6 +53,7 @@ ts_library(
   deps = [
     ":schematics",
     "//src/cdk/schematics",
+    "//src/cdk/schematics/testing",
     "@npm//@schematics/angular",
     "@npm//@angular-devkit/schematics",
     "@npm//@types/jasmine",

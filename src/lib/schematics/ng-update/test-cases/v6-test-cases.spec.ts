@@ -1,5 +1,5 @@
 import {join} from 'path';
-import {readFileContent, runTestCases} from '@angular/cdk/schematics';
+import {readFileContent, runTestCases} from '@angular/cdk/schematics/testing';
 import {migrationCollection} from './index.spec';
 
 describe('v6 upgrade test cases', () => {

@@ -1,5 +1,5 @@
 import {migrationCollection} from '../index.spec';
-import {runTestCases} from '@angular/cdk/schematics';
+import {runTestCases} from '@angular/cdk/schematics/testing';
 
 describe('constructor checks', () => {
 
