@@ -6,11 +6,12 @@ load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_p
 load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
-DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
-DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
-DEFAULT_COMPILER_BIN = "//:@bazel/typescript/tsc_wrapped"
-DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
-DEFAULT_KARMA_BIN = "//:@bazel/karma/karma"
+_DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
+_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
+_DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
+_INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
+_INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
+_INTERNAL_NG_PACKAGER_PACKAGER = "//packages/bazel/src/ng_package:packager"
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -52,15 +53,14 @@ def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
         deps.append("@ngdeps//@types/node")
     if not tsconfig:
         if testonly:
-            tsconfig = DEFAULT_TSCONFIG_TEST
+            tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
-            tsconfig = DEFAULT_TSCONFIG_BUILD
+            tsconfig = _DEFAULT_TSCONFIG_BUILD
     _ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
-        compiler = DEFAULT_COMPILER_BIN,
-        node_modules = DEFAULT_TS_TYPINGS,
+        node_modules = _DEFAULT_TS_TYPINGS,
         **kwargs
     )
 
@@ -73,9 +73,9 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         deps.append("@ngdeps//@types/node")
     if not tsconfig:
         if testonly:
-            tsconfig = DEFAULT_TSCONFIG_TEST
+            tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
-            tsconfig = DEFAULT_TSCONFIG_BUILD
+            tsconfig = _DEFAULT_TSCONFIG_BUILD
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(
@@ -85,7 +85,9 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         entry_point = entry_point,
         testonly = testonly,
         deps = deps,
-        node_modules = DEFAULT_TS_TYPINGS,
+        compiler = _INTERNAL_NG_MODULE_COMPILER,
+        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
+        node_modules = _DEFAULT_TS_TYPINGS,
         **kwargs
     )
 
@@ -101,9 +103,9 @@ def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, d
         deps.append("@ngdeps//@types/node")
     if not tsconfig:
         if testonly:
-            tsconfig = DEFAULT_TSCONFIG_TEST
+            tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
-            tsconfig = DEFAULT_TSCONFIG_BUILD
+            tsconfig = _DEFAULT_TSCONFIG_BUILD
     if not entry_point:
         entry_point = "public_api.ts"
     _internal_global_ng_module(
@@ -113,7 +115,9 @@ def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, d
         entry_point = entry_point,
         testonly = testonly,
         deps = deps,
-        node_modules = DEFAULT_TS_TYPINGS,
+        compiler = _INTERNAL_NG_MODULE_COMPILER,
+        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
+        node_modules = _DEFAULT_TS_TYPINGS,
         **kwargs
     )
 
@@ -133,6 +137,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         readme_md = readme_md,
         license_banner = license_banner,
         replacements = PKG_GROUP_REPLACEMENTS,
+        ng_packager = _INTERNAL_NG_PACKAGER_PACKAGER,
         **kwargs
     )
 
@@ -167,7 +172,6 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
             # "@io_bazel_rules_webtesting//browsers:firefox-local",
             # TODO(alexeagle): add remote browsers on SauceLabs
         ],
-        karma = DEFAULT_KARMA_BIN,
         **kwargs
     )
 
