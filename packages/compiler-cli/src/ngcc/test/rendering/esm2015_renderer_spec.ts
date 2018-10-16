@@ -23,7 +23,7 @@ function setup(file: {name: string, contents: string}, transformDts: boolean = f
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new EsmRenderer(host, false, null, dir, dir);
+  const renderer = new EsmRenderer(host, false, null, dir, dir, false);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
