@@ -7,9 +7,9 @@
  */
 
 import {StaticSymbol} from '../../aot/static_symbol';
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName, sanitizeIdentifier} from '../../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName} from '../../compile_metadata';
 import {CompileReflector} from '../../compile_reflector';
-import {BindingForm, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
+import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
 import {LifecycleHooks} from '../../lifecycle_reflector';
@@ -44,11 +44,13 @@ function baseDirectiveFields(
 
 
   // e.g. `factory: () => new MyApp(directiveInject(ElementRef))`
+  const hostListeners =
+      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
   const result = compileFactoryFunction({
     name: meta.name,
     type: meta.type,
     deps: meta.deps,
-    injectFn: R3.directiveInject,
+    injectFn: R3.directiveInject, hostListeners
   });
   definitionMap.set('factory', result.factory);
 
@@ -624,26 +626,6 @@ function createHostBindingsFunction(
                             o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
                           ])
                           .toStmt());
-    }
-  }
-
-  // Calculate host event bindings
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
-  if (eventBindings) {
-    for (const binding of eventBindings) {
-      const bindingExpr = convertActionBinding(
-          null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
-      const bindingName = binding.name && sanitizeIdentifier(binding.name);
-      const typeName = meta.name;
-      const functionName =
-          typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
-      const handler = o.fn(
-          [new o.FnParam('$event', o.DYNAMIC_TYPE)],
-          [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
-          null, functionName);
-      statements.push(
-          o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt());
     }
   }
 
