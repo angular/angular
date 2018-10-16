@@ -43,8 +43,6 @@ npm_package(
         "package.json",
     ],
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
     ],
     deps = [

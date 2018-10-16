@@ -36,6 +36,7 @@ def rules_typescript_dependencies():
         http_archive,
         name = "build_bazel_rules_nodejs",
         urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.15.1.zip"],
+        sha256 = "a0a91a2e0cee32e9304f1aeea9e6c1b611afba548058c5980217d44ee11e3dd7",
         strip_prefix = "rules_nodejs-0.15.1",
     )
 

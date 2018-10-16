@@ -24,6 +24,10 @@ jasmine_node_test(
         "@ngdeps//@types/shelljs",
         "@ngdeps//shelljs",
     ],
+    tags = [
+        "fixme-ivy-local",
+        "no-ivy-jit",
+    ],
 )
 
 ts_library(
@@ -65,6 +69,7 @@ jasmine_node_test(
     # TODO(alexeagle): re-enable this test
     # see https://github.com/angular/angular/pull/22933
     tags = ["manual"],
+    deps = ["@ngdeps//diff"],
 )
 
 nodejs_binary(

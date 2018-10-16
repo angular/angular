@@ -33,4 +33,5 @@ jasmine_node_test(
         "//packages/bazel/test/ngc-wrapped/empty:tsconfig.json",
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
+    tags = ["fixme-ivy-local"],
 )
