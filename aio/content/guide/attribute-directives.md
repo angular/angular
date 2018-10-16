@@ -43,7 +43,7 @@ when the user hovers over that element. You can apply it like this:
 
 ### Write the directive code
 
-Create the directive class file in a terminal window with this CLI command.
+Create the directive class file in a terminal window with the CLI command [`ng generate directive`](cli/generate).
 
 <code-example language="sh" class="code-shell">
 ng generate directive highlight

@@ -164,7 +164,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
+The Angular CLI command [`ng generate component`](cli/generate) defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -193,7 +193,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI creates an empty styles file for you by default and references that file in the component's generated `styleUrls`.
+When you use the Angular CLI command [`ng generate component`](cli/generate) without the `--inline-style` flag, it creates an empty styles file for you and references that file in the component's generated `styleUrls`.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app
@@ -216,7 +216,8 @@ You can also write `<link>` tags into the component's HTML template.
 
 <div class="alert is-critical">
 
-When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+<!-- 2018-10-16: The link above is still the best source for this information. -->
 
 Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
 
@@ -239,7 +240,9 @@ When building with the CLI, you must configure the `angular.json` to include _al
 
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.
 
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+See the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 ### Non-CSS style files
 
@@ -259,8 +262,10 @@ The CLI build process runs the pertinent CSS preprocessor.
 
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
 You can configure the CLI to default to your preferred CSS preprocessor
-as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
+as explained in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration").
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 <div class="alert is-important">
 

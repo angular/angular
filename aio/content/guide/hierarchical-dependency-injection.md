@@ -23,7 +23,7 @@ When you specify providers in the `@Injectable()` decorator of the service itsel
 
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
 
-You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the CLI uses when you generate a service for your app.
+You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the [Angular CLI](cli) uses when you generate a service for your app.
 
 <div class="alert-is-helpful">
 <header>Platform injector</header>
