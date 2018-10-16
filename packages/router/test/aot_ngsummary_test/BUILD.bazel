@@ -2,7 +2,9 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library", "ts
 
 ng_module(
     name = "aot_routing_module",
+    testonly = True,
     srcs = ["aot_router_module.ts"],
+    tags = ["no-ivy-jit"],
     deps = [
         "//packages/core",
         "//packages/router",
@@ -12,8 +14,12 @@ ng_module(
 
 ts_library(
     name = "aot_test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = ["aot_router_bootstrap.spec.ts"],
+    tags = [
+        "fixme-ivy-local",
+        "no-ivy-jit",
+    ],
     deps = [
         ":aot_routing_module",
         "//packages/core",
@@ -26,6 +32,10 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    tags = [
+        "fixme-ivy-local",
+        "no-ivy-jit",
+    ],
     deps = [
         ":aot_test_lib",
         "//tools/testing:node",

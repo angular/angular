@@ -26,7 +26,6 @@ ng_package(
     ],
     entry_point = "packages/http/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
     deps = [

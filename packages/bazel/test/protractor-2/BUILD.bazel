@@ -8,8 +8,6 @@ ts_library(
     name = "app",
     srcs = ["app.ts"],
     tsconfig = ":tsconfig.json",
-    # FIXME: should not be needed here!
-    deps = ["@ngdeps//@types/jasmine"],
 )
 
 ts_devserver(
@@ -37,7 +35,7 @@ ts_library(
     name = "ts_spec",
     testonly = True,
     srcs = ["test.spec.ts"],
-    tsconfig = ":tsconfig.json",
+    tsconfig = ":tsconfig.test.json",
     deps = [
         "@ngdeps//@types/selenium-webdriver",
         "@ngdeps//protractor",

@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/common",
@@ -15,6 +15,10 @@ ts_library(
 
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],

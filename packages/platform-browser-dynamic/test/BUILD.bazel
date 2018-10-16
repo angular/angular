@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_sui
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -18,6 +18,7 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    tags = ["fixme-ivy-jit"],
     deps = [
         ":test_lib",
         "//tools/testing:node",
@@ -29,6 +30,10 @@ ts_web_test_suite(
     static_files = [
         "//packages/platform-browser/test:static_assets/test.html",
         "//packages/platform-browser/test:browser/static_assets/200.html",
+    ],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
     ],
     deps = [
         ":test_lib",
