@@ -77,7 +77,7 @@ export function CDK_DRAG_CONFIG_FACTORY(): CdkDragConfig {
   return {dragStartThreshold: 5, pointerDirectionChangeThreshold: 5};
 }
 
-/** Element that can be moved inside a CdkDrop container. */
+/** Element that can be moved inside a CdkDropList container. */
 @Directive({
   selector: '[cdkDrag]',
   exportAs: 'cdkDrag',

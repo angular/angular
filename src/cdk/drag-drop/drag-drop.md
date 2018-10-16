@@ -57,7 +57,7 @@ by the directives:
 
 | Selector            | Description                                                              |
 |---------------------|--------------------------------------------------------------------------|
-| `.cdk-drop-list`         | Corresponds to the `cdkDropList` container.                                  |
+| `.cdk-drop-list`    | Corresponds to the `cdkDropList` container.                                  |
 | `.cdk-drag`         | Corresponds to a `cdkDrag` instance.                                     |
 | `.cdk-drag-preview` | This is the element that will be rendered next to the user's cursor as they're dragging an item in a sortable list. By default the element looks exactly like the element that is being dragged. |
 | `.cdk-drag-placeholder` | This is element that will be shown instead of the real element as it's being dragged inside a `cdkDropList`. By default this will look exactly like the element that is being sorted. |
