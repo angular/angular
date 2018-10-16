@@ -15,8 +15,8 @@ export class EsmRenderer extends Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
       protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-      protected targetPath: string) {
-    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath);
+      protected targetPath: string, transformDts: boolean) {
+    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath, transformDts);
   }
 
   /**
