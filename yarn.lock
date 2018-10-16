@@ -25,10 +25,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.1.1.tgz#f970c08b4e4efb0ab17e04ade3cc610554f33bed"
   integrity sha1-+XDAi05O+wqxfgSt48xhBVTzO+0=
 
-"@bazel/karma@0.20.2":
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.2.tgz#69b440e320eadce2b4c7de922f87c5fc539b6586"
-  integrity sha512-WQHPpAuu9jNqZ7J2tYkAJaccC9oQh5IjD0wJDnBq0iLxusLQkxJOPw5TmemHYVEMlkuj5+1w7UN8YeS0YRgAeg==
+"@bazel/karma@0.20.3":
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.3.tgz#a63bb82b4887ae8c0d01f3028c6fa4764470851d"
+  integrity sha512-IgWfTpK9XLEI977DS2kHIEO1QfFTEOBxeNDDjHtd1onmzyMCLROphTOBZ/g42ybUIWyJhS9DK4U3bLSMQE0Bng==
   dependencies:
     jasmine-core "2.8.0"
     karma alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a
@@ -41,12 +41,12 @@
     requirejs "2.3.5"
     tmp "0.0.33"
 
-"@bazel/typescript@0.20.2":
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.2.tgz#7e31e2fe23458536e4917bf5ee130d55704c54f5"
-  integrity sha512-S54LqrCT3WpYdYgpOYEgtwdGX2kJfliSNombmmWmR3ZXYdXwU10PYhWR7s4k9eyakknitAt1RxPEvIHEHCucqQ==
+"@bazel/typescript@0.20.3":
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.3.tgz#51dcc369c2af0d7f2311d6e692d07776492060f4"
+  integrity sha512-BZmfzaNkgS++53CGEUk5p9FXOG+k8FNWCDbxzYljoIGP60aIkw4UgRQ24ReBwhCMg6M6KW609yje7AvDZkA6bg==
   dependencies:
-    protobufjs "5.0.0"
+    protobufjs "5.0.3"
     source-map-support "0.5.9"
     tsickle "0.28.0"
     tsutils "2.27.2"
@@ -3404,7 +3404,7 @@ glob@^4.3.1:
     minimatch "^2.0.1"
     once "^1.3.0"
 
-glob@^5.0.10, glob@^5.0.15, glob@~5.0.0:
+glob@^5.0.15, glob@~5.0.0:
   version "5.0.15"
   resolved "https://registry.yarnpkg.com/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
   integrity sha1-G8k2ueAvSmA/zCIuz3Yz0wuLk7E=
@@ -6503,14 +6503,14 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-protobufjs@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-5.0.0.tgz#4223063233ea96ac063ca2b554035204db524fa1"
-  integrity sha1-QiMGMjPqlqwGPKK1VANSBNtST6E=
+protobufjs@5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-5.0.3.tgz#e4dfe9fb67c90b2630d15868249bcc4961467a17"
+  integrity sha512-55Kcx1MhPZX0zTbVosMQEO5R6/rikNXd9b6RQK4KSPcrSIIwoXTtebIczUrXlwaSrbz4x8XUVThGPob1n8I4QA==
   dependencies:
     ascli "~1"
     bytebuffer "~5"
-    glob "^5.0.10"
+    glob "^7.0.5"
     yargs "^3.10.0"
 
 protractor@5.1.2:
