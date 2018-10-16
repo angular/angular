@@ -100,6 +100,10 @@ module.exports = (config) => {
     },
   });
 
+  if (process.env['CIRCLECI']) {
+    config.browsers = platformMap[process.env['TEST_PLATFORM']];
+  }
+
   if (process.env['TRAVIS']) {
     const buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
 
@@ -114,7 +118,8 @@ module.exports = (config) => {
     // It will look like <platform>_<target>, where platform is one of 'saucelabs', 'browserstack'
     // or 'travis'. The target is a reference to different collections of browsers that can run
     // in the previously specified platform.
-    const [platform, target] = process.env.MODE.split('_');
+    // TODO(devversion): when moving Saucelabs and Browserstack to Circle, remove the target part.
+    const [platform] = process.env.MODE.split('_');
 
     if (platform === 'saucelabs') {
       config.sauceLabs.build = buildId;
@@ -132,6 +137,6 @@ module.exports = (config) => {
       config.concurrency = 1;
     }
 
-    config.browsers = platformMap[platform][target.toLowerCase()];
+    config.browsers = platformMap[platform];
   }
 };

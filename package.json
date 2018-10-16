@@ -23,7 +23,7 @@
     "docs": "gulp docs",
     "api": "gulp api-docs",
     "breaking-changes": "gulp breaking-changes",
-    "ci:lint": "gulp ci:lint"
+    "gulp": "gulp"
   },
   "version": "7.0.0-rc.2",
   "requiredAngularVersion": ">=7.0.0-rc.0",

@@ -31,7 +31,6 @@ jobs:
     - env: "MODE=e2e"
     - env: "MODE=saucelabs_required"
     - env: "MODE=browserstack_required"
-    - env: "MODE=travis_required"
     - env: "DEPLOY_MODE=build-artifacts"
       if: type = push
     - env: "DEPLOY_MODE=docs-content"

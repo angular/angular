@@ -1,6 +1,5 @@
 # Configuration file for https://circleci.com/gh/angular/material2
 
-#
 # Note: YAML anchors allow an object to be re-used, reducing duplication.
 # The ampersand declares an alias for an object, then later the `<<: *name`
 # syntax dereferences it.
@@ -81,6 +80,30 @@ jobs:
 
       - *save_cache
 
+  # ------------------------------------------------------------------------------------------
+  # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).
+  # The available browsers are installed through the angular/ngcontainer Docker image.
+  # ------------------------------------------------------------------------------------------
+  tests_local_browsers:
+    docker:
+      # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
+      # ngcontainer image does include an old Firefox version that does not support headless.
+      # See the PR that fixes this: https://github.com/angular/angular/pull/26435
+      - image: circleci/node:10.12-browsers
+    resource_class: xlarge
+    environment:
+      TEST_PLATFORM: local
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+
+      # Launches the unit tests. The platform is determined by the "TEST_PLATFORM" environment
+      # variable which has been configured above
+      - run: yarn gulp ci:test
+
+      - *save_cache
+
   # ----------------------------------
   # Lint job. Runs the gulp lint task.
   # ----------------------------------
@@ -91,7 +114,7 @@ jobs:
       - *restore_cache
       - *yarn_install
 
-      - run: yarn ci:lint
+      - run: yarn gulp ci:lint
 
       - *save_cache
 
@@ -107,6 +130,10 @@ workflows:
   build_and_test:
     jobs:
       - bazel_build_test
+
+  unit_tests:
+    jobs:
+      - tests_local_browsers
 
   # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
   lint:
