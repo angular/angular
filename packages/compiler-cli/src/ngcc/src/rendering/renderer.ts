@@ -57,7 +57,7 @@ export abstract class Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
       protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-      protected targetPath: string) {}
+      protected targetPath: string, protected transformDts: boolean) {}
 
   renderProgram(
       program: ts.Program, decorationAnalyses: DecorationAnalyses,
@@ -74,9 +74,11 @@ export abstract class Renderer {
       }
     });
 
-    // Transform the .d.ts files
-    const dtsFiles = this.getTypingsFilesToRender(decorationAnalyses);
-    dtsFiles.forEach((classes, file) => renderedFiles.push(...this.renderDtsFile(file, classes)));
+    if (this.transformDts) {
+      // Transform the .d.ts files
+      const dtsFiles = this.getTypingsFilesToRender(decorationAnalyses);
+      dtsFiles.forEach((classes, file) => renderedFiles.push(...this.renderDtsFile(file, classes)));
+    }
 
     return renderedFiles;
   }
