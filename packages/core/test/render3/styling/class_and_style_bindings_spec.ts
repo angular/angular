@@ -142,7 +142,7 @@ describe('style and class based bindings', () => {
   function dirtyClass(a: number, b: number) { return _dirty(a, b, true); }
 
   function makePlayerBuilder<T = any>(
-      factory: PlayerFactory<T>, isClassBased?: boolean, elm?: HTMLElement) {
+      factory: PlayerFactory, isClassBased?: boolean, elm?: HTMLElement) {
     return new ClassAndStylePlayerBuilder(
         factory, (elm || element) as HTMLElement,
         isClassBased ? BindingType.Class : BindingType.Style);

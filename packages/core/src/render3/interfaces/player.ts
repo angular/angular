@@ -28,6 +28,8 @@ export const enum BindingType {
 export interface BindingStore { setValue(prop: string, value: any): void; }
 
 /**
+ * Defines the shape which produces the Player.
+ *
  * Used to produce a player that will be placed on an element that contains
  * styling bindings that make use of the player. This function is designed
  * to be used with `PlayerFactory`.
@@ -48,9 +50,7 @@ export interface PlayerFactoryBuildFn {
  * `[style]`, `[style.prop]`, `[class]` and `[class.name]` template bindings
  * all accept a `PlayerFactory` as input and this player factories.
  */
-export interface PlayerFactory<T> {
-  '__brand__': 'Brand for PlayerFactory that nothing will match';
-}
+export interface PlayerFactory { '__brand__': 'Brand for PlayerFactory that nothing will match'; }
 
 export interface PlayerBuilder extends BindingStore {
   buildPlayer(currentPlayer: Player|null): Player|undefined|null;

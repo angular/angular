@@ -8,6 +8,8 @@
 import {PlayerFactory, PlayerFactoryBuildFn} from '../interfaces/player';
 
 /**
+ * Combines the binding value and a factory for an animation player.
+ *
  * Used to bind a player to an element template binding (currently only
  * `[style]`, `[style.prop]`, `[class]` and `[class.name]` bindings
  * supported). The provided `factoryFn` function will be run once all
@@ -21,7 +23,7 @@ import {PlayerFactory, PlayerFactoryBuildFn} from '../interfaces/player';
  *   so that the binding can update its internal values when
  *   any changes are evaluated.
  */
-export function bindPlayerFactory<T>(factoryFn: PlayerFactoryBuildFn, value: T): PlayerFactory<T> {
+export function bindPlayerFactory<T>(factoryFn: PlayerFactoryBuildFn, value: T): PlayerFactory {
   return new BoundPlayerFactory(factoryFn, value) as any;
 }
 

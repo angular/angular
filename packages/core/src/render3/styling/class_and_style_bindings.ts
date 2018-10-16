@@ -896,8 +896,7 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
   private _dirty = false;
   private _factory: BoundPlayerFactory<T>;
 
-  constructor(
-      factory: PlayerFactory<T>, private _element: HTMLElement, private _type: BindingType) {
+  constructor(factory: PlayerFactory, private _element: HTMLElement, private _type: BindingType) {
     this._factory = factory as any;
   }
 

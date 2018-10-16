@@ -1504,7 +1504,7 @@ function generatePropertyAliases(
  * @param value A value indicating if a given class should be added or removed.
  */
 export function elementClassProp(
-    index: number, stylingIndex: number, value: boolean | {} | PlayerFactory<boolean>): void {
+    index: number, stylingIndex: number, value: boolean | PlayerFactory): void {
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
   updateElementClassProp(getStylingContext(index, viewData), stylingIndex, val);
@@ -1599,8 +1599,7 @@ export function elementStylingApply(index: number): void {
  *        be ignored.
  */
 export function elementStyleProp(
-    index: number, styleIndex: number,
-    value: string | number | {} | PlayerFactory<{[key: string]: any}>| null,
+    index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string): void {
   let valueToAdd: string|null = null;
   if (value) {
