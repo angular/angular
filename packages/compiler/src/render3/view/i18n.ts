@@ -75,6 +75,15 @@ export type I18nMeta = {
   meaning?: string
 };
 
+/**
+ * I18nContext is a helper class which keeps track of all i18n-related aspects
+ * (accumulates content, bindings, etc) between i18nStart and i18nEnd instructions.
+ *
+ * When we enter a nested template, the top-level context is being passed down
+ * to the nested component, which uses this context to generate a child instance
+ * of I18nContext class (to handle nested template) and at the end, reconciles it back
+ * with the parent context.
+ */
 export class I18nContext {
   private id: number;
   private content: string = '';
