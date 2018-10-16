@@ -122,7 +122,7 @@ Note that polyfills cannot magically transform an old, slow browser into a moder
 
 ## Enabling polyfills
 
-[Angular CLI](https://github.com/angular/angular-cli/wiki) users enable polyfills through the `src/polyfills.ts` file that
+[Angular CLI](cli) users enable polyfills through the `src/polyfills.ts` file that
 the CLI created with your project.
 
 This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
