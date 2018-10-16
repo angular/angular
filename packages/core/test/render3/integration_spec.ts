@@ -1605,10 +1605,12 @@ describe('render3 integration test', () => {
           type: AnimComp,
           consts: 0,
           vars: 0,
-          animations: [
-            animA,
-            animB,
-          ],
+          data: {
+            animations: [
+              animA,
+              animB,
+            ],
+          },
           selectors: [['foo']],
           factory: () => new AnimComp(),
           template: (rf: RenderFlags, ctx: AnimComp) => {}
@@ -1630,7 +1632,9 @@ describe('render3 integration test', () => {
           type: AnimComp,
           consts: 0,
           vars: 0,
-          animations: [],
+          data: {
+            animations: [],
+          },
           selectors: [['foo']],
           factory: () => new AnimComp(),
           template: (rf: RenderFlags, ctx: AnimComp) => {}
