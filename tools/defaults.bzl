@@ -68,7 +68,34 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
     **kwargs
   )
 
-def ng_web_test_suite(deps = [], srcs = [], **kwargs):
+def ng_web_test_suite(deps = [], srcs = [], static_css = [], **kwargs):
+  # Workaround for https://github.com/bazelbuild/rules_typescript/issues/301
+  # Since some of our tests depend on CSS files which are not part of the `ng_module` rule,
+  # we need to somehow load static CSS files within Karma (e.g. overlay prebuilt). Those styles
+  # are required for successful test runs. Since the `ts_web_test_suite` rule currently only
+  # allows JS files to be included and served within Karma, we need to create a JS file that
+  # loads the given CSS file.
+  for css_label in static_css:
+    css_id = "static-css-file-%s" % (css_label.strip(':').strip('/'))
+    deps += [":%s" % css_id]
+
+    native.genrule(
+      name = css_id,
+      srcs = [css_label],
+      outs = ["%s.js" % css_id],
+      output_to_bindir = True,
+      cmd = """
+        files=($(locations %s))
+        css_content=$$(cat $${files[0]})
+        js_template="var cssElement = document.createElement('style'); \
+                    cssElement.type = 'text/css'; \
+                    cssElement.innerHTML = '$$css_content'; \
+                    document.head.appendChild(cssElement);"
+
+         echo $$js_template > $@
+      """ % css_label
+    )
+
   _ts_web_test_suite(
     # Required for running the compiled ng modules that use TypeScript import helpers.
     srcs = ["@npm//node_modules/tslib:tslib.js"] + srcs,

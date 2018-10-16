@@ -50,7 +50,5 @@ ng_test_library(
 ng_web_test_suite(
   name = "unit_tests",
   deps = [":text-field_test_sources"],
-  # TODO(devversion): Disabling this test until we found a way to set the screen resolution
-  # of the web test instance. Currently all positioning tests are not passing.
-  tags = ["manual"],
+  static_css = [":text_field_prebuilt_scss"]
 )
