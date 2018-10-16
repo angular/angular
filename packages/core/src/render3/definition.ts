@@ -310,7 +310,7 @@ export function defineComponent<T>(componentDefinition: {
     viewProviders: EMPTY_ARRAY,
     id: 'c',
     styles: componentDefinition.styles || EMPTY_ARRAY,
-    _: null
+    _: null as never,
   };
   def._ = noSideEffects(() => {
     const directiveTypes = componentDefinition.directives !;
@@ -331,7 +331,7 @@ export function defineComponent<T>(componentDefinition: {
     def.pipeDefs = pipeTypes ?
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
-  });
+  }) as never;
   return def as never;
 }
 
