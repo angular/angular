@@ -51,9 +51,9 @@ Workspace-wide `node_modules` dependencies are visible to this project.
 
 | APP SOURCE & CONFIG FILES    | PURPOSE |
 | :--------------------- | :------------------------------------------|
-| `app/`                 | Contains the component files in which your app logic and data are defined. |
+| `app/`                 | Contains the component files in which your app logic and data are defined. See details in [App source folder](#app-src) below. |
 | `assets/`              | Contains image files and other asset files to be copied as-is when you build your application. | 
-| `environments/`        | |
+| `environments/`        | Contains build configuration options for particular target environments. By default there is an unnamed standard development environment and a production ("prod") environment. You can define additional target environment configurations. |
 | `browserlist`          | Configures sharing of target browsers and Node.js versions among various front-end tools. |
 | `favicon.ico`          | An icon to use for this app in the bookmark bar. |
 | `index.html`           | The main HTML page that is served when someone visits your site. The CLI automatically adds all JavaScript and CSS files when building your app, so you typically don't need to add any `<script>` or` <link>` tags here manually. |
@@ -99,11 +99,12 @@ my-app/
       (config files)
 ```
 
+{@a app-src}
 ## App source folder
 
-Inside the `src/` folder, the `app/` folder contains your app's logic and data. Angular components, templates, styles, images, and anything else your app needs go here. Other files in `src/` support testing, building, and running your app.
+Inside the `src/` folder, the `app/` folder contains your app's logic and data. Angular components, templates, styles, images, and anything else your app needs go here. Files at the top level of `src/` support testing and running your app.
 
-```
+<code-example language="none" linenums="false">
    src/
     app/
         app.component.css
@@ -112,11 +113,8 @@ Inside the `src/` folder, the `app/` folder contains your app's logic and data. 
         app.component.ts
         app.module.ts
         assets/...
-    favicon.ico
-    index.html
-    main.ts
-    test.ts
-```
+    ...
+</code-example>
 
 | APP SOURCE FILES | PURPOSE |
 | :-------------------------- | :------------------------------------------|
@@ -126,5 +124,3 @@ Inside the `src/` folder, the `app/` folder contains your app's logic and data. 
 | `app/app.component.spec.ts` | Defines a unit test for the root AppComponent. |
 | `app/app.module.ts`         | Defines the root module, named AppModule, that tells Angular how to assemble the application. Initially declares only the AppComponent. As you add more components to the app, they must be declared here. |
 | `assets/*`                  | Contains image files and other asset files to be copied as-is when you build your application. |
-
-
