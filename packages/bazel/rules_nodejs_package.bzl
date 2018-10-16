@@ -19,8 +19,8 @@ Fulfills similar role as the package.json file.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_nodejs/0.15.0/package.bzl
-VERSION = "0.15.0"
+# This file mirrored from https://raw.githubusercontent.com/bazelbuild/rules_nodejs/0.15.1/package.bzl
+VERSION = "0.15.1"
 
 def rules_nodejs_dependencies():
     """
