@@ -41,21 +41,17 @@ filegroup(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
-# Override for ts_web_test_suite to use @ngdeps instead of @npm
+# A nodejs_binary for @angular/bazel/ngc-wrapped to use by default in
+# ng_module that depends on @npm//@angular/bazel instead of the
+# output of the //packages/bazel/src/ngc-wrapped ts_library rule. This
+# default is for downstream users that depend on the @angular/bazel npm
+# package. The generated @npm//@angular/bazel/ngc-wrapped target
+# does not work because it does not have the node `--expose-gc` flag
+# set which is required to support the call to `global.gc()`.
 nodejs_binary(
-    name = "@bazel/karma/karma",
-    data = ["@ngdeps//@bazel/karma"],
-    entry_point = "@bazel/karma/karma.js",
-    install_source_map_support = False,
-    visibility = ["//visibility:public"],
-)
-
-# Override for ts_library to use @ngdeps instead of @npm
-nodejs_binary(
-    name = "@bazel/typescript/tsc_wrapped",
-    data = ["@ngdeps//@bazel/typescript"],
-    entry_point = "@bazel/typescript/tsc_wrapped/tsc_wrapped.js",
+    name = "@angular/bazel/ngc-wrapped",
+    data = ["@npm//@angular/bazel"],
+    entry_point = "@angular/bazel/src/ngc-wrapped/index.js",
     install_source_map_support = False,
     templated_args = ["--node_options=--expose-gc"],
-    visibility = ["//visibility:public"],
 )

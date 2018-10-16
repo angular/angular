@@ -4,10 +4,17 @@
   "description": "Angular - bazel build rules",
   "author": "angular",
   "license": "MIT",
+  "bin": {
+    "ngc-wrapped": "./src/ngc-wrapped/index.js",
+    "packager": "./src/ng_package/packager.js",
+    "xi18n": "./src/ngc-wrapped/extract_i18n.js",
+    "modify_tsconfig": "./src/modify_tsconfig.js"
+  },
+  "typings": "./src/ngc-wrapped/index.d.ts",
   "dependencies": {
-    "@bazel/typescript": "^0.15.0",
+    "@bazel/typescript": "^0.19.1",
     "@types/node": "6.0.84",
-    "protobufjs": "5.0.0"
+    "tsickle": "0.28.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
@@ -19,5 +26,8 @@
   },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "scripts": {
+    "postinstall": "node ./check_version.js"
   }
 }
