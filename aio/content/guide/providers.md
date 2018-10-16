@@ -13,7 +13,7 @@ A provider is an instruction to the DI system on how to obtain a value for a dep
 
 ## Providing a service
 
-If you already have a CLI generated app, create a service using the following CLI command in the root project directory. Replace _User_ with the name of your service.
+If you already have an app that was created with the [Angular CLI](cli), you can create a service using the [`ng generate`](cli/generate) CLI command in the root project directory. Replace _User_ with the name of your service.
 
 ```sh
 ng generate service User
@@ -46,7 +46,7 @@ The example above shows the preferred way to provide a service in a module. This
 
 ## Limiting provider scope by lazy loading modules
 
-In the basic CLI generated app, modules are eagerly loaded which means that they are all loaded when the app launches. Angular uses an injector system to make things available between modules. In an eagerly loaded app, the root application injector makes all of the providers in all of the modules available throughout the app.
+In the basic CLI-generated app, modules are eagerly loaded which means that they are all loaded when the app launches. Angular uses an injector system to make things available between modules. In an eagerly loaded app, the root application injector makes all of the providers in all of the modules available throughout the app.
 
 This behavior necessarily changes when you use lazy loading. Lazy loading is when you load modules only when you need them; for example, when routing. They aren’t loaded right away like with eagerly loaded modules. This means that any services listed in their provider arrays aren’t available because the root injector doesn’t know about these modules.
 

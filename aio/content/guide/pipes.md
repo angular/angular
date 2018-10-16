@@ -223,7 +223,7 @@ Note the following:
 
 You must register custom pipes.
 If you don't, Angular reports an error.
-Angular CLI's generator registers the pipe automatically.
+The [Angular CLI's](cli) generator registers the pipe automatically.
 
 
 </div>
