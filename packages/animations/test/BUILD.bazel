@@ -18,11 +18,19 @@ jasmine_node_test(
         ":test_lib",
         "//tools/testing:node",
     ],
+    tags = [
+        "ivy-local",
+	"ivy-jit",
+    ],
 )
 
 ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
+    ],
+    tags = [
+        "ivy-local",
+	"ivy-jit",
     ],
 )
