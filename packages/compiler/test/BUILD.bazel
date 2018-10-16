@@ -28,7 +28,7 @@ ts_library(
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = NODE_ONLY + UTILS,
@@ -49,7 +49,7 @@ ts_library(
 
 ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         NODE_ONLY,
         exclude = UTILS,
@@ -73,6 +73,10 @@ jasmine_node_test(
         "//packages/animations:npm_package",
         "//packages/common:npm_package",
         "//packages/core:npm_package",
+    ],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
     ],
     deps = [
         ":test_lib",

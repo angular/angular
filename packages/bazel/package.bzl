@@ -26,6 +26,7 @@ def rules_angular_dependencies():
         name = "build_bazel_rules_typescript",
         url = "https://github.com/bazelbuild/rules_typescript/archive/0.20.3.zip",
         strip_prefix = "rules_typescript-0.20.3",
+        sha256 = "2a03b23c30c5109ab0863cfa60acce73ceb56337d41efc2dd67f8455a1c1d5f3",
     )
 
     # Needed for Remote Execution

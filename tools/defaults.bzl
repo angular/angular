@@ -44,7 +44,7 @@ PKG_GROUP_REPLACEMENTS = {
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
 
-def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
+def ts_library(tsconfig = None, testonly = False, deps = [], tags = [], **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@ngdeps//tslib"]
     if testonly:
@@ -56,15 +56,17 @@ def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
             tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
             tsconfig = _DEFAULT_TSCONFIG_BUILD
+
     _ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
         node_modules = _DEFAULT_TS_TYPINGS,
+        tags = ivy_tags(tags),
         **kwargs
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], tags = [], **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@ngdeps//tslib"]
     if testonly:
@@ -88,6 +90,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         node_modules = _DEFAULT_TS_TYPINGS,
+        tags = ivy_tags(tags),
         **kwargs
     )
 
@@ -183,7 +186,7 @@ def nodejs_binary(**kwargs):
         **kwargs
     )
 
-def jasmine_node_test(deps = [], **kwargs):
+def jasmine_node_test(deps = [], tags = [], **kwargs):
     """Default values for jasmine_node_test"""
     deps = deps + [
         # Very common dependencies for tests
@@ -198,6 +201,7 @@ def jasmine_node_test(deps = [], **kwargs):
     ]
     _jasmine_node_test(
         deps = deps,
+        tags = ivy_tags(tags),
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
         **kwargs
@@ -212,3 +216,15 @@ def ng_rollup_bundle(deps = [], **kwargs):
         deps = deps,
         **kwargs
     )
+
+def ivy_tags(tags):
+    """Sets inclusive ivy-jit and ivy-local tags"""
+
+    # Set the tags by default unless no-ivy-jit, no-ivy-local, fixme-ivy-jit, or fixme-ivy-local were specified
+    if not tags:
+        tags = ["ivy-jit", "ivy-local"]
+    elif "no-ivy-jit" not in tags and "fixme-ivy-jit" not in tags:
+        tags = tags + ["ivy-jit"]
+    elif "no-ivy-local" not in tags and "fixme-ivy-local" not in tags:
+        tags = tags + ["ivy-local"]
+    return tags

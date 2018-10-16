@@ -11,8 +11,9 @@ import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChil
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {InjectableAnimationEngine} from '../../animations/src/providers';
+
 import {el} from '../../testing/src/browser_util';
+import {InjectableAnimationEngine} from '../src/providers';
 
 (function() {
   if (isNode) return;
@@ -282,7 +283,7 @@ import {el} from '../../testing/src/browser_util';
       @Component({
         selector: 'my-cmp',
         template: `
-          <div [@myAnimation]="exp"></div> 
+          <div [@myAnimation]="exp"></div>
         `,
         animations: [trigger('myAnimation', [])]
       })

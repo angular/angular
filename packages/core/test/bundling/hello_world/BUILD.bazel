@@ -31,7 +31,7 @@ ng_rollup_bundle(
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["*_spec.ts"]),
     deps = [
         "//packages:types",
