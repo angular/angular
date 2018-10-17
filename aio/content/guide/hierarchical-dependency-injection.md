@@ -25,7 +25,7 @@ When you specify providers in the `@Injectable()` decorator of the service itsel
 
 You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the [Angular CLI](cli) uses when you generate a service for your app.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 <header>Platform injector</header>
 
 When you use `providedIn:'root'`, you are configuring the root injector for the _app_, which is the injector for `AppModule`.
