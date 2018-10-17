@@ -324,8 +324,8 @@ Here's the brief markup that produced that lengthy snippet:
 You identified the snippet's source file by setting the `path` attribute to sample folder's location _within_ `content/examples`.
 In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 
-You added a header to tell the reader where to find the file by setting the `title` attribute.
-Following convention, you set the `title` attribute to the file's location within the sample's root folder.
+You added a header to tell the reader where to find the file by setting the `header` attribute.
+Following convention, you set the `header` attribute to the file's location within the sample's root folder.
 
 <div class="alert is-helpful">
 
@@ -357,7 +357,7 @@ You control the _code-example_ output by setting one or more of its attributes:
 
 * `path`- the path to the file in the `content/examples` folder.
 
-* `title`- the header of the code listing.
+* `header`- the header of the code listing.
 
 * `region`- displays the source file fragment with that region name; regions are identified by _docregion_ markup in the source file, as explained [below](#region "Displaying a code fragment").
 
@@ -395,7 +395,7 @@ A couple of observations:
 
 1. The `region` value, `"class"`, is the name of the `#docregion` in the source file. Confirm that by looking at `content/examples/docs-style-guide/src/app/app.module.ts`
 
-1. Omitting the `title` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
+1. Omitting the `header` is fine when the source of the fragment is obvious. We just said that this is a fragment of the `app.module.ts` file which was displayed immediately above, in full, with a header.
 There's no need to repeat the header.
 
 1. The line numbers disappeared. By default, the doc viewer omits line numbers when there are fewer than 10 lines of code; it adds line numbers after that. You can turn line numbers on or off explicitly by setting the `linenums` attribute.
@@ -434,10 +434,10 @@ Code tabs display code much like _code examples_ do.  The added advantage is tha
 #### Code-pane attributes
 
 * `path` - a file in the content/examples folder
-* `title` - seen in the header of a tab
+* `header` - seen in the header of a tab
 * `linenums` - overrides the `linenums` property at the `code-tabs` level for this particular pane. The value can be `true`, `false` or a number indicating the starting line number. If not specified, line numbers are enabled only when the number of lines of code are greater than 10.
 
-The next example displays multiple code tabs, each with its own title.
+The next example displays multiple code tabs, each with its own header.
 It demonstrates control over display of line numbers at both the `<code-tabs>` and `<code-pane>` levels.
 
 <code-tabs linenums="false">
