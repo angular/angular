@@ -9,7 +9,7 @@
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, flush, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
@@ -2014,6 +2014,59 @@ describe('Integration', () => {
              advance(fixture);
              expect(location.path()).toEqual('/');
              expect(fixture.nativeElement).toHaveText('simple');
+           })));
+      });
+
+      describe('should redirect when guard returns UrlTree', () => {
+        beforeEach(() => TestBed.configureTestingModule({
+          providers: [{
+            provide: 'returnUrlTree',
+            useFactory: (router: Router) => () => { return router.parseUrl('/redirected'); },
+            deps: [Router]
+          }]
+        }));
+
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const recordedEvents: any[] = [];
+             let cancelEvent: NavigationCancel = null !;
+             router.events.forEach((e: any) => {
+               recordedEvents.push(e);
+               if (e instanceof NavigationCancel) cancelEvent = e;
+             });
+             router.resetConfig([
+               {path: '', component: SimpleCmp},
+               {path: 'one', component: RouteCmp, canActivate: ['returnUrlTree']},
+               {path: 'redirected', component: SimpleCmp}
+             ]);
+
+             const fixture = TestBed.createComponent(RootCmp);
+             router.navigateByUrl('/one');
+
+             advance(fixture);
+
+             expect(location.path()).toEqual('/redirected');
+             expect(fixture.nativeElement).toHaveText('simple');
+             expect(cancelEvent && cancelEvent.reason)
+                 .toBe('NavigationCancelingError: Redirecting to "/redirected"');
+             expectEvents(recordedEvents, [
+               [NavigationStart, '/one'],
+               [RoutesRecognized, '/one'],
+               [GuardsCheckStart, '/one'],
+               [ChildActivationStart, undefined],
+               [ActivationStart, undefined],
+               [NavigationCancel, '/one'],
+               [NavigationStart, '/redirected'],
+               [RoutesRecognized, '/redirected'],
+               [GuardsCheckStart, '/redirected'],
+               [ChildActivationStart, undefined],
+               [ActivationStart, undefined],
+               [GuardsCheckEnd, '/redirected'],
+               [ResolveStart, '/redirected'],
+               [ResolveEnd, '/redirected'],
+               [ActivationEnd, undefined],
+               [ChildActivationEnd, undefined],
+               [NavigationEnd, '/redirected'],
+             ]);
            })));
       });
 
