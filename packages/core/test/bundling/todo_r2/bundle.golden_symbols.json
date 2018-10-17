@@ -60,6 +60,9 @@
     "name": "BROWSER_SANITIZATION_PROVIDERS"
   },
   {
+    "name": "BoundPlayerFactory"
+  },
+  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -129,6 +132,9 @@
     "name": "ChangeDetectorRef"
   },
   {
+    "name": "ClassAndStylePlayerBuilder"
+  },
+  {
     "name": "CommonModule"
   },
   {
@@ -163,6 +169,9 @@
   },
   {
     "name": "Console"
+  },
+  {
+    "name": "CorePlayerHandler"
   },
   {
     "name": "CurrencyPipe"
@@ -1170,6 +1179,9 @@
     "name": "addDateMinutes"
   },
   {
+    "name": "addPlayerInternal"
+  },
+  {
     "name": "addRemoveViewFromContainer"
   },
   {
@@ -1177,6 +1189,9 @@
   },
   {
     "name": "adjustBlueprintForNewNode"
+  },
+  {
+    "name": "allocPlayerContext"
   },
   {
     "name": "allocStylingContext"
@@ -1794,6 +1809,15 @@
     "name": "getPlatform"
   },
   {
+    "name": "getPlayerBuilder"
+  },
+  {
+    "name": "getPlayerBuilderIndex"
+  },
+  {
+    "name": "getPlayerContext"
+  },
+  {
     "name": "getPluralCategory"
   },
   {
@@ -1822,6 +1846,12 @@
   },
   {
     "name": "getRendererFactory"
+  },
+  {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
   },
   {
     "name": "getStyleSanitizer"
@@ -1867,6 +1897,9 @@
   },
   {
     "name": "hasOnDestroy"
+  },
+  {
+    "name": "hasPlayerBuilderChanged"
   },
   {
     "name": "hasValueChanged"
@@ -2262,7 +2295,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderStyling"
+    "name": "renderStyleAndClassBindings"
   },
   {
     "name": "resetComponentState"
@@ -2316,6 +2349,9 @@
     "name": "setContextDirty"
   },
   {
+    "name": "setContextPlayersDirty"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
@@ -2335,6 +2371,12 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setPlayerBuilder"
+  },
+  {
+    "name": "setPlayerBuilderIndex"
   },
   {
     "name": "setProp"

@@ -6,13 +6,16 @@
     "name": "AnimationWorldComponent"
   },
   {
-    "name": "AnimationWorldComponent_div_Template_4"
+    "name": "AnimationWorldComponent_div_Template_6"
   },
   {
     "name": "BINDING_INDEX"
   },
   {
     "name": "BLOOM_MASK"
+  },
+  {
+    "name": "BoundPlayerFactory"
   },
   {
     "name": "CIRCULAR$1"
@@ -31,6 +34,9 @@
   },
   {
     "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ClassAndStylePlayerBuilder"
   },
   {
     "name": "CorePlayerHandler"
@@ -213,6 +219,9 @@
     "name": "ViewRef"
   },
   {
+    "name": "WebAnimationsPlayer"
+  },
+  {
     "name": "_CLEAN_PROMISE"
   },
   {
@@ -252,6 +261,9 @@
     "name": "_c3"
   },
   {
+    "name": "_c4"
+  },
+  {
     "name": "_currentInjector"
   },
   {
@@ -279,6 +291,9 @@
     "name": "addPlayer"
   },
   {
+    "name": "addPlayerInternal"
+  },
+  {
     "name": "addRemoveViewFromContainer"
   },
   {
@@ -291,6 +306,9 @@
     "name": "allocStylingContext"
   },
   {
+    "name": "animateStyleFactory"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -301,6 +319,9 @@
   },
   {
     "name": "bind"
+  },
+  {
+    "name": "bindPlayerFactory"
   },
   {
     "name": "bindingRootIndex"
@@ -645,6 +666,15 @@
     "name": "getPipeDef"
   },
   {
+    "name": "getPlayerBuilder"
+  },
+  {
+    "name": "getPlayerBuilderIndex"
+  },
+  {
+    "name": "getPlayerContext"
+  },
+  {
     "name": "getPointers"
   },
   {
@@ -672,7 +702,13 @@
     "name": "getRootContext"
   },
   {
+    "name": "getRootContext$2"
+  },
+  {
     "name": "getRootView"
+  },
+  {
+    "name": "getRootView$1"
   },
   {
     "name": "getStyleSanitizer"
@@ -697,6 +733,9 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "hasPlayerBuilderChanged"
   },
   {
     "name": "hasValueChanged"
@@ -798,6 +837,9 @@
     "name": "listener"
   },
   {
+    "name": "loadContext"
+  },
+  {
     "name": "locateHostElement"
   },
   {
@@ -808,6 +850,9 @@
   },
   {
     "name": "makeParamDecorator"
+  },
+  {
+    "name": "markDirty"
   },
   {
     "name": "markDirtyIfOnPush"
@@ -900,7 +945,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderStyling"
+    "name": "renderStyleAndClassBindings"
   },
   {
     "name": "resetComponentState"
@@ -933,6 +978,9 @@
     "name": "setContextDirty"
   },
   {
+    "name": "setContextPlayersDirty"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
@@ -952,6 +1000,12 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setPlayerBuilder"
+  },
+  {
+    "name": "setPlayerBuilderIndex"
   },
   {
     "name": "setProp"

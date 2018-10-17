@@ -163,6 +163,7 @@ export {
 
 export {
   Player as ɵPlayer,
+  PlayerFactory as ɵPlayerFactory,
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
 } from './render3/interfaces/player';
@@ -172,9 +173,13 @@ export {
 } from './render3/interfaces/context';
 
 export {
+  bindPlayerFactory as ɵbindPlayerFactory,
+} from './render3/styling/player_factory';
+
+export {
   addPlayer as ɵaddPlayer,
   getPlayers as ɵgetPlayers,
-} from './render3/player';
+} from './render3/players';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.

@@ -14,6 +14,8 @@ export class MockPlayer implements Player {
   state: PlayState = PlayState.Pending;
   private _listeners: {[state: string]: (() => any)[]} = {};
 
+  constructor(public value?: any) {}
+
   play(): void {
     if (this.state === PlayState.Running) return;
 
