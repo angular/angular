@@ -17,7 +17,22 @@ var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.7.0
 
 # Define common ENV vars
 var_3: &define_env_vars
-  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
+  run:
+    name: Define environment variables
+    command: |
+      echo "export PROJECT_ROOT=$(pwd)" | tee -a $BASH_ENV
+      echo "export CI_AIO_MIN_PWA_SCORE=95" | tee -a $BASH_ENV
+      # This is the branch being built; e.g. `pull/12345` for PR builds.
+      echo "export CI_BRANCH=$CIRCLE_BRANCH" | tee -a $BASH_ENV
+      echo "export CI_COMMIT=$CIRCLE_SHA1" | tee -a $BASH_ENV
+      # TODO(gkalpak): Fix this.
+      echo "export CI_COMMIT_RANGE=???" | tee -a $BASH_ENV
+      echo "export CI_PULL_REQUEST=${CIRCLE_PR_NUMBER:-false}" | tee -a $BASH_ENV
+      echo "export CI_REPO_NAME=$CIRCLE_PROJECT_REPONAME" | tee -a $BASH_ENV
+      echo "export CI_REPO_OWNER=$CIRCLE_PROJECT_USERNAME" | tee -a $BASH_ENV
+      # WARNING: Secrets (do not print).
+      echo "export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=$AIO_DEPLOY_TOKEN" >> $BASH_ENV
+      echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=$ANGULAR_PAYLOAD_TOKEN" >> $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache
@@ -29,7 +44,7 @@ var_4: &setup-bazel-remote-cache
 var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
-    command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
+    command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
 
 # Settings common to each job
 anchor_1: &job_defaults
@@ -41,7 +56,7 @@ anchor_1: &job_defaults
 # Similar to travis behavior, but not quite the same.
 # See https://discuss.circleci.com/t/1662
 anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
+  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
 
 version: 2
 jobs:
@@ -49,6 +64,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
@@ -137,28 +153,30 @@ jobs:
       - *setup_bazel_remote_execution
       - run: bazel test //... --define=compile=aot --build_tag_filters=ivy-aot --test_tag_filters=ivy-aot
 
-  # This job should only be run on PR builds, where `CIRCLE_PR_NUMBER` is defined.
+  # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
     <<: *job_defaults
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
       - run: yarn install --frozen-lockfile --non-interactive
-      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CIRCLE_PR_NUMBER $CIRCLE_SHA1
+      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
           # The `destination` needs to be kept in synch with the value of
           # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
           destination: aio/dist/aio-snapshot.tgz
 
-  # This job should only be run on PR builds, where `CIRCLE_PR_NUMBER` is defined.
+  # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
     <<: *job_defaults
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       - restore_cache:
@@ -166,9 +184,7 @@ jobs:
       - run: yarn install --cwd aio --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
-          command: |
-            source "./scripts/ci/env.sh" print
-            xvfb-run --auto-servernum node aio/scripts/test-preview.js $CIRCLE_PR_NUMBER $CIRCLE_SHA1 $AIO_MIN_PWA_SCORE
+          command: xvfb-run --auto-servernum node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
 
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
@@ -223,15 +239,16 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
+      - *define_env_vars
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
       - run:
           name: Skip this job for Pull Requests and Fork builds
           # Note, `|| true` on the end makes this step always exit 0
           command: '[[
-              -v CIRCLE_PR_NUMBER
-              || "$CIRCLE_PROJECT_USERNAME" != "angular"
-              || "$CIRCLE_PROJECT_REPONAME" != "angular"
+              "$CI_PULL_REQUEST" != "false"
+              || "$CI_REPO_OWNER" != "angular"
+              || "$CI_REPO_NAME" != "angular"
           ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
@@ -249,15 +266,14 @@ jobs:
   aio_monitoring:
     <<: *job_defaults
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
       - run:
           name: Run tests against the deployed apps
-          command: |
-            source "./scripts/ci/env.sh" print
-            xvfb-run --auto-servernum ./aio/scripts/test-production.sh $AIO_MIN_PWA_SCORE
+          command: xvfb-run --auto-servernum ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
 
 workflows:
   version: 2
