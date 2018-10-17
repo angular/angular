@@ -491,7 +491,7 @@ describe('event listeners', () => {
         selectors: [['comp']],
         consts: 2,
         vars: 0,
-        /** <button (click)="onClick(data.a, data.b, data.c)"> Click me </button> */
+        /** <button (click)="onClick(data.a, data.b)"> Click me </button> */
         template: function CompTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'button');

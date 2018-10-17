@@ -469,7 +469,7 @@ describe('ngtsc behavioral tests', () => {
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('onChange', ['arg1', 'arg2', 'arg3'])
+          @HostListener('change', ['arg1', 'arg2', 'arg3'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -490,7 +490,7 @@ describe('ngtsc behavioral tests', () => {
         i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) {
           return f.onClick($event);
         });
-        i0.ɵlistener("onChange", function FooCmp_onChange_HostBindingHandler($event) {
+        i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) {
           return f.onChange(f.arg1, f.arg2, f.arg3);
         });
         return f;
@@ -510,7 +510,7 @@ describe('ngtsc behavioral tests', () => {
           selector: '[test]',
         })
         class Dir extends Base {
-          @HostListener('onChange', ['arg'])
+          @HostListener('change', ['arg'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -520,7 +520,7 @@ describe('ngtsc behavioral tests', () => {
     const factoryDef = `
       factory: function Dir_Factory(t) {
         var f = ɵDir_BaseFactory((t || Dir));
-        i0.ɵlistener("onChange", function Dir_onChange_HostBindingHandler($event) {
+        i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) {
           return f.onChange(f.arg);
         });
         return f;
