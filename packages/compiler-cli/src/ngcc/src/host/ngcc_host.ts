@@ -9,8 +9,8 @@ import * as ts from 'typescript';
 import {ReflectionHost} from '../../../ngtsc/host';
 import {DecoratedFile} from './decorated_file';
 
-export const PRE_NGCC_MARKER = '__PRE_NGCC__';
-export const POST_NGCC_MARKER = '__POST_NGCC__';
+export const PRE_NGCC_MARKER = '__PRE_R3__';
+export const POST_NGCC_MARKER = '__POST_R3__';
 
 export type SwitchableVariableDeclaration = ts.VariableDeclaration & {initializer: ts.Identifier};
 export function isSwitchableVariableDeclaration(node: ts.Node):

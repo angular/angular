@@ -141,9 +141,6 @@
     "name": "Compiler"
   },
   {
-    "name": "CompilerFactory"
-  },
-  {
     "name": "ComponentFactory"
   },
   {
@@ -681,21 +678,6 @@
     "name": "R3Injector"
   },
   {
-    "name": "R3_CHANGE_DETECTOR_REF_FACTORY"
-  },
-  {
-    "name": "R3_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "R3_RENDERER2_FACTORY"
-  },
-  {
-    "name": "R3_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
-  },
-  {
     "name": "REMOVE_EVENT_LISTENER"
   },
   {
@@ -757,6 +739,21 @@
   },
   {
     "name": "SURROGATE_PAIR_REGEXP"
+  },
+  {
+    "name": "SWITCH_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_RENDERER2_FACTORY"
+  },
+  {
+    "name": "SWITCH_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "SafeHtmlImpl"
@@ -1281,7 +1278,7 @@
     "name": "compileNgModuleFactory"
   },
   {
-    "name": "compileNgModuleFactory__PRE_NGCC__"
+    "name": "compileNgModuleFactory__POST_R3__"
   },
   {
     "name": "componentRefresh"
@@ -2157,10 +2154,10 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop$1"
+    "name": "noop$2"
   },
   {
-    "name": "noop$2"
+    "name": "noop$3"
   },
   {
     "name": "noopScope"

@@ -33,9 +33,9 @@ let _platform: PlatformRef;
 
 let compileNgModuleFactory:
     <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
-        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_NGCC__;
+        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
 
-function compileNgModuleFactory__PRE_NGCC__<M>(
+function compileNgModuleFactory__PRE_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   const compilerFactory: CompilerFactory = injector.get(CompilerFactory);
@@ -43,7 +43,7 @@ function compileNgModuleFactory__PRE_NGCC__<M>(
   return compiler.compileModuleAsync(moduleType);
 }
 
-export function compileNgModuleFactory__POST_NGCC__<M>(
+export function compileNgModuleFactory__POST_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);

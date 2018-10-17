@@ -6,4 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './ivy_switch_on';
+export function noop(...args: any[]): any {
+  // Do nothing.
+}

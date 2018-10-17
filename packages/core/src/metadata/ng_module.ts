@@ -7,8 +7,10 @@
  */
 
 import {ApplicationRef} from '../application_ref';
+import {InjectorType, defineInjector} from '../di/defs';
 import {Provider} from '../di/provider';
-import {R3_COMPILE_NGMODULE} from '../ivy_switch/compiler/index';
+import {convertInjectableProviderToFactory} from '../di/util';
+import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -334,7 +336,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: Type<any>, meta: NgModule) => R3_COMPILE_NGMODULE(type, meta));
+    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description
@@ -356,3 +358,21 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  *
  */
 export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+
+function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+  let imports = (metadata && metadata.imports) || [];
+  if (metadata && metadata.exports) {
+    imports = [...imports, metadata.exports];
+  }
+
+  moduleType.ngInjectorDef = defineInjector({
+    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+    providers: metadata && metadata.providers,
+    imports: imports,
+  });
+}
+
+
+export const SWITCH_COMPILE_NGMODULE__POST_R3__ = render3CompileNgModule;
+const SWITCH_COMPILE_NGMODULE__PRE_R3__ = preR3NgModuleCompile;
+const SWITCH_COMPILE_NGMODULE: typeof render3CompileNgModule = SWITCH_COMPILE_NGMODULE__PRE_R3__;
