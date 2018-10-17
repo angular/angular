@@ -343,7 +343,7 @@ const DIST_FOLDER = join(process.cwd(), 'dist');
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
@@ -385,7 +385,6 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
 <code-example format="." language="typescript" linenums="false">
-@NgModule({
 const path = require('path');
 const webpack = require('webpack');
 
@@ -441,20 +440,20 @@ Now let's create a few handy scripts to help us do all of this in the future.
 You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
 
 <code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
+{  
+  "depencies": { ... }
+  "devDependencies": { ... },
+   "scripts": {
+    // Common scripts
+    "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+    "serve:ssr": "node dist/server.js",
 
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
+    // Helpers for the scripts
+    "build:client-and-server-bundles": "ng build --prod && ng run <PROJECT_NAME>:server --output-hashing=none",
+    "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+  }
    ...
+}
 </code-example>
 
 To run a production build of your app with Universal on your local system, use the following command.
