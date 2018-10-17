@@ -76,7 +76,7 @@ See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/to
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
-- `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This is done by generating the [`src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) file from [`ivy_switch_legacy.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_legacy.ts) (default), [`ivy_switch_jit.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_jit.ts), or [`ivy_switch_local.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_local.ts).
+- `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This switches which compiler is used (ngc, ngtsc, or a tsc pass-through mode).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
     - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
     - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`

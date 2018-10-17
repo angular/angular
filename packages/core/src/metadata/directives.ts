@@ -8,10 +8,12 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch/compiler/index';
 import {NG_BASE_DEF} from '../render3/fields';
+import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
+import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {noop} from '../util/noop';
 import {fillProperties} from '../util/property';
 
 import {ViewEncapsulation} from './view';
@@ -350,7 +352,7 @@ export interface Directive {
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => R3_COMPILE_DIRECTIVE(type, meta));
+    (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta));
 
 /**
  * Component decorator interface
@@ -634,7 +636,8 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined, (type: Type<any>, meta: Component) => R3_COMPILE_COMPONENT(type, meta));
+    Directive, undefined,
+    (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
@@ -682,7 +685,7 @@ export interface Pipe {
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => R3_COMPILE_PIPE(type, meta));
+    (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta));
 
 
 /**
@@ -949,3 +952,17 @@ export interface HostListener {
  */
 export const HostListener: HostListenerDecorator =
     makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
+
+
+
+export const SWITCH_COMPILE_COMPONENT__POST_R3__ = render3CompileComponent;
+export const SWITCH_COMPILE_DIRECTIVE__POST_R3__ = render3CompileDirective;
+export const SWITCH_COMPILE_PIPE__POST_R3__ = render3CompilePipe;
+
+const SWITCH_COMPILE_COMPONENT__PRE_R3__ = noop;
+const SWITCH_COMPILE_DIRECTIVE__PRE_R3__ = noop;
+const SWITCH_COMPILE_PIPE__PRE_R3__ = noop;
+
+const SWITCH_COMPILE_COMPONENT: typeof render3CompileComponent = SWITCH_COMPILE_COMPONENT__PRE_R3__;
+const SWITCH_COMPILE_DIRECTIVE: typeof render3CompileDirective = SWITCH_COMPILE_DIRECTIVE__PRE_R3__;
+const SWITCH_COMPILE_PIPE: typeof render3CompilePipe = SWITCH_COMPILE_PIPE__PRE_R3__;

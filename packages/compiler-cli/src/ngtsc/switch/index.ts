@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './ivy_switch_on';
+export {ivySwitchTransform} from './src/switch';

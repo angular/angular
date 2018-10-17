@@ -55,15 +55,15 @@ var C = (function() {
   return C;
 }());
 
-var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
-var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
-function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
+var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
+function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
   const compilerFactory = injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler([options]);
   return compiler.compileModuleAsync(moduleType);
 }
 
-function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
   ngDevMode && assertNgModuleType(moduleType);
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
@@ -166,17 +166,15 @@ var A = (function() {`);
       renderer.rewriteSwitchableDeclarations(
           output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
       expect(output.toString())
-          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
       expect(output.toString())
-          .toContain(`var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+          .toContain(`var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
       expect(output.toString())
-          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
     });
   });
 
