@@ -40,7 +40,7 @@ This initial app is the *default app* for CLI commands (unless you change the de
 A newly generated app contains the source files for a root module, with a root component and template. 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the initial app.
 
-<div class="alert-is-helpful>
+<div class="alert is-helpful>
 
  Besides using the CLI on the command line, You can also use an interactive development environment like [Angular Console](https://angular.console.com), or manipulate files directly in the app's source folder and configuration files.
 
