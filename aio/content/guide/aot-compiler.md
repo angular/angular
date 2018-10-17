@@ -41,7 +41,7 @@ For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-
 
 The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
 
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki) for details, especially the [`build` topic](https://github.com/angular/angular-cli/wiki/build).
+See the [CLI documentation](cli) for details, especially the [`build` topic](cli/build).
 
 </div>
 
