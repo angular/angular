@@ -9,14 +9,14 @@ load(
     ":external.bzl",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
-    "DEPS_ASPECTS",
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
+    "DEPS_ASPECTS",
+    "NodeModuleInfo",
     "collect_node_modules_aspect",
     "compile_ts",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
-    "NodeModuleInfo",
 )
 
 def compile_strategy(ctx):
