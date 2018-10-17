@@ -52,6 +52,14 @@ var_8: &copy_bazel_config
   # Set up the CircleCI specific bazel configuration.
   run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
 
+# Sets up a different Docker image that includes a moe recent Firefox version which
+# is needed for headless testing.
+var_9: &docker-firefox-image
+  # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
+  # ngcontainer image does include an old Firefox version that does not support headless.
+  # See the PR that fixes this: https://github.com/angular/angular/pull/26435
+  - image: circleci/node:10.12-browsers
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -85,11 +93,7 @@ jobs:
   # The available browsers are installed through the angular/ngcontainer Docker image.
   # ------------------------------------------------------------------------------------------
   tests_local_browsers:
-    docker:
-      # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
-      # ngcontainer image does include an old Firefox version that does not support headless.
-      # See the PR that fixes this: https://github.com/angular/angular/pull/26435
-      - image: circleci/node:10.12-browsers
+    docker: *docker-firefox-image
     resource_class: xlarge
     environment:
       TEST_PLATFORM: local
@@ -101,6 +105,23 @@ jobs:
       # Launches the unit tests. The platform is determined by the "TEST_PLATFORM" environment
       # variable which has been configured above
       - run: yarn gulp ci:test
+
+      - *save_cache
+
+  # ----------------------------------------------------------------
+  # Job that runs the e2e tests with Protractor and Chrome w/ Xvfb. We cannot use
+  # Chrome headless because our tests rely on APIs which are not testable in headless mode.
+  # For example: the Fullscreen browser API.
+  # ----------------------------------------------------------------
+  e2e_tests:
+    docker: *docker-firefox-image
+    resource_class: xlarge
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+
+      - run: xvfb-run -a --server-args='-screen 0, 1024x768x16' yarn gulp ci:e2e
 
       - *save_cache
 
@@ -137,6 +158,10 @@ workflows:
   unit_tests:
     jobs:
       - tests_local_browsers
+
+  integration_tests:
+    jobs:
+      - e2e_tests
 
   # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
   lint:
