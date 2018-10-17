@@ -39,6 +39,7 @@ merge:
       - "packages/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
+      - "packages/bazel/*.bzl"
       - "packages/language-service/**"
       - "**/.gitignore"
       - "**/.gitkeep"
