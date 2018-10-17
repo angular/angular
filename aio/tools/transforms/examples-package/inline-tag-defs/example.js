@@ -31,8 +31,14 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
       const sourceCode = getExampleRegion(doc, relativePath, regionName);
 
       const attributes = [];
+      if (relativePath) attributes.push(` path="${relativePath}"`);
+      if (regionName) attributes.push(` region="${regionName}"`);
       if (header) attributes.push(` header="${header}"`);
       if (linenums !== undefined) attributes.push(` linenums="${linenums}"`);
+
+      // Preserve the no-longer-supported `title` attribute,
+      // in order to throw an appropriate error in `renderExamples` later.
+      if (tagArgs.title) attributes.push(` title="${tagArgs.title}"`);
 
       return '<code-example' + attributes.join('') + '>\n' + sourceCode + '\n</code-example>';
     }
