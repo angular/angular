@@ -43,6 +43,10 @@ $mat-list-item-inset-divider-offset: 72px;
   height: $base-height;
   -webkit-tap-highlight-color: transparent;
 
+  // Override the user agent styling if the list item is a button.
+  width: 100%;
+  padding: 0;
+
   .mat-list-item-content {
     display: flex;
     flex-direction: row;
