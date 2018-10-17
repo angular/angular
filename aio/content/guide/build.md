@@ -289,7 +289,7 @@ Autoprefixer looks for the Browserlist configuration when it prefixes your CSS.
 
 See the [browserslist repo](https://github.com/ai/browserslist) for more examples of how to target specific browsers and versions.
 
-<div class="alert is-helpful">>
+<div class="alert is-helpful">
 Backward compatibility
 
 If you want to produce a progressive web app and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following browserslist entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
@@ -309,7 +309,7 @@ If you want to produce a progressive web app and are using [Lighthouse](https://
 ## Proxying to a backend server
 
 You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserver-proxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
-For example, to divert all calls for http://localhost:4200/api to a server running on http://localhost:3000/api, take the following steps.
+For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
 1. Create a file `proxy.conf.json` in the projects `src/` folder, next to `package.json`.
 
