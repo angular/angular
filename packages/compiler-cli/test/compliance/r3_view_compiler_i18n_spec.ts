@@ -580,8 +580,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
-            $r3$.ɵelementStart(2, "span");
-            $r3$.ɵelementEnd();
+            $r3$.ɵelement(2, "span");
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(3, "div");
@@ -589,8 +588,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵpipe(5, "uppercase");
             $r3$.ɵelementStart(6, "div");
             $r3$.ɵelementStart(7, "div");
-            $r3$.ɵelementStart(8, "span");
-            $r3$.ɵelementEnd();
+            $r3$.ɵelement(8, "span");
             $r3$.ɵelementEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
@@ -724,9 +722,8 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵelementStart(1, "div");
             $r3$.ɵi18nStart(2, $MSG_APP_SPEC_TS__1$);
-            $r3$.ɵelementStart(3, "div");
+            $r3$.ɵelement(3, "div");
             $r3$.ɵpipe(4, "uppercase");
-            $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementEnd();
@@ -804,8 +801,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 2);
             $r3$.ɵelementStart(1, "div");
-            $r3$.ɵelementStart(2, "div");
-            $r3$.ɵelementEnd();
+            $r3$.ɵelement(2, "div");
             $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
           }
@@ -839,9 +835,8 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 3);
             $r3$.ɵelementStart(1, "div");
-            $r3$.ɵelementStart(2, "div");
+            $r3$.ɵelement(2, "div");
             $r3$.ɵpipe(3, "uppercase");
-            $r3$.ɵelementEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
           }

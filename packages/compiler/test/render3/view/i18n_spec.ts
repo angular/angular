@@ -50,7 +50,7 @@ describe('I18nContext', () => {
     const childCtx = ctx.forkChildContext(6, templateIndex);
     expect(childCtx.getContent()).toBe('');
     expect(childCtx.getBindings().size).toBe(0);
-    expect(childCtx.getRef()).toBe(ctx.getRef()); // ref should be passed into child ctx
+    expect(childCtx.getRef()).toBe(ctx.getRef());  // ref should be passed into child ctx
     expect(childCtx.isRoot()).toBe(false);
 
     childCtx.appendText('Bar');

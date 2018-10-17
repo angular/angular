@@ -522,8 +522,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const implicit = o.variable(CONTEXT_NAME);
 
+    if (this.i18n) {
+      this.i18n.appendElement(elementIndex);
+    }
+
+    const hasChildren = () => {
+      if (!isI18nRootElement && this.i18n) {
+        // we do not append text node instructions inside i18n section, so we
+        // exclude them while calculating whether current element has children
+        return element.children.find(
+            child => !(child instanceof t.Text || child instanceof t.BoundText));
+      }
+      return element.children.length > 0;
+    };
+
     const createSelfClosingInstruction = !hasStylingInstructions && !isNgContainer &&
-        element.children.length === 0 && element.outputs.length === 0 && i18nAttrs.length === 0;
+        element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
@@ -538,10 +552,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       if (isI18nRootElement) {
         this.i18nStart(element.sourceSpan, i18nMeta);
-      } else {
-        if (this.i18n) {
-          this.i18n.appendElement(elementIndex);
-        }
       }
 
       // process i18n element attributes
@@ -736,15 +746,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Traverse element child nodes
     t.visitAll(this, element.children);
 
+    if (!isI18nRootElement && this.i18n) {
+      this.i18n.appendElement(elementIndex, true);
+    }
+
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
       const span = element.endSourceSpan || element.sourceSpan;
       if (isI18nRootElement) {
         this.i18nEnd(span);
-      } else {
-        if (this.i18n) {
-          this.i18n.appendElement(elementIndex, true);
-        }
       }
       if (isNonBindableMode) {
         this.creationInstruction(span, R3.enableBindings);
