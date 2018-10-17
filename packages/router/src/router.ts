@@ -8,7 +8,7 @@
 
 import {Location} from '@angular/common';
 import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, isDevMode, ɵConsole as Console} from '@angular/core';
-import {BehaviorSubject, EMPTY, Observable, Subject, Subscription, of } from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, Subject, Subscription, defer, of } from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
 
 import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
@@ -25,10 +25,11 @@ import {DefaultRouteReuseStrategy, RouteReuseStrategy} from './route_reuse_strat
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, RouterState, RouterStateSnapshot, createEmptyState} from './router_state';
-import {Params, isNavigationCancelingError} from './shared';
+import {Params, isNavigationCancelingError, navigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
+import {isUrlTree} from './utils/type_guards';
 
 
 
@@ -487,6 +488,14 @@ export class Router {
                   })),
 
               checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
+              tap(t => {
+                if (isUrlTree(t.guardsResult)) {
+                  const error: Error&{url?: UrlTree} = navigationCancelingError(
+                      `Redirecting to "${this.serializeUrl(t.guardsResult)}"`);
+                  error.url = t.guardsResult;
+                  throw error;
+                }
+              }),
 
               tap(t => {
                 const guardsEnd = new GuardsCheckEnd(
@@ -602,11 +611,19 @@ export class Router {
                  * rather than an error. */
                 if (isNavigationCancelingError(e)) {
                   this.navigated = true;
-                  this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
+                  const redirecting = isUrlTree(e.url);
+                  if (!redirecting) {
+                    this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
+                  }
                   const navCancel =
                       new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), e.message);
                   eventsSubject.next(navCancel);
                   t.resolve(false);
+
+                  if (redirecting) {
+                    this.navigateByUrl(e.url);
+                  }
+
                   /* All other errors should reset to the router's internal URL reference to the
                    * pre-error state. */
                 } else {
@@ -815,7 +832,7 @@ export class Router {
           `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
     }
 
-    const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
+    const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
     return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
@@ -867,7 +884,7 @@ export class Router {
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
-    if (url instanceof UrlTree) {
+    if (isUrlTree(url)) {
       return containsTree(this.currentUrlTree, url, exact);
     }
 

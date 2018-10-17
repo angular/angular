@@ -672,10 +672,11 @@ function checkGuards(
     guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
   } as Partial<NavigationTransition>)
       .pipe(checkGuardsOperator(injector))
-      .subscribe(
-          t => {
-            if (t.guardsResult === null) throw new Error('Guard result expected');
-            return check(t.guardsResult);
-          },
-          (e) => { throw e; });
+      .subscribe({
+        next(t) {
+          if (t.guardsResult === null) throw new Error('Guard result expected');
+          return check(t.guardsResult);
+        },
+        error(e) { throw e; }
+      });
 }

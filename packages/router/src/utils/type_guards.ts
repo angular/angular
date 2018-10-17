@@ -7,6 +7,7 @@
  */
 
 import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../interfaces';
+import {UrlTree} from '../url_tree';
 
 /**
  * Simple function check, but generic so type inference will flow. Example:
@@ -29,6 +30,10 @@ export function isBoolean(v: any): v is boolean {
   return typeof v === 'boolean';
 }
 
+export function isUrlTree(v: any): v is UrlTree {
+  return v instanceof UrlTree;
+}
+
 export function isCanLoad(guard: any): guard is CanLoad {
   return guard && isFunction<CanLoad>(guard.canLoad);
 }
@@ -38,7 +43,7 @@ export function isCanActivate(guard: any): guard is CanActivate {
 }
 
 export function isCanActivateChild(guard: any): guard is CanActivateChild {
-  return guard && isFunction<CanActivateChild>(guard.canActivate);
+  return guard && isFunction<CanActivateChild>(guard.canActivateChild);
 }
 
 export function isCanDeactivate<T>(guard: any): guard is CanDeactivate<T> {

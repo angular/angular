@@ -10,6 +10,7 @@ import {Observable, OperatorFunction, combineLatest} from 'rxjs';
 import {filter, scan, startWith, switchMap, take} from 'rxjs/operators';
 
 import {UrlTree} from '../url_tree';
+import {isUrlTree} from '../utils/type_guards';
 
 const INITIAL_VALUE = Symbol('INITIAL_VALUE');
 declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
@@ -38,7 +39,7 @@ export function prioritizedGuardValue():
                       // navigation
                       if (val === false) return val;
 
-                      if (i === list.length - 1 || val instanceof UrlTree) {
+                      if (i === list.length - 1 || isUrlTree(val)) {
                         return val;
                       }
                     }
