@@ -1768,4 +1768,52 @@ describe('ViewContainerRef', () => {
     });
 
   });
+
+  describe('view engine compatibility', () => {
+
+    // https://stackblitz.com/edit/angular-xxpffd?file=src%2Findex.html
+    it('should allow injecting VCRef into the root (bootstrapped) component', () => {
+
+      const DynamicComponent =
+          createComponent('dynamic-cmpt', function(rf: RenderFlags, parent: any) {
+            if (rf & RenderFlags.Create) {
+              text(0, 'inserted dynamically');
+            }
+          }, 1, 0);
+
+      @Component({selector: 'app', template: ''})
+      class AppCmpt {
+        static ngComponentDef = defineComponent({
+          type: AppCmpt,
+          selectors: [['app']],
+          factory: () => new AppCmpt(
+                       directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: AppCmpt) => {}
+        });
+
+        constructor(
+            private _vcRef: ViewContainerRef, private _cfResolver: ComponentFactoryResolver) {}
+
+        insert() {
+          this._vcRef.createComponent(this._cfResolver.resolveComponentFactory(DynamicComponent));
+        }
+
+        clear() { this._vcRef.clear(); }
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+      fixture.component.insert();
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe('<div host="mark"></div><dynamic-cmpt>inserted dynamically</dynamic-cmpt>');
+
+      fixture.component.clear();
+      fixture.update();
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+    });
+  });
 });

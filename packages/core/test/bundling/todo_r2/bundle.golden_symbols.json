@@ -2124,6 +2124,9 @@
     "name": "isPromise$2"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "isScheduler"
   },
   {
@@ -2218,6 +2221,12 @@
   },
   {
     "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeNextSibling"
+  },
+  {
+    "name": "nativeParentNode"
   },
   {
     "name": "nextContext"

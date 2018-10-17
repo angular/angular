@@ -3804,6 +3804,9 @@
     "name": "isQuote"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "isScheduler"
   },
   {
@@ -3955,6 +3958,12 @@
   },
   {
     "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeNextSibling"
+  },
+  {
+    "name": "nativeParentNode"
   },
   {
     "name": "needsAdditionalRootNode"
