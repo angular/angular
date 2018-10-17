@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "button-toggle",
@@ -9,12 +9,13 @@ ng_module(
   module_name = "@angular/material/button-toggle",
   assets = [":button-toggle.css"] + glob(["**/*.html"]),
   deps = [
-    "//src/lib/core",
-    "//src/cdk/a11y",
-    "//src/cdk/coercion",
+    "@angular//packages/core",
+    "@angular//packages/forms",
     "//src/cdk/collections",
+    "//src/cdk/coercion",
+    "//src/cdk/a11y",
+    "//src/lib/core",
   ],
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup

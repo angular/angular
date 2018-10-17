@@ -1,13 +1,10 @@
 package(default_visibility=["//visibility:public"])
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-load("@angular//:index.bzl", "ng_package", "ng_module")
+
+load("@angular//:index.bzl", "ng_package")
 load("//tools:sass_bundle.bzl", "sass_bundle")
 load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "ROLLUP_GLOBALS",
     "VERSION_PLACEHOLDER_REPLACEMENTS")
-
-
-# Export the root material tsconfig so that subpackages can reference it directly.
-exports_files(["tsconfig-build.json"])
+load("//tools:defaults.bzl", "ng_module")
 
 # Root "@angular/material" entry-point.
 ng_module(
@@ -15,7 +12,6 @@ ng_module(
   srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material",
   deps = ["//src/lib/%s" % p for p in MATERIAL_PACKAGES],
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 sass_bundle(

@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "icon",
@@ -9,9 +9,15 @@ ng_module(
   module_name = "@angular/material/icon",
   assets = [":icon.css"] + glob(["**/*.html"]),
   deps = [
+    "@angular//packages/common",
+    "@angular//packages/common/http",
+    "@angular//packages/core",
+    "@angular//packages/platform-browser",
+    "@rxjs",
+    "@rxjs//operators",
+    "//src/cdk/coercion",
     "//src/lib/core",
   ],
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup

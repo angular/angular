@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "table",
@@ -9,15 +9,16 @@ ng_module(
   module_name = "@angular/material/table",
   assets = [":table.css"],
   deps = [
-    "//src/cdk/bidi",
+    "@angular//packages/common",
+    "@angular//packages/core",
+    "@rxjs",
+    "@rxjs//operators",
+    "//src/cdk/coercion",
+    "//src/cdk/table",
     "//src/lib/core",
     "//src/lib/paginator",
     "//src/lib/sort",
-    "//src/cdk/table",
-    "//src/cdk/platform",
-    "@rxjs",
   ] + glob(["**/*.html"]),
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup

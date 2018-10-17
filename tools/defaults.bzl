@@ -32,6 +32,10 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
     # Since we use the TypeScript import helpers (tslib) for each TypeScript configuration,
     # we declare TSLib as default dependency
     "@npm//tslib",
+
+    # Depend on the module typings for each `ng_module`. Since all components within the project
+    # need to use `module.id` when creating components, this is always a dependency.
+    "//src:module-typings"
   ] + deps
 
   _ng_module(

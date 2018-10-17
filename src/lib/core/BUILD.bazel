@@ -1,11 +1,10 @@
 package(default_visibility=["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_module")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 load("//:packages.bzl", "MATERIAL_PACKAGES")
+load("//tools:defaults.bzl", "ng_module")
 
 exports_files(["theming/_theming.scss"])
-
 
 ng_module(
   name = "core",
@@ -17,14 +16,18 @@ ng_module(
     ":option/optgroup.css",
   ] + glob(["**/*.html"]),
   deps = [
+    "@angular//packages/common",
+    "@angular//packages/core",
+    "@angular//packages/forms",
+    "@angular//packages/platform-browser",
+    "@angular//packages/platform-browser/animations",
+    "@rxjs",
     "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
     "//src/cdk/platform",
-    "@rxjs",
   ],
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 

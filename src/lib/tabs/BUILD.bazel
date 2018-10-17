@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "tabs",
@@ -14,16 +14,21 @@ ng_module(
     ":tab-nav-bar/tab-nav-bar.css",
   ] + glob(["**/*.html"]),
   deps = [
-    "//src/lib/core",
+    "@angular//packages/animations",
+    "@angular//packages/common",
+    "@angular//packages/core",
+    "@rxjs",
+    "@rxjs//operators",
     "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/coercion",
+    "//src/cdk/keycodes",
     "//src/cdk/observers",
+    "//src/cdk/platform",
     "//src/cdk/portal",
     "//src/cdk/scrolling",
-    "@rxjs",
+    "//src/lib/core",
   ],
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 

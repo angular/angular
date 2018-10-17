@@ -1,18 +1,19 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
   name = "badge",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/badge",
   deps = [
-    "//src/lib/core",
+    "@angular//packages/common",
+    "@angular//packages/core",
     "//src/cdk/a11y",
     "//src/cdk/coercion",
+    "//src/lib/core",
   ] + glob(["**/*.html"]),
-  tsconfig = "//src/lib:tsconfig-build.json",
 )
 
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
