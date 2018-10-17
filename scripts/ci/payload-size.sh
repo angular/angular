@@ -28,7 +28,10 @@ calculateSize() {
 checkSize() {
   name="$1"
   limitFile="$2"
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $TRAVIS_BRANCH $TRAVIS_COMMIT
+
+  # In non-PR builds, `CI_BRANCH` is the branch being built (e.g. `pull/12345`), not the targeted branch.
+  # Thus, PRs will fall back to using the size limits for `master`.
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $CI_BRANCH $CI_COMMIT
 }
 
 # Write timestamp to global variable `$payloadData`.
@@ -41,9 +44,9 @@ addTimestamp() {
 # Write travis commit message to global variable `$payloadData`.
 addMessage() {
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
-  # because $TRAVIS_COMMIT_RANGE will contain the previous SHA which will not be in the
+  # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $TRAVIS_COMMIT_RANGE -- || git log --oneline -n1)
+  message=$(git log --oneline $CI_COMMIT_RANGE -- || git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\""
 }
@@ -53,8 +56,8 @@ addMessage() {
 # Update the change source in global variable `$payloadData`.
 addChange() {
   yarnChanged=false
-  allChangedFiles=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $TRAVIS_COMMIT_RANGE $parentDir)
+  allChangedFiles=$(git diff --name-only $CI_COMMIT_RANGE $parentDir | wc -l)
+  allChangedFileNames=$(git diff --name-only $CI_COMMIT_RANGE $parentDir)
 
   if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
     yarnChanged=true
@@ -82,14 +85,14 @@ uploadData() {
 
   echo $payloadData > /tmp/current.log
 
-  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
+  readonly safeBranchName=$(echo $CI_BRANCH | sed -e 's/\./_/g')
 
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    readonly dbPath=/payload/$name/$safeBranchName/$TRAVIS_COMMIT
+  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
+    readonly dbPath=/payload/$name/$safeBranchName/$CI_COMMIT
 
-    # WARNING: FIREBASE_TOKEN should NOT be printed.
+    # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
     set +x
-    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
+    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
 }
 

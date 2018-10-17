@@ -56,9 +56,9 @@ buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 # snapshots.
 # This logic matches what we use in the .circleci/config.yml file to short-
 # circuit execution of the publish-packages job.
-[[  "${CIRCLE_PR_NUMBER-}" != ""
-    || "${CIRCLE_PROJECT_USERNAME-}" != "angular"
-    || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
+[[  "${CI_PULL_REQUEST-}" != "false"
+    || "${CI_REPO_OWNER-}" != "angular"
+    || "${CI_REPO_NAME-}" != "angular"
 ]] && exit 0
 
 buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"
