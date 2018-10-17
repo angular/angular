@@ -37,7 +37,7 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
       if (linenums !== undefined) attributes.push(` linenums="${linenums}"`);
 
       // Preserve the no-longer-supported `title` attribute,
-      // in order to throw an appripriate error in `renderExamples` later.
+      // in order to throw an appropriate error in `renderExamples` later.
       if (tagArgs.title) attributes.push(` title="${tagArgs.title}"`);
 
       return '<code-example' + attributes.join('') + '>\n' + sourceCode + '\n</code-example>';
