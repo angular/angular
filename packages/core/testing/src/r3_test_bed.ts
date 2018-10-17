@@ -270,9 +270,10 @@ export class TestBedRender3 implements Injector, TestBed {
     }
   }
 
-  // TODO(vicb): implement
   compileComponents(): Promise<any> {
-    throw new Error('Render3TestBed.compileComponents is not implemented yet');
+    // assume for now that components don't use templateUrl / stylesUrl to unblock further testing
+    // TODO(pk): plug into the ivy's resource fetching pipeline
+    return Promise.resolve();
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
