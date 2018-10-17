@@ -1,6 +1,8 @@
 {% import 'lib/cli.html' as cli %}
+{% import "../lib/githubLinks.html" as github -%}
 
 <article>
+  {$ github.githubLinks(doc, cliVersionInfo) $}
   {% include 'include/cli-breadcrumb.html' %}
   {% include 'include/cli-header.html' %}
 
