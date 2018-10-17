@@ -88,9 +88,7 @@ Command syntax is shown as follows:
 Boolean options have two forms: `--thisOption` sets the flag, `--noThisOption` clears it.  
 If neither option is supplied, the flag remains in its default state, as listed in the reference documentation.
 
-Allowed values are given with each enumerated option description, with the default value in **bold**. For example:
-
- `--optionNameOrAlias=`**allowedValue1**`|allowedValue2|allowedValue3`
+Allowed values are given with each enumerated option description, with the default value in **bold**.
 
 ### Relative paths
 
