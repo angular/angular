@@ -147,7 +147,7 @@ In TypeScript, an interface is a design-time artifact, and doesn't have a runtim
 <code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"  linenums="false">
 </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 This might seem strange if you're used to dependency injection in strongly typed languages where an interface is the preferred dependency lookup key.
 However, JavaScript, doesn't have interfaces, so when TypeScript is transpiled to JavaScript, the interface disappears.
@@ -180,7 +180,7 @@ the help of an `@Inject()` parameter decorator.
 <code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Although the `AppConfig` interface plays no role in dependency injection,
 it supports typing of the configuration object within the class.
@@ -293,7 +293,7 @@ When you provide multiple sets of routes using [RouterModule.forRoot](api/router
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
 
-<div class="alert-is-helpful>
+<div class="alert is-helpful>
 
 Search for [Constants in API documentation](api?type=const) to find more built-in tokens. 
 
@@ -309,7 +309,7 @@ When providers are tree-shakable, the Angular compiler removes the associated
 services from the final output when it determines that they are not used in your application.
 This significantly reduces the size of your bundles.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Ideally, if an application isn't injecting a service, it shouldn't be included in the final output. 
 However, Angular has to be able to identify at build time whether the service will be required or not. 
@@ -346,7 +346,7 @@ The service can be instantiated by configuring a factory function, as in the fol
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 To override a tree-shakable provider, configure the injector of a specific NgModule or component with another provider, using the `providers: []` array syntax of the `@NgModule()` or `@Component()` decorator.
 
