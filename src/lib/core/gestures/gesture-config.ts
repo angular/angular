@@ -80,7 +80,7 @@ export class GestureConfig extends HammerGestureConfig {
       // `this.events` to the set we support, instead of conditionally setting it to `[]` if
       // `HAMMER_LOADER` is present (and then throwing an Error here if `window.Hammer` is
       // undefined).
-      // @breaking-change 7.0.0
+      // @breaking-change 8.0.0
       return noopHammerInstance;
     }
 

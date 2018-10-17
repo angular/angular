@@ -55,13 +55,13 @@ export class OverlayContainer implements OnDestroy {
 }
 
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export function OVERLAY_CONTAINER_PROVIDER_FACTORY(parentContainer: OverlayContainer,
   _document: any) {
   return parentContainer || new OverlayContainer(_document);
 }
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export const OVERLAY_CONTAINER_PROVIDER = {
   // If there is already an OverlayContainer available, use that. Otherwise, provide a new one.
   provide: OverlayContainer,

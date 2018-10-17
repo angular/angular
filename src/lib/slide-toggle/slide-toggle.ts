@@ -183,7 +183,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   constructor(elementRef: ElementRef,
               /**
                * @deprecated The `_platform` parameter to be removed.
-               * @breaking-change 7.0.0
+               * @breaking-change 8.0.0
                */
               _platform: Platform,
               private _focusMonitor: FocusMonitor,

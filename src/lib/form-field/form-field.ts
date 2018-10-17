@@ -221,7 +221,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /**
    * @deprecated
-   * @breaking-change 7.0.0
+   * @breaking-change 8.0.0
    */
   @ViewChild('underline') underlineRef: ElementRef;
 
@@ -243,7 +243,7 @@ export class MatFormField extends _MatFormFieldMixinBase
       @Optional() private _dir: Directionality,
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS)
           private _defaults: MatFormFieldDefaultOptions,
-      // @breaking-change 7.0.0 _platform, _ngZone and _animationMode to be made required.
+      // @breaking-change 8.0.0 _platform, _ngZone and _animationMode to be made required.
       private _platform?: Platform,
       private _ngZone?: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string) {
@@ -508,7 +508,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Updates the outline gap the new time the zone stabilizes. */
   private _updateOutlineGapOnStable() {
-    // @breaking-change 7.0.0 Remove this check and else block once _ngZone is required.
+    // @breaking-change 8.0.0 Remove this check and else block once _ngZone is required.
     if (this._ngZone) {
       this._ngZone.onStable.pipe(take(1)).subscribe(() => this.updateOutlineGap());
     } else {

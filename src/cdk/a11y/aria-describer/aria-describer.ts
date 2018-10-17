@@ -225,12 +225,12 @@ export class AriaDescriber implements OnDestroy {
 }
 
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber, _document: any) {
   return parentDispatcher || new AriaDescriber(_document);
 }
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export const ARIA_DESCRIBER_PROVIDER = {
   // If there is already an AriaDescriber available, use that. Otherwise, provide a new one.
   provide: AriaDescriber,

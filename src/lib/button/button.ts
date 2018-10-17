@@ -94,12 +94,12 @@ export class MatButton extends _MatButtonMixinBase
   constructor(elementRef: ElementRef,
               /**
                * @deprecated Platform checks for SSR are no longer needed
-               * @breaking-change 7.0.0
+               * @breaking-change 8.0.0
                */
               // tslint:disable-next-line:no-unused-variable
               private _platform: Platform,
               private _focusMonitor: FocusMonitor,
-              // @breaking-change 7.0.0 `_animationMode` parameter to be made required.
+              // @breaking-change 8.0.0 `_animationMode` parameter to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 
@@ -173,7 +173,7 @@ export class MatAnchor extends MatButton {
     platform: Platform,
     focusMonitor: FocusMonitor,
     elementRef: ElementRef,
-    // @breaking-change 7.0.0 `animationMode` parameter to be made required.
+    // @breaking-change 8.0.0 `animationMode` parameter to be made required.
     @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
     super(elementRef, platform, focusMonitor, animationMode);
   }

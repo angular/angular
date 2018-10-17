@@ -40,7 +40,7 @@ export class PageEvent {
 
   /**
    * Index of the page that was selected previously.
-   * @breaking-change 7.0.0 To be made into a required property.
+   * @breaking-change 8.0.0 To be made into a required property.
    */
   previousPageIndex?: number;
 

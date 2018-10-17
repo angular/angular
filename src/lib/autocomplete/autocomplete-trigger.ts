@@ -198,7 +198,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
               @Optional() private _dir: Directionality,
               @Optional() @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              // @breaking-change 7.0.0 Make `_viewportRuler` required.
+              // @breaking-change 8.0.0 Make `_viewportRuler` required.
               private _viewportRuler?: ViewportRuler) {
 
     if (typeof window !== 'undefined') {

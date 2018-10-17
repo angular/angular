@@ -96,13 +96,13 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
 }
 
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export function OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY(
     dispatcher: OverlayKeyboardDispatcher, _document: any) {
   return dispatcher || new OverlayKeyboardDispatcher(_document);
 }
 
-/** @docs-private @deprecated @breaking-change 7.0.0 */
+/** @docs-private @deprecated @breaking-change 8.0.0 */
 export const OVERLAY_KEYBOARD_DISPATCHER_PROVIDER = {
   // If there is already an OverlayKeyboardDispatcher available, use that.
   // Otherwise, provide a new one.

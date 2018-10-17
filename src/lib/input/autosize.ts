@@ -15,7 +15,7 @@ export const _CdkTextareaAutosize = CdkTextareaAutosize;
 /**
  * Directive to automatically resize a textarea to fit its content.
  * @deprecated Use `cdkTextareaAutosize` from `@angular/cdk/text-field` instead.
- * @breaking-change 7.0.0
+ * @breaking-change 8.0.0
  */
 @Directive({
   selector: 'textarea[mat-autosize], textarea[matTextareaAutosize]',

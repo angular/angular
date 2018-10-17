@@ -77,7 +77,7 @@ export class MatSnackBarRef<T> {
   /**
    * Marks the snackbar action clicked.
    * @deprecated Use `dismissWithAction` instead.
-   * @breaking-change 7.0.0
+   * @breaking-change 8.0.0
    */
   closeWithAction(): void {
     this.dismissWithAction();

@@ -65,14 +65,14 @@ export const matMenuAnimations: {
 
 /**
  * @deprecated
- * @breaking-change 7.0.0
+ * @breaking-change 8.0.0
  * @docs-private
  */
 export const fadeInItems = matMenuAnimations.fadeInItems;
 
 /**
  * @deprecated
- * @breaking-change 7.0.0
+ * @breaking-change 8.0.0
  * @docs-private
  */
 export const transformMenu = matMenuAnimations.transformMenu;

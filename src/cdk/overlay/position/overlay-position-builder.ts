@@ -23,7 +23,7 @@ export class OverlayPositionBuilder {
   constructor(
     private _viewportRuler: ViewportRuler,
     @Inject(DOCUMENT) private _document: any,
-    // @breaking-change 7.0.0 `_platform` and `_overlayContainer` parameters to be made required.
+    // @breaking-change 8.0.0 `_platform` and `_overlayContainer` parameters to be made required.
     @Optional() private _platform?: Platform,
     @Optional() private _overlayContainer?: OverlayContainer) { }
 
@@ -40,7 +40,7 @@ export class OverlayPositionBuilder {
    * @param originPos
    * @param overlayPos
    * @deprecated Use `flexibleConnectedTo` instead.
-   * @breaking-change 7.0.0
+   * @breaking-change 8.0.0
    */
   connectedTo(
       elementRef: ElementRef,

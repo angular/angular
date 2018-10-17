@@ -76,7 +76,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
     private _focusMonitor?: FocusMonitor,
     @Inject(MAT_MENU_PANEL) @Optional() private _parentMenu?: MatMenuPanel<MatMenuItem>) {
 
-    // @breaking-change 7.0.0 make `_focusMonitor` and `document` required params.
+    // @breaking-change 8.0.0 make `_focusMonitor` and `document` required params.
     super();
 
     if (_focusMonitor) {

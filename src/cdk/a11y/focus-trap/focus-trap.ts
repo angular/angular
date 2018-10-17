@@ -153,15 +153,15 @@ export class FocusTrap {
                                                  `[cdk-focus-${bound}]`) as NodeListOf<HTMLElement>;
 
     for (let i = 0; i < markers.length; i++) {
-      // @breaking-change 7.0.0
+      // @breaking-change 8.0.0
       if (markers[i].hasAttribute(`cdk-focus-${bound}`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-${bound}', ` +
                      `use 'cdkFocusRegion${bound}' instead. The deprecated ` +
-                     `attribute will be removed in 7.0.0.`, markers[i]);
+                     `attribute will be removed in 8.0.0.`, markers[i]);
       } else if (markers[i].hasAttribute(`cdk-focus-region-${bound}`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-region-${bound}', ` +
                      `use 'cdkFocusRegion${bound}' instead. The deprecated attribute ` +
-                     `will be removed in 7.0.0.`, markers[i]);
+                     `will be removed in 8.0.0.`, markers[i]);
       }
     }
 
@@ -182,11 +182,11 @@ export class FocusTrap {
                                                           `[cdkFocusInitial]`) as HTMLElement;
 
     if (redirectToElement) {
-      // @breaking-change 7.0.0
+      // @breaking-change 8.0.0
       if (redirectToElement.hasAttribute(`cdk-focus-initial`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-initial', ` +
                     `use 'cdkFocusInitial' instead. The deprecated attribute ` +
-                    `will be removed in 7.0.0`, redirectToElement);
+                    `will be removed in 8.0.0`, redirectToElement);
       }
 
       redirectToElement.focus();
