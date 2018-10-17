@@ -57,7 +57,7 @@ You then import these modules into the root module.
 
 ## The basic NgModule
 
-The CLI generates the following basic app module when creating a new app.
+The [Angular CLI](cli) generates the following basic app module when creating a new app.
 
 <code-example path="bootstrapping/src/app/app.module.ts" region="whole-ngmodule" header="src/app/app.module.ts" linenums="false">
 </code-example>
