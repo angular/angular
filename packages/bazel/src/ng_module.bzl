@@ -6,18 +6,18 @@
 """
 
 load(
-    ":rules_typescript.bzl",
+    ":external.bzl",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
     "DEPS_ASPECTS",
+    "DEFAULT_NG_COMPILER",
+    "DEFAULT_NG_XI18N",
+    "collect_node_modules_aspect",
     "compile_ts",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
+    "NodeModuleInfo",
 )
-load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo", "collect_node_modules_aspect")
-
-_DEFAULT_COMPILER = "@angular//:@angular/bazel/ngc-wrapped"
-_DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
 
 def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
@@ -396,7 +396,8 @@ def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
-    file_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
+    if hasattr(ctx.attr, "node_modules"):
+        file_inputs.extend(_filter_ts_inputs(ctx.files.node_modules))
 
     # If the user supplies a tsconfig.json file, the Angular compiler needs to read it
     if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
@@ -533,12 +534,12 @@ NG_MODULE_ATTRIBUTES = {
         compiler works out of the box. Otherwise, you'll have to override
         the compiler attribute manually.
         """,
-        default = Label(_DEFAULT_COMPILER),
+        default = Label(DEFAULT_NG_COMPILER),
         executable = True,
         cfg = "host",
     ),
     "ng_xi18n": attr.label(
-        default = Label(_DEFAULT_NG_XI18N),
+        default = Label(DEFAULT_NG_XI18N),
         executable = True,
         cfg = "host",
     ),
