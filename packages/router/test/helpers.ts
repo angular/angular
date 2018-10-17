@@ -19,7 +19,7 @@ export class Logger {
   empty() { this.logs.length = 0; }
 }
 
-export function provideTokenLogger(token: string, returnValue = true) {
+export function provideTokenLogger(token: string, returnValue = true as boolean | UrlTree) {
   return {
     provide: token,
     useFactory: (logger: Logger) => () => (logger.add(token), returnValue),

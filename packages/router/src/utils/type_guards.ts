@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/core';
 import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../interfaces';
 
 /**
@@ -24,6 +23,10 @@ import {CanActivate, CanActivateChild, CanDeactivate, CanLoad} from '../interfac
  */
 export function isFunction<T>(v: any): v is T {
   return typeof v === 'function';
+}
+
+export function isBoolean(v: any): v is boolean {
+  return typeof v === 'boolean';
 }
 
 export function isCanLoad(guard: any): guard is CanLoad {

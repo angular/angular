@@ -8,7 +8,7 @@
 
 import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable, from, of } from 'rxjs';
-import {concatAll, every, last as lastValue, map, mergeAll} from 'rxjs/operators';
+import {concatAll, last as lastValue, map} from 'rxjs/operators';
 
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -86,14 +86,6 @@ export function waitForMap<A, B>(
 
   // Closure compiler has problem with using spread operator here. So just using Array.concat.
   return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
-}
-
-/**
- * ANDs Observables by merging all input observables, reducing to an Observable verifying all
- * input Observables return `true`.
- */
-export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
-  return observables.pipe(mergeAll(), every((result: any) => result === true));
 }
 
 export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>) {
