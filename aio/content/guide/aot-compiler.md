@@ -668,16 +668,30 @@ Beginning in version 5, the compiler automatically performs this rewriting while
 Angular v5 버전 초기에는 화살표 함수를 변환하는 과정을 컴파일러가 직접 처리했었습니다.
 
 {@a function-calls}
+<!--
 ### Limited function calls
+-->
+### 함수 실행 제한
 
+<!--
 The _collector_ can represent a function call or object creation with `new` as long as the syntax is valid. The _collector_ only cares about proper syntax.
 
 But beware. The compiler may later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
 The compiler only supports calls to a small set of functions and will use `new` for only a few designated classes. These functions and classes are in a table of [below](#supported-functions).
+-->
+_콜렉터_ 는 함수를 실행하거나 `new` 키워드로 객체를 생성할 수 있습니다. 하지만 _콜렉터_ 를 사용할 때는 문법이 맞는지 주의해야 합니다.
 
+하지만 또 주의할 점이 있습니다. 콜렉터가 JavaScript 구문을 처리한 이후라도 AOT 컴파일러가 이 코드를 다시 처리하면서 _특정_ 함수나 _특정_ 객체가 생성되는 것은 처리하지 않을 수도 있습니다.
+AOT 컴파일러는 콜렉터와 다르게 일부 함수를 실행하거나 일부 클래스만 `new` 키워드로 생성할 수 있습니다. 컴파일러가 지원하는 목록은 [여기](#supported-functions)를 참고하세요.
 
+<!--
 ### Folding
+-->
+### 폴딩 (Folding)
+
 {@a exported-symbols}
+
+<!--
 The compiler can only resolve references to **_exported_** symbols.
 Fortunately, the _collector_ enables limited use of non-exported symbols through _folding_.
 
@@ -686,6 +700,15 @@ The _collector_ may be able to evaluate an expression during collection and reco
 For example, the _collector_ can evaluate the expression `1 + 2 + 3 + 4` and replace it with the result, `10`.
 
 This process is called _folding_. An expression that can be reduced in this manner is _foldable_.
+-->
+AOT 컴파일러는 **_export_** 키워드가 사용된 심볼만 참조할 수 있습니다.
+하지만 다행히도 _콜렉터_ 는 _폴딩_ 이라는 것을 통해 `export` 키워드가 사용되지 않은 심볼도 제한적으로 참조할 수 있습니다.
+
+_콜렉터_ 는 콜렉션 단계에서 표현식을 평가하고 그 결과를 `.metadata.json` 파일에 기록하는데, 이 때 원래 코드를 약간 변형해서 기록합니다.
+
+예를 들어 _콜렉터_ 가 `1 + 2 + 3 + 4` 라는 표현식을 평가하고 나면 `.metadata.json` 파일에는 이 내용을 `10`으로 기록합니다.
+
+이 과정을 _폴딩_ 이라고 합니다. 그리고 이 과정이 적용될 수 있는 코드를 _폴딩할 수 있는(foldable)_ 코드라고 합니다.
 
 {@a var-declaration}
 The collector can evaluate references to
