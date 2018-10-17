@@ -47,7 +47,7 @@ Make a note of the user name and project name in GitHub.
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
 
-<div class="alert-is-helpful>
+<div class="alert is-helpful>
 
  Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
 
@@ -283,7 +283,7 @@ Configure the Angular Router to defer loading of all other modules (and their as
 or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 
-<div class="alert-is-helpful>
+<div class="alert is-helpful>
 
 #### Don't eagerly import something from a lazy-loaded module
 
