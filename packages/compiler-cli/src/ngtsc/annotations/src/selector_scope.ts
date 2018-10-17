@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ReflectionHost} from '../../host';
@@ -198,7 +198,7 @@ export class SelectorScopeRegistry {
       SelectorScopes {
     const result = this.lookupScopes(node, ngModuleImportedFrom);
     if (result === null) {
-      throw new Error(`Module not found: ${reflectIdentifierOfDeclaration(node)}`);
+      throw new Error(`Module not found: ${reflectIdentifierOfDeclaration(node) !.escapedText}`);
     }
     return result;
   }
