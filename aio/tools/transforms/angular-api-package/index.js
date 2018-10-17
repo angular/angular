@@ -34,6 +34,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/removeInjectableConstructors'))
   .processor(require('./processors/processPackages'))
   .processor(require('./processors/processNgModuleDocs'))
+  .processor(require('./processors/fixupRealProjectRelativePath'))
 
 
   /**

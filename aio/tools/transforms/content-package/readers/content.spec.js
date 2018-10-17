@@ -37,7 +37,7 @@ describe('contentFileReader', function() {
           'project/path/modules/someModule/foo/docs/subfolder/bar.ngdoc', 'A load of content',
           'project/path');
       expect(fileReader.getDocs(fileInfo)).toEqual([
-        {docType: 'content', content: 'A load of content', startingLine: 1}
+        {docType: 'content', content: 'A load of content'}
       ]);
     });
   });
