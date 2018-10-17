@@ -26,9 +26,9 @@ import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getPreviousOrParentTNode, getRenderer, getViewData} from './state';
-import {getComponentViewByIndex, getNativeByTNode, getParentInjectorTNode, getParentInjectorView, hasParentInjector, isComponent, isLContainer} from './util';
+import {getComponentViewByIndex, getNativeByTNode, getParentInjectorTNode, getParentInjectorView, hasParentInjector, isComponent, isLContainer, isRootView} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -307,12 +307,26 @@ export function createContainerRef(
     lContainer = slotValue;
     lContainer[ACTIVE_INDEX] = -1;
   } else {
-    const comment = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
+    const commentNode = hostView[RENDERER].createComment(ngDevMode ? 'container' : '');
     ngDevMode && ngDevMode.rendererCreateComment++;
-    hostView[hostTNode.index] = lContainer =
-        createLContainer(slotValue, hostTNode, hostView, comment, true);
 
-    appendChild(comment, hostTNode, hostView);
+    // A container can be created on the root (topmost / bootstrapped) component and in this case we
+    // can't use LTree to insert container's marker node (both parent of a comment node and the
+    // commend node itself is located outside of elements hold by LTree). In this specific case we
+    // use low-level DOM manipulation to insert container's marker (comment) node.
+    if (isRootView(hostView)) {
+      const renderer = hostView[RENDERER];
+      const hostNative = getNativeByTNode(hostTNode, hostView) !;
+      const parentOfHostNative = nativeParentNode(renderer, hostNative);
+      nativeInsertBefore(
+          renderer, parentOfHostNative !, commentNode, nativeNextSibling(renderer, hostNative));
+    } else {
+      appendChild(commentNode, hostTNode, hostView);
+    }
+
+    hostView[hostTNode.index] = lContainer =
+        createLContainer(slotValue, hostTNode, hostView, commentNode, true);
+
     addToViewTree(hostView, hostTNode.index as number, lContainer);
   }
 

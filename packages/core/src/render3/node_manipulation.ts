@@ -15,7 +15,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {getNativeByTNode, isLContainer, readElementValue, stringify} from './util';
+import {getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -501,6 +501,13 @@ function executePipeOnDestroys(viewData: LViewData): void {
 
 export function getRenderParent(tNode: TNode, currentView: LViewData): RElement|null {
   if (canInsertNativeNode(tNode, currentView)) {
+    // If we are asked for a render parent of the root component we need to do low-level DOM
+    // operation as LTree doesn't exist above the topmost host node. We might need to find a render
+    // parent of the topmost host node if the root component injects ViewContainerRef.
+    if (isRootView(currentView)) {
+      return nativeParentNode(currentView[RENDERER], getNativeByTNode(tNode, currentView));
+    }
+
     const hostTNode = currentView[HOST_NODE];
 
     const tNodeParent = tNode.parent;
@@ -598,13 +605,27 @@ export function canInsertNativeNode(tNode: TNode, currentView: LViewData): boole
  * This is a utility function that can be used when native nodes were determined - it abstracts an
  * actual renderer being used.
  */
-function nativeInsertBefore(
+export function nativeInsertBefore(
     renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null): void {
   if (isProceduralRenderer(renderer)) {
     renderer.insertBefore(parent, child, beforeNode);
   } else {
     parent.insertBefore(child, beforeNode, true);
   }
+}
+
+/**
+ * Returns a native parent of a given native node.
+ */
+export function nativeParentNode(renderer: Renderer3, node: RNode): RElement|null {
+  return (isProceduralRenderer(renderer) ? renderer.parentNode(node) : node.parentNode) as RElement;
+}
+
+/**
+ * Returns a native sibling of a given native node.
+ */
+export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null {
+  return isProceduralRenderer(renderer) ? renderer.nextSibling(node) : node.nextSibling;
 }
 
 /**
@@ -632,7 +653,7 @@ export function appendChild(
           renderer, lContainer[RENDER_PARENT] !, childEl,
           getBeforeNodeForView(index, views, lContainer[NATIVE]));
     } else if (parentTNode.type === TNodeType.ElementContainer) {
-      const renderParent: RElement = getRenderParent(childTNode, currentView) !;
+      const renderParent = getRenderParent(childTNode, currentView) !;
       nativeInsertBefore(renderer, renderParent, childEl, parentEl);
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parentEl !as RElement, childEl) :

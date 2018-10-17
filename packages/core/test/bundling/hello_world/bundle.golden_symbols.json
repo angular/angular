@@ -342,6 +342,9 @@
     "name": "isProceduralRenderer"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "leaveView"
   },
   {
@@ -352,6 +355,9 @@
   },
   {
     "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeParentNode"
   },
   {
     "name": "nextNgElementId"
