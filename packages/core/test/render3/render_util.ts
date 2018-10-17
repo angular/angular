@@ -36,17 +36,40 @@ import {Type} from '../../src/type';
 import {getRendererFactory2} from './imported_renderer2';
 
 export abstract class BaseFixture {
+  /**
+   * Each fixture creates the following initial DOM structure:
+   * <div fixture="mark">
+   *  <div host="mark"></div>
+   * </div>
+   *
+   * Components are bootstrapped into the <div host="mark"></div>.
+   * The <div fixture="mark"> is there for cases where the root component creates DOM node _outside_
+   * of its host element (for example when the root component injectes ViewContainerRef or does
+   * low-level DOM manipulation).
+   *
+   * The <div fixture="mark"> is _not_ attached to the document body.
+   */
+  containerElement: HTMLElement;
   hostElement: HTMLElement;
 
   constructor() {
+    this.containerElement = document.createElement('div');
+    this.containerElement.setAttribute('fixture', 'mark');
     this.hostElement = document.createElement('div');
-    this.hostElement.setAttribute('fixture', 'mark');
+    this.hostElement.setAttribute('host', 'mark');
+    this.containerElement.appendChild(this.hostElement);
   }
 
   /**
-   * Current state of rendered HTML.
+   * Current state of HTML rendered by the bootstrapped component.
    */
   get html(): string { return toHtml(this.hostElement as any as Element); }
+
+  /**
+   * Current state of HTML rendered by the fixture (will include HTML rendered by the bootstrapped
+   * component as well as any elements outside of the component's host).
+   */
+  get outerHtml(): string { return toHtml(this.containerElement as any as Element); }
 }
 
 function noop() {}
@@ -251,9 +274,9 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 
   if (element) {
     return stringifyElement(element)
-        .replace(/^<div host="">/, '')
-        .replace(/^<div fixture="mark">/, '')
-        .replace(/<\/div>$/, '')
+        .replace(/^<div host="">(.*)<\/div>$/, '$1')
+        .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
+        .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
         .replace(' style=""', '')
         .replace(/<!--container-->/g, '')
         .replace(/<!--ng-container-->/g, '');

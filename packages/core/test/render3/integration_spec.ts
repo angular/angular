@@ -2677,6 +2677,8 @@ class MockRenderer implements ProceduralRenderer3 {
   selectRootElement(selectorOrNode: string|any): RElement {
     return ({} as any);
   }
+  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
+  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {}
   removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
   addClass(el: RElement, name: string): void {}
