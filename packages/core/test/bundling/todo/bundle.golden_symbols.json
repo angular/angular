@@ -894,6 +894,9 @@
     "name": "isProceduralRenderer"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "isStylingContext"
   },
   {
@@ -937,6 +940,12 @@
   },
   {
     "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeNextSibling"
+  },
+  {
+    "name": "nativeParentNode"
   },
   {
     "name": "nextContext"

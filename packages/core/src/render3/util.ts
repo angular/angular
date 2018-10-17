@@ -134,6 +134,10 @@ export function isLContainer(value: RElement | RComment | LContainer | StylingCo
   return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
 }
 
+export function isRootView(target: LViewData): boolean {
+  return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
+}
+
 /**
  * Retrieve the root view from any component by walking the parent `LViewData` until
  * reaching the root `LViewData`.
