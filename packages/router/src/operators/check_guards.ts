@@ -17,7 +17,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../router_state';
 import {UrlTree} from '../url_tree';
 import {wrapIntoObservable} from '../utils/collection';
 import {CanActivate, CanDeactivate, getCanActivateChild, getToken} from '../utils/preactivation';
-import {isCanActivate, isCanActivateChild, isCanDeactivate, isFunction, isBoolean} from '../utils/type_guards';
+import {isBoolean, isCanActivate, isCanActivateChild, isCanDeactivate, isFunction} from '../utils/type_guards';
 
 import {prioritizedGuardValue} from './prioritized_guard_value';
 
