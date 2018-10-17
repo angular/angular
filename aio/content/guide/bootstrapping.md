@@ -12,7 +12,7 @@ Every application has at least one Angular module, the _root_ module
 that you bootstrap to launch the application.
 By convention, it is usually called `AppModule`.
 
-If you use the CLI to generate an app, the default `AppModule` is as follows:
+If you use the [Angular CLI](cli) to generate an app, the default `AppModule` is as follows:
 
 ```typescript
 /* JavaScript imports */
@@ -52,7 +52,7 @@ The `@NgModule` decorator identifies `AppModule` as an `NgModule` class.
 * **_bootstrap_**&mdash;the _root_ component that Angular creates and inserts
 into the `index.html` host web page.
 
-The default CLI application only has one component, `AppComponent`, so it
+The default application created by the Angular CLI only has one component, `AppComponent`, so it
 is in both the `declarations` and the `bootstrap` arrays.
 
 {@a declarations}
