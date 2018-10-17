@@ -1,3 +1,6 @@
+{% extends 'content.template.html' -%}
+
+{% block content %}
 <div class="content">
 {$ doc.description | marked $}
 </div>
@@ -21,3 +24,4 @@
 {% endfor %}
 </tbody>
 </table>
+{% endblock %}
