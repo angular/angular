@@ -8,6 +8,7 @@
     "outDir": "../../dist/tools/dgeni",
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitThis": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
     "target": "es5",

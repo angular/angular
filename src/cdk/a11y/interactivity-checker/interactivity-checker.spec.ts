@@ -509,7 +509,7 @@ describe('InteractivityChecker', () => {
     }
   }
 
-  function runIf(condition: boolean, runFn: Function): () => void {
+  function runIf(this: any, condition: boolean, runFn: Function): () => void {
     return (...args: any[]) => {
       if (condition) {
         runFn.apply(this, args);

@@ -7,6 +7,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitThis": true,
     "sourceMap": true,
     "target": "es5",
     "baseUrl": "",

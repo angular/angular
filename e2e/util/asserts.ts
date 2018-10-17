@@ -34,6 +34,6 @@ export function expectLocation(element: FinderResult, {x, y}: Point): void {
  */
 export function expectAlignedWith(element: FinderResult, otherElement: FinderResult): void {
   getElement(otherElement).getLocation().then((location: Point) => {
-    this.expectLocation(getElement(element), location);
+    expectLocation(getElement(element), location);
   });
 }

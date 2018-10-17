@@ -8,6 +8,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "importHelpers": true,
     "newLine": "lf",
     "module": "es2015",

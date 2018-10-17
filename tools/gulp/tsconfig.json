@@ -8,6 +8,7 @@
     "outDir": "../../dist/tools/gulp",
     "strictNullChecks": true,
     "strictFunctionTypes": true,
+    "noImplicitThis": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
     "target": "es5",

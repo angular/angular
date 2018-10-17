@@ -37,6 +37,10 @@ class FakeQueryList<T> extends QueryList<T> {
   notifyOnChanges() { this.changes.next(this); }
 }
 
+interface KeyEventTestContext {
+  nextKeyEvent: KeyboardEvent;
+  prevKeyEvent: KeyboardEvent;
+}
 
 describe('Key managers', () => {
   let itemList: FakeQueryList<any>;
@@ -164,7 +168,7 @@ describe('Key managers', () => {
         expect(fakeKeyEvents.downArrow.defaultPrevented).toBe(false);
       });
 
-      describe('with `vertical` direction', () => {
+      describe('with `vertical` direction', function(this: KeyEventTestContext) {
         beforeEach(() => {
           keyManager.withVerticalOrientation();
           this.nextKeyEvent = createKeyboardEvent('keydown', DOWN_ARROW);
@@ -174,7 +178,7 @@ describe('Key managers', () => {
         runDirectionalKeyTests.call(this);
       });
 
-      describe('with `ltr` direction', () => {
+      describe('with `ltr` direction', function(this: KeyEventTestContext) {
         beforeEach(() => {
           keyManager.withHorizontalOrientation('ltr');
           this.nextKeyEvent = createKeyboardEvent('keydown', RIGHT_ARROW);
@@ -184,7 +188,7 @@ describe('Key managers', () => {
         runDirectionalKeyTests.call(this);
       });
 
-      describe('with `rtl` direction', () => {
+      describe('with `rtl` direction', function(this: KeyEventTestContext) {
         beforeEach(() => {
           keyManager.withHorizontalOrientation('rtl');
           this.nextKeyEvent = createKeyboardEvent('keydown', LEFT_ARROW);
@@ -199,7 +203,7 @@ describe('Key managers', () => {
        * parameters have to be passed in via Jasmine's context object (`this` inside a `beforeEach`)
        * because this function has to run before any `beforeEach`, `beforeAll` etc. hooks.
        */
-      function runDirectionalKeyTests() {
+      function runDirectionalKeyTests(this: KeyEventTestContext) {
         it('should set subsequent items as active when the next key is pressed', () => {
           keyManager.onKeydown(this.nextKeyEvent);
 

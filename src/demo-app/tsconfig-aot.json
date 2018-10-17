@@ -10,6 +10,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "outDir": "../../dist/packages/demo-app",
     "rootDirs": [
       ".",

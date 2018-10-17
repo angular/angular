@@ -11,6 +11,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "importHelpers": true,
     "module": "es2015",
     "moduleResolution": "node",

@@ -38,7 +38,7 @@ function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance: TestBed) {
   // Monkey-patch the resetTestingModule to destroy fixtures outside of a try/catch block.
   // With https://github.com/angular/angular/commit/2c5a67134198a090a24f6671dcdb7b102fea6eba
   // errors when destroying components are no longer causing Jasmine to fail.
-  testBedInstance.resetTestingModule = function() {
+  testBedInstance.resetTestingModule = function(this: {_activeFixtures: ComponentFixture<any>[]}) {
     try {
       this._activeFixtures.forEach((fixture: ComponentFixture<any>) => fixture.destroy());
     } finally {

@@ -204,11 +204,11 @@ function fixMarkdownDocLinks(link: string, filePath: string): string {
  * @param classPrefix The prefix to use for the alias class.
  */
 function createTagNameAliaser(classPrefix: string) {
-  return function() {
+  return function(this: HTMLElement) {
     MARKDOWN_TAGS_TO_CLASS_ALIAS.forEach(tag => {
-      for (let el of this.querySelectorAll(tag)) {
+      Array.from(this.querySelectorAll(tag)).forEach(el => {
         el.classList.add(`${classPrefix}-${tag}`);
-      }
+      });
     });
 
     return this;
