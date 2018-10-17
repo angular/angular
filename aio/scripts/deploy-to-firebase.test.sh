@@ -17,7 +17,7 @@ function check {
 (
   echo ===== master - skip deploy - pull request
   actual=$(
-    export TRAVIS_PULL_REQUEST=true
+    export CI_PULL_REQUEST=true
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy because this is a PR build."
@@ -27,10 +27,10 @@ function check {
 (
   echo ===== master - deploy success
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=master
-    export TRAVIS_COMMIT=$(git ls-remote origin master | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=master
+    export CI_COMMIT=$(git ls-remote origin master | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : master
@@ -43,9 +43,9 @@ Deployment URL    : https://next.angular.io/"
 (
   echo ===== master - skip deploy - commit not HEAD
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=master
-    export TRAVIS_COMMIT=DUMMY_TEST_COMMIT
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=master
+    export CI_COMMIT=DUMMY_TEST_COMMIT
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin master | cut -c1-40))."
@@ -55,11 +55,11 @@ Deployment URL    : https://next.angular.io/"
 (
   echo ===== stable - deploy success
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=4.3.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=4.3.x
     export STABLE_BRANCH=4.3.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 4.3.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=$(git ls-remote origin 4.3.x | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : 4.3.x
@@ -72,10 +72,10 @@ Deployment URL    : https://angular.io/"
 (
   echo ===== stable - skip deploy - commit not HEAD
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=4.3.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=4.3.x
     export STABLE_BRANCH=4.3.x
-    export TRAVIS_COMMIT=DUMMY_TEST_COMMIT
+    export CI_COMMIT=DUMMY_TEST_COMMIT
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin 4.3.x | cut -c1-40))."
@@ -85,11 +85,11 @@ Deployment URL    : https://angular.io/"
 (
   echo ===== archive - deploy success
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=2.4.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=2.4.x
     export STABLE_BRANCH=4.3.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : 2.4.x
@@ -102,11 +102,11 @@ Deployment URL    : https://v2.angular.io/"
 (
   echo ===== archive - skip deploy - commit not HEAD
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=2.4.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=2.4.x
     export STABLE_BRANCH=4.3.x
-    export TRAVIS_COMMIT=DUMMY_TEST_COMMIT
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=DUMMY_TEST_COMMIT
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin 2.4.x | cut -c1-40))."
@@ -116,11 +116,11 @@ Deployment URL    : https://v2.angular.io/"
 (
   echo ===== archive - skip deploy - major version too high, lower minor
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=2.1.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=2.1.x
     export STABLE_BRANCH=2.2.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.1.x\" to firebase.
@@ -131,11 +131,11 @@ We only deploy archive branches with the major version less than the stable bran
 (
   echo ===== archive - skip deploy - major version too high, higher minor
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=2.4.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=2.4.x
     export STABLE_BRANCH=2.2.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.4.x\" to firebase.
@@ -146,11 +146,11 @@ We only deploy archive branches with the major version less than the stable bran
 (
   echo ===== archive - skip deploy - minor version too low
   actual=$(
-    export TRAVIS_PULL_REQUEST=false
-    export TRAVIS_BRANCH=2.1.x
+    export CI_PULL_REQUEST=false
+    export CI_BRANCH=2.1.x
     export STABLE_BRANCH=4.3.x
-    export TRAVIS_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.1.x\" to firebase.
