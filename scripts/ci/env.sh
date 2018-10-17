@@ -40,7 +40,11 @@ setEnvVar CHROMIUM_VERSION 561733  # Chrome 68 linux stable, see https://www.chr
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
-setEnvVar AIO_MIN_PWA_SCORE 95
+setEnvVar CI_AIO_MIN_PWA_SCORE 95
+setEnvVar CI_BRANCH $TRAVIS_BRANCH
+setEnvVar CI_COMMIT $TRAVIS_COMMIT
+setEnvVar CI_COMMIT_RANGE $TRAVIS_COMMIT_RANGE
+setEnvVar CI_PULL_REQUEST $TRAVIS_PULL_REQUEST
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
@@ -83,7 +87,7 @@ if [[ ${TRAVIS:-} ]]; then
   # In order to have a meaningful SauceLabs badge on the repo page,
   # the angular2-ci account is used only when pushing commits to master;
   # in all other cases, the regular angular-ci account is used.
-  if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+  if [ "${CI_PULL_REQUEST}" = "false" ] && [ "${CI_BRANCH}" = "master" ]; then
     setEnvVar SAUCE_USERNAME angular2-ci
     # Not using use `setEnvVar` so that we don't print the key.
     export SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
