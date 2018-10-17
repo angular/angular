@@ -9,7 +9,7 @@ DI is a coding pattern in which a class asks for dependencies from external sour
 
 In Angular, the DI framework provides declared dependencies to a class when that class is instantiated. This guide explains how DI works in Angular, and how you use it to make your apps flexible, efficient, and robust, as well as testable and maintainable.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
  You can run the <live-example></live-example> of the sample app that accompanies this guide.
 
@@ -52,7 +52,7 @@ replace every use of the `HEROES` mock data.
 
 The DI framework lets you supply data to a component from an injectable _service_ class, defined in its own file. To demonstrate, we'll create an injectable service class that provides a list of heroes, and register that class as a provider of that service.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Having multiple classes in the same file can be confusing. We generally recommend that you define components and services in separate files.
 
@@ -238,7 +238,7 @@ If Angular can't find that parameter information, it throws an error.
 Angular can only find the parameter information _if the class has a decorator of some kind_.
 The `@Injectable()` decorator is the standard decorator for service classes.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
  The decorator requirement is imposed by TypeScript. TypeScript normally discards parameter type information when it [transpiles](guide/glossary#transpile) the code to JavaScript. TypeScript preserves this information if the class has a decorator and the `emitDecoratorMetadata` compiler option is set `true` in TypeScript's `tsconfig.json` configuration file. The CLI configures `tsconfig.json` with `emitDecoratorMetadata: true`.
  
@@ -295,7 +295,7 @@ When using `@Optional()`, your code must be prepared for a null value. If you
 don't register a logger provider anywhere, the injector sets the
 value of `logger` to null.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 `@Inject()` and `@Optional()` are _parameter decorators_.  They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
 
