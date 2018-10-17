@@ -18,6 +18,7 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {FactoryGenerator, FactoryInfo, GeneratedFactoryHostWrapper, generatedFactoryTransform} from './factories';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
+import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
 
@@ -176,6 +177,9 @@ export class NgtscProgram implements api.Program {
         [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)];
     if (this.factoryToSourceInfo !== null) {
       transforms.push(generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
+    }
+    if (this.isCore) {
+      transforms.push(ivySwitchTransform);
     }
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
     const emitResult = emitCallback({

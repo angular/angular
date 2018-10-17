@@ -13,8 +13,12 @@ import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
+import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
 import {Injector} from '../../src/di/injector';
-import {R3_CHANGE_DETECTOR_REF_FACTORY, R3_ELEMENT_REF_FACTORY, R3_RENDERER2_FACTORY, R3_TEMPLATE_REF_FACTORY, R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/ivy_switch/runtime/ivy_switch_on';
+import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
+import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
+import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
+import {SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {discoverDirectives, getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';

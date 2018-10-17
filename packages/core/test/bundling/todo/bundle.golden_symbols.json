@@ -153,15 +153,6 @@
     "name": "QUERIES"
   },
   {
-    "name": "R3_ELEMENT_REF_FACTORY"
-  },
-  {
-    "name": "R3_TEMPLATE_REF_FACTORY"
-  },
-  {
-    "name": "R3_VIEW_CONTAINER_REF_FACTORY"
-  },
-  {
     "name": "RENDERER"
   },
   {
@@ -178,6 +169,15 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "SkipSelf"

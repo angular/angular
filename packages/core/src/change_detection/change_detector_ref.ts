@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_CHANGE_DETECTOR_REF_FACTORY} from '../ivy_switch/runtime/index';
+import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../render3/view_engine_compatibility';
 
 /**
  * Base class for Angular Views, provides change detection functionality.
@@ -107,5 +107,12 @@ export abstract class ChangeDetectorRef {
   abstract reattach(): void;
 
   /** @internal */
-  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => R3_CHANGE_DETECTOR_REF_FACTORY();
+  static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => SWITCH_CHANGE_DETECTOR_REF_FACTORY();
 }
+
+
+
+export const SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ = render3InjectChangeDetectorRef;
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__ = (...args: any[]): any => {};
+const SWITCH_CHANGE_DETECTOR_REF_FACTORY: typeof render3InjectChangeDetectorRef =
+    SWITCH_CHANGE_DETECTOR_REF_FACTORY__PRE_R3__;
