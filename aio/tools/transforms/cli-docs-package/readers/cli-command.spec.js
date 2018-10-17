@@ -82,11 +82,6 @@ describe('cli-command reader', () => {
       ]);
     });
 
-    it('should start at line 1', () => {
-      const docs = reader.getDocs(fileInfo);
-      expect(docs[0].startingLine).toEqual(1);
-    });
-
     it('should extract the short description into the content', () => {
       const docs = reader.getDocs(fileInfo);
       expect(docs[0].content).toEqual('Add support for a library to your project.');
