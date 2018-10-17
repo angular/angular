@@ -29,7 +29,6 @@ export function parseI18nMeta(meta?: string): I18nMeta {
   let description: string|undefined;
 
   if (meta) {
-    // TODO(vicb): figure out how to force a message ID with closure ?
     const idIndex = meta.indexOf(I18N_ID_SEPARATOR);
     const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
     let meaningAndDesc: string;

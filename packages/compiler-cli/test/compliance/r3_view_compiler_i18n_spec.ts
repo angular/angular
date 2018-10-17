@@ -26,8 +26,12 @@ describe('i18n support in the view compiler', () => {
             @Component({
               selector: 'my-component',
               template: \`
-                <div i18n="meaningA|descA@@idA">Hello world (in i18n section)!</div>
-                <div i18n-title="meaningB|descB@@idB" title="introduction">Hello world</div>
+                <div i18n="meaningA|descA@@idA">Content A</div>
+                <div i18n-title="meaningB|descB@@idB" title="Title B">Content B</div>
+                <div i18n-title="meaningC" title="Title C">Content C</div>
+                <div i18n-title="meaningD|descD" title="Title D">Content D</div>
+                <div i18n-title="meaningE@@idE" title="Title E">Content E</div>
+                <div i18n-title="@@idF" title="Title F">Content F</div>
               \`
             })
             export class MyComponent {}
@@ -40,26 +44,63 @@ describe('i18n support in the view compiler', () => {
 
       const template = `
         /**
-         * @desc descA
+         * @desc [BACKUP_MESSAGE_ID:idA] descA
          * @meaning meaningA
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Hello world (in i18n section)!");
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Content A");
         /**
-         * @desc descB
+         * @desc [BACKUP_MESSAGE_ID:idB] descB
          * @meaning meaningB
          */
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("introduction");
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("Title B");
         const $_c2$ = ["title", $MSG_APP_SPEC_TS_1$, 0];
+        /**
+         * @desc meaningC
+         */
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("Title C");
+        const $_c4$ = ["title", $MSG_APP_SPEC_TS_3$, 0];
+        /**
+         * @desc descD
+         * @meaning meaningD
+         */
+        const $MSG_APP_SPEC_TS_5$ = goog.getMsg("Title D");
+        const $_c6$ = ["title", $MSG_APP_SPEC_TS_5$, 0];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:idE] meaningE
+         */
+        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("Title E");
+        const $_c8$ = ["title", $MSG_APP_SPEC_TS_7$, 0];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:idF]
+         */
+        const $MSG_APP_SPEC_TS_9$ = goog.getMsg("Title F");
+        const $_c10$ = ["title", $MSG_APP_SPEC_TS_9$, 0];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, MSG_APP_SPEC_TS_0);
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "div");
-            $r3$.ɵi18nAttribute(3, _c2);
-            $r3$.ɵtext(4, "Hello world");
+            $r3$.ɵi18nAttribute(3, $_c2$);
+            $r3$.ɵtext(4, "Content B");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(5, "div");
+            $r3$.ɵi18nAttribute(6, $_c4$);
+            $r3$.ɵtext(7, "Content C");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(8, "div");
+            $r3$.ɵi18nAttribute(9, $_c6$);
+            $r3$.ɵtext(10, "Content D");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(11, "div");
+            $r3$.ɵi18nAttribute(12, $_c8$);
+            $r3$.ɵtext(13, "Content E");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(14, "div");
+            $r3$.ɵi18nAttribute(15, $_c10$);
+            $r3$.ɵtext(16, "Content F");
             $r3$.ɵelementEnd();
           }
         }

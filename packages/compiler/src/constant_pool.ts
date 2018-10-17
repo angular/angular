@@ -351,13 +351,14 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
   return e instanceof o.ReadVarExpr;
 }
 
-// Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
-// formatted as expected by the Closure compiler.
+// Converts i18n meta informations for a message (id, description, meaning)
+// to a JsDoc statement formatted as expected by the Closure compiler.
 function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   const tags: o.JSDocTag[] = [];
 
-  if (meta.description) {
-    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
+  if (meta.id || meta.description) {
+    const text = meta.id ? `[BACKUP_MESSAGE_ID:${meta.id}] ${meta.description}` : meta.description;
+    tags.push({tagName: o.JSDocTagName.Desc, text: text !.trim()});
   }
 
   if (meta.meaning) {
