@@ -15,6 +15,7 @@ module.exports = function cliCommandFileReader(log) {
     name: 'cliCommandFileReader',
     defaultPattern: /\.json$/,
     getDocs(fileInfo) {
+      fileInfo.realProjectRelativePath = 'packages/angular/cli/commands/' + fileInfo.relativePath;
       try {
         const doc = json5.parse(fileInfo.content);
         const name = fileInfo.baseName;
@@ -23,7 +24,6 @@ module.exports = function cliCommandFileReader(log) {
         const result = Object.assign(doc, {
           content: doc.description,
           docType: 'cli-command',
-          startingLine: 1,
           id: `cli-${doc.name}`,
           commandAliases: doc.aliases || [],
           aliases: computeAliases(doc),
