@@ -60,7 +60,7 @@
     "name": "THROW_IF_NOT_FOUND"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$1"
   },
   {
     "name": "UnsubscriptionErrorImpl"
@@ -147,12 +147,12 @@
     "name": "providerToRecord"
   },
   {
-    "name": "resolveForwardRef"
+    "name": "resolveForwardRef$1"
   },
   {
     "name": "setCurrentInjector"
   },
   {
-    "name": "stringify"
+    "name": "stringify$1"
   }
 ]

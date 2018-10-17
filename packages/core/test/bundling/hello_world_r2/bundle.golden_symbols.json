@@ -1251,24 +1251,6 @@
     "name": "Quote"
   },
   {
-    "name": "R3_CHANGE_DETECTOR_REF_FACTORY$1"
-  },
-  {
-    "name": "R3_COMPILE_INJECTABLE$1"
-  },
-  {
-    "name": "R3_ELEMENT_REF_FACTORY$1"
-  },
-  {
-    "name": "R3_RENDERER2_FACTORY$1"
-  },
-  {
-    "name": "R3_TEMPLATE_REF_FACTORY$1"
-  },
-  {
-    "name": "R3_VIEW_CONTAINER_REF_FACTORY$1"
-  },
-  {
     "name": "ReadKeyExpr"
   },
   {
@@ -1351,6 +1333,24 @@
   },
   {
     "name": "STYLE_PREFIX"
+  },
+  {
+    "name": "SWITCH_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_COMPILE_INJECTABLE"
+  },
+  {
+    "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_RENDERER2_FACTORY"
+  },
+  {
+    "name": "SWITCH_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "SafeMethodCall"
@@ -1599,10 +1599,10 @@
     "name": "URL_WITH_SCHEMA_REGEXP"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$1"
   },
   {
-    "name": "USE_VALUE$3"
+    "name": "USE_VALUE$2"
   },
   {
     "name": "UnsubscriptionError"
@@ -2460,7 +2460,7 @@
     "name": "compileNgModuleFactory"
   },
   {
-    "name": "compileNgModuleFactory__PRE_NGCC__"
+    "name": "compileNgModuleFactory__PRE_R3__"
   },
   {
     "name": "componentFactoryName"
@@ -3411,10 +3411,10 @@
     "name": "noop$1"
   },
   {
-    "name": "noop$3"
+    "name": "noop$2"
   },
   {
-    "name": "noopFactory"
+    "name": "noop$3"
   },
   {
     "name": "noopScope"
@@ -3475,9 +3475,6 @@
   },
   {
     "name": "platformCoreDynamic"
-  },
-  {
-    "name": "preR3InjectableCompile"
   },
   {
     "name": "preparseElement"
@@ -3553,6 +3550,9 @@
   },
   {
     "name": "removeWhitespaces"
+  },
+  {
+    "name": "render2CompileInjectable"
   },
   {
     "name": "renderAttachEmbeddedView"

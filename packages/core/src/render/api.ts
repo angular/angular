@@ -8,8 +8,9 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {R3_RENDERER2_FACTORY} from '../ivy_switch/runtime/index';
 import {ViewEncapsulation} from '../metadata/view';
+import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
 
 
 /**
@@ -370,5 +371,10 @@ export abstract class Renderer2 {
       callback: (event: any) => boolean | void): () => void;
 
   /** @internal */
-  static __NG_ELEMENT_ID__: () => Renderer2 = () => R3_RENDERER2_FACTORY();
+  static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
+
+
+export const SWITCH_RENDERER2_FACTORY__POST_R3__ = render3InjectRenderer2;
+const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;
+const SWITCH_RENDERER2_FACTORY: typeof render3InjectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;

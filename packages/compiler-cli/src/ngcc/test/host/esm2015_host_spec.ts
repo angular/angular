@@ -35,15 +35,15 @@ const CLASSES = [
 const MARKER_FILE = {
   name: '/marker.js',
   contents: `
-    let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+    let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
 
-    function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+    function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
       const compilerFactory = injector.get(CompilerFactory);
       const compiler = compilerFactory.createCompiler([options]);
       return compiler.compileModuleAsync(moduleType);
     }
 
-    function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+    function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
       ngDevMode && assertNgModuleType(moduleType);
       return Promise.resolve(new R3NgModuleFactory(moduleType));
     }
@@ -113,7 +113,7 @@ describe('Esm2015ReflectionHost', () => {
          const file = program.getSourceFile(MARKER_FILE.name) !;
          const declarations = host.getSwitchableDeclarations(file);
          expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
-           ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_NGCC__']
+           ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_R3__']
          ]);
        });
   });

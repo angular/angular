@@ -48,16 +48,16 @@ export class C {}
 C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
 ];
-let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
-let badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
+let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
+let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
 
-function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
   const compilerFactory = injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler([options]);
   return compiler.compileModuleAsync(moduleType);
 }
 
-function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
   ngDevMode && assertNgModuleType(moduleType);
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
@@ -146,17 +146,15 @@ export class A {}`);
       renderer.rewriteSwitchableDeclarations(
           output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
       expect(output.toString())
-          .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+          .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
       expect(output.toString())
-          .toContain(`let badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+          .toContain(`let badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
       expect(output.toString())
-          .toContain(`let compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+          .toContain(`let compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
     });
   });
 

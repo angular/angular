@@ -7,7 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {R3_VIEW_CONTAINER_REF_FACTORY} from '../ivy_switch/runtime/index';
+import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
@@ -144,5 +145,10 @@ export abstract class ViewContainerRef {
 
   /** @internal */
   static __NG_ELEMENT_ID__:
-      () => ViewContainerRef = () => R3_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
+      () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
 }
+
+export const SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ = render3InjectViewContainerRef;
+const SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_VIEW_CONTAINER_REF_FACTORY: typeof render3InjectViewContainerRef =
+    SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__;
