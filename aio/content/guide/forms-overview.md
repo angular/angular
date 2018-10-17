@@ -4,7 +4,7 @@ Handling user input with forms is the cornerstone of many common applications. A
 
 Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes. 
 
-Reactive and template-driven forms work differently when processing and managing forms and form data. Each offers different advantages.
+Reactive and template-driven forms process and manage form data differently. Each offers different advantages.
 
 **In general:**
 
@@ -138,8 +138,8 @@ The steps below outline the data flow from view to model.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor also calls the `NgModel.viewToModelUpdate()` method which emits an `ngModelChange` event.
-1. Because the component template uses two-way data binding for the `favoriteColor`, the `favoriteColor` property in the component 
-is updated to the value emitted  by the `ngModelChange` event ("Blue").
+1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component 
+is updated to the value emitted  by the `ngModelChange` event (*Blue*).
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
@@ -147,7 +147,7 @@ is updated to the value emitted  by the `ngModelChange` event ("Blue").
 
 The steps below outline the data flow from model to view.
 
-1. The user updates the `favoriteColor` value in the component.
+1. The `favoriteColor` value is updated in the component.
 1. Change detection begins.
 1. During change detection, the `ngOnChanges` lifecycle hook is called on the `NgModel` directive instance because the value of one of its inputs has changed.
 1. The `ngOnChanges()` method queues an async task to set the value for the internal `FormControl` instance.
