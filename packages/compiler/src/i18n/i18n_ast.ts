@@ -69,7 +69,7 @@ export class Icu implements Node {
   public expressionPlaceholder !: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},
-      public sourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan, public name?: string) {}
 
   visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
 }

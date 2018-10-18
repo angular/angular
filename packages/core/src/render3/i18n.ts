@@ -201,6 +201,12 @@ function removeInnerTemplateTranslation(message: string): string {
   return res;
 }
 
+const postprocessRegexps = {
+  placeholders: /\[(�.+?�?)\]/g,
+  icuVars: /({\s*)(VAR_(PLURAL|SELECT)(_\d+)?)(\s*,)/g,
+  icus: /�I18N_EXP_(ICU(_\d+)?)�/g
+};
+
 /**
  * Extracts a part of a message and removes the rest.
  *
@@ -480,6 +486,60 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
   }
 
   return tNode;
+}
+
+export function i18nPostprocess(
+    message: string, replacements: {[key: string]: (string | string[])}): string {
+  //
+  // Step 1: resolve all multi-value cases (like [�*1:1��#2:1�|�#4:1�|�5�])
+  //
+  const matches: {[key: string]: string[]} = {};
+  let result =
+      message.replace(postprocessRegexps.placeholders, (_match, content: string): string => {
+        if (!matches[content]) {
+          matches[content] = content.split('|');
+        }
+        if (!matches[content].length) {
+          throw new Error(`i18n postprocess: unmatched placeholder - ${content}`);
+        }
+        return matches[content].shift() !;
+      });
+
+  // verify that we injected all values
+  const hasUnmatchedValues = Object.keys(matches).some(key => !!matches[key].length);
+  if (hasUnmatchedValues) {
+    throw new Error(`i18n postprocess: unmatched values - ${JSON.stringify(matches)}`);
+  }
+
+  // return current result if no replacements specified
+  if (!Object.keys(replacements).length) {
+    return result;
+  }
+
+  //
+  // Step 2: replace all ICU vars (like "VAR_PLURAL")
+  //
+  result =
+      result.replace(postprocessRegexps.icuVars, (match, start, key, _type, _idx, end): string => {
+        return replacements.hasOwnProperty(key) ? `${start}${replacements[key]}${end}` : match;
+      });
+
+  //
+  // Step 3: replace all ICU references with corresponding values (like �ICU_EXP_ICU_1�)
+  // in case multiple ICUs have the same placeholder name
+  //
+  result = result.replace(postprocessRegexps.icus, (match, key): string => {
+    if (replacements.hasOwnProperty(key)) {
+      const list = replacements[key] as string[];
+      if (!list.length) {
+        throw new Error(`i18n postprocess: unmatched ICU - ${match} with key: ${key}`);
+      }
+      return list.shift() !;
+    }
+    return match;
+  });
+
+  return result;
 }
 
 /**
