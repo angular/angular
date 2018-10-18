@@ -11,7 +11,7 @@ var entities = require('entities');
  * {@example core/application_spec.ts -region=hello-app -header='Sample component' }
  * @kind function
  */
-module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, getExampleRegion) {
+module.exports = function exampleInlineTagDef(parseArgString, createDocMessage) {
   return {
     name: 'example',
     description:
@@ -24,14 +24,17 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
       var relativePath = unnamedArgs[0];
       var regionName = tagArgs.region || (unnamedArgs.length > 1 ? unnamedArgs[1] : '');
       if (regionName === '\'\'') regionName = '';
-      var header = tagArgs.header || (unnamedArgs.length > 2 ? unnamedArgs.slice(2).join(' ') : null);
+      var header = tagArgs.header || (unnamedArgs.length > 2 ? unnamedArgs.slice(2).join(' ') : '');
       var linenums = tagArgs.linenums;
       // var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
 
-      const sourceCode = getExampleRegion(doc, relativePath, regionName);
+      if (!relativePath) {
+        throw new Error(createDocMessage(
+          `Missing required "path" on @${tagName} inline tag "{@${tagName} ${tagDescription}}".\n` +
+          'Usage: {@example some/path [some-region [Some header [linenums="true|false"]]]}', doc));
+      }
 
-      const attributes = [];
-      if (relativePath) attributes.push(` path="${relativePath}"`);
+      const attributes = [` path="${relativePath}"`];
       if (regionName) attributes.push(` region="${regionName}"`);
       if (header) attributes.push(` header="${header}"`);
       if (linenums !== undefined) attributes.push(` linenums="${linenums}"`);
@@ -40,8 +43,7 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage, 
       // in order to throw an appropriate error in `renderExamples` later.
       if (tagArgs.title) attributes.push(` title="${tagArgs.title}"`);
 
-      return '<code-example' + attributes.join('') + '>\n' + sourceCode + '\n</code-example>';
+      return '<code-example' + attributes.join('') + '></code-example>';
     }
   };
 };
-
