@@ -684,6 +684,7 @@ _콜렉터_ 는 함수를 실행하거나 `new` 키워드로 객체를 생성할
 하지만 또 주의할 점이 있습니다. 콜렉터가 JavaScript 구문을 처리한 이후라도 AOT 컴파일러가 이 코드를 다시 처리하면서 _특정_ 함수나 _특정_ 객체가 생성되는 것은 처리하지 않을 수도 있습니다.
 AOT 컴파일러는 콜렉터와 다르게 일부 함수를 실행하거나 일부 클래스만 `new` 키워드로 생성할 수 있습니다. 컴파일러가 지원하는 목록은 [여기](#supported-functions)를 참고하세요.
 
+{@a folding}
 <!--
 ### Folding
 -->
@@ -708,13 +709,18 @@ _콜렉터_ 는 콜렉션 단계에서 표현식을 평가하고 그 결과를 `
 
 예를 들어 _콜렉터_ 가 `1 + 2 + 3 + 4` 라는 표현식을 평가하고 나면 `.metadata.json` 파일에는 이 내용을 `10`으로 기록합니다.
 
-이 과정을 _폴딩_ 이라고 합니다. 그리고 이 과정이 적용될 수 있는 코드를 _폴딩할 수 있는(foldable)_ 코드라고 합니다.
+이 과정을 _폴딩(folding)_ 이라고 합니다. 그리고 이 과정이 적용될 수 있는 코드를 _폴딩할 수 있는(foldable)_ 코드라고 합니다.
 
 {@a var-declaration}
+<!--
 The collector can evaluate references to
 module-local `const` declarations and initialized `var` and `let` declarations, effectively removing them from the `.metadata.json` file.
 
 Consider the following component definition:
+-->
+콜렉터는 모듈 파일에 로컬 변수로 선언된 `const`, `var`, `let` 변수들을 참조할 수 있으며, 코드가 처리되어 `.metadata.json` 파일에 기록될 때는 이 코드가 모두 폴딩되면서 제거됩니다.
+
+다음과 같이 정의된 컴포넌트가 있다고 합시다:
 
 ```typescript
 const template = '<div>{{hero.name}}</div>';
@@ -728,10 +734,16 @@ export class HeroComponent {
 }
 ```
 
+<!--
 The compiler could not refer to the `template` constant because it isn't exported.
 
 But the _collector_ can _fold_ the `template` constant into the metadata definition by inlining its contents.
 The effect is the same as if you had written:
+-->
+컴파일러는 이 코드에 선언된 `template` 변수를 참조할 수 없습니다. 왜냐하면 이 변수에 `export` 키워드가 사용되지 않았기 때문입니다.
+
+하지만 _콜렉터_ 는 `template` 변수를 _폴딩_ 해서 컴포넌트 메타데이터 안으로 집어넣을 수 있습니다.
+결과적으로 이 코드는 아래 코드와 같습니다:
 
 ```typescript
 @Component({
@@ -743,9 +755,14 @@ export class HeroComponent {
 }
 ```
 
+<!--
 There is no longer a reference to `template` and, therefore, nothing to trouble the compiler when it later interprets the _collector's_ output in `.metadata.json`.
 
 You can take this example a step further by including the `template` constant in another expression:
+-->
+이 코드에는 `template`이라는 변수가 없으며, _콜렉터_ 가 생성한 `.metadata.json` 파일을 사용하는 컴파일러도 정상적으로 실행됩니다.
+
+그리고 이와 비슷한 방식으로 다음과 같은 코드도 정상적으로 처리됩니다:
 
 ```typescript
 const template = '<div>{{hero.name}}</div>';
@@ -758,15 +775,24 @@ export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
-
+<!--
 The _collector_ reduces this expression to its equivalent _folded_ string:
+-->
+이 코드의 템플릿을 _콜렉터_ 가 처리하고 나면 다음과 같이 _폴딩 된_ 문자열로 변환됩니다:
 
 `'<div>{{hero.name}}</div><div>{{hero.title}}</div>'`.
 
+<!--
 #### Foldable syntax
+-->
+#### 폴딩할 수 있는 문법
 
+<!--
 The following table describes which expressions the _collector_ can and cannot fold:
+-->
+_콜렉터_ 가 폴딩할 수 있는 문법에는 어떤 것들이 있는지 확인해 보세요:
 
+<!--
 Syntax                             | Foldable
 -----------------------------------|-----------------------------------
 Literal object                     | yes
@@ -787,9 +813,32 @@ Supported prefix operator          | yes, if operand is foldable
 Supported binary operator          | yes, if both left and right are foldable
 Conditional operator               | yes, if condition is foldable
 Parentheses                        | yes, if the expression is foldable
+-->
+문법                             | 폴딩 가능 여부
+-----------------------------------|-----------------------------------
+객체 리터럴                     | O
+배열 리터럴                      | O
+배열 리터럴에 전개 연산자를 사용한 경우            | X
+함수 호출                              | X
+new 키워드                                | X
+프로퍼티 참조                    | 객체가 폴딩 대상이면 O
+배열을 인덱스로 참조하는 경우                        | 배열과 인덱스가 폴딩 대상이면 O
+심볼 참조               | 지역 변수이면 O
+템플릿에 변수를 사용하지 않은 경우   | O
+템플릿에 변수를 사용한 경우      | 변수가 폴딩 대상이면 O
+string 리터럴                     | O
+number 리터럴                     | O
+boolean 리터럴                    | O
+null 리터럴                       | O
+증감 연산자          | 연산 대상이 폴딩 대상이면 O
+이진 연산자          | 연산자 좌우 항목이 폴딩 대상이면 O
+삼항연산자               | 조건식이 폴딩 대상이면 O
+괄호                        | 표현식이 폴딩 대상이면 O
 
+<!--
 If an expression is not foldable, the collector writes it to `.metadata.json` as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) for the compiler to resolve.
-
+-->
+표현식이 폴딩될 수 없는 경우에는 콜렉터가 이 코드를 [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) 형식으로 `.metadata.json`에 생성하며, 이 결과물은 이후에 AOT 컴파일러가 처리합니다.
 
 ## Phase 2: code generation
 
