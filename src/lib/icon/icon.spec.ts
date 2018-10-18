@@ -39,8 +39,11 @@ function verifyPathChildElement(element: Element, attributeValue: string): void 
 
 
 describe('MatIcon', () => {
+  let fakePath: string;
 
   beforeEach(async(() => {
+    fakePath = '/fake-path';
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, MatIconModule],
       declarations: [
@@ -55,7 +58,7 @@ describe('MatIcon', () => {
       ],
       providers: [{
         provide: MAT_ICON_LOCATION,
-        useValue: {pathname: '/fake-path'}
+        useValue: {getPathname: () => fakePath}
       }]
     });
 
@@ -606,6 +609,63 @@ describe('MatIcon', () => {
       expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
 
       tick();
+    }));
+
+    it('should use latest path when prefixing the `url()` references', fakeAsync(() => {
+      iconRegistry.addSvgIconLiteral('fido', trustHtml(`
+        <svg>
+          <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+          </filter>
+
+          <circle cx="170" cy="60" r="50" fill="green" filter="url('#blur')" />
+        </svg>
+      `));
+
+      let fixture = TestBed.createComponent(IconFromSvgName);
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      let circle = fixture.nativeElement.querySelector('mat-icon svg circle');
+
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+      tick();
+      fixture.destroy();
+
+      fakePath = '/another-fake-path';
+      fixture = TestBed.createComponent(IconFromSvgName);
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      circle = fixture.nativeElement.querySelector('mat-icon svg circle');
+
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/another-fake-path#blur['"]?\)$/);
+      tick();
+    }));
+
+    it('should update the `url()` references when the path changes', fakeAsync(() => {
+      iconRegistry.addSvgIconLiteral('fido', trustHtml(`
+        <svg>
+          <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+          </filter>
+
+          <circle cx="170" cy="60" r="50" fill="green" filter="url('#blur')" />
+        </svg>
+      `));
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      const circle = fixture.nativeElement.querySelector('mat-icon svg circle');
+
+      // We use a regex to match here, rather than the exact value, because different browsers
+      // return different quotes through `getAttribute`, while some even omit the quotes altogether.
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+      tick();
+
+      fakePath = '/different-path';
+      fixture.detectChanges();
+
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/different-path#blur['"]?\)$/);
     }));
 
   });

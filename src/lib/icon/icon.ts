@@ -21,6 +21,8 @@ import {
   InjectionToken,
   inject,
   Inject,
+  OnDestroy,
+  AfterViewChecked,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
@@ -51,14 +53,18 @@ export const MAT_ICON_LOCATION = new InjectionToken<MatIconLocation>('mat-icon-l
  * @docs-private
  */
 export interface MatIconLocation {
-  pathname: string;
+  getPathname: () => string;
 }
 
 /** @docs-private */
 export function MAT_ICON_LOCATION_FACTORY(): MatIconLocation {
   const _document = inject(DOCUMENT);
-  const pathname = (_document && _document.location && _document.location.pathname) || '';
-  return {pathname};
+
+  return {
+    // Note that this needs to be a function, rather than a property, because Angular
+    // will only resolve it once, but we want the current path on each call.
+    getPathname: () => (_document && _document.location && _document.location.pathname) || ''
+  };
 }
 
 
@@ -126,7 +132,9 @@ const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, CanColor {
+export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, AfterViewChecked,
+  CanColor, OnDestroy {
+
   /**
    * Whether the icon should be inlined, automatically sizing the icon to match the font size of
    * the element the icon is contained in.
@@ -161,6 +169,12 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
 
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;
+
+  /** Keeps track of the current page path. */
+  private _previousPath?: string;
+
+  /** Keeps track of the elements and attributes that we've prefixed with the current path. */
+  private _elementsWithExternalReferences?: Map<Element, {name: string, value: string}[]>;
 
   constructor(
       elementRef: ElementRef<HTMLElement>,
@@ -233,6 +247,31 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
     }
   }
 
+  ngAfterViewChecked() {
+    const cachedElements = this._elementsWithExternalReferences;
+
+    if (cachedElements && this._location && cachedElements.size) {
+      const newPath = this._location.getPathname();
+
+      // We need to check whether the URL has changed on each change detection since
+      // the browser doesn't have an API that will let us react on link clicks and
+      // we can't depend on the Angular router. The references need to be updated,
+      // because while most browsers don't care whether the URL is correct after
+      // the first render, Safari will break if the user navigates to a different
+      // page and the SVG isn't re-rendered.
+      if (newPath !== this._previousPath) {
+        this._previousPath = newPath;
+        this._prependPathToReferences(newPath);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._elementsWithExternalReferences) {
+      this._elementsWithExternalReferences.clear();
+    }
+  }
+
   private _usingFontIcon(): boolean {
     return !this.svgIcon;
   }
@@ -251,13 +290,23 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
 
     // Note: we do this fix here, rather than the icon registry, because the
     // references have to point to the URL at the time that the icon was created.
-    this._prependCurrentPathToReferences(svg);
+    if (this._location) {
+      const path = this._location.getPathname();
+      this._previousPath = path;
+      this._cacheChildrenWithExternalReferences(svg);
+      this._prependPathToReferences(path);
+    }
+
     this._elementRef.nativeElement.appendChild(svg);
   }
 
   private _clearSvgElement() {
     const layoutElement: HTMLElement = this._elementRef.nativeElement;
     let childCount = layoutElement.childNodes.length;
+
+    if (this._elementsWithExternalReferences) {
+      this._elementsWithExternalReferences.clear();
+    }
 
     // Remove existing non-element child nodes and SVGs, and add the new SVG element. Note that
     // we can't use innerHTML, because IE will throw if the element has a data binding.
@@ -317,24 +366,42 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
    * reference. This is required because WebKit browsers require references to be prefixed with
    * the current path, if the page has a `base` tag.
    */
-  private _prependCurrentPathToReferences(element: SVGElement) {
-    // @breaking-change 8.0.0 Remove this null check once `_location` parameter is required.
-    if (!this._location) {
-      return;
-    }
+  private _prependPathToReferences(path: string) {
+    const elements = this._elementsWithExternalReferences;
 
+    if (elements) {
+      elements.forEach((attrs, element) => {
+        attrs.forEach(attr => {
+          element.setAttribute(attr.name, `url('${path}#${attr.value}')`);
+        });
+      });
+    }
+  }
+
+  /**
+   * Caches the children of an SVG element that have `url()`
+   * references that we need to prefix with the current path.
+   */
+  private _cacheChildrenWithExternalReferences(element: SVGElement) {
     const elementsWithFuncIri = element.querySelectorAll(funcIriAttributeSelector);
-    const path = this._location.pathname ? this._location.pathname.split('#')[0] : '';
+    const elements = this._elementsWithExternalReferences =
+        this._elementsWithExternalReferences || new Map();
 
     for (let i = 0; i < elementsWithFuncIri.length; i++) {
       funcIriAttributes.forEach(attr => {
-        const value = elementsWithFuncIri[i].getAttribute(attr);
+        const elementWithReference = elementsWithFuncIri[i];
+        const value = elementWithReference.getAttribute(attr);
         const match = value ? value.match(funcIriPattern) : null;
 
         if (match) {
-          // Note the quotes inside the `url()`. They're important, because URLs pointing to named
-          // router outlets can contain parentheses which will break if they aren't quoted.
-          elementsWithFuncIri[i].setAttribute(attr, `url('${path}#${match[1]}')`);
+          let attributes = elements.get(elementWithReference);
+
+          if (!attributes) {
+            attributes = [];
+            elements.set(elementWithReference, attributes);
+          }
+
+          attributes!.push({name: attr, value: match[1]});
         }
       });
     }
