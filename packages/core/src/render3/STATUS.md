@@ -207,12 +207,13 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | ----------------------------------- | ------- | -------- | -------- |
 | i18nStart                           |  ❌     |  ✅       |  ✅      |
 | i18nEnd                             |  ❌     |  ✅       |  ✅      |
-| i18nAttributes                      |  ❌     |  ✅       |  ❌      |
-| i18nExp                             |  ❌     |  ✅       |  ❌      |
-| i18nApply                           |  ❌     |  ✅       |  ❌      |
+| i18nAttributes                      |  ❌     |  ✅       |  ✅      |
+| i18nExp                             |  ❌     |  ✅       |  ✅     |
+| i18nApply                           |  ❌     |  ✅       |  ✅      |
 | ICU expressions                     |  ❌     |  ✅       |  ❌      |
-| closure support for g3              |  ✅     |  ✅       |  ✅      |
+| closure support for g3              |  ✅     |  ✅       |  ❌      |
 | runtime service for external world  |  ❌     |  ❌       |  ❌      |
+| migration tool                      |  ❌     |  ❌       |  ❌      |
 
 
 ### View Encapsulation
