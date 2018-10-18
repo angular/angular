@@ -3,33 +3,39 @@
 # WARNING: CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN should NOT be printed.
 set +x -eu -o pipefail
 
-# Only deploy if this not a PR. PRs are deployed early in `build.sh`.
+# Do not deploy if we are running in a fork.
+if [[ "$CI_REPO_OWNER/$CI_REPO_NAME" != "angular/angular" ]]; then
+  echo "Skipping deploy because this is not angular/angular."
+  exit 0
+fi
+
+# Do not deploy if this is a PR. PRs are deployed in the `aio_preview` CircleCI job.
 if [[ $CI_PULL_REQUEST != "false" ]]; then
   echo "Skipping deploy because this is a PR build."
   exit 0
 fi
 
 # Do not deploy if the current commit is not the latest on its branch.
-readonly LATEST_COMMIT=$(git ls-remote origin $CI_BRANCH | cut -c1-40)
-if [[ $CI_COMMIT != $LATEST_COMMIT ]]; then
-  echo "Skipping deploy because $CI_COMMIT is not the latest commit ($LATEST_COMMIT)."
+readonly latestCommit=$(git ls-remote origin $CI_BRANCH | cut -c1-40)
+if [[ $CI_COMMIT != $latestCommit ]]; then
+  echo "Skipping deploy because $CI_COMMIT is not the latest commit ($latestCommit)."
   exit 0
 fi
 
 # The deployment mode is computed based on the branch we are building
 if [[ $CI_BRANCH == master ]]; then
   readonly deployEnv=next
-elif [[ $CI_BRANCH == $STABLE_BRANCH ]]; then
+elif [[ $CI_BRANCH == $CI_STABLE_BRANCH ]]; then
   readonly deployEnv=stable
 else
   # Extract the major versions from the branches, e.g. the 4 from 4.3.x
   readonly majorVersion=${CI_BRANCH%%.*}
-  readonly majorVersionStable=${STABLE_BRANCH%%.*}
+  readonly majorVersionStable=${CI_STABLE_BRANCH%%.*}
 
   # Do not deploy if the major version is not less than the stable branch major version
   if [[ !( "$majorVersion" < "$majorVersionStable" ) ]]; then
     echo "Skipping deploy of branch \"$CI_BRANCH\" to firebase."
-    echo "We only deploy archive branches with the major version less than the stable branch: \"$STABLE_BRANCH\""
+    echo "We only deploy archive branches with the major version less than the stable branch: \"$CI_STABLE_BRANCH\""
     exit 0
   fi
 
