@@ -268,7 +268,7 @@ Each budget entry is a JSON object with the following properties:
 The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions. 
 You may find it necessary to target specific browsers or exclude certain browser versions from your build.
 
-Internally, Autoprefixer relies on a library called [Browserslist(https://github.com/ai/browserslist)] to figure out which browsers to support with prefixing. 
+Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing. 
 Browserlist looks for configuration options in a `browserlist` property of the package configuration file, or in a configuration file named `.browserslistrc`. 
 Autoprefixer looks for the Browserlist configuration when it prefixes your CSS. 
 
@@ -287,7 +287,7 @@ Autoprefixer looks for the Browserlist configuration when it prefixes your CSS.
  last 2 versions
 ```
 
-See the [browserslist repo](https://github.com/ai/browserslist) for more examples of how to target specific browsers and versions.
+See the [browserslist repo](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
 
 <div class="alert is-helpful">
 Backward compatibility
