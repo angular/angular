@@ -1,13 +1,111 @@
-.github-links {
-  float: right;
-  .material-icons {
-    border-radius: 4px;
-    padding: 4px;
-    font-size: 20px;
-    &:hover {
-      background-color: $mist;
+.api-body {
+  max-width: 1200px;
+
+  table {
+      margin: 12px 0 24px;
+
+      th {
+          text-transform: none;
+          font-size: 16px;
+          font-weight: bold;
+      }
+
+      tr {
+          border-bottom: 1px solid $lightgray;
+      }
+
+      td {
+          vertical-align: middle;
+      }
+
+      // This is overriding a style here:
+      // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
+      tbody > tr > td tr td:first-child {
+        @media screen and (max-width: 480px) {
+          background-color: inherit;
+        }
+      }
+
+      hr {
+          margin: 16px 0;
+      }
+
+      tr:last-child {
+          border-bottom: none;
+      }
+
+      &.item-table {
+          td {
+              padding: 32px;
+          }
+      }
+
+      &.list-table {
+          td {
+              padding: 16px 24px;
+          }
+      }
+
+      .short-description {
+          margin-left: 0;
+      }
+
+      &.parameters-table {
+        margin-top: 0;
+        font-size: 14px;
+        box-shadow: none;
+
+        tr {
+          @media screen and (max-width: 480px) {
+            display: flex;
+            flex-direction: column;
+          }
+
+          td:first-child {
+            font-weight: 600;
+            padding-left: 16px;
+            width: 20%;
+          }
+        }
+
+        td {
+          padding: 8px 8px 8px 0;
+          border: 0;
+          vertical-align: top;
+        }
+      }
+  }
+
+  .class-overview {
+    position: relative;
+
+    code-example {
+        clear: left;
     }
   }
+
+  .short-description {
+    margin: 6px 0 0 10px;
+  }
+
+  .properties-table {
+    font-size: 14px;
+
+    thead th {
+      &:nth-child(1) {
+        width: 20%;
+      }
+      &:nth-child(2) {
+        width: 20%;
+      }
+    }
+  }
+}
+
+.breadcrumb-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .api-header {
@@ -17,6 +115,22 @@
   @media screen and (max-width: 600px) {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  h1 {
+    margin-top: -4px;
+  }
+}
+
+.github-links {
+  float: right;
+  .material-icons {
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 20px;
+    &:hover {
+      background-color: $mist;
+    }
   }
 }
 
@@ -65,10 +179,10 @@
     }
   }
 
+
   .api-heading {
     padding: 5px 0;
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 14px;
   }
 
   .parameters-table {
@@ -80,21 +194,71 @@
   }
 
   details.overloads {
-    margin-left: -8px;
+    box-shadow: none;
+
+    .icon-action-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      a {
+        display: flex;
+      }
+    }
+
+    .detail-contents {
+      padding: 0;
+      border: 1px solid $lightgray;
+      border-radius: 2px;
+      box-shadow: none;
+
+      > *:not(hr) {
+        margin: 16px 24px;
+      }
+    }
 
     summary {
       height: inherit;
-      padding: 8px 12px;
+      padding: 0;
+
       h4 {
         margin: 0;
         clear: left;
       }
+
+      .show-all {
+        display: initial;
+      }
+      .collapse-all {
+        display: none;
+      }
+    }
+
+    &[open] > summary {
+      .show-all {
+        display: none;
+      }
+      .collapse-all {
+        display: initial;
+      }
     }
   }
 
+  details.overload {
+    box-shadow: none;
+    margin: 0;
+  }
+
+
   .from-constructor, .read-only-property, .write-only-property {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     font-style: italic;
-    color: $blue;
+    background-color: $lightgray;
+    border-radius: 4px;
+    padding: 4px 6px;
   }
 
   .ngmodule-list {
@@ -119,10 +283,6 @@
         font-weight: normal;
       }
     }
-  }
-
-  .member-name {
-    font-weight: bold;
   }
 }
 
