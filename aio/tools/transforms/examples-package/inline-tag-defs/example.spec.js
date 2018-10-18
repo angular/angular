@@ -46,7 +46,7 @@ describe('example inline-tag-def', function() {
       expect(handler({}, 'example', 'test/url \'\'')).toEqual(
         '<code-example path="test/url"></code-example>');
 
-      expect(handler({}, 'example', 'test/url \'\' Some Header')).toEqual(
+      expect(handler({}, 'example', 'test/url "" Some Header')).toEqual(
         '<code-example path="test/url" header="Some Header"></code-example>');
     });
 
