@@ -184,7 +184,7 @@ You'll need to push a new commit to trigger a build.
 
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
-There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/latest/config/configuration-file.html) 
+There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html) 
 and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool, 
 which  you must adjust to start Chrome without sandboxing.
 
@@ -259,7 +259,7 @@ The code coverage percentages let you estimate how much of your code is tested.
 If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
 
 For example, suppose you want the code base to have a minimum of 80% code coverage. 
-To enable this, open the [Karma](http://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
+To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
 
 ```
 coverageIstanbulReporter: {
@@ -1010,7 +1010,7 @@ _compiles the app before running the tests_.
 
 However, if you run the tests in a **non-CLI environment**,
 tests of this component may fail.
-For example, if you run the `BannerComponent` tests in a web coding environment such as [plunker](http://plnkr.co/), you'll see a message like this one:
+For example, if you run the `BannerComponent` tests in a web coding environment such as [plunker](https://plnkr.co/), you'll see a message like this one:
 
 <code-example language="sh" class="code-shell" hideCopy>
 Error: This test module uses the component BannerComponent
@@ -1489,7 +1489,7 @@ While the `async()` and `fakeAsync()` functions greatly
 simplify Angular asynchronous testing,
 you can still fall back to the traditional technique
 and pass `it` a function that takes a
-[`done` callback](http://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support).
+[`done` callback](https://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support).
 
 You can't call `done()` in `async()` or `fakeAsync()` functions, because the `done parameter`
 is `undefined`.
