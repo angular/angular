@@ -23,7 +23,7 @@ module.exports = function exampleInlineTagDef(parseArgString, createDocMessage) 
       var unnamedArgs = tagArgs._;
       var relativePath = unnamedArgs[0];
       var regionName = tagArgs.region || (unnamedArgs.length > 1 ? unnamedArgs[1] : '');
-      if (regionName === '\'\'') regionName = '';
+      if (regionName === '\'\'' || regionName === '""') regionName = '';
       var header = tagArgs.header || (unnamedArgs.length > 2 ? unnamedArgs.slice(2).join(' ') : '');
       var linenums = tagArgs.linenums;
       // var stylePattern = tagArgs.stylePattern;  // TODO: not yet implemented here
