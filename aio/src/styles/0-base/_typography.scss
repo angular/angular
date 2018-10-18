@@ -123,7 +123,7 @@ td {
   padding: 8px 30px;
   letter-spacing: 0.30px;
 
-  p {
+  p:first-child, p:last-child {
     margin: 0;
   }
 }
