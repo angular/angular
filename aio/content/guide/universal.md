@@ -451,7 +451,7 @@ You can add these in the `"server"` section of the Angular configuration file, `
       "serve:ssr": "node dist/server.js",
 
       // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
+      "build:client-and-server-bundles": "ng build --prod && ng build --prod --project=angular.io-example --output-hashing=false",
       "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
     }
    ...
