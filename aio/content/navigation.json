@@ -517,8 +517,8 @@
         },
         {
           "url": "guide/npm-packages",
-          "title": "Packages",
-          "tooltip": "Explanation of npm packages installed into a project by default."
+          "title": "npm Dependencies",
+          "tooltip": "Description of npm packages required at development time and at runtime."
         },
         {
           "url": "guide/typescript-configuration",

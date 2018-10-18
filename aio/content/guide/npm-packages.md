@@ -1,8 +1,8 @@
-# Angular packages and dependencies
+# Workspace npm dependencies
 
  The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [**npm packages**](https://docs.npmjs.com/getting-started/what-is-npm "What is npm?") and distributed via the [npm registry](https://docs.npmjs.com/).
 
-You can download and install these npm packages by using the [**npm CLI client**](https://docs.npmjs.com/cli/install), which is installed with and runs as a [Node.js®](https://nodejs.org "Nodejs.org") application. By default, the Angular CLI uses the npm client to install npm packages when you create a new project.
+You can download and install these npm packages by using the [**npm CLI client**](https://docs.npmjs.com/cli/install), which is installed with and runs as a [Node.js®](https://nodejs.org "Nodejs.org") application. By default, the Angular CLI uses the npm client.
 
 Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloading and installing npm packages. 
 
@@ -18,16 +18,17 @@ If you already have projects running on your machine that use other versions of 
 
 ## `package.json`
 
-Both `npm` and `yarn` install packages that are identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
+Both `npm` and `yarn` install the packages that are identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
 
-The CLI `ng new` command creates a default `package.json` file for your project.
-This `package.json` specifies _a starter set of packages_ that work well together and 
-jointly support many common application scenarios.
+The CLI `ng new` command creates a `package.json` file when it creates the new workspace. 
+This `package.json` is used by all projects in the workspace, including the initial CLI application.   
+
+By default, this `package.json` includes _a starter set of packages_, some of which are required by Angular and others that support common application scenarios.
 
 The `package.json` includes two sets of packages:
 
-* [Dependencies](guide/npm-packages#dependencies) are essential to *running* the application.
-* [DevDependencies](guide/npm-packages#dev-dependencies) are only necessary to *develop* the application.
+* [Dependencies](guide/npm-packages#dependencies) are essential to *running* applications.
+* [DevDependencies](guide/npm-packages#dev-dependencies) are only necessary to *develop* applications.
 
 You add packages to `package.json` as your application evolves. 
 You may even remove some. 
@@ -36,7 +37,7 @@ You may even remove some.
 {@a dependencies}
 ## Dependencies
 
-The packages listed in the `dependencies` section of `package.json` are essential to *running* the application. 
+The packages listed in the `dependencies` section of `package.json` are essential to *running* applications. 
 
 The `dependencies` section of `package.json` contains:
 
