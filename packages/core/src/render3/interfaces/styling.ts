@@ -156,7 +156,7 @@ export interface StylingContext extends Array<InitialStyles|{[key: string]: any}
    * The last class value that was interpreted by elementStylingMap. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
-  [StylingIndex.PreviousMultiClassValue]: {[key: string]: any}|string|null;
+  [StylingIndex.PreviousOrCachedMultiClassValue]: {[key: string]: any}|string|null;
 
   /**
    * The last style value that was interpreted by elementStylingMap. This is cached
@@ -181,18 +181,21 @@ export interface InitialStyles extends Array<string|null|boolean> { [0]: null; }
  */
 export const enum StylingFlags {
   // Implies no configurations
-  None = 0b0000,
+  None = 0b00000,
   // Whether or not the entry or context itself is dirty
-  Dirty = 0b0001,
+  Dirty = 0b00001,
   // Whether or not this is a class-based assignment
-  Class = 0b0010,
+  Class = 0b00010,
   // Whether or not a sanitizer was applied to this property
-  Sanitize = 0b0100,
+  Sanitize = 0b00100,
   // Whether or not any player builders within need to produce new players
-  PlayerBuildersDirty = 0b1000,
+  PlayerBuildersDirty = 0b01000,
+  // If NgClass is present (or some other class handler) then it will handle the map expressions and
+  // initial classes
+  OnlyProcessSingleClasses = 0b10000,
   // The max amount of bits used to represent these configuration values
-  BitCountSize = 4,
-  // There are only three bits here
+  BitCountSize = 5,
+  // There are only five bits here
   BitMask = 0b1111
 }
 
@@ -211,8 +214,9 @@ export const enum StylingIndex {
   // Position of where the initial styles are stored in the styling context
   // This index must align with HOST, see interfaces/view.ts
   ElementPosition = 5,
-  // Position of where the last string-based CSS class value was stored
-  PreviousMultiClassValue = 6,
+  // Position of where the last string-based CSS class value was stored (or a cached version of the
+  // initial styles when a [class] directive is present)
+  PreviousOrCachedMultiClassValue = 6,
   // Position of where the last string-based CSS class value was stored
   PreviousMultiStyleValue = 7,
   // Location of single (prop) value entries are stored within the context

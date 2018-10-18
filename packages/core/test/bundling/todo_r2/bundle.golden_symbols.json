@@ -1428,6 +1428,9 @@
     "name": "definePipe"
   },
   {
+    "name": "delegateToClassInput"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -1911,6 +1914,9 @@
     "name": "initDomAdapter"
   },
   {
+    "name": "initializeTNodeInputs"
+  },
+  {
     "name": "inject"
   },
   {
@@ -2080,6 +2086,9 @@
   },
   {
     "name": "leaveView"
+  },
+  {
+    "name": "limitToSingleClasses"
   },
   {
     "name": "listener"
