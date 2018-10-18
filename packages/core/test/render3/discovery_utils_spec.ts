@@ -7,7 +7,7 @@
  */
 import {StaticInjector} from '../../src/di/injector';
 import {getComponent, getDirectives, getHostComponent, getInjector, getLocalRefs, getRootComponents} from '../../src/render3/discovery_utils';
-import {PublicFeature, RenderFlags, defineComponent, defineDirective} from '../../src/render3/index';
+import {RenderFlags, defineComponent, defineDirective} from '../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply} from '../../src/render3/instructions';
 
 import {ComponentFixture} from './render_util';
@@ -231,8 +231,7 @@ describe('discovery utils', () => {
           factory: () => new Comp(),
           consts: 0,
           vars: 0,
-          template: (rf: RenderFlags, ctx: Comp) => {},
-          features: [PublicFeature]
+          template: (rf: RenderFlags, ctx: Comp) => {}
         });
       }
 
@@ -252,8 +251,7 @@ describe('discovery utils', () => {
           factory: () => new Comp(),
           consts: 0,
           vars: 0,
-          template: (rf: RenderFlags, ctx: Comp) => {},
-          features: [PublicFeature]
+          template: (rf: RenderFlags, ctx: Comp) => {}
         });
       }
 

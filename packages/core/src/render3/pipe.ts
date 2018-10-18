@@ -8,10 +8,11 @@
 
 import {PipeTransform} from '../change_detection/pipe_transform';
 
-import {getTView, load, store} from './instructions';
+import {load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
+import {getTView} from './state';
 
 /**
  * Create a pipe.
@@ -36,7 +37,7 @@ export function pipe(index: number, pipeName: string): any {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeInstance = pipeDef.factory();
+  const pipeInstance = pipeDef.factory(null);
   store(index, pipeInstance);
   return pipeInstance;
 }

@@ -165,7 +165,7 @@ export class R3Injector {
           if (def && this.injectableDefInScope(def)) {
             // Found an ngInjectableDef and it's scoped to this injector. Pretend as if it was here
             // all along.
-            record = injectableDefRecord(token);
+            record = makeRecord(injectableDefFactory(token), NOT_YET);
             this.records.set(token, record);
           }
         }
@@ -328,7 +328,7 @@ export class R3Injector {
   }
 }
 
-function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
+function injectableDefFactory(token: Type<any>| InjectionToken<any>): () => any {
   const injectableDef = getInjectableDef(token as InjectableType<any>);
   if (injectableDef === null) {
     if (token instanceof InjectionToken) {
@@ -336,21 +336,34 @@ function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any>
     }
     // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
     // no-args constructor.
-    return makeRecord(() => new (token as Type<any>)());
+    return () => new (token as Type<any>)();
   }
-  return makeRecord(injectableDef.factory);
+  return injectableDef.factory;
 }
 
 function providerToRecord(provider: SingleProvider): Record<any> {
+  let factory: (() => any)|undefined = providerToFactory(provider);
+  if (isValueProvider(provider)) {
+    return makeRecord(undefined, provider.useValue);
+  } else {
+    return makeRecord(factory, NOT_YET);
+  }
+}
+
+/**
+ * Converts a `SingleProvider` into a factory function.
+ *
+ * @param provider provider to convert to factory
+ */
+export function providerToFactory(provider: SingleProvider): () => any {
   let token = resolveForwardRef(provider);
-  let value: any = NOT_YET;
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
-    return injectableDefRecord(provider);
+    return injectableDefFactory(provider);
   } else {
     token = resolveForwardRef(provider.provide);
     if (isValueProvider(provider)) {
-      value = provider.useValue;
+      factory = () => provider.useValue;
     } else if (isExistingProvider(provider)) {
       factory = () => inject(provider.useExisting);
     } else if (isFactoryProvider(provider)) {
@@ -360,11 +373,11 @@ function providerToRecord(provider: SingleProvider): Record<any> {
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
-        return injectableDefRecord(classRef);
+        return injectableDefFactory(classRef);
       }
     }
   }
-  return makeRecord(factory, value);
+  return factory;
 }
 
 function makeRecord<T>(
@@ -392,7 +405,7 @@ function isFactoryProvider(value: SingleProvider): value is FactoryProvider {
   return !!(value as FactoryProvider).useFactory;
 }
 
-function isTypeProvider(value: SingleProvider): value is TypeProvider {
+export function isTypeProvider(value: SingleProvider): value is TypeProvider {
   return typeof value === 'function';
 }
 

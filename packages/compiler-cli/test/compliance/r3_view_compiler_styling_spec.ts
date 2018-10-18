@@ -128,7 +128,6 @@ describe('compiler compliance: styling', () => {
           factory:function MyComponent_Factory(t){
             return new (t || MyComponent)();
           },
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
@@ -170,7 +169,6 @@ describe('compiler compliance: styling', () => {
           factory:function MyComponent_Factory(t){
             return new (t || MyComponent)();
           },
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
@@ -308,7 +306,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -367,7 +364,6 @@ describe('compiler compliance: styling', () => {
             factory: function MyComponent_Factory(t) {
               return new (t || MyComponent)();
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 0,
             template:  function MyComponent_Template(rf, ctx) {
@@ -506,7 +502,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -563,7 +558,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 2,
               template:  function MyComponent_Template(rf, $ctx$) {

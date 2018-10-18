@@ -25,8 +25,7 @@ describe('queries', () => {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: SomeDirective,
       selectors: [['', 'someDir', '']],
-      factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
-      features: [$r3$.ɵPublicFeature]
+      factory: function SomeDirective_Factory(t) { return someDir = new (t || SomeDirective)(); }
     });
   }
 
@@ -53,7 +52,7 @@ describe('queries', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ViewQueryComponent,
         selectors: [['view-query-component']],
-        factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
+        factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
         consts: 3,
         vars: 0,
         template: function ViewQueryComponent_Template(
@@ -111,12 +110,14 @@ describe('queries', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ContentQueryComponent,
         selectors: [['content-query-component']],
-        factory: function ContentQueryComponent_Factory() { return new ContentQueryComponent(); },
+        factory: function ContentQueryComponent_Factory(t) {
+          return new (t || ContentQueryComponent)();
+        },
         consts: 2,
         vars: 0,
-        contentQueries: function ContentQueryComponent_ContentQueries() {
-          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
-          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
+        contentQueries: function ContentQueryComponent_ContentQueries(dirIndex: $number$) {
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
         },
         contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(
             dirIndex: $number$, queryStartIndex: $number$) {
@@ -155,7 +156,7 @@ describe('queries', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {

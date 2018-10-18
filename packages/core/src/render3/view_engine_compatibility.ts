@@ -17,18 +17,18 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Renderer2} from '../render/api';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {NodeInjector, getParentInjectorLocation, getParentInjectorView} from './di';
-import {_getViewData, addToViewTree, createEmbeddedViewAndNode, createLContainer, getPreviousOrParentTNode, getRenderer, renderEmbeddedTemplate} from './instructions';
-import {ACTIVE_INDEX, LContainer, NATIVE, RENDER_PARENT, VIEWS} from './interfaces/container';
+import {getOrCreateInjectable, getParentInjectorLocation} from './di';
+import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions';
+import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {RenderFlags} from './interfaces/definition';
-import {InjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
-import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, HOST_NODE, LViewData, QUERIES, RENDERER, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, getRenderParent, insertView, removeView} from './node_manipulation';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer} from './util';
+import {getPreviousOrParentTNode, getRenderer, getViewData} from './state';
+import {getComponentViewByIndex, getNativeByTNode, getParentInjectorTNode, getParentInjectorView, hasParentInjector, isComponent, isLContainer} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -40,7 +40,7 @@ import {ViewRef} from './view_ref';
  */
 export function injectElementRef(ElementRefToken: typeof ViewEngine_ElementRef):
     ViewEngine_ElementRef {
-  return createElementRef(ElementRefToken, getPreviousOrParentTNode(), _getViewData());
+  return createElementRef(ElementRefToken, getPreviousOrParentTNode(), getViewData());
 }
 
 let R3ElementRef: {new (native: RElement | RComment): ViewEngine_ElementRef};
@@ -79,7 +79,7 @@ export function injectTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef,
     ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T> {
   return createTemplateRef<T>(
-      TemplateRefToken, ElementRefToken, getPreviousOrParentTNode(), _getViewData());
+      TemplateRefToken, ElementRefToken, getPreviousOrParentTNode(), getViewData());
 }
 
 /**
@@ -147,9 +147,18 @@ export function injectViewContainerRef(
     ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_ViewContainerRef {
   const previousTNode =
       getPreviousOrParentTNode() as TElementNode | TElementContainerNode | TContainerNode;
-  return createContainerRef(ViewContainerRefToken, ElementRefToken, previousTNode, _getViewData());
+  return createContainerRef(ViewContainerRefToken, ElementRefToken, previousTNode, getViewData());
 }
 
+export class NodeInjector implements Injector {
+  constructor(
+      private _tNode: TElementNode|TContainerNode|TElementContainerNode,
+      private _hostView: LViewData) {}
+
+  get(token: any, notFoundValue?: any): any {
+    return getOrCreateInjectable(this._tNode, this._hostView, token, notFoundValue);
+  }
+}
 
 /**
  * Creates a ViewContainerRef and stores it on the injector.
@@ -187,11 +196,11 @@ export function createContainerRef(
       get parentInjector(): Injector {
         const parentLocation = getParentInjectorLocation(this._hostTNode, this._hostView);
         const parentView = getParentInjectorView(parentLocation, this._hostView);
-        const parentIndex = parentLocation & InjectorLocationFlags.InjectorIndexMask;
-        const parentTNode = parentView[TVIEW].data[parentIndex] as TElementNode | TContainerNode;
+        const parentTNode = getParentInjectorTNode(parentLocation, this._hostView, this._hostTNode);
 
-        return parentLocation === -1 ? new NullInjector() :
-                                       new NodeInjector(parentTNode, parentView);
+        return !hasParentInjector(parentLocation) || parentTNode == null ?
+            new NullInjector() :
+            new NodeInjector(parentTNode, parentView);
       }
 
       clear(): void {
@@ -310,7 +319,7 @@ export function createContainerRef(
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(): ViewEngine_ChangeDetectorRef {
-  return createViewRef(getPreviousOrParentTNode(), _getViewData(), null);
+  return createViewRef(getPreviousOrParentTNode(), getViewData(), null);
 }
 
 /**
@@ -345,5 +354,5 @@ function getOrCreateRenderer2(view: LViewData): Renderer2 {
 
 /** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
 export function injectRenderer2(): Renderer2 {
-  return getOrCreateRenderer2(_getViewData());
+  return getOrCreateRenderer2(getViewData());
 }

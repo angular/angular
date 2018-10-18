@@ -3,7 +3,7 @@
     "name": "APP_ROOT"
   },
   {
-    "name": "CIRCULAR$2"
+    "name": "CIRCULAR$1"
   },
   {
     "name": "EMPTY_ARRAY$2"
@@ -69,6 +69,9 @@
     "name": "_THROW_IF_NOT_FOUND"
   },
   {
+    "name": "__forward_ref__"
+  },
+  {
     "name": "__read"
   },
   {
@@ -120,7 +123,13 @@
     "name": "injectArgs"
   },
   {
-    "name": "injectableDefRecord"
+    "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectRootLimpMode"
+  },
+  {
+    "name": "injectableDefFactory"
   },
   {
     "name": "isExistingProvider"
@@ -142,6 +151,9 @@
   },
   {
     "name": "makeRecord"
+  },
+  {
+    "name": "providerToFactory"
   },
   {
     "name": "providerToRecord"

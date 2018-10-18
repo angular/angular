@@ -717,7 +717,7 @@ export interface ResolvedReflectiveProvider {
     resolvedFactories: ResolvedReflectiveFactory[];
 }
 
-export declare function resolveForwardRef(type: any): any;
+export declare function resolveForwardRef<T>(type: T): T;
 
 /** @deprecated */
 export declare abstract class RootRenderer {

@@ -25,7 +25,7 @@ describe('i18n', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: () => new MyApp(),
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -52,7 +52,7 @@ describe('i18n', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: () => new MyApp(),
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -81,7 +81,7 @@ describe('i18n', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: () => new MyApp(),
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -125,7 +125,7 @@ describe('i18n', () => {
       items: string[] = ['1', '2'];
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
-        factory: () => new MyApp(),
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         selectors: [['my-app']],
         consts: 2,
         vars: 1,
