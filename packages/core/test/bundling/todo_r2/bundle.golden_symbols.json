@@ -1911,6 +1911,9 @@
     "name": "initDomAdapter"
   },
   {
+    "name": "initializeTNodeInputs"
+  },
+  {
     "name": "inject"
   },
   {
@@ -2212,6 +2215,9 @@
   },
   {
     "name": "prepareInitialFlag"
+  },
+  {
+    "name": "produceClassStr"
   },
   {
     "name": "projectionNodeStack"

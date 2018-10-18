@@ -28,7 +28,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, Curre
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {createStylingContextTemplate, delegateToClassInput, produceClassStr, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {assertDataInRangeInternal, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isContentQueryHost, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
@@ -1337,14 +1337,7 @@ export function elementProperty<T>(
   if (value === NO_CHANGE) return;
   const element = getNativeByIndex(index, viewData) as RElement | RComment;
   const tNode = getTNode(index, viewData);
-  // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
-  // yet been checked
-  if (tNode && tNode.inputs === undefined) {
-    // mark inputs as checked
-    tNode.inputs = generatePropertyAliases(tNode.flags, BindingDirection.Input);
-  }
-
-  const inputData = tNode && tNode.inputs;
+  const inputData = initializeTNodeInputs(tNode);
   let dataValue: PropertyAliasValue|undefined;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
@@ -1543,13 +1536,22 @@ export function elementStyling(
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = previousOrParentTNode;
+  const inputData = initializeTNodeInputs(tNode);
+  const dirWithClassInput = inputData && inputData['class'] || null;
+
   if (!tNode.stylingTemplate) {
     // initialize the styling template.
-    tNode.stylingTemplate =
-        createStylingContextTemplate(classDeclarations, styleDeclarations, styleSanitizer);
+    tNode.stylingTemplate = createStylingContextTemplate(
+        classDeclarations, styleDeclarations, styleSanitizer, !!dirWithClassInput);
   }
+
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
+    // directives with a [class] input expect the starting CSS classes to be passed in
+    if (dirWithClassInput) {
+      setInputsForProperty(
+          dirWithClassInput, classDeclarations ? produceClassStr(classDeclarations) : '');
+    }
     elementStylingApply(tNode.index - HEADER_OFFSET);
   }
 }
@@ -1642,7 +1644,12 @@ export function elementStyleProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | null,
     styles?: {[styleName: string]: any} | null): void {
-  updateStylingMap(getStylingContext(index, viewData), classes, styles);
+  const stylingContext = getStylingContext(index, viewData);
+  if (delegateToClassInput(stylingContext)) {
+    setInputsForProperty(getTNode(index, viewData).inputs !['class'] !, classes);
+    classes = null;
+  }
+  updateStylingMap(stylingContext, classes, styles);
 }
 
 //////////////////////////
@@ -2871,3 +2878,16 @@ function assertDataNext(index: number, arr?: any[]) {
 }
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
+
+function initializeTNodeInputs(tNode: TNode | null) {
+  // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
+  // yet been checked
+  if (tNode) {
+    if (tNode.inputs === undefined) {
+      // mark inputs as checked
+      tNode.inputs = generatePropertyAliases(tNode.flags, BindingDirection.Input);
+    }
+    return tNode.inputs;
+  }
+  return null;
+}

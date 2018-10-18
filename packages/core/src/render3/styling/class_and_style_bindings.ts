@@ -45,7 +45,7 @@ const EMPTY_OBJ: {[key: string]: any} = {};
 export function createStylingContextTemplate(
     initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null): StylingContext {
+    styleSanitizer?: StyleSanitizeFn | null, hasClassInput?: boolean): StylingContext {
   const initialStylingValues: InitialStyles = [null];
   const context: StylingContext =
       createEmptyStylingContext(null, styleSanitizer, initialStylingValues);
@@ -53,6 +53,12 @@ export function createStylingContextTemplate(
   // we use two maps since a class name might collide with a CSS style prop
   const stylesLookup: {[key: string]: number} = {};
   const classesLookup: {[key: string]: number} = {};
+
+  // the class input handler will get all the initial class definitions and the algorithm will skip
+  // them
+  if (hasClassInput) {
+    initialClassDeclarations = null;
+  }
 
   let totalStyleDeclarations = 0;
   if (initialStyleDeclarations) {
@@ -146,6 +152,10 @@ export function createStylingContextTemplate(
   setFlag(context, StylingIndex.MasterFlagPosition, pointers(0, 0, multiStart));
   setContextDirty(context, initialStylingValues.length > 1);
 
+  // if `class` is being used as an input then all `[class]` bindings will flow through it
+  if (hasClassInput) {
+    context[StylingIndex.MasterFlagPosition] |= StylingFlags.DelegateToClassInput;
+  }
   return context;
 }
 
@@ -921,4 +931,21 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
 
     return undefined;
   }
+}
+
+export function delegateToClassInput(context: StylingContext) {
+  return context[StylingIndex.MasterFlagPosition] & StylingFlags.DelegateToClassInput;
+}
+
+export function produceClassStr(classes: (string | boolean | InitialStylingFlags)[]): string {
+  // +1 because the values start after the marker
+  let i = classes.indexOf(InitialStylingFlags.VALUES_MODE) + 1;
+  let str = '';
+  if (i > 0) {
+    while (i < classes.length) {
+      str += (str.length ? ' ' : '') + classes[i];
+      i += 2;
+    }
+  }
+  return str;
 }

@@ -447,6 +447,9 @@
     "name": "defineInjectable"
   },
   {
+    "name": "delegateToClassInput"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -741,6 +744,9 @@
     "name": "hasValueChanged"
   },
   {
+    "name": "initializeTNodeInputs"
+  },
+  {
     "name": "inject"
   },
   {
@@ -883,6 +889,9 @@
   },
   {
     "name": "prepareInitialFlag"
+  },
+  {
+    "name": "produceClassStr"
   },
   {
     "name": "projectionNodeStack"
