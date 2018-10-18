@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, InjectionToken, OnChanges, OnDestroy, Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵPublicFeature as PublicFeature, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive, InjectionToken, OnChanges, OnDestroy, Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
@@ -367,7 +367,6 @@ describe('pipe', () => {
         static ngComponentDef = defineComponent({
           type: MyComponent,
           selectors: [['my-app']],
-          features: [PublicFeature],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           consts: 2,
           vars: 3,

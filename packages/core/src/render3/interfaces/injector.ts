@@ -6,17 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {TContainerNode, TElementContainerNode, TElementNode,} from './node';
+import {InjectionToken} from '../../di/injection_token';
+import {InjectFlags} from '../../di/injector';
+import {Type} from '../../type';
+import {TElementNode} from './node';
+import {LViewData, TData} from './view';
 
 export const TNODE = 8;
 export const PARENT_INJECTOR = 8;
 export const INJECTOR_SIZE = 9;
 
-export const enum InjectorLocationFlags {
+/**
+ * Represents a relative location of parent injector.
+ *
+ * The interfaces encodes number of parents `LViewData`s to traverse and index in the `LViewData`
+ * pointing to the parent injector.
+ */
+export interface RelativeInjectorLocation { __brand__: 'RelativeInjectorLocationFlags'; }
+
+export const enum RelativeInjectorLocationFlags {
   InjectorIndexMask = 0b111111111111111,
-  ViewOffsetShift = 15
+  ViewOffsetShift = 15,
+  NO_PARENT = -1,
 }
+
+export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
 
 /**
  * Each injector is saved in 9 contiguous slots in `LViewData` and 9 contiguous slots in
@@ -97,6 +111,140 @@ export const enum InjectorLocationFlags {
  *    [TNODE]: TElementNode|TElementContainerNode|TContainerNode;
  *  }
  */
+
+/**
+* Factory for creating instances of injectors in the NodeInjector.
+*
+* This factory is complicated by the fact that it can resolve `multi` factories as well.
+*
+* NOTE: Some of the fields are optional which means that this class has two hidden classes.
+* - One without `multi` support (most common)
+* - One with `multi` values, (rare).
+*
+* Since VMs can cache up to 4 inline hidden classes this is OK.
+*
+* - Single factory: Only `resolving` and `factory` is defined.
+* - `providers` factory: `componentProviders` is a number and `index = -1`.
+* - `viewProviders` factory: `componentProviders` is a number and `index` points to `providers`.
+*/
+export class NodeInjectorFactory {
+  /**
+   * The inject implementation to be activated when using the factory.
+   */
+  injectImpl: null|(<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags) => T);
+
+  /**
+   * Marker set to true during factory invocation to see if we get into recursive loop.
+   * Recursive loop causes an error to be displayed.
+   */
+  resolving = false;
+
+  /**
+   * Marks that the token can see other Tokens declared in `viewProviders` on the same node.
+   */
+  canSeeViewProviders: boolean;
+
+  /**
+   * An array of factories to use in case of `multi` provider.
+   */
+  multi?: Array<() => any>;
+
+  /**
+   * Number of `multi`-providers which belong to the component.
+   *
+   * This is needed because when multiple components and directives declare the `multi` provider
+   * they have to be concatenated in the correct order.
+   *
+   * Example:
+   *
+   * If we have a component and directive active an a single element as declared here
+   * ```
+   * component:
+   *   provides: [ {provide: String, useValue: 'component', multi: true} ],
+   *   viewProvides: [ {provide: String, useValue: 'componentView', multi: true} ],
+   *
+   * directive:
+   *   provides: [ {provide: String, useValue: 'directive', multi: true} ],
+   * ```
+   *
+   * Then the expected results are:
+   *
+   * ```
+   * providers: ['component', 'directive']
+   * viewProviders: ['component', 'componentView', 'directive']
+   * ```
+   *
+   * The way to think about it is that the `viewProviders` have been inserted after the component
+   * but before the directives, which is why we need to know how many `multi`s have been declared by
+   * the component.
+   */
+  componentProviders?: number;
+
+  /**
+   * Current index of the Factory in the `data`. Needed for `viewProviders` and `providers` merging.
+   * See `providerFactory`.
+   */
+  index?: number;
+
+  /**
+   * Because the same `multi` provider can be declared in `provides` and `viewProvides` it is
+   * possible for `viewProvides` to shadow the `provides`. For this reason we store the
+   * `provideFactory` of the `providers` so that `providers` can be extended with `viewProviders`.
+   *
+   * Example:
+   *
+   * Given:
+   * ```
+   * provides: [ {provide: String, useValue: 'all', multi: true} ],
+   * viewProvides: [ {provide: String, useValue: 'viewOnly', multi: true} ],
+   * ```
+   *
+   * We have to return `['all']` in case of content injection, but `['all', 'viewOnly']` in case
+   * of view injection. We further have to make sure that the shared instances (in our case
+   * `all`) are the exact same instance in both the content as well as the view injection. (We
+   * have to make sure that we don't double instantiate.) For this reason the `viewProvides`
+   * `Factory` has a pointer to the shadowed `provides` factory so that it can instantiate the
+   * `providers` (`['all']`) and then extend it with `viewProviders` (`['all'] + ['viewOnly'] =
+   * ['all', 'viewOnly']`).
+   */
+  providerFactory?: NodeInjectorFactory|null;
+
+
+  constructor(
+      /**
+       * Factory to invoke in order to create a new instance.
+       */
+      public factory:
+          (this: NodeInjectorFactory, _: null,
+           /**
+            * array where injectables tokens are stored. This is used in
+            * case of an error reporting to produce friendlier errors.
+            */
+           tData: TData,
+           /**
+            * array where existing instances of injectables are stored. This is used in case
+            * of multi shadow is needed. See `multi` field documentation.
+            */
+           lData: LViewData,
+           /**
+            * The TNode of the same element injector.
+            */
+           tNode: TElementNode) => any,
+      /**
+       * Set to `true` if the token is declared in `viewProviders` (or if it is component).
+       */
+      isViewProvider: boolean,
+      injectImplementation: null|(<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags) => T)) {
+    this.canSeeViewProviders = isViewProvider;
+    this.injectImpl = injectImplementation;
+  }
+}
+
+const FactoryPrototype = NodeInjectorFactory.prototype;
+export function isFactory(obj: any): obj is NodeInjectorFactory {
+  // See: https://jsperf.com/instanceof-vs-getprototypeof
+  return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == FactoryPrototype;
+}
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

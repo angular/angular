@@ -1968,6 +1968,9 @@
     "name": "__extends$p"
   },
   {
+    "name": "__forward_ref__"
+  },
+  {
     "name": "__metadata"
   },
   {
@@ -3097,6 +3100,12 @@
   },
   {
     "name": "injectArgs"
+  },
+  {
+    "name": "injectInjectorOnly"
+  },
+  {
+    "name": "injectRootLimpMode"
   },
   {
     "name": "inlineInterpolate"

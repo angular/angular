@@ -15,14 +15,16 @@ import {Sanitizer} from '../sanitization/security';
 import {assertComponentType, assertDefined} from './assert';
 import {getComponentViewByInstance} from './context_discovery';
 import {getComponentDef} from './definition';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getOrCreateTView, leaveView, locateHostElement, prefillHostVars, resetComponentState, setHostBindings} from './instructions';
+import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, executeInitAndContentHooks, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, setHostBindings} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {publishDefaultGlobalUtils} from './publish_global_util';
+import {enterView, leaveView, resetComponentState} from './state';
 import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
@@ -130,13 +132,12 @@ export function renderComponent<T>(
   let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
-
     const componentView =
         createRootComponentView(hostRNode, componentDef, rootView, renderer, sanitizer);
     component = createRootComponent(
         hostRNode, componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    executeInitAndContentHooks();
+    executeInitAndContentHooks(rootView);
     detectChangesInternal(componentView, component);
   } finally {
     leaveView(oldView);
@@ -171,9 +172,9 @@ export function createRootComponentView(
 
   if (tView.firstTemplatePass) {
     tView.expandoInstructions = ROOT_EXPANDO_INSTRUCTIONS.slice();
-    if (def.diPublic) def.diPublic(def);
-    tNode.flags =
-        rootView.length << TNodeFlags.DirectiveStartingIndexShift | TNodeFlags.isComponent;
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
+    tNode.flags = TNodeFlags.isComponent;
+    initNodeFlags(tNode, rootView.length, 1);
   }
 
   // Store component view at node index, with node as the HOST
@@ -189,16 +190,17 @@ export function createRootComponentView(
 export function createRootComponent<T>(
     hostRNode: RNode | null, componentView: LViewData, componentDef: ComponentDef<T>,
     rootView: LViewData, rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+  const tView = rootView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
-  const component =
-      baseDirectiveCreate(rootView.length, componentDef.factory() as T, componentDef, hostRNode);
+  const component = instantiateRootComponent(tView, rootView, componentDef);
 
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
-  if (rootView[TVIEW].firstTemplatePass) prefillHostVars(componentDef.hostVars);
-  setHostBindings();
+
+  if (tView.firstTemplatePass) prefillHostVars(tView, rootView, componentDef.hostVars);
+  setHostBindings(tView, rootView);
   return component;
 }
 

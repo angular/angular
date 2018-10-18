@@ -19,11 +19,12 @@ import {Type} from '../type';
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
-import {adjustBlueprintForNewNode, createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, enterView, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, renderEmbeddedTemplate} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {FLAGS, HEADER_OFFSET, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {enterView} from './state';
 import {getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
@@ -114,9 +115,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
         locateHostElement(rendererFactory, rootSelectorOrNode);
 
-    // The first index of the first selector is the tag name.
-    const componentTag = this.componentDef.selectors ![0] ![0] as string;
-
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
     const rootContext: RootContext = ngModule && !isInternalRootView ?
@@ -145,15 +143,25 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // projection instruction. This is needed to support the reprojection of these nodes.
       if (projectableNodes) {
         let index = 0;
+        const tView = rootView[TVIEW];
         const projection: TNode[] = tElementNode.projection = [];
         for (let i = 0; i < projectableNodes.length; i++) {
           const nodeList = projectableNodes[i];
           let firstTNode: TNode|null = null;
           let previousTNode: TNode|null = null;
           for (let j = 0; j < nodeList.length; j++) {
-            adjustBlueprintForNewNode(rootView);
+            if (tView.firstTemplatePass) {
+              // For dynamically created components such as ComponentRef, we create a new TView for
+              // each insert. This is not ideal since we should be sharing the TViews.
+              // Also the logic here should be shared with `component.ts`'s `renderComponent`
+              // method.
+              tView.expandoStartIndex++;
+              tView.blueprint.splice(++index + HEADER_OFFSET, 0, null);
+              tView.data.splice(index + HEADER_OFFSET, 0, null);
+              rootView.splice(index + HEADER_OFFSET, 0, null);
+            }
             const tNode =
-                createNodeAtIndex(++index, TNodeType.Element, nodeList[j] as RElement, null, null);
+                createNodeAtIndex(index, TNodeType.Element, nodeList[j] as RElement, null, null);
             previousTNode ? (previousTNode.next = tNode) : (firstTNode = tNode);
             previousTNode = tNode;
           }

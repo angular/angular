@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCurrentSanitizer} from '../render3/instructions';
+import {getCurrentSanitizer} from '../render3/state';
 import {stringify} from '../render3/util';
 
 import {BypassType, allowSanitizationBypass} from './bypass';

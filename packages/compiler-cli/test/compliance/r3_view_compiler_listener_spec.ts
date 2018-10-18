@@ -202,7 +202,6 @@ describe('compiler compliance: listen()', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 4,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {

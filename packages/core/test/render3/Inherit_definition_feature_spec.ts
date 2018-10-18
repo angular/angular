@@ -397,7 +397,7 @@ describe('InheritDefinitionFeature', () => {
 
     const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
-    subDef.contentQueries !();
+    subDef.contentQueries !(0);
 
     expect(log).toEqual(['super', 'sub']);
   });
