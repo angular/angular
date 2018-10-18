@@ -50,7 +50,8 @@ function baseDirectiveFields(
     name: meta.name,
     type: meta.type,
     deps: meta.deps,
-    injectFn: R3.directiveInject, hostListeners
+    injectFn: R3.directiveInject,
+    hostListeners: hostListeners
   });
   definitionMap.set('factory', result.factory);
 

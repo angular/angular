@@ -11,7 +11,7 @@ import {container, containerRefreshEnd, containerRefreshStart, element, elementE
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
+import {ComponentFixture, containerEl, renderToHtml, requestAnimationFrame} from './render_util';
 
 
 describe('event listeners', () => {
@@ -86,8 +86,10 @@ describe('event listeners', () => {
   beforeEach(() => { comps = []; });
 
   it('should call function on event emit', () => {
-    const comp = renderComponent(MyComp);
-    const button = containerEl.querySelector('button') !;
+    const fixture = new ComponentFixture(MyComp);
+    const comp = fixture.component;
+    const button = fixture.hostElement.querySelector('button') !;
+
     button.click();
     expect(comp.counter).toEqual(1);
 
@@ -96,8 +98,9 @@ describe('event listeners', () => {
   });
 
   it('should retain event handler return values using document', () => {
-    const preventDefaultComp = renderComponent(PreventDefaultComp);
-    const button = containerEl.querySelector('button') !;
+    const fixture = new ComponentFixture(PreventDefaultComp);
+    const preventDefaultComp = fixture.component;
+    const button = fixture.hostElement.querySelector('button') !;
 
     button.click();
     expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
@@ -112,9 +115,10 @@ describe('event listeners', () => {
   });
 
   it('should retain event handler return values with renderer2', () => {
-    const preventDefaultComp =
-        renderComponent(PreventDefaultComp, {rendererFactory: getRendererFactory2(document)});
-    const button = containerEl.querySelector('button') !;
+    const fixture =
+        new ComponentFixture(PreventDefaultComp, {rendererFactory: getRendererFactory2(document)});
+    const preventDefaultComp = fixture.component;
+    const button = fixture.hostElement.querySelector('button') !;
 
     button.click();
     expect(preventDefaultComp.event !.preventDefault).not.toHaveBeenCalled();
@@ -506,8 +510,10 @@ describe('event listeners', () => {
       });
     }
 
-    const comp = renderComponent(MyComp);
-    const button = containerEl.querySelector('button') !;
+    const fixture = new ComponentFixture(MyComp);
+    const comp = fixture.component;
+    const button = fixture.hostElement.querySelector('button') !;
+
     button.click();
     expect(comp.counter).toEqual(3);
 
