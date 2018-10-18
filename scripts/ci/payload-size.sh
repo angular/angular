@@ -42,22 +42,28 @@ addTimestamp() {
 }
 
 # Write travis commit message to global variable `$payloadData`.
+#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
 addMessage() {
+  commitRange="$1"
+
   # Grab the set of SHAs for the message. This can fail when you force push or do initial build
   # because $CI_COMMIT_RANGE may contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
-  message=$(git log --oneline $CI_COMMIT_RANGE -- || git log --oneline -n1)
+  message=$(git log --oneline $commitRange -- || git log --oneline -n1)
   message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-  payloadData="$payloadData\"message\": \"$message\""
+  payloadData="$payloadData\"message\": \"$message\", "
 }
 
 # Add change source: `application`, `dependencies`, or `application+dependencies`
 # Read from global variable `$parentDir`.
 # Update the change source in global variable `$payloadData`.
-addChange() {
+#   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
+addChangeType() {
+  commitRange="$1"
+
   yarnChanged=false
-  allChangedFiles=$(git diff --name-only $CI_COMMIT_RANGE $parentDir | wc -l)
-  allChangedFileNames=$(git diff --name-only $CI_COMMIT_RANGE $parentDir)
+  allChangedFiles=$(git diff --name-only $commitRange $parentDir | wc -l)
+  allChangedFileNames=$(git diff --name-only $commitRange $parentDir)
 
   if [[ $allChangedFileNames == *"yarn.lock"* ]]; then
     yarnChanged=true
@@ -77,23 +83,24 @@ addChange() {
   payloadData="$payloadData\"change\": \"$change\", "
 }
 
+# Convert the current `payloadData` value to a JSON string.
+# (Basically remove trailing `,` and wrap in `{...}`.)
+payloadToJson() {
+  echo "{$(sed -r 's|, *$||' <<< $payloadData)}"
+}
+
 # Upload data to firebase database if it's commit, print out data for pull requests.
 #   $1: string - The name in database.
 uploadData() {
   name="$1"
-  payloadData="{${payloadData}}"
-
-  echo $payloadData > /tmp/current.log
 
   readonly safeBranchName=$(echo $CI_BRANCH | sed -e 's/\./_/g')
+  readonly dbPath=/payload/$name/$safeBranchName/$CI_COMMIT
+  readonly jsonPayload=$(payloadToJson)
 
-  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
-    readonly dbPath=/payload/$name/$safeBranchName/$CI_COMMIT
-
-    # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
-    set +x
-    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
-  fi
+  # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
+  set +x
+  $NODE_MODULES_BIN/firebase database:update --data "$jsonPayload" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
 }
 
 # Track payload size.
@@ -106,21 +113,31 @@ trackPayloadSize() {
   name="$1"
   path="$2"
   checkSize="$3"
-  trackChange="$4"
+  trackChangeType="$4"
   limitFile="${5:-}"
 
   payloadData=""
 
+  # Calculate the file sizes.
   for filename in $path; do
     declare -A size
     calculateSize
   done
-  addTimestamp
-  if [[ $trackChange = true ]]; then
-    addChange
+
+  # Save the file sizes to be retrieved from `payload-size.js`.
+  echo "$(payloadToJson)" > /tmp/current.log
+
+  # If this is a non-PR build, upload the data to firebase.
+  if [[ "$CI_PULL_REQUEST" == "false" ]]; then
+    if [[ $trackChangeType = true ]]; then
+      addChangeType $CI_COMMIT_RANGE
+    fi
+    addTimestamp
+    addMessage $CI_COMMIT_RANGE
+    uploadData $name
   fi
-  addMessage
-  uploadData $name
+
+  # Check the file sizes against the specified limits.
   if [[ $checkSize = true ]]; then
     checkSize $name $limitFile
   fi
