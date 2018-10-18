@@ -12,7 +12,7 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 [ ] Performance issue
 [ ] Feature request
 [ ] Documentation issue or request
-[ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
+[ ] Support request => Please do not submit support requests here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
 [ ] Other... Please describe:
 </code></pre>
 
