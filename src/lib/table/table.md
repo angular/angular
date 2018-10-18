@@ -138,7 +138,7 @@ and its interface is not tied to any one specific implementation.
 #### Sorting
 
 To add sorting behavior to the table, add the `matSort` directive to the table and add 
-`mat-sort-header` to each column header cell that should trigger sorting. 
+`mat-sort-header` to each column header cell that should trigger sorting. Note that you have to import `MatSortModule` in order to initialize the `matSort` directive (see [API docs](https://material.angular.io/components/sort/api)).
 
 ```html
 <!-- Name Column -->
