@@ -1,7 +1,6 @@
 import {DialogModule} from '@angular/cdk-experimental/dialog';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ScrollingModule as ExperimentalScrollingModule} from '@angular/cdk-experimental/scrolling';
-import {FullscreenOverlayContainer, OverlayContainer} from '@angular/cdk/overlay';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -35,7 +34,6 @@ import {SimpleCheckboxes} from './checkbox/checkbox-e2e';
 import {DialogE2E, TestDialog} from './dialog/dialog-e2e';
 import {E2EApp, Home} from './e2e-app/e2e-app';
 import {E2E_APP_ROUTES} from './e2e-app/routes';
-import {FullscreenE2E, TestDialogFullScreen} from './fullscreen/fullscreen-e2e';
 import {GridListE2E} from './grid-list/grid-list-e2e';
 import {IconE2E} from './icon/icon-e2e';
 import {InputE2E} from './input/input-e2e';
@@ -93,7 +91,6 @@ export class E2eMaterialModule {}
     ButtonE2E,
     DialogE2E,
     E2EApp,
-    FullscreenE2E,
     GridListE2E,
     Home,
     IconE2E,
@@ -106,14 +103,10 @@ export class E2eMaterialModule {}
     SimpleRadioButtons,
     SlideToggleE2E,
     TestDialog,
-    TestDialogFullScreen,
     BlockScrollStrategyE2E,
     VirtualScrollE2E,
   ],
   bootstrap: [E2EApp],
-  providers: [
-    {provide: OverlayContainer, useClass: FullscreenOverlayContainer}
-  ],
-  entryComponents: [TestDialog, TestDialogFullScreen]
+  entryComponents: [TestDialog]
 })
 export class E2eAppModule { }

@@ -156,7 +156,6 @@
 /e2e/components/checkbox-e2e.spec.ts               @jelbourn @devversion
 /e2e/components/dialog-e2e.spec.ts                 @jelbourn @crisbeto
 /e2e/components/expansion-e2e.spec.ts              @josephperrott @jelbourn
-/e2e/components/fullscreen-e2e.spec.ts             @jelbourn
 /e2e/components/grid-list-e2e.spec.ts              @jelbourn
 /e2e/components/icon-e2e.spec.ts                   @jelbourn
 /e2e/components/input-e2e.spec.ts                  @mmalerba
@@ -178,7 +177,6 @@
 /src/e2e-app/checkbox/**                           @jelbourn @devversion
 /src/e2e-app/dialog/**                             @jelbourn @crisbeto
 /src/e2e-app/e2e-app/**                            @jelbourn
-/src/e2e-app/fullscreen/**                         @jelbourn
 /src/e2e-app/grid-list/**                          @jelbourn
 /src/e2e-app/icon/**                               @jelbourn
 /src/e2e-app/input/**                              @mmalerba

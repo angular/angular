@@ -12,7 +12,6 @@ import {GridListE2E} from '../grid-list/grid-list-e2e';
 import {ProgressBarE2E} from '../progress-bar/progress-bar-e2e';
 import {ProgressSpinnerE2E} from '../progress-spinner/progress-spinner-e2e';
 import {SlideToggleE2E} from '../slide-toggle/slide-toggle-e2e';
-import {FullscreenE2E} from '../fullscreen/fullscreen-e2e';
 import {InputE2E} from '../input/input-e2e';
 import {SidenavE2E} from '../sidenav/sidenav-e2e';
 import {BlockScrollStrategyE2E} from '../block-scroll-strategy/block-scroll-strategy-e2e';
@@ -33,7 +32,6 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'checkbox', component: SimpleCheckboxes},
   {path: 'dialog', component: DialogE2E},
   {path: 'expansion', component: ExpansionOverviewExample},
-  {path: 'fullscreen', component: FullscreenE2E},
   {path: 'grid-list', component: GridListE2E},
   {path: 'icon', component: IconE2E},
   {path: 'input', component: InputE2E},
