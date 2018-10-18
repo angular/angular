@@ -11,7 +11,7 @@ import * as o from '../../output/output_ast';
 import * as t from '../r3_ast';
 
 import {R3QueryMetadata} from './api';
-import {isI18NAttribute} from './i18n';
+import {isI18nAttribute} from './i18n/util';
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -135,7 +135,7 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
   const attributesMap: {[name: string]: string} = {};
 
   elOrTpl.attributes.forEach(a => {
-    if (!isI18NAttribute(a.name)) {
+    if (!isI18nAttribute(a.name)) {
       attributesMap[a.name] = a.value;
     }
   });

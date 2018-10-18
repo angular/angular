@@ -8,7 +8,7 @@
 
 import {AST, ImplicitReceiver, MethodCall, PropertyRead, PropertyWrite, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead} from '../../expression_parser/ast';
 import {CssSelector, SelectorMatcher} from '../../selector';
-import {BoundAttribute, BoundEvent, BoundText, Content, Element, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
+import {BoundAttribute, BoundEvent, BoundText, Content, Element, Icu, Node, Reference, Template, Text, TextAttribute, Variable, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, Target, TargetBinder} from './t2_api';
 import {getAttrsForDirectiveMatching} from './util';
@@ -132,6 +132,7 @@ class Scope implements Visitor {
   visitBoundText(text: BoundText) {}
   visitText(text: Text) {}
   visitTextAttribute(attr: TextAttribute) {}
+  visitIcu(icu: Icu) {}
 
   private maybeDeclare(thing: Reference|Variable) {
     // Declare something with a name, as long as that name isn't taken.
@@ -312,6 +313,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   visitBoundAttributeOrEvent(node: BoundAttribute|BoundEvent) {}
   visitText(text: Text): void {}
   visitBoundText(text: BoundText): void {}
+  visitIcu(icu: Icu): void {}
 }
 
 /**
@@ -423,6 +425,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitText(text: Text) {}
   visitContent(content: Content) {}
   visitTextAttribute(attribute: TextAttribute) {}
+  visitIcu(icu: Icu): void {}
 
   // The remaining visitors are concerned with processing AST expressions within template bindings
 

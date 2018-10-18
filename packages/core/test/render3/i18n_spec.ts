@@ -9,10 +9,12 @@
 import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nIcuReplaceVars, i18nStart} from '../../src/render3/i18n';
+import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {getNativeByIndex} from '../../src/render3/util';
+
 import {NgIf} from './common_with_def';
+
 import {element, elementEnd, elementStart, template, text, bind, elementProperty, projectionDef, projection} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LViewData, TVIEW} from '../../src/render3/interfaces/view';
@@ -55,14 +57,6 @@ describe('Runtime i18n', () => {
     it('should throw if the template is malformed', () => {
       const message = `�*2:1�message!`;
       expect(() => getTranslationForTemplate(message)).toThrowError(/Tag mismatch/);
-    });
-  });
-
-  describe('i18nIcuReplaceVars', () => {
-    it('should replace var names', () => {
-      const MSG_APP_1_RAW = '{VAR_SELECT, select, male {male} female {female} other {other}}';
-      const MSG_APP_1 = i18nIcuReplaceVars(MSG_APP_1_RAW, {VAR_SELECT: '\uFFFD0\uFFFD'});
-      expect(MSG_APP_1).toEqual('{�0�, select, male {male} female {female} other {other}}');
     });
   });
 
@@ -1506,4 +1500,105 @@ describe('Runtime i18n', () => {
       });
     });
   });
+
+  describe('i18nPostprocess', () => {
+    it('should handle valid cases', () => {
+      const arr = ['�*1:1��#2:1�', '�#4:2�', '�6:4�', '�/#2:1��/*1:1�'];
+      const str = `[${arr.join('|')}]`;
+
+      const cases = [
+        // empty string
+        ['', {}, ''],
+
+        // string without any special cases
+        ['Foo [1,2,3] Bar - no ICU here', {}, 'Foo [1,2,3] Bar - no ICU here'],
+
+        // multi-value cases
+        [
+          `Start: ${str}, ${str} and ${str}, ${str} end.`, {},
+          `Start: ${arr[0]}, ${arr[1]} and ${arr[2]}, ${arr[3]} end.`
+        ],
+
+        // replace VAR_SELECT
+        [
+          'My ICU: {VAR_SELECT, select, =1 {one} other {other}}', {VAR_SELECT: '�1:2�'},
+          'My ICU: {�1:2�, select, =1 {one} other {other}}'
+        ],
+
+        [
+          'My ICU: {\n\n\tVAR_SELECT_1 \n\n, select, =1 {one} other {other}}',
+          {VAR_SELECT_1: '�1:2�'}, 'My ICU: {\n\n\t�1:2� \n\n, select, =1 {one} other {other}}'
+        ],
+
+        // replace VAR_PLURAL
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1} other {other}}', {VAR_PLURAL: '�1:2�'},
+          'My ICU: {�1:2�, plural, one {1} other {other}}'
+        ],
+
+        [
+          'My ICU: {\n\n\tVAR_PLURAL_1 \n\n, select, =1 {one} other {other}}',
+          {VAR_PLURAL_1: '�1:2�'}, 'My ICU: {\n\n\t�1:2� \n\n, select, =1 {one} other {other}}'
+        ],
+
+        // do not replace VAR_* anywhere else in a string (only in ICU)
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1} other {other}} VAR_PLURAL and VAR_SELECT',
+          {VAR_PLURAL: '�1:2�'},
+          'My ICU: {�1:2�, plural, one {1} other {other}} VAR_PLURAL and VAR_SELECT'
+        ],
+
+        // replace VAR_*'s in nested ICUs
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1 - {VAR_SELECT, age, 50 {fifty} other {other}}} other {other}}',
+          {VAR_PLURAL: '�1:2�', VAR_SELECT: '�5�'},
+          'My ICU: {�1:2�, plural, one {1 - {�5�, age, 50 {fifty} other {other}}} other {other}}'
+        ],
+
+        [
+          'My ICU: {VAR_PLURAL, plural, one {1 - {VAR_PLURAL_1, age, 50 {fifty} other {other}}} other {other}}',
+          {VAR_PLURAL: '�1:2�', VAR_PLURAL_1: '�5�'},
+          'My ICU: {�1:2�, plural, one {1 - {�5�, age, 50 {fifty} other {other}}} other {other}}'
+        ],
+
+        // ICU replacement
+        [
+          'My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�',
+          {ICU: ['ICU_VALUE_1', 'ICU_VALUE_2']}, 'My ICU #1: ICU_VALUE_1, My ICU #2: ICU_VALUE_2'
+        ],
+
+        // mixed case
+        [
+          `Start: ${str}, ${str}. ICU: {VAR_SELECT, count, 10 {ten} other {other}}.
+          Another ICU: �I18N_EXP_ICU� and ${str}, ${str} and one more ICU: �I18N_EXP_ICU� and end.`,
+          {VAR_SELECT: '�1:2�', ICU: ['ICU_VALUE_1', 'ICU_VALUE_2']},
+          `Start: ${arr[0]}, ${arr[1]}. ICU: {�1:2�, count, 10 {ten} other {other}}.
+          Another ICU: ICU_VALUE_1 and ${arr[2]}, ${arr[3]} and one more ICU: ICU_VALUE_2 and end.`,
+        ],
+      ];
+      cases.forEach(([input, replacements, output]) => {
+        expect(i18nPostprocess(input as string, replacements as any)).toEqual(output as string);
+      });
+    });
+
+    it('should throw in case we have invalid string', () => {
+      const arr = ['�*1:1��#2:1�', '�#4:2�', '�6:4�', '�/#2:1��/*1:1�'];
+      const str = `[${arr.join('|')}]`;
+
+      const cases = [
+        // less placeholders than we have
+        [`Start: ${str}, ${str} and ${str} end.`, {}],
+
+        // more placeholders than we have
+        [`Start: ${str}, ${str} and ${str}, ${str} ${str} end.`, {}],
+
+        // not enough ICU replacements
+        ['My ICU #1: �I18N_EXP_ICU�, My ICU #2: �I18N_EXP_ICU�', {ICU: ['ICU_VALUE_1']}]
+      ];
+      cases.forEach(([input, replacements, output]) => {
+        expect(() => i18nPostprocess(input as string, replacements as any)).toThrowError();
+      });
+    });
+  });
+
 });
