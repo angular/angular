@@ -13,8 +13,6 @@ import {getDOM} from '../../dom/dom_adapter';
 
 /**
  * Predicates for use with {@link DebugElement}'s query functions.
- *
- * @experimental All debugging apis are currently experimental.
  */
 export class By {
   /**

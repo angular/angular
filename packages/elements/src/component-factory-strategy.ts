@@ -20,8 +20,6 @@ const DESTROY_DELAY = 10;
 /**
  * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
  * constructor's injector's factory resolver and passes that factory to each strategy.
- *
- * @experimental
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
   componentFactory: ComponentFactory<any>;
@@ -39,8 +37,6 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 /**
  * Creates and destroys a component ref using a component factory and handles change detection
  * in response to input changes.
- *
- * @experimental
  */
 export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */

@@ -56,9 +56,6 @@ export function ngswCommChannelFactory(
                                                                 undefined);
 }
 
-/**
- * @experimental
- */
 @NgModule({
   providers: [SwPush, SwUpdate],
 })

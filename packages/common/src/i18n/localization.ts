@@ -15,9 +15,6 @@ import {Plural, getLocalePluralCase} from './locale_data_api';
  */
 export const DEPRECATED_PLURAL_FN = new InjectionToken<boolean>('UseV4Plurals');
 
-/**
- * @experimental
- */
 export abstract class NgLocalization {
   abstract getPluralCategory(value: any, locale?: string): string;
 }
@@ -51,8 +48,6 @@ export function getPluralCategory(
 
 /**
  * Returns the plural case based on the locale
- *
- * @experimental
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
@@ -89,7 +84,6 @@ export class NgLocaleLocalization extends NgLocalization {
  * Returns the plural case based on the locale
  *
  * @deprecated from v5 the plural case function is in locale data files common/locales/*.ts
- * @experimental
  */
 export function getPluralCase(locale: string, nLike: number | string): Plural {
   // TODO(vicb): lazy compute

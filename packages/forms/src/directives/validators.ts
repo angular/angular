@@ -16,8 +16,6 @@ import {NG_VALIDATORS, Validators} from '../validators';
 /**
  * @description
  * Defines the map of errors returned from failed validation checks
- *
- * @experimental
  */
 export type ValidationErrors = {
   [key: string]: any
@@ -92,8 +90,6 @@ export interface Validator {
  *   }
  * }
  * ```
- *
- * @experimental
  */
 export interface AsyncValidator extends Validator {
   /**
@@ -174,8 +170,6 @@ export class RequiredValidator implements Validator {
  * ```
  * <input type="checkbox" name="active" ngModel required>
  * ```
- *
- * @experimental
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
  */
@@ -212,8 +206,6 @@ export const EMAIL_VALIDATOR: any = {
  * <input type="email" name="email" ngModel email="true">
  * <input type="email" name="email" ngModel [email]="true">
  * ```
- *
- * @experimental
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
  */

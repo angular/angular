@@ -17,8 +17,6 @@ import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInpu
  * Prototype for a class constructor based on an Angular component
  * that can be used for custom element registration. Implemented and returned
  * by the {@link createCustomElement createCustomElement() function}.
- *
- * @experimental
  */
 export interface NgElementConstructor<P> {
   /**
@@ -36,8 +34,6 @@ export interface NgElementConstructor<P> {
 
 /**
  * Implements the functionality needed for a custom element.
- *
- * @experimental
  */
 export abstract class NgElement extends HTMLElement {
   /**
@@ -76,8 +72,6 @@ export abstract class NgElement extends HTMLElement {
  * Additional type information that can be added to the NgElement class,
  * for properties that are added based
  * on the inputs and methods of the underlying component.
- *
- * @experimental
  */
 export type WithProperties<P> = {
   [property in keyof P]: P[property]
@@ -87,8 +81,6 @@ export type WithProperties<P> = {
  * A configuration that initializes an NgElementConstructor with the
  * dependencies and strategy it needs to transform a component into
  * a custom element class.
- *
- * @experimental
  */
 export interface NgElementConfig {
   /**
@@ -119,8 +111,6 @@ export interface NgElementConfig {
  * @param config A configuration that provides initialization information to the created class.
  * @returns The custom-element construction class, which can be registered with
  * a browser's `CustomElementRegistry`.
- *
- * @experimental
  */
 export function createCustomElement<P>(
     component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {

@@ -189,8 +189,6 @@ export interface CompilerOptions extends ts.CompilerOptions {
    *  of running the View Engine compilers
    * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
    * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
-   *
-   * @experimental
    */
   enableIvy?: boolean|'ngtsc'|'tsc';
 

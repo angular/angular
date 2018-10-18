@@ -10,9 +10,6 @@ import {EventEmitter, Injectable, Type, ɵstringify as stringify} from '@angular
 import {MessageBus} from './message_bus';
 import {Serializer, SerializerTypes} from './serializer';
 
-/**
- * @experimental WebWorker support in Angular is experimental.
- */
 @Injectable()
 export class ClientMessageBrokerFactory {
   /** @internal */
@@ -37,9 +34,6 @@ interface PromiseCompleter {
   reject: (err: any) => void;
 }
 
-/**
- * @experimental WebWorker support in Angular is experimental.
- */
 export class ClientMessageBroker {
   private _pending = new Map<string, PromiseCompleter>();
   private _sink: EventEmitter<any>;
@@ -140,17 +134,11 @@ interface ResponseMessageData {
   id?: string;
 }
 
-/**
- * @experimental WebWorker support in Angular is experimental.
- */
 export class FnArg {
   constructor(
       public value: any, public type: Type<any>|SerializerTypes = SerializerTypes.PRIMITIVE) {}
 }
 
-/**
- * @experimental WebWorker support in Angular is experimental.
- */
 export class UiArguments {
   constructor(public method: string, public args?: FnArg[]) {}
 }

@@ -13,9 +13,6 @@ export class EventListener {
   constructor(public name: string, public callback: Function) {}
 }
 
-/**
- * @experimental All debugging apis are currently experimental.
- */
 export class DebugNode {
   listeners: EventListener[] = [];
   parent: DebugElement|null = null;
@@ -37,9 +34,6 @@ export class DebugNode {
   get providerTokens(): any[] { return this._debugContext.providerTokens; }
 }
 
-/**
- * @experimental All debugging apis are currently experimental.
- */
 export class DebugElement extends DebugNode {
   name !: string;
   properties: {[key: string]: any} = {};
@@ -125,9 +119,6 @@ export class DebugElement extends DebugNode {
   }
 }
 
-/**
- * @experimental
- */
 export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
 }
@@ -161,9 +152,6 @@ function _queryNodeChildren(
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
-/**
- * @experimental
- */
 export function getDebugNode(nativeNode: any): DebugNode|null {
   return _nativeNodeToDebugNode.get(nativeNode) || null;
 }
@@ -183,7 +171,5 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
 /**
  * A boolean-valued function over a value, possibly including context information
  * regarding that value's position in an array.
- *
- * @experimental All debugging apis are currently experimental.
  */
 export interface Predicate<T> { (value: T): boolean; }

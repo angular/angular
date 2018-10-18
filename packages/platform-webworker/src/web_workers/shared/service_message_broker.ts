@@ -11,9 +11,6 @@ import {MessageBus} from '../shared/message_bus';
 import {Serializer, SerializerTypes} from '../shared/serializer';
 
 
-/**
- * @experimental WebWorker support in Angular is currently experimental.
- */
 @Injectable()
 export class ServiceMessageBrokerFactory {
   /** @internal */
@@ -38,8 +35,6 @@ export class ServiceMessageBrokerFactory {
  * If a registered method message is received from the broker on the worker,
  * the UIMessageBroker deserializes its arguments and calls the registered method.
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
- *
- * @experimental WebWorker support in Angular is currently experimental.
  */
 export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
@@ -89,9 +84,6 @@ export class ServiceMessageBroker {
   }
 }
 
-/**
- * @experimental WebWorker support in Angular is currently experimental.
- */
 export interface ReceivedMessage {
   method: string;
   args: any[];

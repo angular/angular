@@ -19,8 +19,6 @@ import {TreeNode} from './utils/tree';
  *
  * This is an opaque value the router will give to a custom route reuse strategy
  * to store and retrieve later on.
- *
- * @experimental
  */
 export type DetachedRouteHandle = {};
 
@@ -35,8 +33,6 @@ export type DetachedRouteHandleInternal = {
  * @description
  *
  * Provides a way to customize when activated routes get reused.
- *
- * @experimental
  */
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */

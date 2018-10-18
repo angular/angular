@@ -83,8 +83,6 @@ export interface ModuleWithProviders<
  * @see `@NgModule`, `CUSTOM_ELEMENTS_SCHEMA`, `NO_ERRORS_SCHEMA`
  *
  * @param name The name of a defined schema.
- *
- * @experimental
  */
 export interface SchemaMetadata { name: string; }
 
@@ -102,8 +100,6 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
 
 /**
  * Defines a schema that allows any property on any element.
- *
- * @experimental
  */
 export const NO_ERRORS_SCHEMA: SchemaMetadata = {
   name: 'no-errors-schema'

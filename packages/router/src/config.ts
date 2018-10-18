@@ -261,8 +261,6 @@ export type Routes = Route[];
  *
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
- *
- * @experimental
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -285,8 +283,6 @@ export type UrlMatchResult = {
  *
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
- *
- * @experimental
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -352,7 +348,6 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * The type of `runGuardsAndResolvers`.
  *
  * See `Routes` for more details.
- * @experimental
  */
 export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 

@@ -10,9 +10,6 @@ import {Injectable} from '@angular/core';
 
 import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
-/**
- * @experimental
- */
 @Injectable()
 export class NoopAnimationDriver implements AnimationDriver {
   validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
@@ -39,9 +36,6 @@ export class NoopAnimationDriver implements AnimationDriver {
   }
 }
 
-/**
- * @experimental
- */
 export abstract class AnimationDriver {
   static NOOP: AnimationDriver = new NoopAnimationDriver();
 

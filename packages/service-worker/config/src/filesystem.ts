@@ -9,8 +9,6 @@
 /**
  * An abstraction over a virtual file system used to enable testing and operation
  * of the config generator in different environments.
- *
- * @experimental
  */
 export interface Filesystem {
   list(dir: string): Promise<string[]>;

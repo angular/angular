@@ -65,8 +65,6 @@ interface Record<T> {
 
 /**
  * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.
- *
- * @experimental
  */
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,

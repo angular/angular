@@ -47,8 +47,6 @@ import {INJECTOR_KEY} from './constants';
  *
  * @returns a [factory function](https://docs.angularjs.org/guide/di) that can be
  * used to register the service on an AngularJS module.
- *
- * @experimental
  */
 export function downgradeInjectable(token: any): Function {
   const factory = function(i: Injector) { return i.get(token); };

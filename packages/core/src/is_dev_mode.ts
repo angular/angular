@@ -22,8 +22,6 @@ let _runModeLocked: boolean = false;
  * the value is locked and won't change any more.
  *
  * By default, this is true, unless a user calls `enableProdMode` before calling this.
- *
- * @experimental APIs related to application bootstrap are currently under review.
  */
 export function isDevMode(): boolean {
   _runModeLocked = true;

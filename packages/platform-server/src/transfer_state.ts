@@ -25,8 +25,6 @@ export function serializeTransferStateFactory(
 /**
  * NgModule to install on the server side while using the `TransferState` to transfer state from
  * server to client.
- *
- * @experimental
  */
 @NgModule({
   providers: [

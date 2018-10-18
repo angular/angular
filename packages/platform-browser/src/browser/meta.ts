@@ -15,8 +15,6 @@ import {DOCUMENT} from '../dom/dom_tokens';
 
 /**
  * Represents a meta element.
- *
- * @experimental
  */
 export type MetaDefinition = {
   charset?: string; content?: string; httpEquiv?: string; id?: string; itemprop?: string;
@@ -39,8 +37,6 @@ export function createMeta() {
 
 /**
  * A service that can be used to get and add meta tags.
- *
- * @experimental
  */
 @Injectable({providedIn: 'root', useFactory: createMeta, deps: []})
 export class Meta {

@@ -13,8 +13,6 @@ import {SubscriptionLike} from 'rxjs';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
- *
- * @experimental
  */
 @Injectable()
 export class SpyLocation implements Location {

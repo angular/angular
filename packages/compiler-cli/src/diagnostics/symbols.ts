@@ -10,8 +10,6 @@ import {StaticSymbol} from '@angular/compiler';
 
 /**
  * The range of a span of text in a source file.
- *
- * @experimental
  */
 export interface Span {
   /**
@@ -43,8 +41,6 @@ export type Definition = Location[] | undefined;
 /**
  * A symbol describing a language element that can be referenced by expressions
  * in an Angular template.
- *
- * @experimental
  */
 export interface Symbol {
   /**
@@ -123,8 +119,6 @@ export interface Symbol {
 
 /**
  * A table of `Symbol`s accessible by name.
- *
- * @experimental
  */
 export interface SymbolTable {
   /**
@@ -152,8 +146,6 @@ export interface SymbolTable {
 
 /**
  * A description of a function or method signature.
- *
- * @experimental
  */
 export interface Signature {
   /**
@@ -170,8 +162,6 @@ export interface Signature {
 
 /**
  * An enumeration of basic types.
- *
- * @experimental
  */
 export enum BuiltinType {
   /**
@@ -217,16 +207,12 @@ export enum BuiltinType {
 
 /**
  * The kinds of definition.
- *
- * @experimental
  */
 export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'element' | 'entity' |
     'key' | 'method' | 'pipe' | 'property' | 'type' | 'reference' | 'variable';
 
 /**
  * Describes a symbol to type binding used to build a symbol table.
- *
- * @experimental
  */
 export interface SymbolDeclaration {
   /**
@@ -252,8 +238,6 @@ export interface SymbolDeclaration {
 
 /**
  * Information about the pipes that are available for use in a template.
- *
- * @experimental
  */
 export interface PipeInfo {
   /**
@@ -269,15 +253,11 @@ export interface PipeInfo {
 
 /**
  * A sequence of pipe information.
- *
- * @experimental
  */
 export type Pipes = PipeInfo[] | undefined;
 
 /**
  * Describes the language context in which an Angular expression is evaluated.
- *
- * @experimental
  */
 export interface SymbolQuery {
   /**

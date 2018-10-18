@@ -20,8 +20,6 @@ import {Directive} from '@angular/core';
  * ```
  * <form ngNativeValidate></form>
  * ```
- *
- * @experimental
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
  */

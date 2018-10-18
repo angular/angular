@@ -17,8 +17,6 @@ import {Type} from '../type';
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
- *
- * @experimental
  */
 export interface ValueSansProvider {
   /**
@@ -63,8 +61,6 @@ export interface ValueProvider extends ValueSansProvider {
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
- *
- * @experimental
  */
 export interface StaticClassSansProvider {
   /**
@@ -123,8 +119,6 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * @Injectable(SomeModule, {deps: []})
  * class MyService {}
  * ```
- *
- * @experimental
  */
 export interface ConstructorSansProvider {
   /**
@@ -214,8 +208,6 @@ export interface ExistingProvider extends ExistingSansProvider {
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='FactorySansProvider'}
- *
- * @experimental
  */
 export interface FactorySansProvider {
   /**
@@ -299,8 +291,6 @@ export interface TypeProvider extends Type<any> {}
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='ClassSansProvider'}
- *
- * @experimental
  */
 export interface ClassSansProvider {
   /**

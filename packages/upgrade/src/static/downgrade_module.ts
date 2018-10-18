@@ -98,8 +98,6 @@ import {NgAdapterInjector} from './util';
  *   ngZone.run(...)}.
  *
  * </div>
- *
- * @experimental
  */
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|

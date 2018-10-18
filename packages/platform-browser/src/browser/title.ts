@@ -25,8 +25,6 @@ export function createTitle() {
  * it is not possible to bind to the `text` property of the `HTMLTitleElement` elements
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
- *
- * @experimental
  */
 @Injectable({providedIn: 'root', useFactory: createTitle, deps: []})
 export class Title {

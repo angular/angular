@@ -11,7 +11,6 @@ import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
 
-/** @experimental */
 export interface PopStateEvent {
   pop?: boolean;
   state?: any;

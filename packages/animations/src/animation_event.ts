@@ -35,7 +35,6 @@
  * }
  * ```
  *
- * @experimental Animation support is experimental.
  */
 export interface AnimationEvent {
   /**

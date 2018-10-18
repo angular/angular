@@ -14,7 +14,6 @@ import {NgZone} from '../zone/ng_zone';
  * Testability API.
  * `declare` keyword causes tsickle to generate externs, so these methods are
  * not renamed by Closure Compiler.
- * @experimental
  */
 export declare interface PublicTestability {
   isStable(): boolean;
@@ -52,7 +51,6 @@ interface WaitCallback {
  * The Testability service provides testing hooks that can be accessed from
  * the browser and by services such as Protractor. Each bootstrapped Angular
  * application on the page will have an instance of Testability.
- * @experimental
  */
 @Injectable()
 export class Testability implements PublicTestability {
@@ -223,7 +221,6 @@ export class Testability implements PublicTestability {
 
 /**
  * A global registry of {@link Testability} instances for specific elements.
- * @experimental
  */
 @Injectable()
 export class TestabilityRegistry {
@@ -283,7 +280,7 @@ export class TestabilityRegistry {
  * Adapter interface for retrieving the `Testability` service associated for a
  * particular context.
  *
- * @experimental Testability apis are primarily intended to be used by e2e test tool vendors like
+ * Testability apis are primarily intended to be used by e2e test tool vendors like
  * the Protractor team.
  */
 export interface GetTestability {
@@ -302,7 +299,9 @@ class _NoopGetTestability implements GetTestability {
 
 /**
  * Set the {@link GetTestability} implementation used by the Angular testing framework.
- * @experimental
+ *
+ * Testability apis are primarily intended to be used by e2e test tool vendors like
+ * the Protractor team.
  */
 export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;

@@ -79,8 +79,6 @@ import {EventEmitter} from '../event_emitter';
  *   }
  * }
  * ```
- *
- * @experimental
  */
 export class NgZone {
   readonly hasPendingMicrotasks: boolean = false;

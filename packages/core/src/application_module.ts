@@ -66,8 +66,6 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
  *
  * Re-exported by `BrowserModule`, which is included automatically in the root
  * `AppModule` when you create a new app with the CLI `new` command.
- *
- * @experimental
  */
 @NgModule({providers: APPLICATION_MODULE_PROVIDERS})
 export class ApplicationModule {

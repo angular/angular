@@ -20,8 +20,6 @@ import {RouterConfigLoader} from './router_config_loader';
  * @description
  *
  * Provides a preloading strategy.
- *
- * @experimental
  */
 export abstract class PreloadingStrategy {
   abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -35,8 +33,6 @@ export abstract class PreloadingStrategy {
  * ```
  * RouteModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
  * ```
- *
- * @experimental
  */
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
@@ -50,8 +46,6 @@ export class PreloadAllModules implements PreloadingStrategy {
  * Provides a preloading strategy that does not preload any modules.
  *
  * This strategy is enabled by default.
- *
- * @experimental
  */
 export class NoPreloading implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
@@ -66,8 +60,6 @@ export class NoPreloading implements PreloadingStrategy {
  * will check if any configurations can be loaded lazily.
  *
  * If a route is protected by `canLoad` guards, the preloaded will not load it.
- *
- *
  */
 @Injectable()
 export class RouterPreloader implements OnDestroy {

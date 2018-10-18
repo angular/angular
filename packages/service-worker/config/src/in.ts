@@ -6,21 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * @experimental
- */
 export type Glob = string;
 
-/**
- * @experimental
- */
 export type Duration = string;
 
-/**
- * A top-level Angular Service Worker configuration object.
- *
- * @experimental
- */
 export interface Config {
   appData?: {};
   index: string;
@@ -31,8 +20,6 @@ export interface Config {
 
 /**
  * Configuration for a particular group of assets.
- *
- * @experimental
  */
 export interface AssetGroup {
   name: string;
@@ -49,8 +36,6 @@ export interface AssetGroup {
 
 /**
  * Configuration for a particular group of dynamic URLs.
- *
- * @experimental
  */
 export interface DataGroup {
   name: string;

@@ -9,9 +9,6 @@ import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@an
 import {ɵAnimationDriver as AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵinvokeQuery as invokeQuery, ɵmatchesElement as matchesElement, ɵvalidateStyleProperty as validateStyleProperty} from '@angular/animations/browser';
 
 
-/**
- * @experimental Animation support is experimental.
- */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
 
@@ -41,9 +38,6 @@ export class MockAnimationDriver implements AnimationDriver {
   }
 }
 
-/**
- * @experimental Animation support is experimental.
- */
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;
   private __started = false;

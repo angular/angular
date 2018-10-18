@@ -14,8 +14,6 @@ import {COMPILER_PROVIDERS, TestingCompilerFactoryImpl} from './compiler_factory
 
 /**
  * Platform for dynamic tests
- *
- * @experimental
  */
 export const platformCoreDynamicTesting: (extraProviders?: any[]) => PlatformRef =
     createPlatformFactory(platformCoreDynamic, 'coreDynamicTesting', [

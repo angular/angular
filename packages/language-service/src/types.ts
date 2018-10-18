@@ -28,8 +28,6 @@ export {
  * a template and the language context the template is in.
  *
  * A host interface; see `LanguageSeriviceHost`.
- *
- * @experimental
  */
 export interface TemplateSource {
   /**
@@ -72,8 +70,6 @@ export interface TemplateSource {
  * A sequence of template sources.
  *
  * A host type; see `LanguageSeriviceHost`.
- *
- * @experimental
  */
 export type TemplateSources = TemplateSource[] | undefined;
 
@@ -82,8 +78,6 @@ export type TemplateSources = TemplateSource[] | undefined;
  * Error information found getting declaration information
  *
  * A host type; see `LanguageServiceHost`.
- *
- * @experimental
  */
 export interface DeclarationError {
   /**
@@ -108,8 +102,6 @@ export interface DeclarationError {
  * template.
  *
  * A host type; see `LanguageSeriviceHost`.
- *
- * @experimental
  */
 export interface Declaration {
   /**
@@ -138,8 +130,6 @@ export interface Declaration {
  * A sequence of declarations.
  *
  * A host type; see `LanguageSeriviceHost`.
- *
- * @experimental
  */
 export type Declarations = Declaration[];
 
@@ -168,8 +158,6 @@ export type Declarations = Declaration[];
  * While an interface is marked as experimental breaking-changes will be allowed between minor
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
- *
- * @experimental
  */
 export interface LanguageServiceHost {
   /**
@@ -211,8 +199,6 @@ export interface LanguageServiceHost {
  * An item of the completion result to be displayed by an editor.
  *
  * A `LanguageService` interface.
- *
- * @experimental
  */
 export interface Completion {
   /**
@@ -233,8 +219,6 @@ export interface Completion {
 
 /**
  * A sequence of completions.
- *
- * @experimental
  */
 export type Completions = Completion[] | undefined;
 
@@ -248,8 +232,6 @@ export interface Location {
 
 /**
  * The kind of diagnostic message.
- *
- * @experimental
  */
 export enum DiagnosticKind {
   Error,
@@ -263,8 +245,6 @@ export enum DiagnosticKind {
  *
  * For compatibility previous implementation, the values are expected to override
  * toString() to return a formatted message.
- *
- * @experimental
  */
 export interface DiagnosticMessageChain {
   /**
@@ -280,8 +260,6 @@ export interface DiagnosticMessageChain {
 
 /**
  * An template diagnostic message to display.
- *
- * @experimental
  */
 export interface Diagnostic {
   /**
@@ -302,8 +280,6 @@ export interface Diagnostic {
 
 /**
  * A sequence of diagnostic message.
- *
- * @experimental
  */
 export type Diagnostics = Diagnostic[];
 
@@ -363,8 +339,6 @@ export interface Hover {
  * While an interface is marked as experimental breaking-changes will be allowed between minor
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
- *
- * @experimental
  */
 export interface LanguageService {
   /**

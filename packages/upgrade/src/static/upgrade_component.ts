@@ -62,8 +62,6 @@ class Bindings {
  * * call the base class from the constructor, passing
  *   * the AngularJS name of the component (`ng1Hero`)
  *   * the `ElementRef` and `Injector` for the component wrapper
- *
- * @experimental
  */
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private helper: UpgradeHelper;

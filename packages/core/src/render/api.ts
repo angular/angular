@@ -118,7 +118,6 @@ export abstract class RootRenderer {
 /**
  * Used by `RendererFactory2` to associate custom rendering data and styles
  * with a rendering implementation.
- *  @experimental
  */
 export interface RendererType2 {
   /**
@@ -150,8 +149,6 @@ export interface RendererType2 {
 
 /**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
- *
- * @experimental
  */
 export abstract class RendererFactory2 {
   /**
@@ -178,7 +175,6 @@ export abstract class RendererFactory2 {
 
 /**
  * Flags for renderer-specific style modifiers.
- * @experimental
  */
 export enum RendererStyleFlags2 {
   /**
@@ -203,8 +199,6 @@ export enum RendererStyleFlags2 {
  * For example if you need to set a property or an attribute whose name is
  * not statically known, use the `setProperty()` or
  * `setAttribute()` method.
- *
- * @experimental
  */
 export abstract class Renderer2 {
   /**

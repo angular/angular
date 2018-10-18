@@ -8,8 +8,6 @@
 
 /**
  * Type used for modifications to metadata
- *
- * @experimental
  */
 export type MetadataOverride<T> = {
   add?: Partial<T>,

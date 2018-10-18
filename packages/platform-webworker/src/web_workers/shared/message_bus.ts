@@ -15,8 +15,6 @@ import {EventEmitter, NgZone} from '@angular/core';
  * Communication is based on a channel abstraction. Messages published in a
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
- *
- * @experimental WebWorker support in Angular is currenlty experimental.
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -50,9 +48,6 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   abstract to(channel: string): EventEmitter<any>;
 }
 
-/**
- * @experimental WebWorker support in Angular is currenlty experimental.
- */
 export interface MessageBusSource {
   /**
    * Sets up a new channel on the MessageBusSource.
@@ -76,9 +71,6 @@ export interface MessageBusSource {
   from(channel: string): EventEmitter<any>;
 }
 
-/**
- * @experimental WebWorker support in Angular is currenlty experimental.
- */
 export interface MessageBusSink {
   /**
    * Sets up a new channel on the MessageBusSink.

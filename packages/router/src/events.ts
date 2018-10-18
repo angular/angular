@@ -17,8 +17,6 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
  * * 'popstate'--triggered by a popstate event
  * * 'hashchange'--triggered by a hashchange event
- *
- * @experimental
  */
 export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
 
@@ -39,8 +37,6 @@ export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
  *   }
  * }
  * ```
- *
- * @experimental
  */
 export class RouterEvent {
   constructor(
@@ -54,8 +50,6 @@ export class RouterEvent {
  * @description
  *
  * Represents an event triggered when a navigation starts.
- *
- *
  */
 export class NavigationStart extends RouterEvent {
   /**
@@ -199,8 +193,6 @@ export class RoutesRecognized extends RouterEvent {
  * @description
  *
  * Represents the start of the Guard phase of routing.
- *
- * @experimental
  */
 export class GuardsCheckStart extends RouterEvent {
   constructor(
@@ -224,8 +216,6 @@ export class GuardsCheckStart extends RouterEvent {
  * @description
  *
  * Represents the end of the Guard phase of routing.
- *
- * @experimental
  */
 export class GuardsCheckEnd extends RouterEvent {
   constructor(
@@ -254,8 +244,6 @@ export class GuardsCheckEnd extends RouterEvent {
  * event may change, thus it's experimental. In the current iteration it will run
  * in the "resolve" phase whether there's things to resolve or not. In the future this
  * behavior may change to only run when there are things to be resolved.
- *
- * @experimental
  */
 export class ResolveStart extends RouterEvent {
   constructor(
@@ -280,8 +268,6 @@ export class ResolveStart extends RouterEvent {
  *
  * Represents the end of the Resolve phase of routing. See note on
  * `ResolveStart` for use of this experimental API.
- *
- * @experimental
  */
 export class ResolveEnd extends RouterEvent {
   constructor(
@@ -305,8 +291,6 @@ export class ResolveEnd extends RouterEvent {
  * @description
  *
  * Represents an event triggered before lazy loading a route config.
- *
- * @experimental
  */
 export class RouteConfigLoadStart {
   constructor(
@@ -319,8 +303,6 @@ export class RouteConfigLoadStart {
  * @description
  *
  * Represents an event triggered when a route has been lazy loaded.
- *
- * @experimental
  */
 export class RouteConfigLoadEnd {
   constructor(
@@ -334,8 +316,6 @@ export class RouteConfigLoadEnd {
  *
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ChildActivationEnd` for use of this experimental API.
- *
- * @experimental
  */
 export class ChildActivationStart {
   constructor(
@@ -352,8 +332,6 @@ export class ChildActivationStart {
  *
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ChildActivationStart` for use of this experimental API.
- *
- * @experimental
  */
 export class ChildActivationEnd {
   constructor(
@@ -370,8 +348,6 @@ export class ChildActivationEnd {
  *
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ActivationEnd` for use of this experimental API.
- *
- * @experimental
  */
 export class ActivationStart {
   constructor(
@@ -388,8 +364,6 @@ export class ActivationStart {
  *
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ActivationStart` for use of this experimental API.
- *
- * @experimental
  */
 export class ActivationEnd {
   constructor(

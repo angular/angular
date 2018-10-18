@@ -10,9 +10,6 @@ import {Injectable, RenderComponentType, RendererType2, Type, ɵstringify as str
 import {RenderStore} from './render_store';
 
 
-/**
- * @experimental WebWorker support in Angular is currently experimental.
- */
 export const enum SerializerTypes {
   // RendererType2
   RENDERER_TYPE_2,

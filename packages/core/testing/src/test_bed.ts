@@ -35,16 +35,12 @@ export interface TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   resetTestEnvironment(): void;
 
@@ -119,8 +115,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
@@ -132,8 +126,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
 
@@ -291,8 +283,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
@@ -308,8 +298,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();
@@ -643,8 +631,6 @@ export const TestBed: TestBedStatic =
  * Returns a singleton of the applicable `TestBed`.
  *
  * It will be either an instance of `TestBedViewEngine` or `TestBedRender3`.
- *
- * @experimental
  */
 export const getTestBed: () => TestBed = ivyEnabled ? _getTestBedRender3 : _getTestBedViewEngine;
 
@@ -697,9 +683,6 @@ export function inject(tokens: any[], fn: Function): () => any {
   }
 }
 
-/**
- * @experimental
- */
 export class InjectSetupWrapper {
   constructor(private _moduleDef: () => TestModuleMetadata) {}
 
@@ -720,9 +703,6 @@ export class InjectSetupWrapper {
   }
 }
 
-/**
- * @experimental
- */
 export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;
 export function withModule(moduleDef: TestModuleMetadata, fn?: Function | null): (() => any)|

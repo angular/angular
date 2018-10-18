@@ -25,8 +25,6 @@ export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
  *
  * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
  * project.
- *
- * @experimental
  */
 export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
 
@@ -444,8 +442,6 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  * Within such a factory function `inject` is utilized to request injection of a dependency, instead
  * of providing an additional array of dependencies as was common to do with `useFactory` providers.
  * `inject` is faster and more type-safe.
- *
- * @experimental
  */
 export function inject<T>(token: Type<T>| InjectionToken<T>): T;
 export function inject<T>(token: Type<T>| InjectionToken<T>, flags?: InjectFlags): T|null;

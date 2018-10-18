@@ -22,9 +22,6 @@ import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
 
 
-/**
- * @experimental
- */
 export const platformWorkerApp = createPlatformFactory(
     platformCore, 'workerApp', [{provide: PLATFORM_ID, useValue: PLATFORM_WORKER_APP_ID}]);
 
@@ -54,8 +51,6 @@ export function setupWebWorker(): void {
 
 /**
  * The ng module for the worker app side.
- *
- * @experimental
  */
 @NgModule({
   providers: [

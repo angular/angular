@@ -272,8 +272,6 @@ export function directiveInject<T>(
  *   ...
  * })
  * ```
- *
- * @experimental
  */
 export function injectAttribute(attrNameToInject: string): string|undefined {
   const tNode = getPreviousOrParentTNode();

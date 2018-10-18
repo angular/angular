@@ -42,7 +42,6 @@ import {SwitchView} from './ng_switch';
  *
  * See http://cldr.unicode.org/index/cldr-spec/plural-rules
  *
- * @experimental
  */
 @Directive({selector: '[ngPlural]'})
 export class NgPlural {
@@ -100,7 +99,6 @@ export class NgPlural {
  *
  * See {@link NgPlural} for more details and example.
  *
- * @experimental
  */
 @Directive({selector: '[ngPluralCase]'})
 export class NgPluralCase {

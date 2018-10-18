@@ -20,7 +20,6 @@ let moduleFactories = new Map<string, NgModuleFactory<any>>();
 
 /**
  * Registers a loaded module. Should only be called from generated NgModuleFactory code.
- * @experimental
  */
 export function registerModuleFactory(id: string, factory: NgModuleFactory<any>) {
   const existing = moduleFactories.get(id);
@@ -39,7 +38,6 @@ export function clearModulesForTest() {
  * Returns the NgModuleFactory with the given id, if it exists and has been loaded.
  * Factories for modules that do not specify an `id` cannot be retrieved. Throws if the module
  * cannot be found.
- * @experimental
  */
 export function getModuleFactory(id: string): NgModuleFactory<any> {
   const factory = moduleFactories.get(id);

@@ -37,8 +37,6 @@ export class TestBedRender3 implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed {
@@ -49,8 +47,6 @@ export class TestBedRender3 implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   static resetTestEnvironment(): void { _getTestBedRender3().resetTestEnvironment(); }
 
@@ -197,8 +193,6 @@ export class TestBedRender3 implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
@@ -211,8 +205,6 @@ export class TestBedRender3 implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();

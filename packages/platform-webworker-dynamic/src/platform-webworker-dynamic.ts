@@ -14,9 +14,6 @@ import {ɵResourceLoaderImpl as ResourceLoaderImpl, ɵplatformCoreDynamic as pla
 export {VERSION} from './version';
 
 
-/**
- * @experimental API related to bootstrapping are still under review.
- */
 export const platformWorkerAppDynamic =
     createPlatformFactory(platformCoreDynamic, 'workerAppDynamic', [
       {

@@ -33,7 +33,6 @@
 *
 * @param html HTML which should be inserted into `body` of the `document`.
 * @param blockFn function to wrap. The function can return promise or be `async`.
-* @experimental
 */
 export function withBody<T extends Function>(html: string, blockFn: T): T {
   return function(done: DoneFn) {
@@ -74,7 +73,6 @@ const domino: any = (function(domino) {
 
 /**
  * Ensure that global has `Document` if we are in node.js
- * @experimental
  */
 export function ensureDocument(): void {
   if (domino) {
@@ -101,7 +99,6 @@ export function ensureDocument(): void {
 
 /**
  * Restore the state of `Document` between tests.
- * @experimental
  */
 export function cleanupDocument(): void {
   if (savedDocument) {

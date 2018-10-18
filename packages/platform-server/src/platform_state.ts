@@ -13,8 +13,6 @@ import {serializeDocument} from './domino_adapter';
 
 /**
  * Representation of the current platform state.
- *
- * @experimental
  */
 @Injectable()
 export class PlatformState {

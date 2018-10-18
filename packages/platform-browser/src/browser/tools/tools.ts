@@ -22,8 +22,6 @@ const PROFILER_GLOBAL_NAME = 'profiler';
  * 1. Type `ng.` (usually the console will show auto-complete suggestion)
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
- *
- * @experimental All debugging apis are currently experimental.
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
   exportNgVar(PROFILER_GLOBAL_NAME, new AngularProfiler(ref));
@@ -32,8 +30,6 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
 
 /**
  * Disables Angular tools.
- *
- * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
   exportNgVar(PROFILER_GLOBAL_NAME, null);

@@ -18,7 +18,6 @@ import {stringify} from '../util';
  * ### Example
  *
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
- * @experimental
  */
 export interface ForwardRefFn { (): any; }
 
@@ -32,7 +31,6 @@ export interface ForwardRefFn { (): any; }
  * @usageNotes
  * ### Example
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
- * @experimental
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
@@ -51,7 +49,6 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
  *
  * @see `forwardRef`
- * @experimental
  */
 export function resolveForwardRef(type: any): any {
   if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__') &&

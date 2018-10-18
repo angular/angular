@@ -92,8 +92,6 @@ export type FormHooks = 'change' | 'blur' | 'submit';
 
 /**
  * Interface for options provided to an `AbstractControl`.
- *
- * @experimental
  */
 export interface AbstractControlOptions {
   /**

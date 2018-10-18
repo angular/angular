@@ -71,8 +71,6 @@ export interface InjectorDef<T> {
  *
  * `InjectableDefType`s contain their own Dependency Injection metadata and are usable in an
  * `InjectorDef`-based `StaticInjector.
- *
- * @experimental
  */
 export interface InjectableType<T> extends Type<T> {
   /**
@@ -85,8 +83,6 @@ export interface InjectableType<T> extends Type<T> {
  * A type which has an `InjectorDef` static field.
  *
  * `InjectorDefTypes` can be used to configure a `StaticInjector`.
- *
- * @experimental
  */
 export interface InjectorType<T> extends Type<T> {
   /**
@@ -123,8 +119,6 @@ export interface InjectorTypeWithProviders<T> {
  *   provided in the `'root'` injector, which will be the application-level injector in most apps.
  * * `factory` gives the zero argument function which will create an instance of the injectable.
  *   The factory can call `inject` to access the `Injector` and request injection of dependencies.
- *
- * @experimental
  */
 export function defineInjectable<T>(opts: {
   providedIn?: Type<any>| 'root' | 'any' | null,
@@ -152,8 +146,6 @@ export function defineInjectable<T>(opts: {
  * * `imports`: an optional array of imports of other `InjectorType`s or `InjectorTypeWithModule`s
  *   whose providers will also be added to the injector. Locally provided types will override
  *   providers from imports.
- *
- * @experimental
  */
 export function defineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
