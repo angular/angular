@@ -78,6 +78,11 @@ describe('getEntryPointInfo()', () => {
       umd: `/some_package/material_style/bundles/material_style.umd.js`,
     });
   });
+
+  it('should return null if the package.json is not valid JSON', () => {
+    const entryPoint = getEntryPointInfo('/some_package', '/some_package/unexpected_symbols');
+    expect(entryPoint).toBe(null);
+  });
 });
 
 function createMockFileSystem() {
@@ -115,8 +120,15 @@ function createMockFileSystem() {
           "module": "./esm5/material_style.es5.js",
           "es2015": "./esm2015/material_style.js"
         }`,
-        'material_style.metadata.json': 'some meta data'
-      }
+        'material_style.metadata.json': 'some meta data',
+      },
+      'unexpected_symbols': {
+        // package.json might not be a valid JSON
+        // for example, @schematics/angular contains a package.json blueprint
+        // with unexpected symbols
+        'package.json':
+            '{"devDependencies": {<% if (!minimal) { %>"@types/jasmine": "~2.8.8" <% } %>}}',
+      },
     }
   });
 }
