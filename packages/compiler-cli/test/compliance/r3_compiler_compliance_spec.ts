@@ -415,7 +415,6 @@ describe('compiler compliance', () => {
             factory: function MyComponent_Factory(t){
               return new (t || MyComponent)();
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 0,
             template: function MyComponent_Template(rf,ctx){
@@ -470,7 +469,6 @@ describe('compiler compliance', () => {
           type: ChildComponent,
           selectors: [["child"]],
           factory: function ChildComponent_Factory(t) { return new (t || ChildComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 1,
           vars: 0,
           template:  function ChildComponent_Template(rf, ctx) {
@@ -485,8 +483,7 @@ describe('compiler compliance', () => {
         SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]],
-          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
         });
       `;
 
@@ -498,7 +495,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 2,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
@@ -543,8 +539,7 @@ describe('compiler compliance', () => {
         SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           selectors: [["div", "some-directive", "", 8, "foo", 3, "title", "", 9, "baz"]],
-          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
         });
       `;
 
@@ -553,8 +548,7 @@ describe('compiler compliance', () => {
         OtherDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: OtherDirective,
           selectors: [["", 5, "span", "title", "", 9, "baz"]],
-          factory: function OtherDirective_Factory(t) {return new (t || OtherDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function OtherDirective_Factory(t) {return new (t || OtherDirective)(); }
         });
       `;
 
@@ -590,8 +584,7 @@ describe('compiler compliance', () => {
           hostBindings: function HostBindingDir_HostBindings(dirIndex, elIndex) {
             $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵload(dirIndex).dirId));
           },
-          hostVars: 1,
-          features: [$r3$.ɵPublicFeature]
+          hostVars: 1
         });
       `;
 
@@ -635,7 +628,6 @@ describe('compiler compliance', () => {
             $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, $r3$.ɵload(dirIndex).id)));
           },
           hostVars: 3,
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template: function HostBindingComp_Template(rf, ctx) {}
@@ -679,7 +671,6 @@ describe('compiler compliance', () => {
                 $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef),
                 $r3$.ɵdirectiveInject(ChangeDetectorRef));
           },
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {}
@@ -720,8 +711,7 @@ describe('compiler compliance', () => {
         IfDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]],
-          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef)); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef)); }
         });`;
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
@@ -743,7 +733,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 3,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
@@ -806,7 +795,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
@@ -888,7 +876,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 11,
             template:  function MyApp_Template(rf, ctx) {
@@ -952,7 +939,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
@@ -1020,7 +1006,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 8,
             template:  function MyApp_Template(rf, ctx) {
@@ -1079,7 +1064,6 @@ describe('compiler compliance', () => {
           type: SimpleComponent,
           selectors: [["simple"]],
           factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 2,
           vars: 0,
           template:  function SimpleComponent_Template(rf, ctx) {
@@ -1102,7 +1086,6 @@ describe('compiler compliance', () => {
           type: ComplexComponent,
           selectors: [["complex"]],
           factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 4,
           vars: 0,
           template:  function ComplexComponent_Template(rf, ctx) {
@@ -1171,7 +1154,6 @@ describe('compiler compliance', () => {
             type: ViewQueryComponent,
             selectors: [["view-query-component"]],
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵquery(0, SomeDirective, true);
@@ -1348,9 +1330,9 @@ describe('compiler compliance', () => {
             factory: function ContentQueryComponent_Factory(t) {
               return new (t || ContentQueryComponent)();
             },
-            contentQueries: function ContentQueryComponent_ContentQueries() {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);
@@ -1358,7 +1340,6 @@ describe('compiler compliance', () => {
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
@@ -1406,9 +1387,9 @@ describe('compiler compliance', () => {
           …
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
-            contentQueries: function ContentQueryComponent_ContentQueries() {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false));
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);
@@ -1459,11 +1440,11 @@ describe('compiler compliance', () => {
           …
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
-            contentQueries: function ContentQueryComponent_ContentQueries() {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$ , true, TemplateRef));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true, ElementRef));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false, ElementRef));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false, TemplateRef));
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$ , true, TemplateRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false, TemplateRef), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);
@@ -1552,7 +1533,6 @@ describe('compiler compliance', () => {
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-              features: [$r3$.ɵPublicFeature],
               consts: 6,
               vars: 17,
               template:  function MyApp_Template(rf, ctx) {
@@ -1616,7 +1596,6 @@ describe('compiler compliance', () => {
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-              features: [$r3$.ɵPublicFeature],
               consts: 6,
               vars: 27,
               template:  function MyApp_Template(rf, ctx) {
@@ -1671,7 +1650,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 3,
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
@@ -1765,7 +1743,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 6,
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
@@ -1911,7 +1888,7 @@ describe('compiler compliance', () => {
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
             inputs: {nameMin: "name"},
-            features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+            features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {}
@@ -1922,7 +1899,6 @@ describe('compiler compliance', () => {
             type: SimpleLayout,
             selectors: [["simple-layout"]],
             factory: function SimpleLayout_Factory(t) { return new (t || SimpleLayout)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 2,
             template:  function SimpleLayout_Template(rf, ctx) {
@@ -2032,7 +2008,7 @@ describe('compiler compliance', () => {
                 factory: function ForOfDirective_Factory(t) {
                   return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
                 },
-                features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+                features: [$r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2052,7 +2028,6 @@ describe('compiler compliance', () => {
                 type: MyComponent,
                 selectors: [["my-component"]],
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-                features: [$r3$.ɵPublicFeature],
                 consts: 2,
                 vars: 1,
                 template:  function MyComponent_Template(rf, ctx){
@@ -2108,7 +2083,7 @@ describe('compiler compliance', () => {
             factory: function ForOfDirective_Factory(t) {
               return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
             },
-            features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+            features: [$r3$.ɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -2131,7 +2106,6 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
@@ -2231,7 +2205,6 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {

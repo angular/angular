@@ -69,8 +69,8 @@ describe('template variables', () => {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: ForOfDirective,
       selectors: [['', 'forOf', '']],
-      factory: function ForOfDirective_Factory() {
-        return new ForOfDirective(
+      factory: function ForOfDirective_Factory(t) {
+        return new (t || ForOfDirective)(
             $r3$.ɵdirectiveInject(ViewContainerRef as any),
             $r3$.ɵdirectiveInject(TemplateRef as any));
       },
@@ -111,7 +111,7 @@ describe('template variables', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 2,
         vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -205,7 +205,7 @@ describe('template variables', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 2,
         vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {

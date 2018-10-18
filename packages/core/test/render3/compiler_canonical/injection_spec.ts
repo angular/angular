@@ -8,6 +8,7 @@
 
 import {Attribute, ChangeDetectorRef, Component, INJECTOR, Inject, InjectFlags, Injectable, Injector, SkipSelf, defineInjectable, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
+import {ProvidersFeature} from '../../../src/render3/features/providers_feature';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -31,8 +32,8 @@ describe('injection', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: function MyComp_Factory() {
-            return new MyComp($r3$.ɵdirectiveInject(ChangeDetectorRef as any));
+          factory: function MyComp_Factory(t) {
+            return new (t || MyComp)($r3$.ɵdirectiveInject(ChangeDetectorRef as any));
           },
           consts: 1,
           vars: 1,
@@ -52,7 +53,7 @@ describe('injection', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 0,
           /** <my-comp></my-comp> */
@@ -83,7 +84,9 @@ describe('injection', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
+          factory: function MyComp_Factory(t) {
+            return new (t || MyComp)($r3$.ɵinjectAttribute('title'));
+          },
           consts: 1,
           vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
@@ -102,7 +105,7 @@ describe('injection', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 0,
           /** <my-comp></my-comp> */
@@ -153,15 +156,14 @@ describe('injection', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() {
-            return new MyApp(
+          factory: function MyApp_Factory(t) {
+            return new (t || MyApp)(
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
           consts: 0,
           vars: 0,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
-          providers: [ServiceA],
-          viewProviders: [ServiceB],
+          features: [ProvidersFeature([ServiceA], [ServiceB])]
         });
       }
       const e0_attrs = ['title', 'WORKS'];

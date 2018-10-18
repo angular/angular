@@ -34,7 +34,7 @@ describe('elements', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent(),
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 5,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -65,7 +65,7 @@ describe('elements', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: Dir,
         selectors: [['', 'dir', '']],
-        factory: function DirA_Factory() { return new Dir(); },
+        factory: function DirA_Factory(t) { return new (t || Dir)(); },
         exportAs: 'dir'
       });
     }
@@ -87,7 +87,7 @@ describe('elements', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: LocalRefComp,
         selectors: [['local-ref-comp']],
-        factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
+        factory: function LocalRefComp_Factory(t) { return new (t || LocalRefComp)(); },
         consts: 4,
         vars: 2,
         template: function LocalRefComp_Template(rf: $RenderFlags$, ctx: $LocalRefComp$) {
@@ -131,7 +131,7 @@ describe('elements', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ListenerComp,
         selectors: [['listener-comp']],
-        factory: function ListenerComp_Factory() { return new ListenerComp(); },
+        factory: function ListenerComp_Factory(t) { return new (t || ListenerComp)(); },
         consts: 2,
         vars: 0,
         template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
@@ -188,7 +188,7 @@ describe('elements', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent(),
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 5,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -222,7 +222,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 1,
           vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -255,7 +255,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 1,
           vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -289,7 +289,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 1,
           vars: 0,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -334,7 +334,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 1,
           vars: 0,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -379,7 +379,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [['my-component']],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           consts: 1,
           vars: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -419,7 +419,7 @@ describe('elements', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: StyleComponent,
           selectors: [['style-comp']],
-          factory: function StyleComponent_Factory() { return new StyleComponent(); },
+          factory: function StyleComponent_Factory(t) { return new (t || StyleComponent)(); },
           consts: 1,
           vars: 0,
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {

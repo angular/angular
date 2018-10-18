@@ -11,10 +11,13 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDefined, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
-import {TNode, TNodeFlags} from './interfaces/node';
+import {ComponentDef, DirectiveDef} from './interfaces/definition';
+import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
+import {TContainerNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
+
 
 
 /**
@@ -122,6 +125,10 @@ export function isComponent(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }
 
+export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> {
+  return (def as ComponentDef<T>).template !== null;
+}
+
 export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
   return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
@@ -160,4 +167,73 @@ export function readPatchedLViewData(target: any): LViewData|null {
     return Array.isArray(value) ? value : (value as LContext).lViewData;
   }
   return null;
+}
+
+export function hasParentInjector(parentLocation: RelativeInjectorLocation): boolean {
+  return parentLocation !== NO_PARENT_INJECTOR;
+}
+
+export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation): number {
+  return (parentLocation as any as number) & RelativeInjectorLocationFlags.InjectorIndexMask;
+}
+
+export function getParentInjectorViewOffset(parentLocation: RelativeInjectorLocation): number {
+  return (parentLocation as any as number) >> RelativeInjectorLocationFlags.ViewOffsetShift;
+}
+
+/**
+ * Unwraps a parent injector location number to find the view offset from the current injector,
+ * then walks up the declaration view tree until the view is found that contains the parent
+ * injector.
+ *
+ * @param location The location of the parent injector, which contains the view offset
+ * @param startView The LViewData instance from which to start walking up the view tree
+ * @returns The LViewData instance that contains the parent injector
+ */
+export function getParentInjectorView(
+    location: RelativeInjectorLocation, startView: LViewData): LViewData {
+  let viewOffset = getParentInjectorViewOffset(location);
+  let parentView = startView;
+  // For most cases, the parent injector can be found on the host node (e.g. for component
+  // or container), but we must keep the loop here to support the rarer case of deeply nested
+  // <ng-template> tags or inline views, where the parent injector might live many views
+  // above the child injector.
+  while (viewOffset > 0) {
+    parentView = parentView[DECLARATION_VIEW] !;
+    viewOffset--;
+  }
+  return parentView;
+}
+
+/**
+ * Unwraps a parent injector location number to find the view offset from the current injector,
+ * then walks up the declaration view tree until the TNode of the parent injector is found.
+ *
+ * @param location The location of the parent injector, which contains the view offset
+ * @param startView The LViewData instance from which to start walking up the view tree
+ * @param startTNode The TNode instance of the starting element
+ * @returns The TNode of the parent injector
+ */
+export function getParentInjectorTNode(
+    location: RelativeInjectorLocation, startView: LViewData, startTNode: TNode): TElementNode|
+    TContainerNode|null {
+  if (startTNode.parent && startTNode.parent.injectorIndex !== -1) {
+    // view offset is 0
+    const injectorIndex = startTNode.parent.injectorIndex;
+    let parentTNode = startTNode.parent;
+    while (parentTNode.parent != null && injectorIndex == parentTNode.injectorIndex) {
+      parentTNode = parentTNode.parent;
+    }
+    return parentTNode;
+  }
+
+  let viewOffset = getParentInjectorViewOffset(location);
+  let parentView = startView;
+  let parentTNode = startView[HOST_NODE] as TElementNode;
+  while (viewOffset > 0) {
+    parentView = parentView[DECLARATION_VIEW] !;
+    parentTNode = parentView[HOST_NODE] as TElementNode;
+    viewOffset--;
+  }
+  return parentTNode;
 }

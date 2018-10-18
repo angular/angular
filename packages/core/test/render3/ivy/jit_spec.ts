@@ -239,7 +239,7 @@ ivyEnabled && describe('render3 jit', () => {
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
-    expect(pipeDef.factory() instanceof P)
+    expect(pipeDef.factory(null) instanceof P)
         .toBe(true, 'factory() should create an instance of the pipe');
   });
 

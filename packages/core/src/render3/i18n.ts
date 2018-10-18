@@ -9,13 +9,14 @@
 import {NO_CHANGE} from '../../src/render3/tokens';
 
 import {assertEqual, assertLessThan} from './assert';
-import {_getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
+import {adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, load} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
+import {getRenderer, getViewData, resetComponentState} from './state';
 import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
 
 
@@ -256,7 +257,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode):
     ngDevMode.rendererMoveNode++;
   }
 
-  const viewData = _getViewData();
+  const viewData = getViewData();
 
   // On first pass, re-organize node tree to put this node in the correct position.
   const firstTemplatePass = viewData[TVIEW].firstTemplatePass;
@@ -311,7 +312,7 @@ export function i18nEnd(): void {
  * @param instructions The list of instructions to apply on the current view.
  */
 export function i18nApply(startIndex: number, instructions: I18nInstruction[]): void {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   if (ngDevMode) {
     assertEqual(
         viewData[BINDING_INDEX], viewData[TVIEW].bindingStartIndex,
@@ -411,7 +412,7 @@ export function i18nExpMapping(
  * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
 export function i18nInterpolation1(instructions: I18nExpInstruction[], v0: any): string|NO_CHANGE {
-  const different = bindingUpdated(_getViewData()[BINDING_INDEX]++, v0);
+  const different = bindingUpdated(getViewData()[BINDING_INDEX]++, v0);
 
   if (!different) {
     return NO_CHANGE;
@@ -442,7 +443,7 @@ export function i18nInterpolation1(instructions: I18nExpInstruction[], v0: any):
  */
 export function i18nInterpolation2(instructions: I18nExpInstruction[], v0: any, v1: any): string|
     NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   const different = bindingUpdated2(viewData[BINDING_INDEX], v0, v1);
   viewData[BINDING_INDEX] += 2;
 
@@ -482,7 +483,7 @@ export function i18nInterpolation2(instructions: I18nExpInstruction[], v0: any, 
  */
 export function i18nInterpolation3(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any): string|NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   const different = bindingUpdated3(viewData[BINDING_INDEX], v0, v1, v2);
   viewData[BINDING_INDEX] += 3;
 
@@ -524,7 +525,7 @@ export function i18nInterpolation3(
  */
 export function i18nInterpolation4(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any): string|NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   const different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
   viewData[BINDING_INDEX] += 4;
 
@@ -568,7 +569,7 @@ export function i18nInterpolation4(
 export function i18nInterpolation5(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any): string|
     NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
   different = bindingUpdated(viewData[BINDING_INDEX] + 4, v4) || different;
   viewData[BINDING_INDEX] += 5;
@@ -615,7 +616,7 @@ export function i18nInterpolation5(
 i18nInterpolation6(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any):
     string|NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
   different = bindingUpdated2(viewData[BINDING_INDEX] + 4, v4, v5) || different;
   viewData[BINDING_INDEX] += 6;
@@ -663,7 +664,7 @@ i18nInterpolation6(
 export function i18nInterpolation7(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
     v6: any): string|NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
   different = bindingUpdated3(viewData[BINDING_INDEX] + 4, v4, v5, v6) || different;
   viewData[BINDING_INDEX] += 7;
@@ -712,7 +713,7 @@ export function i18nInterpolation7(
 export function i18nInterpolation8(
     instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
     v6: any, v7: any): string|NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
   different = bindingUpdated4(viewData[BINDING_INDEX] + 4, v4, v5, v6, v7) || different;
   viewData[BINDING_INDEX] += 8;
@@ -753,7 +754,7 @@ export function i18nInterpolation8(
  */
 export function i18nInterpolationV(instructions: I18nExpInstruction[], values: any[]): string|
     NO_CHANGE {
-  const viewData = _getViewData();
+  const viewData = getViewData();
   let different = false;
   for (let i = 0; i < values.length; i++) {
     // Check if bindings have changed

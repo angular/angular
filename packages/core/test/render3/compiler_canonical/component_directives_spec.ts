@@ -31,7 +31,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ChildComponent,
         selectors: [['child']],
-        factory: function ChildComponent_Factory() { return new ChildComponent(); },
+        factory: function ChildComponent_Factory(t) { return new (t || ChildComponent)(); },
         consts: 1,
         vars: 0,
         template: function ChildComponent_Template(rf: $RenderFlags$, ctx: $ChildComponent$) {
@@ -52,7 +52,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: SomeDirective,
         selectors: [['', 'some-directive', '']],
-        factory: () => new SomeDirective(),
+        factory: function SomeDirective_Factory(t) { return new (t || SomeDirective)(); },
       });
       // /NORMATIVE
     }
@@ -68,7 +68,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent(),
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 2,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -101,7 +101,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
         selectors: [['', 'hostBindingDir', '']],
-        factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+        factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementProperty(
@@ -123,7 +123,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 1,
         vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -175,7 +175,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -205,7 +205,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         selectors: [['', 'hostAttributeDir', '']],
         type: HostAttributeDir,
-        factory: function HostAttributeDir_Factory() { return new HostAttributeDir(); },
+        factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
         attributes: ['role', 'listbox']
       });
       // /NORMATIVE
@@ -223,7 +223,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 1,
         vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -252,7 +252,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: HostBindingDir,
         selectors: [['', 'hostBindingDir', '']],
-        factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+        factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementAttribute(
@@ -274,7 +274,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 1,
         vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -311,7 +311,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComp,
         selectors: [['my-comp']],
-        factory: function MyComp_Factory() { return new MyComp(); },
+        factory: function MyComp_Factory(t) { return new (t || MyComp)(); },
         consts: 1,
         vars: 1,
         template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
@@ -340,7 +340,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 1,
         vars: 1,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -388,7 +388,9 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: IfDirective,
         selectors: [['', 'if', '']],
-        factory: () => new IfDirective($r3$.ɵdirectiveInject(TemplateRef as any)),
+        factory: function IfDirective_Factory(t) {
+          return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef as any));
+        },
       });
       // /NORMATIVE
     }
@@ -406,7 +408,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent(),
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 3,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -440,7 +442,7 @@ describe('components & directives', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyArrayComp,
         selectors: [['my-array-comp']],
-        factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
+        factory: function MyArrayComp_Factory(t) { return new (t || MyArrayComp)(); },
         consts: 1,
         vars: 2,
         template: function MyArrayComp_Template(rf: $RenderFlags$, ctx: $MyArrayComp$) {
@@ -473,7 +475,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 0,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -519,7 +521,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 2,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -555,7 +557,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: function MyComp_Factory() { return new MyComp(); },
+          factory: function MyComp_Factory(t) { return new (t || MyComp)(); },
           consts: 1,
           vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
@@ -589,7 +591,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 2,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -634,7 +636,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 3,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -684,7 +686,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: function MyComp_Factory() { return new MyComp(); },
+          factory: function MyComp_Factory(t) { return new (t || MyComp)(); },
           consts: 12,
           vars: 12,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
@@ -749,7 +751,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 11,
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
@@ -793,7 +795,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: ObjectComp,
           selectors: [['object-comp']],
-          factory: function ObjectComp_Factory() { return new ObjectComp(); },
+          factory: function ObjectComp_Factory(t) { return new (t || ObjectComp)(); },
           consts: 4,
           vars: 2,
           template: function ObjectComp_Template(rf: $RenderFlags$, ctx: $ObjectComp$) {
@@ -831,7 +833,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 3,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -874,7 +876,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: NestedComp,
           selectors: [['nested-comp']],
-          factory: function NestedComp_Factory() { return new NestedComp(); },
+          factory: function NestedComp_Factory(t) { return new (t || NestedComp)(); },
           consts: 6,
           vars: 3,
           template: function NestedComp_Template(rf: $RenderFlags$, ctx: $NestedComp$) {
@@ -921,7 +923,7 @@ describe('components & directives', () => {
         static ngComponentDef = $r3$.ɵdefineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: function MyApp_Factory() { return new MyApp(); },
+          factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
           consts: 1,
           vars: 8,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {

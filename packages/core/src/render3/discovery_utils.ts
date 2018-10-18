@@ -9,11 +9,12 @@ import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
 import {discoverDirectives, discoverLocalRefs, getContext, isComponentInstance} from './context_discovery';
-import {NodeInjector} from './di';
 import {LContext} from './interfaces/context';
 import {TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 import {getComponentViewByIndex, readPatchedLViewData} from './util';
+import {NodeInjector} from './view_engine_compatibility';
+
 
 
 /**

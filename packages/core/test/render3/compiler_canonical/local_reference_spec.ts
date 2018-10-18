@@ -27,7 +27,7 @@ describe('local references', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent,
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 3,
         vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
@@ -64,7 +64,7 @@ describe('local references', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: () => new MyComponent,
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 3,
         vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {

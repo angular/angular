@@ -42,7 +42,6 @@ describe('compiler compliance: directives', () => {
                 type: MyComponent, 
                 selectors: [["my-component"]], 
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, 
-                features: [$r3$.ɵPublicFeature], 
                 consts: 1, 
                 vars: 0, 
                 template: function MyComponent_Template(rf, ctx) {
@@ -88,7 +87,6 @@ describe('compiler compliance: directives', () => {
                 type: MyComponent, 
                 selectors: [["my-component"]], 
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, 
-                features: [$r3$.ɵPublicFeature], 
                 consts: 1, 
                 vars: 0, 
                 template: function MyComponent_Template(rf, ctx) {
