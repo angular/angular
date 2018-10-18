@@ -15,7 +15,6 @@ This guide provides information to help you decide which type of form works best
 
 <div class="alert is-helpful">
 
-
 **Note:** For complete information about each kind of form, see [Reactive Forms](guide/reactive-forms) and [Template-driven Forms](guide/forms).
 
 </div>
@@ -130,7 +129,7 @@ In template-driven forms, each form element is linked to a directive that manage
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms data flow - view to model" width="100%">
 </figure>
 
-The steps below outline the data flow from view to model.
+The steps below outline the data flow from view to model when the input value changes from *Red* to *Blue*.
 
 1. The user types *Blue* into the input element.
 1. The input element emits an "input" event with the value *Blue*.
@@ -145,7 +144,7 @@ is updated to the value emitted  by the `ngModelChange` event (*Blue*).
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms data flow - model to view" width="100%">
 </figure>
 
-The steps below outline the data flow from model to view.
+The steps below outline the data flow from model to view when the `favoriteColor` changes from *Blue* to *Red*.
 
 1. The `favoriteColor` value is updated in the component.
 1. Change detection begins.
