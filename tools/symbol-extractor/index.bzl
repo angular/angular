@@ -13,9 +13,13 @@ load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_binary", "node
 def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
     """This test verifies that a set of top level symbols from a javascript file match a gold file.
     """
-    all_data = data + [src, golden]
-    all_data += [Label("//tools/symbol-extractor:lib")]
-    all_data += [Label("@bazel_tools//tools/bash/runfiles")]
+    all_data = data + [
+        src,
+        golden,
+        Label("//tools/symbol-extractor:lib"),
+        Label("@bazel_tools//tools/bash/runfiles"),
+        Label("@ngdeps//typescript"),
+    ]
     entry_point = "angular/tools/symbol-extractor/cli.js"
 
     nodejs_test(
