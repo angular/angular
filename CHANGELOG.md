@@ -1,3 +1,101 @@
+<a name="7.0.0"></a>
+# 7.0.0 amethyst ammonite (2018-10-17)
+
+### Highlights
+
+* Support for [Drag and Drop](https://material.angular.io/cdk/drag-drop/overview) in `@angular/cdk/drag-drop`.
+* Support for [Virtual Scrolling](https://material.angular.io/cdk/scrolling/overview) in `@angular/cdk/scrolling`.
+* Support for native `<select>` element in `<mat-form-field>` .
+* Added `<mat-action-list>`, a list where each item is a `<button>`.
+* Updated component styles throughout the library matching the 2018 Material Design Spec refresh.
+* Added more schematics, with schematics now available for table, drag and drop, tree, address form and more.
+* Added CLI prompts when using `ng add` to assist in setting up HammerJS support, application theming and animations.
+* 250+ bug/performance fixes
+
+
+### Upgrading to 7.0
+
+Using the Angular CLI, you can use the `ng update` command to automatically migrate to the new APIs in for Material and CDK.
+```
+ng update @angular/material
+```
+
+**NOTE:** If you are **using only the CDK** you can automatically migrate using `ng update @angular/cdk` instead.
+
+
+### Breaking Changes
+
+* **ripple:** deprecated `[matRippleSpeedFactor]` and `baseSpeedFactor` for the ripples have been removed. Use the new animation config instead.
+* **overlay:** The `flexibleDiemsions` property on `CdkConnectedOverlay` has been renamed to `flexibleDimensions`
+* **sidenav:** the constructor signature of the `MatDrawerContent` and `MatSidenavContent` has changed.
+* **elevation:** Because `mat-elevation` usages have been moved out of component stylesheets, users who have
+not invoked a theme mixin will not see any elevation shadows on Material components.
+However, users that have created a custom theme which lacks the `elevation` property will
+still see the default black shadows.
+
+Additionally, users who want to use themed elevations in their custom components can create
+their own shorthand mixin:
+
+```sass
+@import '~@angular/material/theming';
+
+$myTheme: ...
+
+@mixin my-elevation($zValue) {
+  @include mat-theme-elevation($zValue, $myTheme);
+}
+
+```
+
+and then invoke `angular-material-theme` with the `$myTheme` variable.
+
+
+
+### Marked for Deprecation
+A number of items throughout the library have been deprecated and are expected to be removed in v8.
+#### CDK
+Collections
+- `SelectionModel.onChange` has been deprecated, use `SelectionModel.changed` instead.
+
+Scrolling
+- `ScrollDispatchModule` has been deprecated, use `ScrollingModule` instead.
+
+Table
+- `CdkTable.setFooterRowDef` has been deprecated, use `CdkTable.addFooterRowDef` and `CdkTable.removeFooterRowDef` instead.
+- `CdkTable.setHeaderRowDef` has been deprecated, use `CdkTable.addHeaderRowDef` and `CdkTable.removeHeaderRowDef` instead.
+
+#### Material
+Dialog
+- `matDialogAnimations.slideDialog` has been deprecated, use `matDialogAnimations.dialogContainer` instead.
+- `MatDialogRef.afterOpen` has been deprecated, use `MatDialogRef.afterOpened` instead.
+- `MatDialogRef.afterClose` has been deprecated, use `MatDialogRef.afterClosed` instead.
+- `MatDialog.afterOpen` has been deprecated, use `MatDialog.afterOpened` instead.
+
+Form Field
+- `<mat-placeholder>` has been deprecated, use `<mat-label>` instead.
+- `MatPlaceholder` has been deprecated, use `MatLabel` instead.
+
+Paginator
+- `$mat-paginator-selector-trigger-min-width` has been deprecated, use `$mat-paginator-selector-trigger-width` instead.
+
+Select
+- `matSelectAnimations.fadeInContent` has been deprecated and will be removed without replacement.
+- The setter method for `MatSelect.focused` has been deprecated, `MatSelect.focused` will become readonly.
+
+Toolbar
+- `$mat-toolbar-height-mobile-portrait` has been deprecated and will be removed without replacement.
+- `$mat-toolbar-height-mobile-landscape` has been deprecated and will be removed without replacement.
+
+**NOTE:** In addition to the specific deprecations listed above, many component constructor methods contain 
+optional parameters which are expected to become required in v8.
+
+
+### Bug Fixes
+
+* **icon:** not taking current path after initialization  ([#13641](https://github.com/angular/material2/issues/13641)) ([df9ec7](https://github.com/angular/material2/commit/df9ec7))
+* **list:** action list items clickable area not stretching the full width ([#13099](https://github.com/angular/material2/issues/13099)) ([f3057fa](https://github.com/angular/material2/commit/f3057fa))
+
+
 <a name="7.0.0-rc.2"></a>
 # 7.0.0-rc.2 (2018-10-15)
 
@@ -179,8 +277,8 @@ still see the default black shadows.
 Additionally, users who want to use themed elevations in their custom components can create
 their own shorthand mixin:
 
-```
-@import '~angular/material/theming';
+```sass
+@import '~@angular/material/theming';
 
 $myTheme: ...
 
