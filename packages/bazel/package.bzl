@@ -40,15 +40,6 @@ def rules_angular_dependencies():
         ],
     )
 
-    # Angular apps don't necessarily depend on Sass, but it's common enough
-    _maybe(
-        http_archive,
-        name = "io_bazel_rules_sass",
-        sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
-        strip_prefix = "rules_sass-1.11.0",
-        url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
-    )
-
     rules_typescript_dependencies()
     rules_nodejs_dependencies()
 
@@ -103,6 +94,13 @@ def rules_angular_dev_dependencies():
     #############################################
     # Dependencies for generating documentation #
     #############################################
+    http_archive(
+        name = "io_bazel_rules_sass",
+        sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
+        strip_prefix = "rules_sass-1.11.0",
+        url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
+    )
+
     http_archive(
         name = "io_bazel_skydoc",
         sha256 = "7bfb5545f59792a2745f2523b9eef363f9c3e7274791c030885e7069f8116016",

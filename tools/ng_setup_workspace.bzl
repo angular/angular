@@ -22,7 +22,7 @@ def ng_setup_workspace():
     )
 
     yarn_install(
-        name = "ts-api-guardian_runtime_deps",
+        name = "ts-api-guardian_deps",
         package_json = "@angular//tools/ts-api-guardian:package.json",
         yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
     )

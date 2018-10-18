@@ -35,9 +35,6 @@ ng_rollup_bundle(
 js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
-    data = [
-        "@ngdeps//typescript",
-    ],
     golden = ":bundle.golden_symbols.json",
     tags = [
         "ivy-local",

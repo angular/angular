@@ -12,9 +12,10 @@
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
   "dependencies": {
-    "@bazel/typescript": "^0.19.1",
+    "@bazel/typescript": "^0.20.3",
     "@types/node": "6.0.84",
-    "tsickle": "0.28.0"
+    "shelljs": "0.8.2",
+    "tsickle": "0.32.1"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",

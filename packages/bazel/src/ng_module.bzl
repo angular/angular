@@ -551,13 +551,14 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     "node_modules": attr.label(
         doc = """The npm packages which should be available during the compile.
 
-        The default value is `@npm//typescript:typescript__typings` is setup
-        for projects that use bazel managed npm deps that. It is recommended
+        The default value of `@npm//typescript:typescript__typings` is
+        for projects that use bazel managed npm deps. It is recommended
         that you use the workspace name `@npm` for bazel managed deps so the
-        default node_modules works out of the box. Otherwise, you'll have to
+        default value works out of the box. Otherwise, you'll have to
         override the node_modules attribute manually. This default is in place
-        since ng_module will always depend on at least the typescript
-        default libs which are provided by `@npm//typescript:typescript__typings`.
+        since code compiled by ng_module will always depend on at least the
+        typescript default libs which are provided by
+        `@npm//typescript:typescript__typings`.
 
         This attribute is DEPRECATED. As of version 0.18.0 the recommended
         approach to npm dependencies is to use fine grained npm dependencies
@@ -569,7 +570,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         ng_module(
           name = "my_lib",
           ...
-          node_modules = "@npm//node_modules",
+          node_modules = "//:node_modules",
         )
         ```
 
