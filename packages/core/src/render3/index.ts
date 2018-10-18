@@ -87,12 +87,13 @@ export {
 } from './state';
 
 export {
+  i18n,
   i18nAttributes,
   i18nExp,
   i18nStart,
   i18nEnd,
   i18nApply,
-  i18nIcuReplaceVars,
+  i18nPostprocess
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';

@@ -208,10 +208,11 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | i18nStart                           |  ✅     |  ✅       |  ✅      |
 | i18nEnd                             |  ✅     |  ✅       |  ✅      |
 | i18nAttributes                      |  ✅     |  ✅       |  ✅      |
-| i18nExp                             |  ✅     |  ✅       |  ✅     |
+| i18nExp                             |  ✅     |  ✅       |  ✅      |
 | i18nApply                           |  ✅     |  ✅       |  ✅      |
-| ICU expressions                     |  ✅     |  ✅       |  ❌      |
-| closure support for g3              |  ✅     |  ✅       |  ❌      |
+| ICU expressions                     |  ✅     |  ✅       |  ✅      |
+| closure support for g3              |  ✅     |  ✅       |  ✅      |
+| `<ng-container>` support            |  ✅     |  ✅       |  ✅      |
 | runtime service for external world  |  ❌     |  ❌       |  ❌      |
 | migration tool                      |  ❌     |  ❌       |  ❌      |
 
