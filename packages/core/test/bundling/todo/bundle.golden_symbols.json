@@ -504,6 +504,9 @@
     "name": "defineInjectable"
   },
   {
+    "name": "delegateToClassInput"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -771,6 +774,9 @@
     "name": "hasValueChanged"
   },
   {
+    "name": "initializeTNodeInputs"
+  },
+  {
     "name": "inject"
   },
   {
@@ -847,6 +853,9 @@
   },
   {
     "name": "leaveView"
+  },
+  {
+    "name": "limitToSingleClasses"
   },
   {
     "name": "listener"

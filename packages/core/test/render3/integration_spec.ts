@@ -7,13 +7,13 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
+import {NO_CHANGE} from '../../src/render3/tokens';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -1627,6 +1627,62 @@ describe('render3 integration test', () => {
         expect(fixture.html)
             .toEqual('<structural-comp class="">Comp Content</structural-comp>Temp Content');
       });
+
+      let mockClassDirective: DirWithClassDirective;
+      class DirWithClassDirective {
+        static ngDirectiveDef = defineDirective({
+          type: DirWithClassDirective,
+          selectors: [['', 'DirWithClass', '']],
+          factory: () => mockClassDirective = new DirWithClassDirective(),
+          inputs: {'klass': 'class'}
+        });
+
+        public classesVal: string = '';
+        set klass(value: string) { this.classesVal = value; }
+      }
+
+      it('should delegate all initial classes to a [class] input binding if present on a directive on the same element',
+         () => {
+           /**
+            * <my-comp class="apple orange banana" DirWithClass></my-comp>
+            */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               elementStart(0, 'div', ['DirWithClass']);
+               elementStyling([
+                 InitialStylingFlags.VALUES_MODE, 'apple', true, 'orange', true, 'banana', true
+               ]);
+               elementEnd();
+             }
+             if (rf & RenderFlags.Update) {
+               elementStylingApply(0);
+             }
+           }, 1, 0, [DirWithClassDirective]);
+
+           const fixture = new ComponentFixture(App);
+           expect(mockClassDirective !.classesVal).toEqual('apple orange banana');
+         });
+
+      it('should update `[class]` and bindings in the provided directive if the input is matched',
+         () => {
+           /**
+            * <my-comp DirWithClass></my-comp>
+           */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               elementStart(0, 'div', ['DirWithClass']);
+               elementStyling();
+               elementEnd();
+             }
+             if (rf & RenderFlags.Update) {
+               elementStylingMap(0, 'cucumber grape');
+               elementStylingApply(0);
+             }
+           }, 1, 0, [DirWithClassDirective]);
+
+           const fixture = new ComponentFixture(App);
+           expect(mockClassDirective !.classesVal).toEqual('cucumber grape');
+         });
     });
   });
 
