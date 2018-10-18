@@ -20,9 +20,6 @@ export {CssSelectorList} from './interfaces/projection';
 
 // clang-format off
 export {
-
-  NO_CHANGE,
-
   bind,
   interpolation1,
   interpolation2,
@@ -175,3 +172,5 @@ export {
   renderComponent,
   whenRendered,
 };
+
+export {NO_CHANGE} from './tokens';

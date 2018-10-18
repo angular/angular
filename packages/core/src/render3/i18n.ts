@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NO_CHANGE} from '../../src/render3/tokens';
+
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
+import {_getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer';

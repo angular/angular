@@ -11,6 +11,7 @@ import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerI
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LViewData, RootContext} from '../interfaces/view';
+import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
@@ -45,7 +46,7 @@ const EMPTY_OBJ: {[key: string]: any} = {};
 export function createStylingContextTemplate(
     initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null): StylingContext {
+    styleSanitizer?: StyleSanitizeFn | null, onlyProcessSingleClasses?: boolean): StylingContext {
   const initialStylingValues: InitialStyles = [null];
   const context: StylingContext =
       createEmptyStylingContext(null, styleSanitizer, initialStylingValues);
@@ -80,6 +81,7 @@ export function createStylingContextTemplate(
   // make where the class offsets begin
   context[StylingIndex.ClassOffsetPosition] = totalStyleDeclarations;
 
+  const initialStaticClasses: string[]|null = onlyProcessSingleClasses ? [] : null;
   if (initialClassDeclarations) {
     let hasPassedDeclarations = false;
     for (let i = 0; i < initialClassDeclarations.length; i++) {
@@ -93,6 +95,7 @@ export function createStylingContextTemplate(
           const value = initialClassDeclarations[++i] as boolean;
           initialStylingValues.push(value);
           classesLookup[className] = initialStylingValues.length - 1;
+          initialStaticClasses && initialStaticClasses.push(className);
         } else {
           classesLookup[className] = 0;
         }
@@ -143,8 +146,14 @@ export function createStylingContextTemplate(
 
   // there is no initial value flag for the master index since it doesn't
   // reference an initial style value
-  setFlag(context, StylingIndex.MasterFlagPosition, pointers(0, 0, multiStart));
+  const masterFlag = pointers(0, 0, multiStart) |
+      (onlyProcessSingleClasses ? StylingFlags.OnlyProcessSingleClasses : 0);
+  setFlag(context, StylingIndex.MasterFlagPosition, masterFlag);
   setContextDirty(context, initialStylingValues.length > 1);
+
+  if (initialStaticClasses) {
+    context[StylingIndex.PreviousOrCachedMultiClassValue] = initialStaticClasses.join(' ');
+  }
 
   return context;
 }
@@ -164,8 +173,8 @@ export function createStylingContextTemplate(
  */
 export function updateStylingMap(
     context: StylingContext, classesInput: {[key: string]: any} | string |
-        BoundPlayerFactory<null|string|{[key: string]: any}>| null,
-    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>|
+        BoundPlayerFactory<null|string|{[key: string]: any}>| NO_CHANGE | null,
+    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| NO_CHANGE |
         null): void {
   stylesInput = stylesInput || null;
 
@@ -181,13 +190,14 @@ export function updateStylingMap(
       (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
       classesInput;
   const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
-
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
-  const ignoreAllClassUpdates = classesValue === context[StylingIndex.PreviousMultiClassValue];
-  const ignoreAllStyleUpdates = stylesValue === context[StylingIndex.PreviousMultiStyleValue];
+  const ignoreAllClassUpdates = limitToSingleClasses(context) || classesValue === NO_CHANGE ||
+      classesValue === context[StylingIndex.PreviousOrCachedMultiClassValue];
+  const ignoreAllStyleUpdates =
+      stylesValue === NO_CHANGE || stylesValue === context[StylingIndex.PreviousMultiStyleValue];
   if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
 
-  context[StylingIndex.PreviousMultiClassValue] = classesValue;
+  context[StylingIndex.PreviousOrCachedMultiClassValue] = classesValue;
   context[StylingIndex.PreviousMultiStyleValue] = stylesValue;
 
   let classNames: string[] = EMPTY_ARR;
@@ -478,6 +488,8 @@ export function renderStyleAndClassBindings(
     const native = context[StylingIndex.ElementPosition] !;
     const multiStartIndex = getMultiStartIndex(context);
     const styleSanitizer = getStyleSanitizer(context);
+    const onlySingleClasses = limitToSingleClasses(context);
+
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;
          i += StylingIndex.Size) {
       // there is no point in rendering styles that have not changed on screen
@@ -488,6 +500,7 @@ export function renderStyleAndClassBindings(
         const playerBuilder = getPlayerBuilder(context, i);
         const isClassBased = flag & StylingFlags.Class ? true : false;
         const isInSingleRegion = i < multiStartIndex;
+        const readInitialValue = !isClassBased || !onlySingleClasses;
 
         let valueToApply: string|boolean|null = value;
 
@@ -506,7 +519,7 @@ export function renderStyleAndClassBindings(
         // note that this should always be a falsy check since `false` is used
         // for both class and style comparisons (styles can't be false and false
         // classes are turned off and should therefore defer to their initial values)
-        if (!valueExists(valueToApply, isClassBased)) {
+        if (!valueExists(valueToApply, isClassBased) && readInitialValue) {
           valueToApply = getInitialValue(context, flag);
         }
 
@@ -763,6 +776,10 @@ function getProp(context: StylingContext, index: number): string {
 
 export function isContextDirty(context: StylingContext): boolean {
   return isDirty(context, StylingIndex.MasterFlagPosition);
+}
+
+export function limitToSingleClasses(context: StylingContext) {
+  return context[StylingIndex.MasterFlagPosition] & StylingFlags.OnlyProcessSingleClasses;
 }
 
 export function setContextDirty(context: StylingContext, isDirtyYes: boolean): void {
