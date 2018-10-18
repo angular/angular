@@ -42,7 +42,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
     nodejs_test(
         name = name,
         data = data,
-        node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+        node_modules = "@ts-api-guardian_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
         templated_args = args + ["--verify", golden, actual],
         **kwargs
@@ -52,7 +52,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
         name = name + ".accept",
         testonly = True,
         data = data,
-        node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+        node_modules = "@ts-api-guardian_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
         templated_args = args + ["--out", golden, actual],
         **kwargs

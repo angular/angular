@@ -14,5 +14,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/util",
+        "@ngdeps//typescript",
     ],
 )
