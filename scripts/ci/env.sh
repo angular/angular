@@ -66,11 +66,6 @@ if [[ ${TRAVIS:-} ]]; then
     browserstack_optional)
       setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
       ;;
-    aio)
-      # Determine the current stable branch.
-      readonly versionRe="^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$"
-      setEnvVar STABLE_BRANCH `npm info @angular/core dist-tags.latest | sed -r "s/$versionRe/\1.x/"`
-      ;;
   esac
 else
   setEnvVar KARMA_JS_BROWSERS Chrome
