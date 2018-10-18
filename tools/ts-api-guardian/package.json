@@ -19,7 +19,9 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.2",
     "@types/diff": "^3.5.1",
+    "@types/jasmine": "^2.8.8",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.9.2",
     "chai": "^4.1.2",
