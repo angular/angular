@@ -23,7 +23,7 @@ Just run the [`ng test`](cli/test) CLI command:
 </code-example>
 
 The `ng test` command builds the app in _watch mode_,
-and launches the [karma test runner](https://karma-runner.github.io/1.0/index.html).
+and launches the [karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
 
@@ -184,7 +184,7 @@ You'll need to push a new commit to trigger a build.
 
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
-There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/2.0/config/configuration-file.html) 
+There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/latest/config/configuration-file.html) 
 and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool, 
 which  you must adjust to start Chrome without sandboxing.
 
@@ -259,7 +259,7 @@ The code coverage percentages let you estimate how much of your code is tested.
 If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
 
 For example, suppose you want the code base to have a minimum of 80% code coverage. 
-To enable this, open the [Karma](http://karma-runner.github.io/0.13/index.html) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
+To enable this, open the [Karma](http://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
 
 ```
 coverageIstanbulReporter: {
