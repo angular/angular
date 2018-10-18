@@ -46,8 +46,6 @@ setEnvVar CI_COMMIT $TRAVIS_COMMIT
 setEnvVar CI_COMMIT_RANGE $TRAVIS_COMMIT_RANGE
 setEnvVar CI_PULL_REQUEST $TRAVIS_PULL_REQUEST
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
-# WARNING: Secrets (do not print).
-export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=$FIREBASE_TOKEN
 
 if [[ ${TRAVIS:-} ]]; then
   case ${CI_MODE} in
@@ -65,11 +63,6 @@ if [[ ${TRAVIS:-} ]]; then
       ;;
     browserstack_optional)
       setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
-      ;;
-    aio)
-      # Determine the current stable branch.
-      readonly versionRe="^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$"
-      setEnvVar STABLE_BRANCH `npm info @angular/core dist-tags.latest | sed -r "s/$versionRe/\1.x/"`
       ;;
   esac
 else
