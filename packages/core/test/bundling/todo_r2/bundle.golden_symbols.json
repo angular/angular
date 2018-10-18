@@ -81,9 +81,6 @@
     "name": "CIRCULAR$1"
   },
   {
-    "name": "CIRCULAR$2"
-  },
-  {
     "name": "CLEANUP"
   },
   {
@@ -309,6 +306,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "FactoryPrototype"
+  },
+  {
     "name": "FormStyle"
   },
   {
@@ -501,6 +501,9 @@
     "name": "NON_ALPHANUMERIC_REGEXP"
   },
   {
+    "name": "NOT_FOUND"
+  },
+  {
     "name": "NOT_YET"
   },
   {
@@ -508,6 +511,9 @@
   },
   {
     "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NO_PARENT_INJECTOR"
   },
   {
     "name": "NULL_INJECTOR"
@@ -586,6 +592,9 @@
   },
   {
     "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorFactory"
   },
   {
     "name": "NoopNgZone"
@@ -667,9 +676,6 @@
   },
   {
     "name": "Plural"
-  },
-  {
-    "name": "PublicFeature"
   },
   {
     "name": "QUERIES"
@@ -999,6 +1005,9 @@
     "name": "__extends$p"
   },
   {
+    "name": "__forward_ref__"
+  },
+  {
     "name": "__read"
   },
   {
@@ -1116,9 +1125,6 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
-    "name": "_getViewData"
-  },
-  {
     "name": "_global"
   },
   {
@@ -1185,9 +1191,6 @@
     "name": "addToViewTree"
   },
   {
-    "name": "adjustBlueprintForNewNode"
-  },
-  {
     "name": "allocPlayerContext"
   },
   {
@@ -1209,16 +1212,13 @@
     "name": "attachPatchData"
   },
   {
-    "name": "baseDirectiveCreate"
-  },
-  {
     "name": "baseElement"
   },
   {
-    "name": "bind"
+    "name": "baseResolveDirective"
   },
   {
-    "name": "bindingRootIndex"
+    "name": "bind"
   },
   {
     "name": "bindingUpdated"
@@ -1230,10 +1230,10 @@
     "name": "bloomAdd"
   },
   {
-    "name": "bloomHashBitOrFactory"
+    "name": "bloomHasToken"
   },
   {
-    "name": "cacheMatchingDirectivesForNode"
+    "name": "bloomHashBitOrFactory"
   },
   {
     "name": "cacheMatchingLocalNames"
@@ -1395,6 +1395,9 @@
     "name": "decoratePreventDefault"
   },
   {
+    "name": "decreaseElementDepthCount"
+  },
+  {
     "name": "deepForEach"
   },
   {
@@ -1452,13 +1455,7 @@
     "name": "detectWTF"
   },
   {
-    "name": "diPublic"
-  },
-  {
     "name": "diPublicInInjector"
-  },
-  {
-    "name": "directiveCreate"
   },
   {
     "name": "directiveInject"
@@ -1605,7 +1602,7 @@
     "name": "fromPromise"
   },
   {
-    "name": "generateExpandoBlock"
+    "name": "generateExpandoInstructionBlock"
   },
   {
     "name": "generateInitialInputs"
@@ -1618,6 +1615,12 @@
   },
   {
     "name": "getBeforeNodeForView"
+  },
+  {
+    "name": "getBindingsEnabled"
+  },
+  {
+    "name": "getCheckNoChangesMode"
   },
   {
     "name": "getCleanup"
@@ -1638,7 +1641,16 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContextViewData"
+  },
+  {
+    "name": "getCreationMode"
+  },
+  {
     "name": "getCurrencySymbol"
+  },
+  {
+    "name": "getCurrentQueries"
   },
   {
     "name": "getCurrentSanitizer"
@@ -1668,7 +1680,13 @@
     "name": "getDirectiveDef"
   },
   {
+    "name": "getElementDepthCount"
+  },
+  {
     "name": "getErrorLogger"
+  },
+  {
+    "name": "getFirstTemplatePass"
   },
   {
     "name": "getFirstThursdayOfYear"
@@ -1693,6 +1711,9 @@
   },
   {
     "name": "getInjectorIndex"
+  },
+  {
+    "name": "getIsParent"
   },
   {
     "name": "getLContainer"
@@ -1767,6 +1788,9 @@
     "name": "getNgZone"
   },
   {
+    "name": "getNodeInjectable"
+  },
+  {
     "name": "getNullInjector"
   },
   {
@@ -1774,9 +1798,6 @@
   },
   {
     "name": "getOrCreateInjectable"
-  },
-  {
-    "name": "getOrCreateNodeInjector"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
@@ -1791,10 +1812,19 @@
     "name": "getOriginalError"
   },
   {
+    "name": "getParentInjectorIndex"
+  },
+  {
     "name": "getParentInjectorLocation"
   },
   {
+    "name": "getParentInjectorTNode"
+  },
+  {
     "name": "getParentInjectorView"
+  },
+  {
+    "name": "getParentInjectorViewOffset"
   },
   {
     "name": "getParentNative"
@@ -1869,6 +1899,9 @@
     "name": "getTNode"
   },
   {
+    "name": "getTView"
+  },
+  {
     "name": "getTViewCleanup"
   },
   {
@@ -1887,6 +1920,9 @@
     "name": "getValue"
   },
   {
+    "name": "getViewData"
+  },
+  {
     "name": "globalListener"
   },
   {
@@ -1897,6 +1933,9 @@
   },
   {
     "name": "hasOnDestroy"
+  },
+  {
+    "name": "hasParentInjector"
   },
   {
     "name": "hasPlayerBuilderChanged"
@@ -1911,7 +1950,16 @@
     "name": "identity"
   },
   {
+    "name": "includeViewProviders"
+  },
+  {
+    "name": "increaseElementDepthCount"
+  },
+  {
     "name": "initDomAdapter"
+  },
+  {
+    "name": "initNodeFlags"
   },
   {
     "name": "initializeTNodeInputs"
@@ -1926,13 +1974,22 @@
     "name": "injectAttribute"
   },
   {
+    "name": "injectAttributeImpl"
+  },
+  {
     "name": "injectChangeDetectorRef"
   },
   {
     "name": "injectElementRef"
   },
   {
+    "name": "injectInjectorOnly"
+  },
+  {
     "name": "injectRenderer2"
+  },
+  {
+    "name": "injectRootLimpMode"
   },
   {
     "name": "injectTemplateRef"
@@ -1941,10 +1998,10 @@
     "name": "injectViewContainerRef"
   },
   {
-    "name": "injectableDefRecord"
+    "name": "injectableDefFactory"
   },
   {
-    "name": "injectorHasToken"
+    "name": "insertBloom"
   },
   {
     "name": "insertView"
@@ -1953,7 +2010,10 @@
     "name": "inspectNativeElement"
   },
   {
-    "name": "instantiateDirectivesDirectly"
+    "name": "instantiateAllDirectives"
+  },
+  {
+    "name": "instantiateRootComponent"
   },
   {
     "name": "interpolation1"
@@ -1977,7 +2037,7 @@
     "name": "isComponent"
   },
   {
-    "name": "isContentQueryHost"
+    "name": "isComponentDef"
   },
   {
     "name": "isContextDirty"
@@ -2005,6 +2065,9 @@
   },
   {
     "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactory"
   },
   {
     "name": "isFactoryProvider"
@@ -2154,6 +2217,9 @@
     "name": "nextContext"
   },
   {
+    "name": "nextContextImpl"
+  },
+  {
     "name": "nextNgElementId"
   },
   {
@@ -2217,6 +2283,12 @@
     "name": "pointers"
   },
   {
+    "name": "postProcessBaseDirective"
+  },
+  {
+    "name": "postProcessDirective"
+  },
+  {
     "name": "prefillHostVars"
   },
   {
@@ -2227,6 +2299,9 @@
   },
   {
     "name": "promise"
+  },
+  {
+    "name": "providerToFactory"
   },
   {
     "name": "providerToRecord"
@@ -2307,7 +2382,7 @@
     "name": "resetComponentState"
   },
   {
-    "name": "resolveDirective"
+    "name": "resolveDirectives"
   },
   {
     "name": "resolveForwardRef$1"
@@ -2343,10 +2418,13 @@
     "name": "scheduleTick"
   },
   {
-    "name": "searchDirectivesOnInjector"
+    "name": "searchTokensOnInjector"
   },
   {
-    "name": "searchMatchesQueuedForCreation"
+    "name": "setBindingRoot"
+  },
+  {
+    "name": "setCheckNoChangesMode"
   },
   {
     "name": "setClass"
@@ -2361,10 +2439,13 @@
     "name": "setCurrentInjector"
   },
   {
+    "name": "setCurrentQueries"
+  },
+  {
     "name": "setDirty"
   },
   {
-    "name": "setEnvironment"
+    "name": "setFirstTemplatePass"
   },
   {
     "name": "setFlag"
@@ -2373,10 +2454,19 @@
     "name": "setHostBindings"
   },
   {
+    "name": "setIncludeViewProviders"
+  },
+  {
+    "name": "setInjectImplementation"
+  },
+  {
     "name": "setInputsForProperty"
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsParent"
   },
   {
     "name": "setPlayerBuilder"
@@ -2385,7 +2475,13 @@
     "name": "setPlayerBuilderIndex"
   },
   {
+    "name": "setPreviousOrParentTNode"
+  },
+  {
     "name": "setProp"
+  },
+  {
+    "name": "setRendererFactory"
   },
   {
     "name": "setRootDomAdapter"
@@ -2394,13 +2490,13 @@
     "name": "setStyle"
   },
   {
+    "name": "setTNodeAndViewData"
+  },
+  {
     "name": "setTestabilityGetter"
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "setUpBloom"
   },
   {
     "name": "setValue"
@@ -2418,7 +2514,7 @@
     "name": "shimHostAttribute"
   },
   {
-    "name": "shouldNotSearchParent"
+    "name": "shouldSearchParent"
   },
   {
     "name": "staticError"
@@ -2482,9 +2578,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwCyclicDependencyError"
   },
   {
     "name": "throwErrorIfNoChangesMode"

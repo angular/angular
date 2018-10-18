@@ -24,7 +24,7 @@ describe('content projection', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: SimpleComponent,
         selectors: [['simple']],
-        factory: () => new SimpleComponent(),
+        factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
         consts: 1,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $SimpleComponent$) {
@@ -55,7 +55,7 @@ describe('content projection', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ComplexComponent,
         selectors: [['complex']],
-        factory: () => new ComplexComponent(),
+        factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
         consts: 4,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $ComplexComponent$) {
@@ -80,7 +80,7 @@ describe('content projection', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: () => new MyApp(),
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 2,
         vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {

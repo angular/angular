@@ -40,7 +40,7 @@ describe('compiler sanitization', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
         consts: 2,
         vars: 4,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {

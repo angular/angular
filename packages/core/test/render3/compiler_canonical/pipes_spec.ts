@@ -43,7 +43,7 @@ describe('pipes', () => {
     static ngPipeDef = $r3$.ɵdefinePipe({
       name: 'myPipe',
       type: MyPipe,
-      factory: function MyPipe_Factory() { return new MyPipe(); },
+      factory: function MyPipe_Factory(t) { return new (t || MyPipe)(); },
       pure: false,
     });
     // /NORMATIVE
@@ -63,7 +63,7 @@ describe('pipes', () => {
     static ngPipeDef = $r3$.ɵdefinePipe({
       name: 'myPurePipe',
       type: MyPurePipe,
-      factory: function MyPurePipe_Factory() { return new MyPurePipe(); },
+      factory: function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); },
       pure: true,
     });
     // /NORMATIVE
@@ -83,7 +83,7 @@ describe('pipes', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 3,
         vars: 7,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
@@ -146,9 +146,11 @@ describe('pipes', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: OneTimeIf,
         selectors: [['', 'oneTimeIf', '']],
-        factory: () => new OneTimeIf(
-                     $r3$.ɵdirectiveInject(ViewContainerRef as any),
-                     $r3$.ɵdirectiveInject(TemplateRef as any)),
+        factory: function OneTimeIf_Factory(t) {
+          return new (t || OneTimeIf)(
+              $r3$.ɵdirectiveInject(ViewContainerRef as any),
+              $r3$.ɵdirectiveInject(TemplateRef as any));
+        },
         inputs: {oneTimeIf: 'oneTimeIf'}
       });
       // /NORMATIVE
@@ -181,7 +183,7 @@ describe('pipes', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
         consts: 5,
         vars: 9,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ViewEncapsulation} from '../../core';
+import {ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
@@ -112,11 +112,11 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
-  /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<T>) => void)|null;
+  /** Function that resolves providers and publishes them into the DI system. */
+  providersResolver: ((def: DirectiveDef<T>) => void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
-  selectors: CssSelectorList;
+  readonly selectors: CssSelectorList;
 
   /**
    * Name under which the directive is exported (for use with local references in template)
@@ -126,12 +126,12 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /**
    * Factory function used to create a new directive instance.
    */
-  factory(): T;
+  factory: (t: Type<T>|null) => T;
 
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries: (() => void)|null;
+  contentQueries: ((directiveIndex: number) => void)|null;
 
   /** Refreshes content queries associated with directives in a given view */
   contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
@@ -142,7 +142,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
    * Used to calculate the length of the LViewData array for the *parent* component
    * of this directive/component.
    */
-  hostVars: number;
+  readonly hostVars: number;
 
   /** Refreshes host bindings on the associated directive. */
   hostBindings: HostBindingsFunction|null;
@@ -153,7 +153,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
    * Even indices: attribute name
    * Odd indices: attribute value
    */
-  attributes: string[]|null;
+  readonly attributes: string[]|null;
 
   /* The following are lifecycle hooks for this component */
   onInit: (() => void)|null;
@@ -167,7 +167,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /**
    * The features applied to this directive
    */
-  features: DirectiveDefFeature[]|null;
+  readonly features: DirectiveDefFeature[]|null;
 }
 
 export type ComponentDefWithMeta<
@@ -245,18 +245,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly onPush: boolean;
 
   /**
-   * Defines the set of injectable providers that are visible to a Directive and its content DOM
-   * children.
-   */
-  readonly providers: Provider[]|null;
 
-  /**
-   * Defines the set of injectable providers that are visible to a Directive and its view DOM
-   * children only.
-   */
-  readonly viewProviders: Provider[]|null;
-
-  /**
    * Registry of directives and components that may be found in this view.
    *
    * The property is either an array of `DirectiveDef`s or a function which returns the array of
@@ -297,12 +286,12 @@ export interface PipeDef<T> {
    *
    * Used to resolve pipe in templates.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Factory function used to create a new pipe instance.
    */
-  factory: () => T;
+  factory: (t: Type<T>|null) => T;
 
   /**
    * Whether or not the pipe is pure.
@@ -310,7 +299,7 @@ export interface PipeDef<T> {
    * Pure pipes result only depends on the pipe input and not on internal
    * state of the pipe.
    */
-  pure: boolean;
+  readonly pure: boolean;
 
   /* The following are lifecycle hooks for this pipe */
   onDestroy: (() => void)|null;

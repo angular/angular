@@ -34,7 +34,7 @@ xdescribe('NgModule', () => {
       constructor(name: String) {}
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
-        factory: () => new Toast($r3$.ɵdirectiveInject(String)),
+        factory: function Toast_Factory() { return new Toast($r3$.ɵdirectiveInject(String)); },
       });
       // /NORMATIVE
     }
@@ -53,7 +53,7 @@ xdescribe('NgModule', () => {
       constructor(toast: Toast) {}
       // NORMATIVE
       static ngInjectorDef = defineInjector({
-        factory: () => new MyModule($r3$.ɵdirectiveInject(Toast)),
+        factory: function MyModule_Factory() { return new MyModule($r3$.ɵdirectiveInject(Toast)); },
         provider: [
           {provide: Toast, deps: [String]},  // If Toast has metadata generate this line
           Toast,                             // If Toast has no metadata generate this line.
@@ -70,9 +70,11 @@ xdescribe('NgModule', () => {
       // NORMATIVE
       static ngInjectableDef = defineInjectable({
         providedIn: MyModule,
-        factory: () => new BurntToast(
-                     $r3$.ɵdirectiveInject(Toast, $core$.InjectFlags.Optional),
-                     $r3$.ɵdirectiveInject(String)),
+        factory: function BurntToast_Factory() {
+          return new BurntToast(
+              $r3$.ɵdirectiveInject(Toast, $core$.InjectFlags.Optional),
+              $r3$.ɵdirectiveInject(String));
+        },
       });
       // /NORMATIVE
     }

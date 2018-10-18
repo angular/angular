@@ -36,6 +36,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "FactoryPrototype"
+  },
+  {
     "name": "HEADER_OFFSET"
   },
   {
@@ -78,6 +81,12 @@
     "name": "NO_CHANGE"
   },
   {
+    "name": "NO_PARENT_INJECTOR"
+  },
+  {
+    "name": "NodeInjectorFactory"
+  },
+  {
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
@@ -85,9 +94,6 @@
   },
   {
     "name": "PARENT_INJECTOR"
-  },
-  {
-    "name": "PublicFeature"
   },
   {
     "name": "QUERIES"
@@ -117,9 +123,6 @@
     "name": "ViewEncapsulation$1"
   },
   {
-    "name": "_getViewData"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
@@ -129,10 +132,7 @@
     "name": "attachPatchData"
   },
   {
-    "name": "baseDirectiveCreate"
-  },
-  {
-    "name": "bindingRootIndex"
+    "name": "baseResolveDirective"
   },
   {
     "name": "bloomAdd"
@@ -192,9 +192,6 @@
     "name": "detectChangesInternal"
   },
   {
-    "name": "diPublic"
-  },
-  {
     "name": "diPublicInInjector"
   },
   {
@@ -225,6 +222,9 @@
     "name": "getBeforeNodeForView"
   },
   {
+    "name": "getCheckNoChangesMode"
+  },
+  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -237,7 +237,13 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getCreationMode"
+  },
+  {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementContainer"
@@ -249,6 +255,9 @@
     "name": "getInjectorIndex"
   },
   {
+    "name": "getIsParent"
+  },
+  {
     "name": "getLContainer"
   },
   {
@@ -258,7 +267,7 @@
     "name": "getNativeByTNode"
   },
   {
-    "name": "getOrCreateNodeInjector"
+    "name": "getNodeInjectable"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
@@ -267,10 +276,16 @@
     "name": "getOrCreateTView"
   },
   {
+    "name": "getParentInjectorIndex"
+  },
+  {
     "name": "getParentInjectorLocation"
   },
   {
     "name": "getParentInjectorView"
+  },
+  {
+    "name": "getParentInjectorViewOffset"
   },
   {
     "name": "getParentNative"
@@ -288,7 +303,40 @@
     "name": "getRenderParent"
   },
   {
+    "name": "getRenderer"
+  },
+  {
+    "name": "getRendererFactory"
+  },
+  {
+    "name": "getTView"
+  },
+  {
+    "name": "getViewData"
+  },
+  {
+    "name": "hasParentInjector"
+  },
+  {
+    "name": "includeViewProviders"
+  },
+  {
+    "name": "initNodeFlags"
+  },
+  {
+    "name": "insertBloom"
+  },
+  {
+    "name": "instantiateRootComponent"
+  },
+  {
     "name": "invertObject"
+  },
+  {
+    "name": "isComponentDef"
+  },
+  {
+    "name": "isFactory"
   },
   {
     "name": "isProceduralRenderer"
@@ -310,6 +358,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "postProcessBaseDirective"
   },
   {
     "name": "prefillHostVars"
@@ -351,13 +402,34 @@
     "name": "resetComponentState"
   },
   {
+    "name": "setBindingRoot"
+  },
+  {
+    "name": "setFirstTemplatePass"
+  },
+  {
     "name": "setHostBindings"
   },
   {
-    "name": "setUpAttributes"
+    "name": "setIncludeViewProviders"
   },
   {
-    "name": "setUpBloom"
+    "name": "setInjectImplementation"
+  },
+  {
+    "name": "setIsParent"
+  },
+  {
+    "name": "setPreviousOrParentTNode"
+  },
+  {
+    "name": "setRendererFactory"
+  },
+  {
+    "name": "setTNodeAndViewData"
+  },
+  {
+    "name": "setUpAttributes"
   },
   {
     "name": "stringify$2"

@@ -118,6 +118,10 @@ export class ComponentDecoratorHandler implements
       preserveWhitespaces = value;
     }
 
+    const viewProviders: Expression|null = component.has('viewProviders') ?
+        new WrappedNodeExpr(component.get('viewProviders') !) :
+        null;
+
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const filePath = node.getSourceFile().fileName;
@@ -202,6 +206,7 @@ export class ComponentDecoratorHandler implements
           directives: EMPTY_MAP,
           wrapDirectivesInClosure: false,  //
           animations,
+          viewProviders
         },
         parsedTemplate: template.nodes,
       },
