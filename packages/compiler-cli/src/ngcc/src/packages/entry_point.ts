@@ -51,6 +51,21 @@ interface EntryPointPackageJson {
 }
 
 /**
+ * Parses the JSON from a package.json file.
+ * @param packageJsonPath the absolute path to the package.json file.
+ * @returns JSON from the package.json file if it is valid, `null` otherwise.
+ */
+function loadEntryPointPackage(packageJsonPath: string): {[key: string]: any}|null {
+  try {
+    return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  } catch (e) {
+    // We may have run into a package.json with unexpected symbols
+    console.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
+    return null;
+  }
+}
+
+/**
  * Try to get entry point info from the given path.
  * @param pkgPath the absolute path to the containing npm package
  * @param entryPoint the absolute path to the potential entry point.
@@ -59,6 +74,11 @@ interface EntryPointPackageJson {
 export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoint|null {
   const packageJsonPath = path.resolve(entryPoint, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
+    return null;
+  }
+
+  const entryPointPackageJson = loadEntryPointPackage(packageJsonPath);
+  if (!entryPointPackageJson) {
     return null;
   }
 
@@ -75,8 +95,7 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
     esm2015,
     esm5,
     main
-  }: EntryPointPackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
+  } = entryPointPackageJson;
   // Minimum requirement is that we have typings and one of esm2015 or fesm2015 formats.
   if (!typings || !(fesm2015 || esm2015)) {
     return null;
