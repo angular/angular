@@ -154,7 +154,7 @@ jobs:
       - *setup_bazel_remote_execution
       - run: bazel test //... --define=compile=aot --build_tag_filters=ivy-aot --test_tag_filters=ivy-aot
 
-  test_aio:
+  test_and_deploy_aio:
     <<: *job_defaults
     steps:
       - *define_env_vars
@@ -180,6 +180,9 @@ jobs:
       - run: xvfb-run --auto-servernum yarn --cwd aio e2e
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
+        # Deploy angular.io to production (if necessary)
+      - run: echo "export CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')" | tee -a $BASH_ENV
+      - run: yarn --cwd aio deploy-production
 
   test_aio_local:
     <<: *job_defaults
@@ -385,7 +388,7 @@ workflows:
       - test_ivy_jit
       - test_ivy_aot
       - build-packages-dist
-      - test_aio
+      - test_and_deploy_aio
       - test_aio_local:
           requires:
             - build-packages-dist
