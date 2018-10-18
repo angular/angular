@@ -680,5 +680,14 @@
     "website": "https://lacolaco.net",
     "bio": "Suguru is a community-loving Frontend developer and a lead of Angular Japan User Group. He organizes the largest Angular event in Japan (ng-japan). And he is a contributor to Angular by sending patches, writing, speaking, and localizing resources in Japanese.",
     "group": "GDE"
+  },
+
+  "katerina": {
+    "name": "Katerina Skroumpelou",
+    "picture": "katerina.jpg",
+    "twitter": "psybercity",
+    "website": "https://mandarini.github.io/",
+    "bio": "Katerina is a front end software engineer, a conference speaker and AngularAthens meetup organizer. She is obsessed with sharing knowledge about things she loves. She is also trying to support diversity in the community. She lives with her cat in Athens.",
+    "group": "GDE"
   }
 }
