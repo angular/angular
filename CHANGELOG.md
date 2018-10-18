@@ -4,7 +4,7 @@
 
 ### Release Highlights & Update instructions
 
-To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v7 release announcement](https://blog.angular.io/TODO).
+To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v7 release announcement](https://blog.angular.io/version-7-of-angular-cli-prompts-virtual-scroll-drag-and-drop-and-more-c594e22e7b8c).
 
 
 ### Dependency updates
