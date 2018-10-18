@@ -20,16 +20,15 @@ The top level of the workspace contains a number of workspace-wide configuration
 | :--------------------- | :------------------------------------------|
 | `.editorconfig`        | Configuration for code editors. See [EditorConfig](https://editorconfig.org/). |
 | `.gitignore`           | Specifies intentionally untracked files that [Git](https://git-scm.com/) should ignore. |
-| `angular.json`        | CLI configuration for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [Karma](https://karma-runner.github.io/) and [Protractor](http://www.protractortest.org/).  |
+| `angular.json`         | CLI configuration defaults for all projects in the workspace, including configuration options for build, serve, and test tools that the CLI uses, such as [TSLint](https://palantir.github.io/tslint/), [Karma](https://karma-runner.github.io/), and [Protractor](http://www.protractortest.org/). For details, see [Angular Workspace Configuration](guide/workspace-config). |
 | `node_modules`         | Provides [npm packages](guide/npm-packages) to the entire workspace. |
-| `package.json`        | Lists package dependencies. See [npm documentation](https://docs.npmjs.com/files/package.json) for the specific format and contents of this file.|
-| `tsconfig.app.json`   | Default [TypeScript](https://www.typescriptlang.org/) configuration for apps in the workspace. |
-| `tsconfig.spec.json`  | Default TypeScript configuration for e2e test apps in the workspace. |
-| `tslint.json`         | Default [TSLint](https://palantir.github.io/tslint/) configuration for apps in the workspace. |
-| `README.md`            | Introductory documentation. |
+| `package.json`         | Configures [npm package dependencies](guide/npm-packages) that are available to all projects in the workspace. See [npm documentation](https://docs.npmjs.com/files/package.json) for the specific format and contents of this file. |
 | `package-lock.json`    | Provides version information for all packages installed into `node_modules` by the npm client. See [npm documentation](https://docs.npmjs.com/files/package-lock.json) for details. If you use the yarn client, this file will be [yarn.lock](https://yarnpkg.com/lang/en/docs/yarn-lock/) instead. |
+| `tsconfig.json`        | Default [TypeScript](https://www.typescriptlang.org/) configuration for apps in the workspace, including TypeScript and Angular template compiler options. See [TypeScript Configuration](guide/typescript-configuration). |
+| `tslint.json`          | Default [TSLint](https://palantir.github.io/tslint/) configuration for apps in the workspace. |
+| `README.md`            | Introductory documentation. |
 
-All projects within a workspace share this configuration context. 
+All projects within a workspace share a [CLI configuration context](guide/workspace-config). 
 Project-specific [TypeScript](https://www.typescriptlang.org/) configuration files inherit from the workspace-wide `tsconfig.*.json`, and app-specific [TSLint](https://palantir.github.io/tslint/) configuration files inherit from the workspace-wide `tslint.json`.
 
 ### Default app project files
@@ -40,9 +39,9 @@ This initial app is the *default app* for CLI commands (unless you change the de
 A newly generated app contains the source files for a root module, with a root component and template. 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the initial app.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
- Besides using the CLI on the command line, You can also use an interactive development environment like [Angular Console](https://angular.console.com), or manipulate files directly in the app's source folder and configuration files.
+   Besides using the CLI on the command line, you can also use an interactive development environment like [Angular Console](https://angular.console.com), or manipulate files directly in the app's source folder and configuration files.
 
 </div>
 
@@ -103,18 +102,6 @@ my-app/
 ## App source folder
 
 Inside the `src/` folder, the `app/` folder contains your app's logic and data. Angular components, templates, and styles go here. An `assets/` subfolder contains images and anything else your app needs. Files at the top level of `src/` support testing and running your app.
-
-<code-example language="none" linenums="false">
-   src/
-    app/
-        app.component.css
-        app.component.html
-        app.component.spec.ts
-        app.component.ts
-        app.module.ts
-        assets/...
-    ...
-</code-example>
 
 | APP SOURCE FILES | PURPOSE |
 | :-------------------------- | :------------------------------------------|
