@@ -42,11 +42,17 @@ describe('example inline-tag-def', function() {
         '<code-example path="test/url" region="region-1"></code-example>');
     });
 
-    it('should add no region if an empty (\'\') region is specified', () => {
+    it('should add no region if an empty (\'\'/"") region is specified', () => {
       expect(handler({}, 'example', 'test/url \'\'')).toEqual(
         '<code-example path="test/url"></code-example>');
 
+      expect(handler({}, 'example', 'test/url ""')).toEqual(
+        '<code-example path="test/url"></code-example>');
+
       expect(handler({}, 'example', 'test/url \'\' Some Header')).toEqual(
+        '<code-example path="test/url" header="Some Header"></code-example>');
+
+      expect(handler({}, 'example', 'test/url "" Some Header')).toEqual(
         '<code-example path="test/url" header="Some Header"></code-example>');
     });
 
