@@ -4,8 +4,6 @@
 
 ### Release Highlights & Update instructions
 
-Angular v7 is .
-
 To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v7 release announcement](https://blog.angular.io/TODO).
 
 
