@@ -473,7 +473,7 @@
           "url": "guide/universal",
           "title": "Server-side Rendering",
           "tooltip": "Render HTML server-side with Angular Universal."
-        },  
+        },
         {
           "title": "Upgrading from AngularJS",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
@@ -509,7 +509,7 @@
           "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine.",
           "hidden": true
         },
-        
+
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
@@ -524,11 +524,16 @@
           "url": "guide/typescript-configuration",
           "title": "TypeScript Configuration",
           "tooltip": "TypeScript configuration for Angular developers."
-        }, 
+        },
         {
           "url": "guide/aot-compiler",
           "title": "Ahead-of-Time Compilation",
           "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+        },
+        {
+          "url": "guide/aot-compiler-options",
+          "title": "Angular Template Compiler Options",
+          "tooltip": "Available template compiler options."
         },
         {
           "url": "guide/build",
@@ -544,14 +549,14 @@
           "url": "guide/deployment",
           "title": "Deployment",
           "tooltip": "Learn how to deploy your Angular app."
-        }, 
+        },
         {
           "url": "guide/browser-support",
           "title": "Browser Support",
           "tooltip": "Browser support and polyfills guide."
         },
 
-        { 
+        {
           "title": "Dev Tool Integration",
           "tooltip": "Integrate with your development environment and tools.",
           "children": [
