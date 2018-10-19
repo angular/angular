@@ -40,7 +40,7 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * router.navigateByUrl('/lazy/loaded');
  * ```
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
@@ -86,7 +86,7 @@ function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
 /**
  * Router setup factory function used for testing.
  *
- *
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -98,6 +98,7 @@ export function setupTestingRouter(
  *
  * @deprecated As of v5.2. The 2nd-to-last argument should be `ExtraOptions`, not
  * `UrlHandlingStrategy`
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -107,7 +108,7 @@ export function setupTestingRouter(
 /**
  * Router setup factory function used for testing.
  *
- *
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -162,7 +163,7 @@ export function setupTestingRouter(
  * });
  * ```
  *
- *
+ * @publicApi
  */
 @NgModule({
   exports: [RouterModule],
