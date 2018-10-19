@@ -857,7 +857,7 @@ Begin with a simple version of the app that navigates between two empty views.
 
 Generate a sample application to follow the walkthrough.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng new angular-router-sample
 </code-example>
 
@@ -884,11 +884,11 @@ browser's address location and history with the URL for that path.
 The first configuration defines an array of two routes with simple paths leading to the
 `CrisisListComponent` and `HeroListComponent`. Generate the `CrisisList` and `HeroList` components.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component crisis-list
 </code-example>
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component hero-list
 </code-example>
 
@@ -986,7 +986,7 @@ Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead an
 
 Create the `PageNotFoundComponent` to display when users visit invalid URLs.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component page-not-found
 </code-example>
 
@@ -1300,7 +1300,7 @@ The file includes an empty `Routes` object that you can fill with routes to diff
 
 Create an `AppRouting` module in the `/app` folder to contain the routing configuration.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate module app-routing --module app --flat
 </code-example>
 
@@ -1410,7 +1410,7 @@ Follow these steps:
 
 * Create a `HeroesModule` with routing in the heroes folder and register it with the root `AppModule`. This is where you'll be implementing the *hero management*.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate module heroes/heroes --module app --flat --routing
 </code-example>
 
@@ -2079,7 +2079,7 @@ Look at the browser address bar.
 It should look something like this, depending on where you run it:
 
 
-<code-example language="bash">
+<code-example>
   localhost:4200/heroes;id=15;foo=foo
 
 </code-example>
@@ -2615,7 +2615,7 @@ If your app had many feature areas, the app component trees might look like this
 
 Generate a `CrisisCenter` component in the `crisis-center` folder:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component crisis-center/crisis-center
 </code-example>
 
@@ -2643,7 +2643,7 @@ it has no business logic, and its template has no links, just a title and
 
 As a host page for the "Crisis Center" feature, generate a `CrisisCenterHome` component in the `crisis-center` folder.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component crisis-center/crisis-center-home
 </code-example>
 
@@ -2871,7 +2871,7 @@ They differ in a few key respects.
 
 Generate a new component to compose the message.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component compose-message
 </code-example>
 
@@ -3130,25 +3130,25 @@ But you can start by adding a new feature module named `AdminModule`.
 
 Generate an `admin` folder with a feature module file and a routing configuration file.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate module admin --routing
 </code-example>
 
 Next, generate the supporting components.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component admin/admin-dashboard
 </code-example>
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component admin/admin
 </code-example>
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component admin/manage-crises
 </code-example>
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component admin/manage-heroes
 </code-example>
 
@@ -3356,7 +3356,7 @@ This is a general purpose guard&mdash;you can imagine other features
 that require authenticated users&mdash;so you generate an
 `AuthGuard` in the `auth` folder.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate guard auth/auth
 </code-example>
 
@@ -3392,7 +3392,7 @@ Make the `AuthGuard` at least pretend to authenticate.
 
 The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `admin` folder:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate service admin/auth
 </code-example>
 
@@ -3443,7 +3443,7 @@ You need a `LoginComponent` for the user to log in to the app. After logging in,
 to the stored URL if available, or use the default URL.
 There is nothing new about this component or the way you wire it into the router configuration.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate component auth/login
 </code-example>
 
@@ -3584,7 +3584,7 @@ is like waiting for the server asynchronously.
 
 Generate a `Dialog` service to handle user confirmation.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate service dialog
 </code-example>
 
@@ -3603,7 +3603,7 @@ to discard changes and navigate away (`true`) or to preserve the pending changes
 
 Generate a _guard_ that checks for the presence of a `canDeactivate()` method in a component&mdash;any component.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate guard can-deactivate
 </code-example>
 
@@ -3696,7 +3696,7 @@ _before_ activating the route and creating the `CrisisDetailComponent`.
 
 Generate a `CrisisDetailResolver` service file within the `Crisis Center` feature area.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate service crisis-center/crisis-detail-resolver
 </code-example>
 
@@ -4185,7 +4185,7 @@ Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModul
 
 Generate a new `SelectivePreloadingStrategy` service.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng generate service selective-preloading-strategy
 </code-example>
 

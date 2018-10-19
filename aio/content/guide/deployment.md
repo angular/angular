@@ -12,7 +12,7 @@ For the simplest deployment, build for development and copy the output directory
 
 1. Start with the development build:
 
-  <code-example language="none" class="code-shell">
+  <code-example language="sh" class="code-shell">
     ng build
   </code-example>
 
@@ -35,7 +35,7 @@ Another simple way to deploy your Angular app is to use [GitHub Pages](https://h
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
-   <code-example language="none" class="code-shell">
+   <code-example language="sh" class="code-shell">
      ng build --prod --output-path docs --base-href <project_name>
     </code-example>
 
@@ -117,12 +117,12 @@ The second runs the web server against the `dist` folder.
 The combination of these two processes provides the same behavior as `ng serve`.
 
 1. Start the build in terminal A:
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
 ng build --watch
 </code-example>
 
 1. Start the web server in terminal B:
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
 lite-server --baseDir="dist"
 </code-example>
 The default browser opens to the appropriate URL.
@@ -238,7 +238,7 @@ starting with `--prod`.
 
 ### Build with _--prod_
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng build --prod
 </code-example>
 
@@ -328,26 +328,26 @@ tool is a great way to inspect the generated JavaScript bundles after a producti
 
 Install `source-map-explorer`:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   npm install source-map-explorer --save-dev
 </code-example>
 
 Build your app for production _including the source maps_
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ng build --prod --source-map
 </code-example>
 
 List the generated bundles in the `dist/` folder.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   ls dist/*.bundle.js
 </code-example>
 
 Run the explorer to generate a graphical representation of one of the bundles.
 The following example displays the graph for the _main_ bundle.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
   node_modules/.bin/source-map-explorer dist/main.*.bundle.js
 </code-example>
 
@@ -404,9 +404,10 @@ The `ng serve` command builds, watches, and serves the application from local me
 When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it. 
 You can do this by adding the `--watch` option to the `ng build` command.
 
-```
-ng build --watch
-```
+<code-example language="sh" class="code-shell">
+  ng build --watch
+</code-example>
+
 Like the `ng serve` command, this regenerates output files when source files change. 
 
 For complete details of the CLI commands, see the [CLI command reference](cli).

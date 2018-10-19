@@ -70,7 +70,7 @@ Workspace-wide `node_modules` dependencies are visible to this project.
 An `e2e/` subfolder contains configuration and source files for a set of end-to-end tests that correspond to the initial app.
 Workspace-wide `node_modules` dependencies are visible to this project.
 
-<code-example language="none" linenums="false">
+<code-example hideCopy language="none" linenums="false">
 my-app/
   e2e/                  (end-to-end test app for my-app)
     src/                (app source files)
@@ -85,7 +85,7 @@ the CLI creates a new *workspace*`/projects` folder, and adds the generated file
 
 When you generate an app (`ng generate application my-other-app`), the CLI adds folders under `projects/` for both the app and its corresponding end-to-end tests. Newly generated libraries are also added under `projects/`.
 
-<code-example language="none" linenums="false">
+<code-example hideCopy language="none" linenums="false">
 my-app/
   ...
   projects/           (additional apps and libs)
@@ -104,7 +104,7 @@ my-app/
 
 Inside the `src/` folder, the `app/` folder contains your app's logic and data. Angular components, templates, and styles go here. An `assets/` subfolder contains images and anything else your app needs. Files at the top level of `src/` support testing and running your app.
 
-<code-example language="none" linenums="false">
+<code-example hideCopy language="none" linenums="false">
    src/
     app/
         app.component.css

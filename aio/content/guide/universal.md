@@ -144,9 +144,10 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 
-```
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
-```
+<code-example language="sh" class="code-shell">
+  npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
+</code-example>
+
 
 ## Step 2: Prepare your app
 
@@ -423,7 +424,7 @@ module.exports = {
 
 The  project's `dist/` folder now contains both browser and server folders.
 
-<code-example format="." language="none" linenums="false">
+<code-example hideCopy format="." language="none" linenums="false">
 dist/
    browser/
    server/
@@ -431,7 +432,7 @@ dist/
 
 To run the app on the server, type the following in a command shell.
 
-<code-example format="." language="bash" linenums="false">
+<code-example language="sh" class="code-shell">
 node dist/server.js
 </code-example>
 
@@ -459,7 +460,7 @@ You can add these in the `"server"` section of the Angular configuration file, `
 
 To run a production build of your app with Universal on your local system, use the following command.
 
-<code-example format="." language="bash" linenums="false">
+<code-example language="sh" class="code-shell">
 npm run build:ssr && npm run serve:ssr
 </code-example>
 
@@ -495,7 +496,7 @@ A Node Express web server turns client requests into the HTML pages rendered by 
 
 To create server-side app module, `app.server.module.ts`, run the following CLI command.
 
-<code-example format="." language="bash">
+<code-example language="sh" class="code-shell">
 
 ng add @nguniversal/express-engine --clientProject angular.io-example
 

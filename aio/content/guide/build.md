@@ -32,11 +32,11 @@ For example:
 
 The base file `environment.ts`, contains the default environment settings. For example:
 
-<code-example language="none" class="code-shell">
+```
 export const environment = {
   production: false
 };
-</code-example>
+```
 
 The `build` command uses this as the build target when no environment is specified. 
 You can add further variables, either as additional properties on the environment object, or as separate objects. 
@@ -459,7 +459,7 @@ module.exports = PROXY_CONFIG;
 If you work behind a corporate proxy, the cannot directly proxy calls to any URL outside your local network. 
 In this case, you can configure the backend proxy to redirect calls through your corporate proxy using an agent:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh" class="code-shell">
 npm install --save-dev https-proxy-agent
 </code-example>
 
