@@ -82,6 +82,7 @@ export class RadioControlRegistry {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
