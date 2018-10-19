@@ -643,18 +643,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       const stylingInput = mapBasedStyleInput || mapBasedClassInput;
       if (stylingInput) {
+        // these values must be outside of the update block so that they can
+        // be evaluted (the AST visit call) during creation time so that any
+        // pipes can be picked up in time before the template is built
+        const mapBasedClassValue =
+            mapBasedClassInput ? mapBasedClassInput.value.visit(this._valueConverter) : null;
+        const mapBasedStyleValue =
+            mapBasedStyleInput ? mapBasedStyleInput.value.visit(this._valueConverter) : null;
         this.updateInstruction(stylingInput.sourceSpan, R3.elementStylingMap, () => {
           const params: o.Expression[] = [indexLiteral];
 
-          if (mapBasedClassInput) {
-            const mapBasedClassValue = mapBasedClassInput.value.visit(this._valueConverter);
+          if (mapBasedClassValue) {
             params.push(this.convertPropertyBinding(implicit, mapBasedClassValue, true));
           } else if (mapBasedStyleInput) {
             params.push(o.NULL_EXPR);
           }
 
-          if (mapBasedStyleInput) {
-            const mapBasedStyleValue = mapBasedStyleInput.value.visit(this._valueConverter);
+          if (mapBasedStyleValue) {
             params.push(this.convertPropertyBinding(implicit, mapBasedStyleValue, true));
           }
 
