@@ -19,8 +19,6 @@ task('aot:deps', sequenceTask(
     'cdk-experimental:build-release',
     'material-experimental:build-release',
     'material-moment-adapter:build-release',
-    // The examples module needs to be built before building examples package
-    'build-examples-module',
     'material-examples:build-release',
   ],
   // Build the assets after the releases have been built, because the demo-app assets import

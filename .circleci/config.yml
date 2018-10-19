@@ -125,6 +125,37 @@ jobs:
 
       - *save_cache
 
+  # --------------------------------------
+  # Job that builds the demo-app with AOT
+  # --------------------------------------
+  demo_app_aot:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+
+      - run: yarn gulp ci:aot
+
+      - *save_cache
+
+  # -------------------------------------------------------------------------
+  # Job that pre-render's the universal app with `@angular/platform-server`.
+  # This verifies that Angular Material can be rendered within Node.
+  # -------------------------------------------------------------------------
+  prerender_build:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+    - *checkout_code
+    - *restore_cache
+    - *yarn_install
+
+    - run: yarn gulp ci:prerender
+
+    - *save_cache
+
   # ----------------------------------
   # Lint job. Runs the gulp lint task.
   # ----------------------------------
@@ -162,6 +193,8 @@ workflows:
   integration_tests:
     jobs:
       - e2e_tests
+      - prerender_build
+      - demo_app_aot
 
   # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
   lint:

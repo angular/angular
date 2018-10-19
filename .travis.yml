@@ -25,9 +25,7 @@ branches:
 
 jobs:
   include:
-    - env: "MODE=aot"
     - env: "MODE=payload"
-    - env: "MODE=prerender"
     - env: "MODE=saucelabs_required"
     - env: "MODE=browserstack_required"
     - env: "DEPLOY_MODE=build-artifacts"
