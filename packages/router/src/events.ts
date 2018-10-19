@@ -18,7 +18,7 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  * * 'popstate'--triggered by a popstate event
  * * 'hashchange'--triggered by a hashchange event
  *
- * @experimental
+ * @publicApi
  */
 export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
 
@@ -40,7 +40,7 @@ export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
  * }
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export class RouterEvent {
   constructor(
@@ -200,7 +200,7 @@ export class RoutesRecognized extends RouterEvent {
  *
  * Represents the start of the Guard phase of routing.
  *
- * @experimental
+ * @publicApi
  */
 export class GuardsCheckStart extends RouterEvent {
   constructor(
@@ -225,7 +225,7 @@ export class GuardsCheckStart extends RouterEvent {
  *
  * Represents the end of the Guard phase of routing.
  *
- * @experimental
+ * @publicApi
  */
 export class GuardsCheckEnd extends RouterEvent {
   constructor(
@@ -255,7 +255,7 @@ export class GuardsCheckEnd extends RouterEvent {
  * in the "resolve" phase whether there's things to resolve or not. In the future this
  * behavior may change to only run when there are things to be resolved.
  *
- * @experimental
+ * @publicApi
  */
 export class ResolveStart extends RouterEvent {
   constructor(
@@ -281,7 +281,7 @@ export class ResolveStart extends RouterEvent {
  * Represents the end of the Resolve phase of routing. See note on
  * `ResolveStart` for use of this experimental API.
  *
- * @experimental
+ * @publicApi
  */
 export class ResolveEnd extends RouterEvent {
   constructor(
@@ -306,7 +306,7 @@ export class ResolveEnd extends RouterEvent {
  *
  * Represents an event triggered before lazy loading a route config.
  *
- * @experimental
+ * @publicApi
  */
 export class RouteConfigLoadStart {
   constructor(
@@ -320,7 +320,7 @@ export class RouteConfigLoadStart {
  *
  * Represents an event triggered when a route has been lazy loaded.
  *
- * @experimental
+ * @publicApi
  */
 export class RouteConfigLoadEnd {
   constructor(
@@ -335,7 +335,7 @@ export class RouteConfigLoadEnd {
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ChildActivationEnd` for use of this experimental API.
  *
- * @experimental
+ * @publicApi
  */
 export class ChildActivationStart {
   constructor(
@@ -353,7 +353,7 @@ export class ChildActivationStart {
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ChildActivationStart` for use of this experimental API.
  *
- * @experimental
+ * @publicApi
  */
 export class ChildActivationEnd {
   constructor(
@@ -371,7 +371,7 @@ export class ChildActivationEnd {
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ActivationEnd` for use of this experimental API.
  *
- * @experimental
+ * @publicApi
  */
 export class ActivationStart {
   constructor(
@@ -389,7 +389,7 @@ export class ActivationStart {
  * Represents the start of end of the Resolve phase of routing. See note on
  * `ActivationStart` for use of this experimental API.
  *
- * @experimental
+ * @publicApi
  */
 export class ActivationEnd {
   constructor(

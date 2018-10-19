@@ -55,7 +55,7 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export abstract class NgModuleFactory<T> {
   abstract get moduleType(): Type<T>;

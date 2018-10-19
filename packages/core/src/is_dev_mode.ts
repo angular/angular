@@ -23,7 +23,7 @@ let _runModeLocked: boolean = false;
  *
  * By default, this is true, unless a user calls `enableProdMode` before calling this.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function isDevMode(): boolean {
   _runModeLocked = true;

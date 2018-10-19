@@ -7,7 +7,7 @@
  */
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export abstract class AnimationStyleNormalizer {
   abstract normalizePropertyName(propertyName: string, errors: string[]): string;
@@ -17,7 +17,7 @@ export abstract class AnimationStyleNormalizer {
 }
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export class NoopAnimationStyleNormalizer {
   normalizePropertyName(propertyName: string, errors: string[]): string { return propertyName; }

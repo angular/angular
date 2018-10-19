@@ -190,7 +190,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
    * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
    *
-   * @experimental
+   * @publicApi
    */
   enableIvy?: boolean|'ngtsc'|'tsc';
 

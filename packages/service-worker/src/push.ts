@@ -16,7 +16,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class SwPush {

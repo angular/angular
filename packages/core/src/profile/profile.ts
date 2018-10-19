@@ -48,7 +48,7 @@ function noopScope(arg0?: any, arg1?: any): any {
  * needs to be fixed before the app should be profiled. Add try-finally only when you expect that
  * an exception is expected during normal execution while profiling.
  *
- * @experimental
+ * @publicApi
  */
 export const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
     wtfEnabled ? createScope : (signature: string, flags?: any) => noopScope;
@@ -60,7 +60,7 @@ export const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn =
  * - `returnValue` (optional) to be passed to the WTF.
  *
  * Returns the `returnValue for easy chaining.
- * @experimental
+ * @publicApi
  */
 export const wtfLeave: <T>(scope: any, returnValue?: T) => T =
     wtfEnabled ? leave : (s: any, r?: any) => r;
@@ -76,7 +76,7 @@ export const wtfLeave: <T>(scope: any, returnValue?: T) => T =
  *          wtfEndTimeRange(s);
  *        });
  *     }
- * @experimental
+ * @publicApi
  */
 export const wtfStartTimeRange: (rangeType: string, action: string) => any =
     wtfEnabled ? startTimeRange : (rangeType: string, action: string) => null;
@@ -85,6 +85,6 @@ export const wtfStartTimeRange: (rangeType: string, action: string) => any =
  * Ends a async time range operation.
  * [range] is the return value from [wtfStartTimeRange] Async ranges only work if WTF has been
  * enabled.
- * @experimental
+ * @publicApi
  */
 export const wtfEndTimeRange: (range: any) => void = wtfEnabled ? endTimeRange : (r: any) => null;
