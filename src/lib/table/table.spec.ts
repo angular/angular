@@ -259,6 +259,18 @@ describe('MatTable', () => {
       ]);
     }));
 
+    it('should not match concatenated words', fakeAsync(() => {
+      // Set the value to the last character of the first
+      // column plus the first character of the second column.
+      dataSource.filter = '1b';
+      fixture.detectChanges();
+      expect(dataSource.filteredData.length).toBe(0);
+      expectTableToMatchContent(tableElement, [
+        ['Column A', 'Column B', 'Column C'],
+        ['Footer A', 'Footer B', 'Footer C'],
+      ]);
+    }));
+
     it('should be able to sort the table contents', () => {
       // Activate column A sort
       component.sort.sort(component.sortHeader);
