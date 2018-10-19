@@ -1,4 +1,3 @@
-/** @experimental */
 export declare class ServiceWorkerModule {
     static register(script: string, opts?: {
         scope?: string;
@@ -6,7 +5,6 @@ export declare class ServiceWorkerModule {
     }): ModuleWithProviders<ServiceWorkerModule>;
 }
 
-/** @experimental */
 export declare class SwPush {
     readonly isEnabled: boolean;
     readonly messages: Observable<object>;
@@ -18,7 +16,6 @@ export declare class SwPush {
     unsubscribe(): Promise<void>;
 }
 
-/** @experimental */
 export declare class SwUpdate {
     readonly activated: Observable<UpdateActivatedEvent>;
     readonly available: Observable<UpdateAvailableEvent>;
@@ -28,7 +25,6 @@ export declare class SwUpdate {
     checkForUpdate(): Promise<void>;
 }
 
-/** @experimental */
 export interface UpdateActivatedEvent {
     current: {
         hash: string;
@@ -41,7 +37,6 @@ export interface UpdateActivatedEvent {
     type: 'UPDATE_ACTIVATED';
 }
 
-/** @experimental */
 export interface UpdateAvailableEvent {
     available: {
         hash: string;
