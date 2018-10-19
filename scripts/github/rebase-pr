@@ -5,6 +5,7 @@ set -u -e -o pipefail
 BASEDIR=$(dirname "$0")
 
 if [ $# -eq 0 ]; then
+    echo
     echo "Rebase github PR onto a branch"
     echo
     echo "$0 branch_to_rebase_on PR_NUMBER"
@@ -14,7 +15,6 @@ fi
 
 REBASE_ON="$1"
 PR_NO="$2"
-
 
 HEAD_LABEL=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NO | node $BASEDIR/utils/json_extract.js head.label`
 echo $HEAD_LABEL
@@ -33,13 +33,14 @@ git co FETCH_HEAD
 PUSH_CMD="git push $USER_GIT_URL HEAD:$BRANCH -f";
 RESTORE_CMD="git co $OLD_BRANCH"
 git rebase upstream/master
+
 if [ $? -eq 0 ]; then
     $PUSH_CMD
     $RESTORE_CMD
 else
-    echo ===========================
+    echo ================================
     echo Git rebase failed. RECOVER WITH:
     echo "       $PUSH_CMD"
     echo "       $RESTORE_CMD"
-    echo ===========================
+    echo ================================
 fi
