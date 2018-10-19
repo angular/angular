@@ -152,3 +152,10 @@ $mat-radio-ripple-radius: 20px;
     opacity: 0;
   }
 }
+
+.mat-radio-input {
+  // Move the input in the middle and towards the bottom so
+  // the native validation messages are aligned correctly.
+  bottom: 0;
+  left: 50%;
+}

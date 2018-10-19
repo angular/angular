@@ -14,20 +14,20 @@
 
       <div class="mat-ripple-element mat-radio-persistent-ripple"></div>
     </div>
-  </div>
 
-  <input #input class="mat-radio-input cdk-visually-hidden" type="radio"
-         [id]="inputId"
-         [checked]="checked"
-         [disabled]="disabled"
-         [tabIndex]="tabIndex"
-         [attr.name]="name"
-         [required]="required"
-         [attr.aria-label]="ariaLabel"
-         [attr.aria-labelledby]="ariaLabelledby"
-         [attr.aria-describedby]="ariaDescribedby"
-         (change)="_onInputChange($event)"
-         (click)="_onInputClick($event)">
+    <input #input class="mat-radio-input cdk-visually-hidden" type="radio"
+        [id]="inputId"
+        [checked]="checked"
+        [disabled]="disabled"
+        [tabIndex]="tabIndex"
+        [attr.name]="name"
+        [required]="required"
+        [attr.aria-label]="ariaLabel"
+        [attr.aria-labelledby]="ariaLabelledby"
+        [attr.aria-describedby]="ariaDescribedby"
+        (change)="_onInputChange($event)"
+        (click)="_onInputClick($event)">
+  </div>
 
   <!-- The label content for radio control. -->
   <div class="mat-radio-label-content" [class.mat-radio-label-before]="labelPosition == 'before'">
