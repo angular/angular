@@ -74,7 +74,10 @@ Command syntax is shown as follows:
 * Option names are prefixed with a double dash (--).
     Option aliases are prefixed with a single dash (-).
     Arguments are not prefixed.
-    For example: `ng build my-app -c production`
+    For example: 
+    <code-example format="." language="bash">
+        ng build my-app -c production
+    </code-example>
 
 * Typically, the name of a generated artifact can be given as an argument to the command or specified with the --name option.
 
