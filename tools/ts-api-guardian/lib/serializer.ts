@@ -314,14 +314,14 @@ class ResolvedDeclarationEmitter {
     if (missingRequiredTags.length) {
       this.diagnostics.push({
         type: 'error',
-        message: createErrorMessage(node, `Required jsdoc tags are missing: ${missingRequiredTags.map(tag => `"@${tag}"`).join(', ')}.`)
+        message: createErrorMessage(node, `Required jsdoc tags - ${missingRequiredTags.map(tag => `"@${tag}"`).join(', ')} - are missing on ${getName(node)}.`)
       });
     }
     const bannedTagsFound = tagOptions.banned.filter(bannedTag => jsDocTags.some(tag => tag === bannedTag));
     if (bannedTagsFound.length) {
       this.diagnostics.push({
         type: 'error',
-        message: createErrorMessage(node, `Banned jsdoc tags were found: ${bannedTagsFound.map(tag => `"@${tag}"`).join(', ')}.`)
+        message: createErrorMessage(node, `Banned jsdoc tags - ${bannedTagsFound.map(tag => `"@${tag}"`).join(', ')} - were found on ${getName(node)}.`)
       });
     }
     const tagsToCopy = jsDocTags.filter(tag => tagOptions.toCopy.some(tagToCopy => tag === tagToCopy));
@@ -423,4 +423,8 @@ function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
 
 function applyDefaultTagOptions(tagOptions: JsDocTagOptions|undefined): JsDocTagOptions {
   return { required: [], banned: [], toCopy:[], ...tagOptions };
+}
+
+function getName(node: any) {
+  return '`' + (node.name && node.name.text ? node.name.text : node.getText()) + '`';
 }

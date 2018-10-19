@@ -486,7 +486,7 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(4,1): error: Banned jsdoc tags were found: "@stable".', {exportTags: {banned: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(4,1): error: Banned jsdoc tags - "@stable" - were found on `A`.', {exportTags: {banned: ['stable']}});
   });
 
   it('should throw on using banned jsdoc tags on fields', () => {
@@ -499,17 +499,17 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(5,3): error: Banned jsdoc tags were found: "@stable".', {memberTags: {banned: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(5,3): error: Banned jsdoc tags - "@stable" - were found on `value`.', {memberTags: {banned: ['stable']}});
   });
 
   it('should throw on using banned jsdoc tags on parameters', () => {
     const input = `
       export declare class A {
-        foo(/** @stable */ value: number): void;
+        foo(/** @stable */ param: number): void;
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,22): error: Banned jsdoc tags were found: "@stable".', {paramTags: {banned: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(2,22): error: Banned jsdoc tags - "@stable" - were found on `param`.', {paramTags: {banned: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on exports', () => {
@@ -520,7 +520,7 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,1): error: Required jsdoc tags are missing: "@stable".', {exportTags: {required: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(2,1): error: Required jsdoc tags - "@stable" - are missing on `A`.', {exportTags: {required: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on fields', () => {
@@ -531,18 +531,18 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(3,3): error: Required jsdoc tags are missing: "@stable".', {memberTags: {required: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(3,3): error: Required jsdoc tags - "@stable" - are missing on `value`.', {memberTags: {required: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on parameters', () => {
     const input = `
       /** @experimental */
       export declare class A {
-        foo(value: number): void;
+        foo(param: number): void;
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(3,7): error: Required jsdoc tags are missing: "@stable".', {paramTags: {required: ['stable']}});
+        {'file.d.ts': input}, 'file.d.ts(3,7): error: Required jsdoc tags - "@stable" - are missing on `param`.', {paramTags: {required: ['stable']}});
   });
 });
 
