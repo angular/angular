@@ -164,6 +164,24 @@ describe('MatMenu', () => {
     expect(document.activeElement).toBe(triggerEl);
   }));
 
+  it('should restore focus to the root trigger when the menu was opened by touch', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+    dispatchFakeEvent(triggerEl, 'touchstart');
+    triggerEl.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    flush();
+
+    expect(document.activeElement).toBe(triggerEl);
+  }));
+
   it('should scroll the panel to the top on open, when it is scrollable', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();
@@ -246,6 +264,27 @@ describe('MatMenu', () => {
       expect(triggerEl.classList).toContain('cdk-program-focused');
       focusMonitor.stopMonitoring(triggerEl);
     }));
+
+    it('should set the proper focus origin when restoring focus after opening by touch',
+      fakeAsync(() => {
+        const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+        fixture.detectChanges();
+        const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+        dispatchMouseEvent(triggerEl, 'touchstart');
+        triggerEl.click();
+        fixture.detectChanges();
+        patchElementFocus(triggerEl);
+        focusMonitor.monitor(triggerEl, false);
+        fixture.componentInstance.trigger.closeMenu();
+        fixture.detectChanges();
+        tick(500);
+        fixture.detectChanges();
+        flush();
+
+        expect(triggerEl.classList).toContain('cdk-touch-focused');
+        focusMonitor.stopMonitoring(triggerEl);
+      }));
 
   it('should close the menu when pressing ESCAPE', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
@@ -376,6 +415,21 @@ describe('MatMenu', () => {
     tick(500);
 
     expect(fixture.componentInstance.items.first.focus).toHaveBeenCalledWith('mouse');
+  }));
+
+  it('should set the proper focus origin when opening by touch', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    spyOn(fixture.componentInstance.items.first, 'focus').and.callThrough();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    dispatchMouseEvent(triggerEl, 'touchstart');
+    triggerEl.click();
+    fixture.detectChanges();
+    flush();
+
+    expect(fixture.componentInstance.items.first.focus).toHaveBeenCalledWith('touch');
   }));
 
   it('should close the menu when using the CloseScrollStrategy', fakeAsync(() => {
