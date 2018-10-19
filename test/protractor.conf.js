@@ -36,6 +36,10 @@ exports.config = {
   capabilities: {
     browserName: 'chrome',
 
+    chromeOptions: {
+      args: [ '--headless', '--window-size=1024,768']
+    },
+
     // Enables concurrent testing in the Webdriver. Currently runs three e2e files in parallel.
     shardTestFiles: true,
     maxInstances: 5,

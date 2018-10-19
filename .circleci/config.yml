@@ -121,7 +121,7 @@ jobs:
       - *restore_cache
       - *yarn_install
 
-      - run: xvfb-run -a --server-args='-screen 0, 1024x768x16' yarn gulp ci:e2e
+      - run: yarn gulp ci:e2e
 
       - *save_cache
 
