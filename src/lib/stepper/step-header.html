@@ -1,46 +1,49 @@
 <div class="mat-step-header-ripple" mat-ripple [matRippleTrigger]="_getHostElement()"></div>
 <div class="mat-step-icon-state-{{state}} mat-step-icon" [class.mat-step-icon-selected]="selected"
      [ngSwitch]="state">
-  <ng-container *ngSwitchCase="'number'" [ngSwitch]="!!(iconOverrides && iconOverrides.number)">
-    <ng-container
-      *ngSwitchCase="true"
-      [ngTemplateOutlet]="iconOverrides.number"
-      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <span class="mat-step-icon-content" *ngSwitchDefault>{{index + 1}}</span>
-  </ng-container>
 
-  <ng-container *ngSwitchCase="'edit'" [ngSwitch]="!!(iconOverrides && iconOverrides.edit)">
-    <ng-container
-      *ngSwitchCase="true"
-      [ngTemplateOutlet]="iconOverrides.edit"
-      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon class="mat-step-icon-content" *ngSwitchDefault>create</mat-icon>
-  </ng-container>
+  <div class="mat-step-icon-content">
+    <ng-container *ngSwitchCase="'number'" [ngSwitch]="!!(iconOverrides && iconOverrides.number)">
+      <ng-container
+        *ngSwitchCase="true"
+        [ngTemplateOutlet]="iconOverrides.number"
+        [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+      <span *ngSwitchDefault>{{index + 1}}</span>
+    </ng-container>
 
-  <ng-container *ngSwitchCase="'done'" [ngSwitch]="!!(iconOverrides && iconOverrides.done)">
-    <ng-container
-      *ngSwitchCase="true"
-      [ngTemplateOutlet]="iconOverrides.done"
-      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon class="mat-step-icon-content" *ngSwitchDefault>done</mat-icon>
-  </ng-container>
+    <ng-container *ngSwitchCase="'edit'" [ngSwitch]="!!(iconOverrides && iconOverrides.edit)">
+      <ng-container
+        *ngSwitchCase="true"
+        [ngTemplateOutlet]="iconOverrides.edit"
+        [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+      <mat-icon *ngSwitchDefault>create</mat-icon>
+    </ng-container>
 
-  <ng-container *ngSwitchCase="'error'" [ngSwitch]="!!(iconOverrides && iconOverrides.error)">
-    <ng-container
-      *ngSwitchCase="true"
-      [ngTemplateOutlet]="iconOverrides.error"
-      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon *ngSwitchDefault>warning</mat-icon>
-  </ng-container>
+    <ng-container *ngSwitchCase="'done'" [ngSwitch]="!!(iconOverrides && iconOverrides.done)">
+      <ng-container
+        *ngSwitchCase="true"
+        [ngTemplateOutlet]="iconOverrides.done"
+        [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+      <mat-icon *ngSwitchDefault>done</mat-icon>
+    </ng-container>
 
-  <!-- Custom state. -->
-  <ng-container *ngSwitchDefault [ngSwitch]="!!(iconOverrides && iconOverrides[state])">
-    <ng-container
-      *ngSwitchCase="true"
-      [ngTemplateOutlet]="iconOverrides[state]"
-      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon *ngSwitchDefault>{{state}}</mat-icon>
-  </ng-container>
+    <ng-container *ngSwitchCase="'error'" [ngSwitch]="!!(iconOverrides && iconOverrides.error)">
+      <ng-container
+        *ngSwitchCase="true"
+        [ngTemplateOutlet]="iconOverrides.error"
+        [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+      <mat-icon *ngSwitchDefault>warning</mat-icon>
+    </ng-container>
+
+    <!-- Custom state. -->
+    <ng-container *ngSwitchDefault [ngSwitch]="!!(iconOverrides && iconOverrides[state])">
+      <ng-container
+        *ngSwitchCase="true"
+        [ngTemplateOutlet]="iconOverrides[state]"
+        [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+      <mat-icon *ngSwitchDefault>{{state}}</mat-icon>
+    </ng-container>
+  </div>
 </div>
 <div class="mat-step-label"
      [class.mat-step-label-active]="active"

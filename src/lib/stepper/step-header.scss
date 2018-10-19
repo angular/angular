@@ -30,7 +30,8 @@ $mat-step-header-icon-size: 16px !default;
   position: relative;
 }
 
-.mat-step-icon-content {
+.mat-step-icon-content,
+.mat-step-icon .mat-icon {
   // Use absolute positioning to center the content, because it works better with text.
   position: absolute;
   top: 50%;
