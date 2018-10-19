@@ -60,7 +60,6 @@ interface Thenable<T> {
  */
 export function downgradeComponent(info: {
   component: Type<any>;
-  /** @publicApi */
   propagateDigest?: boolean;
   /** @deprecated since v4. This parameter is no longer used */
   inputs?: string[];
