@@ -88,7 +88,7 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
@@ -167,7 +167,7 @@ export class RouterLink {
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {

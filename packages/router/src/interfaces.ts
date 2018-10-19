@@ -76,7 +76,7 @@ import {UrlSegment} from './url_tree';
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
@@ -156,7 +156,7 @@ export interface CanActivate {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanActivateChild {
   canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot):
@@ -229,7 +229,7 @@ export interface CanActivateChild {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanDeactivate<T> {
   canDeactivate(
@@ -303,6 +303,7 @@ export interface CanDeactivate<T> {
  * class AppModule {}
  * ```
  *
+ * @publicApi
  */
 export interface Resolve<T> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T>|Promise<T>|T;
@@ -371,7 +372,7 @@ export interface Resolve<T> {
  * class AppModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export interface CanLoad {
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean;

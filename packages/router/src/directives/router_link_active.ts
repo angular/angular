@@ -70,7 +70,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({
   selector: '[routerLinkActive]',
