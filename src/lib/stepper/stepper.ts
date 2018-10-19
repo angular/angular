@@ -39,7 +39,8 @@ import {
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {takeUntil, distinctUntilChanged} from 'rxjs/operators';
 
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
@@ -102,18 +103,26 @@ export class MatStepper extends _CdkStepper implements AfterContentInit {
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};
 
+  /** Stream of animation `done` events when the body expands/collapses. */
+  _animationDone = new Subject<AnimationEvent>();
+
   ngAfterContentInit() {
-    const icons = this._icons.toArray();
-    icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
+    this._icons.forEach(({name, templateRef}) => this._iconOverrides[name] = templateRef);
 
     // Mark the component for change detection whenever the content children query changes
     this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => this._stateChanged());
-  }
 
-  _animationDone(event: AnimationEvent) {
-    if ((event.toState as StepContentPositionState) === 'current') {
-      this.animationDone.emit();
-    }
+    this._animationDone.pipe(
+      // This needs a `distinctUntilChanged` in order to avoid emitting the same event twice due
+      // to a bug in animations where the `.done` callback gets invoked twice on some browsers.
+      // See https://github.com/angular/angular/issues/24084
+      distinctUntilChanged((x, y) => x.fromState === y.fromState && x.toState === y.toState),
+      takeUntil(this._destroyed)
+    ).subscribe(event => {
+      if ((event.toState as StepContentPositionState) === 'current') {
+        this.animationDone.emit();
+      }
+    });
   }
 }
 

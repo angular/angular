@@ -23,7 +23,7 @@
   <div class="mat-vertical-content-container" [class.mat-stepper-vertical-line]="!isLast">
     <div class="mat-vertical-stepper-content" role="tabpanel"
          [@stepTransition]="_getAnimationDirection(i)"
-         (@stepTransition.done)="_animationDone($event)"
+         (@stepTransition.done)="_animationDone.next($event)"
          [id]="_getStepContentId(i)"
          [attr.aria-labelledby]="_getStepLabelId(i)"
          [attr.aria-expanded]="selectedIndex === i">
