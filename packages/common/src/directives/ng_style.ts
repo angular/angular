@@ -28,7 +28,7 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, 
  * - keys are style names with an optional `.<unit>` suffix (ie 'top.px', 'font-style.em'),
  * - values are the values assigned to those properties (expressed in the given unit).
  *
- *
+ * @publicApi
  */
 @Directive({selector: '[ngStyle]'})
 export class NgStyle implements DoCheck {

@@ -15,6 +15,8 @@ function makeKeyValuePair<K, V>(key: K, value: V): KeyValue<K, V> {
 /**
  * A key value pair.
  * Usually used to represent the key value pairs from a Map or Object.
+ *
+ * @publicApi
  */
 export interface KeyValue<K, V> {
   key: K;
@@ -38,6 +40,8 @@ export interface KeyValue<K, V> {
  * pipe.
  *
  * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
+ *
+ * @publicApi
  */
 @Pipe({name: 'keyvalue', pure: false})
 export class KeyValuePipe implements PipeTransform {
