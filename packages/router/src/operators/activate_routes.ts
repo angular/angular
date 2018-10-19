@@ -57,7 +57,7 @@ export class ActivateRoutes {
 
     // De-activate the routes that will not be re-used
     forEach(children, (v: TreeNode<ActivatedRoute>, childName: string) => {
-      this.deactivateRouteAndItsChildren(v, contexts);
+      this.deactivateRouteAndItsChildren(futureNode, v, contexts);
     });
   }
 
@@ -82,17 +82,19 @@ export class ActivateRoutes {
     } else {
       if (curr) {
         // Deactivate the current route which will not be re-used
-        this.deactivateRouteAndItsChildren(currNode, parentContext);
+        this.deactivateRouteAndItsChildren(futureNode, currNode, parentContext);
       }
     }
   }
 
   private deactivateRouteAndItsChildren(
-      route: TreeNode<ActivatedRoute>, parentContexts: ChildrenOutletContexts): void {
-    if (this.routeReuseStrategy.shouldDetach(route.value.snapshot)) {
-      this.detachAndStoreRouteSubtree(route, parentContexts);
+      futureRoute: TreeNode<ActivatedRoute>, currentRoute: TreeNode<ActivatedRoute>,
+      parentContexts: ChildrenOutletContexts): void {
+    if (this.routeReuseStrategy.shouldDetach(
+            currentRoute.value.snapshot, futureRoute.value._futureSnapshot)) {
+      this.detachAndStoreRouteSubtree(currentRoute, parentContexts);
     } else {
-      this.deactivateRouteAndOutlet(route, parentContexts);
+      this.deactivateRouteAndOutlet(futureRoute, currentRoute, parentContexts);
     }
   }
 
@@ -107,14 +109,17 @@ export class ActivateRoutes {
   }
 
   private deactivateRouteAndOutlet(
-      route: TreeNode<ActivatedRoute>, parentContexts: ChildrenOutletContexts): void {
-    const context = parentContexts.getContext(route.value.outlet);
+      futureRoute: TreeNode<ActivatedRoute>, currentRoute: TreeNode<ActivatedRoute>,
+      parentContexts: ChildrenOutletContexts): void {
+    const context = parentContexts.getContext(currentRoute.value.outlet);
 
     if (context) {
-      const children: {[outletName: string]: any} = nodeChildrenAsMap(route);
-      const contexts = route.value.component ? context.children : parentContexts;
+      const children: {[outletName: string]: any} = nodeChildrenAsMap(currentRoute);
+      const contexts = currentRoute.value.component ? context.children : parentContexts;
 
-      forEach(children, (v: any, k: string) => this.deactivateRouteAndItsChildren(v, contexts));
+      forEach(
+          children,
+          (v: any, k: string) => this.deactivateRouteAndItsChildren(futureRoute, v, contexts));
 
       if (context.outlet) {
         // Destroy the component
@@ -161,7 +166,7 @@ export class ActivateRoutes {
         // if we have a normal route, we need to place the component into the outlet and recurse.
         const context = parentContexts.getOrCreateContext(future.outlet);
 
-        if (this.routeReuseStrategy.shouldAttach(future.snapshot)) {
+        if (this.routeReuseStrategy.shouldAttach(future.snapshot, curr ? curr.snapshot : null)) {
           const stored =
               (<DetachedRouteHandleInternal>this.routeReuseStrategy.retrieve(future.snapshot));
           this.routeReuseStrategy.store(future.snapshot, null);

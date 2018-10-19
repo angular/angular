@@ -40,7 +40,8 @@ export type DetachedRouteHandleInternal = {
  */
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
-  abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
+  abstract shouldDetach(currentRoute: ActivatedRouteSnapshot, futureRoute?: ActivatedRouteSnapshot):
+      boolean;
 
   /**
    * Stores the detached route.
@@ -50,7 +51,8 @@ export abstract class RouteReuseStrategy {
   abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle|null): void;
 
   /** Determines if this route (and its subtree) should be reattached */
-  abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
+  abstract shouldAttach(
+      futureRoute: ActivatedRouteSnapshot, currentRoute?: ActivatedRouteSnapshot|null): boolean;
 
   /** Retrieves the previously stored route */
   abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null;
@@ -63,9 +65,14 @@ export abstract class RouteReuseStrategy {
  * Does not detach any subtrees. Reuses routes as long as their route config is the same.
  */
 export class DefaultRouteReuseStrategy implements RouteReuseStrategy {
-  shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
+  shouldDetach(currentRoute: ActivatedRouteSnapshot, futureRoute: ActivatedRouteSnapshot): boolean {
+    return false;
+  }
   store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
-  shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
+  shouldAttach(futureRoute: ActivatedRouteSnapshot, currentRoute: ActivatedRouteSnapshot|null):
+      boolean {
+    return false;
+  }
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null { return null; }
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
     return future.routeConfig === curr.routeConfig;
