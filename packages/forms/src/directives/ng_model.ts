@@ -98,6 +98,7 @@ const resolvedPromise = Promise.resolve(null);
  * * Selects: `SelectControlValueAccessor`
  *
  * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',

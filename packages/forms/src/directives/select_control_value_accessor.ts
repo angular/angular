@@ -88,6 +88,7 @@ function _extractId(valueString: string): string {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -166,6 +167,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {

@@ -133,6 +133,7 @@ export const formControlBinding: any = {
  * the pattern is being used as the code is being updated.
  *
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 
