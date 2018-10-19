@@ -307,7 +307,7 @@ class CompWithUrlTemplate {
           TestBed.compileComponents();
         }));
 
-        !isNode &&
+        isBrowser &&
             it('should allow to createSync components with templateUrl after explicit async compilation',
                () => {
                  const fixture = TestBed.createComponent(CompWithUrlTemplate);
