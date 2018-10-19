@@ -37,6 +37,7 @@ import {take} from 'rxjs/operators';
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class MockConnection implements Connection {
   // TODO: Name `readyState` should change to be more generic, and states could be made to be more
@@ -190,6 +191,7 @@ export class MockConnection implements Connection {
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class MockBackend implements ConnectionBackend {
