@@ -34,6 +34,7 @@
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Headers {
   /** @internal header names are lower case */
