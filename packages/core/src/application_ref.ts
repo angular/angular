@@ -171,6 +171,8 @@ export interface BootstrapOptions {
  *
  * A page's platform is initialized implicitly when a platform is created via a platform factory
  * (e.g. {@link platformBrowser}), or explicitly by calling the {@link createPlatform} function.
+ *
+ * @publicApi
  */
 @Injectable()
 export class PlatformRef {
@@ -202,8 +204,6 @@ export class PlatformRef {
    *
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
-   *
-   * @publicApi
    */
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {
@@ -346,6 +346,8 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 
 /**
  * A reference to an Angular application running on a page.
+ *
+ * @publicApi
  */
 @Injectable()
 export class ApplicationRef {

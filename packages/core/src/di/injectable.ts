@@ -25,6 +25,8 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 
 /**
  * Type of the Injectable decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface InjectableDecorator {
   /**
@@ -57,10 +59,11 @@ export interface InjectableDecorator {
 export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
 /**
-* Injectable decorator and metadata.
-*
-* @Annotation
-*/
+ * Injectable decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
     (type: Type<any>, meta: Injectable) => SWITCH_COMPILE_INJECTABLE(type as any, meta));

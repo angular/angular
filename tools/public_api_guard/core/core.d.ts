@@ -14,13 +14,10 @@ export interface AfterViewInit {
     ngAfterViewInit(): void;
 }
 
-/** @experimental */
 export declare const ANALYZE_FOR_ENTRY_COMPONENTS: InjectionToken<any>;
 
-/** @experimental */
 export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: ComponentRef<any>) => void)[]>;
 
-/** @experimental */
 export declare const APP_ID: InjectionToken<string>;
 
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
@@ -31,7 +28,6 @@ export declare class ApplicationInitStatus {
     constructor(appInits: (() => any)[]);
 }
 
-/** @experimental */
 export declare class ApplicationModule {
     constructor(appRef: ApplicationRef);
 }
@@ -47,10 +43,8 @@ export declare class ApplicationRef {
     tick(): void;
 }
 
-/** @experimental */
 export declare function asNativeElements(debugEls: DebugElement[]): any;
 
-/** @experimental */
 export declare function assertPlatform(requiredToken: any): PlatformRef;
 
 export declare const Attribute: AttributeDecorator;
@@ -87,15 +81,12 @@ export declare class Compiler {
     getModuleId(moduleType: Type<any>): string | undefined;
 }
 
-/** @experimental */
 export declare const COMPILER_OPTIONS: InjectionToken<CompilerOptions[]>;
 
-/** @experimental */
 export declare abstract class CompilerFactory {
     abstract createCompiler(options?: CompilerOptions[]): Compiler;
 }
 
-/** @experimental */
 export declare type CompilerOptions = {
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
@@ -142,7 +133,6 @@ export declare abstract class ComponentRef<C> {
     abstract onDestroy(callback: Function): void;
 }
 
-/** @experimental */
 export interface ConstructorSansProvider {
     deps?: any[];
 }
@@ -171,18 +161,14 @@ export interface ContentChildrenDecorator {
     }): Query;
 }
 
-/** @experimental */
 export declare function createInjector(defType: any, parent?: Injector | null, additionalProviders?: StaticProvider[] | null): Injector;
 
-/** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
 
-/** @experimental */
 export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
 
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
-/** @experimental */
 export declare class DebugElement extends DebugNode {
     attributes: {
         [key: string]: string | null;
@@ -211,7 +197,6 @@ export declare class DebugElement extends DebugNode {
     triggerEventHandler(eventName: string, eventObj: any): void;
 }
 
-/** @experimental */
 export declare class DebugNode {
     readonly componentInstance: any;
     readonly context: any;
@@ -244,20 +229,17 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
     onDestroy(): void;
 }
 
-/** @experimental */
 export declare function defineInjectable<T>(opts: {
     providedIn?: Type<any> | 'root' | 'any' | null;
     factory: () => T;
 }): never;
 
-/** @experimental */
 export declare function defineInjector(options: {
     factory: () => any;
     providers?: any[];
     imports?: any[];
 }): never;
 
-/** @experimental */
 export declare function destroyPlatform(): void;
 
 export declare const Directive: DirectiveDecorator;
@@ -280,7 +262,6 @@ export declare class ElementRef<T = any> {
     constructor(nativeElement: T);
 }
 
-/** @experimental */
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
     abstract readonly context: C;
     abstract readonly rootNodes: any[];
@@ -309,24 +290,18 @@ export interface FactoryProvider extends FactorySansProvider {
     provide: any;
 }
 
-/** @experimental */
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
 
-/** @experimental */
 export interface ForwardRefFn {
     (): any;
 }
 
-/** @experimental */
 export declare function getDebugNode(nativeNode: any): DebugNode | null;
 
-/** @experimental */
 export declare function getModuleFactory(id: string): NgModuleFactory<any>;
 
-/** @experimental */
 export declare function getPlatform(): PlatformRef | null;
 
-/** @experimental */
 export interface GetTestability {
     addToWindow(registry: TestabilityRegistry): void;
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability | null;
@@ -343,7 +318,6 @@ export interface HostDecorator {
 
 export declare const HostListener: HostListenerDecorator;
 
-/** @experimental */
 export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
@@ -362,10 +336,8 @@ export interface InjectableDecorator {
     } & InjectableProvider): Injectable;
 }
 
-/** @experimental */
 export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
-/** @experimental */
 export interface InjectableType<T> extends Type<T> {
     ngInjectableDef: never;
 }
@@ -407,17 +379,14 @@ export declare abstract class Injector {
     }): Injector;
 }
 
-/** @experimental */
 export declare const INJECTOR: InjectionToken<Injector>;
 
-/** @experimental */
 export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;
 }
 
 export declare const Input: InputDecorator;
 
-/** @experimental */
 export declare function isDevMode(): boolean;
 
 export interface IterableChangeRecord<V> {
@@ -489,17 +458,14 @@ export declare class KeyValueDiffers {
     static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
 
-/** @experimental */
 export declare const LOCALE_ID: InjectionToken<string>;
 
-/** @experimental */
 export declare enum MissingTranslationStrategy {
     Error = 0,
     Warning = 1,
     Ignore = 2
 }
 
-/** @experimental */
 export declare class ModuleWithComponentFactories<T> {
     componentFactories: ComponentFactory<any>[];
     ngModuleFactory: NgModuleFactory<T>;
@@ -515,7 +481,6 @@ export declare type NgIterable<T> = Array<T> | Iterable<T>;
 
 export declare const NgModule: NgModuleDecorator;
 
-/** @experimental */
 export declare abstract class NgModuleFactory<T> {
     abstract readonly moduleType: Type<T>;
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
@@ -533,14 +498,12 @@ export declare abstract class NgModuleRef<T> {
     abstract onDestroy(callback: () => void): void;
 }
 
-/** @experimental */
 export declare class NgProbeToken {
     name: string;
     token: any;
     constructor(name: string, token: any);
 }
 
-/** @experimental */
 export declare class NgZone {
     readonly hasPendingMacrotasks: boolean;
     readonly hasPendingMicrotasks: boolean;
@@ -561,7 +524,6 @@ export declare class NgZone {
     static isInAngularZone(): boolean;
 }
 
-/** @experimental */
 export declare const NO_ERRORS_SCHEMA: SchemaMetadata;
 
 export interface OnChanges {
@@ -585,7 +547,6 @@ export interface OptionalDecorator {
 
 export declare const Output: OutputDecorator;
 
-/** @experimental */
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 export declare const Pipe: PipeDecorator;
@@ -594,25 +555,21 @@ export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
 }
 
-/** @experimental */
 export declare const PLATFORM_ID: InjectionToken<Object>;
 
-/** @experimental */
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
-/** @experimental */
 export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 export declare class PlatformRef {
     readonly destroyed: boolean;
     readonly injector: Injector;
     bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
-    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
+    bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
     destroy(): void;
     onDestroy(callback: () => void): void;
 }
 
-/** @experimental */
 export interface Predicate<T> {
     (value: T): boolean;
 }
@@ -650,7 +607,7 @@ export declare abstract class ReflectiveInjector implements Injector {
     abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
     abstract resolveAndCreateChild(providers: Provider[]): ReflectiveInjector;
     abstract resolveAndInstantiate(provider: Provider): any;
-    /** @experimental */ static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
+    static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector): ReflectiveInjector;
     static resolve(providers: Provider[]): ResolvedReflectiveProvider[];
     static resolveAndCreate(providers: Provider[], parent?: Injector): ReflectiveInjector;
 }
@@ -699,7 +656,6 @@ export declare abstract class Renderer {
     abstract setText(renderNode: any, text: string): void;
 }
 
-/** @experimental */
 export declare abstract class Renderer2 {
     abstract readonly data: {
         [key: string]: any;
@@ -726,7 +682,6 @@ export declare abstract class Renderer2 {
     abstract setValue(node: any, value: string): void;
 }
 
-/** @experimental */
 export declare abstract class RendererFactory2 {
     abstract begin?(): void;
     abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
@@ -734,13 +689,11 @@ export declare abstract class RendererFactory2 {
     abstract whenRenderingDone?(): Promise<any>;
 }
 
-/** @experimental */
 export declare enum RendererStyleFlags2 {
     Important = 1,
     DashCase = 2
 }
 
-/** @experimental */
 export interface RendererType2 {
     data: {
         [kind: string]: any;
@@ -750,7 +703,6 @@ export interface RendererType2 {
     styles: (string | any[])[];
 }
 
-/** @experimental */
 export declare class ResolvedReflectiveFactory {
     dependencies: ReflectiveDependency[];
     factory: Function;
@@ -759,14 +711,12 @@ export declare class ResolvedReflectiveFactory {
     dependencies: ReflectiveDependency[]);
 }
 
-/** @experimental */
 export interface ResolvedReflectiveProvider {
     key: ReflectiveKey;
     multiProvider: boolean;
     resolvedFactories: ResolvedReflectiveFactory[];
 }
 
-/** @experimental */
 export declare function resolveForwardRef(type: any): any;
 
 /** @deprecated */
@@ -778,7 +728,6 @@ export declare abstract class Sanitizer {
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
 }
 
-/** @experimental */
 export interface SchemaMetadata {
     name: string;
 }
@@ -799,7 +748,6 @@ export interface SelfDecorator {
     new (): Self;
 }
 
-/** @experimental */
 export declare function setTestabilityGetter(getter: GetTestability): void;
 
 export declare class SimpleChange {
@@ -823,13 +771,11 @@ export interface SkipSelfDecorator {
 
 export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
-/** @experimental */
 export declare class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
     constructor(_compiler: Compiler, config?: SystemJsNgModuleLoaderConfig);
     load(path: string): Promise<NgModuleFactory<any>>;
 }
 
-/** @experimental */
 export declare abstract class SystemJsNgModuleLoaderConfig {
     factoryPathPrefix: string;
     factoryPathSuffix: string;
@@ -840,7 +786,6 @@ export declare abstract class TemplateRef<C> {
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
-/** @experimental */
 export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
     /** @deprecated */ decreasePendingRequestCount(): number;
@@ -851,7 +796,6 @@ export declare class Testability implements PublicTestability {
     whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;
 }
 
-/** @experimental */
 export declare class TestabilityRegistry {
     constructor();
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability | null;
@@ -867,10 +811,8 @@ export interface TrackByFunction<T> {
     (index: number, item: T): any;
 }
 
-/** @experimental */
 export declare const TRANSLATIONS: InjectionToken<string>;
 
-/** @experimental */
 export declare const TRANSLATIONS_FORMAT: InjectionToken<string>;
 
 export declare const Type: FunctionConstructor;
@@ -957,19 +899,14 @@ export declare class WrappedValue {
     static wrap(value: any): WrappedValue;
 }
 
-/** @experimental */
 export declare const wtfCreateScope: (signature: string, flags?: any) => WtfScopeFn;
 
-/** @experimental */
 export declare const wtfEndTimeRange: (range: any) => void;
 
-/** @experimental */
 export declare const wtfLeave: <T>(scope: any, returnValue?: T) => T;
 
-/** @experimental */
 export interface WtfScopeFn {
     (arg0?: any, arg1?: any): any;
 }
 
-/** @experimental */
 export declare const wtfStartTimeRange: (rangeType: string, action: string) => any;

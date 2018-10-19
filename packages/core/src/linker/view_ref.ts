@@ -16,6 +16,8 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
  * that adds destroy methods for [embedded views](guide/glossary#view-tree).
  *
  * @see `EmbeddedViewRef`
+ *
+ * @publicApi
  */
 export abstract class ViewRef extends ChangeDetectorRef {
   /**
