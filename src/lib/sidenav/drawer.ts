@@ -37,7 +37,15 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {fromEvent, merge, Observable, Subject} from 'rxjs';
-import {debounceTime, filter, map, startWith, take, takeUntil} from 'rxjs/operators';
+import {
+  debounceTime,
+  filter,
+  map,
+  startWith,
+  take,
+  takeUntil,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 import {matDrawerAnimations} from './drawer-animations';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -108,8 +116,8 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
   host: {
     'class': 'mat-drawer',
     '[@transform]': '_animationState',
-    '(@transform.start)': '_onAnimationStart($event)',
-    '(@transform.done)': '_onAnimationEnd($event)',
+    '(@transform.start)': '_animationStarted.next($event)',
+    '(@transform.done)': '_animationEnd.next($event)',
     // must prevent the browser from aligning text based on value
     '[attr.align]': 'null',
     '[class.mat-drawer-end]': 'position === "end"',
@@ -166,7 +174,10 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   private _openedVia: FocusOrigin | null;
 
   /** Emits whenever the drawer has started animating. */
-  _animationStarted = new EventEmitter<AnimationEvent>();
+  _animationStarted = new Subject<AnimationEvent>();
+
+  /** Emits whenever the drawer is done animating. */
+  _animationEnd = new Subject<AnimationEvent>();
 
   /** Current state of the sidenav animation. */
   _animationState: 'open-instant' | 'open' | 'void' = 'void';
@@ -255,6 +266,19 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
             event.stopPropagation();
         }));
     });
+
+    // We need a Subject with distinctUntilChanged, because the `done` event
+    // fires twice on some browsers. See https://github.com/angular/angular/issues/24084
+    this._animationEnd.pipe(distinctUntilChanged((x, y) => {
+      return x.fromState === y.fromState && x.toState === y.toState;
+    })).subscribe((event: AnimationEvent) => {
+      const {fromState, toState} = event;
+
+      if ((toState.indexOf('open') === 0 && fromState === 'void') ||
+          (toState === 'void' && fromState.indexOf('open') === 0)) {
+        this.openedChange.emit(this._opened);
+      }
+    });
   }
 
   /** Traps focus inside the drawer. */
@@ -314,6 +338,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     if (this._focusTrap) {
       this._focusTrap.destroy();
     }
+
+    this._animationStarted.complete();
+    this._animationEnd.complete();
   }
 
   /**
@@ -365,19 +392,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     return new Promise<MatDrawerToggleResult>(resolve => {
       this.openedChange.pipe(take(1)).subscribe(open => resolve(open ? 'open' : 'close'));
     });
-  }
-
-  _onAnimationStart(event: AnimationEvent) {
-    this._animationStarted.emit(event);
-  }
-
-  _onAnimationEnd(event: AnimationEvent) {
-    const {fromState, toState} = event;
-
-    if ((toState.indexOf('open') === 0 && fromState === 'void') ||
-        (toState === 'void' && fromState.indexOf('open') === 0)) {
-      this.openedChange.emit(this._opened);
-    }
   }
 
   get _width(): number {
