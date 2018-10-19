@@ -144,6 +144,30 @@ describe('CdkDrag', () => {
           expect(dragElement.style.transform).toBeFalsy();
         }));
 
+      it('should preserve the previous `transform` value', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElement.style.transform = 'translateX(-50%)';
+        dragElementViaMouse(fixture, dragElement, 50, 100);
+        expect(dragElement.style.transform).toBe('translateX(-50%) translate3d(50px, 100px, 0px)');
+      }));
+
+      it('should not generate multiple own `translate3d` values', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElement.style.transform = 'translateY(-50%)';
+
+        dragElementViaMouse(fixture, dragElement, 50, 100);
+        expect(dragElement.style.transform).toBe('translateY(-50%) translate3d(50px, 100px, 0px)');
+
+        dragElementViaMouse(fixture, dragElement, 100, 200);
+        expect(dragElement.style.transform).toBe('translateY(-50%) translate3d(150px, 300px, 0px)');
+      }));
+
     });
 
     describe('touch dragging', () => {
