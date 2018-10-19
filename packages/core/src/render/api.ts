@@ -15,6 +15,7 @@ import {noop} from '../util/noop';
 
 /**
  * @deprecated Use `RendererType2` (and `Renderer2`) instead.
+ * @publicApi
  */
 export class RenderComponentType {
   constructor(
@@ -48,6 +49,7 @@ export interface DirectRenderer {
 
 /**
  * @deprecated Use the `Renderer2` instead.
+ * @publicApi
  */
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
@@ -111,6 +113,7 @@ export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2In
  * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  *
  * @deprecated Use `RendererFactory2` instead.
+ * @publicApi
  */
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;

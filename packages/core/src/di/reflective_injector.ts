@@ -51,6 +51,7 @@ const UNDEFINED = new Object();
  * resolve all of the object's dependencies automatically.
  *
  * @deprecated from v5 - slow and brings in a lot of code, Use `Injector.create` instead.
+ * @publicApi
  */
 export abstract class ReflectiveInjector implements Injector {
   /**

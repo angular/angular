@@ -47,6 +47,8 @@ import {defineInjectable} from './defs';
  *
  * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
  *
+ *
+ * @publicApi
  */
 export class InjectionToken<T> {
   /** @internal */

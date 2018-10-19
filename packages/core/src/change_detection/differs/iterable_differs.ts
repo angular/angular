@@ -15,7 +15,7 @@ import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 /**
  * A type describing supported iterable types.
  *
- *
+ * @publicApi
  */
 export type NgIterable<T> = Array<T>| Iterable<T>;
 
@@ -23,7 +23,7 @@ export type NgIterable<T> = Array<T>| Iterable<T>;
  * A strategy for tracking changes over time to an iterable. Used by {@link NgForOf} to
  * respond to changes in an iterable by effecting equivalent changes in the DOM.
  *
- *
+ * @publicApi
  */
 export interface IterableDiffer<V> {
   /**
@@ -40,7 +40,7 @@ export interface IterableDiffer<V> {
  * An object describing the changes in the `Iterable` collection since last time
  * `IterableDiffer#diff()` was invoked.
  *
- *
+ * @publicApi
  */
 export interface IterableChanges<V> {
   /**
@@ -93,7 +93,7 @@ export interface IterableChanges<V> {
 /**
  * Record representing the item change information.
  *
- *
+ * @publicApi
  */
 export interface IterableChangeRecord<V> {
   /** Current index of the item in `Iterable` or null if removed. */
@@ -111,6 +111,7 @@ export interface IterableChangeRecord<V> {
 
 /**
  * @deprecated v4.0.0 - Use IterableChangeRecord instead.
+ * @publicApi
  */
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
 
@@ -118,14 +119,14 @@ export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
  * An optional function passed into {@link NgForOf} that defines how to track
  * items in an iterable (e.g. fby index or id)
  *
- *
+ * @publicApi
  */
 export interface TrackByFunction<T> { (index: number, item: T): any; }
 
 /**
  * Provides a factory for {@link IterableDiffer}.
  *
- *
+ * @publicApi
  */
 export interface IterableDifferFactory {
   supports(objects: any): boolean;
@@ -135,6 +136,7 @@ export interface IterableDifferFactory {
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  *
+ * @publicApi
  */
 export class IterableDiffers {
   static ngInjectableDef = defineInjectable({

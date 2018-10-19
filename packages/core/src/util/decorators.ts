@@ -20,6 +20,7 @@ import {Type} from '../type';
  * class MyClass {...}
  * ```
  *
+ * @publicApi
  */
 export interface TypeDecorator {
   /**

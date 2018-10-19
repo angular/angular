@@ -57,7 +57,7 @@ export class NullInjector implements Injector {
  *
  * {@example core/di/ts/injector_spec.ts region='injectInjector'}
  *
- *
+ * @publicApi
  */
 export abstract class Injector {
   static THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
@@ -399,6 +399,8 @@ function staticError(text: string, obj: any): Error {
 
 /**
  * Injection flags for DI.
+ *
+ * @publicApi
  */
 export const enum InjectFlags {
   Default = 0b0000,
