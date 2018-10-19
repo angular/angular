@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {relativePathBetween} from '../../util/src/path';
 
 import {ShimGenerator} from './host';
+import {isNonDeclarationTsFile} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;
@@ -25,12 +26,16 @@ export class FactoryGenerator implements ShimGenerator {
 
   get factoryFileMap(): Map<string, string> { return this.map; }
 
-  recognize(fileName: string): string|null { return this.map.get(fileName) || null; }
+  getOriginalSourceOfShim(fileName: string): string|null { return this.map.get(fileName) || null; }
 
   generate(original: ts.SourceFile, genFilePath: string): ts.SourceFile {
     const relativePathToSource =
         './' + path.posix.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
-    // Collect a list of classes that need to have factory types emitted for them.
+    // Collect a list of classes that need to have factory types emitted for them. This list is
+    // overly broad as at this point the ts.TypeChecker hasn't been created, and can't be used to
+    // semantically understand which decorated types are actually decorated with Angular decorators.
+    //
+    // The exports generated here are pruned in the factory transform during emit.
     const symbolNames = original
                             .statements
                             // Pick out top level class declarations...
@@ -62,7 +67,7 @@ export class FactoryGenerator implements ShimGenerator {
 
   static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
     const map = new Map<string, string>();
-    files.filter(sourceFile => !sourceFile.endsWith('.d.ts'))
+    files.filter(sourceFile => isNonDeclarationTsFile(sourceFile))
         .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
     return new FactoryGenerator(map);
   }
