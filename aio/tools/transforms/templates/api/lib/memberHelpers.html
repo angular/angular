@@ -40,40 +40,41 @@
 {%- endmacro -%}
 
 {%- macro renderOverloadInfo(overload, cssClass, method) -%}
+<div class="overload-info">
+  {% if overload.shortDescription and (overload.shortDescription != method.shortDescription) %}
+  <div class="short-description">
+    {$ overload.shortDescription | marked $}
+  </div>{% endif %}
 
-{% if overload.shortDescription and (overload.shortDescription != method.shortDescription) %}
-<div class="short-description">
-  {$ overload.shortDescription | marked $}
-</div>{% endif %}
+  <code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
-<code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
+  {% if overload.deprecated !== undefined %}
+  <div class="deprecated">
+    {$ ('**Deprecated** ' + overload.deprecated) | marked $}
+  </div>{% endif %}
 
-{% if overload.deprecated !== undefined %}
-<div class="deprecated">
-  {$ ('**Deprecated** ' + overload.deprecated) | marked $}
-</div>{% endif %}
+  <h6 class="no-anchor">Parameters</h6>
+  {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter', true) $}
 
-<h6 class="no-anchor">Parameters</h6>
-{$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter', true) $}
-
-{% if overload.type or overload.returns.type %}
-<h6 class="no-anchor">Returns</h6>
-{% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
-{% endif %}
+  {% if overload.type or overload.returns.type %}
+  <h6 class="no-anchor">Returns</h6>
+  {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
+  {% endif %}
 
 
-{% if overload.throws.length %}
-<h6 class="no-anchor">Throws</h6>
-{% for error in overload.throws %}
-{% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
-{% endfor %}
-{% endif %}
+  {% if overload.throws.length %}
+  <h6 class="no-anchor">Throws</h6>
+  {% for error in overload.throws %}
+  {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
+  {% endfor %}
+  {% endif %}
 
-{% if overload.description and (overload.description != method.description) -%}
-<div class="description">
-  {$ overload.description | marked $}
+  {% if overload.description and (overload.description != method.description) -%}
+  <div class="description">
+    {$ overload.description | marked $}
+  </div>
+  {%- endif %}
 </div>
-{%- endif %}
 {%- endmacro -%}
 
 {%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
