@@ -37,6 +37,8 @@ export function isDevMode(): boolean {
  * One important assertion this disables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
+ *
+ * @publicApi
  */
 export function enableProdMode(): void {
   if (_runModeLocked) {

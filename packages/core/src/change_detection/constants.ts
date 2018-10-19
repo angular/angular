@@ -11,6 +11,7 @@
  * The strategy that the default change detector uses to detect changes.
  * When set, takes effect the next time change detection is triggered.
  *
+ * @publicApi
  */
 export enum ChangeDetectionStrategy {
   /**
@@ -74,7 +75,7 @@ export enum ChangeDetectorStatus {
  * @param changeDetectionStrategy The strategy to check.
  * @returns True if the given strategy is the current default, false otherwise.
  * @see `ChangeDetectorStatus`
- * @see `ChangeDetectorRef` 
+ * @see `ChangeDetectorRef`
  */
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
     boolean {
