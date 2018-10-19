@@ -404,7 +404,7 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected);
   });
 
-  it('should keep stability annotations of exports in docstrings', () => {
+  it('should copy specified jsdoc tags of exports in docstrings', () => {
     const input = `
       /**
        * @deprecated This is useless now
@@ -428,14 +428,14 @@ describe('unit test', () => {
       /** @experimental */
       export declare const b: string;
 
-      /** @stable */
       export declare var c: number;
     `;
-    check({'file.d.ts': input}, expected);
+    check({'file.d.ts': input}, expected, {exportTags: {toCopy: ['deprecated', 'experimental']}});
   });
 
-  it('should keep stability annotations of fields in docstrings', () => {
+  it('should copy specified jsdoc tags of fields in docstrings', () => {
     const input = `
+      /** @otherTag */
       export declare class A {
         /**
          * @stable
@@ -443,6 +443,7 @@ describe('unit test', () => {
         value: number;
         /**
          * @experimental
+         * @otherTag
          */
         constructor();
         /**
@@ -453,12 +454,95 @@ describe('unit test', () => {
     `;
     const expected = `
       export declare class A {
-        /** @stable */ value: number;
+        value: number;
         /** @experimental */ constructor();
         /** @deprecated */ foo(): void;
       }
     `;
-    check({'file.d.ts': input}, expected);
+    check({'file.d.ts': input}, expected, {memberTags: {toCopy: ['deprecated', 'experimental']}});
+  });
+
+  it('should copy specified jsdoc tags of parameters in docstrings', () => {
+    const input = `
+      export declare class A {
+        foo(str: string, /** @deprecated */ value: number): void;
+      }
+    `;
+    const expected = `
+      export declare class A {
+        foo(str: string, /** @deprecated */ value: number): void;
+      }
+    `;
+    check({'file.d.ts': input}, expected, {paramTags: {toCopy: ['deprecated', 'experimental']}});
+  });
+
+  it('should throw on using banned jsdoc tags on exports', () => {
+    const input = `
+      /**
+       * @stable
+       */
+      export declare class A {
+        value: number;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(4,1): error: Banned jsdoc tags were found: "@stable".', {exportTags: {banned: ['stable']}});
+  });
+
+  it('should throw on using banned jsdoc tags on fields', () => {
+    const input = `
+      export declare class A {
+        /**
+         * @stable
+         */
+        value: number;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(5,3): error: Banned jsdoc tags were found: "@stable".', {memberTags: {banned: ['stable']}});
+  });
+
+  it('should throw on using banned jsdoc tags on parameters', () => {
+    const input = `
+      export declare class A {
+        foo(/** @stable */ value: number): void;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(2,22): error: Banned jsdoc tags were found: "@stable".', {paramTags: {banned: ['stable']}});
+  });
+
+  it('should throw on missing required jsdoc tags on exports', () => {
+    const input = `
+      /** @experimental */
+      export declare class A {
+        value: number;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(2,1): error: Required jsdoc tags are missing: "@stable".', {exportTags: {required: ['stable']}});
+  });
+
+  it('should throw on missing required jsdoc tags on fields', () => {
+    const input = `
+      /** @experimental */
+      export declare class A {
+        value: number;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(3,3): error: Required jsdoc tags are missing: "@stable".', {memberTags: {required: ['stable']}});
+  });
+
+  it('should throw on missing required jsdoc tags on parameters', () => {
+    const input = `
+      /** @experimental */
+      export declare class A {
+        foo(value: number): void;
+      }
+    `;
+    checkThrows(
+        {'file.d.ts': input}, 'file.d.ts(3,7): error: Required jsdoc tags are missing: "@stable".', {paramTags: {required: ['stable']}});
   });
 });
 
@@ -487,8 +571,8 @@ function check(
   chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
 }
 
-function checkThrows(files: {[name: string]: string}, error: string) {
-  chai.assert.throws(() => { publicApiInternal(getMockHost(files), 'file.d.ts', {}); }, error);
+function checkThrows(files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
+  chai.assert.throws(() => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
 }
 
 function stripExtraIndentation(text: string) {
