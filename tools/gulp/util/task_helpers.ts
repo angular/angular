@@ -16,15 +16,14 @@ const {projectDir} = buildConfig;
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
-  if (maybeGlob.indexOf('*') != -1) {
+  if (maybeGlob.indexOf('*') > -1) {
     return maybeGlob;
   }
   try {
-    const stat = fs.statSync(maybeGlob);
-    if (stat.isFile()) {
+    if (fs.statSync(maybeGlob).isFile()) {
       return maybeGlob;
     }
-  } catch (e) {}
+  } catch {}
   return path.join(maybeGlob, suffix);
 }
 

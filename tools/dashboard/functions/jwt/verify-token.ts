@@ -18,7 +18,7 @@ export function verifyToken(token: string): boolean {
     }
 
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

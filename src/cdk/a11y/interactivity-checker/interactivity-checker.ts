@@ -150,7 +150,7 @@ export class InteractivityChecker {
 function getFrameElement(window: Window) {
   try {
     return window.frameElement as HTMLElement;
-  } catch (e) {
+  } catch {
     return null;
   }
 }

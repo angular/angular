@@ -79,7 +79,7 @@ describe('MatToolbar', () => {
           fixture.componentInstance.showToolbarRow = true;
           fixture.detectChanges();
           flush();
-        } catch (e) {
+        } catch {
           flush();
         }
       }).toThrowError(/attempting to combine different/i);
