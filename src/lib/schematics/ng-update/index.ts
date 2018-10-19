@@ -8,6 +8,7 @@
 
 import {Rule} from '@angular-devkit/schematics';
 import {TargetVersion, createUpgradeRule, UpgradeTSLintConfig} from '@angular/cdk/schematics';
+import {green, yellow} from 'chalk';
 import {sync as globSync} from 'glob';
 import {materialUpgradeData} from './upgrade-data';
 
@@ -47,7 +48,11 @@ export function updateToV7(): Rule {
 
 /** Post-update schematic to be called when update is finished. */
 export function postUpdate(): Rule {
-  return () => console.log(
-    '\nComplete! Please check the output above for any issues that were detected but could not' +
-    ' be automatically fixed.');
+  return () => {
+    console.log();
+    console.log(green('  ✓  Angular Material update complete'));
+    console.log();
+    console.log(yellow('  ⚠  Please check the output above for any issues that were detected ' +
+      'but could not be automatically fixed.'));
+  };
 }

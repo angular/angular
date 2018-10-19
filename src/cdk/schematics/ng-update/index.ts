@@ -7,6 +7,7 @@
  */
 
 import {Rule} from '@angular-devkit/schematics';
+import {green, yellow} from 'chalk';
 import {TargetVersion} from './target-version';
 import {cdkUpgradeData} from './upgrade-data';
 import {createUpgradeRule} from './upgrade-rules';
@@ -36,7 +37,11 @@ export function updateToV7(): Rule {
 
 /** Post-update schematic to be called when update is finished. */
 export function postUpdate(): Rule {
-  return () => console.log(
-    '\nComplete! Please check the output above for any issues that were detected but could not' +
-    ' be automatically fixed.');
+  return () => {
+    console.log();
+    console.log(green('  ✓  Angular CDK update complete'));
+    console.log();
+    console.log(yellow('  ⚠  Please check the output above for any issues that were detected ' +
+      'but could not be automatically fixed.'));
+  };
 }
