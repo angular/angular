@@ -12,7 +12,6 @@ describe('MatCalendarBody', () => {
 
         // Test components.
         StandardCalendarBody,
-        CalendarBodyWithDisabledCells,
       ],
     });
 
@@ -101,37 +100,6 @@ describe('MatCalendarBody', () => {
     });
   });
 
-  describe('calendar body with disabled cells', () => {
-    let fixture: ComponentFixture<CalendarBodyWithDisabledCells>;
-    let testComponent: CalendarBodyWithDisabledCells;
-    let calendarBodyNativeElement: Element;
-    let cellEls: HTMLElement[];
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(CalendarBodyWithDisabledCells);
-      fixture.detectChanges();
-
-      const calendarBodyDebugElement = fixture.debugElement.query(By.directive(MatCalendarBody));
-      calendarBodyNativeElement = calendarBodyDebugElement.nativeElement;
-      testComponent = fixture.componentInstance;
-      cellEls = Array.from(calendarBodyNativeElement.querySelectorAll('.mat-calendar-body-cell'));
-    });
-
-    it('should only allow selection of disabled cells when allowDisabledSelection is true', () => {
-      cellEls[0].click();
-      fixture.detectChanges();
-
-      expect(testComponent.selected).toBeFalsy();
-
-      testComponent.allowDisabledSelection = true;
-      fixture.detectChanges();
-
-      cellEls[0].click();
-      fixture.detectChanges();
-
-      expect(testComponent.selected).toBe(1);
-    });
-  });
 });
 
 
@@ -159,25 +127,6 @@ class StandardCalendarBody {
     this.selectedValue = value;
   }
 }
-
-
-@Component({
-  template: `<table mat-calendar-body
-                    [rows]="rows"
-                    [allowDisabledSelection]="allowDisabledSelection"
-                    (selectedValueChange)="selected = $event">
-             </table>`
-})
-class CalendarBodyWithDisabledCells {
-  rows = [[1, 2, 3, 4]].map(r => r.map(d => {
-    let cell = createCell(d);
-    cell.enabled = d % 2 == 0;
-    return cell;
-  }));
-  allowDisabledSelection = false;
-  selected: number;
-}
-
 
 function createCell(value: number) {
   return new MatCalendarCell(value, `${value}`, `${value}-label`, true);

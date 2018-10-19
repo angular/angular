@@ -67,9 +67,6 @@ export class MatCalendarBody {
   /** The number of columns in the table. */
   @Input() numCols = 7;
 
-  /** Whether to allow selection of disabled cells. */
-  @Input() allowDisabledSelection = false;
-
   /** The cell number of the active cell in the table. */
   @Input() activeCell = 0;
 
@@ -85,10 +82,9 @@ export class MatCalendarBody {
   constructor(private _elementRef: ElementRef<HTMLElement>, private _ngZone: NgZone) { }
 
   _cellClicked(cell: MatCalendarCell): void {
-    if (!this.allowDisabledSelection && !cell.enabled) {
-      return;
+    if (cell.enabled) {
+      this.selectedValueChange.emit(cell.value);
     }
-    this.selectedValueChange.emit(cell.value);
   }
 
   /** The number of blank cells to put at the beginning for the first row. */
