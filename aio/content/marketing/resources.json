@@ -384,6 +384,12 @@
             "title": "Ant Design of Angular (ng-zorro-antd)",
             "url": "https://ng.ant.design/docs/introduce/en"
           },
+          "ngzorromobile": {
+            "desc": "A set of enterprise-class mobile UI components based on Ant Design Mobile and Angular",
+            "rev": true,
+            "title": "Ant Design Mobile of Angular (ng-zorro-antd-mobile)",
+            "url": "http://ng.mobile.ant.design/#/docs/introduce/en"
+          },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
