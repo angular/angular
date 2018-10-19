@@ -24,6 +24,9 @@ export function startCli() {
   const options: SerializationOptions = {
     stripExportPattern: [].concat(argv['stripExportPattern']),
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
+    exportTags: {required: [], banned: [], toCopy: ['deprecated', 'experimental']},
+    memberTags: {required: [], banned: [], toCopy: ['deprecated', 'experimental']},
+    paramTags: {required: [], banned: [], toCopy: ['deprecated', 'experimental']}
   };
 
   for (const error of errors) {
