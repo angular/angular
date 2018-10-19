@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {BrowserModule} from '@angular/platform-browser';
-import {SimpleFormComp} from './simple_form_example';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { SimpleFormComp } from './simple_form_example';
 
 @NgModule({
-  imports: [BrowserModule, FormsModule],
-  declarations: [SimpleFormComp],
-  bootstrap: [SimpleFormComp]
+  imports: [ BrowserModule, FormsModule ],
+  declarations: [ SimpleFormComponent ],
+  bootstrap: [ SimpleFormComponent ]
 })
 export class AppModule {
 }
