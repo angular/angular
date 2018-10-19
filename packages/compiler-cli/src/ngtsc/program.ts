@@ -17,8 +17,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
-import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, generatedFactoryTransform} from './shims';
-import {SummaryGenerator} from './shims/src/summary';
+import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
