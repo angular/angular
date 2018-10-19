@@ -18,6 +18,8 @@ import {FormBuilder} from './form_builder';
  * @see [Forms](guide/forms)
  *
  * @see [Forms Guide](/guide/forms)
+ *
+ * @publicApi
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -51,6 +53,7 @@ export class FormsModule {
  *
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  *
+ * @publicApi
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],

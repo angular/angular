@@ -85,7 +85,6 @@ export declare abstract class AbstractControlDirective {
     reset(value?: any): void;
 }
 
-/** @experimental */
 export interface AbstractControlOptions {
     asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[] | null;
     updateOn?: 'change' | 'blur' | 'submit';
@@ -102,7 +101,6 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
     ngOnInit(): void;
 }
 
-/** @experimental */
 export interface AsyncValidator extends Validator {
     validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
@@ -121,12 +119,10 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare class CheckboxRequiredValidator extends RequiredValidator {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-/** @experimental */
 export declare const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 export declare abstract class ControlContainer extends AbstractControlDirective {
@@ -152,7 +148,6 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare class EmailValidator implements Validator {
     email: boolean | string;
     registerOnValidatorChange(fn: () => void): void;
@@ -498,7 +493,6 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare type ValidationErrors = {
     [key: string]: any;
 };

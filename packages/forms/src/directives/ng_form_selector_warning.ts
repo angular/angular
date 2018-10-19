@@ -19,6 +19,7 @@ export const NG_FORM_SELECTOR_WARNING = new InjectionToken('NgFormSelectorWarnin
  *
  * @deprecated in Angular v6 and will be removed in Angular v9.
  * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({selector: 'ngForm'})
 export class NgFormSelectorWarning {
