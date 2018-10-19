@@ -19,7 +19,7 @@ export class GitClient {
   /** Gets the commit SHA for the specified remote repository branch. */
   getRemoteCommitSha(branchName: string): string {
     return spawnSync('git', ['ls-remote', this.remoteGitUrl, '-h', `refs/heads/${branchName}`],
-      {cwd: this.projectDir}).stdout.toString().trim();
+      {cwd: this.projectDir}).stdout.toString().split('\t')[0].trim();
   }
 
   /** Gets the latest commit SHA for the specified git reference. */
