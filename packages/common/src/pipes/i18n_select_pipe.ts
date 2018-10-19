@@ -24,7 +24,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nSelectPipeComponent'}
  *
- * @experimental
+ * @publicApi
  */
 @Pipe({name: 'i18nSelect', pure: true})
 export class I18nSelectPipe implements PipeTransform {

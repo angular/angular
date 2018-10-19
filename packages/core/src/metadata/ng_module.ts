@@ -84,7 +84,7 @@ export interface ModuleWithProviders<
  *
  * @param name The name of a defined schema.
  *
- * @experimental
+ * @publicApi
  */
 export interface SchemaMetadata { name: string; }
 
@@ -103,7 +103,7 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
 /**
  * Defines a schema that allows any property on any element.
  *
- * @experimental
+ * @publicApi
  */
 export const NO_ERRORS_SCHEMA: SchemaMetadata = {
   name: 'no-errors-schema'

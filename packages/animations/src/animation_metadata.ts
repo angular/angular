@@ -12,7 +12,7 @@
 export interface ɵStyleData { [key: string]: string|number; }
 
 /**
-* Represents animation-step timing parameters for an animation step.  
+* Represents animation-step timing parameters for an animation step.
 * @see `animate()`
 */
 export declare type AnimateTimings = {
@@ -413,7 +413,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * and `transition()` declarations.
  *
  * @return An object that encapsulates the trigger data.
- * 
+ *
  * @usageNotes
  * Define an animation trigger in the `animations` section of `@Component` metadata.
  * In the template, reference the trigger by name and bind it to a trigger expression that
@@ -421,12 +421,12 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * `[@triggerName]="expression"`
  *
- * Animation trigger bindings convert all values to strings, and then match the 
+ * Animation trigger bindings convert all values to strings, and then match the
  * previous and current values against any linked transitions.
  * Booleans can be specified as `1` or `true` and `0` or `false`.
  *
  * ### Usage Example
- * 
+ *
  * The following example creates an animation trigger reference based on the provided
  * name value.
  * The provided animation value is expected to be an array consisting of state and
@@ -487,7 +487,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * ```
  *
  * ### Disabling Animations
- * When true, the special animation control binding `@.disabled` binding prevents 
+ * When true, the special animation control binding `@.disabled` binding prevents
  * all animations from rendering.
  * Place the  `@.disabled` binding on an element to disable
  * animations on the element itself, as well as any inner animation triggers
@@ -519,7 +519,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * along with any inner animations.
  *
  * ### Disable animations application-wide
- * When an area of the template is set to have animations disabled, 
+ * When an area of the template is set to have animations disabled,
  * **all** inner components have their animations disabled as well.
  * This means that you can disable all animations for an app
  * by placing a host binding set on `@.disabled` on the topmost Angular component.
@@ -539,8 +539,8 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * ### Overriding disablement of inner animations
  * Despite inner animations being disabled, a parent animation can `query()`
- * for inner elements located in disabled areas of the template and still animate 
- * them if needed. This is also the case for when a sub animation is 
+ * for inner elements located in disabled areas of the template and still animate
+ * them if needed. This is also the case for when a sub animation is
  * queried by a parent and then later animated using `animateChild()`.
  *
  * ### Detecting when an animation is disabled
@@ -549,7 +549,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * an instance of an `AnimationEvent`. If animations are disabled,
  * the `.disabled` flag on the event is true.
  *
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
   return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
@@ -626,7 +626,7 @@ export function animate(
  * - To specify offset styles to be applied at a later time, define steps with
  * `keyframes()`, or use `animate()` calls with a delay value.
  * For example:
- * 
+ *
  * ```typescript
  * group([
  *   animate("1s", { background: "black" }))
@@ -641,7 +641,7 @@ export function animate(
  * @return An object that encapsulates the group data.
  *
  * @usageNotes
- * Grouped animations are useful when a series of styles must be 
+ * Grouped animations are useful when a series of styles must be
  * animated at different starting times and closed off at different ending times.
  *
  * When called within a `sequence()` or a
@@ -701,7 +701,7 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  * - An asterisk (*), to use auto-styling, where styles are derived from the element
  * being animated and applied to the animation when it starts.
  *
- * Auto-styling can be used to define a state that depends on layout or other 
+ * Auto-styling can be used to define a state that depends on layout or other
  * environmental factors.
  *
  * @return An object that encapsulates the style data.
@@ -709,7 +709,7 @@ export function sequence(steps: AnimationMetadata[], options: AnimationOptions |
  * @usageNotes
  * The following examples create animation styles that collect a set of
  * CSS property values:
- * 
+ *
  * ```typescript
  * // string values for CSS properties
  * style({ background: "red", color: "blue" })
@@ -1062,7 +1062,7 @@ export function animateChild(options: AnimateChildOptions | null = null):
  * Starts a reusable animation that is created using the `animation()` function.
  *
  * @param animation The reusable animation to start.
- * @param options An options object that can contain a delay value for the start of 
+ * @param options An options object that can contain a delay value for the start of
  * the animation, and additional override values for developer-defined parameters.
  * @return An object that contains the animation parameters.
  */
@@ -1121,7 +1121,7 @@ export function useAnimation(
  * ### Usage Example
  *
  * The following example queries for inner elements and animates them
- * individually using `animateChild()`. 
+ * individually using `animateChild()`.
  *
  * ```typescript
  * @Component({

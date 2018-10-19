@@ -12,7 +12,7 @@ import {JitCompilerFactory} from './compiler_factory';
 /**
  * A platform that included corePlatform and the compiler.
  *
- * @experimental
+ * @publicApi
  */
 export const platformCoreDynamic = createPlatformFactory(platformCore, 'coreDynamic', [
   {provide: COMPILER_OPTIONS, useValue: {}, multi: true},

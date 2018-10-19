@@ -17,7 +17,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UpdateActivatedEvent, UpdateAvail
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class SwUpdate {

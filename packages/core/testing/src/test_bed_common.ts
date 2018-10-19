@@ -15,25 +15,25 @@ import {TestBed} from './test_bed';
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
- * @experimental
+ * @publicApi
  */
 export class TestComponentRenderer {
   insertRootElement(rootElementId: string) {}
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export const ComponentFixtureAutoDetect =
     new InjectionToken<boolean[]>('ComponentFixtureAutoDetect');
 
 /**
- * @experimental
+ * @publicApi
  */
 export const ComponentFixtureNoNgZone = new InjectionToken<boolean[]>('ComponentFixtureNoNgZone');
 
 /**
- * @experimental
+ * @publicApi
  */
 export type TestModuleMetadata = {
   providers?: any[],
@@ -55,7 +55,7 @@ export interface TestBedStatic {
   /**
    * Reset the providers for the test injector.
    *
-   * @experimental
+   * @publicApi
    */
   resetTestEnvironment(): void;
 
