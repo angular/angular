@@ -204,8 +204,6 @@ export class PlatformRef {
    *
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
-   *
-   * @publicApi
    */
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {

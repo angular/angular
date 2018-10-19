@@ -56,8 +56,6 @@ export interface TestBedStatic {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @publicApi
    */
   resetTestEnvironment(): void;
 

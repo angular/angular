@@ -141,7 +141,6 @@ export abstract class ReflectiveInjector implements Injector {
    * var injector = ReflectiveInjector.fromResolvedProviders(providers);
    * expect(injector.get(Car) instanceof Car).toBe(true);
    * ```
-   * @publicApi
    */
   static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector):
       ReflectiveInjector {
