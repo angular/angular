@@ -106,6 +106,7 @@ export interface Attribute { attributeName?: string; }
  * Attribute decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const Attribute: AttributeDecorator =
     makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
@@ -128,6 +129,8 @@ export interface Query {
  * @see `ContentChild`.
  * @see `ViewChildren`.
  * @see `ViewChild`.
+ *
+ * @publicApi
  */
 export abstract class Query {}
 
@@ -135,6 +138,7 @@ export abstract class Query {}
  * Type of the ContentChildren decorator / constructor function.
  *
  * @see `ContentChildren`.
+ * @publicApi
  */
 export interface ContentChildrenDecorator {
   /**
@@ -184,7 +188,8 @@ export type ContentChildren = Query;
  * ContentChildren decorator and metadata.
  *
  *
- *  @Annotation
+ * @Annotation
+ * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
     'ContentChildren',
@@ -195,8 +200,7 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
 /**
  * Type of the ContentChild decorator / constructor function.
  *
- *
- *
+ * @publicApi
  */
 export interface ContentChildDecorator {
   /**
@@ -242,6 +246,7 @@ export type ContentChild = Query;
  *
  *
  * @Annotation
+ * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
     'ContentChild', (selector?: any, data: any = {}) =>
@@ -253,7 +258,7 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
  *
  * @see `ViewChildren`.
  *
- *
+ * @publicApi
  */
 export interface ViewChildrenDecorator {
   /**
@@ -295,6 +300,7 @@ export type ViewChildren = Query;
  * ViewChildren decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
     'ViewChildren', (selector?: any, data: any = {}) =>
@@ -305,6 +311,7 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
  * Type of the ViewChild decorator / constructor function.
  *
  * @see `ViewChild`.
+ * @publicApi
  */
 export interface ViewChildDecorator {
   /**
@@ -359,6 +366,7 @@ export type ViewChild = Query;
  * ViewChild decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
     'ViewChild', (selector: any, data: any) =>

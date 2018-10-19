@@ -40,6 +40,8 @@ export interface ValueSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface ValueProvider extends ValueSansProvider {
   /**
@@ -191,6 +193,8 @@ export interface ExistingSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface ExistingProvider extends ExistingSansProvider {
   /**
@@ -248,6 +252,8 @@ export interface FactorySansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface FactoryProvider extends FactorySansProvider {
   /**
@@ -270,6 +276,8 @@ export interface FactoryProvider extends FactorySansProvider {
  * @see `ValueProvider`
  * @see `ExistingProvider`
  * @see `FactoryProvider`
+ *
+ * @publicApi
  */
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
     ConstructorProvider | FactoryProvider | any[];
@@ -287,6 +295,8 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * ### Example
  *
  * {@example core/di/ts/provider_spec.ts region='TypeProvider'}
+ *
+ * @publicApi
  */
 export interface TypeProvider extends Type<any> {}
 
@@ -326,6 +336,8 @@ export interface ClassSansProvider {
  * ### Multi-value example
  *
  * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+ *
+ * @publicApi
  */
 export interface ClassProvider extends ClassSansProvider {
   /**
@@ -348,6 +360,8 @@ export interface ClassProvider extends ClassSansProvider {
  * @see `TypeProvider`
  * @see `ClassProvider`
  * @see `StaticProvider`
+ *
+ * @publicApi
  */
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider |
     ExistingProvider | FactoryProvider | any[];

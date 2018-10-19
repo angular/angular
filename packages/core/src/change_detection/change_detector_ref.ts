@@ -48,6 +48,7 @@ import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../rend
  *
  * <code-example path="core/ts/change_detect/change-detection.ts" region="reattach"></code-example>
  *
+ * @publicApi
  */
 export abstract class ChangeDetectorRef {
   /**

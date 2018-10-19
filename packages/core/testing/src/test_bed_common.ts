@@ -45,6 +45,8 @@ export type TestModuleMetadata = {
 
 /**
  * Static methods implemented by the `TestBedViewEngine` and `TestBedRender3`
+ *
+ * @publicApi
  */
 export interface TestBedStatic {
   new (...args: any[]): TestBed;
@@ -54,8 +56,6 @@ export interface TestBedStatic {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @publicApi
    */
   resetTestEnvironment(): void;
 

@@ -43,6 +43,7 @@ function _throwError() {
  * that will use the directives/pipes of the ng module for compilation
  * of components.
  *
+ * @publicApi
  */
 @Injectable()
 export class Compiler {

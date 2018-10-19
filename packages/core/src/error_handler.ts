@@ -32,6 +32,8 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
  * })
  * class MyModule {}
  * ```
+ *
+ * @publicApi
  */
 export class ErrorHandler {
   /**
