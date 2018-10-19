@@ -65,7 +65,7 @@ import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgMo
  *
  * {@example common/ngComponentOutlet/ts/module.ts region='NgModuleFactoryExample'}
  *
- * @experimental
+ * @publicApi
  * @ngModule CommonModule
  */
 @Directive({selector: '[ngComponentOutlet]'})

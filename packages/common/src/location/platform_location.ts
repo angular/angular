@@ -49,7 +49,7 @@ export abstract class PlatformLocation {
 
 /**
  * @description Indicates when a location is initialized.
- * @experimental
+ * @publicApi
  */
 export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location Initialized');
 
@@ -57,7 +57,7 @@ export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>('Location I
  * @description
  * A serializable version of the event from `onPopState` or `onHashChange`
  *
- * @experimental
+ * @publicApi
  */
 export interface LocationChangeEvent {
   type: string;
@@ -65,6 +65,6 @@ export interface LocationChangeEvent {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export interface LocationChangeListener { (event: LocationChangeEvent): any; }

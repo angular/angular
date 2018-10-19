@@ -18,7 +18,7 @@ import {convertInjectableProviderToFactory} from './util';
 /**
  * Injectable providers used in `@Injectable` decorator.
  *
- * @experimental
+ * @publicApi
  */
 export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
     StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
@@ -52,7 +52,7 @@ export interface InjectableDecorator {
 /**
  * Type of the Injectable metadata.
  *
- * @experimental
+ * @publicApi
  */
 export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
@@ -68,7 +68,7 @@ export const Injectable: InjectableDecorator = makeDecorator(
 /**
  * Type representing injectable service.
  *
- * @experimental
+ * @publicApi
  */
 export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }
 

@@ -57,7 +57,7 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
 /**
  * A token for third-party components that can register themselves with NgProbe.
  *
- * @experimental
+ * @publicApi
  */
 export class NgProbeToken {
   constructor(public name: string, public token: any) {}
@@ -67,7 +67,7 @@ export class NgProbeToken {
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_platform && !_platform.destroyed &&
@@ -84,7 +84,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 /**
  * Creates a factory for a platform
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function createPlatformFactory(
     parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
@@ -111,7 +111,7 @@ export function createPlatformFactory(
 /**
  * Checks that there currently is a platform which contains the given token as a provider.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
@@ -131,7 +131,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 /**
  * Destroy the existing platform.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function destroyPlatform(): void {
   if (_platform && !_platform.destroyed) {
@@ -142,7 +142,7 @@ export function destroyPlatform(): void {
 /**
  * Returns the current platform.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function getPlatform(): PlatformRef|null {
   return _platform && !_platform.destroyed ? _platform : null;
@@ -203,7 +203,7 @@ export class PlatformRef {
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
    *
-   * @experimental APIs related to application bootstrap are currently under review.
+   * @publicApi
    */
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {

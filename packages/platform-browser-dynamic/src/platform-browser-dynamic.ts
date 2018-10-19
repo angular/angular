@@ -18,7 +18,7 @@ export {VERSION} from './version';
 export {JitCompilerFactory} from './compiler_factory';
 
 /**
- * @experimental
+ * @publicApi
  */
 export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];

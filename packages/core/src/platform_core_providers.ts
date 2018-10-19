@@ -23,6 +23,6 @@ const _CORE_PLATFORM_PROVIDERS: StaticProvider[] = [
 /**
  * This platform has to be included in any other platform
  *
- * @experimental
+ * @publicApi
  */
 export const platformCore = createPlatformFactory(null, 'core', _CORE_PLATFORM_PROVIDERS);

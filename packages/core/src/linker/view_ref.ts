@@ -13,9 +13,9 @@ import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
  * Represents an Angular [view](guide/glossary#view),
  * specifically the [host view](guide/glossary#view-tree) that is defined by a component.
  * Also serves as the base class
- * that adds destroy methods for [embedded views](guide/glossary#view-tree). 
- * 
- * @see `EmbeddedViewRef` 
+ * that adds destroy methods for [embedded views](guide/glossary#view-tree).
+ *
+ * @see `EmbeddedViewRef`
  */
 export abstract class ViewRef extends ChangeDetectorRef {
   /**
@@ -89,7 +89,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * </ul>
  * <!-- /ViewRef: outer-0 -->
  * ```
- * @experimental
+ * @publicApi
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
   /**

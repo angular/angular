@@ -57,7 +57,7 @@ export function ngswCommChannelFactory(
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 @NgModule({
   providers: [SwPush, SwUpdate],

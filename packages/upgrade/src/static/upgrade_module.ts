@@ -139,7 +139,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@example upgrade/static/ts/full/module.ts region="use-ng1-upgraded-service"}
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({providers: [angular1Providers]})
 export class UpgradeModule {
