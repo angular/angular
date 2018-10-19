@@ -35,7 +35,7 @@ import {
 import {DOCUMENT} from '@angular/common';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
-import {filter, startWith, take} from 'rxjs/operators';
+import {filter, startWith, take, distinctUntilChanged} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
 import {MAT_ACCORDION, MatAccordionBase} from './accordion-base';
@@ -119,6 +119,9 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   /** ID for the associated header element. Used for a11y labelling. */
   _headerId = `mat-expansion-panel-header-${uniqueId++}`;
 
+  /** Stream of body animation done events. */
+  _bodyAnimationDone = new Subject<AnimationEvent>();
+
   constructor(@Optional() @SkipSelf() @Inject(MAT_ACCORDION) accordion: MatAccordionBase,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
@@ -129,6 +132,20 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
     this.accordion = accordion;
     this._document = _document;
+
+    // We need a Subject with distinctUntilChanged, because the `done` event
+    // fires twice on some browsers. See https://github.com/angular/angular/issues/24084
+    this._bodyAnimationDone.pipe(distinctUntilChanged((x, y) => {
+      return x.fromState === y.fromState && x.toState === y.toState;
+    })).subscribe(event => {
+      if (event.fromState !== 'void') {
+        if (event.toState === 'expanded') {
+          this.afterExpand.emit();
+        } else if (event.toState === 'collapsed') {
+          this.afterCollapse.emit();
+        }
+      }
+    });
   }
 
   /** Determines whether the expansion panel should have spacing between it and its siblings. */
@@ -166,18 +183,8 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
 
   ngOnDestroy() {
     super.ngOnDestroy();
+    this._bodyAnimationDone.complete();
     this._inputChanges.complete();
-  }
-
-  _bodyAnimation(event: AnimationEvent) {
-    const {phaseName, toState, fromState} = event;
-
-    if (phaseName === 'done' && toState === 'expanded' && fromState !== 'void') {
-      this.afterExpand.emit();
-    }
-    if (phaseName === 'done' && toState === 'collapsed' && fromState !== 'void') {
-      this.afterCollapse.emit();
-    }
   }
 
   /** Checks whether the expansion panel's content contains the currently-focused element. */
