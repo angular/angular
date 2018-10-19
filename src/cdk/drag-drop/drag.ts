@@ -46,6 +46,7 @@ import {CdkDragPreview} from './drag-preview';
 import {CDK_DROP_LIST_CONTAINER, CdkDropListContainer} from './drop-list-container';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {extendStyles, toggleNativeDragInteractions} from './drag-styling';
+import {CDK_DRAG_PARENT} from './drag-parent';
 
 
 // TODO(crisbeto): add auto-scrolling functionality.
@@ -89,7 +90,11 @@ const passiveEventListenerOptions = supportsPassiveEventListeners() ?
   host: {
     'class': 'cdk-drag',
     '[class.cdk-drag-dragging]': '_hasStartedDragging && _isDragging()',
-  }
+  },
+  providers: [{
+    provide: CDK_DRAG_PARENT,
+    useExisting: CdkDrag
+  }]
 })
 export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _document: Document;
@@ -172,7 +177,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _pointerUpSubscription = Subscription.EMPTY;
 
   /** Elements that can be used to drag the draggable item. */
-  @ContentChildren(CdkDragHandle) _handles: QueryList<CdkDragHandle>;
+  @ContentChildren(CdkDragHandle, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
   /** Element that will be used as a template to create the draggable item's preview. */
   @ContentChild(CdkDragPreview) _previewTemplate: CdkDragPreview;
@@ -298,9 +303,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
   /** Handler for the `mousedown`/`touchstart` events. */
   _pointerDown = (event: MouseEvent | TouchEvent) => {
+    // Skip handles inside descendant `CdkDrag` instances.
+    const handles = this._handles.filter(handle => handle._parentDrag === this);
+
     // Delegate the event based on whether it started from a handle or the element itself.
-    if (this._handles.length) {
-      const targetHandle = this._handles.find(handle => {
+    if (handles.length) {
+      const targetHandle = handles.find(handle => {
         const element = handle.element.nativeElement;
         const target = event.target;
         return !!target && (target === element || element.contains(target as HTMLElement));

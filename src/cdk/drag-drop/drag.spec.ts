@@ -33,7 +33,7 @@ describe('CdkDrag', () => {
     ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [DragDropModule],
-      declarations: [componentType],
+      declarations: [componentType, PassthroughComponent],
       providers: [
         {
           provide: CDK_DRAG_CONFIG,
@@ -464,6 +464,23 @@ describe('CdkDrag', () => {
 
       dragElementViaMouse(fixture, handles[0], 100, 200);
       expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
+    }));
+
+    it('should be able to drag with a handle that is not a direct descendant', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithIndirectHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+
+      expect(dragElement.style.transform)
+          .toBeFalsy('Expected not to be able to drag the element by itself.');
+
+      dragElementViaMouse(fixture, handle, 50, 100);
+      expect(dragElement.style.transform)
+          .toBe('translate3d(50px, 100px, 0px)', 'Expected to drag the element by its handle.');
     }));
 
   });
@@ -1747,6 +1764,26 @@ class StandaloneDraggableWithDelayedHandle {
 }
 
 @Component({
+  template: `
+    <div #dragElement cdkDrag
+      style="width: 100px; height: 100px; background: red; position: relative">
+
+      <passthrough-component>
+        <div
+          #handleElement
+          cdkDragHandle
+          style="width: 10px; height: 10px; background: green;"></div>
+      </passthrough-component>
+    </div>
+  `
+})
+class StandaloneDraggableWithIndirectHandle {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
+}
+
+
+@Component({
   encapsulation: ViewEncapsulation.None,
   styles: [`
     .cdk-drag-handle {
@@ -1985,6 +2022,16 @@ class ConnectedDropZonesWithSingleItems {
 
   droppedSpy = jasmine.createSpy('dropped spy');
 }
+
+/**
+ * Component that passes through whatever content is projected into it.
+ * Used to test having drag elements being projected into a component.
+ */
+@Component({
+  selector: 'passthrough-component',
+  template: '<ng-content></ng-content>'
+})
+class PassthroughComponent {}
 
 /**
  * Drags an element to a position on the page using the mouse.
