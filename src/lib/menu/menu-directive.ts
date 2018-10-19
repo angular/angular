@@ -262,7 +262,6 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnI
     switch (keyCode) {
       case ESCAPE:
         this.closed.emit('keydown');
-        event.stopPropagation();
       break;
       case LEFT_ARROW:
         if (this.parentMenu && this.direction === 'ltr') {

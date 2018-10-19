@@ -254,14 +254,12 @@ describe('MatMenu', () => {
 
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
     const event = createKeyboardEvent('keydown', ESCAPE);
-    const stopPropagationSpy = spyOn(event, 'stopPropagation').and.callThrough();
 
     dispatchEvent(panel, event);
     fixture.detectChanges();
     tick(500);
 
     expect(overlayContainerElement.textContent).toBe('');
-    expect(stopPropagationSpy).toHaveBeenCalled();
   }));
 
   it('should open a custom menu', () => {
