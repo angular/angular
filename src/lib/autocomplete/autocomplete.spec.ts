@@ -2194,6 +2194,33 @@ describe('MatAutocomplete', () => {
     expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom),
         'Expected autocomplete panel to align with the bottom of the new origin.');
   });
+
+  it('should be able to re-type the same value when it is reset while open', fakeAsync(() => {
+    const fixture = createComponent(SimpleAutocomplete);
+    fixture.detectChanges();
+    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+    const formControl = fixture.componentInstance.stateCtrl;
+
+    typeInElement('Cal', input);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(formControl.value).toBe('Cal', 'Expected initial value to be propagated to model');
+
+    formControl.setValue('');
+    fixture.detectChanges();
+
+    expect(input.value).toBe('', 'Expected input value to reset when model is reset');
+
+    typeInElement('Cal', input);
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(formControl.value).toBe('Cal', 'Expected new value to be propagated to model');
+  }));
+
 });
 
 @Component({

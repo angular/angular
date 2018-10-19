@@ -532,6 +532,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     } else {
       this._element.nativeElement.value = inputValue;
     }
+
+    this._previousValue = inputValue;
   }
 
   /**
