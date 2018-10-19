@@ -9,12 +9,12 @@ export { RouterLink} from '@angular/router';
   selector: '[routerLink]'
 })
 export class RouterLinkDirectiveStub {
-  @Input('routerLink') linkParams: any;
+  @Input() routerLink: any[] | string;
   navigatedTo: any = null;
 
   @HostListener('click')
   onClick() {
-    this.navigatedTo = this.linkParams;
+    this.navigatedTo = this.routerLink;
   }
 }
 // #enddocregion router-link
