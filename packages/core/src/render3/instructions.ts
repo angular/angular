@@ -2880,8 +2880,8 @@ function assertDataNext(index: number, arr?: any[]) {
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
 function initializeTNodeInputs(tNode: TNode | null) {
-  // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
-  // yet been checked
+  // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
+  // yet been checked.
   if (tNode) {
     if (tNode.inputs === undefined) {
       // mark inputs as checked

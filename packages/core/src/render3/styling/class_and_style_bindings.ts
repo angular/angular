@@ -54,8 +54,8 @@ export function createStylingContextTemplate(
   const stylesLookup: {[key: string]: number} = {};
   const classesLookup: {[key: string]: number} = {};
 
-  // the class input handler will get all the initial class definitions and the algorithm will skip
-  // them
+  // The class input handler will get all the initial class definitions and the algorithm will skip
+  // them.
   if (hasClassInput) {
     initialClassDeclarations = null;
   }

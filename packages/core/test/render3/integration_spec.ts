@@ -1629,22 +1629,22 @@ describe('render3 integration test', () => {
             .toEqual('<structural-comp class="">Comp Content</structural-comp>Temp Content');
       });
 
+      let mockClassDirective: DirWithClassDirective;
+      class DirWithClassDirective {
+        static ngDirectiveDef = defineDirective({
+          type: DirWithClassDirective,
+          selectors: [['', 'DirWithClass', '']],
+          factory: () => mockClassDirective = new DirWithClassDirective(),
+          inputs: {'klass': 'class'}
+        });
+
+        public classesVal: string = '';
+
+        set klass(value: string) { this.classesVal = value; }
+      }
+
       it('should delegate all initial classes to a [class] input binding if present on a directive on the same element',
          () => {
-           let mockClassDirective: DirWithClassDirective;
-           class DirWithClassDirective {
-             static ngDirectiveDef = defineDirective({
-               type: DirWithClassDirective,
-               selectors: [['', 'DirWithClass', '']],
-               factory: () => mockClassDirective = new DirWithClassDirective(),
-               inputs: {'klass': 'class'}
-             });
-
-             public classesVal: string = '';
-
-             @Input('class')
-             set klass(value: string) { this.classesVal = value; }
-           }
            /**
             * <my-comp class="apple orange banana" DirWithClass></my-comp>
             */
@@ -1667,23 +1667,9 @@ describe('render3 integration test', () => {
 
       it('should update `[class]` and bindings in the provided directive if the input is matched',
          () => {
-           let mockClassDirective: DirWithClassDirective;
-           class DirWithClassDirective {
-             static ngDirectiveDef = defineDirective({
-               type: DirWithClassDirective,
-               selectors: [['', 'DirWithClass', '']],
-               factory: () => mockClassDirective = new DirWithClassDirective(),
-               inputs: {'klass': 'class'}
-             });
-
-             public classesVal: string = '';
-
-             @Input('class')
-             set klass(value: string) { this.classesVal = value; }
-           }
            /**
             * <my-comp DirWithClass></my-comp>
-            */
+           */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
                elementStart(0, 'div', ['DirWithClass']);
