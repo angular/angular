@@ -8,6 +8,7 @@
 
 import {$} from 'protractor';
 
+import {openBrowser} from '../../../e2e_util/e2e_util';
 import {runBenchmark, verifyNoBrowserErrors} from '../../../e2e_util/perf_util';
 
 interface Worker {
@@ -39,9 +40,23 @@ describe('largetable benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
+  it('should render the table for render3', () => {
+    openBrowser({
+      url: '',
+      ignoreBrowserSynchronization: true,
+      params: [{name: 'cols', value: 5}, {name: 'rows', value: 5}],
+    });
+    $('#createDom').click();
+    expect($('#root').getText()).toContain('0/0');
+    $('#createDom').click();
+    expect($('#root').getText()).toContain('A/A');
+    $('#destroyDom').click();
+    expect($('#root').getText() as any).toEqual('');
+  });
+
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for render3', done => {
+      it('should run benchmark for render3', done => {
         runTableBenchmark({
           id: `largeTable.render3.${worker.id}`,
           url: 'index.html',
