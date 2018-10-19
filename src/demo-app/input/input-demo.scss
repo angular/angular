@@ -35,3 +35,7 @@
 .demo-custom-autofill-style {
   @include cdk-text-field-autofill-color(transparent, red);
 }
+
+.demo-rows {
+  width: 30px;
+}

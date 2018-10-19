@@ -543,6 +543,17 @@
     <h3>Regular &lt;textarea&gt;</h3>
     <textarea class="demo-textarea" cdkTextareaAutosize cdkAutosizeMaxRows="10"></textarea>
 
+    <h3>Regular &lt;textarea&gt; with maxRows and minRows</h3>
+    <div>
+      <label>minRows<input type="number" #minRows class="demo-rows" (input)="1+1"></label> &nbsp;
+      <label>maxRows<input type="number" #maxRows class="demo-rows" (input)="1+1"></label>
+    </div>
+    <textarea class="demo-textarea"
+        cdkTextareaAutosize
+        [cdkAutosizeMinRows]="minRows.value"
+        [cdkAutosizeMaxRows]="maxRows.value"></textarea>
+    <button type="button" (click)="minRows.value = minRows.value - 1">Decrement minRows</button>
+
     <h3>&lt;textarea&gt; with mat-form-field</h3>
     <div>
       <mat-form-field>
