@@ -22,8 +22,8 @@ ts_library(
 nodejs_binary(
     name = "packager",
     data = [
-      "lib",
-      "@ngdeps//shelljs",
+        "lib",
+        "@ngdeps//shelljs",
     ],
     entry_point = "angular/packages/bazel/src/ng_package/packager.js",
     install_source_map_support = False,
