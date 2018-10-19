@@ -41,6 +41,9 @@ export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
   {provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [DOCUMENT]},
 ];
 
+/**
+ * @publicApi
+ */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
@@ -95,7 +98,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
  * Re-exports `CommonModule` and `ApplicationModule`, making their
  * exports and providers available to all apps.
  *
- *
+ * @publicApi
  */
 @NgModule({providers: BROWSER_MODULE_PROVIDERS, exports: [CommonModule, ApplicationModule]})
 export class BrowserModule {

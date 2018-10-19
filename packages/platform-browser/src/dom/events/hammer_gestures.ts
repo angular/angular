@@ -62,10 +62,18 @@ const EVENT_NAMES = {
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
 
-/** Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded. */
+/**
+ * Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded.
+ *
+ * @publicApi
+ */
 export type HammerLoader = () => Promise<void>;
 
-/** Injection token used to provide a {@link HammerLoader} to Angular. */
+/**
+ * Injection token used to provide a {@link HammerLoader} to Angular.
+ *
+ * @publicApi
+ */
 export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
 
 export interface HammerInstance {
