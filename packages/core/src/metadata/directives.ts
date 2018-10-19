@@ -20,6 +20,7 @@ import {ViewEncapsulation} from './view';
 
 /**
  * Type of the Directive decorator / constructor function.
+ * @publicApi
  */
 export interface DirectiveDecorator {
   /**
@@ -347,6 +348,8 @@ export interface Directive {
 
 /**
  * Type of the Directive metadata.
+ *
+ * @publicApi
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
@@ -355,6 +358,7 @@ export const Directive: DirectiveDecorator = makeDecorator(
 /**
  * Component decorator interface
  *
+ * @publicApi
  */
 export interface ComponentDecorator {
   /**
@@ -631,6 +635,7 @@ export interface Component extends Directive {
  * `ngPreserveWhitespaces` attribute.
  *
  * @Annotation
+ * @publicApi
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
@@ -638,6 +643,8 @@ export const Component: ComponentDecorator = makeDecorator(
 
 /**
  * Type of the Pipe decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface PipeDecorator {
   /**
@@ -676,9 +683,8 @@ export interface Pipe {
 }
 
 /**
- *
- *
  * @Annotation
+ * @publicApi
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
@@ -686,7 +692,7 @@ export const Pipe: PipeDecorator = makeDecorator(
 
 
 /**
- *
+ * @publicApi
  */
 export interface InputDecorator {
   /**
@@ -799,8 +805,8 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
     };
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const Input: InputDecorator = makePropDecorator(
     'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
@@ -808,6 +814,8 @@ export const Input: InputDecorator = makePropDecorator(
 
 /**
  * Type of the Output decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface OutputDecorator {
   /**
@@ -835,8 +843,8 @@ export interface OutputDecorator {
 export interface Output { bindingPropertyName?: string; }
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
@@ -846,6 +854,8 @@ export const Output: OutputDecorator = makePropDecorator(
 
 /**
  * Type of the HostBinding decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostBindingDecorator {
   /**
@@ -887,8 +897,8 @@ export interface HostBindingDecorator {
 export interface HostBinding { hostPropertyName?: string; }
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const HostBinding: HostBindingDecorator =
     makePropDecorator('HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
@@ -896,6 +906,8 @@ export const HostBinding: HostBindingDecorator =
 
 /**
  * Type of the HostListener decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostListenerDecorator {
   (eventName: string, args?: string[]): any;
@@ -946,6 +958,7 @@ export interface HostListener {
  * ```
  *
  * @Annotation
+ * @publicApi
  */
 export const HostListener: HostListenerDecorator =
     makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));

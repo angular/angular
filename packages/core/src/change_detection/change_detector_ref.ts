@@ -48,6 +48,7 @@ import {R3_CHANGE_DETECTOR_REF_FACTORY} from '../ivy_switch/runtime/index';
  *
  * <code-example path="core/ts/change_detect/change-detection.ts" region="reattach"></code-example>
  *
+ * @publicApi
  */
 export abstract class ChangeDetectorRef {
   /**

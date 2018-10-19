@@ -70,6 +70,8 @@ export interface NgModuleDef<T> {
  *
  * @param T the module type. In Ivy applications, this must be explicitly
  * provided.
+ *
+ * @publicApi
  */
 export interface ModuleWithProviders<
     T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
@@ -94,7 +96,7 @@ export interface SchemaMetadata { name: string; }
  * - Element properties named with dash case (`-`).
  * Dash case is the naming convention for custom elements.
  *
- *
+ * @publicApi
  */
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -112,8 +114,6 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 
 /**
  * Type of the NgModule decorator / constructor function.
- *
- *
  */
 export interface NgModuleDecorator {
   /**
@@ -125,8 +125,6 @@ export interface NgModuleDecorator {
 
 /**
  * Type of the NgModule metadata.
- *
- *
  */
 export interface NgModule {
   /**
@@ -320,6 +318,7 @@ export interface NgModule {
 
 /**
  * @Annotation
+ * @publicApi
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
     'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
@@ -354,5 +353,6 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  * }
  * ```
  *
+ * @publicApi
  */
 export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }

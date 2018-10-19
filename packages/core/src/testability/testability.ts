@@ -284,7 +284,6 @@ export class TestabilityRegistry {
  * particular context.
  *
  * @publicApi
- * the Protractor team.
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;

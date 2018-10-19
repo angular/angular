@@ -11,6 +11,7 @@ import {NgModuleFactory} from './ng_module_factory';
 /**
  * Used to load ng module factories.
  *
+ * @publicApi
  */
 export abstract class NgModuleFactoryLoader {
   abstract load(path: string): Promise<NgModuleFactory<any>>;
