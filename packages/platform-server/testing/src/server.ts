@@ -28,7 +28,8 @@ export const platformServerTesting = createPlatformFactory(
 @NgModule({
   exports: [BrowserDynamicTestingModule],
   imports: [NoopAnimationsModule],
-  providers: SERVER_RENDER_PROVIDERS
+  providers: SERVER_RENDER_PROVIDERS,
+  jit: true,
 })
 export class ServerTestingModule {
 }

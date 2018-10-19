@@ -29,6 +29,7 @@ export class BrowserAnimationsModule {
 @NgModule({
   exports: [BrowserModule],
   providers: BROWSER_NOOP_ANIMATIONS_PROVIDERS,
+  jit: true,
 })
 export class NoopAnimationsModule {
 }
