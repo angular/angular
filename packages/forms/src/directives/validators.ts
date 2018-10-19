@@ -45,6 +45,8 @@ export type ValidationErrors = {
  *   }
  * }
  * ```
+ *
+ * @publicApi
  */
 export interface Validator {
   /**
@@ -135,6 +137,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -240,8 +243,14 @@ export class EmailValidator implements Validator {
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
+/**
+ * @publicApi
+ */
 export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null; }
 
+/**
+ * @publicApi
+ */
 export interface AsyncValidatorFn {
   (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
@@ -266,6 +275,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -320,6 +330,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -377,6 +388,7 @@ export const PATTERN_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

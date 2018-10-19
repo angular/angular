@@ -51,6 +51,7 @@ export const ngControlStatusHost = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formControlName],[ngModel],[formControl]', host: ngControlStatusHost})
 export class NgControlStatus extends AbstractControlStatus {
@@ -63,6 +64,7 @@ export class NgControlStatus extends AbstractControlStatus {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
