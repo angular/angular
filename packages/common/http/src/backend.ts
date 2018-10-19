@@ -20,7 +20,7 @@ import {HttpEvent} from './response';
  *
  * In an `HttpInterceptor`, the `HttpHandler` parameter is the next interceptor in the chain.
  *
- *
+ * @publicApi
  */
 export abstract class HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
@@ -34,7 +34,7 @@ export abstract class HttpHandler {
  * When injected, `HttpBackend` dispatches requests directly to the backend, without going
  * through the interceptor chain.
  *
- *
+ * @publicApi
  */
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
