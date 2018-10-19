@@ -251,6 +251,8 @@ try {
 
 /**
  * @deprecated Use `setAngularJSGlobal` instead.
+ *
+ * @publicApi
  */
 export function setAngularLib(ng: any): void {
   setAngularJSGlobal(ng);
@@ -258,6 +260,8 @@ export function setAngularLib(ng: any): void {
 
 /**
  * @deprecated Use `getAngularJSGlobal` instead.
+ *
+ * @publicApi
  */
 export function getAngularLib(): any {
   return getAngularJSGlobal();
@@ -267,6 +271,8 @@ export function getAngularLib(): any {
  * Resets the AngularJS global.
  *
  * Used when AngularJS is loaded lazily, and not available on `window`.
+ *
+ * @publicApi
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
@@ -275,6 +281,8 @@ export function setAngularJSGlobal(ng: any): void {
 
 /**
  * Returns the current AngularJS global.
+ *
+ * @publicApi
  */
 export function getAngularJSGlobal(): any {
   return angular;

@@ -37,7 +37,7 @@ import {Checks, getAllRouteGuards} from './utils/preactivation';
  *
  * Represents the extra options used during navigation.
  *
- *
+ * @publicApi
  */
 export interface NavigationExtras {
   /**
@@ -155,7 +155,7 @@ export interface NavigationExtras {
  * If the handler throws an exception, the navigation promise will be rejected with
  * the exception.
  *
- *
+ * @publicApi
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -222,7 +222,7 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 export class Router {
   private currentUrlTree: UrlTree;
