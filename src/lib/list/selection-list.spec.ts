@@ -214,6 +214,7 @@ describe('MatSelectionList without forms', () => {
     it('should restore focus if active option is destroyed', () => {
       const manager = selectionList.componentInstance._keyManager;
 
+      spyOn(listOptions[2].componentInstance, 'focus').and.callThrough();
       listOptions[3].componentInstance._handleFocus();
 
       expect(manager.activeItemIndex).toBe(3);
@@ -222,7 +223,27 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(manager.activeItemIndex).toBe(2);
+      expect(listOptions[2].componentInstance.focus).toHaveBeenCalled();
     });
+
+    it('should not attempt to focus the next option when the destroyed option was not focused',
+      () => {
+        const manager = selectionList.componentInstance._keyManager;
+
+        // Focus and blur the option to move the active item index.
+        listOptions[3].componentInstance._handleFocus();
+        listOptions[3].componentInstance._handleBlur();
+
+        spyOn(listOptions[2].componentInstance, 'focus').and.callThrough();
+
+        expect(manager.activeItemIndex).toBe(3);
+
+        fixture.componentInstance.showLastOption = false;
+        fixture.detectChanges();
+
+        expect(manager.activeItemIndex).toBe(2);
+        expect(listOptions[2].componentInstance.focus).not.toHaveBeenCalled();
+      });
 
     it('should focus previous item when press UP ARROW', () => {
       let testListItem = listOptions[2].nativeElement as HTMLElement;
