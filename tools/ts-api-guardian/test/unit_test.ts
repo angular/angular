@@ -486,7 +486,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(4,1): error: Banned jsdoc tags - "@stable" - were found on `A`.', {exportTags: {banned: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(4,1): error: Banned jsdoc tags - "@stable" - were found on `A`.',
+        {exportTags: {banned: ['stable']}});
   });
 
   it('should throw on using banned jsdoc tags on fields', () => {
@@ -499,7 +501,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(5,3): error: Banned jsdoc tags - "@stable" - were found on `value`.', {memberTags: {banned: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(5,3): error: Banned jsdoc tags - "@stable" - were found on `value`.',
+        {memberTags: {banned: ['stable']}});
   });
 
   it('should throw on using banned jsdoc tags on parameters', () => {
@@ -509,7 +513,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,22): error: Banned jsdoc tags - "@stable" - were found on `param`.', {paramTags: {banned: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(2,22): error: Banned jsdoc tags - "@stable" - were found on `param`.',
+        {paramTags: {banned: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on exports', () => {
@@ -520,7 +526,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,1): error: Required jsdoc tags - "@stable" - are missing on `A`.', {exportTags: {required: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(2,1): error: Required jsdoc tags - "@stable" - are missing on `A`.',
+        {exportTags: {required: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on fields', () => {
@@ -531,7 +539,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(3,3): error: Required jsdoc tags - "@stable" - are missing on `value`.', {memberTags: {required: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(3,3): error: Required jsdoc tags - "@stable" - are missing on `value`.',
+        {memberTags: {required: ['stable']}});
   });
 
   it('should throw on missing required jsdoc tags on parameters', () => {
@@ -542,7 +552,9 @@ describe('unit test', () => {
       }
     `;
     checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(3,7): error: Required jsdoc tags - "@stable" - are missing on `param`.', {paramTags: {required: ['stable']}});
+        {'file.d.ts': input},
+        'file.d.ts(3,7): error: Required jsdoc tags - "@stable" - are missing on `param`.',
+        {paramTags: {required: ['stable']}});
   });
 });
 
@@ -571,8 +583,10 @@ function check(
   chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
 }
 
-function checkThrows(files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
-  chai.assert.throws(() => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
+function checkThrows(
+    files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
+  chai.assert.throws(
+      () => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
 }
 
 function stripExtraIndentation(text: string) {

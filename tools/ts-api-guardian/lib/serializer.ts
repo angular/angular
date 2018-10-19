@@ -310,21 +310,29 @@ class ResolvedDeclarationEmitter {
 
   private processJsDocTags(node: ts.Node, tagOptions: JsDocTagOptions) {
     const jsDocTags = getJsDocTags(node);
-    const missingRequiredTags = tagOptions.required.filter(requiredTag => jsDocTags.every(tag => tag !== requiredTag));
+    const missingRequiredTags =
+        tagOptions.required.filter(requiredTag => jsDocTags.every(tag => tag !== requiredTag));
     if (missingRequiredTags.length) {
       this.diagnostics.push({
         type: 'error',
-        message: createErrorMessage(node, `Required jsdoc tags - ${missingRequiredTags.map(tag => `"@${tag}"`).join(', ')} - are missing on ${getName(node)}.`)
+        message: createErrorMessage(
+            node, 'Required jsdoc tags - ' +
+                missingRequiredTags.map(tag => `"@${tag}"`).join(', ') +
+                ` - are missing on ${getName(node)}.`)
       });
     }
-    const bannedTagsFound = tagOptions.banned.filter(bannedTag => jsDocTags.some(tag => tag === bannedTag));
+    const bannedTagsFound =
+        tagOptions.banned.filter(bannedTag => jsDocTags.some(tag => tag === bannedTag));
     if (bannedTagsFound.length) {
       this.diagnostics.push({
         type: 'error',
-        message: createErrorMessage(node, `Banned jsdoc tags - ${bannedTagsFound.map(tag => `"@${tag}"`).join(', ')} - were found on ${getName(node)}.`)
+        message: createErrorMessage(
+            node, 'Banned jsdoc tags - ' + bannedTagsFound.map(tag => `"@${tag}"`).join(', ') +
+                ` - were found on ${getName(node)}.`)
       });
     }
-    const tagsToCopy = jsDocTags.filter(tag => tagOptions.toCopy.some(tagToCopy => tag === tagToCopy));
+    const tagsToCopy =
+        jsDocTags.filter(tag => tagOptions.toCopy.some(tagToCopy => tag === tagToCopy));
 
     if (tagsToCopy.length === 1) {
       return `/** @${tagsToCopy[0]} */`;
@@ -343,9 +351,9 @@ function getJsDocTags(node: ts.Node): string[] {
   const trivia = sourceText.substr(node.pos, node.getLeadingTriviaWidth());
   // We use a hash so that we don't collect duplicate jsdoc tags
   // (e.g. if a property has a getter and setter with the same tag).
-  const jsdocTags: { [key: string]: boolean} = {};
+  const jsdocTags: {[key: string]: boolean} = {};
   let match: RegExpExecArray;
-  while(match = tagRegex.exec(trivia)) {
+  while (match = tagRegex.exec(trivia)) {
     jsdocTags[match[1]] = true;
   }
   return Object.keys(jsdocTags);
@@ -421,8 +429,8 @@ function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
   return !!node.modifiers && node.modifiers.some(x => x.kind === modifierKind);
 }
 
-function applyDefaultTagOptions(tagOptions: JsDocTagOptions|undefined): JsDocTagOptions {
-  return { required: [], banned: [], toCopy:[], ...tagOptions };
+function applyDefaultTagOptions(tagOptions: JsDocTagOptions | undefined): JsDocTagOptions {
+  return {required: [], banned: [], toCopy: [], ...tagOptions};
 }
 
 function getName(node: any) {
