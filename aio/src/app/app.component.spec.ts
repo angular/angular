@@ -753,10 +753,10 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(true);
         });
 
-        it('should not intercept clicks when searchResults are not shown', () => {
+        it('should not call `locationService.setSearch` when searchResults are not shown', () => {
           docViewer.click();
           expect(locationService.setSearch).not.toHaveBeenCalled();
-        })
+        });
       });
 
       describe('keyup handling', () => {
