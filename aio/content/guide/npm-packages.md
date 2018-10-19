@@ -84,7 +84,7 @@ For information about choosing the best forms approach for your app, see [Introd
 the pieces that help render into the DOM.
 This package also includes the `bootstrapModuleFactory()` method for bootstrapping applications for production builds that pre-compile with [AOT](guide/aot-compiler).
 
-[**@angular/platform-browser-dynamic:**](api/platform-browser-dymanic) Includes [providers](api/core/Provider) and methods to compile and run the app on the client using the [JIT compiler](guide/aot-compiler).
+[**@angular/platform-browser-dynamic:**](api/platform-browser-dynamic) Includes [providers](api/core/Provider) and methods to compile and run the app on the client using the [JIT compiler](guide/aot-compiler).
 
 [**@angular/router:**](api/router) The router module navigates among your app pages when the browser URL changes.
 For more information, see [Routing and Navigation](guide/router).
