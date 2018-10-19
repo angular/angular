@@ -62,7 +62,7 @@ JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
 
 The Angular template compiler transforms code that is used, or could be used, in an annotation
 to allow it to be imported from template factory modules. See
-[metadata rewriting](#metadata-rewriting) for more information.
+[metadata rewriting](guide/aot-compiler#metadata-rewriting) for more information.
 
 Setting this option to `false` disables this rewriting, requiring the rewriting to be
 done manually.
@@ -119,7 +119,7 @@ would be `"index.d.ts"`.
 
 ### *fullTemplateTypeCheck*
 
-This option tells the compiler to enable the [binding expression validation](#binding-expression-validation)
+This option tells the compiler to enable the [binding expression validation](guide/aot-compiler#binding-expression-validation)
 phase of the template compiler which uses TypeScript to validate binding expressions.
 
 This option is `false` by default.

@@ -81,7 +81,7 @@ When you use the Angular AOT compiler, you can control your app compilation in t
 
 * By providing template compiler options in the `tsconfig.json` file.
 
-      For more information, see [Angular template compiler options](guide/aot-compiler-options.md).
+      For more information, see [Angular template compiler options](guide/aot-compiler-options).
 
 * By [specifying Angular metadata](#metadata-aot).
 
@@ -1165,7 +1165,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   In the validation phase, the Angular template compiler uses the TypeScript compiler to validate the
   binding expressions in templates. Enable this phase explicitly by adding the compiler
   option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json` (see
-  [Angular Compiler Options](guide/aot-compiler-options.md)).
+  [Angular Compiler Options](guide/aot-compiler-options)).
 
   Template validation produces error messages when a type error is detected in a template binding
   expression, similar to how type errors are reported by the TypeScript compiler against code in a `.ts`
