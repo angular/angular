@@ -28,6 +28,7 @@ import {
   SkipSelf,
   ViewContainerRef,
 } from '@angular/core';
+import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {Observable, Subject, Subscription, Observer} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
@@ -76,6 +77,10 @@ export const CDK_DRAG_CONFIG = new InjectionToken<CdkDragConfig>('CDK_DRAG_CONFI
 export function CDK_DRAG_CONFIG_FACTORY(): CdkDragConfig {
   return {dragStartThreshold: 5, pointerDirectionChangeThreshold: 5};
 }
+
+/** Options that can be used to bind a passive event listener. */
+const passiveEventListenerOptions = supportsPassiveEventListeners() ?
+    {passive: true} as EventListenerOptions : false;
 
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({
@@ -255,15 +260,17 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     // their original DOM position and then they get transferred to the portal.
     this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
       const rootElement = this._rootElement = this._getRootElement();
-      rootElement.addEventListener('mousedown', this._pointerDown);
-      rootElement.addEventListener('touchstart', this._pointerDown);
+      rootElement.addEventListener('mousedown', this._pointerDown, passiveEventListenerOptions);
+      rootElement.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
       toggleNativeDragInteractions(rootElement , false);
     });
   }
 
   ngOnDestroy() {
-    this._rootElement.removeEventListener('mousedown', this._pointerDown);
-    this._rootElement.removeEventListener('touchstart', this._pointerDown);
+    this._rootElement.removeEventListener('mousedown', this._pointerDown,
+        passiveEventListenerOptions);
+    this._rootElement.removeEventListener('touchstart', this._pointerDown,
+        passiveEventListenerOptions);
     this._destroyPreview();
     this._destroyPlaceholder();
 
