@@ -63,7 +63,7 @@ class Bindings {
  *   * the AngularJS name of the component (`ng1Hero`)
  *   * the `ElementRef` and `Injector` for the component wrapper
  *
- * @experimental
+ * @publicApi
  */
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private helper: UpgradeHelper;

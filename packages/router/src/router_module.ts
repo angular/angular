@@ -268,7 +268,7 @@ export function provideRoutes(routes: Routes): any {
  *
  * The 'legacy_enabled' and 'legacy_disabled' should not be used for new applications.
  *
- * @experimental
+ * @publicApi
  */
 export type InitialNavigation =
     true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
@@ -608,7 +608,7 @@ export function getBootstrapListener(r: RouterInitializer) {
 /**
  * A token for the router initializer that will be called after the app is bootstrapped.
  *
- * @experimental
+ * @publicApi
  */
 export const ROUTER_INITIALIZER =
     new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');

@@ -15,14 +15,14 @@ import {AnimationStateStyles, AnimationTransitionFactory} from './animation_tran
 
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
   return new AnimationTrigger(name, ast);
 }
 
 /**
-* @experimental Animation support is experimental.
+* @publicApi
 */
 export class AnimationTrigger {
   public transitionFactories: AnimationTransitionFactory[] = [];

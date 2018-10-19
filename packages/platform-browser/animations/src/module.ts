@@ -13,7 +13,7 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
 /**
  * Exports `BrowserModule` with additional [dependency-injection providers](guide/glossary#provider)
  * for use with animations. See [Animations](guide/animations).
- * @experimental
+ * @publicApi
  */
 @NgModule({
   exports: [BrowserModule],
@@ -24,7 +24,7 @@ export class BrowserAnimationsModule {
 
 /**
  * A null player that must be imported to allow disabling of animations.
- * @experimental
+ * @publicApi
  */
 @NgModule({
   exports: [BrowserModule],

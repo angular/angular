@@ -7,19 +7,19 @@
  */
 
 /**
- * @experimental
+ * @publicApi
  */
 export type Glob = string;
 
 /**
- * @experimental
+ * @publicApi
  */
 export type Duration = string;
 
 /**
  * A top-level Angular Service Worker configuration object.
  *
- * @experimental
+ * @publicApi
  */
 export interface Config {
   appData?: {};
@@ -32,7 +32,7 @@ export interface Config {
 /**
  * Configuration for a particular group of assets.
  *
- * @experimental
+ * @publicApi
  */
 export interface AssetGroup {
   name: string;
@@ -50,7 +50,7 @@ export interface AssetGroup {
 /**
  * Configuration for a particular group of dynamic URLs.
  *
- * @experimental
+ * @publicApi
  */
 export interface DataGroup {
   name: string;

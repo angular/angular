@@ -37,7 +37,7 @@ export function instantiateRendererFactory(
 }
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export const ANIMATION_MODULE_TYPE =
     new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');

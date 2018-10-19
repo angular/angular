@@ -16,7 +16,7 @@ import {WebWorkerPlatformLocation} from './platform_location';
  * The {@link PlatformLocation} providers that should be added when the {@link Location} is used in
  * a worker context.
  *
- * @experimental
+ * @publicApi
  */
 export const WORKER_APP_LOCATION_PROVIDERS = [
   {provide: PlatformLocation, useClass: WebWorkerPlatformLocation}, {
