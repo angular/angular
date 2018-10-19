@@ -689,5 +689,14 @@
     "website": "https://mandarini.github.io/",
     "bio": "Katerina is a front end software engineer, a conference speaker and AngularAthens meetup organizer. She is obsessed with sharing knowledge about things she loves. She is also trying to support diversity in the community. She lives with her cat in Athens.",
     "group": "GDE"
+  },
+
+  "blove": {
+    "name": "Brian Love",
+    "picture": "brian-love.jpg",
+    "twitter": "brian_love",
+    "website": "https://brianflove.com",
+    "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
+    "group": "GDE"
   }
 }
