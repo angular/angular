@@ -145,6 +145,7 @@ export const controlNameBinding: any = {
  * the pattern is being used as the code is being updated.
  *
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {

@@ -42,6 +42,7 @@ function isEmptyInputValue(value: any): boolean {
  * }
  * ```
  *
+ * @publicApi
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
 
@@ -51,6 +52,7 @@ export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgVa
  *
  * @see `NG_VALIDATORS`
  *
+ * @publicApi
  */
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
@@ -67,6 +69,7 @@ const EMAIL_REGEXP =
  *
  * @see [Form Validation](/guide/form-validation)
  *
+ * @publicApi
  */
 export class Validators {
   /**
