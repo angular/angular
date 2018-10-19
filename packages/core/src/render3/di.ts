@@ -273,7 +273,7 @@ export function directiveInject<T>(
  * })
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export function injectAttribute(attrNameToInject: string): string|undefined {
   const tNode = getPreviousOrParentTNode();

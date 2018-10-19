@@ -99,7 +99,7 @@ import {NgAdapterInjector} from './util';
  *
  * </div>
  *
- * @experimental
+ * @publicApi
  */
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|

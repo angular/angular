@@ -57,7 +57,7 @@ const EVENT_NAMES = {
  * DI token for providing [HammerJS](http://hammerjs.github.io/) support to Angular.
  * @see `HammerGestureConfig`
  *
- * @experimental
+ * @publicApi
  */
 export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
 
@@ -77,7 +77,7 @@ export interface HammerInstance {
 /**
  * An injectable [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
  * for gesture recognition. Configures specific event recognition.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class HammerGestureConfig {
