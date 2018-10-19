@@ -72,7 +72,7 @@ export abstract class ComponentRef<C> {
  */
 export abstract class ComponentFactory<C> {
   /**
-   * The comonent's HTML selector.
+   * The component's HTML selector.
    */
   abstract get selector(): string;
   /**
