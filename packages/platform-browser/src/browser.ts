@@ -116,8 +116,6 @@ export class BrowserModule {
    * @param params An object containing an identifier for the app to transition.
    * The ID must match between the client and server versions of the app.
    * @returns The reconfigured `BrowserModule` to import into the app's root `AppModule`.
-   *
-   * @publicApi
    */
   static withServerTransition(params: {appId: string}): ModuleWithProviders<BrowserModule> {
     return {
