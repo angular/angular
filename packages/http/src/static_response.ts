@@ -34,6 +34,7 @@ import {Headers} from './headers';
  * most significant.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Response extends Body {
   /**

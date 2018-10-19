@@ -41,6 +41,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class ResponseOptions {
   // TODO: FormData | Blob
@@ -160,6 +161,7 @@ export class ResponseOptions {
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {
