@@ -20,7 +20,8 @@ require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
 var CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox'],
   'perfLoggingPrefs': {
-    'traceCategories': 'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline'
+    'traceCategories':
+        'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing'
   }
 };
 
