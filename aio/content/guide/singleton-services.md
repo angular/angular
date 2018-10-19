@@ -17,7 +17,7 @@ There are two ways to make a service a singleton in Angular:
 * Declare that the service should be provided in the application root.
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`.
 
-Beginning with Angular 6.0, the preferred way to create a singleton services is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
+Beginning with Angular 6.0, the preferred way to create a singleton service is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
 
 <code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
 
@@ -28,7 +28,7 @@ For more detailed information on services, see the [Services](tutorial/toh-pt4) 
 
 ## `forRoot()`
 
-If a module provides both providers and declarations (components, directives, pipes) then loading it in a child injector such as a route, would duplicate the provider instances. The duplication of providers would cause issues as they would shadow the root instances, which are probably meant to be singletons. For this reason Angular provides a way to separate providers out of the module so that same module can be imported into the root module with `providers` and child modules without `providers`.
+If a module provides both providers and declarations (components, directives, pipes) then loading it in a child injector such as a route, would duplicate the provider instances. The duplication of providers would cause issues as they would shadow the root instances, which are probably meant to be singletons. For this reason, Angular provides a way to separate providers out of the module so that the same module can be imported into the root module with `providers` and child modules without `providers`.
 
 1. Create a static method `forRoot()` (by convention) on the module.
 2. Place the providers into the `forRoot` method as follows.
@@ -66,7 +66,7 @@ Import `CoreModule` and use its `forRoot()` method one time, in `AppModule`, bec
 You can also add a `forRoot()` method in the `CoreModule` that configures
 the core `UserService`.
 
-In the following example, the optional, injected `UserServiceConfig`
+In the following example, the optional injected `UserServiceConfig`
 extends the core `UserService`. If a `UserServiceConfig` exists, the `UserService` sets the user name from that config.
 
 <code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" header="src/app/core/user.service.ts (constructor)" linenums="false">
@@ -123,7 +123,7 @@ It's a different story if you improperly import `CoreModule` into a lazy-loaded 
 Angular creates a lazy-loaded module with its own injector,
 a _child_ of the root injector.
 `@SkipSelf` causes Angular to look for a `CoreModule` in the parent injector, which this time is the root injector.
-Of course it finds the instance imported by the root `AppModule`.
+Of course, it finds the instance imported by the root `AppModule`.
 Now `parentModule` exists and the constructor throws the error.
 
 Here are the two files in their entirety for reference:
