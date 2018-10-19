@@ -8,16 +8,18 @@ import {MatProgressBar} from './progress-bar';
 
 
 describe('MatProgressBar', () => {
-  let fakePath = '/fake-path';
+  let fakePath: string;
 
   function createComponent<T>(componentType: Type<T>,
                               imports?: Array<Type<{}>>): ComponentFixture<T> {
+    fakePath = '/fake-path';
+
     TestBed.configureTestingModule({
       imports: imports || [MatProgressBarModule],
       declarations: [componentType],
       providers: [{
         provide: MAT_PROGRESS_BAR_LOCATION,
-        useValue: {pathname: fakePath}
+        useValue: {getPathname: () => fakePath}
       }]
     }).compileComponents();
 
@@ -121,6 +123,23 @@ describe('MatProgressBar', () => {
 
         const svg = fixture.debugElement.query(By.css('svg')).nativeElement;
         expect(svg.getAttribute('focusable')).toBe('false');
+      });
+
+      it('should use latest path when prefixing the SVG references', () => {
+        let fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        let rect = fixture.debugElement.query(By.css('rect')).nativeElement;
+        expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/fake-path#.*['"]?\)$/);
+
+        fixture.destroy();
+        fakePath = '/another-fake-path';
+
+        fixture = TestBed.createComponent(BasicProgressBar);
+        fixture.detectChanges();
+        rect = fixture.debugElement.query(By.css('rect')).nativeElement;
+
+        expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/another-fake-path#.*['"]?\)$/);
       });
     });
 
