@@ -26,6 +26,7 @@ import {COMMON_PIPES} from './pipes/index';
  * * The `exports` options make the declared directives and pipes available for import
  * by other NgModules.
  *
+ * @publicApi
  */
 @NgModule({
   declarations: [COMMON_DIRECTIVES, COMMON_PIPES],
@@ -41,6 +42,7 @@ export class CommonModule {
  * A module that contains the deprecated i18n pipes.
  *
  * @deprecated from v5
+ * @publicApi
  */
 @NgModule({
   declarations: [COMMON_DEPRECATED_I18N_PIPES],

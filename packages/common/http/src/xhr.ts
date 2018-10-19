@@ -33,7 +33,7 @@ function getResponseUrl(xhr: any): string|null {
 /**
  * A wrapper around the `XMLHttpRequest` constructor.
  *
- *
+ * @publicApi
  */
 export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 
@@ -62,7 +62,7 @@ interface PartialResponse {
  * An `HttpBackend` which uses the XMLHttpRequest API to send
  * requests to a backend server.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {

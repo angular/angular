@@ -12,6 +12,8 @@ import {DOCUMENT} from './dom_tokens';
 
 /**
  * Manages the scroll position.
+ *
+ * @publicApi
  */
 export abstract class ViewportScroller {
   // De-sugared tree-shakable injection
