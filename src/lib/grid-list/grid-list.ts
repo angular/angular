@@ -85,12 +85,13 @@ export class MatGridList implements MatGridListBase, OnInit, AfterContentChecked
   /** Size of the grid list's gutter in pixels. */
   @Input()
   get gutterSize(): string { return this._gutter; }
-  set gutterSize(value: string) { this._gutter = `${value || ''}`; }
+  set gutterSize(value: string) { this._gutter = `${value == null ? '' : value}`; }
 
   /** Set internal representation of row height from the user-provided value. */
   @Input()
+  get rowHeight(): string | number { return this._rowHeight; }
   set rowHeight(value: string | number) {
-    const newValue = `${value || ''}`;
+    const newValue = `${value == null ? '' : value}`;
 
     if (newValue !== this._rowHeight) {
       this._rowHeight = newValue;

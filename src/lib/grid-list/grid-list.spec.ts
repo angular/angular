@@ -46,6 +46,14 @@ describe('MatGridList', () => {
     }).not.toThrow();
   });
 
+  it('should preserve value when zero is set as row height', () => {
+    const fixture = createComponent(GridListWithUnspecifiedRowHeight);
+    const gridList = fixture.debugElement.query(By.directive(MatGridList)).componentInstance;
+
+    gridList.rowHeight = 0;
+    expect(gridList.rowHeight).toBe('0');
+  });
+
   it('should set the columns to zero if a negative number is passed in', () => {
     const fixture = createComponent(GridListWithDynamicCols);
     fixture.detectChanges();
@@ -137,6 +145,24 @@ describe('MatGridList', () => {
     // check vertical gutter
     expect(getStyle(tiles[0], 'height')).toBe('100px');
     expect(getStyle(tiles[2], 'top')).toBe('101px');
+  });
+
+  it('should be able to set the gutter size to zero', () => {
+    const fixture = createComponent(GridListWithUnspecifiedGutterSize);
+    const gridList = fixture.debugElement.query(By.directive(MatGridList));
+
+    gridList.componentInstance.gutterSize = 0;
+    fixture.detectChanges();
+
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+
+    // check horizontal gutter
+    expect(getStyle(tiles[0], 'width')).toBe('100px');
+    expect(getComputedLeft(tiles[1])).toBe(100);
+
+    // check vertical gutter
+    expect(getStyle(tiles[0], 'height')).toBe('100px');
+    expect(getStyle(tiles[2], 'top')).toBe('100px');
   });
 
   it('should lay out the tiles correctly for a nested grid list', () => {
