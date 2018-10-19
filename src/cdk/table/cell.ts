@@ -55,7 +55,11 @@ export const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase =
  */
 @Directive({
   selector: '[cdkColumnDef]',
-  inputs: ['sticky']
+  inputs: ['sticky'],
+  providers: [{
+    provide: 'MAT_SORT_HEADER_COLUMN_DEF',
+    useExisting: CdkColumnDef
+  }],
 })
 export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   /** Unique name for this column. */

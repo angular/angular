@@ -14,7 +14,6 @@ ng_module(
     "@angular//packages/core",
     "@rxjs",
     "//src/cdk/coercion",
-    "//src/cdk/table",
     "//src/lib/core",
   ],
 )
