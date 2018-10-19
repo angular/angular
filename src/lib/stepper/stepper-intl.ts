@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Optional, SkipSelf} from '@angular/core';
 import {Subject} from 'rxjs';
 
 
@@ -22,3 +22,16 @@ export class MatStepperIntl {
   /** Label that is rendered below optional steps. */
   optionalLabel: string = 'Optional';
 }
+
+
+/** @docs-private */
+export function MAT_STEPPER_INTL_PROVIDER_FACTORY(parentIntl: MatStepperIntl) {
+  return parentIntl || new MatStepperIntl();
+}
+
+/** @docs-private */
+export const MAT_STEPPER_INTL_PROVIDER = {
+  provide: MatStepperIntl,
+  deps: [[new Optional(), new SkipSelf(), MatStepperIntl]],
+  useFactory: MAT_STEPPER_INTL_PROVIDER_FACTORY
+};
