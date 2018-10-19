@@ -86,6 +86,9 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   line-height: $mat-button-toggle-legacy-height;
   padding: $mat-button-toggle-legacy-padding;
 
+  // Prevents IE from shifting the content on click.
+  position: relative;
+
   .mat-button-toggle-appearance-standard & {
     line-height: $mat-button-toggle-standard-height;
     padding: $mat-button-toggle-standard-padding;
