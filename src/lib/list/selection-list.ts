@@ -33,7 +33,7 @@ import {
 import {
   CanDisableRipple, CanDisableRippleCtor,
   MatLine,
-  MatLineSetter,
+  setLines,
   mixinDisableRipple,
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -161,9 +161,7 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngAfterContentInit() {
-    // TODO: consider turning the setter into a function, it doesn't do anything as a class.
-    // tslint:disable-next-line:no-unused-expression
-    new MatLineSetter(this._lines, this._element);
+    setLines(this._lines, this._element);
   }
 
   ngOnDestroy(): void {

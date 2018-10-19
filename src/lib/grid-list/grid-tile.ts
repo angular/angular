@@ -19,7 +19,7 @@ import {
   ChangeDetectionStrategy,
   Inject,
 } from '@angular/core';
-import {MatLine, MatLineSetter} from '@angular/material/core';
+import {MatLine, setLines} from '@angular/material/core';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {MAT_GRID_LIST, MatGridListBase} from './grid-list-base';
 
@@ -70,17 +70,12 @@ export class MatGridTile {
   encapsulation: ViewEncapsulation.None,
 })
 export class MatGridTileText implements AfterContentInit {
-  /**
-   *  Helper that watches the number of lines in a text area and sets
-   * a class on the host element that matches the line count.
-   */
-  _lineSetter: MatLineSetter;
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
   constructor(private _element: ElementRef<HTMLElement>) {}
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._element);
+    setLines(this._lines, this._element);
   }
 }
 

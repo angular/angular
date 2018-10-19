@@ -12,6 +12,7 @@ import {
   ElementRef,
   QueryList,
 } from '@angular/core';
+import {startWith} from 'rxjs/operators';
 import {MatCommonModule} from '../common-behaviors/common-module';
 
 
@@ -30,38 +31,38 @@ export class MatLine {}
  * Helper that takes a query list of lines and sets the correct class on the host.
  * @docs-private
  */
+export function setLines(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>) {
+  // Note: doesn't need to unsubscribe, because `changes`
+  // gets completed by Angular when the view is destroyed.
+  lines.changes.pipe(startWith<QueryList<MatLine>>(lines)).subscribe(({length}) => {
+    setClass(element, 'mat-2-line', false);
+    setClass(element, 'mat-3-line', false);
+    setClass(element, 'mat-multi-line', false);
+
+    if (length === 2 || length === 3) {
+      setClass(element, `mat-${length}-line`, true);
+    } else if (length > 3) {
+      setClass(element, `mat-multi-line`, true);
+    }
+  });
+}
+
+/** Adds or removes a class from an element. */
+function setClass(element: ElementRef<HTMLElement>, className: string, isAdd: boolean): void {
+  const classList = element.nativeElement.classList;
+  isAdd ? classList.add(className) : classList.remove(className);
+}
+
+/**
+ * Helper that takes a query list of lines and sets the correct class on the host.
+ * @docs-private
+ * @deprecated Use `setLines` instead.
+ * @breaking-change 8.0.0
+ */
 export class MatLineSetter {
-  constructor(private _lines: QueryList<MatLine>, private _element: ElementRef<HTMLElement>) {
-    this._setLineClass(this._lines.length);
-
-    this._lines.changes.subscribe(() => {
-      this._setLineClass(this._lines.length);
-    });
+  constructor(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>) {
+    setLines(lines, element);
   }
-
-  private _setLineClass(count: number): void {
-    this._resetClasses();
-    if (count === 2 || count === 3) {
-      this._setClass(`mat-${count}-line`, true);
-    } else if (count > 3) {
-      this._setClass(`mat-multi-line`, true);
-    }
-  }
-
-  private _resetClasses(): void {
-    this._setClass('mat-2-line', false);
-    this._setClass('mat-3-line', false);
-    this._setClass('mat-multi-line', false);
-  }
-
-  private _setClass(className: string, isAdd: boolean): void {
-    if (isAdd) {
-      this._element.nativeElement.classList.add(className);
-    } else {
-      this._element.nativeElement.classList.remove(className);
-    }
-  }
-
 }
 
 @NgModule({
