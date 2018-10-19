@@ -67,7 +67,7 @@ export class NoPreloading implements PreloadingStrategy {
  *
  * If a route is protected by `canLoad` guards, the preloaded will not load it.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class RouterPreloader implements OnDestroy {

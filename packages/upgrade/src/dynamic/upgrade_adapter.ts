@@ -99,6 +99,7 @@ let upgradeCount: number = 0;
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
  * [Ahead-of-Time compilation](guide/aot-compiler).
+ * @publicApi
  */
 export class UpgradeAdapter {
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
@@ -655,6 +656,7 @@ class ParentInjectorPromise {
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
  * [Ahead-of-Time compilation](guide/aot-compiler).
+ * @publicApi
  */
 export class UpgradeAdapterRef {
   /* @internal */

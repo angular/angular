@@ -55,7 +55,7 @@ export class RouterEvent {
  *
  * Represents an event triggered when a navigation starts.
  *
- *
+ * @publicApi
  */
 export class NavigationStart extends RouterEvent {
   /**
@@ -104,7 +104,7 @@ export class NavigationStart extends RouterEvent {
  *
  * Represents an event triggered when a navigation ends successfully.
  *
- *
+ * @publicApi
  */
 export class NavigationEnd extends RouterEvent {
   constructor(
@@ -128,7 +128,7 @@ export class NavigationEnd extends RouterEvent {
  *
  * Represents an event triggered when a navigation is canceled.
  *
- *
+ * @publicApi
  */
 export class NavigationCancel extends RouterEvent {
   constructor(
@@ -150,7 +150,7 @@ export class NavigationCancel extends RouterEvent {
  *
  * Represents an event triggered when a navigation fails due to an unexpected error.
  *
- *
+ * @publicApi
  */
 export class NavigationError extends RouterEvent {
   constructor(
@@ -174,7 +174,7 @@ export class NavigationError extends RouterEvent {
  *
  * Represents an event triggered when routes are recognized.
  *
- *
+ * @publicApi
  */
 export class RoutesRecognized extends RouterEvent {
   constructor(
@@ -405,6 +405,8 @@ export class ActivationEnd {
  * @description
  *
  * Represents a scrolling event.
+ *
+ * @publicApi
  */
 export class Scroll {
   constructor(
@@ -447,7 +449,7 @@ export class Scroll {
  * - `NavigationError`
  * - `Scroll`
  *
- *
+ * @publicApi
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
     ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;

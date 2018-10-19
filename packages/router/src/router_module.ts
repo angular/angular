@@ -45,7 +45,7 @@ const ROUTER_DIRECTIVES =
  *
  * Is used in DI to configure the router.
  *
- *
+ * @publicApi
  */
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
 
@@ -128,7 +128,7 @@ export function routerNgProbeToken() {
  * [Read this developer guide](https://angular.io/docs/ts/latest/guide/router.html) to get an
  * overview of how the router should be used.
  *
- *
+ * @publicApi
  */
 @NgModule({
   declarations: ROUTER_DIRECTIVES,
@@ -236,7 +236,7 @@ export function provideForRootGuard(router: Router): any {
  * class MyNgModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export function provideRoutes(routes: Routes): any {
   return [
@@ -278,7 +278,7 @@ export type InitialNavigation =
  *
  * Represents options to configure the router.
  *
- *
+ * @publicApi
  */
 export interface ExtraOptions {
   /**
