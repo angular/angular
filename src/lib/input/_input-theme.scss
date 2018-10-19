@@ -26,6 +26,21 @@
     @include input-placeholder {
       color: _mat-control-placeholder-color($theme);
     }
+
+    // On dark themes we set the native `select` color to some shade of white,
+    // however the color propagates to all of the `option` elements, which are
+    // always on a white background inside the dropdown, causing them to blend in.
+    // Since we can't change background of the dropdown, we need to explicitly
+    // reset the color of the options to something dark.
+    @if (map-get($theme, is-dark)) {
+      option {
+        color: $dark-primary-text;
+      }
+
+      option:disabled {
+        color: $dark-disabled-text;
+      }
+    }
   }
 
   .mat-accent .mat-input-element {
