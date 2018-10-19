@@ -40,6 +40,7 @@ export function runBenchmark(config: {
   if (config.setup) {
     config.setup();
   }
+  if (!cmdArgs) readCommandLine();
   const description: {[key: string]: any} = {'bundles': cmdArgs.bundles};
   config.params.forEach((param) => { description[param.name] = param.value; });
   return runner.sample({

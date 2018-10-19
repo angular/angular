@@ -1,10 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
 load("//packages/bazel:index.bzl", "protractor_web_test")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
-ts_library(
+ng_module(
     name = "largetable_lib",
     srcs = glob(
         [
@@ -12,18 +12,20 @@ ts_library(
         ],
         exclude = ["protractor.on-prepare.ts"],
     ),
+    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/largetable:util_lib",
         "//packages:types",
+        "//packages/common",
         "//packages/core",
-        "@rxjs",
     ],
 )
 
 ng_rollup_bundle(
     name = "bundle",
     entry_point = "modules/benchmarks/src/largetable/render3/index.js",
+    tags = ["ivy-only"],
     deps = [
         ":largetable_lib",
     ],
@@ -44,6 +46,7 @@ ts_devserver(
         "index.html",
         ":favicon",
     ],
+    tags = ["ivy-only"],
 )
 
 protractor_web_test(
@@ -59,7 +62,7 @@ protractor_web_test(
     ],
     on_prepare = ":protractor.on-prepare.js",
     server = ":devserver",
-    tags = ["manual"],
+    tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/largetable:perf_lib",
     ],
