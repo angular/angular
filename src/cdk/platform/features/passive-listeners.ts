@@ -26,3 +26,14 @@ export function supportsPassiveEventListeners(): boolean {
 
   return supportsPassiveEvents;
 }
+
+/**
+ * Normalizes an `AddEventListener` object to something that can be passed
+ * to `addEventListener` on any browser, no matter whether it supports the
+ * `options` parameter.
+ * @param options Object to be normalized.
+ */
+export function normalizePassiveListenerOptions(options: AddEventListenerOptions):
+  AddEventListenerOptions | boolean {
+  return supportsPassiveEventListeners() ? options : !!options.capture;
+}

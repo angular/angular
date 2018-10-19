@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
+import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {
   Directive,
   ElementRef,
@@ -37,7 +37,7 @@ type MonitoredElementInfo = {
 
 
 /** Options to pass to the animationstart listener. */
-const listenerOptions: any = supportsPassiveEventListeners() ? {passive: true} : false;
+const listenerOptions = normalizePassiveListenerOptions({passive: true});
 
 
 /**

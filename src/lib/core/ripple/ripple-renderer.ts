@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ElementRef, NgZone} from '@angular/core';
-import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
+import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
 import {RippleRef, RippleState} from './ripple-ref';
 
@@ -57,6 +57,9 @@ export const defaultRippleAnimationConfig = {
  */
 const ignoreMouseEventsTimeout = 800;
 
+/** Options that apply to all the event listeners that are bound by the ripple renderer. */
+const passiveEventOptions = normalizePassiveListenerOptions({passive: true});
+
 /**
  * Helper service that performs DOM manipulations. Not intended to be used outside this module.
  * The constructor takes a reference to the ripple directive's host element and a map of DOM
@@ -85,9 +88,6 @@ export class RippleRenderer {
 
   /** Time in milliseconds when the last touchstart event happened. */
   private _lastTouchStartEvent: number;
-
-  /** Options that apply to all the event listeners that are bound by the renderer. */
-  private _eventOptions = supportsPassiveEventListeners() ? ({passive: true} as any) : false;
 
   /**
    * Cached dimensions of the ripple container. Set when the first
@@ -235,8 +235,9 @@ export class RippleRenderer {
     this._removeTriggerEvents();
 
     this._ngZone.runOutsideAngular(() => {
-      this._triggerEvents.forEach((fn, type) =>
-          element.addEventListener(type, fn, this._eventOptions));
+      this._triggerEvents.forEach((fn, type) => {
+        element.addEventListener(type, fn, passiveEventOptions);
+      });
     });
 
     this._triggerElement = element;
@@ -305,7 +306,7 @@ export class RippleRenderer {
   _removeTriggerEvents() {
     if (this._triggerElement) {
       this._triggerEvents.forEach((fn, type) => {
-        this._triggerElement!.removeEventListener(type, fn, this._eventOptions);
+        this._triggerElement!.removeEventListener(type, fn, passiveEventOptions);
       });
     }
   }

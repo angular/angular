@@ -8,12 +8,12 @@
 
 import {Injectable, NgZone, OnDestroy, Inject} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {supportsPassiveEventListeners} from '@angular/cdk/platform';
+import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {Subject} from 'rxjs';
 import {toggleNativeDragInteractions} from './drag-styling';
 
 /** Event options that can be used to bind an active event. */
-const activeEventOptions = supportsPassiveEventListeners() ? {passive: false} : false;
+const activeEventOptions = normalizePassiveListenerOptions({passive: false});
 
 /** Handler for a pointer event callback. */
 type PointerEventHandler = (event: TouchEvent | MouseEvent) => void;

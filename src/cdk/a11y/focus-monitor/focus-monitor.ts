@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
+import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {
   Directive,
   ElementRef,
@@ -243,8 +243,10 @@ export class FocusMonitor implements OnDestroy {
 
     // Event listener options that enable capturing and also mark the the listener as passive
     // if the browser supports it.
-    const captureEventListenerOptions = supportsPassiveEventListeners() ?
-      {passive: true, capture: true} : true;
+    const captureEventListenerOptions = normalizePassiveListenerOptions({
+      passive: true,
+      capture: true
+    });
 
     // Note: we listen to events in the capture phase so we can detect them even if the user stops
     // propagation.
