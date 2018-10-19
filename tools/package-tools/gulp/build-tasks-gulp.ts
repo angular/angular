@@ -30,8 +30,14 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
   // Name of all dependencies of the current package.
   const dependencyNames = buildPackage.dependencies.map(p => p.name);
 
-  // Glob that matches all style files that need to be copied to the package output.
-  const stylesGlob = join(buildPackage.sourceDir, '**/*.css');
+  // Glob that matches all style files that need to be copied to the package output. Besides CSS
+  // files that will be copied (e.g. in the examples package), we copy the source SCSS files that
+  // start with an underscore. These files can be packaged into the release output if the
+  // build package `copySecondaryEntryPointStylesToRoot` option is enabled (e.g. _overlay.scss).
+  const styleGlobs = [
+    join(buildPackage.sourceDir, '**/*.css'),
+    join(buildPackage.sourceDir, '**/_*.scss'),
+  ];
 
   // Glob that matches every HTML file in the current package.
   const htmlGlob = join(buildPackage.sourceDir, '**/*.html');
@@ -119,7 +125,7 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
   );
 
   task(`${taskName}:assets:copy-styles`, () => {
-    return src(stylesGlob)
+    return src(styleGlobs)
         .pipe(dest(buildPackage.outputDir))
         .pipe(dest(buildPackage.esm5OutputDir));
   });
