@@ -29,42 +29,19 @@ export const controlNameBinding: any = {
 
 /**
  * @description
- *
  * Syncs a `FormControl` in an existing `FormGroup` to a form control
  * element by name.
- *
- * This directive ensures that any values written to the `FormControl`
- * instance programmatically will be written to the DOM element (model -> view). Conversely,
- * any values written to the DOM element through user input will be reflected in the
- * `FormControl` instance (view -> model).
+ * 
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `FormControl`
+ * @see `AbstractControl`
  *
  * @usageNotes
- * This directive is designed to be used with a parent `FormGroupDirective` (selector:
- * `[formGroup]`).
+ * 
+ * ### Register `FormControl` within a group
  *
- * It accepts the string name of the `FormControl` instance you want to
- * link, and will look for a `FormControl` registered with that name in the
- * closest `FormGroup` or `FormArray` above it.
- *
- * **Access the control**: You can access the `FormControl` associated with
- * this directive by using the {@link AbstractControl#get get} method.
- * Ex: `this.form.get('first');`
- *
- * **Get value**: the `value` property is always synced and available on the `FormControl`.
- * See a full list of available properties in `AbstractControl`.
- *
- *  **Set value**: You can set an initial value for the control when instantiating the
- *  `FormControl`, or you can set it programmatically later using
- *  {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
- *
- * **Listen to value**: If you want to listen to changes in the value of the control, you can
- * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
- * re-calculated.
- *
- * ### Example
- *
- * In this example, we create form controls for first name and last name.
+ * The following example shows how to register multiple form controls within a form group
+ * and set their value.
  *
  * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
  *
@@ -150,14 +127,32 @@ export const controlNameBinding: any = {
 @Directive({selector: '[formControlName]', providers: [controlNameBinding]})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
-  /** @internal */
+  /**
+   * @description
+   * Internal reference to the view model value.
+   * @internal
+   */
   viewModel: any;
+
+  /**
+   * @description
+   * Tracks the `FormControl` instance bound to the directive.
+   */
   // TODO(issue/24571): remove '!'.
   readonly control !: FormControl;
 
+  /**
+   * @description
+   * Tracks the name of the `FormControl` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
+   */
   // TODO(issue/24571): remove '!'.
   @Input('formControlName') name !: string;
 
+  /**
+   * @description
+   * Triggers a warning that this input should not be used with reactive forms.
+   */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
@@ -170,6 +165,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   @Output('ngModelChange') update = new EventEmitter();
 
   /**
+   * @description
    * Static property used to track whether any ngModel warnings have been sent across
    * all instances of FormControlName. Used to support warning config of "once".
    *
@@ -178,6 +174,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   static _ngModelWarningSentOnce = false;
 
   /**
+   * @description
    * Instance property used to track whether an ngModel warning has been sent out for this
    * particular FormControlName instance. Used to support warning config of "always".
    *
@@ -200,6 +197,12 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
+  /**
+   * @description
+   * A lifecycle method called when the directive's inputs change. For internal use only.
+   *
+   * @param changes A object of key/value pairs for the set of changed inputs.
+   */
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
@@ -209,23 +212,54 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * @description
+   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
+   *
+   * @param changes A object of key/value pairs for the set of changed inputs.
+   */
   ngOnDestroy(): void {
     if (this.formDirective) {
       this.formDirective.removeControl(this);
     }
   }
 
+  /**
+   * @description
+   * Sets the new value for the view model and emits an `ngModelChange` event.
+   *
+   * @param newValue The new value for the view model.
+   */
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     this.update.emit(newValue);
   }
 
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
   get path(): string[] { return controlPath(this.name, this._parent !); }
 
+  /**
+   * @description
+   * The top-level directive for this group if present, otherwise null.
+   */
   get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
+  /**
+   * @description
+   * Synchronous validator function composed of all the synchronous validators
+   * registered with this directive.
+   */
   get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
+  /**
+   * @description
+   * Async validator function composed of all the async validators registered with this
+   * directive.
+   */
   get asyncValidator(): AsyncValidatorFn {
     return composeAsyncValidators(this._rawAsyncValidators) !;
   }
