@@ -85,7 +85,7 @@ export function jsonpCallbackContext(): Object {
  * If no names are supplied, the default cookie name is `XSRF-TOKEN`
  * and the default header name is `X-XSRF-TOKEN`.
  *
- *
+ * @publicApi
  */
 @NgModule({
   providers: [
@@ -138,7 +138,7 @@ export class HttpClientXsrfModule {
  * You can add interceptors to the chain behind `HttpClient` by binding them to the
  * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
  *
- *
+ * @publicApi
  */
 @NgModule({
   /**
@@ -175,7 +175,7 @@ export class HttpClientModule {
  * You can add interceptors to the chain behind `HttpClient` by binding them to the
  * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
  *
- *
+ * @publicApi
  */
 @NgModule({
   providers: [

@@ -15,7 +15,6 @@ export declare class MockLocationStrategy extends LocationStrategy {
     simulatePopState(url: string): void;
 }
 
-/** @experimental */
 export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;

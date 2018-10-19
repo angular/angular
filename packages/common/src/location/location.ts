@@ -44,6 +44,7 @@ export interface PopStateEvent {
  *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
+ * @publicApi
  */
 @Injectable()
 export class Location {
