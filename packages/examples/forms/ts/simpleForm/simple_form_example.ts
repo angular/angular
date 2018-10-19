@@ -8,8 +8,8 @@
 
 /* tslint:disable:no-console  */
 // #docregion Component
-import {Component} from '@angular/core';
-import {NgForm} from '@angular/forms';
+import { Component } from '@angular/core';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'example-app',
@@ -26,7 +26,7 @@ import {NgForm} from '@angular/forms';
     <p>Form valid: {{ f.valid }}</p>
   `,
 })
-export class SimpleFormComp {
+export class SimpleFormComponent {
   onSubmit(f: NgForm) {
     console.log(f.value);  // { first: '', last: '' }
     console.log(f.valid);  // false
