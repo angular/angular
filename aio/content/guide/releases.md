@@ -125,6 +125,14 @@ The following table provides the support status and key dates for Angular versio
         <td>November 3, 2019</td>
     </tr>
 
+     <tr>
+        <td>^7.0.0</td>
+        <td>Active</td>
+        <td>October 18, 2018</td>
+        <td>April 18, 2019</td>
+        <td>April 18, 2020</td>
+    </tr>
+
 </table>
 
 
