@@ -29,7 +29,7 @@ build --watchfs
 ###############################
 
 # Releases should always be stamped with version control info
-build --workspace_status_command=./tools/bazel_stamp_vars.sh
+build:release --workspace_status_command=./tools/bazel_stamp_vars.sh
 
 ###############################
 # Output                      #

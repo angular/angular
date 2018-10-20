@@ -55,25 +55,24 @@ ts_library(
     ],
 )
 
+_GOLDEN_TEST_DATA = [
+    "example_package.golden",
+    "//packages/bazel/test/ng_package/example:npm_package",
+    "@ngdeps//diff",
+]
+
 jasmine_node_test(
     name = "example_package",
     srcs = [":example_spec_lib"],
-    data = [
-        "example_package.golden",
-        "//packages/bazel/test/ng_package/example:npm_package",
-    ],
-    # TODO(alexeagle): re-enable this test
-    # see https://github.com/angular/angular/pull/22933
-    tags = ["manual"],
+    data = _GOLDEN_TEST_DATA,
 )
 
 nodejs_binary(
     name = "example_package.accept",
     testonly = True,
-    data = [
-        "example_package.golden",
+    data = _GOLDEN_TEST_DATA + [
         ":example_spec_lib",
-        "//packages/bazel/test/ng_package/example:npm_package",
+        "@ngdeps//tslib",
     ],
     entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
     templated_args = ["--accept"],
