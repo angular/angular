@@ -386,7 +386,10 @@ When building with the CLI, be sure to include the linked style file among the a
 -->
 Angular CLI가 애플리케이션을 빌드할 때 링크로 연결된 스타일 파일이 `assets` 폴더에 있고 빌드 결과에 제대로 포함되는지 꼭 확인하세요. `assets` 폴더를 활용하는 방법은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-asset-configuration)에서 소개합니다.
 
+<!--
 Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
+-->
+스타일 파일이 `assets` 폴더에 있다면 CLI가 이 스타일 파일을 빌드 결과물에 포함시키며, 컴포넌트에서는 애플리케이션 최상위 경로나 컴포넌트 파일의 상대경로로 이 스타일 파일을 참조할 수 있습니다.
 
 </div>
 
@@ -507,7 +510,10 @@ Choose from the following modes:
 컴포넌트 뷰는 이 섀도우 DOM 안에 들어가며, 이 때 컴포넌트의 스타일도 함께 섀도우 DOM에 포함됩니다.
 섀도우 DOM에 대한 자세한 내용은 [MDN](https://developer.mozilla.org) 사이트에서 제공하는 [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) 문서를 참고하세요.
 
+<!--
 * `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
+-->
+* `Native` 캡슐화 정책은 이전 버전(Shadow DOM v0)의 섀도우 DOM에 대한 것으로 변경되었습니다. [변경된 내용을 확인해 보세요](https://hayato.io/2016/shadowdomv1/).
 
 <!--
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
@@ -515,7 +521,7 @@ Choose from the following modes:
   For details, see [Appendix 1](guide/component-styles#inspect-generated-css).
 -->
 * 기본값인 `Emulated` 캡슐화 정책을 사용하면 Angular가 제공하는 섀도우 DOM을 사용하며, CSS 코드를 컴포넌트 뷰에 한정되도록 변경해서 적용합니다.
-좀 더 자세한 내용은 [생성된-css-코드-확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
+좀 더 자세한 내용은 [생성된 css 코드 확인하기](guide/component-styles#생성된-css-코드-확인하기) 섹션을 참고하세요.
 
 <!--
 * `None` means that Angular does no view encapsulation.
@@ -523,7 +529,7 @@ Choose from the following modes:
   The scoping rules, isolations, and protections discussed earlier don't apply.
   This is essentially the same as pasting the component's styles into the HTML.
 -->
-* `None` 캡슐화 정책을 사용하면 Angular가 뷰를 캡슐화하지 않습니다. Angular에서 지정한 CSS 스타일은 전역 스타일로 적용되며, 이전에 언급했던 스타일 적용 범위도 컴포넌트 안에만 제한되지 않습니다.
+* `None` 캡슐화 정책을 사용하면 Angular가 뷰를 캡슐화하지 않습니다. Angular에서 지정한 CSS 스타일은 전역 범위에 적용되며, 이전에 언급했던 스타일 적용 범위도 컴포넌트 안에만 제한되지 않습니다.
 이 특징 외에는 다른 캡슐화 정책과 비슷합니다.
 
 <!--

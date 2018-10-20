@@ -243,7 +243,7 @@ Although this example uses variable assignment to initialize the components, you
 <!--
 This app uses more terse "variable assignment" style simply for brevity.
 -->
-하지만 이 예제만 보면 클래스에 변수를 선언하면서 초기값을 할당하는 것이 간결하니 이 방식을 계속 사용하겠습니다.
+이 예제만 보면 클래스에 변수를 선언하면서 초기값을 할당하는 것이 간결하니 이 방식을 계속 사용하겠습니다.
 
 {@a ngFor}
 

@@ -116,7 +116,7 @@ export class OldLogger {
   providers:
     // #docregion providers-6a
     [ NewLogger,
-      // Not aliased! Creates two instances of `NewLogger`
+      // 별칭으로 지정한 것이 아닙니다! `NewLogger`의 인스턴스는 2개 생성됩니다.
       { provide: OldLogger, useClass: NewLogger}]
     // #enddocregion providers-6a
 })
@@ -139,7 +139,7 @@ export class Provider6aComponent {
   providers:
     // #docregion providers-6b
     [ NewLogger,
-      // Alias OldLogger w/ reference to NewLogger
+      // OldLogger는 NewLogger를 가리키는 이름으로 지정됩니다.
       { provide: OldLogger, useExisting: NewLogger}]
     // #enddocregion providers-6b
 })
@@ -157,7 +157,7 @@ export class Provider6bComponent {
 //////////////////////////////////////////
 
 // #docregion silent-logger
-// An object in the shape of the logger service
+// Logger 서비스와 모양이 같은 객체
 export function SilentLoggerFn() {}
 
 const silentLogger = {
@@ -205,7 +205,7 @@ export class Provider8Component {
   template: template,
   /*
    // #docregion providers-9-interface
-   // FAIL! Can't use interface as provider token
+   // 에러! 인터페이스는 프로바이더 토큰으로 사용할 수 없습니다.
    [{ provide: AppConfig, useValue: HERO_DI_CONFIG })]
    // #enddocregion providers-9-interface
    */
@@ -217,7 +217,7 @@ export class Provider9Component implements OnInit {
   log: string;
   /*
    // #docregion provider-9-ctor-interface
-   // FAIL! Can't inject using the interface as the parameter type
+   // 에러! 인자의 타입으로 인터페이스를 지정하면 의존성 주입이 동작하지 않습니다.
    constructor(private config: AppConfig){ }
    // #enddocregion provider-9-ctor-interface
    */

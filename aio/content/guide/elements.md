@@ -190,14 +190,12 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Opera</td>
-  <td>Safari</td>
   <!--
   <td>Supported natively.</td>
   -->
   <td>네이티브로 지원</td>
 </tr>
 <tr>
-  <td>Safari</td>
   <td>Safari</td>
   <!--
   <td>Supported natively.</td>
@@ -209,7 +207,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <!--
   <td> Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true. Planned to be enabled by default in version 60/61.</td>
   -->
-  <td><code>dom.webcomponents.enabled</code>와 <code>dom.webcomponents.customelements.enabled</code>를 <code>true</code>로 설정하면 사용할 수 있습니다. 60/61 버전부터는 기본 지원하는 것으로 계획되어 있습니다.</td>
+  <td><code>dom.webcomponents.enabled</code>와 <code>dom.webcomponents.customelements.enabled</code>를 <code>true</code>로 설정하면 사용할 수 있습니다. 60/61 버전부터는 기본 지원할 예정입니다.</td>
 </tr>
 <tr>
   <td>Edge</td>
