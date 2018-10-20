@@ -349,7 +349,7 @@ export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<a
 /** @experimental */
 export declare abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
-    abstract shouldAttach(futureRoute: ActivatedRouteSnapshot, currentRoute?: ActivatedRouteSnapshot|null): boolean;
+    abstract shouldAttach(futureRoute: ActivatedRouteSnapshot, currentRoute?: ActivatedRouteSnapshot | null): boolean;
     abstract shouldDetach(currentRoute: ActivatedRouteSnapshot, futureRoute?: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
