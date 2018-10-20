@@ -60,7 +60,7 @@ protractor_web_test(
         "@ngdeps//reflect-metadata",
         "@ngdeps//yargs",
     ],
-    on_prepare = ":protractor.on-prepare.js",
+    on_prepare = ":protractor.on_prepare.js",
     server = ":devserver",
     tags = ["ivy-only"],
     deps = [
