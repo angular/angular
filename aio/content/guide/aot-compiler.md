@@ -453,7 +453,7 @@ The compiler understands all syntax forms that the _collector_ supports, but it 
 
 The compiler can only reference _exported symbols_.
 
-Decorated component class members must be public. You cannot make an `@Input()` property private or internal.
+Decorated component class members must be public. You cannot make an `@Input()` property private or protected.
 
 Data bound properties must also be public.
 
