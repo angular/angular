@@ -379,7 +379,7 @@ to allow it to be imported from template factory modules. See
 Setting this option to `false` disables this rewriting, requiring the rewriting to be
 done manually.
 -->
-Angular 템플릿 컴파일러는 어노테이션에 있는 코드 중 이미 사용된 코드나, 앞으로 사용될 수 있는 코드를 템플릿 팩토리 모듈에 처리하기 위해 변환합니다. 자세한 내용은 [메타데이터 재작성](#metadata-rewriting) 부분을 참고하세요.
+Angular 템플릿 컴파일러는 어노테이션에 있는 코드 중 이미 사용된 코드나, 앞으로 사용될 수 있는 코드를 템플릿 팩토리 모듈에 처리하기 위해 변환합니다. 자세한 내용은 [메타데이터 재구축](#metadata-rewriting) 부분을 참고하세요.
 
 이 옵션을 `false`로 설정하면 이 동작을 하지 않습니다. 수동으로 이 동작을 해야 할 때 설정하세요.
 
@@ -840,12 +840,22 @@ If an expression is not foldable, the collector writes it to `.metadata.json` as
 -->
 표현식이 폴딩될 수 없는 경우에는 콜렉터가 이 코드를 [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) 형식으로 `.metadata.json`에 생성하며, 이 결과물은 이후에 AOT 컴파일러가 처리합니다.
 
+<!--
 ## Phase 2: code generation
+-->
+## 2단계: 코드 생성
 
+<!--
 The _collector_ makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
+-->
+_콜렉터_ 는 메타데이터를 이해하는 것이 아니라 메타데이터를 찾아서 `.metadata.json`에 모으는 역할만 합니다. 그리고 이 과정에서 메타데이터에 사용된 문법에 오류가 있는지도 검사합니다.
 
+<!--
 It's the compiler's job to interpret the `.metadata.json` in the code generation phase.
+-->
+`.mdtadata.json` 파일을 해석해서 코드를 생성하는 것은 컴파일러의 역할입니다.
 
+<!--
 The compiler understands all syntax forms that the _collector_ supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
 
 The compiler can only reference _exported symbols_.
@@ -853,7 +863,16 @@ The compiler can only reference _exported symbols_.
 Decorated component class members must be public. You cannot make an `@Input()` property private or internal.
 
 Data bound properties must also be public.
+-->
+컴파일러는 _콜렉터_ 가 처리할 수 있었던 문법을 모두 처리할 수 있지만, 콜렉터와 다르게 메타데이터가 _문법적으로_ 컴파일 규칙에 어긋나면 에러를 발생시킵니다.
 
+컴파일러는 _export 키워드가 사용된 심볼_ 만 참조할 수 있습니다.
+
+컴포넌트 클래스 멤버에 데코레이터가 사용되면 이 멤버는 반드시 public이어야 합니다. private 프로퍼티에는 `@Input()` 데코레이터를 사용할 수 없습니다.
+
+데이터 바인딩으로 연결된 프로퍼티도 반드시 public이어야 합니다.
+
+<!--
 ```typescript
 // BAD CODE - title is private
 @Component({
@@ -864,20 +883,49 @@ export class AppComponent {
   private title = 'My App'; // Bad
 }
 ```
+-->
+```typescript
+// 잘못된 코드 - title이 private으로 지정되었습니다.
+@Component({
+  selector: 'app-root',
+  template: '<h1>{{title}}</h1>'
+})
+export class AppComponent {
+  private title = 'My App'; // 오류
+}
+```
 
 {@a supported-functions}
+<!--
 Most importantly, the compiler only generates code to create instances of certain classes, support certain decorators, and call certain functions from the following lists.
+-->
+컴파일러가 생성할 수 있는 클래스는 일부 목록으로 제한되며, 지원하는 데코레이터도 제한되어 있고, 실행할 수 있는 함수도 제한되어 있습니다. 다음 목록을 참고하세요.
 
 
+<!--
 ### New instances
+-->
+### 인스턴스 생성
 
+<!--
 The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.
+-->
+AOT 컴파일러는 `@angular/core`의 `InjectionToken`으로 등록된 클래스의 인스턴스만 생성할 수 있습니다.
 
+<!--
 ### Annotations/Decorators
+-->
+### 어노테이션/데코레이터
 
+<!--
 The compiler only supports metadata for these Angular decorators.
+-->
+컴파일러는 다음 목록에 해당하는 Angular 데코레이터만 지원합니다.
 
+<!--
 Decorator         | Module
+-->
+데코레이터         | 모듈
 ------------------|--------------
 `Attribute`       | `@angular/core`
 `Component`       | `@angular/core`
@@ -899,12 +947,20 @@ Decorator         | Module
 `ViewChild`       | `@angular/core`
 
 
+<!--
 ### Macro-functions and macro-static methods
+-->
+### 매크로 함수와 정적 매크로 메소드
 
+<!--
 The compiler also supports _macros_ in the form of functions or static
 methods that return an expression.
 
 For example, consider the following function:
+-->
+AOT 컴파일러는 함수 형태로 된 _매크로_ 와 표현식을 반환하는 정적 메소드도 지원합니다.
+
+다음과 같은 함수가 정의되어 있다고 합시다:
 
 ```typescript
 export function wrapInArray<T>(value: T): T[] {
@@ -912,9 +968,15 @@ export function wrapInArray<T>(value: T): T[] {
 }
 ```
 
+<!--
 You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset.
+-->
+그러면 이 `wrapInArray` 함수를 메타데이터 정의에 사용할 수 있습니다. 왜냐하면 이 함수는 컴파일러가 처리할 수 있는 형태의 결과물을 반환하기 때문입니다.
 
+<!--
 You might use  `wrapInArray()` like this:
+-->
+그래서 이 함수는 이렇게 사용할 수 있습니다:
 
 ```typescript
 @NgModule({
@@ -923,7 +985,10 @@ You might use  `wrapInArray()` like this:
 export class TypicalModule {}
 ```
 
+<!--
 The compiler treats this usage as if you had written:
+-->
+이 코드는 다음 코드와 동일하게 처리됩니다.
 
 ```typescript
 @NgModule({
@@ -932,23 +997,37 @@ The compiler treats this usage as if you had written:
 export class TypicalModule {}
 ```
 
+<!--
 The collector is simplistic in its determination of what qualifies as a macro
 function; it can only contain a single `return` statement.
+-->
+콜렉터가 처리할 수 있는 매크로 함수의 기준은 단순합니다. 함수가 `return` 키워드로 무언가를 반환하기만 하면 됩니다.
 
+<!--
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
 for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
+-->
+Angular [`RouterModule`](api/router/RouterModule)가 제공하는 메소드 중 애플리케이션의 최상위 라우팅을 정의하는 `forRoot`와 자식 라우팅을 정의하는 `forChild`가 정적 매크로 메소드입니다.
+[NgModules](guide/ngmodules) 설정이 복잡할 때 매크로 함수를 활용하면 이 설정을 좀 더 간단하게 작성할 수 있습니다. [소스 코드](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")를 보면서 내용을 확인해 보세요.
 
 {@a metadata-rewriting}
 
+<!--
 ### Metadata rewriting
+-->
+### 메타데이터 재구축
 
+<!--
 The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially. The compiler converts the expression initializing one of these fields into an exported variable, which replaces the expression. This process of rewriting these expressions removes all the restrictions on what can be in them because
 the compiler doesn't need to know the expression's value&mdash;it just needs to be able to generate a reference to the value.
+-->
+AOT 컴파일러는 메타데이터에 사용된 `useClass`, `useValue`, `useFactory`에 사용된 객체 리터럴과 `data` 프로퍼티를 처리해서 각각 `export`로 지정된 변수로 변환합니다. 컴파일러는 이 필드에 사용된 표현식 자체를 알 필요는 없습니다. 단순하게 결과만 참조하면 됩니다.
 
-
-
+<!--
 You might write something like:
+-->
+다음과 같은 코드가 있다고 합시다:
 
 ```typescript
 class TypicalServer {
@@ -961,9 +1040,14 @@ class TypicalServer {
 export class TypicalModule {}
 ```
 
+<!--
 Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
 
 To allow this, the compiler automatically rewrites this to something like:
+-->
+메타데이터 재구축 과정이 없다면 이 코드는 처리되지 않습니다. 왜나하면 AOT 컴파일러는 람다 함수를 지원하지 않으며, `TypicalServer` 클래스도 `export`로 지정되지 않았기 때문입니다.
+
+하지만 이 코드는 메타데이터 재구축 과정을 거치면서 다음과 같이 변환됩니다:
 
 ```typescript
 class TypicalServer {
@@ -978,11 +1062,16 @@ export const ɵ0 = () => new TypicalServer();
 export class TypicalModule {}
 ```
 
+<!--
 This allows the compiler to generate a reference to `ɵ0` in the
 factory without having to know what the value of `ɵ0` contains.
+-->
+그러면 AOT 컴파일러가 클래스를 직접 참조하지 않고 `ɵ0` 팩토리를 참조합니다.
 
+<!--
 The compiler does the rewriting during the emit of the `.js` file. This doesn't rewrite the `.d.ts` file, however, so TypeScript doesn't recognize it as being an export. Thus, it does not pollute the ES module's exported API.
-
+-->
+메타데이터 재구축 과정은 컴파일러가 `.js` 파일을 생성할 때 이루어집니다. 그리고 이 과정은 `.d.ts` 파일을 수정하는 것이 아니기 때문에 TypeScript에서는 이 과정에 생성된 `export` 변수를 인식할 수 없습니다. 결과적으로 모듈이 제공하던 API도 영향을 받지 않습니다.
 
 ## Metadata Errors
 
