@@ -57,7 +57,7 @@ people who otherwise couldn't use the app at all.
 ### Show the first page quickly
 
 Displaying the first page quickly can be critical for user engagement.
-[53 percent of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.
+[53 percent of mobile site visits are abandoned](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/) if pages take longer than 3 seconds to load.
 Your app may have to launch faster to engage these users before they decide to do something else.
 
 With Angular Universal, you can generate landing pages for the app that look like the complete app.
