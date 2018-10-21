@@ -4,11 +4,6 @@
 # 컴포넌트 소개
 
 <!--
-<img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
--->
-<img src="generated/images/guide/architecture/hero-component.png" alt="컴포넌트" class="left">
-
-<!--
 A *component* controls a patch of screen called a *view*.
 For example, individual components define and control each of the following views from the [Tutorial](tutorial):
 -->
@@ -35,16 +30,16 @@ Its `selectHero()` method sets a `selectedHero` property when the user clicks to
 The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. 
 The service is provided to the component through the dependency injection system.
 -->
-예를 들면 `HeroListComponent`는 히어로의 목록을 받아서 저장하도록 `heroes` 프로퍼티를 선언할 수 있습니다. 이 프로퍼티에 저장된 목록은 화면에 표시되며,  사용자가 화면에서 히어로 목록 중 하나를 클릭했을 때 `selectHero()` 메소드가 `selectedHero` 프로퍼티를 갱신하도록 구현할 수 있습니다. 컴포넌트는 생성자에 TypeScript [인자 프로퍼티(parameter property)](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties)를 지정해서 서비스를 의존성으로 주입받을 수 있으며, 히어로 데이터는 이 서비스를 통해 가져옵니다.
+예를 들면 `HeroListComponent`는 히어로의 목록을 받아서 저장하도록 `heroes` 프로퍼티를 선언할 수 있습니다.
+이 프로퍼티에 저장된 목록은 화면에 표시되며,  사용자가 화면에서 히어로 목록 중 하나를 클릭했을 때 `selectHero()` 메소드가 `selectedHero` 프로퍼티를 갱신하도록 구현할 수 있습니다.
+컴포넌트는 생성자에 TypeScript [인자 프로퍼티(parameter property)](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties)를 지정해서 서비스를 의존성으로 주입받을 수 있으며, 히어로 데이터는 이 서비스를 통해 가져옵니다.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
 <!--
 Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
 -->
 Angular는 사용자의 동작에 따라 컴포넌트를 생성하고 갱신하며 종료시킵니다. 그리고 컴포넌트가 동작하는 각 라이프싸이클은 [라이프싸이클 후킹 함수](guide/lifecycle-hooks)로 가로채서 각 시점에 필요한 동작을 실행할 수 있습니다. 예를 들어 컴포넌트가 생성되는 시점을 활용하려면 `ngOnInit()` 함수를 정의하면 됩니다.
-
-<hr/>
 
 <!--
 ## Component metadata
@@ -72,14 +67,14 @@ In addition to containing or pointing to the template, the `@Component` metadata
 템플릿을 외부 파일에서 불러올지 컴포넌트 안에 포함시킬지는 `@Component` 메타데이터 설정에 의해 결정됩니다. 그리고 의존성으로 주입받아야 하는 서비스가 있다면 이 내용도 메타데이터에 지정할 수 있습니다.
 
 <!--
- Here's an example of basic metadata for `HeroListComponent`:
+Here's an example of basic metadata for `HeroListComponent`.
 -->
 `HeroListComponent`에 사용된 메타데이터를 간단하게 살펴봅시다:
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
 
 <!--
- This example shows some of the most useful `@Component` configuration options:
+This example shows some of the most useful `@Component` configuration options:
 -->
 이 예제에 사용된 `@Component` 데코레이터의 메타데이터는 다른 컴포넌트에서도 많이 사용합니다:
 
@@ -115,7 +110,6 @@ You define a component's view with its companion template. A template is a form 
 -->
 컴포넌트의 뷰는 템플릿으로 정의하며, 템플릿이 화면에 렌더링되는 모양은 HTML 형식으로 정의합니다.
 
-<<<<<<< HEAD
 <!--
 Views are typically arranged hierarchically, allowing you to modify or show and hide entire UI sections or pages as a unit. The template immediately associated with a component defines that component's *host view*. The component can also define a *view hierarchy*, which contains *embedded views*, hosted by other components.
 -->
@@ -144,18 +138,17 @@ A template looks like regular HTML, except that it also contains Angular [templa
 템플릿은 자주 사용하는 HTML 문법과 비슷하며, 여기에 Angular가 제공하는 [템플릿 문법](guide/template-syntax)을 사용할 수 있습니다. 템플릿 문법은 애플리케이션이나 DOM 데이터에 따라 HTML을 조작하면서 뷰를 원하는대로 표시합니다. 그리고 템플릿은 애플리케이션 데이터나 DOM 데이터를 _데이터 바인딩_ 해서 표시할 수 있고, 이 때 *파이프* 를 사용해서 원하는 형식으로 표현할 수도 있으며, *디렉티브* 를 활용해서 간단한 로직을 더할수도 있습니다.
 
 <!--
-For example, here is a template for the Tutorial's `HeroListComponent`:
+For example, here is a template for the Tutorial's `HeroListComponent`.
 -->
 예를 들어 튜토리얼에서 살펴봤던 `HeroListComponent`의 템플릿은 다음과 같이 정의되어 있습니다:
 
-<code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
+<code-example path="architecture/src/app/hero-list.component.html" header="src/app/hero-list.component.html"></code-example>
 
 <!--
 This template uses typical HTML elements like `<h2>` and  `<p>`, and also includes Angular template-syntax elements,  `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`. The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.
 -->
 이 템플릿에는 일반적으로 HTML 문서에 사용되는 `<h2>`나 `<p>` 엘리먼트가 사용되었으며, `*ngFor`나 `{{hero.name}}`, `(click)`, `[hero]`, `<app-hero-detail>`와 같은 문법은 Angular의 템플릿 문법을 활용한 것입니다. 템플릿 문법을 사용하면 HTML를 화면에 렌더링할 때 애플리케이션의 로직이나 데이터를 활용할 수 있습니다.
 
-<!--
 * The `*ngFor` directive tells Angular to iterate over a list.
 * `{{hero.name}}`, `(click)`, and `[hero]` bind program data to and from the DOM, responding to user input. See more about [data binding](#data-binding) below.
 * The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.  
@@ -184,10 +177,7 @@ Angular supports *two-way data binding*, a mechanism for coordinating the parts 
 Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터 바인딩** 기능이 있습니다.
 템플릿 HTML에 어떤 항목을 바인딩하겠다고 선언하면, Angular가 해당 항목을 자동으로 처리합니다.
 
-<!--
-The following diagram shows the four forms of data binding markup. Each form has a direction&mdash;to the DOM, from the DOM, or in both directions.
--->
-옆에 있는 그림에서 보듯이 Angular가 제공하는 바인딩 문법은 4종류이며, DOM과 컴포넌트를 단방향/양방향으로 연결할 수 있습니다.
+The following diagram shows the four forms of data binding markup. Each form has a direction: to the DOM, from the DOM, or both.
 
 <figure>
 <!--
@@ -201,7 +191,7 @@ This example from the `HeroListComponent` template uses three of these forms.
 -->
 그리고 아래 `HeroListComponent` 템플릿에는 3가지 종류의 데이터 바인딩이 사용되었습니다.
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (binding)" region="binding"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
 <!--
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
@@ -228,7 +218,7 @@ Here's an example from the `HeroDetailComponent` template that uses two-way data
 [템플릿 기반의 폼](guide/forms)에서 많이 사용하는 양방향 데이터 바인딩은 프로퍼티 바인딩과 이벤트 바인딩을 합쳐놓은 문법입니다.
 `HeroDetailComponent`의 템플릿에 히어로의 이름을 양방향 바인딩한다면 `noModel` 디렉티브를 사용해서 다음과 같이 구현할 수 있습니다.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 <!--
 In two-way binding, a data property value flows to the input box from the component as with property binding.
@@ -269,54 +259,52 @@ Data binding plays an important role in communication between a template and its
 ### 파이프
 
 <!--
- Angular pipes let you declare display-value transformations in your template HTML. A class with the `@Pipe` decorator defines a function that transforms input values to output values for display in a view.
+Angular pipes let you declare display-value transformations in your template HTML. A class with the `@Pipe` decorator defines a function that transforms input values to output values for display in a view.
 -->
 Angular에서 제공하는 파이프를 사용하면 애플리케이션 데이터가 템플릿 HTML에 표시될 때 원하는 형식을 지정할 수 있습니다. 파이프는 원래값을 입력받고 새로운 형식의 값을 반환하는 함수에 `@Pipe` 데코레이터를 사용해서 Angular에 등록합니다.
 
 <!--
- Angular defines various pipes, such as the [date](https://angular.io/api/common/DatePipe) pipe and [currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
+Angular defines various pipes, such as the [date](https://angular.io/api/common/DatePipe) pipe and [currency](https://angular.io/api/common/CurrencyPipe) pipe; for a complete list, see the [Pipes API list](https://angular.io/api?type=pipe). You can also define new pipes.
 -->
 Angular는 여러가지 파이프를 기본으로 제공하는데, 이 중 [날짜](https://angular.io/api/common/DatePipe) 파이프와 [통화](https://angular.io/api/common/CurrencyPipe) 파이프는 자주 사용하게 될 것입니다. Angular에서 제공하는 파이프 목록을 확인하려면 [파이프 API 목록](https://angular.io/api?type=pipe) 문서를 참고하세요. 필요하다면 파이프를 새로 정의해서 사용할 수도 있습니다.
 
 <!--
- To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-syntax#pipe).
+To specify a value transformation in an HTML template, use the [pipe operator (|)](https://angular.io/guide/template-syntax#pipe).
 -->
 HTML 템플릿에 파이프를 적용할 때는 [파이프 연산자 (|)](https://angular.io/guide/template-syntax#pipe)를 다음과 같이 사용합니다:
 
 <!--
- `{{interpolated_value | pipe_name}}`
+`{{interpolated_value | pipe_name}}`
 -->
 `{{변환되는 값 | 파이프 이름}}`
 
 <!--
- You can chain pipes, sending the output of one pipe function to be transformed by another pipe function. A pipe can also take arguments that control how it performs its transformation. For example, you can pass the desired format to the `date` pipe:
+You can chain pipes, sending the output of one pipe function to be transformed by another pipe function. A pipe can also take arguments that control how it performs its transformation. For example, you can pass the desired format to the `date` pipe.
 -->
 한 파이프의 결과는 다른 파이프로 전달하면서 체이닝할 수도 있습니다. 그리고 파이프의 동작을 구체적으로 지정하기 위해 인자를 전달할 수도 있는데, 예를 들어 `date` 파이프는 다음과 같이 다양한 방식으로 활용할 수 있습니다.
 
 <!--
 ```
-<!- Default format: output 'Jun 15, 2015'->
-<p>Today is {{today | date}}</p>
+  <!-- Default format: output 'Jun 15, 2015'-->
+  <p>Today is {{today | date}}</p>
 
-<!- fullDate format: output 'Monday, June 15, 2015'->
-<p>The date is {{today | date:'fullDate'}}</p>
+ <!-- fullDate format: output 'Monday, June 15, 2015'-->
+ <p>The date is {{today | date:'fullDate'}}</p>
 
-<!- shortTime format: output '9:43 AM'->
-<p>The time is {{today | date:'shortTime'}}</p>
+  <!-- shortTime format: output '9:43 AM'-->
+  <p>The time is {{today | date:'shortTime'}}</p>
 ```
 -->
 ```
   <!-- 기본 형식: 'Jun 15, 2015'-->
   <p>Today is {{today | date}}</p>
 
-<!-- fullDate 형식: 'Monday, June 15, 2015'-->
-<p>The date is {{today | date:'fullDate'}}</p>
+ <!-- fullDate 형식: 'Monday, June 15, 2015'-->
+ <p>The date is {{today | date:'fullDate'}}</p>
 
-<!-- shortTime 형식: '9:43 AM'-->
-<p>The time is {{today | date:'shortTime'}}</p>
+  <!-- shortTime 형식: '9:43 AM'-->
+  <p>The time is {{today | date:'shortTime'}}</p>
 ```
-
-<hr/>
 
 <!--
 ### Directives
@@ -364,7 +352,7 @@ The example template uses two built-in structural directives to add application 
 -->
 구조 디렉티브는 DOM 엘리먼트를 추가하거나 제거, 치환하는 용도로 사용합니다. Angular에서 제공하는 구조 디렉티브를 템플릿에 사용하는 예제 코드를 확인해 보세요:
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
 <!--
 * [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
@@ -390,7 +378,7 @@ The `ngModel` directive, which implements two-way data binding, is an example of
 -->
 `ngModel` 디렉티브는 양방향 바인딩에 사용되며, 어트리뷰트 디렉티브의 한 종류입니다. `ngModel` 디렉티브는 일반적으로 `<input>`과 같은 입력 필드의 동작을 변형시켜 컴포넌트 프로퍼티의 값을 화면에 표시하거나 값이 변경되는 이벤트에 반응합니다.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 <!--
 Angular has more pre-defined directives that either alter the layout structure

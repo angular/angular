@@ -4,11 +4,6 @@
 # 모듈 소개
 
 <!--
-<img src="generated/images/guide/architecture/module.png" alt="Module" class="left">
--->
-<img src="generated/images/guide/architecture/module.png" alt="모듈" class="left">
-
-<!--
 Angular apps are modular and Angular has its own modularity system called *NgModules*. 
 NgModules are containers for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. They can contain components, service providers, and other code files whose scope is defined by the containing NgModule. They can import functionality that is exported from other NgModules, and export selected functionality for use by other NgModules.
 -->
@@ -60,18 +55,19 @@ NgModule은 클래스에 `@NgModule()` 데코레이터를 붙여서 정의하는
 * `bootstrap`: 애플리케이션의 최상위 뷰로 표시될 *최상위 컴포넌트* 를 지정합니다. `bootstrap` 프로퍼티는 *최상위 NgModule* 에만 지정할 수 있습니다.
 
 <!--
-Here's a simple root NgModule definition:
+Here's a simple root NgModule definition.
 -->
 최상위 NgModule을 간단하게 만들면 다음처럼 구현할 수 있습니다:
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts" linenums="false"></code-example>
 
 <div class="alert is-helpful">
 
+
 <!--
-  The `export` property of `AppComponent` is included here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
+   The `export` property of `AppComponent` is included here for illustration; it isn't actually necessary in this example. A root NgModule has no reason to *export* anything because other modules don't need to *import* the root NgModule.
 -->
-  이 코드에서 `exports` 프로퍼티는 이 프로퍼티를 어떻게 사용하는지 설명하기 위해 추가했습니다. 최상위 모듈은 다른 NgModule에서 참조할 일이 없기 때문에 어떤 구성요소라도 *exports* 로 지정할 필요가 없습니다.
+   이 코드에서 `exports` 프로퍼티는 이 프로퍼티를 어떻게 사용하는지 설명하기 위해 추가했습니다. 최상위 모듈은 다른 NgModule에서 참조할 일이 없기 때문에 어떤 구성요소라도 *exports* 로 지정할 필요가 없습니다.
 
 </div>
 
@@ -118,10 +114,10 @@ When you create a component, it's associated directly with a single view, called
 컴포넌트를 정의할 때는 *호스트 뷰(host view)* 라는 뷰가 연결됩니다. 호스트 뷰는 뷰 계층에서 컴포넌트가 차지하는 최상위 뷰를 가리키며, 뷰 안에 컴포넌트를 추가해서 _종속된 뷰(enbedded view)_ 를 자유롭게 구성할 수도 있습니다. 이 때 추가되는 컴포넌트는 부모 컴포넌트와 같은 NgModule에 있거나 다른 NgModule에서 가져온 컴포넌트가 될 수 있습니다.
 
 <div class="alert is-helpful">
-  <!--
+<!--
     **Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data. 
-	-->
-	**참고:** 뷰 계층은 Angular가 DOM이나 앱 데이터가 변할 때 변화를 감지하는 단위가 되기 때문에 효율적으로 구성하는 것이 중요합니다.
+-->
+    **참고:** 뷰 계층은 Angular가 DOM이나 앱 데이터가 변할 때 변화를 감지하는 단위가 되기 때문에 효율적으로 구성하는 것이 중요합니다.
 </div>
 
 <!--
