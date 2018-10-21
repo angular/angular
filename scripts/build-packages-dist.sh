@@ -63,6 +63,12 @@ buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
 
 IVY_JIT_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-jit.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 IVY_LOCAL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-local.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+
+# A clean is needed since build artifacts from previous build can break the following build
+bazel clean
 buildTargetPackages "$IVY_JIT_TARGETS" "dist/packages-dist-ivy-jit" "jit" "Ivy JIT"
+
+# A clean is needed since build artifacts from previous build can break the following build
+bazel clean
 buildTargetPackages "$IVY_LOCAL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
 
