@@ -8,7 +8,7 @@
 
 import {QueryList} from '../../linker';
 import {Type} from '../../type';
-import {LNode} from './node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
@@ -30,10 +30,10 @@ export interface LQueries {
   clone(): LQueries;
 
   /**
-   * Notify `LQueries` that a new `LNode` has been created and needs to be added to query results
+   * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
    * if matching query predicate.
    */
-  addNode(node: LNode): LQueries|null;
+  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): LQueries|null;
 
   /**
    * Notify `LQueries` that a new LContainer was added to ivy data structures. As a result we need
@@ -69,10 +69,8 @@ export interface LQueries {
    */
   track<T>(
       queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: QueryReadType<T>|Type<T>): void;
+      read?: Type<T>): void;
 }
-
-export class QueryReadType<T> { private defeatStructuralTyping: any; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

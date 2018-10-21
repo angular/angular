@@ -9,6 +9,7 @@
 import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectObjectLiteral} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
@@ -56,13 +57,15 @@ function extractInjectableMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
     isCore: boolean): R3InjectableMetadata {
   if (clazz.name === undefined) {
-    throw new Error(`@Injectables must have names`);
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, decorator.node, `@Injectable on anonymous class`);
   }
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
   const ctorDeps = getConstructorDependencies(clazz, reflector, isCore);
   if (decorator.args === null) {
-    throw new Error(`@Injectable must be called`);
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
   }
   if (decorator.args.length === 0) {
     return {
@@ -90,7 +93,9 @@ function extractInjectableMetadata(
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
       const depsExpr = meta.get('deps') !;
       if (!ts.isArrayLiteralExpression(depsExpr)) {
-        throw new Error(`In Ivy, deps metadata must be inline.`);
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_NOT_LITERAL, depsExpr,
+            `In Ivy, deps metadata must be an inline array.`);
       }
       if (depsExpr.elements.length > 0) {
         throw new Error(`deps not yet supported`);
@@ -130,7 +135,8 @@ function extractInjectableMetadata(
       return {name, type, providedIn, ctorDeps};
     }
   } else {
-    throw new Error(`Too many arguments to @Injectable`);
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_ARITY_WRONG, decorator.args[2], 'Too many arguments to @Injectable');
   }
 }
 

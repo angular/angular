@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as nock from 'nock';
+import {resolve as resolvePath} from 'path';
 import {BuildInfo, CircleCiApi} from '../../lib/common/circle-ci-api';
+import {Logger} from '../../lib/common/utils';
 import {BuildRetriever} from '../../lib/preview-server/build-retriever';
 
 describe('BuildRetriever', () => {
   const MAX_DOWNLOAD_SIZE = 10000;
-  const DOWNLOAD_DIR = '/DOWNLOAD/DIR';
+  const DOWNLOAD_DIR = resolvePath('/DOWNLOAD/DIR');
   const BASE_URL = 'http://test.com';
   const ARTIFACT_PATH = '/some/path/build.zip';
 
@@ -28,10 +30,6 @@ describe('BuildRetriever', () => {
       username: 'ORG',
       vcs_revision: 'COMMIT',
     };
-
-    spyOn(console, 'log');
-    spyOn(console, 'warn');
-    spyOn(console, 'error');
 
     api = new CircleCiApi('ORG', 'REPO', 'TOKEN');
     spyOn(api, 'getBuildInfo').and.callFake(() => Promise.resolve(BUILD_INFO));
@@ -91,6 +89,7 @@ describe('BuildRetriever', () => {
     let retriever: BuildRetriever;
 
     beforeEach(() => {
+      spyOn(Logger.prototype, 'warn');
       retriever = new BuildRetriever(api, MAX_DOWNLOAD_SIZE, DOWNLOAD_DIR);
     });
 
@@ -133,11 +132,14 @@ describe('BuildRetriever', () => {
 
     it('should write the artifact file to disk', async () => {
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).reply(200, ARTIFACT_CONTENTS);
+      const downloadPath = resolvePath(`${DOWNLOAD_DIR}/777-COMMIT-build.zip`);
+
       await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-      expect(writeFileSpy)
-        .toHaveBeenCalledWith(`${DOWNLOAD_DIR}/777-COMMIT-build.zip`, jasmine.any(Buffer), jasmine.any(Function));
+      expect(writeFileSpy).toHaveBeenCalledWith(downloadPath, jasmine.any(Buffer), jasmine.any(Function));
+
       const buffer: Buffer = writeFileSpy.calls.mostRecent().args[1];
       expect(buffer.toString()).toEqual(ARTIFACT_CONTENTS);
+
       artifactRequest.done();
     });
 

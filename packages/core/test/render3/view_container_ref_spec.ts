@@ -8,22 +8,23 @@
 
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {templateRefExtractor} from '../../src/render3/di';
-import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {directiveInject} from '../../src/render3/di';
+import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
 
-  beforeEach(() => { directiveInstance = null; });
+  beforeEach(() => directiveInstance = null);
 
   class DirectiveWithVCRef {
     static ngDirectiveDef = defineDirective({
@@ -31,7 +32,7 @@ describe('ViewContainerRef', () => {
       selectors: [['', 'vcref', '']],
       factory: () => directiveInstance = new DirectiveWithVCRef(
 
-                   injectViewContainerRef(), injectComponentFactoryResolver()),
+                   directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
       inputs: {tplRef: 'tplRef'}
     });
 
@@ -160,8 +161,8 @@ describe('ViewContainerRef', () => {
           element(3, 'div', ['vcref', '']);
 
           // for testing only:
-          firstDir = loadDirective(0);
-          secondDir = loadDirective(1);
+          firstDir = getDirectiveOnNode(2);
+          secondDir = getDirectiveOnNode(3);
         }
 
         function update() {
@@ -225,7 +226,8 @@ describe('ViewContainerRef', () => {
                type: TestDirective,
                selectors: [['', 'testdir', '']],
                factory: () => {
-                 const instance = new TestDirective(injectViewContainerRef(), injectTemplateRef());
+                 const instance = new TestDirective(
+                     directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any));
 
                  directiveInstances.push(instance);
 
@@ -299,8 +301,9 @@ describe('ViewContainerRef', () => {
              static ngDirectiveDef = defineDirective({
                type: TestDirective,
                selectors: [['', 'testdir', '']],
-               factory: () => directiveInstance =
-                            new TestDirective(injectViewContainerRef(), injectTemplateRef())
+               factory: () => directiveInstance = new TestDirective(
+                            directiveInject(ViewContainerRef as any),
+                            directiveInject(TemplateRef as any))
              });
 
              constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
@@ -495,7 +498,7 @@ describe('ViewContainerRef', () => {
         static ngDirectiveDef = defineDirective({
           type: InsertionDir,
           selectors: [['', 'tplDir', '']],
-          factory: () => new InsertionDir(injectViewContainerRef()),
+          factory: () => new InsertionDir(directiveInject(ViewContainerRef as any)),
           inputs: {tplDir: 'tplDir'}
         });
       }
@@ -962,7 +965,7 @@ describe('ViewContainerRef', () => {
               {provide: RendererFactory2, useValue: getRendererFactory2(document)}
             ]
           });
-          static ngModuleDef: NgModuleDef<any, any, any, any> = { bootstrap: [] } as any;
+          static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
         }
         const myAppModuleFactory = new NgModuleFactory(MyAppModule);
         const ngModuleRef = myAppModuleFactory.create(null);
@@ -1704,5 +1707,66 @@ describe('ViewContainerRef', () => {
         'afterViewChecked-A', 'afterViewChecked-B'
       ]);
     });
+  });
+
+  describe('host bindings', () => {
+
+    it('should support host bindings on dynamically created components', () => {
+
+      @Component(
+          {selector: 'host-bindings', host: {'id': 'attribute', '[title]': 'title'}, template: ``})
+      class HostBindingCmpt {
+        title = 'initial';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingCmpt,
+          selectors: [['host-bindings']],
+          factory: () => new HostBindingCmpt(),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
+          hostVars: 1,
+          attributes: ['id', 'attribute'],
+          hostBindings: function(dirIndex, elIndex) {
+            const cmptInstance = load<HostBindingCmpt>(dirIndex);
+            elementProperty(elIndex, 'title', bind(cmptInstance.title));
+          },
+        });
+      }
+
+      @Component({
+        template: `
+          <ng-template vcref></ng-template>
+        `
+      })
+      class AppCmpt {
+        static ngComponentDef = defineComponent({
+          type: AppCmpt,
+          selectors: [['app']],
+          factory: () => new AppCmpt(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: AppCmpt) => {
+            if (rf & RenderFlags.Create) {
+              template(0, null, 0, 0, null, ['vcref', '']);
+            }
+          },
+          directives: [HostBindingCmpt, DirectiveWithVCRef]
+        });
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.html).toBe('');
+
+      const componentRef = directiveInstance !.vcref.createComponent(
+          directiveInstance !.cfr.resolveComponentFactory(HostBindingCmpt));
+      expect(fixture.html).toBe('<host-bindings id="attribute" title="initial"></host-bindings>');
+
+
+      componentRef.instance.title = 'changed';
+      fixture.update();
+      expect(fixture.html).toBe('<host-bindings id="attribute" title="changed"></host-bindings>');
+    });
+
   });
 });

@@ -14,8 +14,9 @@ import {scheduleMicroTask} from '../util';
  *
  * @see `AnimationBuilder`
  * @see `AnimationFactory`
- * @see `animate()` 
+ * @see `animate()`
  *
+ * @publicApi
  */
 export interface AnimationPlayer {
   /**
@@ -112,6 +113,7 @@ export interface AnimationPlayer {
  * @see `AnimationPlayer`
  * @see `GroupPlayer`
  *
+ * @publicApi
  */
 export class NoopAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];

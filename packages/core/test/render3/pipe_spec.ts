@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform} from '@angular/core';
+import {Directive, InjectionToken, OnChanges, OnDestroy, Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵPublicFeature as PublicFeature, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
-import {ComponentFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
 
 
 let log: string[] = [];
@@ -100,7 +100,7 @@ describe('pipe', () => {
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'elprop', bind(pipeBind1(1, 1, ctx)));
-        directive = loadDirective(0);
+        directive = getDirectiveOnNode(0);
       }
     }
     renderToHtml(Template, 'a', 2, 3, [MyDir], [DoublePipe]);
@@ -326,6 +326,87 @@ describe('pipe', () => {
       renderToHtml(Template, person, 1, 0, null, pipes);
       expect(log).toEqual(['pipeWithOnDestroy - ngOnDestroy']);
     });
+  });
+
+  describe('injection mechanism', () => {
+    class ServiceA {
+      title = 'ServiceA Title';
+    }
+
+    class ServiceB {
+      title = 'ServiceB Title';
+
+      static ngInjectableDef =
+          defineInjectable({providedIn: 'root', factory: () => new ServiceB()});
+    }
+
+    class ModuleA {
+      static ngInjectorDef = defineInjector({factory: () => new ModuleA(), providers: [ServiceA]});
+      static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
+    }
+
+    const generatePipe = (InjectionType: any) => {
+      return class MyConcatPipe implements PipeTransform {
+        constructor(public obj: any) {}
+
+        transform(value: string): string { return `${value} - ${this.obj.title}`; }
+
+        static ngPipeDef = definePipe({
+          name: 'myConcatPipe',
+          type: MyConcatPipe,
+          factory: () => new MyConcatPipe(directiveInject(InjectionType)),
+          pure: false
+        });
+      };
+    };
+
+    const generateComponent = (overrides: any) => {
+      return class MyComponent {
+        title = 'MyComponent Title';
+
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['my-app']],
+          features: [PublicFeature],
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 2,
+          vars: 3,
+          // '{{ title | myConcatPipe }}'
+          template: (rf: RenderFlags, ctx: MyComponent) => {
+            if (rf & 1) {
+              text(0);
+              pipe(1, 'myConcatPipe');
+            }
+            if (rf & 2) {
+              textBinding(0, interpolation1('', pipeBind1(1, 1, ctx.title), ''));
+            }
+          },
+          ...overrides
+        });
+      };
+    };
+
+    it('should be able to handle Service injection', () => {
+      const Comp = generateComponent({providers: [ServiceB], pipes: [generatePipe(ServiceB)]});
+      const fixture = new ComponentFixture(Comp);
+      expect(fixture.html).toEqual('MyComponent Title - ServiceB Title');
+    });
+
+    it('should be able to handle Token injections', () => {
+      const provider = new InjectionToken<ServiceA>(
+          'token', {providedIn: 'root', factory: () => new ServiceB()});
+      const Comp = generateComponent({providers: [provider], pipes: [generatePipe(provider)]});
+      const fixture = new ComponentFixture(Comp);
+      expect(fixture.html).toEqual('MyComponent Title - ServiceB Title');
+    });
+
+    it('should be able to handle Module injection', () => {
+      const injector = createInjector(ModuleA);
+      const Comp = generateComponent({providers: [], pipes: [generatePipe(ServiceA)]});
+      const fixture = new ComponentFixture(Comp, {injector});
+      expect(fixture.html).toEqual('MyComponent Title - ServiceA Title');
+    });
+
   });
 
 });

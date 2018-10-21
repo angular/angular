@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {MEANING_SEPARATOR, unsupported} from './view/util';
+import {unsupported} from './view/util';
 
 
 /**
@@ -100,26 +100,6 @@ export enum R3ResolvedDependencyType {
    * The dependency is for the `Injector` type itself.
    */
   Injector = 2,
-
-  /**
-   * The dependency is for `ElementRef`.
-   */
-  ElementRef = 3,
-
-  /**
-   * The dependency is for `TemplateRef`.
-   */
-  TemplateRef = 4,
-
-  /**
-   * The dependency is for `ViewContainerRef`.
-   */
-  ViewContainerRef = 5,
-
-  /**
-   * The dependency is for `ChangeDetectorRef`.
-   */
-  ChangeDetectorRef = 6,
 }
 
 /**
@@ -277,14 +257,6 @@ function compileInjectDependency(
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
-    case R3ResolvedDependencyType.ElementRef:
-      return o.importExpr(R3.injectElementRef).callFn([]);
-    case R3ResolvedDependencyType.TemplateRef:
-      return o.importExpr(R3.injectTemplateRef).callFn([]);
-    case R3ResolvedDependencyType.ViewContainerRef:
-      return o.importExpr(R3.injectViewContainerRef).callFn([]);
-    case R3ResolvedDependencyType.ChangeDetectorRef:
-      return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
@@ -301,9 +273,6 @@ export function dependenciesFromGlobalMetadata(
   // Use the `CompileReflector` to look up references to some well-known Angular types. These will
   // be compared with the token to statically determine whether the token has significance to
   // Angular, and set the correct `R3ResolvedDependencyType` as a result.
-  const elementRef = reflector.resolveExternalReference(Identifiers.ElementRef);
-  const templateRef = reflector.resolveExternalReference(Identifiers.TemplateRef);
-  const viewContainerRef = reflector.resolveExternalReference(Identifiers.ViewContainerRef);
   const injectorRef = reflector.resolveExternalReference(Identifiers.Injector);
 
   // Iterate through the type's DI dependencies and produce `R3DependencyMetadata` for each of them.
@@ -312,13 +281,7 @@ export function dependenciesFromGlobalMetadata(
     if (dependency.token) {
       const tokenRef = tokenReference(dependency.token);
       let resolved: R3ResolvedDependencyType = R3ResolvedDependencyType.Token;
-      if (tokenRef === elementRef) {
-        resolved = R3ResolvedDependencyType.ElementRef;
-      } else if (tokenRef === templateRef) {
-        resolved = R3ResolvedDependencyType.TemplateRef;
-      } else if (tokenRef === viewContainerRef) {
-        resolved = R3ResolvedDependencyType.ViewContainerRef;
-      } else if (tokenRef === injectorRef) {
+      if (tokenRef === injectorRef) {
         resolved = R3ResolvedDependencyType.Injector;
       } else if (dependency.isAttribute) {
         resolved = R3ResolvedDependencyType.Attribute;

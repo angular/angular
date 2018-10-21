@@ -34,15 +34,8 @@ declare global {
 
 declare let global: any;
 
-// NOTE: The order here matters: Checking window, then global, then self is important.
-//   checking them in another order can result in errors in some Node environments.
-const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
-    typeof window != 'undefined' && window || typeof global != 'undefined' && global ||
-    typeof self != 'undefined' && self;
-
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
-  // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  return __global['ngDevMode'] = {
+  const newCounters: NgDevModePerfCounters = {
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -64,6 +57,21 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
     rendererRemoveNode: 0,
     rendererCreateComment: 0,
   };
+  // NOTE: Under Ivy we may have both window & global defined in the Node
+  //    environment since ensureDocument() in render3.ts sets global.window.
+  if (typeof window != 'undefined') {
+    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
+    (window as any)['ngDevMode'] = newCounters;
+  }
+  if (typeof global != 'undefined') {
+    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
+    (global as any)['ngDevMode'] = newCounters;
+  }
+  if (typeof self != 'undefined') {
+    // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
+    (self as any)['ngDevMode'] = newCounters;
+  }
+  return newCounters;
 }
 
 /**
@@ -75,6 +83,5 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * as much early warning and errors as possible.
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
-  // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  __global['ngDevMode'] = ngDevModeResetPerfCounters();
+  ngDevModeResetPerfCounters();
 }

@@ -45,6 +45,13 @@ def _esm5_outputs_aspect(target, ctx):
     if not hasattr(target, "typescript"):
         return []
 
+    # Workaround for https://github.com/bazelbuild/rules_typescript/issues/211
+    # TODO(gmagolan): generate esm5 output from ts_proto_library and have that
+    # output work with esm5_outputs_aspect
+    if not hasattr(target.typescript, "replay_params"):
+        print("WARNING: no esm5 output from target %s//%s:%s available" % (target.label.workspace_root, target.label.package, target.label.name))
+        return []
+
     # We create a new tsconfig.json file that will have our compilation settings
     tsconfig = ctx.actions.declare_file("%s_esm5.tsconfig.json" % target.label.name)
 
@@ -73,16 +80,25 @@ def _esm5_outputs_aspect(target, ctx):
         ],
     )
 
+    replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
+    if replay_compiler == "tsc_wrapped":
+        compiler = ctx.executable._tsc_wrapped
+    elif replay_compiler == "ngc-wrapped":
+        compiler = ctx.executable._ngc_wrapped
+    else:
+        fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
+
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
         inputs = target.typescript.replay_params.inputs + [tsconfig],
         outputs = outputs,
         arguments = [tsconfig.path],
-        executable = target.typescript.replay_params.compiler,
+        executable = compiler,
         execution_requirements = {
             # TODO(alexeagle): enable worker mode for these compilations
             "supports-workers": "0",
         },
+        mnemonic = "ESM5",
     )
 
     root_dir = _join([
@@ -114,15 +130,11 @@ esm5_outputs_aspect = aspect(
             executable = True,
             cfg = "host",
         ),
-        # We must list tsc_wrapped here to ensure it's built before the action runs
-        # For some reason, having the compiler output as an input to the action above
-        # is not sufficient.
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//internal:tsc_wrapped_bin"),
+            default = Label("@build_bazel_rules_typescript//:@bazel/typescript/tsc_wrapped"),
             executable = True,
             cfg = "host",
         ),
-        # Same comment as for tsc_wrapped above.
         "_ngc_wrapped": attr.label(
             default = Label("//packages/bazel/src/ngc-wrapped"),
             executable = True,

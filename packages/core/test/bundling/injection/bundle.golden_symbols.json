@@ -9,7 +9,7 @@
     "name": "EMPTY_ARRAY$2"
   },
   {
-    "name": "GET_PROPERTY_NAME"
+    "name": "EmptyErrorImpl"
   },
   {
     "name": "INJECTOR"
@@ -21,6 +21,12 @@
     "name": "InjectionToken"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
     "name": "NOT_YET"
   },
   {
@@ -28,6 +34,9 @@
   },
   {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Optional"
@@ -51,7 +60,10 @@
     "name": "THROW_IF_NOT_FOUND"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$1"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "_THROW_IF_NOT_FOUND"
@@ -85,6 +97,12 @@
   },
   {
     "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
   },
   {
     "name": "getNullInjector"
@@ -129,12 +147,12 @@
     "name": "providerToRecord"
   },
   {
-    "name": "resolveForwardRef"
+    "name": "resolveForwardRef$1"
   },
   {
     "name": "setCurrentInjector"
   },
   {
-    "name": "stringify"
+    "name": "stringify$1"
   }
 ]

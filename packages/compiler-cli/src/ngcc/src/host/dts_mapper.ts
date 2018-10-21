@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {relative, resolve} from 'path';
+import {relative, resolve} from 'canonical-path';
 
 /**
  * Map source files to their associated typings definitions files.

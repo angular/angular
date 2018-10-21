@@ -6,84 +6,97 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {ElementRef} from '../../linker/element_ref';
-import {TemplateRef} from '../../linker/template_ref';
-import {ViewContainerRef} from '../../linker/view_container_ref';
 
-import {LContainerNode, LElementContainerNode, LElementNode} from './node';
+import {TContainerNode, TElementContainerNode, TElementNode,} from './node';
 
-export interface LInjector {
-  /**
-   * We need to store a reference to the injector's parent so DI can keep looking up
-   * the injector tree until it finds the dependency it's looking for.
-   */
-  readonly parent: LInjector|null;
+export const TNODE = 8;
+export const PARENT_INJECTOR = 8;
+export const INJECTOR_SIZE = 9;
 
-  /**
-   * Allows access to the directives array in that node's static data and to
-   * the node's flags (for starting directive index and directive size). Necessary
-   * for DI to retrieve a directive from the data array if injector indicates
-   * it is there.
-   */
-  readonly node: LElementNode|LElementContainerNode|LContainerNode;
-
-  /**
-   * The following bloom filter determines whether a directive is available
-   * on the associated node or not. This prevents us from searching the directives
-   * array at this level unless it's probable the directive is in it.
-   *
-   * - bf0: Check directive IDs 0-31  (IDs are % 128)
-   * - bf1: Check directive IDs 32-63
-   * - bf2: Check directive IDs 64-95
-   * - bf3: Check directive IDs 96-127
-   * - bf4: Check directive IDs 128-159
-   * - bf5: Check directive IDs 160 - 191
-   * - bf6: Check directive IDs 192 - 223
-   * - bf7: Check directive IDs 224 - 255
-   *
-   * See: https://en.wikipedia.org/wiki/Bloom_filter for more about bloom filters.
-   */
-  bf0: number;
-  bf1: number;
-  bf2: number;
-  bf3: number;
-  bf4: number;
-  bf5: number;
-  bf6: number;
-  bf7: number;
-
-  /**
-   * cbf0 - cbf7 properties determine whether a directive is available through a
-   * parent injector. They refer to the merged values of parent bloom filters. This
-   * allows us to skip looking up the chain unless it's probable that directive exists
-   * up the chain.
-   */
-  cbf0: number;
-  cbf1: number;
-  cbf2: number;
-  cbf3: number;
-  cbf4: number;
-  cbf5: number;
-  cbf6: number;
-  cbf7: number;
-
-  /** Stores the TemplateRef so subsequent injections of the TemplateRef get the same instance. */
-  templateRef: TemplateRef<any>|null;
-
-  /** Stores the ViewContainerRef so subsequent injections of the ViewContainerRef get the same
-   * instance. */
-  viewContainerRef: ViewContainerRef|null;
-
-  /** Stores the ElementRef so subsequent injections of the ElementRef get the same instance. */
-  elementRef: ElementRef|null;
-
-  /**
-   * Stores the ChangeDetectorRef so subsequent injections of the ChangeDetectorRef get the
-   * same instance.
-   */
-  changeDetectorRef: ChangeDetectorRef|null;
+export const enum InjectorLocationFlags {
+  InjectorIndexMask = 0b111111111111111,
+  ViewOffsetShift = 15
 }
+
+/**
+ * Each injector is saved in 9 contiguous slots in `LViewData` and 9 contiguous slots in
+ * `TView.data`. This allows us to store information about the current node's tokens (which
+ * can be shared in `TView`) as well as the tokens of its ancestor nodes (which cannot be
+ * shared, so they live in `LViewData`).
+ *
+ * Each of these slots (aside from the last slot) contains a bloom filter. This bloom filter
+ * determines whether a directive is available on the associated node or not. This prevents us
+ * from searching the directives array at this level unless it's probable the directive is in it.
+ *
+ * See: https://en.wikipedia.org/wiki/Bloom_filter for more about bloom filters.
+ *
+ * Because all injectors have been flattened into `LViewData` and `TViewData`, they cannot typed
+ * using interfaces as they were previously. The start index of each `LInjector` and `TInjector`
+ * will differ based on where it is flattened into the main array, so it's not possible to know
+ * the indices ahead of time and save their types here. The interfaces are still included here
+ * for documentation purposes.
+ *
+ * export interface LInjector extends Array<any> {
+ *
+ *    // Cumulative bloom for directive IDs 0-31  (IDs are % BLOOM_SIZE)
+ *    [0]: number;
+ *
+ *    // Cumulative bloom for directive IDs 32-63
+ *    [1]: number;
+ *
+ *    // Cumulative bloom for directive IDs 64-95
+ *    [2]: number;
+ *
+ *    // Cumulative bloom for directive IDs 96-127
+ *    [3]: number;
+ *
+ *    // Cumulative bloom for directive IDs 128-159
+ *    [4]: number;
+ *
+ *    // Cumulative bloom for directive IDs 160 - 191
+ *    [5]: number;
+ *
+ *    // Cumulative bloom for directive IDs 192 - 223
+ *    [6]: number;
+ *
+ *    // Cumulative bloom for directive IDs 224 - 255
+ *    [7]: number;
+ *
+ *    // We need to store a reference to the injector's parent so DI can keep looking up
+ *    // the injector tree until it finds the dependency it's looking for.
+ *    [PARENT_INJECTOR]: number;
+ * }
+ *
+ * export interface TInjector extends Array<any> {
+ *
+ *    // Shared node bloom for directive IDs 0-31  (IDs are % BLOOM_SIZE)
+ *    [0]: number;
+ *
+ *    // Shared node bloom for directive IDs 32-63
+ *    [1]: number;
+ *
+ *    // Shared node bloom for directive IDs 64-95
+ *    [2]: number;
+ *
+ *    // Shared node bloom for directive IDs 96-127
+ *    [3]: number;
+ *
+ *    // Shared node bloom for directive IDs 128-159
+ *    [4]: number;
+ *
+ *    // Shared node bloom for directive IDs 160 - 191
+ *    [5]: number;
+ *
+ *    // Shared node bloom for directive IDs 192 - 223
+ *    [6]: number;
+ *
+ *    // Shared node bloom for directive IDs 224 - 255
+ *    [7]: number;
+ *
+ *    // Necessary to find directive indices for a particular node.
+ *    [TNODE]: TElementNode|TElementContainerNode|TContainerNode;
+ *  }
+ */
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

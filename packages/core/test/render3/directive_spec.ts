@@ -8,10 +8,11 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {AttributeMarker, defineDirective} from '../../src/render3/index';
-import {bind, element, elementEnd, elementProperty, elementStart, listener, loadDirective} from '../../src/render3/instructions';
+import {AttributeMarker, RenderFlags, defineDirective} from '../../src/render3/index';
 
-import {TemplateFixture} from './render_util';
+import {bind, element, elementEnd, elementProperty, elementStart, listener, template, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+
+import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 describe('directive', () => {
 
@@ -148,6 +149,67 @@ describe('directive', () => {
       // "out" should not be part of reflected attributes
       expect(fixture.html).toEqual('<span></span>');
       expect(directiveInstance !).not.toBeUndefined();
+    });
+  });
+
+  describe('outputs', () => {
+
+    let directiveInstance: Directive;
+
+    class Directive {
+      static ngDirectiveDef = defineDirective({
+        type: Directive,
+        selectors: [['', 'out', '']],
+        factory: () => directiveInstance = new Directive,
+        outputs: {out: 'out'}
+      });
+
+      out = new EventEmitter();
+    }
+
+    it('should allow outputs of directive on ng-template', () => {
+      /**
+       * <ng-template (out)="value = true"></ng-template>
+       */
+      const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+        if (rf & RenderFlags.Create) {
+          template(0, null, 0, 0, null, [AttributeMarker.SelectOnly, 'out']);
+          listener('out', () => { ctx.value = true; });
+        }
+      }, 1, 0, [Directive]);
+
+      const fixture = new ComponentFixture(Cmpt);
+
+      expect(directiveInstance !).not.toBeUndefined();
+      expect(fixture.component.value).toBeFalsy();
+
+      directiveInstance !.out.emit();
+      fixture.update();
+      expect(fixture.component.value).toBeTruthy();
+    });
+
+    it('should allow outputs of directive on ng-container', () => {
+      /**
+       * <ng-container (out)="value = true"></ng-container>
+       */
+      const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0, [AttributeMarker.SelectOnly, 'out']);
+          {
+            listener('out', () => { ctx.value = true; });
+          }
+          elementContainerEnd();
+        }
+      }, 1, 0, [Directive]);
+
+      const fixture = new ComponentFixture(Cmpt);
+
+      expect(directiveInstance !).not.toBeUndefined();
+      expect(fixture.component.value).toBeFalsy();
+
+      directiveInstance !.out.emit();
+      fixture.update();
+      expect(fixture.component.value).toBeTruthy();
     });
 
   });

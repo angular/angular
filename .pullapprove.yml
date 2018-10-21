@@ -24,7 +24,6 @@
 # petebacondarwin - Pete Bacon Darwin
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
-# vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 
 
@@ -88,10 +87,10 @@ groups:
       files:
         include:
           - "WORKSPACE"
+          - ".bazel*"
           - "*.bazel"
           - "*.bzl"
           - "packages/bazel/*"
-          - "tools/bazel.rc"
           - "/docs/BAZEL.md"
     users:
       - alexeagle #primary
@@ -109,7 +108,6 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/bazel.rc"
           - "tools/public_api_guard/*"
           - "aio/*"
     users:
@@ -125,7 +123,6 @@ groups:
     users:
       - alexeagle
       - mhevery
-      - vicb
       - IgorMinar #fallback
 
   core:
@@ -197,7 +194,6 @@ groups:
       - mhevery #primary
       - jasonaden
       - kara
-      - vicb
       - IgorMinar
       - jenniferfell #docs only
 
@@ -222,8 +218,7 @@ groups:
         - "aio/content/guide/i18n.md"
         - "aio/content/examples/i18n/*"
     users:
-      - vicb #primary
-      - alxhub
+      - alxhub #primary
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -235,7 +230,6 @@ groups:
         - "aio/content/guide/aot-compiler.md"
     users:
       - alxhub #primary
-      - vicb
       - mhevery
       - IgorMinar #fallback
       - jenniferfell #docs only
@@ -260,7 +254,6 @@ groups:
     users:
       - alexeagle
       - alxhub
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -273,7 +266,6 @@ groups:
           - "packages/common/http/*"
     users:
       - pkozlowski-opensource #primary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -284,6 +276,9 @@ groups:
         - "aio/content/guide/forms.md"
         - "aio/content/examples/forms/*"
         - "aio/content/images/guide/forms/*"
+        - "aio/content/guide/forms-overview.md"
+        - "aio/content/examples/forms-overview/*"
+        - "aio/content/images/guide/forms-overview/*"
         - "aio/content/guide/form-validation.md"
         - "aio/content/examples/form-validation/*"
         - "aio/content/images/guide/form-validation/*"
@@ -322,7 +317,6 @@ groups:
     users:
       - kyliau #primary
       # needs secondary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -336,7 +330,6 @@ groups:
         - "aio/content/images/guide/router/*"
     users:
       - jasonaden #primary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -379,10 +372,9 @@ groups:
       files:
         - "packages/platform-browser/*"
     users:
-      - vicb #primary
+      - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
-      - mhevery #fallback
 
   platform-server:
     conditions:
@@ -393,7 +385,6 @@ groups:
     users:
       - vikerman #primary
       - alxhub #secondary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -403,10 +394,9 @@ groups:
       files:
         - "packages/platform-webworker/*"
     users:
-      - vicb #primary
+      - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
-      - mhevery #fallback
 
   service-worker:
     conditions:

@@ -127,6 +127,13 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Selectors found in the <ng-content> tags in the template.
      */
     ngContentSelectors: string[];
+
+    /**
+     * Path to the .ts file in which this template's generated code will be included, relative to
+     * the compilation root. This will be used to generate identifiers that need to be globally
+     * unique in certain contexts (such as g3).
+     */
+    relativeContextFilePath: string;
   };
 
   /**
@@ -168,6 +175,11 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * into a shadow root.
    */
   encapsulation: ViewEncapsulation;
+
+  /**
+   * A collection of animation triggers that will be used in the component template.
+   */
+  animations: o.Expression|null;
 }
 
 /**

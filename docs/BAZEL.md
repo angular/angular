@@ -72,10 +72,11 @@ keeps the outputs up-to-date as you save sources.
 
 If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
 
-See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/tools/bazel.rc) where `--define=ivy=false` is defined as default.
+See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc) where `--define=ivy=false` is defined as default.
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
-- `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This is done by generating the [`src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) file from [`ivy_switch_legacy.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_legacy.ts) (default), [`ivy_switch_jit.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_jit.ts), or [`ivy_switch_local.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_local.ts).
+- `--test_arg=--node_options=--inspect=9228`: change the inspector port.
+- `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This switches which compiler is used (ngc, ngtsc, or a tsc pass-through mode).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
     - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
     - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`
@@ -93,7 +94,7 @@ of your rules in any given `BUILD.bazel`.
 - Click on  `Open dedicated DevTools for Node` to launch a debugger.
 - Run test: `bazel test packages/core/test:test --config=debug`
 
-The process should automatically connect to the debugger.
+The process should automatically connect to the debugger. For additional info and testing options, see the [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/node/node.html#nodejs_test).
 
 ### Debugging a Node Test in VSCode
 
@@ -164,7 +165,7 @@ You can see an overview at https://www.kchodorow.com/blog/2017/03/27/stamping-yo
 In our repo, here is how it's configured:
 
 1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
-1) In `tools/bazel.rc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
+1) In `.bazelrc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
 
 Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
 
