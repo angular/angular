@@ -253,7 +253,7 @@
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "//desc": "Lightweight development only node server",
+            "//desc": "Lightweight development only Node.js® server",
             "desc": "아주 간단한 node 서버입니다.",
             "logo": "",
             "rev": true,
@@ -485,7 +485,14 @@
             "desc": "TrulyUI는 웹 컴포넌트를 바탕으로 만드는 데스크탑 애플리케이션에 최적화된 UI 프레임워크입니다.",
             "rev": true,
             "title": "Truly UI",
-            "url": "http://truly-ui.tk"
+            "url": "http://truly-ui.com"
+          },
+          "ngsqui": {
+            "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "logo": "https://sq-ui.github.io/ng-sq-ui/_media/sq-ui-logo.png",
+            "rev": true,
+            "title": "Simple Quality UI",
+            "url": "https://sq-ui.github.io/ng-sq-ui/#/"
           }
         }
       }
@@ -697,7 +704,7 @@
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
-            "url": "https://egghead.io/technologies/angular2"
+            "url": "https://egghead.io/browse/frameworks/angular"
           },
           "ab5": {
             "//desc": "Build Web Apps with Angular - recorded video content",
@@ -738,6 +745,12 @@
             "//title": "Learn Angular (francais)",
             "title": "Learn Angular (프랑스어)",
             "url": "http://www.learn-angular.fr/"
+          },
+          "upgrading-ajs": {
+            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "rev": true,
+            "title": "Upgrading AngularJS",
+            "url": "https://www.upgradingangularjs.com"
           },
           "toddmotto-ultimateangular": {
             "//desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",

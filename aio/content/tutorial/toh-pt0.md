@@ -3,6 +3,7 @@
 -->
 # 애플리케이션 쉘
 
+<<<<<<< HEAD
 <!--
 ## Install the Angular CLI
 -->
@@ -26,45 +27,83 @@
 Create a new project named `angular-tour-of-heroes` with this CLI command.
 -->
 다음 CLI 명령을 실행하여 angular-tour-of-heroes 프로젝트를 생성합니다.
+=======
+You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
 
-<code-example language="sh" class="code-shell">
-  ng new angular-tour-of-heroes
-</code-example> 
+In this part of the tutorial, you'll do the following:
 
+1. Set up your environment.
+2. Create a new workspace and initial app project.
+3. Serve the application.
+4. Make changes to the application.
+
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
+
+## Set up your environment
+
+<<<<<<< HEAD
 <!--
 The Angular CLI generated a new project with a default application and supporting files. 
 -->
 Angular CLI가 기본 애플리케이션과 필요한 파일들을 포함한 새로운 프로젝트를 생성하였습니다. 
+=======
+To set up your development environment, follow these instructions in [Getting Started](guide/quickstart):
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
+* [Prerequisites](guide/quickstart#prerequisites)
+* [Install the Angular CLI](guide/quickstart#install-cli)
 
 <div class="alert is-helpful">
 
-
-
-You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
-For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
-
-Angular Material provides schematics for typical app layouts. 
-See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
-
+**Note:**: You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
 </div>
 
+
+## Create a new workspace and an initial application
+
+You develop apps in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
+
+To create a new workspace and an initial app project:
+
+  1. Ensure that you are not already in an Angular workspace folder. For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
+  2. Run the CLI command `ng new` and provide the name `angular-tour-of-heroes`, as shown here:
+
+  <code-example language="sh" class="code-shell">
+     ng new angular-tour-of-heroes
+  </code-example>
+
+  3. The `ng new` command prompts you for information about features to include in the initial app project. Accept the defaults by pressing the Enter or Return key.
+
+The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes.
+
+It also creates the following workspace and starter project files:
+
+  * A new workspace, with a root folder named `angular-tour-of-heroes`.
+  * An initial skeleton app project, also called `angular-tour-of-heroes` (in the `src` subfolder).
+  * An end-to-end test project (in the e2e subfolder).
+  * Related configuration files.
+
+The initial app project contains a simple Welcome app, ready to run.
 
 <!--
 ## Serve the application
 -->
 ## 애플리케이션 실행
 
+<<<<<<< HEAD
 <!--
 Go to the project directory and launch the application.
 -->
 프로젝트 디렉토리로 들어가서 애플리케이션을 실행합니다.
+=======
+Go to the workspace directory and launch the application.
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <code-example language="sh" class="code-shell">
   cd angular-tour-of-heroes
   ng serve --open
 </code-example>
- 
+
 <div class="alert is-helpful">
 
 <!--
@@ -104,6 +143,7 @@ They display data on the screen, listen for user input, and take action based on
 _Components_는 Angular 애플리케이션의 기본 구성 요소입니다.
 화면에 데이터를 표시하고, 유저의 입력을 대기하며, 유저의 입력에 따른 동작을 수행합니다.
 
+<<<<<<< HEAD
 <!--
 ## Change the application title
 -->
@@ -113,12 +153,18 @@ _Components_는 Angular 애플리케이션의 기본 구성 요소입니다.
 Open the project in your favorite editor or IDE and navigate to the `src/app` folder.
 -->
 여러분이 즐겨 사용하는 에디터나 IDE를 통해 프로젝트를 열어 `src/app` 폴더로 이동합니다.
+=======
+## Make changes to the application
+
+Open the project in your favorite editor or IDE and navigate to the `src/app` folder to make some changes to the starter app.
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <!--
 You'll find the implementation of the shell `AppComponent` distributed over three files:
 -->
 `AppComponent`는 3개의 파일로 구성됩니다 : 
 
+<<<<<<< HEAD
 <!--
 1. `app.component.ts`&mdash; the component class code, written in TypeScript. 
 1. `app.component.html`&mdash; the component template, written in HTML.
@@ -129,11 +175,19 @@ You'll find the implementation of the shell `AppComponent` distributed over thre
 1. `app.component.css`&mdash; 'AppComponent`에 적용되는 CSS 스타일.
  
 <!--
+=======
+1. `app.component.ts`&mdash; the component class code, written in TypeScript.
+1. `app.component.html`&mdash; the component template, written in HTML.
+1. `app.component.css`&mdash; the component's private CSS styles.
+
+### Change the application title
+
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 Open the component class file (`app.component.ts`) and change the value of the `title` property to 'Tour of Heroes'.
 -->
 컴포넌트 클래스 파일(`app.component.ts`)을 열어 `title` 프로퍼티의 값을 'Tour of Heroes'로 바꿔봅시다.
 
-<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" title="app.component.ts (class title property)" linenums="false">
+<code-example path="toh-pt0/src/app/app.component.ts" region="set-title" header="app.component.ts (class title property)" linenums="false">
 </code-example>
 
 <!--
@@ -143,13 +197,18 @@ Replace it with the following line of HTML.
 -->
 이제 컴포넌트 파일(`app.component.html`)를 열어 Angular CLI에 의해 자동생성된 디폴트 템플릿을 삭제하고 아래의 HTML코드로 교체해 봅니다.
 
-<code-example path="toh-pt0/src/app/app.component.html" 
-  title="app.component.html (template)" linenums="false">
+<code-example path="toh-pt0/src/app/app.component.html"
+  header="app.component.html (template)" linenums="false">
 </code-example>
 
+<<<<<<< HEAD
 <!--
 The double curly braces are Angular's *interpolation binding* syntax. 
 This interpolation binding presents the component's `title` property value 
+=======
+The double curly braces are Angular's *interpolation binding* syntax.
+This interpolation binding presents the component's `title` property value
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 inside the HTML header tag.
 -->
 중첩 중괄호는 Angular에서 *문자열 바인딩(interpolation binding)*을 위한 구문입니다.
@@ -162,10 +221,14 @@ The browser refreshes and displays the new application title.
 
 {@a app-wide-styles}
 
+<<<<<<< HEAD
 <!--
 ## Add application styles
 -->
 ## 애플리케이션 전역 스타일 지정하기
+=======
+### Add application styles
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <!--
 Most apps strive for a consistent look across the application.
@@ -178,9 +241,14 @@ Put your application-wide styles there.
 
 <!--
 Here's an excerpt from the `styles.css` for the _Tour of Heroes_ sample app.
+<<<<<<< HEAD
 -->
 다음 코드는 Tour of Heroes 앱의 styles.css 파일의 일부입니다.
 <code-example path="toh-pt0/src/styles.1.css" title="src/styles.css (excerpt)">
+=======
+
+<code-example path="toh-pt0/src/styles.1.css" header="src/styles.css (excerpt)">
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 </code-example>
 
 <!--
@@ -188,6 +256,7 @@ Here's an excerpt from the `styles.css` for the _Tour of Heroes_ sample app.
 -->
 ## 마지막 코드 리뷰
 
+<<<<<<< HEAD
 <!--
 The source code for this tutorial and the complete _Tour of Heroes_ global styles 
 are available in the <live-example></live-example>. 
@@ -198,17 +267,23 @@ are available in the <live-example></live-example>.
 Here are the code files discussed on this page. 
 -->
 아래는 이 튜토리얼에서 언급된 소스코드 파일들입니다. 
+=======
+The source code for this tutorial and the complete _Tour of Heroes_ global styles
+are available in the <live-example></live-example>.
+
+Here are the code files discussed on this page.
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="toh-pt0/src/app/app.component.ts">
+  <code-pane header="src/app/app.component.ts" path="toh-pt0/src/app/app.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/app.component.html" path="toh-pt0/src/app/app.component.html">
+  <code-pane header="src/app/app.component.html" path="toh-pt0/src/app/app.component.html">
   </code-pane>
 
-  <code-pane 
-    title="src/styles.css (excerpt)" 
+  <code-pane
+    header="src/styles.css (excerpt)"
     path="toh-pt0/src/styles.1.css">
   </code-pane>
 </code-tabs>
@@ -221,8 +296,12 @@ Here are the code files discussed on this page.
 <!--
 * You created the initial application structure using the Angular CLI.
 * You learned that Angular components display data.
+<<<<<<< HEAD
 * You used the double curly braces of interpolation to display the app title. 
 -->
 * Angular CLI를 이용하여 초기 애플리케이션 구조를 생성하였습니다.
 * 데이터를 표현하는 Angular 컴포넌트를 배웠습니다.
 * 이중 중괄호를 사용하면 컴포넌트 프로퍼티 값을 템플릿에 바인딩 할 수 있습니다.
+=======
+* You used the double curly braces of interpolation to display the app title.
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371

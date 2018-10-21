@@ -23,10 +23,10 @@ Angular와 함께라면 웹 애플리케이션을 개발하면서 모바일 웹�
       <p class="card-footer">온라인 예제 확인하기</p>
   </a>
 
-  <a href="guide/quickstart" class="docs-card" title="Angular Quickstart">
+  <a href="guide/quickstart" class="docs-card" title="Angular Getting Started">
       <!--
       <section>Get Going with Angular</section>
-      <p>Get going on your own environment with the Quickstart.</p>
+      <p>Get going on your own environment with the Getting Started.</p>
       <p class="card-footer">Quickstart</p>
       -->
       <section>Angular 시작하기</section>
