@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 // #docregion observer
 
 // 3개의 값을 전달하도록 옵저버블을 간단하게 정의합니다.
-const myObservable = Observable.of(1, 2, 3);
+const myObservable = of(1, 2, 3);
 
 // 옵저버 객체를 정의합니다.
 const myObserver = {
