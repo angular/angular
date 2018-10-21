@@ -9,7 +9,8 @@
 import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, ReflectionHost} from '../../host';
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
 import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
@@ -31,7 +32,9 @@ export function getConstructorDependencies(
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       if (dec.name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
-          throw new Error(`Unexpected number of arguments to @Inject().`);
+          throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              `Unexpected number of arguments to @Inject().`);
         }
         tokenExpr = dec.args[0];
       } else if (dec.name === 'Optional') {
@@ -44,36 +47,29 @@ export function getConstructorDependencies(
         host = true;
       } else if (dec.name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
-          throw new Error(`Unexpected number of arguments to @Attribute().`);
+          throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              `Unexpected number of arguments to @Attribute().`);
         }
         tokenExpr = dec.args[0];
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
-        throw new Error(`Unexpected decorator ${dec.name} on parameter.`);
+        throw new FatalDiagnosticError(
+            ErrorCode.DECORATOR_UNEXPECTED, dec.node,
+            `Unexpected decorator ${dec.name} on parameter.`);
       }
     });
     if (tokenExpr === null) {
-      throw new Error(
+      throw new FatalDiagnosticError(
+          ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
           `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
     if (ts.isIdentifier(tokenExpr)) {
       const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
       if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
         switch (importedSymbol.name) {
-          case 'ChangeDetectorRef':
-            resolved = R3ResolvedDependencyType.ChangeDetectorRef;
-            break;
-          case 'ElementRef':
-            resolved = R3ResolvedDependencyType.ElementRef;
-            break;
           case 'Injector':
             resolved = R3ResolvedDependencyType.Injector;
-            break;
-          case 'TemplateRef':
-            resolved = R3ResolvedDependencyType.TemplateRef;
-            break;
-          case 'ViewContainerRef':
-            resolved = R3ResolvedDependencyType.ViewContainerRef;
             break;
           default:
             // Leave as a Token or Attribute.
@@ -176,4 +172,21 @@ export function forwardRefResolver(
     return null;
   }
   return expandForwardRef(args[0]);
+}
+
+export function extractDirectiveGuards(node: ts.Declaration, reflector: ReflectionHost): {
+  ngTemplateGuards: string[],
+  hasNgTemplateContextGuard: boolean,
+} {
+  const methods = nodeStaticMethodNames(node, reflector);
+  const ngTemplateGuards = methods.filter(method => method.startsWith('ngTemplateGuard_'))
+                               .map(method => method.split('_', 2)[1]);
+  const hasNgTemplateContextGuard = methods.some(name => name === 'ngTemplateContextGuard');
+  return {hasNgTemplateContextGuard, ngTemplateGuards};
+}
+
+function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost): string[] {
+  return reflector.getMembersOfClass(node)
+      .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
+      .map(member => member.name);
 }

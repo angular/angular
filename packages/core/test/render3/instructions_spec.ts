@@ -8,12 +8,11 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {RenderFlags, directiveInject} from '../../src/render3';
+import {RenderFlags} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
-import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
-import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -50,7 +49,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 2
       });
@@ -68,7 +67,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 1
       });
@@ -81,13 +80,13 @@ describe('instructions', () => {
         element(0, 'div', ['id', 'test', 'title', 'Hello']);
       }, () => {}, 1);
 
-      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const div = (t.hostElement as HTMLElement).querySelector('div') !;
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
       });
     });
@@ -109,7 +108,7 @@ describe('instructions', () => {
         ]);
       }, () => {}, 1);
 
-      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const div = (t.hostElement as HTMLElement).querySelector('div') !;
       const attrs: any = div.attributes;
 
       expect(attrs['id'].name).toEqual('id');
@@ -127,7 +126,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetAttribute: 3
       });
@@ -148,7 +147,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetAttribute: 2
       });
@@ -169,7 +168,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
       });
     });
@@ -179,11 +178,11 @@ describe('instructions', () => {
 
       t.update(() => elementProperty(0, 'hidden', false));
       // The hidden property would be true if `false` was stringified into `"false"`.
-      expect((t.hostNode.native as HTMLElement).querySelector('div') !.hidden).toEqual(false);
+      expect((t.hostElement as HTMLElement).querySelector('div') !.hidden).toEqual(false);
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 1
       });

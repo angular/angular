@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
 import {Type} from '../type';
 
 import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
@@ -71,7 +72,7 @@ export interface InjectorDef<T> {
  * `InjectableDefType`s contain their own Dependency Injection metadata and are usable in an
  * `InjectorDef`-based `StaticInjector.
  *
- * @experimental
+ * @publicApi
  */
 export interface InjectableType<T> extends Type<T> {
   /**
@@ -85,7 +86,7 @@ export interface InjectableType<T> extends Type<T> {
  *
  * `InjectorDefTypes` can be used to configure a `StaticInjector`.
  *
- * @experimental
+ * @publicApi
  */
 export interface InjectorType<T> extends Type<T> {
   /**
@@ -123,7 +124,7 @@ export interface InjectorTypeWithProviders<T> {
  * * `factory` gives the zero argument function which will create an instance of the injectable.
  *   The factory can call `inject` to access the `Injector` and request injection of dependencies.
  *
- * @experimental
+ * @publicApi
  */
 export function defineInjectable<T>(opts: {
   providedIn?: Type<any>| 'root' | 'any' | null,
@@ -152,11 +153,29 @@ export function defineInjectable<T>(opts: {
  *   whose providers will also be added to the injector. Locally provided types will override
  *   providers from imports.
  *
- * @experimental
+ * @publicApi
  */
 export function defineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
     never {
   return ({
     factory: options.factory, providers: options.providers || [], imports: options.imports || [],
   } as InjectorDef<any>) as never;
+}
+
+/**
+ * Read the `ngInjectableDef` type in a way which is immune to accidentally reading inherited value.
+ *
+ * @param type type which may have `ngInjectableDef`
+ */
+export function getInjectableDef<T>(type: any): InjectableDef<T>|null {
+  return type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
+}
+
+/**
+ * Read the `ngInjectorDef` type in a way which is immune to accidentally reading inherited value.
+ *
+ * @param type type which may have `ngInjectorDef`
+ */
+export function getInjectorDef<T>(type: any): InjectorDef<T>|null {
+  return type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }

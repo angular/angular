@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Adapter, Context} from './adapter';
+import {Adapter} from './adapter';
 import {CacheState, DebugIdleState, DebugState, DebugVersion, Debuggable, UpdateCacheStatus, UpdateSource} from './api';
 import {AppVersion} from './app-version';
-import {Database, Table} from './database';
+import {Database} from './database';
 import {DebugHandler} from './debug';
-import {SwCriticalError} from './error';
+import {errorToString} from './error';
 import {IdleScheduler} from './idle';
 import {Manifest, ManifestHash, hashManifest} from './manifest';
 import {MsgAny, isMsgActivateUpdate, isMsgCheckForUpdates} from './msg';
@@ -123,9 +123,22 @@ export class Driver implements Debuggable, UpdateSource {
     // The activate event is triggered when this version of the service worker is
     // first activated.
     this.scope.addEventListener('activate', (event) => {
-      // As above, it's safe to take over from existing clients immediately, since
-      // the new SW version will continue to serve the old application.
-      event !.waitUntil(this.scope.clients.claim());
+      event !.waitUntil((async() => {
+        // As above, it's safe to take over from existing clients immediately, since the new SW
+        // version will continue to serve the old application.
+        await this.scope.clients.claim();
+
+        // Once all clients have been taken over, we can delete caches used by old versions of
+        // `@angular/service-worker`, which are no longer needed. This can happen in the background.
+        this.idle.schedule('activate: cleanup-old-sw-caches', async() => {
+          try {
+            await this.cleanupOldSwCaches();
+          } catch (err) {
+            // Nothing to do - cleanup failed. Just log it.
+            this.debugger.log(err, 'cleanupOldSwCaches @ activate: cleanup-old-sw-caches');
+          }
+        });
+      })());
 
       // Rather than wait for the first fetch event, which may not arrive until
       // the next time the application is loaded, the SW takes advantage of the
@@ -709,7 +722,7 @@ export class Driver implements Debuggable, UpdateSource {
       // network, but caches continue to be valid for previous versions. This is
       // unfortunate but unavoidable.
       this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
-      this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
+      this.stateMessage = `Degraded due to: ${errorToString(err)}`;
 
       // Cancel the binding for these clients.
       Array.from(this.clientVersionMap.keys())
@@ -724,7 +737,14 @@ export class Driver implements Debuggable, UpdateSource {
       // Push the affected clients onto the latest version.
       affectedClients.forEach(clientId => this.clientVersionMap.set(clientId, this.latestHash !));
     }
-    await this.sync();
+
+    try {
+      await this.sync();
+    } catch (err2) {
+      // We are already in a bad state. No need to make things worse.
+      // Just log the error and move on.
+      this.debugger.log(err2, `Driver.versionFailed(${err.message || err})`);
+    }
   }
 
   private async setupUpdate(manifest: Manifest, hash: string): Promise<void> {
@@ -866,6 +886,19 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   /**
+   * Delete caches that were used by older versions of `@angular/service-worker` to avoid running
+   * into storage quota limitations imposed by browsers.
+   * (Since at this point the SW has claimed all clients, it is safe to remove those caches.)
+   */
+  async cleanupOldSwCaches(): Promise<void> {
+    const cacheNames = await this.scope.caches.keys();
+    const oldSwCacheNames =
+        cacheNames.filter(name => /^ngsw:(?:active|staged|manifest:.+)$/.test(name));
+
+    await Promise.all(oldSwCacheNames.map(name => this.scope.caches.delete(name)));
+  }
+
+  /**
    * Determine if a specific version of the given resource is cached anywhere within the SW,
    * and fetch it if so.
    */
@@ -997,13 +1030,5 @@ export class Driver implements Debuggable, UpdateSource {
         statusText: 'Gateway Timeout',
       });
     }
-  }
-}
-
-function errorToString(error: any): string {
-  if (error instanceof Error) {
-    return `${error.message}\n${error.stack}`;
-  } else {
-    return `${error}`;
   }
 }

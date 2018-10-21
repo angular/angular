@@ -15,6 +15,8 @@ function makeKeyValuePair<K, V>(key: K, value: V): KeyValue<K, V> {
 /**
  * A key value pair.
  * Usually used to represent the key value pairs from a Map or Object.
+ *
+ * @publicApi
  */
 export interface KeyValue<K, V> {
   key: K;
@@ -31,12 +33,15 @@ export interface KeyValue<K, V> {
  * By default the comparator will be by Unicode point value.
  * You can optionally pass a compareFn if your keys are complex types.
  *
- * ## Examples
+ * @usageNotes
+ * ### Examples
  *
  * This examples show how an Object or a Map and be iterated by ngFor with the use of this keyvalue
  * pipe.
  *
  * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
+ *
+ * @publicApi
  */
 @Pipe({name: 'keyvalue', pure: false})
 export class KeyValuePipe implements PipeTransform {

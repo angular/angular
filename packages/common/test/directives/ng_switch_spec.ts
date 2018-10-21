@@ -133,9 +133,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
             '</div>';
 
         TestBed.configureTestingModule({declarations: [TestDirective]});
-        TestBed.overrideComponent(TestComponent, {set: {template: template}})
-            .createComponent(TestComponent);
-        const fixture = TestBed.createComponent(TestComponent);
+        const fixture = createTestComponent(template);
         fixture.componentInstance.switchValue = 'a';
 
         fixture.detectChanges();

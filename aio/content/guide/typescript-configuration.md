@@ -60,7 +60,7 @@ The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 -->
 [로컬 개발환경 설정하기](guide/setup) 문서에서 만든 `tsconfig.json` 파일은 다음과 같은 내용입니다:
 
-<code-example path="quickstart/src/tsconfig.1.json" title="tsconfig.json" linenums="false"></code-example>
+<code-example path="quickstart/src/tsconfig.1.json" header="tsconfig.json" linenums="false"></code-example>
 
 <!--
 This file contains options and flags that are essential for Angular applications.

@@ -135,13 +135,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     if (!el) {
       throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
     }
-    el.textContent = '';
+    if (!preserveContent) {
+      el.textContent = '';
+    }
     return el;
   }
 

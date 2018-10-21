@@ -190,7 +190,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
    * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
    *
-   * @experimental
+   * @publicApi
    */
   enableIvy?: boolean|'ngtsc'|'tsc';
 
@@ -340,7 +340,7 @@ export interface Program {
    * Angular structural information is required to produce these diagnostics.
    */
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<Diagnostic>;
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
 
   /**
    * Load Angular structural information asynchronously. If this method is not called then the

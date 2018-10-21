@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LElementNode, LViewNode} from './node';
 import {LQueries} from './query';
-import {LViewData, NEXT, PARENT, QUERIES} from './view';
+import {RComment, RElement} from './renderer';
+import {StylingContext} from './styling';
+import {HOST, LViewData, NEXT, PARENT, QUERIES} from './view';
+
 
 /**
  * Below are constants for LContainer indices to help us look up LContainer members
@@ -16,13 +18,14 @@ import {LViewData, NEXT, PARENT, QUERIES} from './view';
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 export const ACTIVE_INDEX = 0;
-// PARENT, NEXT, and QUERIES are indices 1, 2, and 3.
+export const VIEWS = 1;
+// PARENT, NEXT, QUERIES, and HOST are indices 2, 3, 4, and 5.
 // As we already have these constants in LViewData, we don't need to re-create them.
-export const VIEWS = 4;
-export const RENDER_PARENT = 5;
+export const NATIVE = 6;
+export const RENDER_PARENT = 7;
 
 /**
- * The state associated with an LContainerNode.
+ * The state associated with a container.
  *
  * This is an array so that its structure is closer to LViewData. This helps
  * when traversing the view tree (which is a mix of containers and component
@@ -37,7 +40,16 @@ export interface LContainer extends Array<any> {
    * it is set to null to identify this scenario, as indices are "absolute" in that case,
    * i.e. provided directly by the user of the ViewContainerRef API.
    */
-  [ACTIVE_INDEX]: number|null;
+  [ACTIVE_INDEX]: number;
+
+  /**
+   * A list of the container's currently active child views. Views will be inserted
+   * here as they are added and spliced from here when they are removed. We need
+   * to keep a record of current views so we know which views are already in the DOM
+   * (and don't need to be re-added) and so we can remove views from the DOM when they
+   * are no longer required.
+   */
+  [VIEWS]: LViewData[];
 
   /**
    * Access to the parent view is necessary so we can propagate back
@@ -58,35 +70,40 @@ export interface LContainer extends Array<any> {
   [QUERIES]: LQueries|null;
 
   /**
-   * A list of the container's currently active child views. Views will be inserted
-   * here as they are added and spliced from here when they are removed. We need
-   * to keep a record of current views so we know which views are already in the DOM
-   * (and don't need to be re-added) and so we can remove views from the DOM when they
-   * are no longer required.
+   * The host element of this LContainer.
+   *
+   * The host could be an LViewData if this container is on a component node.
+   * In that case, the component LViewData is its HOST.
+   *
+   * It could also be a styling context if this is a node with a style/class
+   * binding.
    */
-  [VIEWS]: LViewNode[];
+  [HOST]: RElement|RComment|StylingContext|LViewData;
+
+  /** The comment element that serves as an anchor for this LContainer. */
+  [NATIVE]: RComment;
 
   /**
-   * Parent Element which will contain the location where all of the Views will be
+   * Parent Element which will contain the location where all of the views will be
    * inserted into to.
    *
    * If `renderParent` is `null` it is headless. This means that it is contained
-   * in another `LViewNode` which in turn is contained in another `LContainerNode` and
+   * in another view which in turn is contained in another container and
    * therefore it does not yet have its own parent.
    *
    * If `renderParent` is not `null` then it may be:
-   * - same as `LContainerNode.parent` in which case it is just a normal container.
-   * - different from `LContainerNode.parent` in which case it has been re-projected.
-   *   In other words `LContainerNode.parent` is logical parent where as
-   *   `LContainer.projectedParent` is render parent.
+   * - same as `tContainerNode.parent` in which case it is just a normal container.
+   * - different from `tContainerNode.parent` in which case it has been re-projected.
+   *   In other words `tContainerNode.parent` is logical parent where as
+   *   `tContainerNode.projectedParent` is render parent.
    *
-   * When views are inserted into `LContainerNode` then `renderParent` is:
-   * - `null`, we are in `LViewNode` keep going up a hierarchy until actual
+   * When views are inserted into `LContainer` then `renderParent` is:
+   * - `null`, we are in a view, keep going up a hierarchy until actual
    *   `renderParent` is found.
    * - not `null`, then use the `projectedParent.native` as the `RElement` to insert
-   *   `LViewNode`s into.
+   * views into.
    */
-  [RENDER_PARENT]: LElementNode|null;
+  [RENDER_PARENT]: RElement|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

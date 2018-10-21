@@ -80,7 +80,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('class PublicExport');
+    expect(keywordsDoc.data[0].titleWords).toEqual('class publicexport');
   });
 
   it('should add heading words to the search terms', () => {
@@ -141,7 +141,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('ngController Controller');
+    expect(keywordsDoc.data[0].titleWords).toEqual('ngcontroller controller');
     expect(keywordsDoc.data[0].headingWords).toEqual('model ngmodel');
     expect(keywordsDoc.data[0].keywords).toContain('class');
     expect(keywordsDoc.data[0].keywords).toContain('ngclass');
@@ -163,10 +163,11 @@ describe('generateKeywords processor', () => {
       [{
         'title':'SomeClass',
         'type':'class',
-        'titleWords':'SomeClass',
+        'titleWords':'someclass',
         'headingWords':'heading some someclass',
         'keywords':'api class documentation for is someclass the',
-        'members':''
+        'members':'',
+        'deprecated': false,
       }]
     );
   });

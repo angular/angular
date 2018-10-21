@@ -4,7 +4,7 @@ import { browser, element, by, ExpectedConditions } from 'protractor';
 
 const numDashboardTabs = 5;
 const numCrises = 4;
-const numHeroes = 6;
+const numHeroes = 10;
 const EC = ExpectedConditions;
 
 describe('Router', () => {
@@ -13,33 +13,34 @@ describe('Router', () => {
 
   function getPageStruct() {
     const hrefEles = element.all(by.css('app-root > nav a'));
-    const crisisDetail = element.all(by.css('app-root > ng-component > ng-component > ng-component > div')).first();
-    const heroDetail = element(by.css('app-root > ng-component > div'));
+    const crisisDetail = element.all(by.css('app-root > div > app-crisis-center > app-crisis-list > app-crisis-detail > div')).first();
+    const heroDetail = element(by.css('app-root > div > app-hero-detail'));
 
     return {
       hrefs: hrefEles,
       activeHref: element(by.css('app-root > nav a.active')),
 
       crisisHref: hrefEles.get(0),
-      crisisList: element.all(by.css('app-root > ng-component > ng-component li')),
+      crisisList: element.all(by.css('app-root > div > app-crisis-center > app-crisis-list li')),
       crisisDetail: crisisDetail,
       crisisDetailTitle: crisisDetail.element(by.xpath('*[1]')),
 
       heroesHref: hrefEles.get(1),
-      heroesList: element.all(by.css('app-root > ng-component li')),
+      heroesList: element.all(by.css('app-root > div > app-hero-list li')),
       heroDetail: heroDetail,
-      heroDetailTitle: heroDetail.element(by.xpath('*[1]')),
+      heroDetailTitle: heroDetail.element(by.xpath('*[2]')),
 
       adminHref: hrefEles.get(2),
-      adminPreloadList: element.all(by.css('app-root > ng-component > ng-component > ul > li')),
+      adminPreloadList: element.all(by.css('app-root > div > app-admin > app-admin-dashboard > ul > li')),
 
       loginHref: hrefEles.get(3),
-      loginButton: element.all(by.css('app-root > ng-component > p > button')),
+      loginButton: element.all(by.css('app-root > div > app-login > p > button')),
 
       contactHref: hrefEles.get(4),
       contactCancelButton: element.all(by.buttonText('Cancel')),
 
-      outletComponents: element.all(by.css('app-root > ng-component'))
+      primaryOutlet: element.all(by.css('app-root > div > app-hero-list')),
+      secondaryOutlet: element.all(by.css('app-root > app-compose-message'))
     };
   }
 
@@ -98,6 +99,7 @@ describe('Router', () => {
   it('saves changed hero details', async () => {
     const page = getPageStruct();
     await page.heroesHref.click();
+    await browser.sleep(600);
     const heroEle = page.heroesList.get(4);
     let text = await heroEle.getText();
     expect(text.length).toBeGreaterThan(0, 'hero item text length');
@@ -105,6 +107,7 @@ describe('Router', () => {
     const heroText = text.substr(text.indexOf(' ')).trim();
 
     await heroEle.click();
+    await browser.sleep(600);
     expect(page.heroesList.count()).toBe(0, 'hero list count');
     expect(page.heroDetail.isPresent()).toBe(true, 'hero detail');
     expect(page.heroDetailTitle.getText()).toContain(heroText);
@@ -114,6 +117,7 @@ describe('Router', () => {
 
     let buttonEle = page.heroDetail.element(by.css('button'));
     await buttonEle.click();
+    await browser.sleep(600);
     expect(heroEle.getText()).toContain(heroText + '-foo');
   });
 
@@ -130,7 +134,8 @@ describe('Router', () => {
     const page = getPageStruct();
     await page.heroesHref.click();
     await page.contactHref.click();
-    expect(page.outletComponents.count()).toBe(2, 'route count');
+    expect(page.primaryOutlet.count()).toBe(1, 'primary outlet');
+    expect(page.secondaryOutlet.count()).toBe(1, 'secondary outlet');
   });
 
   async function crisisCenterEdit(index: number, save: boolean) {

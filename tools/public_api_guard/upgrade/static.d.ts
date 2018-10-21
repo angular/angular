@@ -1,16 +1,13 @@
-/** @experimental */
 export declare function downgradeComponent(info: {
     component: Type<any>;
-    /** @experimental */ propagateDigest?: boolean;
+    propagateDigest?: boolean;
     /** @deprecated */ inputs?: string[];
     /** @deprecated */ outputs?: string[];
     /** @deprecated */ selectors?: string[];
 }): any;
 
-/** @experimental */
 export declare function downgradeInjectable(token: any): Function;
 
-/** @experimental */
 export declare function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T> | ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string;
 
 export declare function getAngularJSGlobal(): any;
@@ -23,7 +20,6 @@ export declare function setAngularJSGlobal(ng: any): void;
 /** @deprecated */
 export declare function setAngularLib(ng: any): void;
 
-/** @experimental */
 export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     constructor(name: string, elementRef: ElementRef, injector: Injector);
     ngDoCheck(): void;
@@ -32,7 +28,6 @@ export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnD
     ngOnInit(): void;
 }
 
-/** @experimental */
 export declare class UpgradeModule {
     $injector: any;
     injector: Injector;

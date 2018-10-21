@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "mocks",
@@ -13,6 +12,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/core",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -25,11 +25,13 @@ ts_library(
         ":mocks",
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "check_types",
+    timeout = "long",  # 900 seconds
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
@@ -53,6 +55,7 @@ ts_library(
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
         "//packages/language-service",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -83,6 +86,7 @@ ts_library(
         "//packages/compiler-cli/test:test_utils",
         "//packages/compiler/test:test_utils",
         "//packages/language-service",
+        "@ngdeps//typescript",
     ],
 )
 

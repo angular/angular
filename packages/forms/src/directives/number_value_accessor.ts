@@ -20,10 +20,15 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  * The accessor for writing a number value and listening to changes that is used by the
  * `NgModel`, `FormControlDirective`, and `FormControlName` directives.
  *
- *  ### Example
- *  ```
- *  <input type="number" [(ngModel)]="age">
- *  ```
+ * @usageNotes
+ * ### Example
+ *
+ * ```
+ * <input type="number" [(ngModel)]="age">
+ * ```
+ *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:

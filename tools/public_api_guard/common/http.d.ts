@@ -1482,11 +1482,11 @@ export declare class HttpClientModule {
 }
 
 export declare class HttpClientXsrfModule {
-    static disable(): ModuleWithProviders;
+    static disable(): ModuleWithProviders<HttpClientXsrfModule>;
     static withOptions(options?: {
         cookieName?: string;
         headerName?: string;
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<HttpClientXsrfModule>;
 }
 
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
@@ -1497,8 +1497,8 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
 export declare class HttpErrorResponse extends HttpResponseBase implements Error {
     readonly error: any | null;
     readonly message: string;
-    readonly name: string;
-    readonly ok: boolean;
+    readonly name = "HttpErrorResponse";
+    readonly ok = false;
     constructor(init: {
         error?: any;
         headers?: HttpHeaders;

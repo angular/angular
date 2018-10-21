@@ -1,6 +1,8 @@
 import {
   Component,
-  Input
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import {
   trigger,
@@ -11,45 +13,31 @@ import {
   group
 } from '@angular/animations';
 
-import { Hero } from './hero.service';
+import { Hero } from './hero';
 
 @Component({
   selector: 'app-hero-list-groups',
   template: `
-    <ul>
+    <ul class="heroes">
       <li *ngFor="let hero of heroes"
-          [@flyInOut]="'in'">
-        {{hero.name}}
+          [@flyInOut]="'in'" (click)="removeHero(hero.id)">
+          <div class="inner">
+            <span class="badge">{{ hero.id }}</span>
+            <span>{{ hero.name }}</span>
+          </div>
       </li>
     </ul>
   `,
-  styleUrls: ['./hero-list.component.css'],
-  styles: [`
-    li {
-      padding: 0 !important;
-      text-align: center;
-    }
-  `],
-  /* The element here always has the state "in" when it
-   * is present. We animate two transitions: From void
-   * to in and from in to void, to achieve an animated
-   * enter and leave transition.
-   *
-   * The transitions have  *parallel group* that allow
-   * animating several properties at the same time but
-   * with different timing configurations. On enter
-   * (void => *) we start the opacity animation 0.1s
-   * earlier than the translation/width animation.
-   * On leave (* => void) we do the opposite -
-   * the translation/width animation begins immediately
-   * and the opacity animation 0.1s later.
-   */
+  styleUrls: ['./hero-list-page.component.css'],
   // #docregion animationdef
   animations: [
     trigger('flyInOut', [
-      state('in', style({width: 120, transform: 'translateX(0)', opacity: 1})),
+      state('in', style({
+        width: 120,
+        transform: 'translateX(0)', opacity: 1
+      })),
       transition('void => *', [
-        style({width: 10, transform: 'translateX(50px)', opacity: 0}),
+        style({ width: 10, transform: 'translateX(50px)', opacity: 0 }),
         group([
           animate('0.3s 0.1s ease', style({
             transform: 'translateX(0)',
@@ -77,4 +65,10 @@ import { Hero } from './hero.service';
 })
 export class HeroListGroupsComponent {
    @Input() heroes: Hero[];
+
+   @Output() remove = new EventEmitter<number>();
+
+   removeHero(id: number) {
+     this.remove.emit(id);
+   }
 }

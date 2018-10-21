@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "ivy_lib",
@@ -10,16 +9,6 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/core",
-    ],
-)
-
-ts_library(
-    name = "ivy_node_lib",
-    testonly = 1,
-    srcs = [],
-    deps = [
-        ":ivy_lib",
-        "//packages/core/test/render3:domino",
     ],
 )
 
@@ -32,6 +21,7 @@ jasmine_node_test(
         "ivy-jit",
     ],
     deps = [
-        ":ivy_node_lib",
+        ":ivy_lib",
+        "//packages/core/test/render3:domino",
     ],
 )

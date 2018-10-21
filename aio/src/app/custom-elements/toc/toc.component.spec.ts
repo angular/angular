@@ -138,9 +138,6 @@ describe('TocComponent', () => {
       });
 
       it('should have more than 4 displayed items', () => {
-        let tocList: TocItem[];
-        tocService.tocList.subscribe(v => tocList = v);
-
         expect(page.listItems.length).toBeGreaterThan(4);
       });
 

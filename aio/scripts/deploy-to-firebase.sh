@@ -92,6 +92,10 @@ fi
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
 
+  # Set deployedUrl as parameter in the opensearch description
+  # deployedUrl must end with /
+  yarn set-opensearch-url $deployedUrl
+
   # Check payload size
   yarn payload-size
 
@@ -100,5 +104,5 @@ fi
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
-  yarn test-pwa-score "$deployedUrl" "$MIN_PWA_SCORE"
+  yarn test-pwa-score "$deployedUrl" "$AIO_MIN_PWA_SCORE"
 )

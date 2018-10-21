@@ -37,7 +37,6 @@ export declare class ActivatedRouteSnapshot {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -45,7 +44,6 @@ export declare class ActivationEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ActivationStart {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -69,7 +67,6 @@ export interface CanLoad {
     canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean;
 }
 
-/** @experimental */
 export declare class ChildActivationEnd {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -77,7 +74,6 @@ export declare class ChildActivationEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ChildActivationStart {
     snapshot: ActivatedRouteSnapshot;
     constructor(
@@ -105,7 +101,6 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
     serialize(tree: UrlTree): string;
 }
 
-/** @experimental */
 export declare type DetachedRouteHandle = {};
 
 export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
@@ -126,7 +121,6 @@ export interface ExtraOptions {
     useHash?: boolean;
 }
 
-/** @experimental */
 export declare class GuardsCheckEnd extends RouterEvent {
     shouldActivate: boolean;
     state: RouterStateSnapshot;
@@ -140,7 +134,6 @@ export declare class GuardsCheckEnd extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare class GuardsCheckStart extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -209,7 +202,6 @@ export declare class NavigationStart extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare class NoPreloading implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
@@ -233,12 +225,10 @@ export declare type Params = {
     [key: string]: any;
 };
 
-/** @experimental */
 export declare class PreloadAllModules implements PreloadingStrategy {
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
 
-/** @experimental */
 export declare abstract class PreloadingStrategy {
     abstract preload(route: Route, fn: () => Observable<any>): Observable<any>;
 }
@@ -255,7 +245,6 @@ export declare type ResolveData = {
     [name: string]: any;
 };
 
-/** @experimental */
 export declare class ResolveEnd extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -267,7 +256,6 @@ export declare class ResolveEnd extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare class ResolveStart extends RouterEvent {
     state: RouterStateSnapshot;
     urlAfterRedirects: string;
@@ -297,7 +285,6 @@ export interface Route {
     runGuardsAndResolvers?: RunGuardsAndResolvers;
 }
 
-/** @experimental */
 export declare class RouteConfigLoadEnd {
     route: Route;
     constructor(
@@ -305,7 +292,6 @@ export declare class RouteConfigLoadEnd {
     toString(): string;
 }
 
-/** @experimental */
 export declare class RouteConfigLoadStart {
     route: Route;
     constructor(
@@ -343,10 +329,8 @@ export declare class Router {
 
 export declare const ROUTER_CONFIGURATION: InjectionToken<ExtraOptions>;
 
-/** @experimental */
 export declare const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => void>;
 
-/** @experimental */
 export declare abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
@@ -355,7 +339,6 @@ export declare abstract class RouteReuseStrategy {
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
 }
 
-/** @experimental */
 export declare class RouterEvent {
     id: number;
     url: string;
@@ -455,7 +438,6 @@ export declare class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
 
 export declare type Routes = Route[];
 
-/** @experimental */
 export declare const ROUTES: InjectionToken<Route[][]>;
 
 export declare class RoutesRecognized extends RouterEvent {
@@ -469,7 +451,6 @@ export declare class RoutesRecognized extends RouterEvent {
     toString(): string;
 }
 
-/** @experimental */
 export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 export declare class Scroll {
@@ -483,17 +464,14 @@ export declare class Scroll {
     toString(): string;
 }
 
-/** @experimental */
 export declare abstract class UrlHandlingStrategy {
     abstract extract(url: UrlTree): UrlTree;
     abstract merge(newUrlPart: UrlTree, rawUrl: UrlTree): UrlTree;
     abstract shouldProcessUrl(url: UrlTree): boolean;
 }
 
-/** @experimental */
 export declare type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) => UrlMatchResult;
 
-/** @experimental */
 export declare type UrlMatchResult = {
     consumed: UrlSegment[];
     posParams?: {

@@ -1,0 +1,130 @@
+{
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.html",
+          "/pwa-manifest.json",
+          "/app/search/search-worker.js",
+          "/assets/images/favicons/favicon.ico",
+          "/assets/js/*.js",
+          "/*.css",
+          "/*.js"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/s/**",
+          "https://maxcdn.bootstrapcdn.com/**"
+        ]
+      }
+    }, {
+      "name": "assets-eager",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/**",
+          "/generated/images/marketing/**",
+          "!/assets/images/favicons/**",
+          "!/**/_unused/**"
+        ]
+      }
+    }, {
+      "name": "assets-lazy",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/favicons/**",
+          "/generated/ie-polyfills.min.js",
+          "!/**/_unused/**"
+        ]
+      }
+    }, {
+      "name": "docs-index",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/generated/*.json",
+          "/generated/docs/*.json",
+          "/generated/docs/api/api-list.json",
+          "/generated/docs/app/search-data.json"
+        ]
+      }
+    }, {
+      "name": "docs-lazy",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/generated/docs/**/*.json",
+          "/generated/images/**",
+          "!/**/_unused/**"
+        ]
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/**/stackblitz",
+    "!/**/stackblitz.html",
+    "!/api/*/**/*-*",
+    "!/api/**/AnimationStateDeclarationMetadata*",
+    "!/api/**/CORE_DIRECTIVES*",
+    "!/api/**/DirectiveMetadata*",
+    "!/api/**/HTTP_PROVIDERS*",
+    "!/api/**/NgFor",
+    "!/api/**/NgFor-*",
+    "!/api/**/PLATFORM_PIPES*",
+    "!/api/animate/**",
+    "!/api/api/**",
+    "!/api/common/Control*",
+    "!/api/common/MaxLengthValidator*",
+    "!/api/common/NgModel*",
+    "!/api/platform-browser/AnimationDriver*",
+    "!/api/testing/**",
+    "!/docs/?*",
+    "!/docs/*/**",
+    "!/guide/cli-quickstart",
+    "!/guide/cli-quickstart.html",
+    "!/guide/cli-quickstart/",
+    "!/guide/learning-angular",
+    "!/guide/learning-angular.html",
+    "!/guide/learning-angular/",
+    "!/guide/metadata",
+    "!/guide/metadata.html",
+    "!/guide/metadata/",
+    "!/guide/ngmodule",
+    "!/guide/ngmodule.html",
+    "!/guide/ngmodule/",
+    "!/guide/service-worker-getstart",
+    "!/guide/service-worker-getstart.html",
+    "!/guide/service-worker-getstart/",
+    "!/guide/service-worker-comm",
+    "!/guide/service-worker-comm.html",
+    "!/guide/service-worker-comm/",
+    "!/guide/service-worker-configref",
+    "!/guide/service-worker-configref.html",
+    "!/guide/service-worker-configref/",
+    "!/guide/webpack",
+    "!/guide/webpack.html",
+    "!/guide/webpack/",
+    "!/guide/setup-systemjs-anatomy",
+    "!/guide/setup-systemjs-anatomy.html",
+    "!/news",
+    "!/news.html",
+    "!/news/",
+    "!/styleguide",
+    "!/styleguide/**",
+    "!/testing",
+    "!/testing/**"
+  ]
+}

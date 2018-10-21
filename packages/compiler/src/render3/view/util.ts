@@ -11,6 +11,7 @@ import * as o from '../../output/output_ast';
 import * as t from '../r3_ast';
 
 import {R3QueryMetadata} from './api';
+import {isI18NAttribute} from './i18n';
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -27,13 +28,8 @@ export const REFERENCE_PREFIX = '_r';
 /** The name of the implicit context reference */
 export const IMPLICIT_REFERENCE = '$implicit';
 
-/** Name of the i18n attributes **/
-export const I18N_ATTR = 'i18n';
-export const I18N_ATTR_PREFIX = 'i18n-';
-
-/** I18n separators for metadata **/
-export const MEANING_SEPARATOR = '|';
-export const ID_SEPARATOR = '@@';
+/** Non bindable attribute name **/
+export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
 /**
  * Creates an allocator for a temporary variable.
@@ -97,8 +93,15 @@ export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
 export function getQueryPredicate(
     query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
   if (Array.isArray(query.predicate)) {
-    return constantPool.getConstLiteral(
-        o.literalArr(query.predicate.map(selector => o.literal(selector) as o.Expression)));
+    let predicate: o.Expression[] = [];
+    query.predicate.forEach((selector: string): void => {
+      // Each item in predicates array may contain strings with comma-separated refs
+      // (for ex. 'ref, ref1, ..., refN'), thus we extract individual refs and store them
+      // as separate array entities
+      const selectors = selector.split(',').map(token => o.literal(token.trim()));
+      predicate.push(...selectors);
+    });
+    return constantPool.getConstLiteral(o.literalArr(predicate), true);
   } else {
     return query.predicate;
   }
@@ -116,4 +119,28 @@ export class DefinitionMap {
   }
 
   toLiteralMap(): o.LiteralMapExpr { return o.literalMap(this.values); }
+}
+
+/**
+ * Extract a map of properties to values for a given element or template node, which can be used
+ * by the directive matching machinery.
+ *
+ * @param elOrTpl the element or template in question
+ * @return an object set up for directive matching. For attributes on the element/template, this
+ * object maps a property name to its (static) value. For any bindings, this map simply maps the
+ * property name to an empty string.
+ */
+export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
+    {[name: string]: string} {
+  const attributesMap: {[name: string]: string} = {};
+
+  elOrTpl.attributes.forEach(a => {
+    if (!isI18NAttribute(a.name)) {
+      attributesMap[a.name] = a.value;
+    }
+  });
+  elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
+  elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
+
+  return attributesMap;
 }

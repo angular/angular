@@ -196,7 +196,7 @@ export class JitCompiler {
         }
       });
       localModuleMeta.entryComponents.forEach((entryComponentType) => {
-        if (!this.hasAotSummary(entryComponentType.componentType.reference)) {
+        if (!this.hasAotSummary(entryComponentType.componentType)) {
           const moduleMeta = moduleByJitDirective.get(entryComponentType.componentType) !;
           templates.add(
               this._createCompiledHostTemplate(entryComponentType.componentType, moduleMeta));

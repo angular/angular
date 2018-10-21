@@ -93,7 +93,7 @@ You met the double-curly braces of interpolation, `{{` and `}}`, early in your A
 -->
 다른 문서에서도 살펴봤듯이, 문자열 바인딩에는 이중 중괄호(`{{`, `}}`)를 사용합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="first-interpolation" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="first-interpolation" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -101,7 +101,7 @@ You use interpolation to weave calculated strings into the text between HTML ele
 -->
 그리고 HTML 엘리먼트 태그 안에 내용을 넣거나 어트리뷰트를 지정할 때도 문자열 바인딩을 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="title+image" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="title+image" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -118,7 +118,7 @@ and then **converts to a string**. The following interpolation illustrates the p
 -->
 좀 더 자세히 얘기하면 중괄호 안에 있는 **템플릿 표현식**은 Angular에서 가장 먼저 **평가**되며, 평가된 값은 **문자열로 변환**되어 템플릿에 반영됩니다. 이 때문에 문자열 바인딩은 문자열 삽입이라고도 하며, 문자열로 변환되는 특성 덕분에 두 숫자를 더하는 표현식도 템플릿에 바로 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="sum-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="sum-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -126,7 +126,7 @@ The expression can invoke methods of the host component such as `getVal()`, seen
 -->
 템플릿 표현식에서는 컴포넌트 메서드를 바로 실행할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="sum-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="sum-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -233,7 +233,7 @@ In the following snippets, the `title`  within double-curly braces and the
 *템플릿 표현식의 컨텍스트*는 일반적으로 _컴포넌트_ 인스턴스의 컨텍스트와 같습니다.
 따라서 아래 예제에서 이중 중괄호로 문자열 바인딩 된  `title`과 `<span>`에 사용된 `isUnchanged` 어트리뷰트는 모두 `AppComponent`에 있는 프로퍼티를 가리킵니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-expression" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="context-component-expression" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -244,7 +244,7 @@ or a [template reference variable](guide/template-syntax#ref-vars) (`#heroInput`
 그리고 _템플릿_ 안에서만 유효한 변수도 있습니다. 아래 코드에서 `let hero`로 쓰인 [템플릿 입력 변수](guide/template-syntax#템플릿-입력-변수)와
 `#heroInput`으로 쓰인 [템플릿 참조 변수](guide/template-syntax#템플릿-참조-변수)는 템플릿 안에서만 유효합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-var" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="context-var" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -426,7 +426,7 @@ appearing in quotes to the right of the `=`&nbsp;symbol as in `(event)="statemen
 템플릿 실행문은 이 문서의 [이벤트 바인딩](guide/template-syntax#이벤트-바인딩) 섹션에서도 확인할 수 있으며,
 `=` 기호를 사용해서 `(이벤트)="실행문"`과 같이 작성합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -489,7 +489,7 @@ The *deleteHero* in `(click)="deleteHero()"` is a method of the data-bound compo
 *템플릿 실행문의 컨텍스트*는 컴포넌트 인스턴스의 범위와 같습니다.
 예를 들어 아래 코드에서 `(click)="deleteHero()"`에 사용된 `deleteHero`는 컴포넌트에서 데이터를 처리하는 메소드입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="context-component-statement" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -504,7 +504,7 @@ are passed to an event handling method of the component.
 `#heroForm`은 [템플릿 참조 변수](guide/template-syntax#템플릿-참조-변수)입니다.
 각각의 변수는 컴포넌트의 이벤트 핸들링 메소드로 전달됩니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="context-var-statement" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -742,7 +742,7 @@ you modify those elements by setting element attributes with string constants.
 -->
 일반적으로 HTML 문서를 작성할 때는 화면에 표시하는 모양에 맞게 HTML 엘리먼트 구조를 잡고 각 엘리먼트의 어트리뷰트를 문자열로 직접 지정했습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="img+button" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="img+button" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -756,7 +756,7 @@ and drop them into templates as if they were native HTML elements.
 -->
 그리고 HTML을 캡슐화하는 컴포넌트를 작성한 후에는 일반 HTML 엘리먼트처럼 템플릿에 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -769,7 +769,7 @@ Then you learn about data binding. The first binding you meet might look like th
 -->
 이제 데이터 바인딩에 대해 알아봅시다. 첫번째로 살펴볼 바인딩은 다음과 같습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -987,7 +987,7 @@ The following table summarizes:
       디렉티브 프로퍼티
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1009,7 +1009,7 @@ The following table summarizes:
       디렉티브 이벤트
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1027,7 +1027,7 @@ The following table summarizes:
       이벤트나 프로퍼티
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1046,7 +1046,7 @@ The following table summarizes:
       어트리뷰트(일부)
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1064,7 +1064,7 @@ The following table summarizes:
       <code>class</code> 프로퍼티
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1082,7 +1082,7 @@ The following table summarizes:
       <code>style</code> 프로퍼티
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" title="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" header="src/app/app.component.html" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -1120,7 +1120,7 @@ binding the `src` property of an image element to a component's `heroImageUrl` p
 프로퍼티 바인딩은 컴포넌트의 프로퍼티 값을 엘리먼트의 프로퍼티 값으로 지정하는 용도에 주로 사용합니다.
 그래서 컴포넌트에 있는 `heroImageUrl` 프로퍼티 값을 이미지 엘리먼트의 `src` 프로퍼티에 지정하려면 다음과 같이 사용합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1128,7 +1128,7 @@ Another example is disabling a button when the component says that it `isUnchang
 -->
 그리고 컴포넌트에 있는 `isUnchanged` 프로퍼티 값에 따라 버튼을 비활성화 하려면 다음과 같이 사용합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1136,7 +1136,7 @@ Another is setting a property of a directive:
 -->
 디렉티브 프로퍼티를 설정하려면 다음과 같이 사용합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1145,7 +1145,7 @@ for parent and child components to communicate):
 -->
 그리고 커스텀 컴포넌트의 모델 프로퍼티를 설정하려면 다음과 같이 사용합니다. 이 방법을 사용하면 부모 컴포넌트에서 자식 컴포넌트로 간단하게 데이터를 전달할 수 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1202,7 +1202,7 @@ The target property in the following code is the image element's `src` property.
 엘리먼트의 프로퍼티를 대괄호(`[`, `]`)로 감싸면 프로퍼티 바인딩 대상으로 지정할 수 있습니다.
 그래서 다음 코드에서는 이미지 엘리먼트의 `src` 프로퍼티가 프로퍼티 바인딩의 대상 프로퍼티입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1210,7 +1210,7 @@ Some people prefer the `bind-` prefix alternative, known as the *canonical form*
 -->
 이 방식이 익숙하지 않다면 다음과 같이 `bind-` 접두사를 사용할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1228,7 +1228,7 @@ as it is in the following example:
 바인딩되는 프로퍼티는 대상 엘리먼트의 프로퍼티인 것이 일반적이지만, 다음과 같이 Angular가 제공하는 기본 디렉티브의 프로퍼티일 수도 있습니다.
 이 때는 엘리먼트 프로퍼티보다 디렉티브 프로퍼티의 우선순위가 높습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1297,7 +1297,7 @@ The `hero` property of the `HeroDetail` component expects a `Hero` object, which
 -->
 `HeroDetail` 컴포넌트에 정의된 `hero` 프로퍼티는 `Hero` 객체 타입이어야 한다고 합시다. 그러면 컴포넌트 외부에서 `hero` 프로퍼티에 데이터를 전달할 때도 `Hero` 타입을 전달해야 합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1320,7 +1320,7 @@ Don't make the following mistake:
 -->
 다음과 같은 경우는 예상하지 못한 에러가 발생할 수도 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 {@a one-time-initialization}
@@ -1354,7 +1354,7 @@ HTML에서 어트리뷰트를 초기화하는 방식은 Angular에서도 유효�
 다음 예제를 보면 `HeroDetailComponent` 에 사용할 `prefix` 프로퍼티를 초기화하는데, 이 때 템플릿 표현식을 사용하지 않고 고정된 문자열을 사용했습니다.
 그러면 Angular는 대상 프로퍼티의 초기값을 설정할 때만 이 문자열을 사용하고, 이후에는 신경쓰지 않습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1377,7 +1377,7 @@ The following binding pairs do the same thing:
 코드를 작성하다보면 프로퍼티 바인딩을 해야할 지 문자열 바인딩(Interpolation)을 해야할 지 고민될 때가 있습니다.
 코드를 보면서 생각해봅시다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1409,7 +1409,7 @@ Imagine the following *malicious content*.
 -->
 `<script>` 태그가 포함된 악성 코드로 프로퍼티 바인딩 하는 경우를 생각해봅시다.
 
-<code-example path="template-syntax/src/app/app.component.ts" region="evil-title" title="src/app/app.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/app.component.ts" region="evil-title" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -1422,7 +1422,7 @@ nor property binding.
 위험한 HTML 코드로 프로퍼티 바인딩을 시도하면 Angular가 감지하고 경고를 표시합니다.
 그래서 `<script>` 태그를 문자열 바인딩이나 프로퍼티 바인딩에 사용해도 `<script>` 태그는 동작하지 않습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1546,7 +1546,7 @@ Bind `[attr.colspan]` to a calculated value:
 -->
 그래서 `colspan` 어트리뷰트는 `[attr.colspan]` 와 같이 바인딩합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1565,7 +1565,7 @@ is to set ARIA attributes, as in this example:
 -->
 어트리뷰트 바인딩은 ARIA 어트리뷰트를 바인딩할 때도 많이 사용합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 
@@ -1597,7 +1597,7 @@ with class bindings.  Here's how to set the attribute without binding:
 이제 클래스 바인디을 사용해서 "special" 클래스를 동적으로 지정하는 방법을 알아봅시다.
 먼저, 바인딩을 사용하지 않고 원래 사용하던 방식대로 클래스를 적용하려면 다음과 같이 작성합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1605,7 +1605,7 @@ You can replace that with a binding to a string of the desired class names; this
 -->
 `class` 어트리뷰트를 바인딩하면 이미 지정된 클래스 전체를 새로운 값으로 초기화합니다. 하지만 이 방식은 이미 지정된 클래스 전체를 새로운 값으로 덮어쓰는 방식입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1616,7 +1616,7 @@ It removes the class when the expression is falsy.
 원하는 클래스만 바인딩해 봅시다.
 다음과 같이 작성하면 템플릿 표현식의 평가값이 참일 때 해당 클래스가 지정되고, 평가값이 거짓일 때 해당 클래스가 해제됩니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1651,7 +1651,7 @@ followed by a dot (`.`) and the name of a CSS style property: `[style.style-prop
 스타일 바인딩 문법은 프로퍼티 바인딩 문법과 비슷합니다.
 스타일 바인딩은 `style` 접두사와 마침표(`.`) 를 사용해서 `[style.스타일-프로퍼티]`와 같이 작성합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1661,7 +1661,7 @@ The following example conditionally sets the font size in  “em” and “%” 
 그리고 스타일을 바인딩하면서 단위를 함께 사용할 수도 있습니다.
 글자 크기를 지정하면서 “em” 이나 “%” 단위를 사용하려면 다음과 같이 작성합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1729,7 +1729,7 @@ the component's `onSave()` method whenever a click occurs:
 이벤트 바인딩은 **대상 이벤트** 이름을 괄호(`(`, `)`)로 감싸고 [템플릿 실행문](guide/template-syntax#템플릿-실행문) 을 등호로 연결해서 작성합니다.
 예를 들어 버튼의 클릭 이벤트를 감지하고 있다가 사용자가 버튼을 클릭할 때 컴포넌트에 있는 `onSave()` 메소드를 실행하려면 다음과 같이 구현합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1743,7 +1743,7 @@ identifies the target event. In the following example, the target is the button'
 -->
 대상 이벤트는 **괄호로 둘러싼 이벤트 이름**으로 구별합니다. 위 코드에서는 `click` 이벤트를 괄호로 감싸서 `(click)`과 같이 작성했기 때문에 `click` 이벤트가 대상 이벤트이며, 아래 코드에서도 바인딩 대상 이벤트는 버튼의 클릭 이벤트입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1751,7 +1751,7 @@ Some people prefer the `on-` prefix alternative, known as the **canonical form**
 -->
 이 방식이 익숙하지 않다면 다음과 같이 `on-` 접두사를 사용할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="event-binding-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1760,7 +1760,7 @@ of a known directive, as it does in the following example:
 -->
 엘리먼트에서 발생하는 이벤트는 HTML 스펙에 정의된 이벤트인 경우가 대부분입니다. 하지만 커스텀 이벤트가 정의되어 있다면 그 이벤트도 같은 방식으로 사용할 수 있습니다. 커스텀 이벤트의 이름이 일반 이벤트 이름과 겹치면 커스텀 이벤트의 우선순위가 더 높습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1818,7 +1818,7 @@ Consider this example:
 -->
 다음 예제를 봅시다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -1879,10 +1879,10 @@ Here are the pertinent excerpts from that `HeroDetailComponent`:
 -->
 `HeroDetailComponent` 코드에서 관련된 부분을 봅시다:
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (template)" region="template-1">
+<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" header="src/app/hero-detail.component.ts (template)" region="template-1">
 </code-example>
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" title="src/app/hero-detail.component.ts (deleteRequest)" region="deleteRequest">
+<code-example path="template-syntax/src/app/hero-detail.component.ts" linenums="false" header="src/app/hero-detail.component.ts (deleteRequest)" region="deleteRequest">
 </code-example>
 
 <!--
@@ -1898,7 +1898,7 @@ Now imagine a hosting parent component that binds to the `HeroDetailComponent`'s
 -->
 그러면 부모 컴포넌트에서 이 이벤트를 받기 위해 `deleteRequest` 프로퍼티를 바인딩하고 있어야 합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
+<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (event-binding-to-component)" region="event-binding-to-component">
 </code-example>
 
 <!--
@@ -1985,7 +1985,7 @@ It has a `size` value property and a companion `sizeChange` event:
 `SizerComponent` 예제를 보면서 이 내용을 확인해봅시다.
 이 컴포넌트에는 `size` 프로퍼티와 `sizeChange` 이벤트가 선언되어 있습니다.
 
-<code-example path="template-syntax/src/app/sizer.component.ts" title="src/app/sizer.component.ts">
+<code-example path="template-syntax/src/app/sizer.component.ts" header="src/app/sizer.component.ts">
 </code-example>
 
 <!--
@@ -2002,7 +2002,7 @@ Here's an example in which the `AppComponent.fontSizePx` is two-way bound to the
 -->
 이 때 받은 커스텀 이벤트를 활용해서 `SizerComponent` 의 부모 컴포넌트인 `AppComponent`의 `fontSizePx` 프로퍼티를 양방향 바인딩으로 연결해 봅시다.
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-1)" region="two-way-1">
+<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-1)" region="two-way-1">
 </code-example>
 
 <!--
@@ -2022,7 +2022,7 @@ Angular _desugars_ the `SizerComponent` binding into this:
 엄밀히 얘기하면, 양방향 바인딩 문법은 _프로퍼티_ 바인딩과 _이벤트_ 바인딩을 하나로 묶어둔 문법 설탕(syntatic sugar)일 뿐입니다.
 프로퍼티 바인딩과 이벤트 바인딩을 각각 구현하려면 코드를 다음과 같이 작성합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (two-way-2)" region="two-way-2">
+<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (two-way-2)" region="two-way-2">
 </code-example>
 
 <!--
@@ -2078,7 +2078,7 @@ Why create a directive to handle a click when you can write a simple binding suc
 AngularJS에서 디렉티브로 해야 했던 많은 작업들은 이제 바인딩 시스템으로 더 간단하고 우아하게 구현할 수 있습니다.
 클릭 이벤트를 처리하는 경우만 생각해봐도, 이벤트 바인딩이 이렇게 간단한데 클릭 이벤트를 처리하는 디렉티브를 굳이 만들 필요는 없겠죠?
 
-<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="event-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2154,7 +2154,7 @@ A [class binding](guide/template-syntax#class-binding) is a good way to add or r
 -->
 클래스 *하나만* 조작한다면 [클래스 바인딩](guide/template-syntax#클래스-바인딩)을 사용하는 것도 나쁘지 않습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3a" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2178,7 +2178,7 @@ Consider a `setCurrentClasses` component method that sets a component property,
 지정해야 하는 클래스가 여러 개라면 컴포넌트 프로퍼티를 따로 선언하고, 이 프로퍼티 값을 메소드로 지정하는 방법도 고려해볼만 합니다.
 아래 예제에서는 다른 프로퍼티 값에 따라 3개의 클래스를 각각 제어하기 위해 `currentClasses` 프로퍼티 값을 지정하는 `setCurrentClasses` 메소드를 정의했습니다.
 
-<code-example path="template-syntax/src/app/app.component.ts" region="setClasses" title="src/app/app.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/app.component.ts" region="setClasses" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -2186,7 +2186,7 @@ Adding an `ngClass` property binding to `currentClasses` sets the element's clas
 -->
 그리고 `currentClasses`를 `ngClass` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -2215,7 +2215,7 @@ A [style binding](guide/template-syntax#style-binding) is an easy way to set a *
 -->
 이 때 지정해야 하는 스타일이 *하나*라면 [스타일 바인딩](guide/template-syntax#스타일-바인딩)을 사용하는 것이 간단할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2237,7 +2237,7 @@ with an object that defines three styles, based on the state of three other comp
 지정해야 하는 스타일이 여러 개라면 컴포넌트 프로퍼티를 따로 선언하고, 이 프로퍼티 값을 메소드로 지정하는 것도 고려해볼만 합니다.
 아래 예제에서는 다른 프로퍼티 값에 따라 3개의 스타일을 각각 제어하기 위해 `currentStyles` 프로퍼티 값을 지정하는 `setCurrentStyles` 메소드를 정의했습니다.
 
-<code-example path="template-syntax/src/app/app.component.ts" region="setStyles" title="src/app/app.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/app.component.ts" region="setStyles" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -2245,7 +2245,7 @@ Adding an `ngStyle` property binding to `currentStyles` sets the element's style
 -->
 그리고 `currentStyles`를 `ngStyle` 디렉티브에 바인딩하려면 다음과 같이 구현합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -2278,7 +2278,7 @@ Two-way data binding with the `NgModel` directive makes that easy. Here's an exa
 -->
 이 때 `NgModel` 디렉티브를 사용하면 양방향 바인딩을 간단하게 구현할 수 있습니다. `NgModel` 디렉티브는 다음과 같이 사용합니다:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (NgModel-1)" region="NgModel-1">
+<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (NgModel-1)" region="NgModel-1">
 </code-example>
 
 <!--
@@ -2300,7 +2300,7 @@ Here's how to import the `FormsModule` to make `[(ngModel)]` available.
 -->
 NgModule에 `FormsModule` 을 다음과 같이 추가합니다.
 
-<code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (FormsModule import)">
+<code-example path="template-syntax/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (FormsModule import)">
 </code-example>
 
 <!--
@@ -2316,7 +2316,7 @@ the `<input>` element's  `value` property and `input` event.
 `<input>` 엘리먼트에 `name` 프로퍼티를 양방향 바인딩 한 것을 `value` 프로퍼티 바인딩과 `input` 이벤트 바인딩으로 나눠서 구현하면
 다음과 같이 구현할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="without-NgModel" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2333,7 +2333,7 @@ That `ngModel` directive hides these onerous details behind its own  `ngModel` i
 -->
 `ngModel` 디렉티브를 사용하면 같은 로직을 `ngModel` 프로퍼티와 `ngModelChange` 이벤트로 간단하게 연결할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -2389,7 +2389,7 @@ with a single declaration, which it can with the `[(ngModel)]` syntax:
 -->
 데이터 프로퍼티를 두 번이나 참조할 필요는 없습니다. `[(ngModel)]` 문법을 다음과 같이 사용하면 컴포넌트의 데이터 프로퍼티를 아주 간단하게 양방향 바인딩할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgModel-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2409,7 +2409,7 @@ The following contrived example forces the input value to uppercase:
 -->
 예를 들어 입력 필드에 있는 값을 대문자로 바꿔서 사용해야 한다면 다음과 같이 구현하면 됩니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgModel-4" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2489,7 +2489,7 @@ Bind the directive to a condition expression like `isActive` in this example.
 `NgIf` 디렉티브를 사용하면 조건에 따라 원하는 위치(_호스트 엘리먼트_)에 엘리먼트를 추가하거나 제거할 수 있습니다.
 다음 예제에서 보면 `isActive`값에 따라 디렉티브가 뷰에 추가되거나 제거됩니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgIf-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
@@ -2520,7 +2520,7 @@ You can control the visibility of an element with a
 -->
 엘리먼트가 표시되는 것을 제어할 때는 다음과 같이 [클래스 바인딩](guide/template-syntax#클래스-바인딩)이나 [스타일 바인딩](guide/template-syntax#스타일-바인딩)을 사용해도 됩니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgIf-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2578,7 +2578,7 @@ The `nullHero` will never be displayed.
 이 코드에서 `currentHero` 가 바인딩 된 `<div>` 는 `currentHero` 객체가 존재할 때만 표시됩니다.
 그리고 `nullHero` 가 바인딩 된 `<div>`는 절대 표시되지 않을 것입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -2613,7 +2613,7 @@ Here is an example of `NgForOf` applied to a simple `<div>`:
 -->
 `<div>` 엘리먼트에 간단하게 적용해보면 다음과 같이 사용할 수 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2621,7 +2621,7 @@ You can also apply an `NgForOf` to a component element, as in this example:
 -->
 그리고 `NgForOf` 디렉티브는 컴포넌트에도 직접 사용할 수 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgFor-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-critical">
@@ -2700,7 +2700,7 @@ and then passed in a binding to the `hero` property of the `<hero-detail>` compo
 아래 코드의 첫번째 반복문은 전달된 `hero` 객체에서 `name` 프로퍼티를 뷰에 표시하는 코드이며,
 두 번째 반복문은 반복되는 `hero` 객체를 `<app-hero-detail>` 컴포넌트에 바인딩해서 표시하는 문법입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgFor-1-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--Learn more about _template input variables_ in the
@@ -2725,7 +2725,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 -->
 다음 코드는 `index` 프로퍼티를 변수 `i`로 할당하고 히어로의 이름과 함께 표시하는 예제입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -2777,7 +2777,7 @@ In this case, that value is the hero's `id`.
 `trackBy`를 사용하려면 `NgForOf` 디렉티브가 기준으로 삼을 값을 반환하는 함수를 지정합니다.
 위에서 설명한 것처럼, `hero` 객체에 있는 `id` 프로퍼티를 활용하려면 다음과 같이 작성합니다.
 
-<code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" title="src/app/app.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/app.component.ts" region="trackByHeroes" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -2785,7 +2785,7 @@ In the microsyntax expression, set `trackBy` to this method.
 -->
 그리고 세부 문법에 `trackBy`를 사용해서 이 함수를 지정합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="trackBy" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="trackBy" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2835,7 +2835,7 @@ Angular puts only the *selected* element into the DOM.
 스위칭 동작을 하려면 `NgSwitch`, `NgSwitchCase`, `NgSwitchDefault` 3개의 디렉티브를 함께 사용합니다.
 예제 코드를 확인해 보세요.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <figure>
@@ -2891,7 +2891,7 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 그리고 스위치 디렉티브는 네이티브 엘리먼트나 웹 컴포넌트에도 자연스럽게 적용할 수 있습니다.
 위 예제에서 `<confused-hero>`에 사용했던 스위치 디렉티브는 다음과 같이 네이티브 엘리먼트에도 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <hr/>
@@ -2924,7 +2924,7 @@ The `#phone` declares a `phone` variable on an `<input>` element.
 참조 변수는 해시 기호(#)를 사용해서 정의합니다.
 예를 들어, `<input>` 엘리먼트를 `phone` 변수로 가리키려면 `#phone` 과 같이 정의합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-var" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2935,7 +2935,7 @@ consumed in a `<button>` on the other side of the template
 템플릿 참조 변수는 템플릿 안이라면 _어디에서도_ 사용할 수 있습니다.
 그래서 템플릿 안에 있는 `<button>` 엘리먼트는 `phone` 변수를 사용해서 `<input>` 엘리먼트를 참조할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-phone" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -2960,7 +2960,7 @@ The following is a *simplified* version of the form example in the [Forms](guide
 -->
 [폼](guide/forms) 문서에 있는 예제를 *간단하게만* 살펴보면 다음과 같습니다.
 
-<code-example path="template-syntax/src/app/hero-form.component.html" title="src/app/hero-form.component.html" linenums="false">
+<code-example path="template-syntax/src/app/hero-form.component.html" header="src/app/hero-form.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3019,7 +3019,7 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 `#` 기호를 사용하는 것이 어색하다면 `ref-` 접두사를 대신 사용할 수도 있습니다.
 접두사를 사용해서 `ref-fax` 라고 작성하면 `#fax` 로 `fax` 변수를 정의한 것과 같습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-fax" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 
@@ -3081,7 +3081,7 @@ In such binding expressions, the component's property or method is to the _right
 템플릿은 _컴포넌트 클래스_ 와 연결합니다.
 그래서 입출력 프로퍼티를 바인딩하기 위해 등호(`=`) _오른쪽_ 에 사용하는 표현식은 컴포넌트 안에 있는 프로퍼티나 메소드가 됩니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="io-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3128,7 +3128,7 @@ In the following example, the `AppComponent` template binds `AppComponent` class
 아래 예제에서 `AppComponent`의 템플릿은 `AppComponent` 클래스 멤버를 `HeroDetailComponent`의 프로퍼티로 바인딩합니다.
 `HeroDetailComponent`는 `'app-hero-detail'` 셀렉터로 표현되는 컴포넌트입니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="io-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3226,7 +3226,7 @@ because the data bound properties are annotated with `@Input()` and `@Output()` 
 왜냐하면 컴포넌트 외부에서 바인딩하는 프로퍼티를 참조할 때, 이 프로퍼티들이 입출력 프로퍼티로 선언되지 않았기 때문입니다.
 그래서 외부에서 입력을 받는 프로퍼티는 `@Input()` 데코레이터로, 외부로 이벤트를 보내는 프로퍼티는 `@Output()` 데코레이터로 다음과 같이 지정해야 합니다.
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" header="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -3237,7 +3237,7 @@ of the directive metadata, as in this example:
 -->
 데코레이터를 사용하지 않고 디렉티브 메타데이터를 활용하려면, 아래와 같이 디렉티브 메타데이터의 `inputs` 멤버와 `outputs` 멤버를 사용해도 됩니다:
 
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
+<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" header="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
 </div>
@@ -3299,7 +3299,7 @@ you expect to bind to an event property that is also called `myClick`.
 디렉티브를 사용하는 입장에서는 자주 사용하던 이름을 그대로 사용하지만 디렉티브에는 이 프로퍼티가 없는 경우가 있을 수 있습니다.
 예를 들어 `<div>` 태그에 `myClick` 셀렉터로 지정하는 디렉티브가 있고, 이 디렉티브에서 발생하는 이벤트의 이름도 `myClick`이라고 합시다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="myClick" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="myClick" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3325,7 +3325,7 @@ You can specify the alias for the property name by passing it into the input/out
 -->
 디렉티브 밖에서 사용하는 프로퍼티 이름과 디렉티브 안에서 사용하는 프로퍼티 이름을 다르게 하려면 다음과 같이 지정합니다:
 
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" title="src/app/click.directive.ts" linenums="false">
+<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" header="src/app/click.directive.ts" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -3338,7 +3338,7 @@ the directive property name on the *left* and the public alias on the *right*:
 디렉티브 메타데이터의 `inputs`와 `outputs`를 사용할 때도 프로퍼티 이름을 변환해서 지정할 수 있습니다.
 이 때는 순서대로 디렉티브의 프로퍼티 이름, 콜론(`:`), 디렉티브 밖에서 사용하는 프로퍼티 이름 순으로 지정합니다:
 
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" title="src/app/click.directive.ts" linenums="false">
+<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" header="src/app/click.directive.ts" linenums="false">
 </code-example>
 
 </div>
@@ -3385,7 +3385,7 @@ They're easy to apply within template expressions, using the **pipe operator (`|
 파이프는 입력값을 간단하게 변환해서 새로운 값으로 반환하는 함수입니다.
 템플릿에서는 다음과 같이 **파이프 연산자 (`|`)**를 사용해서 적용할 수 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="pipes-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3398,7 +3398,7 @@ You can chain expressions through multiple pipes:
 -->
 그래서 다음과 같이 파이프 여러개를 연달아 사용할 수도 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="pipes-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3406,7 +3406,7 @@ And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe
 -->
 그리고 파이프 함수에 [파이프 인자](guide/pipes#파이프-인자-사용하기)를 전달해서 파이프의 동작을 구체적으로 지정할 수도 있습니다:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-3" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="pipes-3" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3414,7 +3414,7 @@ The `json` pipe is particularly helpful for debugging bindings:
 -->
 바인딩되는 객체를 확인해야 할때 `json` 파이프를 사용하면 디버깅이 훨씬 편해집니다:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" title="src/app/app.component.html (pipes-json)" region="pipes-json">
+<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (pipes-json)" region="pipes-json">
 </code-example>
 
 <!--
@@ -3451,7 +3451,7 @@ Here it is, protecting against a view render failure if the `currentHero` is nul
 **안전 참조 연산자 (`?.`)**를 사용하면 간단하게 구현할 수 있습니다.
 `currentHero`의 값이 `null`인지 확인하고, 객체가 유효할 때만 `name` 프로퍼티를 참조하는 로직은 다음과 같이 구현합니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="safe-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3459,7 +3459,7 @@ What happens when the following data bound `title` property is null?
 -->
 이 문법이 왜 필요한지 생각해 봅시다. 프로퍼티 바인딩하는 `title`의 값이 null이라면 어떻게 될까요?
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="safe-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3526,7 +3526,7 @@ You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
 -->
 이 문제는 [*ngIf*](guide/template-syntax#ngIf)로 방지할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-4" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="safe-4" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3535,7 +3535,7 @@ when it encounters the first null.
 -->
 그리고 `&&` 연산자를 사용해서 null이 발생하는 경우를 순차적으로 검사할 수도 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-5" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="safe-5" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3553,7 +3553,7 @@ The display is blank, but the app keeps rolling without errors.
 이 때 Angular에서 제공하는 안전 참조 연산자 (`?.`)를 사용하면, 객체가 null인지 검사하는 로직을 아주 간단하게 구현할 수 있습니다.
 안전 참조 연산자로 참조하는 객체의 값이 null이면 더이상 객체를 참조하지 않고 종료하며, 뷰는 비어있겠지만 에러로 앱이 중단되는 상황은 막을 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-6" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="safe-6" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3604,7 +3604,7 @@ For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `he
 -->
 만약 `hero` 객체가 정의되어있는지 [*ngIf*](guide/template-syntax#ngIf)로 검사하고, 이 객체가 유효할 때만 동작하는 로직을 다음과 같이 구현했다고 합시다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3648,7 +3648,7 @@ the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/b
 -->
 바인딩 표현식을 사용하다보면 변수 타입에 맞지 않다는 에러가 종종 발생합니다. 이 에러를 없애기 위해 타입을 정확히 맞춰도 되지만, 타입을 맞추기 까다로운 경우라면 `$any` 타입 캐스트 함수를 사용해서 바인딩 표현식의 결과값이 [`any` 타입](http://www.typescriptlang.org/docs/handbook/basic-types.html#any)이 되도록 지정할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -3664,7 +3664,7 @@ the component.
 -->
 그리고 템플릿에서 `this`를 사용해서 컴포넌트 클래스에 직접 접근할 때도 `$any` 캐스트 함수를 사용할 수 있습니다.
 
-<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" title="src/app/app.component.html" linenums="false">
+<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--

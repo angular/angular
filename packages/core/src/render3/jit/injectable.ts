@@ -12,9 +12,9 @@ import {Injectable} from '../../di/injectable';
 import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
 import {Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
+import {NG_INJECTABLE_DEF} from '../fields';
 
 import {angularCoreEnv} from './environment';
-import {NG_INJECTABLE_DEF} from './fields';
 import {convertDependencies, reflectDependencies} from './util';
 
 
@@ -106,9 +106,8 @@ function isUseClassProvider(meta: Injectable): meta is UseClassProvider {
   return (meta as UseClassProvider).useClass !== undefined;
 }
 
-const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE = getClosureSafeProperty<ValueProvider>(
-    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
+const USE_VALUE =
+    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 
 function isUseValueProvider(meta: Injectable): meta is Injectable&ValueSansProvider {
   return USE_VALUE in meta;

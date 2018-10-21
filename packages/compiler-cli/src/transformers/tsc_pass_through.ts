@@ -10,11 +10,15 @@ import {GeneratedFile} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {ivySwitchTransform} from '../ngtsc/switch';
 import * as api from '../transformers/api';
 
+
 /**
- * An implementation of the `Program` API which behaves like plain `tsc` and does not include any
- * Angular-specific behavior whatsoever.
+ * An implementation of the `Program` API which behaves similarly to plain `tsc`.
+ *
+ * The only Angular specific behavior included in this `Program` is the operation of the Ivy
+ * switch to turn on render3 behavior.
  *
  * This allows `ngc` to behave like `tsc` in cases where JIT code needs to be tested.
  */
@@ -95,6 +99,7 @@ export class TscPassThroughProgram implements api.Program {
       host: this.host,
       options: this.options,
       emitOnlyDtsFiles: false,
+      customTransformers: {before: [ivySwitchTransform]},
     });
     return emitResult;
   }

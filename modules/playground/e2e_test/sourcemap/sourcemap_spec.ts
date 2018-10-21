@@ -43,7 +43,7 @@ describe('sourcemaps', function() {
       const marker = '//# sourceMappingURL=data:application/json;base64,';
       const index = content.indexOf(marker);
       const sourceMapData =
-          new Buffer(content.substring(index + marker.length), 'base64').toString('utf8');
+          Buffer.from(content.substring(index + marker.length), 'base64').toString('utf8');
 
       const decoder = new sourceMap.SourceMapConsumer(JSON.parse(sourceMapData));
 

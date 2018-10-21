@@ -9,5 +9,10 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/benchpress",
+        "@ngdeps//@types/fs-extra",
+        "@ngdeps//@types/selenium-webdriver",
+        "@ngdeps//fs-extra",
+        "@ngdeps//protractor",
+        "@ngdeps//selenium-webdriver",
     ],
 )

@@ -383,3 +383,25 @@ export const enum RenderFlags {
 export const enum InitialStylingFlags {
   VALUES_MODE = 0b1,
 }
+
+// Pasted from render3/interfaces/node.ts
+/**
+ * A set of marker values to be used in the attributes arrays. Those markers indicate that some
+ * items are not regular attributes and the processing should be adapted accordingly.
+ */
+export const enum AttributeMarker {
+  /**
+   * Marker indicates that the following 3 values in the attributes array are:
+   * namespaceUri, attributeName, attributeValue
+   * in that order.
+   */
+  NamespaceURI = 0,
+
+  /**
+   * This marker indicates that the following attribute names were extracted from bindings (ex.:
+   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
+   * Taking the above bindings and outputs as an example an attributes array could look as follows:
+   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   */
+  SelectOnly = 1
+}

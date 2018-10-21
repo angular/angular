@@ -262,13 +262,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngOnDestroy() {
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
-      this.controllerInstance.$onDestroy();
-    }
-
-    this.componentScope.$destroy();
-  }
+  ngOnDestroy() { this.helper.onDestroy(this.componentScope, this.controllerInstance); }
 
   setComponentProperty(name: string, value: any) {
     this.destinationObj ![this.propertyMap[name]] = value;

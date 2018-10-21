@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export function getClosureSafeProperty<T>(objWithPropertyToExtract: T, target: any): string {
+export function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
   for (let key in objWithPropertyToExtract) {
-    if (objWithPropertyToExtract[key] === target) {
+    if (objWithPropertyToExtract[key] === getClosureSafeProperty as any) {
       return key;
     }
   }

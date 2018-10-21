@@ -1,5 +1,5 @@
 <div class="form-select-menu">
-  <button class="form-select-button" (click)="toggleOptions()">
+  <button class="form-select-button" (click)="toggleOptions()" [disabled]="disabled">
     <strong>{{label}}</strong><span *ngIf="showSymbol" class="symbol {{selected?.value}}"></span>{{selected?.title}}
   </button>
   <ul class="form-select-dropdown" *ngIf="showOptions">

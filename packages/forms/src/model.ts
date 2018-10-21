@@ -93,7 +93,7 @@ export type FormHooks = 'change' | 'blur' | 'submit';
 /**
  * Interface for options provided to an `AbstractControl`.
  *
- * @experimental
+ * @publicApi
  */
 export interface AbstractControlOptions {
   /**
@@ -130,6 +130,7 @@ function isOptionsObj(
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  * @see [Dynamic Forms Guide](/guide/dynamic-form)
  *
+ * @publicApi
  */
 export abstract class AbstractControl {
   /** @internal */
@@ -599,6 +600,7 @@ export abstract class AbstractControl {
    *
    * Calling `setErrors` also updates the validity of the parent control.
    *
+   * @usageNotes
    * ### Manually set the errors for a control
    *
    * ```
@@ -626,6 +628,7 @@ export abstract class AbstractControl {
    * @param path A dot-delimited string or array of string/number values that define the path to the
    * control.
    *
+   * @usageNotes
    * ### Retrieve a nested control
    *
    * For example, to get a `name` control nested within a `person` sub-group:
@@ -866,7 +869,8 @@ export abstract class AbstractControl {
  * console.log(control.value); // 'Drew'
  * console.log(control.status); // 'DISABLED'
  *
-*/
+ * @publicApi
+ */
 export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function[] = [];
@@ -1122,6 +1126,8 @@ export class FormControl extends AbstractControl {
  *   one: new FormControl()
  * }, { updateOn: 'blur' });
  * ```
+ *
+ * @publicApi
  */
 export class FormGroup extends AbstractControl {
   /**
@@ -1225,6 +1231,7 @@ export class FormGroup extends AbstractControl {
    * Sets the value of the `FormGroup`. It accepts an object that matches
    * the structure of the group, with control names as keys.
    *
+   * @usageNotes
    * ### Set the complete value for the form group
    *
    * ```
@@ -1237,8 +1244,8 @@ export class FormGroup extends AbstractControl {
    *
    * form.setValue({first: 'Nancy', last: 'Drew'});
    * console.log(form.value);   // {first: 'Nancy', last: 'Drew'}
-   *
    * ```
+   *
    * @throws When strict checks fail, such as setting the value of a control
    * that doesn't exist or if you excluding the value of a control.
    *
@@ -1272,24 +1279,24 @@ export class FormGroup extends AbstractControl {
    *
    * It accepts both super-sets and sub-sets of the group without throwing an error.
    *
+   * @usageNotes
    * ### Patch the value for a form group
    *
-   *  ```
-   *  const form = new FormGroup({
-   *     first: new FormControl(),
-   *     last: new FormControl()
-   *  });
-   *  console.log(form.value);   // {first: null, last: null}
+   * ```
+   * const form = new FormGroup({
+   *    first: new FormControl(),
+   *    last: new FormControl()
+   * });
+   * console.log(form.value);   // {first: null, last: null}
    *
-   *  form.patchValue({first: 'Nancy'});
-   *  console.log(form.value);   // {first: 'Nancy', last: null}
+   * form.patchValue({first: 'Nancy'});
+   * console.log(form.value);   // {first: 'Nancy', last: null}
+   * ```
    *
-   *  ```
-   *
-   * @param value The object that matches the structure of the group
-   * @param options Configure options that determines how the control propagates changes and
-   * emits events after the value is patched
-   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
+   * @param value The object that matches the structure of the group.
+   * @param options Configuration options that determine how the control propagates changes and
+   * emits events after the value is patched.
+   * * `onlySelf`: When true, each change only affects this control and not its parent. Default is
    * true.
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges`
@@ -1537,14 +1544,14 @@ export class FormGroup extends AbstractControl {
  * the `FormArray` directly, as that result in strange and unexpected behavior such
  * as broken change detection.
  *
- *
+ * @publicApi
  */
 export class FormArray extends AbstractControl {
   /**
   * Creates a new `FormArray` instance.
   *
   * @param controls An array of child controls. Each child control is given an index
-  * wheh it is registered.
+  * where it is registered.
   *
   * @param validatorOrOpts A synchronous validator function, or an array of
   * such functions, or an `AbstractControlOptions` object that contains validation functions
@@ -1641,6 +1648,7 @@ export class FormArray extends AbstractControl {
    * to set the value of a control that doesn't exist or if you exclude the
    * value of a control.
    *
+   * @usageNotes
    * ### Set the values for the controls in the form array
    *
    * ```
@@ -1683,6 +1691,7 @@ export class FormArray extends AbstractControl {
    *
    * It accepts both super-sets and sub-sets of the array without throwing an error.
    *
+   * @usageNotes
    * ### Patch the values for controls in a form array
    *
    * ```
@@ -1726,6 +1735,7 @@ export class FormArray extends AbstractControl {
    * that matches the structure of the control. The state is a standalone value
    * or a form state object with both a value and a disabled status.
    *
+   * @usageNotes
    * ### Reset the values in a form array
    *
    * ```ts

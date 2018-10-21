@@ -13,13 +13,13 @@ import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelecto
 import {createTNode} from '@angular/core/src/render3/instructions';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(TNodeType.Element, 0, tagName, attrs, null, null);
+  return createTNode(TNodeType.Element, 0, tagName, attrs, null);
 }
 
 describe('css selector matching', () => {
   function isMatching(tagName: string, attrs: TAttributes | null, selector: CssSelector): boolean {
     return isNodeMatchingSelector(
-        createTNode(TNodeType.Element, 0, tagName, attrs, null, null), selector);
+        createTNode(TNodeType.Element, 0, tagName, attrs, null), selector);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
@@ -36,7 +36,7 @@ describe('css selector matching', () => {
       });
 
       /**
-       * We assume that compiler will lower-case tag names both in LNode
+       * We assume that compiler will lower-case tag names both in node
        * and in a selector.
        */
       it('should match element name case-sensitively', () => {

@@ -21,6 +21,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup} from './model';
  *
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  *
+ * @publicApi
  */
 @Injectable()
 export class FormBuilder {

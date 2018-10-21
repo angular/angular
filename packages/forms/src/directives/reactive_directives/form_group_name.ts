@@ -39,6 +39,7 @@ export const formGroupNameProvider: any = {
  * form separately from the rest or when you'd like to group the values of certain
  * controls into their own nested object.
  *
+ * @usageNotes
  * **Access the group**: You can access the associated `FormGroup` using the
  * {@link AbstractControl#get get} method. Ex: `this.form.get('name')`.
  *
@@ -61,11 +62,8 @@ export const formGroupNameProvider: any = {
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -111,6 +109,7 @@ export const formArrayNameProvider: any = {
  * you're not sure how many there will be. Form arrays allow you to create new
  * form controls dynamically.
  *
+ * @usageNotes
  * **Access the array**: You can access the associated `FormArray` using the
  * {@link AbstractControl#get get} method on the parent `FormGroup`.
  * Ex: `this.form.get('cities')`.
@@ -136,11 +135,8 @@ export const formArrayNameProvider: any = {
  *
  * {@example forms/ts/nestedFormArray/nested_form_array_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {

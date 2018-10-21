@@ -5,7 +5,7 @@
 
 var SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 
-// NOTE: This needs to be kept in sync with `ngsw-manifest.json`.
+// NOTE: This needs to be kept in sync with `ngsw-config.json`.
 importScripts('/assets/js/lunr.min.js');
 
 var index;
@@ -27,12 +27,13 @@ self.onmessage = handleMessage;
 // Create the lunr index - the docs should be an array of objects, each object containing
 // the path and search terms for a page
 function createIndex(addFn) {
+  lunr.QueryLexer.termSeparator = lunr.tokenizer.separator = /\s+/;
   return lunr(/** @this */function() {
     this.ref('path');
-    this.field('titleWords', {boost: 100});
-    this.field('headingWords', {boost: 50});
-    this.field('members', {boost: 40});
-    this.field('keywords', {boost: 20});
+    this.field('titleWords', {boost: 10});
+    this.field('headingWords', {boost: 5});
+    this.field('members', {boost: 4});
+    this.field('keywords', {boost: 2});
     addFn(this);
   });
 }
@@ -86,10 +87,13 @@ function loadIndex(searchInfo /*: SearchInfo */) {
 function queryIndex(query) {
   try {
     if (query.length) {
-      // Add a relaxed search in the title for the first word in the query
-      // E.g. if the search is "ngCont guide" then we search for "ngCont guide titleWords:ngCont*"
-      var titleQuery = 'titleWords:*' + query.split(' ', 1)[0] + '*';
-      var results = index.search(query + ' ' + titleQuery);
+      var results = index.search(query);
+      if (results.length === 0) {
+        // Add a relaxed search in the title for the first word in the query
+        // E.g. if the search is "ngCont guide" then we search for "ngCont guide titleWords:ngCont*"
+        var titleQuery = 'titleWords:*' + query.split(' ', 1)[0] + '*';
+        results = index.search(query + ' ' + titleQuery);
+      }
       // Map the hits into info about each page to be returned as results
       return results.map(function(hit) { return pages[hit.ref]; });
     }

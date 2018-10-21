@@ -8,22 +8,25 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {Observable, Observer, of } from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, Observer, Subscription, of } from 'rxjs';
+import {filter, first, map, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
+  const noopConsole: Console = {log() {}, warn() {}};
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports:
-          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule]
+          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule],
+      providers: [{provide: Console, useValue: noopConsole}]
     });
   });
 
@@ -154,6 +157,50 @@ describe('Integration', () => {
        })));
   });
 
+  describe('navigation warning', () => {
+    let warnings: string[] = [];
+
+    class MockConsole {
+      warn(message: string) { warnings.push(message); }
+    }
+
+    beforeEach(() => {
+      warnings = [];
+      TestBed.overrideProvider(Console, {useValue: new MockConsole()});
+    });
+
+    describe('with NgZone enabled', () => {
+      it('should warn when triggered outside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+           ngZone.runOutsideAngular(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(1);
+           expect(warnings[0])
+               .toBe(
+                   `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+         })));
+
+      it('should not warn when triggered inside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+           ngZone.run(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(0);
+         })));
+    });
+
+    describe('with NgZone disabled', () => {
+      beforeEach(() => { TestBed.overrideProvider(NgZone, {useValue: new NoopNgZone()}); });
+
+      it('should not warn when triggered outside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+
+           ngZone.runOutsideAngular(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(0);
+         })));
+    });
+  });
+
   describe('should execute navigations serially', () => {
     let log: any[] = [];
 
@@ -244,7 +291,7 @@ describe('Integration', () => {
 
     });
 
-    it('should execute navigations serialy',
+    it('should not wait for prior navigations to start a new navigation',
        fakeAsync(inject([Router, Location], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
 
@@ -261,23 +308,17 @@ describe('Integration', () => {
          tick(100);  // 200
          fixture.detectChanges();
 
-         expect(log).toEqual(['trueRightAway', 'trueIn2Seconds-start']);
+         expect(log).toEqual(
+             ['trueRightAway', 'trueIn2Seconds-start', 'trueRightAway', 'trueIn2Seconds-start']);
 
          tick(2000);  // 2200
          fixture.detectChanges();
 
          expect(log).toEqual([
-           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
-           'trueIn2Seconds-start'
+           'trueRightAway', 'trueIn2Seconds-start', 'trueRightAway', 'trueIn2Seconds-start',
+           'trueIn2Seconds-end', 'trueIn2Seconds-end'
          ]);
 
-         tick(2000);  // 4200
-         fixture.detectChanges();
-
-         expect(log).toEqual([
-           'trueRightAway', 'trueIn2Seconds-start', 'trueIn2Seconds-end', 'trueRightAway',
-           'trueIn2Seconds-start', 'trueIn2Seconds-end'
-         ]);
        })));
   });
 
@@ -915,7 +956,6 @@ describe('Integration', () => {
              locationUrlBeforeEmittingError = location.path();
            }
          });
-
          router.navigateByUrl('/throwing').catch(() => null);
          advance(fixture);
 
@@ -2756,6 +2796,45 @@ describe('Integration', () => {
            ]);
          })));
 
+      // Regression where navigateByUrl with false CanLoad no longer resolved `false` value on
+      // navigateByUrl promise: https://github.com/angular/angular/issues/26284
+      it('should resolve navigateByUrl promise after CanLoad executes',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+
+               @Component({selector: 'lazy', template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+               }
+
+               @NgModule({
+                 declarations: [LazyLoadedComponent],
+                 imports:
+                     [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([
+                 {path: 'lazy-false', canLoad: ['alwaysFalse'], loadChildren: 'lazy'},
+                 {path: 'lazy-true', canLoad: ['alwaysTrue'], loadChildren: 'lazy'},
+               ]);
+
+               let navFalseResult: any;
+               let navTrueResult: any;
+               router.navigateByUrl('/lazy-false').then(v => { navFalseResult = v; });
+               advance(fixture);
+               router.navigateByUrl('/lazy-true').then(v => { navTrueResult = v; });
+               advance(fixture);
+
+               expect(navFalseResult).toBe(false);
+               expect(navTrueResult).toBe(true);
+
+             })));
+
       it('should execute CanLoad only once',
          fakeAsync(inject(
              [Router, Location, NgModuleFactoryLoader],
@@ -2915,6 +2994,34 @@ describe('Integration', () => {
            [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
            [NavigationEnd, '/user/fedor']
          ]);
+       })));
+
+    it('should allow redirection in NavigationStart',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {path: 'blank', component: UserCmp},
+           {path: 'user/:name', component: BlankCmp},
+         ]);
+
+         const navigateSpy = spyOn(router, 'navigate').and.callThrough();
+         const recordedEvents: any[] = [];
+
+         const navStart$ = router.events.pipe(
+             tap(e => recordedEvents.push(e)), filter(e => e instanceof NavigationStart), first());
+
+         navStart$.subscribe((e: NavigationStart | NavigationError) => {
+           router.navigate(
+               ['/blank'], {queryParams: {state: 'redirected'}, queryParamsHandling: 'merge'});
+           advance(fixture);
+         });
+
+         router.navigate(['/user/:fedor']);
+         advance(fixture);
+
+         expect(navigateSpy.calls.mostRecent().args[1].queryParams);
+
        })));
   });
 
@@ -3975,6 +4082,82 @@ describe('Integration', () => {
          const simpleCmp2 = fixture.debugElement.children[1].componentInstance;
          expect(simpleCmp1).not.toBe(simpleCmp2);
        })));
+
+    it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'root-cmp',
+           template:
+               '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
+         })
+         class RootCmpWithCondOutlet implements OnDestroy {
+           private subscription: Subscription;
+           public isToolpanelShowing: boolean = false;
+
+           constructor(router: Router) {
+             this.subscription =
+                 router.events.pipe(filter(event => event instanceof NavigationEnd))
+                     .subscribe(
+                         () => this.isToolpanelShowing =
+                             !!router.parseUrl(router.url).root.children['toolpanel']);
+           }
+
+           public ngOnDestroy(): void { this.subscription.unsubscribe(); }
+         }
+
+         @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
+         class Tool1Component {
+         }
+
+         @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
+         class Tool2Component {
+         }
+
+         @NgModule({
+           declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
+           imports: [
+             CommonModule,
+             RouterTestingModule.withRoutes([
+               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+             ]),
+           ],
+         })
+         class TestModule {
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule]});
+
+         const router: Router = TestBed.get(Router);
+         router.routeReuseStrategy = new AttachDetachReuseStrategy();
+
+         const fixture = createRoot(router, RootCmpWithCondOutlet);
+
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(a)');
+
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(b)');
+
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(c)');
+
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(d)');
+
+         // Activate 'tool-2'
+         router.navigate([{outlets: {toolpanel: 'b'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool2Component, '(e)');
+       }));
   });
 });
 

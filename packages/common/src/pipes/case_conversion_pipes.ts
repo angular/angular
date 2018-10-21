@@ -21,7 +21,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/lowerupper_pipe.ts" region='LowerUpperPipe'></code-example>
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @Pipe({name: 'lowercase'})
 export class LowerCasePipe implements PipeTransform {
@@ -63,7 +64,8 @@ const unicodeWordMatch =
  *
  * <code-example path="common/pipes/ts/titlecase_pipe.ts" region='TitleCasePipe'></code-example>
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
@@ -85,6 +87,9 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see `LowerCasePipe`
  * @see `TitleCasePipe`
+ *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {

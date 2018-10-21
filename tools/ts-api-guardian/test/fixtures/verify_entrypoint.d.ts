@@ -1,3 +1,4 @@
+/** @publicApi */
 export interface A {
     c: number;
     a(arg: any[]): {[name: string]: number};

@@ -10,7 +10,7 @@ import {ɵAnimationDriver as AnimationDriver, ɵallowPreviousPlayerStylesMerge a
 
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
@@ -42,7 +42,7 @@ export class MockAnimationDriver implements AnimationDriver {
 }
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export class MockAnimationPlayer extends NoopAnimationPlayer {
   private __finished = false;

@@ -19,7 +19,7 @@ import {Completions, Definition, Diagnostic, DiagnosticKind, Diagnostics, Hover,
 /**
  * Create an instance of an Angular `LanguageService`.
  *
- * @experimental
+ * @publicApi
  */
 export function createLanguageService(host: LanguageServiceHost): LanguageService {
   return new LanguageServiceImpl(host);

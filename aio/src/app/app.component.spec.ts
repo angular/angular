@@ -164,10 +164,10 @@ describe('AppComponent', () => {
 
     describe('onScroll', () => {
       it('should update `tocMaxHeight` accordingly', () => {
-        expect(component.tocMaxHeight).toBeUndefined();
-
+        component.tocMaxHeight = '';
         component.onScroll();
-        expect(component.tocMaxHeight).toBeGreaterThan(0);
+
+        expect(component.tocMaxHeight).toMatch(/^\d+\.\d{2}$/);
       });
     });
 
@@ -654,12 +654,13 @@ describe('AppComponent', () => {
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
         setHasFloatingToc(true);
 
-        expect(tocContainer!.style['max-height']).toBe('');
-
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-
         expect(tocContainer!.style['max-height']).toBe('100px');
+
+        component.tocMaxHeight = '200';
+        fixture.detectChanges();
+        expect(tocContainer!.style['max-height']).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
@@ -721,6 +722,15 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(false);
         });
 
+        it('should clear "only" the search query param from the URL', () => {
+          // Mock out the current state of the URL query params
+          locationService.search.and.returnValue({ a: 'some-A', b: 'some-B', search: 'some-C'});
+          // docViewer is a commonly-clicked, non-search element
+          docViewer.click();
+          // Check that the query params were updated correctly
+          expect(locationService.setSearch).toHaveBeenCalledWith('', { a: 'some-A', b: 'some-B', search: undefined });
+        });
+
         it('should not intercept clicks on the searchResults', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
@@ -775,7 +785,7 @@ describe('AppComponent', () => {
           const searchService: MockSearchService = TestBed.get(SearchService);
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
           ];
 
           searchService.searchResults.next({ query: 'something', results: results });

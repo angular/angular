@@ -21,13 +21,17 @@ export class Tires {
 }
 
 //// Engine services ///
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class EngineService {
   id = 'E1';
   getEngine() { return new Engine(); }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class EngineService2 {
   id = 'E2';
   getEngine() {
@@ -38,14 +42,18 @@ export class EngineService2 {
 }
 
 //// Tire services ///
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class TiresService {
   id = 'T1';
   getTires() { return new Tires(); }
 }
 
 /// Car Services ///
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CarService {
   id = 'C1';
   constructor(
@@ -63,7 +71,9 @@ export class CarService {
   }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CarService2 extends CarService {
   id = 'C2';
   constructor(
@@ -78,7 +88,9 @@ export class CarService2 extends CarService {
   }
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CarService3 extends CarService2 {
   id = 'C3';
   constructor(
