@@ -660,5 +660,62 @@ describe('compiler compliance: styling', () => {
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+
+    it('should properly offset multiple style pipe references for styling bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`
+                    <div [class]="{}"
+                         [class.foo]="fooExp | pipe:2000"
+                         [style]="myStyleExp | pipe:1000"
+                         [style.bar]="barExp | pipe:3000"
+                         [style.baz]="bazExp | pipe:4000">
+                         {{ item }}</div>\`
+                })
+                export class MyComponent {
+                  myStyleExp = {};
+                  fooExp = 'foo';
+                  barExp = 'bar';
+                  bazExp = 'baz';
+                  items = [1,2,3];
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling($e0_styling$, $e1_styling$, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵpipe(1, "pipe");
+              $r3$.ɵpipe(2, "pipe");
+              $r3$.ɵpipe(3, "pipe");
+              $r3$.ɵpipe(4, "pipe");
+              $r3$.ɵtext(5);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $e2_styling$, $r3$.ɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
+              $r3$.ɵelementStyleProp(0, 0, $r3$.ɵpipeBind2(2, 4, $ctx$.barExp, 3000));
+              $r3$.ɵelementStyleProp(0, 1, $r3$.ɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
+              $r3$.ɵelementClassProp(0, 0, $r3$.ɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
+              $r3$.ɵelementStylingApply(0);
+              $r3$.ɵtextBinding(5, $r3$.ɵinterpolation1(" ", $ctx$.item, ""));
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 });
