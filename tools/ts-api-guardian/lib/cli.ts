@@ -66,7 +66,7 @@ export function startCli() {
         // Under bazel, give instructions how to use bazel run to accept the golden file.
         if (!!process.env['BAZEL_TARGET']) {
           console.error('\n\nAccept the new golden file:');
-          console.error(`  bazel run ${process.env['BAZEL_TARGET']}.accept`);
+          console.error(`  bazel run ${process.env['BAZEL_TARGET'].replace(/_bin$/, "")}.accept`);
         }
         process.exit(1);
       }
