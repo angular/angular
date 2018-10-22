@@ -5,6 +5,7 @@
 
 "Install angular source dependencies"
 
+load("@build_bazel_rules_nodejs//:package.bzl", "check_rules_nodejs_version")
 load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
 load("@angular//packages/bazel/src:ng_setup_workspace.bzl", _ng_setup_workspace = "ng_setup_workspace")
 
@@ -14,11 +15,19 @@ def ng_setup_workspace():
     It creates some additional Bazel external repositories that are used internally
     to build angular
     """
+
+    # The NodeJS rules version must be at least v0.15.3 because:
+    #   - 0.15.2 Re-introduced the prod_only attribute on yarn_install
+    #   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
+    check_rules_nodejs_version("0.15.3")
+
     yarn_install(
         name = "ngdeps",
         package_json = "@angular//:package.json",
         yarn_lock = "@angular//:yarn.lock",
         data = ["@angular//:tools/yarn/check-yarn.js", "@angular//:tools/postinstall-patches.js"],
+        # Don't install devDependencies, they are large and not used under Bazel
+        prod_only = True,
     )
 
     yarn_install(
