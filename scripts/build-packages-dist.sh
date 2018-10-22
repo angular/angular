@@ -56,10 +56,10 @@ buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
 # snapshots.
 # This logic matches what we use in the .circleci/config.yml file to short-
 # circuit execution of the publish-packages job.
-[[  "${CIRCLE_PR_NUMBER-}" != ""
-    || "${CIRCLE_PROJECT_USERNAME-}" != "angular"
-    || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
-]] && exit 0
+# [[  "${CIRCLE_PR_NUMBER-}" != ""
+#     || "${CIRCLE_PROJECT_USERNAME-}" != "angular"
+#     || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
+# ]] && exit 0
 
 IVY_JIT_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-jit.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 IVY_LOCAL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-local.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
