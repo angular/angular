@@ -83,15 +83,16 @@ All of our major releases are supported for 18 months.
 
 * 12 months of *long-term support (LTS)*, during which only critical fixes and security patches are released.
 
-The following table provides the support status and key dates for Angular version 4.0.0 and higher. 
+The following table provides the support status and key dates for Angular version 5.0.0 and higher. 
 
 
-Version | Status | Released | Active Ends | LTS Ends
-------- | ------ | -------- | ----------- | -------- 
-^7.0.0 | Active | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
-^6.0.0 | LTS | May 3, 2018 | Nov 3, 2018 | Nov 3, 2019
-^5.0.0 | LTS | Nov 1, 2017 | May 1, 2018 | May 1, 2019
-^4.0.0 | LTS | Mar 23, 2017 | Sep 23, 2017 | Sep 23, 2018
+Version | Status | Released     | Active Ends  | LTS Ends
+------- | ------ | ------------ | ------------ | ------------ 
+^7.0.0  | Active | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
+^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
+^5.0.0  | LTS    | Nov 1, 2017  | May 1, 2018  | May 1, 2019
+
+LTS for Angular version 4.0.0 ended on September 23, 2018.
 
 
 {@a deprecation}
