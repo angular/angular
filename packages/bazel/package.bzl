@@ -24,6 +24,13 @@ def rules_angular_dependencies():
     # TODO(gmagolan): updated to next tagged rules_typescript release
     _maybe(
         http_archive,
+        name = "build_bazel_rules_nodejs",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.3.zip",
+        strip_prefix = "rules_nodejs-0.15.3",
+    )
+
+    _maybe(
+        http_archive,
         name = "build_bazel_rules_typescript",
         url = "https://github.com/bazelbuild/rules_typescript/archive/8ea1a55cf5cf8be84ddfeefc0940769b80da792f.zip",
         strip_prefix = "rules_typescript-8ea1a55cf5cf8be84ddfeefc0940769b80da792f",
