@@ -23,6 +23,7 @@ import {InjectorLocationFlags, PARENT_INJECTOR, TNODE,} from './interfaces/injec
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
+import {stringify} from '../util';
 
 /**
  * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
@@ -311,7 +312,14 @@ export function getOrCreateInjectable<T>(
   const bloomHash = bloomHashBitOrFactory(token);
   // If the ID stored here is a function, this is a special object like ElementRef or TemplateRef
   // so just call the factory function to create it.
-  if (typeof bloomHash === 'function') return bloomHash();
+  if (typeof bloomHash === 'function') {
+    const value = bloomHash();
+    if (value == null && !(flags & InjectFlags.Optional)) {
+      throw new Error(`No provider for ${stringify(token)}`);
+    } else {
+      return value;
+    }
+  }
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
   // (diPublic) otherwise fall back to the module injector.

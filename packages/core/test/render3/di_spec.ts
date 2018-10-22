@@ -1168,22 +1168,21 @@ describe('di', () => {
     });
 
     describe('TemplateRef', () => {
-      it('should create directive with TemplateRef dependencies', () => {
-
-        class Directive {
-          value: string;
-          constructor(public templateRef: TemplateRef<any>) {
-            this.value = (templateRef.constructor as any).name;
-          }
-          static ngDirectiveDef = defineDirective({
-            type: Directive,
-            selectors: [['', 'dir', '']],
-            factory: () => new Directive(directiveInject(TemplateRef as any)),
-            features: [PublicFeature],
-            exportAs: 'dir'
-          });
+      class Directive {
+        value: string;
+        constructor(public templateRef: TemplateRef<any>) {
+          this.value = (templateRef.constructor as any).name;
         }
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => new Directive(directiveInject(TemplateRef as any)),
+          features: [PublicFeature],
+          exportAs: 'dir'
+        });
+      }
 
+      it('should create directive with TemplateRef dependencies', () => {
         class DirectiveSameInstance {
           isSameInstance: boolean;
           constructor(templateRef: TemplateRef<any>, directive: Directive) {
@@ -1221,6 +1220,56 @@ describe('di', () => {
         expect(fixture.html).toContain('TemplateRef');
         expect(fixture.html).toContain('false');
       });
+
+      it('should throw if injected on an element', () => {
+        /** <div dir></div> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['dir', '']);
+          }
+        }, 1, 0, [Directive]);
+
+        expect(() => new ComponentFixture(App)).toThrowError(/No provider for TemplateRef/);
+      });
+
+      it('should throw if injected on an ng-container', () => {
+        /** <ng-container dir></ng-container> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            elementContainerStart(0, ['dir', '']);
+            elementContainerEnd();
+          }
+        }, 1, 0, [Directive]);
+
+        expect(() => new ComponentFixture(App)).toThrowError(/No provider for TemplateRef/);
+      });
+
+      it('should NOT throw if optional and injected on an element', () => {
+        let dir !: OptionalDirective;
+        class OptionalDirective {
+          constructor(@Optional() public templateRef: TemplateRef<any>) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: OptionalDirective,
+            selectors: [['', 'dir', '']],
+            factory: () => dir = new OptionalDirective(
+                         directiveInject(TemplateRef as any, InjectFlags.Optional)),
+            features: [PublicFeature],
+            exportAs: 'dir'
+          });
+        }
+
+        /** <div dir></div> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['dir', '']);
+          }
+        }, 1, 0, [OptionalDirective]);
+
+        expect(() => new ComponentFixture(App)).not.toThrow();
+        expect(dir.templateRef).toBeNull();
+      });
+
     });
 
     describe('ViewContainerRef', () => {

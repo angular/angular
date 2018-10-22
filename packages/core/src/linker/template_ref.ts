@@ -55,7 +55,7 @@ export abstract class TemplateRef<C> {
 
   /** @internal */
   static __NG_ELEMENT_ID__:
-      () => TemplateRef<any> = () => SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
+      () => TemplateRef<any>| null = () => SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
 }
 
 export const SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ = render3InjectTemplateRef;
