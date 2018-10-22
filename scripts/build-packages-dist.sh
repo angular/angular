@@ -61,7 +61,4 @@ buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
     || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
 ]] && exit 0
 
-# A clean is needed since build artifacts from previous build can break the following build
-bazel clean
 buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
-
