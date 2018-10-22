@@ -943,6 +943,116 @@ describe('render3 integration test', () => {
       expect(directive !.elRef.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
 
+    it('should support ViewContainerRef when ng-container is at the root of a view', () => {
+
+      function ContentTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Content');
+        }
+      }
+
+      class Directive {
+        contentTpl: TemplateRef<{}>|null = null;
+
+        constructor(private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this.contentTpl as TemplateRef<{}>); }
+
+        clear() { this._vcRef.clear(); }
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => directive = new Directive(directiveInject(ViewContainerRef as any)),
+          inputs: {contentTpl: 'contentTpl'},
+        });
+      }
+
+      let directive: Directive;
+
+      /**
+       * <ng-container dir [contentTpl]="content">
+       *    <ng-template #content>Content</ng-template>
+       * </ng-container>
+       */
+      const App = createComponent('app', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0, [AttributeMarker.SelectOnly, 'dir']);
+          template(1, ContentTemplate, 1, 0, '', null, ['content', ''], templateRefExtractor);
+          elementContainerEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          const content = reference(2) as any;
+          elementProperty(0, 'contentTpl', bind(content));
+        }
+      }, 3, 1, [Directive]);
+
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('');
+
+      directive !.insertView();
+      fixture.update();
+      expect(fixture.html).toEqual('Content');
+
+      directive !.clear();
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
+    it('should support ViewContainerRef on <ng-template> inside <ng-container>', () => {
+      function ContentTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Content');
+        }
+      }
+
+      class Directive {
+        constructor(private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this._tplRef); }
+
+        clear() { this._vcRef.clear(); }
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory:
+              () => directive = new Directive(
+                  directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
+        });
+      }
+
+      let directive: Directive;
+
+      /**
+       * <ng-container>
+       *    <ng-template dir>Content</ng-template>
+       * </ng-container>
+       */
+      const App = createComponent('app', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          template(
+              1, ContentTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'dir'], [],
+              templateRefExtractor);
+          elementContainerEnd();
+        }
+      }, 2, 0, [Directive]);
+
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('');
+
+      directive !.insertView();
+      fixture.update();
+      expect(fixture.html).toEqual('Content');
+
+      directive !.clear();
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
     it('should not set any attributes', () => {
       /**
        * <div><ng-container id="foo"></ng-container></div>
