@@ -33,7 +33,8 @@ cd my-first-project
 ng serve
 </code-example>
 
-In your browser, open http://localhost:4200/ to see the new app run.
+In your browser, open http://localhost:4200/ to see the new app run. 
+When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
 
 ## Workspaces and project files
 
@@ -51,12 +52,13 @@ Commands such as [add](cli/add) and [generate](cli/generate), which create or op
 
 * See more about the [Workspace file structure](guide/file-structure).
 
-When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
+### Workspace and project configuration
 
 A single workspace configuration file, `angular.json`, is created at the top level of the workspace. 
-This is where you can set workspace-wide defaults, and specify configurations to use when the CLI builds a project for different targets.
+This is where you can set per-project defaults for CLI command options, and specify configurations to use when the CLI builds a project for different targets.
 
-The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly.
+The [ng config](cli/config) command lets you set and retrieve configuration values from the command line, or you can edit the `angular.json` file directly. 
+Note that option names in the configuration file must use [camelCase](guide/glossary#case-types), while option names supplied to commands can use either camelCase or dash-case. 
 
 * See the [complete schema](https://github.com/angular/angular-cli/wiki/angular-workspace) for `angular.json`.
 <!-- * Learn more about *configuration options for Angular(links to new guide or topics TBD)*. -->
