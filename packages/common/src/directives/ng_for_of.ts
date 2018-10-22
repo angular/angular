@@ -28,32 +28,39 @@ export class NgForOfContext<T> {
 /**
  * A structural directive that instantiates a view from a given template
  * once per item from an iterable.
- * The context for each instantiated template inherits from the outer context,
+ * The directive is placed on a root or anchor element, which becomes the parent
+ * of the cloned templates.
+ * The context for each instantiated view inherits from the outer context,
  * with the given loop variable set to the current item from the iterable.
  *
- * The `ngFor` and `ngForOf` selectors are interchangeable, and are generally used in the
- * shorthand form `*ngFor`.
- * The shorthand form has the following syntax.
+ * The `ngFor` is generally used in the shorthand form `*ngFor`.
+ * In this form, the template to be rendered for each iteration is the content
+ * of an anchor element containing the directive. 
+ *  
+ * The following exmaple shows the shorthand syntax with some options, contained in an `<li>` element.
  *
  * `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
  *
- * In this form, the template to be rendered for each iteration is the content
- * of the anchor element containing the directive.
- *
- * The shorthand form expands into a long form that moves the template into
- * an explicit `<ng-template>` element.
- * In the long form, the anchor element for the template is the content of an
- * `<ng-template>` element.
+ * The shorthand form expands into a long form that uses the `ngForOf` selector on an `<ng-template>` element.
+ * The content of the `<ng-template>` element is the <li> element that held the short-form directive.
+ *  
+ * Here is the expanded version of the short-form example.
  *
  * ```
  * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
  *   <li>...</li>
  * </ng-template>
  * ```
- * Keep in mind that Angular automatically expands the shorthand syntax before rendering the view.
+ * 
+ * Angular automatically expands the shorthand syntax as it compiles the template.
  * This has implications for nesting of directives, such as iterables
  * and conditionals (specified with `NgIf`).
- * For futher discussion, see [Structural Directives](guide/structural-directives).
+ * For simplicity, Angular allows only one structural directive on an element. 
+ * If you want to iterate conditionally, for example,
+ * put the `*ngIf` on a container element that wraps the `*ngFor` element.
+ *   
+ * For futher discussion,
+ * see [Structural Directives](guide/structural-directives#one-structural-directive-per-host-element).
  *
  * @usageNotes
  *
