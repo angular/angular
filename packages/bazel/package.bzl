@@ -23,6 +23,13 @@ def rules_angular_dependencies():
     #
     _maybe(
         http_archive,
+        name = "build_bazel_rules_nodejs",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.2.zip",
+        strip_prefix = "rules_nodejs-0.15.2",
+    )
+
+    _maybe(
+        http_archive,
         name = "build_bazel_rules_typescript",
         url = "https://github.com/bazelbuild/rules_typescript/archive/0.20.3.zip",
         strip_prefix = "rules_typescript-0.20.3",
