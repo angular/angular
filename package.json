@@ -26,7 +26,7 @@
     "gulp": "gulp",
     "stage-release": "bash ./tools/release/stage-release-bin.sh"
   },
-  "version": "7.0.0",
+  "version": "7.0.1",
   "requiredAngularVersion": ">=7.0.0",
   "dependencies": {
     "@angular/animations": "^7.0.0",
