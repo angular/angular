@@ -211,7 +211,7 @@
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
-            "url": "https://github.com/angular/universal"
+            "url": "https://angular.io/guide/universal"
           },
           "c1": {
             "desc": "Lightweight development only Node.js® server",
@@ -273,6 +273,13 @@
             "rev": true,
             "title": "UI-jar - Test Driven Style Guide Development",
             "url": "https://github.com/ui-jar/ui-jar"
+          },
+          "protactor": {
+            "desc": "The official end to end testing framework for Angular apps",
+            "logo": "",
+            "rev": true,
+            "title": "Protractor",
+            "url": "https://protractor.angular.io/"
           }
         }
       },
@@ -362,7 +369,7 @@
             "logo": "",
             "rev": true,
             "title": "Angular Material",
-            "url": "https://github.com/angular/material2"
+            "url": "https://material.angular.io/"
           },
           "mcc": {
             "desc": "Material components made by the community",
