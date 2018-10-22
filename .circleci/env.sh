@@ -27,6 +27,8 @@ setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
 ####################################################################################################
 setSecretVar CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN "$AIO_DEPLOY_TOKEN";
 setSecretVar CI_SECRET_PAYLOAD_FIREBASE_TOKEN "$ANGULAR_PAYLOAD_TOKEN";
+# Defined in https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+setSecretVar CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL "$SLACK_CARETAKER_WEBHOOK_URL";
 
 
 # Source `$BASH_ENV` to make the variables available immediately.
