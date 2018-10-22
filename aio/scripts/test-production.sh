@@ -16,7 +16,7 @@ set +x -eu -o pipefail
 
   # Install dependencies.
   echo -e "\nInstalling dependencies in '$aioDir'...\n-----"
-  yarn install --frozen-lockfile
+  yarn install --frozen-lockfile --non-interactive
   yarn update-webdriver
 
   # Run checks for all URLs.
