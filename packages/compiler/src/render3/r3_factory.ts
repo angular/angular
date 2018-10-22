@@ -10,11 +10,10 @@ import {StaticSymbol} from '../aot/static_symbol';
 import {CompileTypeMetadata, tokenReference} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {InjectFlags} from '../core';
-import {ParsedEvent} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
-import {OutputContext, error} from '../util';
+import {OutputContext} from '../util';
 
 import {unsupported} from './view/util';
 
