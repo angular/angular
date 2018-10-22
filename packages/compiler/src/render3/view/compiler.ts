@@ -43,6 +43,7 @@ function baseDirectiveFields(
   // e.g. `selectors: [['', 'someDir', '']]`
   definitionMap.set('selectors', createDirectiveSelector(meta.selector !));
 
+
   // e.g. `factory: () => new MyApp(directiveInject(ElementRef))`
   const result = compileFactoryFunction({
     name: meta.name,
