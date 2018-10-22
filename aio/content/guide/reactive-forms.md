@@ -1,12 +1,13 @@
 <!--
-# Reactive forms
+# Reactive Forms
 -->
-# 반응형 폼 (Reactive forms)
+# 반응형 폼 (Reactive Forms)
 
 <!--
 *Reactive forms* provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 -->
 *반응형 폼* 은 화면에 있는 입력 필드의 값이 변경될 때마다 원하는 로직이 실행하게 하는 모델-드리븐 방식의 폼입니다. 이 문서에서는 폼 컨트롤을 만드는 방법부터 시작해서 폼 컨트롤의 값을 갱신하는 방법, 폼 컨트롤 여러개를 그룹으로 묶어서 한 번에 처리하는 방법, 폼 컨트롤의 유효성을 검사하는 방법, 그 외에 폼과 관련된 고급 활용 기술에 대해 다룹니다.
+
 
 
 {@a toc}
@@ -34,9 +35,9 @@ Reactive forms also provide a straightforward path to testing because you are as
 반응형 폼을 사용하면 데이터가 의도한 대로만 변경되며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다. 반응형 폼을 사용하면서 데이터를 변경하는 것도 좀 더 안전합니다.
 
 <!--
-Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
+Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Forms Overview](guide/forms-overview) for detailed comparisons between the two paradigms.
 -->
-반응형 폼은 템플릿 기반의 폼과 많은 점이 다릅니다. 반응형 폼은 실시간으로 데이터 모델에 접근할 수 있으며, 옵저버블 연산자를 활용할 수도 있고, 옵저버블 스트림을 통해 값이 어떻게 변경되는 지도 검사할 수 있습니다. 하지만 템플릿에서 데이터를 직접 수정하는 것을 선호한다면, 템플릿에서 디렉티브를 사용해서 데이터를 수정하는 것이 명시적이라고 생각할 수도 있습니다. 두 방식이 어떻게 다른지 좀 더 자세하게 확인하려면 [부록](#부록)을 참고하세요.
+반응형 폼은 템플릿 기반의 폼과 많은 점이 다릅니다. 반응형 폼은 실시간으로 데이터 모델에 접근할 수 있으며, 옵저버블 연산자를 활용할 수도 있고, 옵저버블 스트림을 통해 값이 어떻게 변경되는 지도 검사할 수 있습니다. 하지만 템플릿에서 데이터를 직접 수정하는 것을 선호한다면, 템플릿에서 디렉티브를 사용해서 데이터를 수정하는 것이 명시적이라고 생각할 수도 있습니다. 두 방식이 어떻게 다른지 좀 더 자세하게 확인하려면 [Forms Overview](guide/forms-overview)을 참고하세요.
 
 <!--
 ## Getting started
@@ -58,10 +59,7 @@ To use reactive forms, import `ReactiveFormsModule` from the `@angular/forms` pa
 -->
 반응형 폼을 사용하려면 `@angular/forms`에서 제공하는 `ReactiveFormsModule`을 로드하고 NgModule의 `imports` 배열에 추가해야 합니다.
 
-<!--
-<code-example path="reactive-forms/src/app/app.module.ts" region="imports" title="src/app/app.module.ts (excerpt)">
--->
-<code-example path="reactive-forms/src/app/app.module.ts" region="imports" title="src/app/app.module.ts (일부)">
+<code-example path="reactive-forms/src/app/app.module.ts" region="imports" header="src/app/app.module.ts (excerpt)">
 
 </code-example>
 
@@ -86,7 +84,7 @@ The `FormControl` class is the basic building block when using reactive forms. T
 -->
 `FormControl` 클래스는 반응형 폼을 사용할 때 가장 기본이 되는 클래스입니다. 폼 컨트롤을 사용하려면 먼저 컴포넌트 코드에 `FormControl` 클래스를 로드하고, `FormControl`을 인스턴스로 생성하는 코드를 클래스 프로퍼티로 선언합니다.
 
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" title="src/app/name-editor/name-editor.component.ts">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" header="src/app/name-editor/name-editor.component.ts">
 
 </code-example>
 
@@ -105,7 +103,7 @@ After you create the control in the component class, you must associate it with 
 -->
 컴포넌트 클래스에 폼 컨트롤을 추가하고 나면, 컴포넌트 템플릿에도 폼 컨트롤을 연결해야 이 폼 컨트롤을 사용할 수 있습니다. 그래서 `FormControlDirective`를 의미하는 `formControl`을 입력 필드에 지정하면 템플릿과 컴포넌트의 폼 컨트롤을 연결할 수 있습니다. 이 디렉티브는 `ReactiveFormsModule`에서 제공하는 디렉티브입니다.
 
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" linenums="false" title="src/app/name-editor/name-editor.component.html">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" linenums="false" header="src/app/name-editor/name-editor.component.html">
 
 </code-example>
 
@@ -133,7 +131,7 @@ The form control assigned to `name` is displayed when the component is added to 
 -->
 이제 `NameEditorComponent`를 템플릿에 추가하면 다음과 같은 입력 필드가 화면에 표시됩니다.
 
-<code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" linenums="false" title="src/app/app.component.html (name editor)">
+<code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" linenums="false" header="src/app/app.component.html (name editor)">
 
 </code-example>
 
@@ -177,10 +175,7 @@ The following example shows you how to display the current value using interpola
 -->
 다음 예제는 폼 컨트롤의 값을 문자열 삽입으로 템플릿에 표시하는 예제 코드입니다.
 
-<!--
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (control value)">
--->
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (폼 컨트롤의 값 표시)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" header="src/app/name-editor/name-editor.component.html (control value)">
 
 </code-example>
 
@@ -216,9 +211,9 @@ The following example adds a method to the component class to update the value o
 다음 예제 코드는 `setValue()` 메소드를 사용해서 폼 컨트롤의 값을 *Nancy*로 변경하는 예제 코드입니다.
 
 <!--
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" title="src/app/name-editor/name-editor.component.ts (update value)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" header="src/app/name-editor/name-editor.component.ts (update value)">
 -->
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" title="src/app/name-editor/name-editor.component.ts (값 변경하기)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" header="src/app/name-editor/name-editor.component.ts (값 변경하기)">
 
 </code-example>
 
@@ -228,9 +223,9 @@ Update the template with a button to simulate a name update. When you click the 
 이 메소드를 실행할 수 있도록 템플릿을 수정합니다. 다음과 같이 구현한 후에 **Update Name** 버튼을 클릭하면, 폼 컨트롤 엘리먼트에 입력된 값에 관계없이 지정된 값으로 변경됩니다.
 
 <!--
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" title="src/app/name-editor/name-editor.component.html (update value)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" header="src/app/name-editor/name-editor.component.html (update value)">
 -->
-<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" title="src/app/name-editor/name-editor.component.html (값 변경하기)">
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="update-value" linenums="false" header="src/app/name-editor/name-editor.component.html (값 변경하기)">
 
 </code-example>
 
@@ -273,7 +268,7 @@ Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl
 
 </code-example>
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="imports" title="src/app/profile-editor/profile-editor.component.ts (imports)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="imports" header="src/app/profile-editor/profile-editor.component.ts (imports)">
 
 </code-example>
 
@@ -293,9 +288,9 @@ For the profile form, add two form control instances with the names `firstName` 
 그러면 이 폼 안에 `firstName` 인스턴스와 `lastName` 인스턴스가 선언됩니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup" title="src/app/profile-editor/profile-editor.component.ts (form group)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup" header="src/app/profile-editor/profile-editor.component.ts (form group)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup" title="src/app/profile-editor/profile-editor.component.ts (폼 그룹)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup" header="src/app/profile-editor/profile-editor.component.ts (폼 그룹)">
 
 </code-example>
 
@@ -314,7 +309,7 @@ A form group tracks the status and changes for each of its controls, so if one o
 -->
 폼 그룹도 각각의 폼 컨트롤의 상태와 변화를 추적합니다. 그래서 폼 컨트롤 중 하나의 상태나 값이 변경되면 이 폼 컨트롤을 감싸고 있는 부모 폼 컨트롤도 새로운 상태로 변경되고 값도 변경됩니다. 이 폼 그룹이 관리하는 모델은 각각의 폼 컨트롤로 구성됩니다. 그래서 이 모델을 템플릿에 연결하면 폼 컨트롤을 처리했던 것과 비슷하게 폼 그룹을 처리할 수 있습니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.html (template form group)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" linenums="false" header="src/app/profile-editor/profile-editor.component.html (template form group)">
 
 </code-example>
 
@@ -338,7 +333,7 @@ Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callbac
 -->
 다음과 같이 `form` 태그에 `ngSubmit` 이벤트를 바인딩해서 `onSubmit()` 콜백 메소드가 실행되게 작성해 봅시다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="ng-submit" linenums="false" title="src/app/profile-editor/profile-editor.component.html (submit event)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="ng-submit" linenums="false" header="src/app/profile-editor/profile-editor.component.html (submit event)">
 
 </code-example>
 
@@ -347,7 +342,10 @@ The `onSubmit()` method in the `ProfileEditor` component captures the current va
 -->
 그러면 `ProfileEditor` 컴포넌트에 정의된 `onSubmit()` 메소드가 `profileForm`의 현재 값을 읽어서 특정 동작을 실행하게 할 수 있습니다. 이 때 컴포넌트와 폼의 캡슐화를 보장하기 위해 `EventEmitter`를 사용해서 폼 값을 컴포넌트 외부로 전달하는 것이 좋습니다. 다음 예제는 이렇게 가져온 폼 값을 `console.warn` 함수로 브라우저 콘솔에 출력하는 예제입니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="on-submit" title="src/app/profile-editor/profile-editor.component.ts (submit 메소드)">
+<!--
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="on-submit" header="src/app/profile-editor/profile-editor.component.ts (submit method)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="on-submit" header="src/app/profile-editor/profile-editor.component.ts (submit 메소드)">
 
 </code-example>
 
@@ -361,7 +359,7 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 -->
 이 이벤트를 발생시키기 위해 폼 아래에 `button` 엘리먼트를 다음과 같이 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" linenums="false" title="src/app/profile-editor/profile-editor.component.html (submit button)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" linenums="false" header="src/app/profile-editor/profile-editor.component.html (submit button)">
 
 </code-example>
 
@@ -384,7 +382,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 -->
 `ProileEditor` 컴포넌트를 화면에 표시하기 위해 `AppComponent` 템플릿에 다음과 같이 컴포넌트를 추가합니다.
 
-<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" linenums="false" title="src/app/app.component.html (profile editor)">
+<code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" linenums="false" header="src/app/app.component.html (profile editor)">
 
 </code-example>
 
@@ -417,7 +415,7 @@ An address is a good example of information that can be grouped together. Form g
 -->
 주소를 입력받는 폼을 생각해 봅시다. 폼 그룹은 폼 컨트롤이나 폼 그룹 인스턴스를 자식으로 가질 수 있습니다. 그래서 복잡한 폼 필드를 연관된 것끼리 묶어서 `FormGroup`으로 처리할 수 있으며, 이 내용을 적용하면 `profileForm` 안에 `address` `FormGroup`을 생성할 수 있습니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.ts (nested form group)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" header="src/app/profile-editor/profile-editor.component.ts (nested form group)">
 
 </code-example>
 
@@ -441,7 +439,7 @@ Add the `address` form group containing the `firstName` and `lastName` fields to
 -->
 `ProfileEditor` 템플릿에 다음과 같이 `address` 폼 그룹을 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (template nested form group)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (template nested form group)">
 
 </code-example>
 
@@ -504,9 +502,9 @@ In `ProfileEditorComponent`, use the `updateProfile` method with the example bel
 아래 예제는 `ProfileEditorComponent`에 선언된 `updateProfile` 메소드를 사용해서 사용자의 이름과 주소를 변경하는 예제 코드입니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (patch value)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" header="src/app/profile-editor/profile-editor.component.ts (patch value)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (일부 값 변경)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" header="src/app/profile-editor/profile-editor.component.ts (일부 값 변경)">
 
 </code-example>
 
@@ -515,7 +513,7 @@ Simulate an update by adding a button to the template to update the user profile
 -->
 그리고 이 메소드를 실행하는 버튼을 템플릿에 다음과 같이 추가합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="patch-value" linenums="false" title="src/app/profile-editor/profile-editor.component.html (update value)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="patch-value" linenums="false" header="src/app/profile-editor/profile-editor.component.html (update value)">
 
 </code-example>
 
@@ -549,7 +547,7 @@ Import the `FormBuilder` class from the `@angular/forms` package.
 -->
 먼저 `@angular/forms` 패키지에서 `FormBuilder` 클래스를 로드합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder-imports" header="src/app/profile-editor/profile-editor.component.ts (import)">
 
 </code-example>
 
@@ -563,7 +561,7 @@ The `FormBuilder` service is an injectable provider that is provided with the re
 -->
 폼 빌더는 `ReactiveFormsModule`에서 제공하며, 의존성으로 주입할 수 있도록 서비스로 정의되어 있습니다. 다음과 같이 컴포넌트 생성자에 `FormBuilder` 서비스를 주입합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="inject-form-builder" title="src/app/profile-editor/profile-editor.component.ts (constructor)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="inject-form-builder" header="src/app/profile-editor/profile-editor.component.ts (constructor)">
 
 </code-example>
 
@@ -582,7 +580,7 @@ Use the `group` method to create the `profileForm` controls.
 -->
 `group()` 메소드를 사용해서 `profileForm` 컨트롤을 만들어 봅시다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder" header="src/app/profile-editor/profile-editor.component.ts (form builder)">
 
 </code-example>
 
@@ -608,19 +606,19 @@ Compare using the form builder to creating the instances manually.
 <code-tabs>
 
   <!--
-  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (instances)">
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (instances)">
   
   </code-pane>
 
-  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (form builder)">
 
   </code-pane>
   -->
-  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (직접 생성)">
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (직접 생성)">
   
   </code-pane>
 
-  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (폼 빌더 사용)">
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" header="src/app/profile-editor/profile-editor.component.ts (폼 빌더 사용)">
 
   </code-pane>
 
@@ -653,9 +651,9 @@ Import the `Validators` class from the `@angular/forms` package.
 먼저, `@angular/forms` 패키지에서 `Validators` 클래스를 로드합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" header="src/app/profile-editor/profile-editor.component.ts (import)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" title="src/app/profile-editor/profile-editor.component.ts (심볼 로드)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" header="src/app/profile-editor/profile-editor.component.ts (심볼 로드)">
 
 </code-example>
 
@@ -675,9 +673,9 @@ In the `ProfileEditor` component, add the `Validators.required` static method as
 `ProfileEditor` 컴포넌트에서 `firstName` 폼 컨트롤을 생성하던 배열의 두 번째 항목으로 `Validators.required`를 추가합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" title="src/app/profile-editor/profile-editor.component.ts (required validator)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" header="src/app/profile-editor/profile-editor.component.ts (required validator)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" title="src/app/profile-editor/profile-editor.component.ts (required 유효성 검사기)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" header="src/app/profile-editor/profile-editor.component.ts (required 유효성 검사기)">
 
 </code-example>
 
@@ -687,9 +685,9 @@ HTML5 has a set of built-in attributes that you can use for native validation, i
 HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required attribute)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" header="src/app/profile-editor/profile-editor.component.html (required attribute)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required 어트리뷰트)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" header="src/app/profile-editor/profile-editor.component.html (required 어트리뷰트)">
 
 </code-example>
 
@@ -718,9 +716,9 @@ Display the current status of `profileForm` using interpolation.
 `profileForm`의 상태를 표시하려면 다음과 같이 템플릿을 작성합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (display status)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" header="src/app/profile-editor/profile-editor.component.html (display status)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (폼 상태 표시)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" header="src/app/profile-editor/profile-editor.component.html (폼 상태 표시)">
 
 </code-example>
 
@@ -758,14 +756,14 @@ Import the `FormArray` class from `@angular/forms` to use for type information. 
 -->
 먼저 `@angular/forms` 패키지에서 `FormArray` 클래스를 로드합니다. 이것은 컴포넌트 클래스에서 타입 참조를 위해 로드한 것이며, `FormBuilder`는 이 과정이 없어도 내부적으로 `FormArray` 타입을 지원합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-array-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-array-imports" header="src/app/profile-editor/profile-editor.component.ts (import)">
 
 </code-example>
 
 <!--
-### Step 2 - Define a `FormArray`
+### Step 2: Defining a FormArray control
 -->
-### 2단계 - `FormArray` 정의하기
+### 2단계 - FormArray 정의하기
 
 <!--
 You can initialize a `FormArray` with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the `FormGroup` for the `profileForm` to define the `FormArray`.
@@ -782,7 +780,7 @@ Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.c
 -->
 `FormBuilder`를 사용한다면 `array()` 메소드로 폼 배열을 정의할 수 있으며, `FormBuilder.control()` 메소드를 사용해서 기본 폼 컨트롤을 생성합니다.
 
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases" title="src/app/profile-editor/profile-editor.component.ts (aliases form array)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases" header="src/app/profile-editor/profile-editor.component.ts (aliases form array)">
 
 </code-example>
 
@@ -794,7 +792,7 @@ The aliases control in the form group instance is now populated with a single co
 <!--
 ### Step 3: Accessing the FormArray control
 -->
-### 3단계: `FormArray`에 접근하기
+### 3단계: FormArray에 접근하기
 
 <!--
 A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls. 
@@ -807,10 +805,9 @@ Use the getter syntax to create an `aliases` class property to retrieve the alia
 게터 함수는 다음과 같이 정의합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" title="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" header="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" title="src/app/profile-editor/profile-editor.component.ts (aliases 게터)">
-
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" header="src/app/profile-editor/profile-editor.component.ts (aliases 게터)">
 </code-example>
 
 <div class="alert is-helpful">
@@ -828,9 +825,9 @@ Define a method to dynamically insert an alias control into the alias's form arr
 이번에는 `FormArray`에 동적으로 폼 컨트롤을 추가하는 함수를 정의해 봅시다. 폼 배열에 새로운 폼 컨트롤을 추가할 때는 `FormArray.push()` 메소드를 사용합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (add alias)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" header="src/app/profile-editor/profile-editor.component.ts (add alias)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (항목 추가)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" header="src/app/profile-editor/profile-editor.component.ts (항목 추가)">
 
 </code-example>
 
@@ -855,16 +852,13 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 `formGroupName` `<div>` 엘리먼트 뒤에 다음과 같은 템플릿을 추가합니다.
 
 <!--
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
 -->
-<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases 폼 배열의 템플릿)">
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" header="src/app/profile-editor/profile-editor.component.html (aliases 폼 배열의 템플릿)">
 
 </code-example>
 
-<!--
-The `*ngFor` directive iterates over each `FormControl` provided by the aliases `FormArray`. Because `FormArray` elements are unnamed, you assign the _index_ to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
--->
-그러면 `*ngFor` 디렉티브가 `aliases` 폼 배열에 있는 각각의 폼 컨트롤을 순회합니다. 이 때 `FormArray` 안에 있는 엘리먼트에는 이름을 지정하지 않았기 때문에, `*ngFor`의 _인덱스_ 를 템플릿 변수 `i`로 선언하고 `formControlName`을 사용해서 각 입력 필드에 연결해 줍니다.
+The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
@@ -1136,88 +1130,3 @@ Listed below are the base classes and services used to create and manage form co
   </tr>
 
 </table>
-
-<!--
-### Comparison to template-driven forms
--->
-## 템플릿 기반 폼과 비교
-
-<!--
-*Template-driven* forms, introduced in the [Template-driven forms guide](guide/forms), take a completely different approach compared to reactive forms. With template-drive forms, you follow these rules:
--->
-반응형 폼을 구현하는 방식은 [템플릿 기반의 폼](guide/forms)을 구현하는 방식과 완전히 다릅니다. 템플릿 기반의 폼은 다음 순서로 개발합니다:
-
-<!--
-* Place HTML form controls (such as `<input>` and `<select>`) in the component template and bind them to data model properties in the component, using directives such as `ngModel`.
--->
-* `<input>`이나 `<select>`와 같은 HTML 폼 컨트롤을 컴포넌트 템플릿에 선언하고 이 엘리먼트를 컴포넌트에 있는 프로퍼티 데이터 모델과 바인딩합니다. 이 때 `ngModel`과 같은 디렉티브를 사용합니다.
-
-<!--
-* Don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
--->
-* Angular 폼 컨트롤 객체는 생성하지 않습니다. 폼 컨트롤은 Angular 디렉티브가 생성하며, 템플릿에서는 디렉티브로 데이터를 바인딩해서 사용하기만 합니다.
-
-<!--
-* Don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable data model with user changes as they happen.
--->
-* 폼 컨트롤의 값을 직접 가져오거나 수동으로 갱신하지 않습니다. 이 동작은 모두 Angular가 제공하는 `ngModel`이 수행하며, 사용자가 입력필드의 값을 변경했을 때 자동으로 데이터 모델을 갱신합니다.
-
-<!--
-While using template-driven forms means less code in the component class, 
-they are [asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync"), 
-which can complicate development in more advanced scenarios.
--->
-템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보일 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
-
-
-{@a async-vs-sync}
-
-
-<!--
-### Async vs. sync
--->
-### 비동기 vs. 동기
-
-<!--
-Reactive forms are synchronous, and template-driven forms are asynchronous.
--->
-반응형 폼은 동기 방식으로 동작하며, 템플릿 기반의 폼은 비동기로 동작합니다.
-
-<!--
-In reactive forms, you create the entire form control tree in code. 
-You can immediately update a value or drill down through the descendants of the parent form 
-because all controls are always available.
--->
-반응형 폼을 사용할 때는 폼 컨트롤의 전체 구조를 코드에 정의합니다.
-그래서 폼 컨트롤도 코드에서 자유롭게 접근할 수 있기 때문에 폼 컨트롤의 값을 변경하거나 폼 안쪽에 있는 폼 컨트롤에 접근하는 것도 자유롭습니다.
-
-<!--
-Template-driven forms delegate the creation of their form controls to directives. 
-To avoid *changed after checked* errors, 
-these directives take more than one cycle to build the entire control tree. 
-That means you must wait until the next change detection cycle happens before manipulating any of the controls 
-from within the component class.
--->
-하지만 템플릿 기반의 폼은 폼 컨트롤의 구조를 디렉티브로 정의합니다.
-그래서 *값이 체크된 이후에 다시 변경되는* 에러를 방지하기 위해, 템플릿 기반 폼의 디렉티브를 사용하면 실행 싸이클을 최소한 한 번 기다려야 합니다.
-컴포넌트 클래스에서 템플릿 기반의 폼 컨트롤을 처리할 때도 마찬가지입니다.
-
-<!--
-For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the 
-[`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"), 
-you'll discover that it has no children. 
-You must trigger a change detection cycle using `setTimeout()` before you can 
-extract a value from a control, test its validity, or set it to a new value.
--->
-예를 들어 폼 컨트롤을 `@ViewChild(NgForm)` 쿼리로 참조하고, 이 프로퍼티를 [`ngAfterViewInit` 라이프싸이클 후킹 함수](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView")에서 확인하면 이 프로퍼티는 빈 값이기 때문에 바로 사용할 수 없습니다.
-이런 경우에 폼 컨트롤의 값을 확인하거나 유효성을 검사할 때, 새로운 값을 지정할 때는 `setTimeout()` 함수를 사용해서 한 싸이클 기다려야 합니다.
-
-<!--
-The asynchrony of template-driven forms also complicates unit testing. 
-You must wrap your test block in `async()` or `fakeAsync()` to 
-avoid looking for values in the form that aren't there yet. 
-With reactive forms, everything is available immediately.
--->
-템플릿 기반의 폼은 비동기로 동작하기 때문에 유닛 테스트를 적용하기도 어렵습니다.
-폼 컨트롤의 값이 제대로 지정된 것을 보장하려면 모든 테스트 코드에 `async()`나 `fakeAsync()`를 사용해야 하기 때문입니다.
-하지만 반응형 폼이라면 모든 것이 동기 방식으로 동작하기 때문에 JavaScript 실행 싸이클을 기다리지 않아도 됩니다.

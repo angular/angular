@@ -77,7 +77,7 @@ A way to initialize and launch an app or system.
 
 In Angular, an app's root NgModule (`AppModule`) has a `bootstrap` property that identifies the app's top-level [components](guide/glossary#component). 
 During the bootstrap process, Angular creates and inserts these components into the `index.html` host web page.
-You can bootstrap multiple apps in the same `index.html`. Each app ccontains its own components.
+You can bootstrap multiple apps in the same `index.html`. Each app contains its own components.
 
 Learn more in [Bootstrapping](guide/bootstrapping).
 
@@ -130,10 +130,10 @@ A [decorator](guide/glossary#decorator) statement immediately before a field in 
 
 ## command-line interface (CLI)
 
-The [Angular CLI](https://cli.angular.io/) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
+The [Angular CLI](cli) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
-* To begin using the CLI for a new project, see [QuickStart](guide/quickstart).
-* To learn more about the full capabilities of the CLI, see the [Angular CLI documentation](https://github.com/angular/angular-cli/wiki).
+* To begin using the CLI for a new project, see [Getting Started](guide/quickstart).
+* To learn more about the full capabilities of the CLI, see the [CLI command reference](cli).
 
 {@a component}
 
@@ -642,8 +642,7 @@ For more information, see [Routing and Navigation](guide/router).
 A scaffolding library that defines how to generate or transform a programming project by creating, modifying, refactoring, or moving files and code. 
 The Angular [CLI](guide/glossary#cli) uses schematics to generate and modify [Angular projects](guide/glossary#project) and parts of projects.
 
-* Angular provides a set of schematics for use with the CLI. 
-For details, see [Angular CLI documentation](https://github.com/angular/angular-cli/wiki).
+* Angular provides a set of schematics for use with the CLI. See the [Angular CLI command reference](cli). The [`ng add`](cli/add) command runs schematics as part of adding a library to your project. The [`ng generate`](cli/generate) command runs schematics to create apps, libraries, and Angular code constructs. 
 
 * Library developers can create schematics that enable the CLI to generate their published libraries.
 For more information, see [devkit documentation](https://www.npmjs.com/package/@angular-devkit/schematics). 
@@ -657,7 +656,7 @@ NgModules are delivered within scoped packages whose names begin with the Angula
 
 Import a scoped package in the same way that you import a normal package. 
 
-<code-example path="architecture/src/app/app.component.ts" linenums="false" title="architecture/src/app/app.component.ts (import)" region="import">
+<code-example path="architecture/src/app/app.component.ts" linenums="false" header="architecture/src/app/app.component.ts (import)" region="import">
 
 </code-example>
 
@@ -809,7 +808,7 @@ See [custom element](guide/glossary#custom-element).
 ## workspace
 
 In Angular, a folder that contains [projects](guide/glossary#project) (that is, apps and libraries).
-The [CLI](guide/glossary#cli) `new` command creates a workspace to contain projects. 
+The [CLI](guide/glossary#cli) `ng new` command creates a workspace to contain projects. 
 Commands that create or operate on apps and libraries (such as `add` and `generate`) must be executed from within a workspace folder. 
 
 {@a X}

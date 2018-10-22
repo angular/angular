@@ -58,10 +58,10 @@ With interpolation, you put the property name in the view template, enclosed in 
 문자열 바인딩은 프로퍼티 이름을 이중 중괄호로 감싸서 뷰 템플릿에 `{{myHero}}` 와 같은 형태로 넣는 방법입니다.
 
 <!--
-Follow the [quickstart](guide/quickstart) instructions for creating a new project
+Follow the [Getting Started](guide/quickstart) instructions for creating a new project
 named <code>displaying-data</code>.
 -->
-먼저, [퀵스타트](guide/quickstart) 문서를 참고하면서 <code>displaying-data</code> 라는 이름으로 새로운 프로젝트를 만듭니다.
+먼저, [시작하기](guide/quickstart) 문서를 참고하면서 <code>displaying-data</code> 라는 이름으로 새로운 프로젝트를 만듭니다.
 
 <!--
 Delete the <code>app.component.html</code> file. It is not needed for this example.
@@ -79,7 +79,7 @@ When you're done, it should look like this:
 화면에 히어로의 이름을 표시하도록 <code>app.component.ts</code> 파일을 다음과 같이 작성합니다:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" title="src/app/app.component.ts">
+<code-example path="displaying-data/src/app/app.component.1.ts" header="src/app/app.component.ts">
 
 </code-example>
 
@@ -97,7 +97,7 @@ interpolation:
 그리고 두 프로퍼티 값을 화면에 표시하도록 다음과 같이 템플릿에 문자열 바인딩 합니다:
 
 
-<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
@@ -150,7 +150,7 @@ That element is a placeholder in the body of your `index.html` file:
 `@Component` 데코레이터에 지정된 메타데이터를 보면 `selector` 항목에 `<app-root>` 가 지정되어 있고,
 `index.html` 파일에는 `<app-root>` 가 다음과 같이 작성되어 있습니다:
 
-<code-example path="displaying-data/src/index.html" linenums="false" title="src/index.html (body)" region="body">
+<code-example path="displaying-data/src/index.html" linenums="false" header="src/index.html (body)" region="body">
 
 </code-example>
 
@@ -212,9 +212,9 @@ In either style, the template data bindings have the same access to the componen
 <div class="alert is-helpful">
   
   <!--
-  By default, the Angular CLI generates components with a template file. You can override that with:
+  By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
   -->
-  Angular CLI으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
+  Angular CLI의 [`ng generate component`](cli/generate)명령으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
   이 때 템플릿을 인라인으로 만들려면 <code>-it</code> 옵션을 사용하면 됩니다.
 
   <code-example hideCopy language="sh" class="code-shell">
@@ -258,7 +258,7 @@ To display a list of heroes, begin by adding an array of hero names to the compo
 히어로의 목록을 표시하려면 먼저 컴포넌트에 배열을 정의해야 합니다. `myHero` 배열을 만들고, 이 배열에 히어로들의 이름을 할당합시다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (class)" region="class">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (class)" region="class">
 
 </code-example>
 
@@ -270,7 +270,7 @@ each item in the `heroes` list.
 그리고 Angular에서 제공하는 `ngFor` 디렉티브를 사용하면 `heroes` 배열의 각 항목을 화면에 표시할 수 있습니다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
@@ -285,7 +285,7 @@ It marks that `<li>` element (and its children) as the "repeater template":
 이 디렉티브를 아래 예제처럼 `<li>` 엘리먼트에 사용하면 `<li>` 엘리먼트와 그 하위 엘리먼트를 반복할 수 있습니다.
 
 
-<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (li)" region="li">
+<code-example path="displaying-data/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (li)" region="li">
 
 </code-example>
 
@@ -383,7 +383,7 @@ With the following code:
 -->
 그리고 클래스 코드는 다음과 같이 작성합니다.
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts">
+<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts">
 
 </code-example>
 
@@ -406,7 +406,7 @@ Consider the first parameter:
 생성자에 사용된 첫번째 인자를 봅시다:
 
 
-<code-example path="displaying-data/src/app/hero.ts" linenums="false" title="src/app/hero.ts (id)" region="id">
+<code-example path="displaying-data/src/app/hero.ts" linenums="false" header="src/app/hero.ts (id)" region="id">
 
 </code-example>
 
@@ -437,7 +437,7 @@ of `Hero` objects:
 이제 `AppComponent.heroes` 프로퍼티를 `Hero` 객체 타입으로 다시 정의합니다.
 
 
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (heroes)" region="heroes">
+<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (heroes)" region="heroes">
 
 </code-example>
 
@@ -451,8 +451,7 @@ Fix that to display only the hero's `name` property.
 히어로 객체에는 `id` 프로퍼티와 `name` 프로퍼티가 있지만, 지금은 `name` 프로퍼티만 화면에 표시합시다.
 
 
-
-<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
+<code-example path="displaying-data/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
 
 </code-example>
 
@@ -486,7 +485,7 @@ To see it in action, add the following paragraph at the bottom of the template:
 Angular에서 제공하는 `ngIf` 디렉티브는 _참/거짓으로 평가되는_ 조건에 따라 엘리먼트를 DOM에 추가하거나 제거합니다.
 `ngIf` 의 동작을 확인하기 위해 템플릿에 다음과 같은 코드를 작성합시다.
 
-<code-example path="displaying-data/src/app/app.component.ts" linenums="false" title="src/app/app.component.ts (message)" region="message">
+<code-example path="displaying-data/src/app/app.component.ts" linenums="false" header="src/app/app.component.ts (message)" region="message">
 
 </code-example>
 
@@ -532,7 +531,7 @@ big chunks of HTML with many data bindings.
 
 <!--
 Try it out. Because the array has four items, the message should appear.
-Go back into <code>app.component.ts"</code> and delete or comment out one of the elements from the hero array.
+Go back into <code>app.component.ts</code> and delete or comment out one of the elements from the hero array.
 The browser should refresh automatically and the message should disappear.
 -->
 앱을 실행해서 결과를 직접 확인해 보세요. 예제에서 다룬 배열은 길이가 4이기 때문에 메시지가 표시됩니다.
@@ -567,19 +566,19 @@ Here's the final code:
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="displaying-data/src/app/app.component.ts" region="final">
+  <code-pane header="src/app/app.component.ts" path="displaying-data/src/app/app.component.ts" region="final">
 
   </code-pane>
 
-  <code-pane title="src/app/hero.ts" path="displaying-data/src/app/hero.ts">
+  <code-pane header="src/app/hero.ts" path="displaying-data/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="displaying-data/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="displaying-data/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="main.ts" path="displaying-data/src/main.ts">
+  <code-pane header="main.ts" path="displaying-data/src/main.ts">
 
   </code-pane>
 

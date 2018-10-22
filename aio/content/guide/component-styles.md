@@ -47,7 +47,7 @@ Usually you give it one string, as in the following example:
 가장 간단한 방법은 컴포넌트 메타데이터에 `styles` 프로퍼티를 사용하는 것입니다.
 `styles` 프로퍼티에는 CSS 코드를 문자열 배열 형태로 지정하며, 다음과 같이 문자열 하나로도 간단하게 지정할 수 있습니다:
 
-<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts" linenums="false">
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -134,7 +134,7 @@ targeting elements *inside* the component's template).
 -->
 컴포넌트가 *위치하는* 엘리먼트(호스트 엘리먼트)에 스타일을 지정하려면  가상 클래스 셀렉터 `:host`를 사용합니다. 이 때 컴포넌트가 위치하는 엘리먼트라는 것은 컴포넌트 템플릿 *안쪽*이 아닌 컴포넌트를 나타내는 엘리먼트 자체를 가리킵니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 <!--
@@ -155,7 +155,7 @@ The next example targets the host element again, but only when it also has the `
 -->
 그래서 아래 예제는 `active` CSS 클래스가 지정된 호스트 엘리먼트만 가리킵니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 ### :host-context
@@ -183,7 +183,7 @@ if some ancestor element has the CSS class `theme-light`.
 -->
 아래 예제는 CSS 클래스 `theme-light`가 지정된 부모 엘리먼트의 자식 엘리먼트 중 이 컴포넌트 *안*에 있는 `<h2>` 엘리먼트에 `background-color` 스타일을 지정하는 예제 코드입니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 <!--
@@ -210,7 +210,7 @@ through this component to all of its child elements in the DOM.
 -->
 아래 예제는 컴포넌트 뷰 안에 있는 모든 자식 컴포넌트의 `<h3>` 엘리먼트에 이탤릭 속성을 지정하는 예제 코드입니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">
 
 </code-example>
 
@@ -286,7 +286,7 @@ Each string in the array defines some CSS for this component.
 -->
 이 프로퍼티는 문자열 배열을 사용하는데, 컴포넌트에 지정될 CSS 스타일을 문자열로 각각 지정합니다.
 
-<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts (CSS inline)">
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts (CSS inline)">
 </code-example>
 
 <div class="alert is-critical">
@@ -299,10 +299,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<!--
-The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
--->
-그리고 Angular CLI로 컴포넌트를 생성할 때 `--inline-styles` 옵션을 사용하면 `styles` 초기값이 빈 배열로 지정됩니다.
+The Angular CLI command [`ng generate component`](cli/generate) defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -320,8 +317,8 @@ to a component's `@Component` decorator:
 컴포넌트의 `@Component` 데코레이터에 `styleUrls` 프로퍼티를 사용하면 컴포넌트 외부에 있는 CSS 파일을 불러와서 컴포넌트에 적용할 수 있습니다.
 
 <code-tabs>
-  <code-pane title="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
-  <code-pane title="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.css"></code-pane>
+  <code-pane header="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
+  <code-pane header="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.css"></code-pane>
 </code-tabs>
 
 <div class="alert is-critical">
@@ -330,7 +327,7 @@ to a component's `@Component` decorator:
 Reminder: the styles in the style file apply _only to this component_.
 They are _not inherited_ by any components nested within the template nor by any content projected into the component.
 -->
-주의 : 이 방법으로 지정하는 스타일은 _이 컴포넌트에만_ 적용됩니다. 템플릿 안에 있는 자식 컴포넌트나, 이 컴포넌트에 프로젝트되는 다른 컨텐츠에도 적용되지 않습니다.
+주의 : 이 방법으로 지정하는 스타일은 _이 컴포넌트에만_ 적용됩니다. 템플릿 안에 있는 자식 컴포넌트나, 이 컴포넌트에 프로젝트되는 다른 컨텐츠에는 적용되지 않습니다.
 
 </div>
 
@@ -343,10 +340,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<!--
-The CLI creates an empty styles file for you by default and references that file in the component's generated `styleUrls`.
--->
-그리고 Angular CLI로 컴포넌트를 생성하면 빈 배열로 `styleUrls` 초기값이 지정됩니다.
+When you use the Angular CLI command [`ng generate component`](cli/generate) without the `--inline-style` flag, it creates an empty styles file for you and references that file in the component's generated `styleUrls`.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app
@@ -363,7 +357,7 @@ inside `<style>` tags.
 -->
 CSS 스타일은 `<style>` 태그를 사용해서 HTML 템플릿 안에 지정할 수도 있습니다.
 
-<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" title="src/app/hero-controls.component.ts">
+<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" header="src/app/hero-controls.component.ts">
 </code-example>
 
 <!--
@@ -376,15 +370,16 @@ You can also write `<link>` tags into the component's HTML template.
 -->
 컴포넌트 HTML 템플릿에는 `<link>` 태그를 사용할 수도 있습니다.
 
-<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
+<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" header="src/app/hero-team.component.ts">
 </code-example>
 
 <div class="alert is-critical">
 
 <!--
-When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
 -->
-Angular CLI가 애플리케이션을 빌드할 때 링크로 연결된 스타일 파일이 `assets` 폴더에 있고 빌드 결과에 제대로 포함되는지 꼭 확인하세요. `assets` 폴더를 활용하는 방법은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-asset-configuration)에서 소개합니다.
+Angular CLI가 애플리케이션을 빌드할 때 링크로 연결된 스타일 파일이 `assets` 폴더에 있고 빌드 결과에 제대로 포함되는지 꼭 확인하세요. `assets` 폴더를 활용하는 방법은 [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-asset-configuration)에서 소개합니다.
+<!-- 2018-10-16: The link above is still the best source for this information. -->
 
 <!--
 Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
@@ -408,7 +403,7 @@ In this case, the URL is relative to the CSS file into which you're importing.
 -->
 이 경우에는 CSS 파일을 로드하는 컴포넌트에서 시작하는 상대 경로로 외부 CSS 파일의 URL을 지정합니다.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="import" title="src/app/hero-details.component.css (excerpt)">
+<code-example path="component-styles/src/app/hero-details.component.css" region="import" header="src/app/hero-details.component.css (excerpt)">
 </code-example>
 
 <!--
@@ -427,9 +422,11 @@ Register **global** style files in the `styles` section which, by default, is pr
 이 때 `styles` 항목을 활용하면 **전역**으로 지정될 스타일 파일을 지정할 수 있으며, CLI로 생성한 프로젝트라면 `styles.css` 파일이 초기값으로 지정됩니다.
 
 <!--
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+See the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
 -->
-더 자세한 내용은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-global-styles)를 참고하세요.
+더 자세한 내용은 [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-styles)를 참고하세요.
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 <!--
 ### Non-CSS style files
@@ -459,12 +456,14 @@ The CLI build process runs the pertinent CSS preprocessor.
 <!--
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
 You can configure the CLI to default to your preferred CSS preprocessor
-as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
+as explained in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration").
 -->
 `ng generate component` 명령으로 컴포넌트를 생성하면 비어있는 CSS 파일(`.css`)이 기본으로 생성됩니다.
 이 때 스타일 파일을 어떤 확장자로 생성할지 Angular CLI 환경 설정파일에 지정할 수 있으며, 더 자세한 내용은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration") 문서를 참고하세요.
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 <div class="alert is-important">
 
@@ -537,7 +536,7 @@ To set the components encapsulation mode, use the `encapsulation` property in th
 -->
 컴포넌트 캡슐화 모드는 컴포넌트 메타데이터의 `encapsulation` 프로퍼티로 지정합니다:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" title="src/app/quest-summary.component.ts" linenums="false">
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts" linenums="false">
 </code-example>
 
 <!--

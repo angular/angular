@@ -37,9 +37,9 @@ Writing this in full JavaScript can be quite involved. With observables, you can
 이 내용을 모두 JavaScript로 구현하는 것은 상당히 번거로운 일입니다. 하지만 옵저버블과 RxJS 연산자를 활용하면 다음과 같이 간단하게 구현할 수 있습니다:
 
 <!--
-<code-example path="practical-observable-usage/src/typeahead.ts" title="Typeahead"></code-example>
+<code-example path="practical-observable-usage/src/typeahead.ts" header="Typeahead"></code-example>
 -->
-<code-example path="practical-observable-usage/src/typeahead.ts" title="코드 자동완성"></code-example>
+<code-example path="practical-observable-usage/src/typeahead.ts" header="코드 자동완성"></code-example>
 
 ## Exponential backoff
 
@@ -48,4 +48,4 @@ Exponential backoff is a technique in which you retry an API after failure, maki
 -->
 지수 백오프(Exponential backoff)는 API 요청을 실패했을 때 사용하는 테크닉입니다. 이 테크닉은 요청이 계속 실패할 때마다 점점 긴 시간 간격을 두고 재시도하며, 정해진 재시도 횟수를 넘어가면 최종 실패한 것으로 판단합니다. 이 기능은 AJAX 요청을 계속 추적해야 하기 때문에 Promise나 JavaScript로 구현하기는 조금 복잡합니다. 하지만 옵저버블을 사용하면 아주 간단합니다:
 
-<code-example path="practical-observable-usage/src/backoff.ts" title="Exponential backoff"></code-example>
+<code-example path="practical-observable-usage/src/backoff.ts" header="Exponential backoff"></code-example>

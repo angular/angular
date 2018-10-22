@@ -33,9 +33,9 @@ A provider is an instruction to the DI system on how to obtain a value for a dep
 ## 서비스 생성하기
 
 <!--
-If you already have a CLI generated app, create a service using the following CLI command in the root project directory. Replace _User_ with the name of your service.
+If you already have an app that was created with the [Angular CLI](cli), you can create a service using the [`ng generate`](cli/generate) CLI command in the root project directory. Replace _User_ with the name of your service.
 -->
-Angular CLI로 프로젝트를 생성했다면, 서비스를 만드는 것도 간단합니다. 프로젝트 최상위 폴더에서 다음 명령을 싱행하는데, 이 때 `Service` 접미사 없이 _User_ 라고 지정합니다.
+[Angular CLI](cli)로 프로젝트를 생성했다면, 서비스를 만드는 것도 간단합니다. 프로젝트 최상위 폴더에서 [`ng generate`](cli/generate) 명령을 싱행하는데, 이 때 `Service` 접미사 없이 _User_ 라고 지정합니다.
 
 ```sh
 ng generate service User
@@ -46,7 +46,7 @@ This command creates the following `UserService` skeleton:
 -->
 그러면 `UserService`가 다음과 같이 생성됩니다:
 
-<code-example path="providers/src/app/user.service.0.ts"  title="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
 
 <!--
 You can now inject `UserService` anywhere in your application. 
@@ -82,14 +82,14 @@ It's also possible to specify that a service should be provided in a particular 
 -->
 특정 `@NgModule`에 포함되도록 서비스를 등록할 수도 있습니다. 예를 들어 `UserModule`을 로드하지 않은 상태에서는 `UserService`를 사용할 수 없도록 하려면, 코드를 다음과 같이 작성하면 됩니다:
 
-<code-example path="providers/src/app/user.service.1.ts"  title="src/app/user.service.1.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.service.1.ts"  header="src/app/user.service.1.ts" linenums="false">  </code-example>
 
 <!--
 The example above shows the preferred way to provide a service in a module. This method is preferred because it enables tree-shaking of the service if nothing injects it. If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
 -->
 이 방법을 사용하면 실제로 사용되지 않는 서비스는 트리 셰이킹으로 제거되기 때문에 애플리케이션을 배포할 때도 좋습니다. 서비스가 포함될 모듈을 지정하는 방법을 사용할 수 없다면, 반대로 모듈 안에 서비스 프로바이더를 등록하는 방법도 있습니다:
 
-<code-example path="providers/src/app/user.module.ts"  title="src/app/user.module.ts" linenums="false">  </code-example>
+<code-example path="providers/src/app/user.module.ts"  header="src/app/user.module.ts" linenums="false">  </code-example>
 
 <!--
 ## Limiting provider scope by lazy loading modules
@@ -97,7 +97,7 @@ The example above shows the preferred way to provide a service in a module. This
 ## 프로바이더 범위 제한하기 : 지연 로딩되는 모듈
 
 <!--
-In the basic CLI generated app, modules are eagerly loaded which means that they are all loaded when the app launches. Angular uses an injector system to make things available between modules. In an eagerly loaded app, the root application injector makes all of the providers in all of the modules available throughout the app.
+In the basic CLI-generated app, modules are eagerly loaded which means that they are all loaded when the app launches. Angular uses an injector system to make things available between modules. In an eagerly loaded app, the root application injector makes all of the providers in all of the modules available throughout the app.
 -->
 Angular CLI를 사용해서 생성한 앱은 애플리케이션이 실행되면서 모든 모듈이 즉시 로드됩니다. 애플리케이션의 최상위 인젝터는 애플리케이션이 실행된 직후에 모듈 안에 등로된 프로바이더에 접근해서 의존성 객체를 생성할 준비를 합니다.
 
@@ -137,7 +137,7 @@ the same module can’t access it.)
 -->
 프로바이더의 범위는 컴포넌트 안으로 제한할 수도 있는데, 이 때 컴포넌트 메타데이터의 `providers` 배열을 사용합니다. 그러면 NgModule의 프로바이더와는 별개로 컴포넌트 프로바이더가 의존성 객체를 생성합니다. 이 방법은 컴포넌트마다 서비스 인스턴스를 별개로 사용하는 경우에 활용하면 좋습니다. 서비스의 인스턴스가 각각 생성되면 컴포넌트에서 이 서비스를 사용해 어떤 동작을 하더라도 다른 컴포넌트는 영향을 받지 않습니다.
 
-<code-example path="providers/src/app/app.component.ts" region="component-providers" title="src/app/app.component.ts" linenums="false">
+<code-example path="providers/src/app/app.component.ts" region="component-providers" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
 <!--
@@ -172,7 +172,7 @@ Register a provider with a component when you must limit a service instance to a
 You may also be interested in:
 * [Singleton Services](guide/singleton-services), which elaborates on the concepts covered on this page.
 * [Lazy Loading Modules](guide/lazy-loading-ngmodules).
-* [Tree-shakable Providers](guide/dependency-injection#tree-shakable-providers).
+* [Tree-shakable Providers](guide/dependency-injection-providers#tree-shakable-providers).
 * [NgModule FAQ](guide/ngmodule-faq).
 -->
 다음 내용에 대해서도 알아보세요.

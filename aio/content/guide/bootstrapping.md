@@ -27,9 +27,9 @@ NgModule은 애플리케이션을 구성하는 단위입니다.
 이 최상위 모듈은 보통 `AppModule`이라고 합니다.
 
 <!--
-If you use the CLI to generate an app, the default `AppModule` is as follows:
+If you use the [Angular CLI](cli) to generate an app, the default `AppModule` is as follows:
 -->
-Angular CLI로 프로젝트를 생성했다면 `AppModule`은 다음과 같이 구성됩니다:
+[Angular CLI](cli)로 프로젝트를 생성했다면 `AppModule`은 다음과 같이 구성됩니다:
 
 <!--
 ```typescript
@@ -55,7 +55,6 @@ import { AppComponent } from './app.component';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-
 ```
 -->
 ```typescript
@@ -63,11 +62,11 @@ export class AppModule { }
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
-/* AppModule 클래스는 @NgModule 데코레이터로 정의합니다. */
+/* AppModule 클래스에 @NgModule 데코레이터를 사용합니다. */
 @NgModule({
   declarations: [
     AppComponent
@@ -75,13 +74,12 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-
 ```
 
 <!--
@@ -109,13 +107,12 @@ into the `index.html` host web page.
 * **_bootstrap_**&mdash;`index.html` 페이지에 생성되고 실행될 _최상위_ 컴포넌트를 지정합니다.
 
 <!--
-The default CLI application only has one component, `AppComponent`, so it
+The default application created by the Angular CLI only has one component, `AppComponent`, so it
 is in both the `declarations` and the `bootstrap` arrays.
 -->
-Angular CLI로 만든 프로젝트에는 컴포넌트가 `AppComponent` 하나만 있습니다. 그리고 `declarations`와 `bootstrap`은 배열로 지정되어 있습니다.
+Angular CLI로 만든 프로젝트에는 `AppComponent` 컴포넌트가 하나 있습니다. 그리고 이 컴포넌트의 `declarations`와 `bootstrap`은 배열로 지정되어 있습니다.
 
 {@a declarations}
-{@a the-declarations-array}
 
 <!--
 ## The `declarations` array
@@ -208,7 +205,7 @@ The following example, named `ItemDirective` is the default directive structure 
 `item.directive.ts` 파일에 `ItemDirective`를 정의해 봅시다.
 Angular CLI로 디렉티브를 생성하면 디렉티브의 기본 구조가 다음과 같이 구성됩니다:
 
-<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" title="src/app/item.directive.ts" linenums="false">
+<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts" linenums="false">
 </code-example>
 
 <!--
@@ -218,7 +215,7 @@ into the NgModule, in this example `app.module.ts`, with a JavaScript import sta
 이 파일에서 중요한 점은, 이 클래스가 `export` 키워드로 지정되었기 때문에 다른 모듈이 이 클래스를 참조할 수 있다는 것입니다.
 따라서, 앱 모듈을 정의하는 `app.module.ts` 파일에서는 다음과 같이 로드할 수 있습니다:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" title="src/app/app.module.ts" linenums="false">
+<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 <!--
@@ -226,7 +223,7 @@ And in the same file, add it to the `@NgModule` `declarations` array:
 -->
 이렇게 불러온 디렉티브를 `@NgModule`의 `declarations` 배열에 추가합니다:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" title="src/app/app.module.ts" linenums="false">
+<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 <!--
@@ -265,13 +262,6 @@ or pipe when the referenced class is declared in this module or
 the class was imported from another module.
 -->
 그리고 이렇게 불러온 모듈 안에서 `export` 키워드로 지정된 컴포넌트나 디렉티브, 파이프는 `imports` 배열을 지정한 현재 모듈안에서 자유롭게 사용할 수 있습니다. Angular CLI로 생성했던 `NgModule` 모듈로 설명하면, 모듈에 포함된다고 등록한 `AppComponent`에서는 앱 모듈에서 불러온 `BrowserModule`, `FormsModule`, `HttpModule` 안에 있는 컴포넌트, 디렉티브, 파이프 중 모듈 외부로 공개된 구성요소는 자유롭게 사용할 수 있습니다.
-
-<!--
-You don't have any services to provide yet.
-But you will create some before long and you may chose to provide many of them here.
--->
-아직 서비스 프로바이더는 아무것도 등록되지 않았습니다.
-이후에 서비스 클래스가 추가된다면 다음 배열에 등록합니다.
 
 {@a bootstrap-array}
 

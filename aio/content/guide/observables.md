@@ -45,10 +45,14 @@ Here's an example that demonstrates the basic usage model by showing how an obse
 -->
 다음 코드는 옵저버블을 사용해서 사용자의 접속 위치를 확인하는 예제 코드입니다.
 
+<<<<<<< HEAD
 <!--
 <code-example path="observables/src/geolocation.ts" title="Observe geolocation updates"></code-example>
 -->
 <code-example path="observables/src/geolocation.ts" title="접속 위치 추적하기"></code-example>
+=======
+<code-example path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
+>>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <!--
 ## Defining observers
@@ -90,17 +94,10 @@ An `Observable` instance begins publishing values only when someone subscribes t
 
 <div class="alert is-helpful">
 
-   <!--
-   In order to show how subscribing works, we need to create a new observable. There is a  constructor that you use to create new instances, but for illustration, we can use some static methods on the `Observable` class that create simple observables of frequently used types:
-   -->
-   옵저버블이 동작하는 것을 확인하려면 새로운 옵저버블 인스턴스를 생성해야 합니다. 옵저버블 클래스에는 새로운 데이터를 생성하는 메소드가 다양하게 정의되어 있으며, 이 함수들은 옵저버블 인스턴스를 생성한 후 다양하게 활용할 수 있지만, 예제를 간단하기 작성하기 위해 다음 함수들을 대신 사용합니다:
+In order to show how subscribing works, we need to create a new observable. There is a constructor that you use to create new instances, but for illustration, we can use some methods from the RxJS library that create simple observables of frequently used types:
 
-  <!--
-  * `Observable.of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
-  * `Observable.from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
-  -->
-  * `Observable.of(...items)`&mdash;인자로 전달된 객체를 `Observable` 인스턴스에 담아 즉시 반환합니다.
-  * `Observable.from(iterable)`&mdash;인자로 전달된 이터러블 객체를 순회하면서, 각 항목을 `Observable` 인스턴스에 담아 반환합니다. 이 함수는 배열을 옵저버블로 변환할 때 자주 사용합니다.
+  * `of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
+  * `from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
 
 </div>
 
@@ -113,7 +110,7 @@ Here's an example of creating and subscribing to a simple observable, with an ob
 <code-example
   path="observables/src/subscribing.ts"
   region="observer"
-  title="Subscribe using observer"></code-example>
+  header="Subscribe using observer"></code-example>
 -->
 <code-example
   path="observables/src/subscribing.ts"
@@ -126,9 +123,9 @@ Alternatively, the `subscribe()` method can accept callback function definitions
 이 예제처럼 `subscribe()` 메소드를 실행하면서 옵저버 객체를 전달하는 방식 대신, `subscribe()` 메소드를 실행하면서 인자로 `next`, `error`, `complete` 핸들러를 바로 지정할 수도 있습니다. 아래 코드를 실행한 결과는 이전과 같습니다.
 
 <!--
-<code-example path="observables/src/subscribing.ts" region="sub_fn" title="Subscribe with positional arguments"></code-example>
+<code-example path="observables/src/subscribing.ts" region="sub_fn" header="Subscribe with positional arguments"></code-example>
 -->
-<code-example path="observables/src/subscribing.ts" region="sub_fn" title="함수의 인자로 구독하기"></code-example>
+<code-example path="observables/src/subscribing.ts" region="sub_fn" header="함수의 인자로 구독하기"></code-example>
 
 <!--
 In either case, a `next` handler is required. The `error` and `complete` handlers are optional.
@@ -152,14 +149,14 @@ Use the `Observable` constructor to create an observable stream of any type. The
 구독자 함수는 `Observer` 객체를 인자로 받는데, 이 객체의 `next()` 메소드를 실행하면 옵저버블 스트림을 발행할 수 있습니다.
 
 <!--
-For example, to create an observable equivalent to the `Observable.of(1, 2, 3)` above, you could do something like this:
+For example, to create an observable equivalent to the `of(1, 2, 3)` above, you could do something like this:
 -->
 예를 들어 `Observable.of(1, 2, 3)`과 같은 동작을 하는 옵저버블을 직접 구현하려면 다음과 같이 작성합니다:
 
 <!--
-<code-example path="observables/src/creating.ts" region="subscriber" title="Create observable with constructor"></code-example>
+<code-example path="observables/src/creating.ts" region="subscriber" header="Create observable with constructor"></code-example>
 -->
-<code-example path="observables/src/subscribing.ts" region="sub_fn" title="함수의 인자로 구독하기"></code-example>
+<code-example path="observables/src/subscribing.ts" region="sub_fn" header="함수의 인자로 구독하기"></code-example>
 
 <!--
 To take this example a little further, we can create an observable that publishes events. In this example, the subscriber function is defined inline.
@@ -168,7 +165,7 @@ To take this example a little further, we can create an observable that publishe
 이 경우라면 다음과 같이 정의하면 됩니다.
 
 <!--
-<code-example path="observables/src/creating.ts" region="fromevent" title="Create with custom fromEvent function"></code-example>
+<code-example path="observables/src/creating.ts" region="fromevent" header="Create with custom fromEvent function"></code-example>
 -->
 <code-example path="observables/src/creating.ts" region="fromevent" title="fromEvent() 함수 정의하기"></code-example>
 
@@ -177,7 +174,10 @@ Now you can use this function to create an observable that publishes keydown eve
 -->
 이 함수를 사용해서 키다운 이벤트를 처리하려면 다음과 같이 작성합니다:
 
-<code-example path="observables/src/creating.ts" region="fromevent_use" title="fromEvent() 함수 활용하기"></code-example>
+<!--
+<code-example path="observables/src/creating.ts" region="fromevent_use" header="Use custom fromEvent function"></code-example>
+-->
+<code-example path="observables/src/creating.ts" region="fromevent_use" header="fromEvent() 함수 활용하기"></code-example>
 
 <!--
 ## Multicasting
@@ -214,9 +214,9 @@ Let’s look at an example that counts from 1 to 3, with a one-second delay afte
 1부터 3까지 숫자를 세는 예제를 봅시다. 이 예제는 1초마다 각각의 숫자를 스트림으로 보냅니다.
 
 <!--
-<code-example path="observables/src/multicasting.ts" region="delay_sequence" title="Create a delayed sequence"></code-example>
+<code-example path="observables/src/multicasting.ts" region="delay_sequence" header="Create a delayed sequence"></code-example>
 -->
-<code-example path="observables/src/multicasting.ts" region="delay_sequence" title="시퀀스 정의하기"></code-example>
+<code-example path="observables/src/multicasting.ts" region="delay_sequence" header="시퀀스 정의하기"></code-example>
 
 <!--
 Notice that if you subscribe twice, there will be two separate streams, each emitting values every second. It looks something like this:
@@ -224,9 +224,9 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 옵저버블을 두 번 구독하면 각각의 스트림은 독립적으로 생성되며, 매초마다 각각 새로운 데이터가 전달될 것입니다:
 
 <!--
-<code-example path="observables/src/multicasting.ts" region="subscribe_twice" title="Two subscriptions"></code-example>
+<code-example path="observables/src/multicasting.ts" region="subscribe_twice" header="Two subscriptions"></code-example>
 -->
-<code-example path="observables/src/multicasting.ts" region="subscribe_twice" title="두 번 구독하기"></code-example>
+<code-example path="observables/src/multicasting.ts" region="subscribe_twice" header="두 번 구독하기"></code-example>
 
 <!--
  Changing the observable to be multicasting could look something like this:
@@ -234,9 +234,9 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 이 옵저버블을 멀티캐스팅 방식으로 바꿔봅시다:
 
 <!--
-<code-example path="observables/src/multicasting.ts" region="multicast_sequence" title="Create a multicast subscriber"></code-example>
+<code-example path="observables/src/multicasting.ts" region="multicast_sequence" header="Create a multicast subscriber"></code-example>
 -->
-<code-example path="observables/src/multicasting.ts" region="multicast_sequence" title="멀티캐스트 구독하기"></code-example>
+<code-example path="observables/src/multicasting.ts" region="multicast_sequence" header="멀티캐스트 구독하기"></code-example>
 
 <div class="alert is-helpful">
    <!--

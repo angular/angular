@@ -161,11 +161,11 @@ Open a terminal window in the project folder and enter the following commands fo
 The **QuickStart seed** contains the same application as the QuickStart playground.
 But its true purpose is to provide a solid foundation for _local_ development.
 Consequently, there are _many more files_ in the project folder on your machine,
-most of which you can [learn about later](guide/setup-systemjs-anatomy "Setup Anatomy").
+most of which you can [learn about later](guide/file-structure).
 -->
 **QuickStart seed**에는 QuickStart 플레이그라운드와 동일한 애플리케이션이 구현되어 있습니다.
 하지만 이 프로젝트의 원래 목적은 _로컬_ 개발 환경의 기본 틀을 제공하는 것입니다.
-[가이드 문서의 내용](guide/setup-systemjs-anatomy "Setup Anatomy")을 계속 따라가다 보면 이 프로젝트에 _많은 파일들이_ 추가될 것입니다.
+[가이드 문서의 내용](guide/file-structure)을 계속 따라가다 보면 이 프로젝트에 _많은 파일들이_ 추가될 것입니다.
 
 
 {@a app-files}
@@ -212,15 +212,15 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="setup/src/app/app.component.ts">
+  <code-pane header="src/app/app.component.ts" path="setup/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="setup/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="setup/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="src/main.ts" path="setup/src/main.ts">
+  <code-pane header="src/main.ts" path="setup/src/main.ts">
 
   </code-pane>
 
@@ -437,12 +437,12 @@ You can play with the sample code, share your changes with friends, and download
 이렇게 실행한 예제 코드를 변경해 볼 수도 있고, 변경한 내용을 친구에게 공유할 수도 있으며, 로컬 환경에 다운받아서 실행할 수도 있습니다.
 
 <!--
-The [QuickStart](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
+The [Getting Started](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
 It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
 so the reader can discover Angular without distraction.
 The other samples are based on the QuickStart seed.
 -->
-[QuickStart](guide/quickstart "Angular QuickStart Playground")는 `AppComponent`를 단순하게 화면에 표시한 것 뿐입니다.
+[시작하기](guide/quickstart "Angular QuickStart Playground")는 `AppComponent`를 단순하게 화면에 표시한 것 뿐입니다.
 그리고 `app.module.ts` 파일과 `main.ts` 파일은 로컬에 Angular를 설치하지 않아도 애플리케이션을 실행할 수 있도록 _플레이 그라운드_ 용으로 만들어진 것입니다.
 가이드 문서의 다른 예제도 QuickStart seed를 활용해서 만들어졌습니다.
 
@@ -494,3 +494,24 @@ So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the 
 그리고 Windows에서는 <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket 설정에 따라</a> 애플리케이션에 6개의 웹소켓을 연결할 수 있습니다.
 그래서 IE에서 수동으로 페이지를 새로고침하거나 `ng serve`에 의해 자동으로 갱신되면 종종 웹소켓이 정상적으로 종료되지 않아서 새로운 웹소켓을 연결하지 못할 때가 있습니다. 이 때 `SecurityError` 가 발생하는데, 이 에러가 Angular 애플리케이션에는 영향을 주지 않지만 에러를 없애려면 IE를 재시작해야 합니다.
 Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합니다.
+
+## Appendix: test using `fakeAsync()/async()`
+
+If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read [testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+
+<div class="alert is-important">
+If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
+</div>
+
+And in the earlier versions of `Angular`, the following files were imported or added in your html file:
+
+```
+import 'zone.js/dist/long-stack-trace-zone';
+import 'zone.js/dist/proxy';
+import 'zone.js/dist/sync-test';
+import 'zone.js/dist/jasmine-patch';
+import 'zone.js/dist/async-test';
+import 'zone.js/dist/fake-async-test';
+```
+
+You can still load those files separately, but the order is important, you must import `proxy` before `sync-test`, `async-test`, `fake-async-test` and `jasmine-patch`. And you also need to import `sync-test` before `jasmine-patch`, so it is recommended to just import `zone-testing` instead of loading those separated files.

@@ -118,11 +118,11 @@ You then import these modules into the root module.
 ## 기본 NgModule
 
 <!--
-The CLI generates the following basic app module when creating a new app.
+The [Angular CLI](cli) generates the following basic app module when creating a new app.
 -->
-Angular CLI로 애플리케이션을 생성하면 앱 모듈은 다음과 같이 생성됩니다.
+[Angular CLI](cli)로 애플리케이션을 생성하면 앱 모듈은 다음과 같이 생성됩니다.
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="whole-ngmodule" title="src/app/app.module.ts" linenums="false">
+<code-example path="bootstrapping/src/app/app.module.ts" region="whole-ngmodule" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 <!--

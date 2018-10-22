@@ -53,7 +53,7 @@ a human-friendly date.
 파이프는 데이터를 입력으로 받고, 이 데이터를 특정 형식으로 변환해서 반환합니다.
 다음 예제는 컴포넌트에 있는 날짜 데이터를 사용자에게 효율적으로 표시하기 위해 파이프를 어떻게 사용할 수 있는지 알아봅니다.
 
-<code-example path="pipes/src/app/hero-birthday1.component.ts" title="src/app/hero-birthday1.component.ts" linenums="false">
+<code-example path="pipes/src/app/hero-birthday1.component.ts" header="src/app/hero-birthday1.component.ts" linenums="false">
 
 </code-example>
 
@@ -63,7 +63,7 @@ Focus on the component's template.
 -->
 컴포넌트 템플릿을 자세히 봅시다.
 
-<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -127,7 +127,7 @@ After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88<
 템플릿에 생년월일을 표시할 때 특정 형식을 인자로 지정해 보겠습니다.
 **<samp>04/15/88</samp>**과 같이 표시하려면 다음과 같이 작성합니다:
 
-<code-example path="pipes/src/app/app.component.html" region="format-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="format-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -149,7 +149,7 @@ to the component's `format` property. Here's the template for that component:
 컴포넌트 클래스에 있는 `format` 프로퍼티를 파이프 인자로 *바인딩 하는* 컴포넌트를 작성해 봅시다.
 이 컴포넌트의 템플릿은 다음과 같이 작성합니다:
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" title="src/app/hero-birthday2.component.ts (template)" linenums="false">
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)" linenums="false">
 
 </code-example>
 
@@ -162,7 +162,7 @@ That method toggles the component's `format` property between a short form
 그리고 템플릿에 버튼을 추가하는데, 이 버튼을 클릭할 때마다 `toggleFormat()` 함수를 실행합니다.
 이 함수는 컴포넌트의 `format` 프로퍼티를 간단한 형식(`'shortDate'`)이나 자세한 형식(`'fullDate'`)으로 지정합니다.
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" title="src/app/hero-birthday2.component.ts (class)" linenums="false">
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)" linenums="false">
 
 </code-example>
 
@@ -207,7 +207,7 @@ The birthday displays as **<samp>APR 15, 1988</samp>**.
 아래 예제는 생년월일을 `DatePipe`로 처리한 후에 `UpperasePipe`로 다시 한 번 처리해서 최종 결과를 대문자로 표시합니다.
 화면에는 **<samp>APR 15, 1988</samp>**과 같이 표시됩니다.
 
-<code-example path="pipes/src/app/app.component.html" region="chained-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="chained-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -218,7 +218,7 @@ the same pipes as above, but passes in a parameter to `date` as well.
 -->
 같은 방식으로 파이프를 체이닝하면서 `date` 파이프에 인자를 지정하면 **<samp>FRIDAY, APRIL 15, 1988</samp>**과 같은 형식으로도 표현할 수 있습니다.
 
-<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -236,7 +236,7 @@ Here's a custom pipe named `ExponentialStrengthPipe` that can boost a hero's pow
 기본 파이프 기능 외에 다른 기능이 필요하다면 커스텀 파이프를 만들어서 활용할 수도 있습니다.
 이번에는 히어로의 파워를 증폭시키는 `ExponentialStrengthPipe` 를 만들어 봅시다.
 
-<code-example path="pipes/src/app/exponential-strength.pipe.ts" title="src/app/exponential-strength.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/exponential-strength.pipe.ts" header="src/app/exponential-strength.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -286,7 +286,7 @@ Now you need a component to demonstrate the pipe.
 -->
 이제 파이프를 테스트하기 위해 컴포넌트를 하나 만듭니다.
 
-<code-example path="pipes/src/app/power-booster.component.ts" title="src/app/power-booster.component.ts" linenums="false">
+<code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts" linenums="false">
 </code-example>
 
 <figure>
@@ -317,10 +317,10 @@ Note the following:
 <!--
 You must register custom pipes.
 If you don't, Angular reports an error.
-Angular CLI's generator registers the pipe automatically.
+The [Angular CLI's](cli) generator registers the pipe automatically.
 -->
 커스텀 파이프는 `AppModule`에 등록해야 사용할 수 있으며, 등록하지 않은 파이프를 사용하면 Angular에서 에러가 발생합니다.
-Angular CLI를 사용해서 파이프를 생성하면, 이 파이프는 `AppModule`에 자동으로 등록됩니다.
+[Angular CLI's](cli)를 사용해서 파이프를 생성하면, 이 파이프는 `AppModule`에 자동으로 등록됩니다.
 
 </div>
 
@@ -344,7 +344,7 @@ your pipe and two-way data binding with `ngModel`.
 그런데 커스텀 파이프를 테스트할 때마다 템플릿을 수정해야 하는 것은 좋은 방법이 아닙니다.
 이전에 만들었던 예제에 양방향 데이터 바인딩을 추가해서 "파워 증폭 계산기"를 만들어 봅시다.
 
-<code-example path="pipes/src/app/power-boost-calculator.component.ts" title="src/app/power-boost-calculator.component.ts">
+<code-example path="pipes/src/app/power-boost-calculator.component.ts" header="src/app/power-boost-calculator.component.ts">
 
 </code-example>
 
@@ -389,7 +389,7 @@ its display of every hero in the `heroes` array. Here's the template:
 -->
 이번에 다루는 예제는 컴포넌트의 기본 변화 감지 정책을 사용합니다. 이 예제에서는 `heroes` 배열에 있는 모든 히어로를 화면에 표시하며, 템플릿은 다음과 같이 정의합니다:
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" title="src/app/flying-heroes.component.html (v1)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" header="src/app/flying-heroes.component.html (v1)" linenums="false">
 
 </code-example>
 
@@ -399,7 +399,7 @@ The companion component class provides heroes, adds heroes into the array, and c
 -->
 그리고 컴포넌트 클래스 코드에서는 히어로 목록에 히어로를 추가하거나 초기화하는 로직을 작성합니다.
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" title="src/app/flying-heroes.component.ts (v1)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" header="src/app/flying-heroes.component.ts (v1)" linenums="false">
 
 </code-example>
 
@@ -420,7 +420,7 @@ Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroe
 -->
 이제 `<div>`에 적용된 `*ngFor`에 `FlyingHeroesPipe`를 적용합니다. 이 파이프를 적용하면 전체 히어로 목록에서 하늘을 날 수 있는 히어로만 `*ngFor`의 대상으로 필터링됩니다.
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" title="src/app/flying-heroes.component.html (flyers)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)" linenums="false">
 
 </code-example>
 
@@ -430,7 +430,7 @@ Here's the `FlyingHeroesPipe` implementation, which follows the pattern for cust
 -->
 `FlyingHeroesPipe`는 다음과 같이 구현합니다.
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" title="src/app/flying-heroes.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" header="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -451,7 +451,7 @@ Notice how a hero is added:
 
 히어로를 추가하는 로직을 확인해 봅시다:
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" title="src/app/flying-heroes.component.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts" linenums="false">
 
 </code-example>
 
@@ -529,7 +529,7 @@ impure like this:
 하지만 파이프 메타데이터의 `pure` 값을 `false`로 설정하면 순수하지 않은 파이프를 구현할 수 있습니다.
 `FlyingHeroesPipe`를 순수하지 않은 파이프로 구현하려면 다음과 같이 적용합니다:
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" title="src/app/flying-heroes.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -621,11 +621,11 @@ The complete implementation is as follows:
 
 <code-tabs>
 
-  <code-pane title="FlyingHeroesImpurePipe" path="pipes/src/app/flying-heroes.pipe.ts" region="impure">
+  <code-pane header="FlyingHeroesImpurePipe" path="pipes/src/app/flying-heroes.pipe.ts" region="impure">
 
   </code-pane>
 
-  <code-pane title="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
+  <code-pane header="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
 
   </code-pane>
 
@@ -643,7 +643,7 @@ This is a good candidate for an impure pipe because the `transform` function is 
 
 이렇게 만든 `FlyingHeroesImpurePipe`는 순수하지 않은 파이프지만, `transform` 함수의 로직은 순수한 파이프일 때와 마찬가지로 아주 간단하기 때문에 위에서 설명한 성능 저하는 크게 신경쓰지 않아도 됩니다.
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" title="src/app/flying-heroes.pipe.ts (filter)" region="filter">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" header="src/app/flying-heroes.pipe.ts (filter)" region="filter">
 
 </code-example>
 
@@ -653,7 +653,7 @@ You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 -->
 그리고 `FlyingHeroesImpureComponent` 의 템플릿은 `FlyingHeroesComponent` 와 비슷하게 다음과 같이 구현합니다.
 
-<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" title="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
+<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
 
 </code-example>
 
@@ -690,7 +690,7 @@ This next example binds an `Observable` of message strings
 
 아래 예제는 `Observable` 형태로 전달되는 메시지 문자열(`message$`)을 `async` 파이프로 뷰에 표시하는 예제입니다.
 
-<code-example path="pipes/src/app/hero-async-message.component.ts" title="src/app/hero-async-message.component.ts">
+<code-example path="pipes/src/app/hero-async-message.component.ts" header="src/app/hero-async-message.component.ts">
 
 </code-example>
 
@@ -728,7 +728,7 @@ The code uses the [Angular http](guide/http) client to retrieve data:
 이번에 구현하는 파이프는 요청하는 서버의 주소가 다를 때만 서버로 요청을 보내고, 한 번 보낸 서버의 응답은 캐싱합니다.
 이 코드는 [Angular http](guide/http) 클라이언트 예제에서도 활용하고 있으니 함께 확인해 보세요.
 
-<code-example path="pipes/src/app/fetch-json.pipe.ts" title="src/app/fetch-json.pipe.ts">
+<code-example path="pipes/src/app/fetch-json.pipe.ts" header="src/app/fetch-json.pipe.ts">
 
 </code-example>
 
@@ -739,7 +739,7 @@ both requesting the heroes from the `heroes.json` file.
 -->
 이렇게 만든 파이프를 컴포넌트 템플릿에 적용해 봅시다. 파이프가 제대로 동작하는 것을 확인하기 위해 `heroes.json` 파일을 요청하는 부분을 템플릿에 총 2번 추가했습니다.
 
-<code-example path="pipes/src/app/hero-list.component.ts" title="src/app/hero-list.component.ts">
+<code-example path="pipes/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts">
 
 </code-example>
 

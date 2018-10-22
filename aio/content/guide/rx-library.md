@@ -39,24 +39,24 @@ RxJS offers a number of functions that can be used to create new observables. Th
 RxJS는 옵저버블을 생성하는 함수를 다양하게 제공합니다. 이 함수를 사용하면 이벤트나 타이머, Promise 등 다양한 타입의 옵저버블을 생성할 수 있습니다.
 
 <!--
-<code-example path="rx-library/src/simple-creation.ts" region="promise" title="Create an observable from a promise"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="promise" header="Create an observable from a promise"></code-example>
 -->
-<code-example path="rx-library/src/simple-creation.ts" region="promise" title="Promise를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="promise" header="Promise를 옵저버블로 변환하기"></code-example>
 
 <!--
-<code-example path="rx-library/src/simple-creation.ts" region="interval" title="Create an observable from a counter"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="interval" header="Create an observable from a counter"></code-example>
 -->
-<code-example path="rx-library/src/simple-creation.ts" region="interval" title="카운터를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="interval" header="카운터를 옵저버블로 변환하기"></code-example>
 
 <!--
-<code-example path="rx-library/src/simple-creation.ts" region="event" title="Create an observable from an event"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="event" header="Create an observable from an event"></code-example>
 -->
-<code-example path="rx-library/src/simple-creation.ts" region="event" title="이벤트를 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="event" header="이벤트를 옵저버블로 변환하기"></code-example>
 
 <!--
-<code-example path="rx-library/src/simple-creation.ts" region="ajax" title="Create an observable that creates an AJAX request"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="ajax" header="Create an observable that creates an AJAX request"></code-example>
 -->
-<code-example path="rx-library/src/simple-creation.ts" region="ajax" title="AJAX 요청을 옵저버블로 변환하기"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="ajax" header="AJAX 요청을 옵저버블로 변환하기"></code-example>
 
 <!--
 ## Operators
@@ -74,9 +74,9 @@ Operators take configuration options, and they return a function that takes a so
 연산자를 사용할 때는 옵저버블을 어떻게 변환할지 정의하는 함수를 함께 전달합니다. 이 함수는 옵저버블에서 데이터가 전달될 때마다 실행되고, 원래 옵저버블 데이터를 변환하며, 변환된 값을 새로운 옵저버블로 전달합니다. 간단한 예제를 봅시다:
 
 <!--
-<code-example path="rx-library/src/operators.ts" title="Map operator"></code-example>
+<code-example path="rx-library/src/operators.ts" header="Map operator"></code-example>
 -->
-<code-example path="rx-library/src/operators.ts" title="Map 연산자"></code-example>
+<code-example path="rx-library/src/operators.ts" header="Map 연산자"></code-example>
 
 <!--
 You can use _pipes_ to link operators together. Pipes let you combine multiple functions into a single function. The `pipe()` function takes as its arguments the functions you want to combine, and returns a new function that, when executed, runs the composed functions in sequence.
@@ -94,9 +94,9 @@ Here’s an example:
 예제를 봅시다:
 
 <!--
-<code-example path="rx-library/src/operators.1.ts" title="Standalone pipe function"></code-example>
+<code-example path="rx-library/src/operators.1.ts" header="Standalone pipe function"></code-example>
 -->
-<code-example path="rx-library/src/operators.1.ts" title="함수로 제공되는 파이프"></code-example>
+<code-example path="rx-library/src/operators.1.ts" header="함수로 제공되는 파이프"></code-example>
 
 <!--
 The `pipe()` function is also a method on the RxJS `Observable`, so you use this shorter form to define the same operation:
@@ -104,9 +104,9 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 그리고 `pipe()` 함수는 RxJS `Observable` 클래스의 메소드로도 제공됩니다. 그래서 위 코드와 같은 동작을 다음과 같이 간단하게 구현할 수도 있습니다:
 
 <!--
-<code-example path="rx-library/src/operators.2.ts" title="Observable.pipe function"></code-example>
+<code-example path="rx-library/src/operators.2.ts" header="Observable.pipe function"></code-example>
 -->
-<code-example path="rx-library/src/operators.2.ts" title="Observable.pipe 함수"></code-example>
+<code-example path="rx-library/src/operators.2.ts" header="Observable.pipe 함수"></code-example>
 
 <!--
 ### Common operators
@@ -165,9 +165,9 @@ Here's an example of using the `catchError` operator to do this:
 `catchError` 연산자는 다음과 같이 사용합니다:
 
 <!--
-<code-example path="rx-library/src/error-handling.ts" title="catchError operator"></code-example>
+<code-example path="rx-library/src/error-handling.ts" header="catchError operator"></code-example>
 -->
-<code-example path="rx-library/src/error-handling.ts" title="catchError 연산자"></code-example>
+<code-example path="rx-library/src/error-handling.ts" header="catchError 연산자"></code-example>
 
 <!--
 ### Retry failed observable
@@ -190,9 +190,9 @@ The following converts the previous example to retry the request before catching
 아래 예제는 에러를 처리하기 전에 재시도하도록 수정한 예제 코드입니다:
 
 <!--
-<code-example path="rx-library/src/retry-on-error.ts" title="retry operator"></code-example>
+<code-example path="rx-library/src/retry-on-error.ts" header="retry operator"></code-example>
 -->
-<code-example path="rx-library/src/retry-on-error.ts" title="retry 연산자"></code-example>
+<code-example path="rx-library/src/retry-on-error.ts" header="retry 연산자"></code-example>
 
 <div class="alert is-helpful">
 
@@ -223,4 +223,4 @@ For example:
 -->
 예제 코드를 봅시다:
 
-<code-example path="rx-library/src/naming-convention.ts" title="Naming observables"></code-example>
+<code-example path="rx-library/src/naming-convention.ts" header="Naming observables"></code-example>
