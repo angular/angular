@@ -39,7 +39,7 @@ describe(browser.baseUrl, () => {
         api: 'api list',
         'guide/architecture': 'architecture',
         'guide/http': 'httpclient',
-        'guide/quickstart': 'quickstart',
+        'guide/quickstart': 'getting started',
         'guide/security': 'security',
         tutorial: 'tutorial',
       };
