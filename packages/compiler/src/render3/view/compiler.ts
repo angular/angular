@@ -7,11 +7,12 @@
  */
 
 import {StaticSymbol} from '../../aot/static_symbol';
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName} from '../../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName, sanitizeIdentifier} from '../../compile_metadata';
 import {CompileReflector} from '../../compile_reflector';
-import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
+import {BindingForm, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
+import {ParsedEvent} from '../../expression_parser/ast';
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import * as o from '../../output/output_ast';
 import {typeSourceSpan} from '../../parse_util';
@@ -42,16 +43,13 @@ function baseDirectiveFields(
   // e.g. `selectors: [['', 'someDir', '']]`
   definitionMap.set('selectors', createDirectiveSelector(meta.selector !));
 
-
   // e.g. `factory: () => new MyApp(directiveInject(ElementRef))`
-  const hostListeners =
-      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
   const result = compileFactoryFunction({
     name: meta.name,
     type: meta.type,
     deps: meta.deps,
     injectFn: R3.directiveInject,
-    hostListeners: hostListeners
+    extraStatementFn: createFactoryExtraStatementsFn(meta, bindingParser)
   });
   definitionMap.set('factory', result.factory);
 
@@ -641,6 +639,32 @@ function createHostBindingsFunction(
   }
 
   return null;
+}
+
+function createFactoryExtraStatementsFn(meta: R3DirectiveMetadata, bindingParser: BindingParser):
+    ((instance: o.Expression) => o.Statement[])|null {
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
+  return eventBindings && eventBindings.length ?
+      (instance: o.Expression) => createHostListeners(instance, eventBindings, meta) :
+      null;
+}
+
+function createHostListeners(
+    bindingContext: o.Expression, eventBindings: ParsedEvent[],
+    meta: R3DirectiveMetadata): o.Statement[] {
+  return eventBindings.map(binding => {
+    const bindingExpr = convertActionBinding(
+        null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
+    const bindingName = binding.name && sanitizeIdentifier(binding.name);
+    const typeName = meta.name;
+    const functionName =
+        typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
+    const handler = o.fn(
+        [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
+        null, functionName);
+    return o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt();
+  });
 }
 
 function metadataAsSummary(meta: R3DirectiveMetadata): CompileDirectiveSummary {

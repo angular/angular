@@ -7,9 +7,8 @@
  */
 
 import {StaticSymbol} from '../aot/static_symbol';
-import {CompileTypeMetadata, sanitizeIdentifier, tokenReference} from '../compile_metadata';
+import {CompileTypeMetadata, tokenReference} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {convertActionBinding} from '../compiler_util/expression_converter';
 import {InjectFlags} from '../core';
 import {ParsedEvent} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
@@ -53,9 +52,9 @@ export interface R3ConstructorFactoryMetadata {
   injectFn: o.ExternalReference;
 
   /**
-   * List of host listeners defined for a given type.
+   * Function that allows extra statements to be inserted into factory function.
    */
-  hostListeners?: ParsedEvent[]|null;
+  extraStatementFn?: ((instance: o.Expression) => o.Statement[])|null;
 }
 
 export enum R3FactoryDelegateType {
@@ -201,8 +200,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
         ]);
 
     statements.push(delegateFactoryStmt);
-    const r = makeConditionalFactory(delegateFactory.callFn([]));
-    retExpr = r;
+    retExpr = makeConditionalFactory(delegateFactory.callFn([]));
   } else if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
@@ -216,10 +214,10 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   } else if (isExpressionFactoryMetadata(meta)) {
     // TODO(alxhub): decide whether to lower the value here or in the caller
     retExpr = makeConditionalFactory(meta.expression);
-  } else if (hasHostListeners(meta)) {
-    // if host listeners are specified and the 'makeConditionalFactory' function
+  } else if (meta.extraStatementFn) {
+    // if extraStatementsFn is specified and the 'makeConditionalFactory' function
     // was not invoked, we need to create a reference to the instance, so we can
-    // use it while generating host listeners expressions
+    // pass it as an argument to the 'extraStatementFn' function while calling it
     const variable = o.variable('f');
     body.push(variable.set(ctorExpr).toDeclStmt());
     retExpr = variable;
@@ -227,8 +225,9 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
     retExpr = ctorExpr;
   }
 
-  if (hasHostListeners(meta)) {
-    body.push(...generateHostListeners(meta, retExpr));
+  if (meta.extraStatementFn) {
+    const extraStmts = meta.extraStatementFn(retExpr);
+    body.push(...extraStmts);
   }
 
   return {
@@ -334,24 +333,4 @@ function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFactor
 
 function isExpressionFactoryMetadata(meta: R3FactoryMetadata): meta is R3ExpressionFactoryMetadata {
   return (meta as any).expression !== undefined;
-}
-
-function hasHostListeners(meta: R3FactoryMetadata): boolean {
-  return !!meta.hostListeners && meta.hostListeners.length > 0;
-}
-
-function generateHostListeners(
-    meta: R3ConstructorFactoryMetadata, bindingContext: o.Expression): o.Statement[] {
-  return meta.hostListeners !.map(binding => {
-    const bindingExpr = convertActionBinding(
-        null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
-    const bindingName = binding.name && sanitizeIdentifier(binding.name);
-    const typeName = meta.name;
-    const functionName =
-        typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
-    const handler = o.fn(
-        [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
-        null, functionName);
-    return o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt();
-  });
 }
