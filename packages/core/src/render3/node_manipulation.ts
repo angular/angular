@@ -503,8 +503,9 @@ export function getRenderParent(tNode: TNode, currentView: LViewData): RElement|
   if (canInsertNativeNode(tNode, currentView)) {
     const hostTNode = currentView[HOST_NODE];
 
-    if (tNode.parent != null && tNode.parent.type === TNodeType.ElementContainer) {
-      tNode = getHighestElementContainer(tNode.parent);
+    const tNodeParent = tNode.parent;
+    if (tNodeParent != null && tNodeParent.type === TNodeType.ElementContainer) {
+      tNode = getHighestElementContainer(tNodeParent);
     }
 
     return tNode.parent == null && hostTNode !.type === TNodeType.View ?
@@ -631,7 +632,7 @@ export function appendChild(
           renderer, lContainer[RENDER_PARENT] !, childEl,
           getBeforeNodeForView(index, views, lContainer[NATIVE]));
     } else if (parentTNode.type === TNodeType.ElementContainer) {
-      let renderParent: RElement = getRenderParent(childTNode, currentView) !;
+      const renderParent: RElement = getRenderParent(childTNode, currentView) !;
       nativeInsertBefore(renderer, renderParent, childEl, parentEl);
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parentEl !as RElement, childEl) :
