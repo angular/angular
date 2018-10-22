@@ -92,7 +92,7 @@ Version | Status | Released     | Active Ends  | LTS Ends
 ^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
 ^5.0.0  | LTS    | Nov 1, 2017  | May 1, 2018  | May 1, 2019
 
-LTS for Angular version 4.0.0 ended on September 23, 2018.
+LTS for Angular version ^4.0.0 ended on September 23, 2018.
 
 
 {@a deprecation}
