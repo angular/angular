@@ -47,6 +47,12 @@ var_5: &setup_bazel_remote_execution
     name: "Setup bazel RBE remote execution"
     command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
 
+var_7: &start-xvfb
+  run:
+    name: Running X virtual framebuffer
+    command: Xvfb :99 -screen 0 1280x1024x24
+    background: true
+
 # Settings common to each job
 anchor_1: &job_defaults
   working_directory: ~/ng
@@ -158,6 +164,7 @@ jobs:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - restore_cache:
@@ -168,35 +175,35 @@ jobs:
       - run: yarn --cwd aio lint
         # Run PWA-score tests
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run:
-          name: Run PWA-score tests
-          command: xvfb-run --auto-servernum yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio payload-size
         # Run unit tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --watch=false
         # Run e2e tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
   deploy_aio:
     <<: *job_defaults
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - restore_cache:
           key: *cache_key
         # Deploy angular.io to production (if necessary)
       - run: echo "export CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')" | tee -a $BASH_ENV
-      - run: xvfb-run --auto-servernum yarn --cwd aio deploy-production
+      - run: yarn --cwd aio deploy-production
 
   test_aio_local:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - attach_workspace:
@@ -207,13 +214,11 @@ jobs:
       - run: yarn --cwd aio build-local --progress=false
         # Run PWA-score tests
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
-      - run:
-          name: Run PWA-score tests
-          command: xvfb-run --auto-servernum yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
+      - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --watch=false
         # Run e2e tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e
 
   test_aio_tools:
     <<: *job_defaults
@@ -236,6 +241,7 @@ jobs:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - attach_workspace:
@@ -247,12 +253,13 @@ jobs:
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio example-e2e --setup --local --shard=0/2
+      - run: yarn --cwd aio example-e2e --setup --local --shard=0/2
 
   test_docs_examples_1:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - attach_workspace:
@@ -264,7 +271,7 @@ jobs:
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests
-      - run: xvfb-run --auto-servernum yarn --cwd aio example-e2e --setup --local --shard=1/2
+      - run: yarn --cwd aio example-e2e --setup --local --shard=1/2
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -290,6 +297,7 @@ jobs:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - restore_cache:
@@ -297,7 +305,7 @@ jobs:
       - run: yarn install --cwd aio --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
-          command: xvfb-run --auto-servernum node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
+          command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
 
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
@@ -341,11 +349,12 @@ jobs:
     resource_class: xlarge
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - attach_workspace:
           at: dist
-      - run: xvfb-run --auto-servernum ./integration/run_tests.sh
+      - run: ./integration/run_tests.sh
 
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
@@ -380,13 +389,14 @@ jobs:
     <<: *job_defaults
     steps:
       - *define_env_vars
+      - *start-xvfb
       - checkout:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
       - run:
           name: Run tests against the deployed apps
-          command: xvfb-run --auto-servernum ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
+          command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
 
 workflows:
   version: 2
