@@ -10,17 +10,17 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^7.0.0-beta.4",
-    "@angular/cdk": "^7.0.0-beta.0",
-    "@angular/common": "^7.0.0-beta.4",
-    "@angular/compiler": "^7.0.0-beta.4",
-    "@angular/core": "^7.0.0-beta.4",
-    "@angular/fire": "^5.0.0",
-    "@angular/forms": "^7.0.0-beta.4",
-    "@angular/material": "^7.0.0-beta.0",
-    "@angular/platform-browser": "^7.0.0-beta.4",
-    "@angular/platform-browser-dynamic": "^7.0.0-beta.4",
-    "@angular/router": "^7.0.0-beta.4",
+    "@angular/animations": "^7.0.0",
+    "@angular/cdk": "^7.0.0",
+    "@angular/common": "^7.0.0",
+    "@angular/compiler": "^7.0.0",
+    "@angular/core": "^7.0.0",
+    "@angular/fire": "^5.0.2",
+    "@angular/forms": "^7.0.0",
+    "@angular/material": "^7.0.0",
+    "@angular/platform-browser": "^7.0.0",
+    "@angular/platform-browser-dynamic": "^7.0.0",
+    "@angular/router": "^7.0.0",
     "@swimlane/ngx-charts": "^9.0.0",
     "core-js": "^2.5.7",
     "d3": "^5.7.0",
@@ -29,11 +29,11 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.7.5",
-    "@angular/cli": "^6.1.5",
-    "@angular/compiler-cli": "^6.1.6",
-    "@angular/language-service": "^6.1.6",
+    "@angular-devkit/build-angular": "^0.10.2",
+    "@angular/cli": "^7.0.0",
+    "@angular/compiler-cli": "^7.0.0",
+    "@angular/language-service": "^7.0.0",
     "@types/node": "^10.9.4",
-    "typescript": "^2.9.x"
+    "typescript": "^3.1.1"
   }
 }
