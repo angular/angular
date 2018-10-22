@@ -502,6 +502,11 @@ function executePipeOnDestroys(viewData: LViewData): void {
 export function getRenderParent(tNode: TNode, currentView: LViewData): RElement|null {
   if (canInsertNativeNode(tNode, currentView)) {
     const hostTNode = currentView[HOST_NODE];
+
+    if (tNode.parent != null && tNode.parent.type === TNodeType.ElementContainer) {
+      tNode = getHighestElementContainer(tNode.parent);
+    }
+
     return tNode.parent == null && hostTNode !.type === TNodeType.View ?
         getContainerRenderParent(hostTNode as TViewNode, currentView) :
         getParentNative(tNode, currentView) as RElement;
@@ -626,8 +631,7 @@ export function appendChild(
           renderer, lContainer[RENDER_PARENT] !, childEl,
           getBeforeNodeForView(index, views, lContainer[NATIVE]));
     } else if (parentTNode.type === TNodeType.ElementContainer) {
-      let elementContainer = getHighestElementContainer(childTNode);
-      let renderParent: RElement = getRenderParent(elementContainer, currentView) !;
+      let renderParent: RElement = getRenderParent(childTNode, currentView) !;
       nativeInsertBefore(renderer, renderParent, childEl, parentEl);
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parentEl !as RElement, childEl) :
