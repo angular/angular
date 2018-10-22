@@ -383,6 +383,10 @@ jobs:
       - run:
           name: Run tests against the deployed apps
           command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
+      - run:
+          name: Notify caretaker about failure
+          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL'
+          when: on_fail
 
 workflows:
   version: 2
