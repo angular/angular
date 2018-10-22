@@ -29,6 +29,7 @@ ts_library(
 
 nodejs_binary(
     name = "ngc-wrapped",
+    configuration_env_vars = ["compile"],
     data = [
         ":ngc_lib",
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
