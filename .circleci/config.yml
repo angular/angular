@@ -19,29 +19,7 @@ var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.7.0
 var_3: &define_env_vars
   run:
     name: Define environment variables
-    command: |
-      # In CircleCI, each step runs in a new shell. The way to share ENV variables across steps is to export them from
-      # `$BASH_ENV`, which is automatically sourced at the beginning of every step (for the default `bash` shell).
-      #
-      # See also https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables.
-      #
-      # NOTE:
-      # Using `tee -a` prints the values to stdout, which can help with debugging.
-      # Secrets (e.g. passwords, access token) should NOT be printed.
-      echo "export PROJECT_ROOT=$(pwd)" | tee -a $BASH_ENV
-      echo "export CI_AIO_MIN_PWA_SCORE=95" | tee -a $BASH_ENV
-      # This is the branch being built; e.g. `pull/12345` for PR builds.
-      echo "export CI_BRANCH=$CIRCLE_BRANCH" | tee -a $BASH_ENV
-      echo "export CI_COMMIT=$CIRCLE_SHA1" | tee -a $BASH_ENV
-      # `CI_COMMIT_RANGE` will only be available when `CIRCLE_COMPARE_URL` is also available,
-      # i.e. on push builds (a.k.a. non-PR builds). That is fine, since we only need it in push builds.
-      echo "export CI_COMMIT_RANGE=$(sed -r 's|^.*/([0-9a-f]+\.\.\.[0-9a-f]+)$|\1|i' <<< ${CIRCLE_COMPARE_URL:-})" | tee -a $BASH_ENV
-      echo "export CI_PULL_REQUEST=${CIRCLE_PR_NUMBER:-false}" | tee -a $BASH_ENV
-      echo "export CI_REPO_NAME=$CIRCLE_PROJECT_REPONAME" | tee -a $BASH_ENV
-      echo "export CI_REPO_OWNER=$CIRCLE_PROJECT_USERNAME" | tee -a $BASH_ENV
-      # WARNING: Secrets (do not print).
-      echo "export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=$AIO_DEPLOY_TOKEN" >> $BASH_ENV
-      echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=$ANGULAR_PAYLOAD_TOKEN" >> $BASH_ENV
+    command: ./.circleci/env.sh
 
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache
@@ -79,9 +57,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
       # Check BUILD.bazel formatting before we have a node_modules directory
@@ -102,9 +80,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
       - run: bazel info release
@@ -146,9 +124,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
       - run: bazel run @yarn//:yarn
@@ -159,9 +137,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
       - run: bazel run @yarn//:yarn
@@ -171,10 +149,10 @@ jobs:
   test_aio:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - restore_cache:
           key: *cache_key
         # Build aio
@@ -204,16 +182,16 @@ jobs:
       - restore_cache:
           key: *cache_key
         # Deploy angular.io to production (if necessary)
-      - run: echo "export CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')" | tee -a $BASH_ENV
+      - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - attach_workspace:
           at: dist
       - restore_cache:
@@ -231,9 +209,9 @@ jobs:
   test_aio_tools:
     <<: *job_defaults
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - attach_workspace:
           at: dist
       - restore_cache:
@@ -248,10 +226,10 @@ jobs:
   test_docs_examples_0:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - attach_workspace:
           at: dist
       - restore_cache:
@@ -266,10 +244,10 @@ jobs:
   test_docs_examples_1:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - attach_workspace:
           at: dist
       - restore_cache:
@@ -287,9 +265,9 @@ jobs:
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - restore_cache:
           key: *cache_key
       - run: yarn install --frozen-lockfile --non-interactive
@@ -304,10 +282,10 @@ jobs:
   test_aio_preview:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - restore_cache:
           key: *cache_key
       - run: yarn install --cwd aio --frozen-lockfile --non-interactive
@@ -326,9 +304,9 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - *define_env_vars
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: bazel run @nodejs//:yarn
       - *setup_bazel_remote_execution
@@ -356,10 +334,10 @@ jobs:
     # on a 4G worker so we use a larger machine here too.
     resource_class: xlarge
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - attach_workspace:
           at: dist
       - run: ./integration/run_tests.sh
@@ -369,6 +347,8 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
+      - checkout:
+          <<: *post_checkout
       - *define_env_vars
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
@@ -380,8 +360,6 @@ jobs:
               || "$CI_REPO_OWNER" != "angular"
               || "$CI_REPO_NAME" != "angular"
           ]] && circleci step halt || true'
-      - checkout:
-          <<: *post_checkout
       - attach_workspace:
           at: dist
       # CircleCI has a config setting to force SSH for all github connections
@@ -396,10 +374,10 @@ jobs:
   aio_monitoring:
     <<: *job_defaults
     steps:
-      - *define_env_vars
-      - *start-xvfb
       - checkout:
           <<: *post_checkout
+      - *define_env_vars
+      - *start-xvfb
       - restore_cache:
           key: *cache_key
       - run:
