@@ -119,6 +119,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
+      # don't run this job on the patch branch (to preserve resources)
+      - run: circleci step halt
       - *define_env_vars
       - checkout:
           <<: *post_checkout
@@ -132,6 +134,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
+      # don't run this job on the patch branch (to preserve resources)
+      - run: circleci step halt
       - *define_env_vars
       - checkout:
           <<: *post_checkout
