@@ -36,8 +36,8 @@ ts_web_test_suite(
         ":elements_test_bootstrap_scripts",
     ],
     tags = [
+        "fixme-ivy-aot",
         "fixme-ivy-jit",
-        "fixme-ivy-local",
     ],
     # do not sort
     deps = [

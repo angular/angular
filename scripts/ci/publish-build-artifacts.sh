@@ -123,8 +123,7 @@ function publishAllBuilds() {
   local latestTag=`getLatestTag`
 
   publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-jit "${CUR_BRANCH}-ivy-jit" "${latestTag}-ivy-jit+${shortSha}"
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-local "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
+  publishPackages $GIT_SCHEME dist/packages-dist-ivy-aot "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
 }
 
 # See docs/DEVELOPER.md for help
