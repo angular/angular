@@ -54,7 +54,7 @@ protractor_web_test(
         "//packages/bazel/src/protractor/utils",
         "//packages/benchpress",
     ],
-    on_prepare = ":protractor.on-prepare.js",
+    on_prepare = ":protractor.on_prepare.js",
     server = ":devserver",
     tags = ["ivy-only"],
     deps = [
