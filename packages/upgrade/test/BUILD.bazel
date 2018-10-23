@@ -22,7 +22,10 @@ ts_web_test_suite(
     static_files = [
         "//:angularjs_scripts",
     ],
-    tags = ["fixme-ivy-local"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],
