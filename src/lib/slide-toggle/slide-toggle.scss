@@ -214,6 +214,16 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   &, .mat-slide-toggle.mat-disabled .mat-slide-toggle-bar:hover & {
     opacity: 0;
   }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-slide-toggle-bar:hover & {
+      display: none;
+    }
+  }
 }
 
 /** Custom styling to make the slide-toggle usable in high contrast mode. */
