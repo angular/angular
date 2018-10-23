@@ -179,11 +179,12 @@ def ts_web_test_suite(bootstrap = [], deps = [], tags = [], **kwargs):
         **kwargs
     )
 
-def nodejs_binary(**kwargs):
+def nodejs_binary(data = [], **kwargs):
     """Default values for nodejs_binary"""
     _nodejs_binary(
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
+        data = data + ["@ngdeps//source-map-support"],
         **kwargs
     )
 
@@ -197,6 +198,7 @@ def jasmine_node_test(deps = [], tags = [], **kwargs):
         "@ngdeps//jasmine-core",
         "@ngdeps//mock-fs",
         "@ngdeps//reflect-metadata",
+        "@ngdeps//source-map-support",
         "@ngdeps//tslib",
         "@ngdeps//xhr2",
     ]
