@@ -42,7 +42,7 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "EMPTY$1"
+    "name": "EMPTY"
   },
   {
     "name": "EMPTY_ARRAY$1"
@@ -69,7 +69,7 @@
     "name": "HOST_NODE"
   },
   {
-    "name": "INJECTOR$1"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_SIZE"
@@ -132,7 +132,7 @@
     "name": "NgModuleRef"
   },
   {
-    "name": "NodeInjector"
+    "name": "NodeInjector$1"
   },
   {
     "name": "NodeInjectorFactory"

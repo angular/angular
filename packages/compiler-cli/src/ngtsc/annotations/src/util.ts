@@ -64,18 +64,6 @@ export function getConstructorDependencies(
           ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
           `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
-    if (ts.isIdentifier(tokenExpr)) {
-      const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
-      if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
-        switch (importedSymbol.name) {
-          case 'Injector':
-            resolved = R3ResolvedDependencyType.Injector;
-            break;
-          default:
-            // Leave as a Token or Attribute.
-        }
-      }
-    }
     const token = new WrappedNodeExpr(tokenExpr);
     useType.push({token, optional, self, skipSelf, host, resolved});
   });
