@@ -223,5 +223,7 @@ export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
 
-
+export {
+  publishGlobalUtil as ɵpublishGlobalUtil
+} from './render3/publish_global_util';
 // clang-format on
