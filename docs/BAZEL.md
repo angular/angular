@@ -82,7 +82,7 @@ See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/to
     - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config
 of your rules in any given `BUILD.bazel`.
-    - `ivy-jit`: This flag should be set for tests that should be excuted with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
+    - `ivy-jit`: This flag should be set for tests that should be executed with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
     - `ivy-local`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=local`, e.g. `--test_tag_filters=ivy-local`..
     - `ivy-only`: Only run ivy related tests, e.g. `--test_tag_filters=ivy-only`.
 
@@ -183,7 +183,7 @@ For this reason, we are careful to implement our Bazel rules to depend only on t
 Currently we only use remote caching on CircleCI.
 We could enable it for developer builds as well, which would make initial builds much faster for developers by fetching already-built artifacts from the cache.
 
-This feature is experimental, and developed by the CircleCI team with guidance from Angular.
+This feature is experimental and developed by the CircleCI team with guidance from Angular.
 Contact Alex Eagle with questions.
 
 *How it's configured*:
