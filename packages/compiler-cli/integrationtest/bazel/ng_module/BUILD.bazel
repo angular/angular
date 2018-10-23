@@ -29,7 +29,7 @@ jasmine_node_test(
     srcs = ["spec.js"],
     data = [":flat_module_index"],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
 )

@@ -38,7 +38,7 @@ jasmine_node_test(
         "//packages/core:npm_package",
     ],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [
@@ -72,7 +72,7 @@ jasmine_node_test(
         "//packages/forms:npm_package",
     ],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [
