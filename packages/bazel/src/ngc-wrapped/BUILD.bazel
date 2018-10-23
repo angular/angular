@@ -32,6 +32,7 @@ nodejs_binary(
     data = [
         ":ngc_lib",
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "@ngdeps//source-map-support",
         "@ngdeps//tslib",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
@@ -42,6 +43,7 @@ nodejs_binary(
     name = "xi18n",
     data = [
         ":ngc_lib",
+        "@ngdeps//source-map-support",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/extract_i18n.js",
     visibility = ["//visibility:public"],
