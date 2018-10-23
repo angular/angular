@@ -3085,10 +3085,10 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.26.9:
-  version "0.26.9"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.26.9.tgz#64d0eb89046bcaec8417036c18002bdbd5062dbc"
-  integrity sha512-wvY/74ytYVdX/CMGs4jaP6PJUeUWcYyMjSCuYUVSbgEVU40SdE7lMnAlJuvTr/wTH3Zfx5BV/WTiVmzBwbXvow==
+dgeni-packages@^0.26.12:
+  version "0.26.12"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.26.12.tgz#6b8329b59a17213d30137b53a689d579cd6a9fb1"
+  integrity sha512-dYuRYnw+sURD82F6JJ+2erOKOlaReBymR9g2bjpws3GSIpBbX1p1kE9VYwmAaBoZRE2h+woK8RyDktZvkzETfg==
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
