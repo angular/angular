@@ -20,6 +20,14 @@ var_3: &define_env_vars
   run:
     name: Define environment variables
     command: |
+      # In CircleCI, each step runs in a new shell. The way to share ENV variables across steps is to export them from
+      # `$BASH_ENV`, which is automatically sourced at the beginning of every step (for the default `bash` shell).
+      #
+      # See also https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables.
+      #
+      # NOTE:
+      # Using `tee -a` prints the values to stdout, which can help with debugging.
+      # Secrets (e.g. passwords, access token) should NOT be printed.
       echo "export PROJECT_ROOT=$(pwd)" | tee -a $BASH_ENV
       echo "export CI_AIO_MIN_PWA_SCORE=95" | tee -a $BASH_ENV
       # This is the branch being built; e.g. `pull/12345` for PR builds.
