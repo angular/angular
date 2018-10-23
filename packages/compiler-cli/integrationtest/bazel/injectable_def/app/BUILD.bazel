@@ -12,7 +12,7 @@ ng_module(
     ),
     module_name = "app_built",
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [

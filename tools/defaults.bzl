@@ -223,12 +223,12 @@ def ng_rollup_bundle(deps = [], **kwargs):
 def ivy_tags(tags):
     """Sets inclusive ivy-jit and ivy-local tags"""
 
-    # Set the tags by default unless no-ivy-jit, no-ivy-local, fixme-ivy-jit, or fixme-ivy-local were specified.
+    # Set the tags by default unless no-ivy-jit, no-ivy-aot, fixme-ivy-jit, or fixme-ivy-aot were specified.
     # We should remove this and use only explicitly defined tags once https://github.com/bazelbuild/rules_nodejs/pull/388 is fixed.
     if not tags:
-        tags = ["ivy-jit", "ivy-local"]
+        tags = ["ivy-jit", "ivy-aot"]
     elif "no-ivy-jit" not in tags and "fixme-ivy-jit" not in tags:
         tags = tags + ["ivy-jit"]
-    elif "no-ivy-local" not in tags and "fixme-ivy-local" not in tags:
-        tags = tags + ["ivy-local"]
+    elif "no-ivy-aot" not in tags and "fixme-ivy-aot" not in tags:
+        tags = tags + ["ivy-aot"]
     return tags

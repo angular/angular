@@ -156,7 +156,7 @@ jobs:
 
       - run: bazel run @yarn//:yarn
       - *setup_bazel_remote_execution
-      - run: bazel test //... --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=ivy-local
+      - run: bazel test //... --define=compile=aot --build_tag_filters=ivy-aot --test_tag_filters=ivy-aot
 
   test_and_deploy_aio:
     <<: *job_defaults
@@ -320,7 +320,7 @@ jobs:
           paths:
             - packages-dist
             - packages-dist-ivy-jit
-            - packages-dist-ivy-local
+            - packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
