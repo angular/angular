@@ -594,6 +594,9 @@
     "name": "NodeInjector"
   },
   {
+    "name": "NodeInjector$1"
+  },
+  {
     "name": "NodeInjectorFactory"
   },
   {
@@ -751,6 +754,9 @@
   },
   {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_INJECTOR_FACTORY"
   },
   {
     "name": "SWITCH_RENDERER2_FACTORY"
@@ -1981,6 +1987,9 @@
   },
   {
     "name": "injectElementRef"
+  },
+  {
+    "name": "injectInjector"
   },
   {
     "name": "injectInjectorOnly"

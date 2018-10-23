@@ -42,11 +42,7 @@ function reflectDependency(dep: any | any[]): R3DependencyMetadata {
   };
 
   function setTokenAndResolvedType(token: any): void {
-    if (token === Injector) {
-      meta.resolved = R3ResolvedDependencyType.Injector;
-    } else {
-      meta.resolved = R3ResolvedDependencyType.Token;
-    }
+    meta.resolved = R3ResolvedDependencyType.Token;
     meta.token = new WrappedNodeExpr(token);
   }
 

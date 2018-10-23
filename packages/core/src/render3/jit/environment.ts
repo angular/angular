@@ -7,7 +7,7 @@
  */
 
 import {defineInjectable, defineInjector,} from '../../di/defs';
-import {inject} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
 import * as r3 from '../index';
 import * as sanitization from '../../sanitization/sanitization';
 
