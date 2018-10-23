@@ -28,7 +28,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, Curre
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {createStylingContextTemplate, delegateToClassInput, produceClassStr, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {assertDataInRangeInternal, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isContentQueryHost, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
@@ -1537,20 +1537,24 @@ export function elementStyling(
     styleSanitizer?: StyleSanitizeFn | null): void {
   const tNode = previousOrParentTNode;
   const inputData = initializeTNodeInputs(tNode);
-  const dirWithClassInput = inputData && inputData['class'] || null;
 
   if (!tNode.stylingTemplate) {
+    const hasClassInput = inputData && inputData.hasOwnProperty('class');
+    if (hasClassInput) {
+      tNode.flags |= TNodeFlags.hasClassInput;
+    }
+
     // initialize the styling template.
     tNode.stylingTemplate = createStylingContextTemplate(
-        classDeclarations, styleDeclarations, styleSanitizer, !!dirWithClassInput);
+        hasClassInput ? null : classDeclarations, styleDeclarations, styleSanitizer);
   }
 
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
     // directives with a [class] input expect the starting CSS classes to be passed in
-    if (dirWithClassInput) {
-      setInputsForProperty(
-          dirWithClassInput, classDeclarations ? produceClassStr(classDeclarations) : '');
+    if (delegateToClassInput(tNode)) {
+      const dirWithClassInput = inputData!['class']!;
+      setInputsForProperty(dirWithClassInput, classDeclarations ? produceClassStr(classDeclarations) : '');
     }
     elementStylingApply(tNode.index - HEADER_OFFSET);
   }
@@ -1644,12 +1648,12 @@ export function elementStyleProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | null,
     styles?: {[styleName: string]: any} | null): void {
-  const stylingContext = getStylingContext(index, viewData);
-  if (delegateToClassInput(stylingContext)) {
-    setInputsForProperty(getTNode(index, viewData).inputs !['class'] !, classes);
+  const tNode = getTNode(index, viewData);
+  if (delegateToClassInput(tNode)) {
+    setInputsForProperty(tNode.inputs !['class'] !, classes);
     classes = null;
   }
-  updateStylingMap(stylingContext, classes, styles);
+  updateStylingMap(getStylingContext(index, viewData), classes, styles);
 }
 
 //////////////////////////
@@ -2890,4 +2894,21 @@ function initializeTNodeInputs(tNode: TNode | null) {
     return tNode.inputs;
   }
   return null;
+}
+
+export function delegateToClassInput(tNode: TNode) {
+  return tNode.flags & TNodeFlags.hasClassInput;
+}
+
+export function produceClassStr(classes: (string | boolean | InitialStylingFlags)[]): string {
+  // +1 because the values start after the marker
+  let i = classes.indexOf(InitialStylingFlags.VALUES_MODE) + 1;
+  let str = '';
+  if (i > 0) {
+    while (i < classes.length) {
+      str += (str.length ? ' ' : '') + classes[i];
+      i += 2;
+    }
+  }
+  return str;
 }

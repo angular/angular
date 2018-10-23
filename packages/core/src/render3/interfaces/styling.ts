@@ -181,22 +181,19 @@ export interface InitialStyles extends Array<string|null|boolean> { [0]: null; }
  */
 export const enum StylingFlags {
   // Implies no configurations
-  None = 0b00000,
+  None = 0b0000,
   // Whether or not the entry or context itself is dirty
-  Dirty = 0b00001,
+  Dirty = 0b0001,
   // Whether or not this is a class-based assignment
-  Class = 0b00010,
+  Class = 0b0010,
   // Whether or not a sanitizer was applied to this property
-  Sanitize = 0b00100,
+  Sanitize = 0b0100,
   // Whether or not any player builders within need to produce new players
-  PlayerBuildersDirty = 0b01000,
-  // Whether or not to forward all `class` binding changes directly to the depreacted ngClass
-  // directive
-  DelegateToClassInput = 0b10000,
+  PlayerBuildersDirty = 0b1000,
   // The max amount of bits used to represent these configuration values
-  BitCountSize = 5,
-  // There are only five bits here
-  BitMask = 0b11111
+  BitCountSize = 4,
+  // There are only four bits here
+  BitMask = 0b1111
 }
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
