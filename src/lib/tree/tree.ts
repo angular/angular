@@ -10,9 +10,6 @@ import {CdkTree} from '@angular/cdk/tree';
 import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MatTreeNodeOutlet} from './outlet';
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-export const _CdkTree = CdkTree;
-
 /**
  * Wrapper for the CdkTable with Material design styles.
  */
@@ -30,8 +27,10 @@ export const _CdkTree = CdkTree;
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: CdkTree, useExisting: MatTree}]
 })
-export class MatTree<T> extends _CdkTree<T> {
+export class MatTree<T> extends CdkTree<T> {
   // Outlets within the tree's template where the dataNodes will be inserted.
   @ViewChild(MatTreeNodeOutlet) _nodeOutlet: MatTreeNodeOutlet;
 }
 
+// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
+(MatTree as any)['ctorParameters'] = () => (CdkTree as any)['ctorParameters'];

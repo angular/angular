@@ -40,9 +40,6 @@ import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
 import {MAT_ACCORDION, MatAccordionBase} from './accordion-base';
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-export const _CdkAccordionItem = CdkAccordionItem;
-
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
 

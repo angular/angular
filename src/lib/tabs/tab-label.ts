@@ -9,11 +9,11 @@
 import {Directive} from '@angular/core';
 import {CdkPortal} from '@angular/cdk/portal';
 
-// TODO(devversion): Workaround for https://github.com/angular/material2/issues/12760
-export const _CdkPortal = CdkPortal;
-
 /** Used to flag tab labels for use with the portal directive */
 @Directive({
   selector: '[mat-tab-label], [matTabLabel]',
 })
-export class MatTabLabel extends _CdkPortal {}
+export class MatTabLabel extends CdkPortal {}
+
+// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
+(MatTabLabel as any)['ctorParameters'] = () => (CdkPortal as any)['ctorParameters'];

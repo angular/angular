@@ -20,11 +20,6 @@ import {
   CdkRowDef,
 } from '@angular/cdk/table';
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-export const _CdkHeaderRowDef = CdkHeaderRowDef;
-export const _CdkFooterRowDef = CdkFooterRowDef;
-export const _CdkRowDef = CdkRowDef;
-
 /**
  * Header row definition for the mat-table.
  * Captures the header row's template and other header properties such as the columns to display.
@@ -34,7 +29,7 @@ export const _CdkRowDef = CdkRowDef;
   providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
   inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
-export class MatHeaderRowDef extends _CdkHeaderRowDef {}
+export class MatHeaderRowDef extends CdkHeaderRowDef {}
 
 /**
  * Footer row definition for the mat-table.
@@ -45,7 +40,7 @@ export class MatHeaderRowDef extends _CdkHeaderRowDef {}
   providers: [{provide: CdkFooterRowDef, useExisting: MatFooterRowDef}],
   inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
-export class MatFooterRowDef extends _CdkFooterRowDef {}
+export class MatFooterRowDef extends CdkFooterRowDef {}
 
 /**
  * Data row definition for the mat-table.
@@ -57,7 +52,12 @@ export class MatFooterRowDef extends _CdkFooterRowDef {}
   providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef<T> extends _CdkRowDef<T> {}
+export class MatRowDef<T> extends CdkRowDef<T> {}
+
+// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
+(MatHeaderRowDef as any)['ctorParameters'] = () => (CdkHeaderRowDef as any)['ctorParameters'];
+(MatFooterRowDef as any)['ctorParameters'] = () => (CdkFooterRowDef as any)['ctorParameters'];
+(MatRowDef as any)['ctorParameters'] = () => (CdkRowDef as any)['ctorParameters'];
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
