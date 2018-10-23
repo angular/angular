@@ -567,6 +567,38 @@ describe('MatBottomSheet', () => {
       document.body.removeChild(button);
     }));
 
+    it('should be able to disable focus restoration', fakeAsync(() => {
+      const button = document.createElement('button');
+      button.id = 'bottom-sheet-trigger';
+      document.body.appendChild(button);
+      button.focus();
+
+      const bottomSheetRef = bottomSheet.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        restoreFocus: false
+      });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement.id)
+          .not.toBe('bottom-sheet-trigger', 'Expected the focus to change when sheet was opened.');
+
+      bottomSheetRef.dismiss();
+      expect(document.activeElement.id).not.toBe('bottom-sheet-trigger',
+          'Expcted the focus not to have changed before the animation finishes.');
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(document.activeElement.id).not.toBe('bottom-sheet-trigger',
+          'Expected the trigger not to be refocused on close.');
+
+      document.body.removeChild(button);
+    }));
+
   });
 
 });
