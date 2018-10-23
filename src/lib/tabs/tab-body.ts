@@ -146,6 +146,11 @@ export class MatTabBody implements OnInit, OnDestroy {
   /** Position that will be used when the tab is immediately becoming visible after creation. */
   @Input() origin: number;
 
+  // Note that the default value will always be overwritten by `MatTabBody`, but we need one
+  // anyway to prevent the animations module from throwing an error if the body is used on its own.
+  /** Duration for the tab's animation. */
+  @Input() animationDuration: string = '500ms';
+
   /** The shifted index position of the tab body, where zero represents the active center tab. */
   @Input()
   set position(position: number) {

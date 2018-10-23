@@ -22,6 +22,9 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  InjectionToken,
+  Inject,
+  Optional,
 } from '@angular/core';
 import {
   CanColor,
@@ -50,6 +53,15 @@ export class MatTabChangeEvent {
 
 /** Possible positions for the tab header. */
 export type MatTabHeaderPosition = 'above' | 'below';
+
+/** Object that can be used to configure the default options for the tabs module. */
+export interface MatTabsConfig {
+  /** Duration for the tab animation. Must be a valid CSS value (e.g. 600ms). */
+  animationDuration?: string;
+}
+
+/** Injection token that can be used to provide the default options the tabs module. */
+export const MAT_TABS_CONFIG = new InjectionToken('MAT_TABS_CONFIG');
 
 // Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
@@ -117,6 +129,9 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   /** Position of the tab header. */
   @Input() headerPosition: MatTabHeaderPosition = 'above';
 
+  /** Duration for the tab animation. Must be a valid CSS value (e.g. 600ms). */
+  @Input() animationDuration: string;
+
   /** Background color of the tab group. */
   @Input()
   get backgroundColor(): ThemePalette { return this._backgroundColor; }
@@ -150,9 +165,12 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   private _groupId: number;
 
   constructor(elementRef: ElementRef,
-              private _changeDetectorRef: ChangeDetectorRef) {
+              private _changeDetectorRef: ChangeDetectorRef,
+              @Inject(MAT_TABS_CONFIG) @Optional() defaultConfig?: MatTabsConfig) {
     super(elementRef);
     this._groupId = nextId++;
+    this.animationDuration = defaultConfig && defaultConfig.animationDuration ?
+        defaultConfig.animationDuration : '500ms';
   }
 
   /**

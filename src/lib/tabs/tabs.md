@@ -114,6 +114,13 @@ do so using the `[mat-align-tabs]` attribute.
 
 <!-- example(tab-group-align) -->
 
+### Controlling the tab animation
+You can control the duration of the tabs' animation using the `animationDuration` input. If you
+want to disable the animation completely, you can do so by setting the properties to `0ms`. The
+duration can be configured globally using the `MAT_TABS_CONFIG` injection token.
+
+<!-- example(tab-group-animations) -->
+
 ### Accessibility
 Tabs without text or labels should be given a meaningful label via `aria-label` or
 `aria-labelledby`. For `MatTabNav`, the `<nav>` element should have a label as well.
