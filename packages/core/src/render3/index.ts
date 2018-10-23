@@ -173,4 +173,4 @@ export {
   whenRendered,
 };
 
-export {NO_CHANGE} from './interfaces/renderer';
+export {NO_CHANGE} from './tokens';

@@ -8,9 +8,10 @@
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {InitialStylingFlags} from '../interfaces/definition';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
-import {NO_CHANGE, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
+import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LViewData, RootContext} from '../interfaces/view';
+import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';

@@ -150,11 +150,3 @@ export interface RComment extends RNode {}
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-export interface NO_CHANGE {
-  // This is a brand that ensures that this type can never match anything else
-  brand: 'NO_CHANGE';
-}
-
-/** A special value which designates that a value has not changed. */
-export const NO_CHANGE = {} as NO_CHANGE;
