@@ -31,7 +31,10 @@ ts_web_test_suite(
         "//packages/platform-browser/test:static_assets/test.html",
         "//packages/platform-browser/test:browser/static_assets/200.html",
     ],
-    tags = ["fixme-ivy-jit"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],

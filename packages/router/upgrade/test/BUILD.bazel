@@ -15,6 +15,7 @@ ts_library(
 
 ts_web_test_suite(
     name = "test_web",
+    tags = ["fixme-ivy-local"],
     deps = [
         ":test_lib",
     ],

@@ -35,7 +35,10 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "test_web",
-    tags = ["fixme-ivy-jit"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],

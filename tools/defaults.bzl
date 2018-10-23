@@ -152,7 +152,7 @@ def npm_package(name, replacements = {}, **kwargs):
         **kwargs
     )
 
-def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
+def ts_web_test_suite(bootstrap = [], deps = [], tags = [], **kwargs):
     """Default values for ts_web_test_suite"""
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
@@ -175,6 +175,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
             # "@io_bazel_rules_webtesting//browsers:firefox-local",
             # TODO(alexeagle): add remote browsers on SauceLabs
         ],
+        tags = ivy_tags(tags),
         **kwargs
     )
 

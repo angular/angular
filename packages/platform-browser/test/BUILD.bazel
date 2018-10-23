@@ -44,7 +44,10 @@ ts_web_test_suite(
     static_files = [
         ":static_assets/test.html",
     ],
-    tags = ["fixme-ivy-jit"],
+    tags = [
+        "fixme-ivy-jit",
+        "fixme-ivy-local",
+    ],
     deps = [
         ":test_lib",
     ],
