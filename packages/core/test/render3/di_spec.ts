@@ -1049,6 +1049,53 @@ describe('di', () => {
 
   describe('Special tokens', () => {
 
+    describe('Injector', () => {
+
+      it('should inject the injector', () => {
+        let injectorDir !: InjectorDir;
+        let otherInjectorDir !: OtherInjectorDir;
+        let divElement !: HTMLElement;
+
+        class InjectorDir {
+          constructor(public injector: Injector) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: InjectorDir,
+            selectors: [['', 'injectorDir', '']],
+            factory: () => injectorDir = new InjectorDir(directiveInject(Injector as any))
+          });
+        }
+
+        class OtherInjectorDir {
+          constructor(public otherDir: InjectorDir, public injector: Injector) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: OtherInjectorDir,
+            selectors: [['', 'otherInjectorDir', '']],
+            factory: () => otherInjectorDir = new OtherInjectorDir(
+                         directiveInject(InjectorDir), directiveInject(Injector as any))
+          });
+        }
+
+
+        /** <div injectorDir otherInjectorDir></div> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['injectorDir', '', 'otherInjectorDir', '']);
+          }
+          // testing only
+          divElement = load(0);
+        }, 1, 0, [InjectorDir, OtherInjectorDir]);
+
+        const fixture = new ComponentFixture(App);
+        expect(injectorDir.injector.get(ElementRef).nativeElement).toBe(divElement);
+        expect(otherInjectorDir.injector.get(ElementRef).nativeElement).toBe(divElement);
+        expect(otherInjectorDir.injector.get(InjectorDir)).toBe(injectorDir);
+        expect(injectorDir.injector).not.toBe(otherInjectorDir.injector);
+      });
+
+    });
+
     describe('ElementRef', () => {
 
       it('should create directive with ElementRef dependencies', () => {

@@ -8,7 +8,8 @@
 
 import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags, Injector, NullInjector, injectRootLimpMode, setInjectImplementation} from '../di/injector';
+import {Injector} from '../di/injector';
+import {InjectFlags, injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
 import {Type} from '../type';
 
 import {assertDefined, assertEqual} from './assert';
@@ -504,6 +505,26 @@ function shouldSearchParent(flags: InjectFlags, parentLocation: RelativeInjector
   return !(
       flags & InjectFlags.Self ||
       (flags & InjectFlags.Host && getParentInjectorViewOffset(parentLocation) > 0));
+}
+
+export function injectInjector() {
+  const tNode = getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode;
+  return new NodeInjector(tNode, getViewData());
+}
+
+export class NodeInjector implements Injector {
+  private _injectorIndex: number;
+
+  constructor(
+      private _tNode: TElementNode|TContainerNode|TElementContainerNode,
+      private _hostView: LViewData) {
+    this._injectorIndex = getOrCreateNodeInjectorForNode(_tNode, _hostView);
+  }
+
+  get(token: any): any {
+    setTNodeAndViewData(this._tNode, this._hostView);
+    return getOrCreateInjectable(this._tNode, this._hostView, token);
+  }
 }
 
 export function getFactoryOf<T>(type: Type<any>): ((type: Type<T>| null) => T)|null {

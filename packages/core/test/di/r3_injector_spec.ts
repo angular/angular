@@ -8,7 +8,8 @@
 
 import {defineInjectable, defineInjector} from '../../src/di/defs';
 import {InjectionToken} from '../../src/di/injection_token';
-import {INJECTOR, Injector, inject} from '../../src/di/injector';
+import {INJECTOR, Injector} from '../../src/di/injector';
+import {inject} from '../../src/di/injector_compatibility';
 import {R3Injector, createInjector} from '../../src/di/r3_injector';
 
 describe('InjectorDef-based createInjector()', () => {

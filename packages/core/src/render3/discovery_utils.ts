@@ -38,14 +38,14 @@ export function getComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target) !;
 
   if (context.component === undefined) {
-    let lViewData = context.lViewData;
+    let lViewData: LViewData|null = context.lViewData;
     while (lViewData) {
       const ctx = lViewData ![CONTEXT] !as{};
       if (ctx && isComponentInstance(ctx)) {
         context.component = ctx;
         break;
       }
-      lViewData = lViewData ![PARENT] !;
+      lViewData = lViewData[FLAGS] & LViewFlags.IsRoot ? null : lViewData ![PARENT] !;
     }
     if (context.component === undefined) {
       context.component = null;
