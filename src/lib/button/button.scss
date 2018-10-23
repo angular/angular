@@ -45,6 +45,18 @@
   border: 1px solid currentColor;
   padding: $mat-stroked-button-padding;
   line-height: $mat-stroked-button-line-height;
+
+  // Since the stroked button has has an actual border that reduces the available space for
+  // child elements (such as the ripple container or focus overlay), an inherited border radius
+  // for absolute positioned child elements which expand to the parent element boundaries, will
+  // not align with the stroked button border because the child element cannot expand to the same
+  // boundaries as the parent element with a border.
+  // See: https://github.com/angular/material2/issues/13738
+  overflow: hidden;
+
+  .mat-button-ripple.mat-ripple, .mat-button-focus-overlay {
+    border-radius: 0;
+  }
 }
 
 .mat-fab {
@@ -85,13 +97,15 @@
   // Pointer events can be safely disabled because the ripple trigger element is the host element.
   pointer-events: none;
 
-  // Inherit the border radius from the parent so the ripple is clipped when it reaches the edges.
+  // Inherit the border radius from the parent so that focus overlay and ripples don't exceed the
+  // parent button boundaries. Note that an inherited border radius does not work properly if
+  // the actual button element does have a border because it causes the inner content to be
+  // smaller. We have special logic for stroked buttons to handle this scenario.
   border-radius: inherit;
 }
 
 // Element that overlays the button to show focus and hover effects.
 .mat-button-focus-overlay {
-  border-radius: inherit;
   opacity: 0;
 
   transition: $mat-button-focus-transition;
