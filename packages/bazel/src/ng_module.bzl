@@ -30,14 +30,14 @@ def compile_strategy(ctx):
       ctx: skylark rule execution context
 
     Returns:
-      one of 'legacy', 'local', 'jit', or 'global' depending on the configuration in ctx
+      one of 'legacy', 'aot', 'jit', or 'global' depending on the configuration in ctx
     """
 
     strategy = "legacy"
     if "compile" in ctx.var:
         strategy = ctx.var["compile"]
 
-    if strategy not in ["legacy", "local", "jit"]:
+    if strategy not in ["legacy", "aot", "jit"]:
         fail("Unknown --define=compile value '%s'" % strategy)
 
     if strategy == "legacy" and hasattr(ctx.attr, "_global_mode") and ctx.attr._global_mode:
@@ -60,7 +60,7 @@ def _compiler_name(ctx):
         return "ngc"
     elif strategy == "global":
         return "ngc.ivy"
-    elif strategy == "local":
+    elif strategy == "aot":
         return "ngtsc"
     elif strategy == "jit":
         return "tsc"
@@ -82,7 +82,7 @@ def _enable_ivy_value(ctx):
         return False
     elif strategy == "global":
         return True
-    elif strategy == "local":
+    elif strategy == "aot":
         return "ngtsc"
     elif strategy == "jit":
         return "tsc"

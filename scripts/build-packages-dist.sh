@@ -61,4 +61,4 @@ buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
     || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
 ]] && exit 0
 
-buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"

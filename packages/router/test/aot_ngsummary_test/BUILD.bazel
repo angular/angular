@@ -17,7 +17,7 @@ ts_library(
     testonly = True,
     srcs = ["aot_router_bootstrap.spec.ts"],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [
@@ -33,7 +33,7 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [
