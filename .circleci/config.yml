@@ -134,14 +134,14 @@ jobs:
     steps:
       - *define_env_vars
       - run:
-        name: Skip this job for non upstream/master jobs to save resources
-        # Note, `|| true` on the end makes this step always exit 0
-        command: '[[
-            "$CI_PULL_REQUEST" == "false"
-            && "$CI_REPO_OWNER" == "angular"
-            && "$CI_REPO_NAME" == "angular"
-            && "$CI_BRANCH" != "master"
-        ]] && circleci step halt || true'
+          name: Skip this job for non upstream/master jobs to save resources
+          # Note, `|| true` on the end makes this step always exit 0
+          command: '[[
+              "$CI_PULL_REQUEST" == "false"
+              && "$CI_REPO_OWNER" == "angular"
+              && "$CI_REPO_NAME" == "angular"
+              && "$CI_BRANCH" != "master"
+              ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
@@ -156,14 +156,14 @@ jobs:
     steps:
       - *define_env_vars
       - run:
-        name: Skip this job for non upstream/master jobs to save resources
-        # Note, `|| true` on the end makes this step always exit 0
-        command: '[[
-            "$CI_PULL_REQUEST" == "false"
-            && "$CI_REPO_OWNER" == "angular"
-            && "$CI_REPO_NAME" == "angular"
-            && "$CI_BRANCH" != "master"
-        ]] && circleci step halt || true'
+          name: Skip this job for non upstream/master jobs to save resources
+          # Note, `|| true` on the end makes this step always exit 0
+          command: '[[
+              "$CI_PULL_REQUEST" == "false"
+              && "$CI_REPO_OWNER" == "angular"
+              && "$CI_REPO_NAME" == "angular"
+              && "$CI_BRANCH" != "master"
+              ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
