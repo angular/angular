@@ -30,6 +30,9 @@ var_3: &define_env_vars
       echo "export CI_PULL_REQUEST=${CIRCLE_PR_NUMBER:-false}" | tee -a $BASH_ENV
       echo "export CI_REPO_NAME=$CIRCLE_PROJECT_REPONAME" | tee -a $BASH_ENV
       echo "export CI_REPO_OWNER=$CIRCLE_PROJECT_USERNAME" | tee -a $BASH_ENV
+      # WARNING: Secrets (do not print).
+      echo "export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=$AIO_DEPLOY_TOKEN" >> $BASH_ENV
+      echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=$ANGULAR_PAYLOAD_TOKEN" >> $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache

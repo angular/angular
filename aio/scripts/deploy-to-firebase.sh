@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# WARNING: FIREBASE_TOKEN should NOT be printed.
+# WARNING: CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN should NOT be printed.
 set +x -eu -o pipefail
 
 # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
@@ -59,17 +59,17 @@ case $deployEnv in
   next)
     readonly projectId=aio-staging
     readonly deployedUrl=https://next.angular.io/
-    readonly firebaseToken=$FIREBASE_TOKEN
+    readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
     ;;
   stable)
     readonly projectId=angular-io
     readonly deployedUrl=https://angular.io/
-    readonly firebaseToken=$FIREBASE_TOKEN
+    readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
     ;;
   archive)
     readonly projectId=v${majorVersion}-angular-io
     readonly deployedUrl=https://v${majorVersion}.angular.io/
-    readonly firebaseToken=$FIREBASE_TOKEN
+    readonly firebaseToken=$CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN
     ;;
 esac
 

@@ -90,9 +90,9 @@ uploadData() {
   if [[ "$CI_PULL_REQUEST" == "false" ]]; then
     readonly dbPath=/payload/$name/$safeBranchName/$CI_COMMIT
 
-    # WARNING: FIREBASE_TOKEN should NOT be printed.
+    # WARNING: CI_SECRET_PAYLOAD_FIREBASE_TOKEN should NOT be printed.
     set +x
-    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
+    $NODE_MODULES_BIN/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$CI_SECRET_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
 }
 

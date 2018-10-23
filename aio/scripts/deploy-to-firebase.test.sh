@@ -30,7 +30,7 @@ function check {
     export CI_PULL_REQUEST=false
     export CI_BRANCH=master
     export CI_COMMIT=$(git ls-remote origin master | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : master
@@ -59,7 +59,7 @@ Deployment URL    : https://next.angular.io/"
     export CI_BRANCH=4.3.x
     export STABLE_BRANCH=4.3.x
     export CI_COMMIT=$(git ls-remote origin 4.3.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : 4.3.x
@@ -89,7 +89,7 @@ Deployment URL    : https://angular.io/"
     export CI_BRANCH=2.4.x
     export STABLE_BRANCH=4.3.x
     export CI_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Git branch        : 2.4.x
@@ -106,7 +106,7 @@ Deployment URL    : https://v2.angular.io/"
     export CI_BRANCH=2.4.x
     export STABLE_BRANCH=4.3.x
     export CI_COMMIT=DUMMY_TEST_COMMIT
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin 2.4.x | cut -c1-40))."
@@ -120,7 +120,7 @@ Deployment URL    : https://v2.angular.io/"
     export CI_BRANCH=2.1.x
     export STABLE_BRANCH=2.2.x
     export CI_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.1.x\" to firebase.
@@ -135,7 +135,7 @@ We only deploy archive branches with the major version less than the stable bran
     export CI_BRANCH=2.4.x
     export STABLE_BRANCH=2.2.x
     export CI_COMMIT=$(git ls-remote origin 2.4.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.4.x\" to firebase.
@@ -150,7 +150,7 @@ We only deploy archive branches with the major version less than the stable bran
     export CI_BRANCH=2.1.x
     export STABLE_BRANCH=4.3.x
     export CI_COMMIT=$(git ls-remote origin 2.1.x | cut -c-40)
-    export FIREBASE_TOKEN=XXXXX
+    export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=XXXXX
     `dirname $0`/deploy-to-firebase.sh --dry-run
   )
   expected="Skipping deploy of branch \"2.1.x\" to firebase.
