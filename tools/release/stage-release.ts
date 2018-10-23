@@ -114,7 +114,7 @@ class StageReleaseTask {
     }
 
     this.git.stageAllChanges();
-    // this.git.createNewCommit(`chore: bump version to ${newVersionName} w/ changelog`);
+    this.git.createNewCommit(`chore: bump version to ${newVersionName} w/ changelog`);
 
     console.info();
     console.info(green(`  ✓   Created the staging commit for: "${newVersionName}".`));
