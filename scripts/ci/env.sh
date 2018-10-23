@@ -46,8 +46,6 @@ setEnvVar CI_COMMIT $TRAVIS_COMMIT
 setEnvVar CI_COMMIT_RANGE $TRAVIS_COMMIT_RANGE
 setEnvVar CI_PULL_REQUEST $TRAVIS_PULL_REQUEST
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
-# WARNING: Secrets (do not print).
-export CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN=$FIREBASE_TOKEN
 
 if [[ ${TRAVIS:-} ]]; then
   case ${CI_MODE} in
