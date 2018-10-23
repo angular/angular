@@ -30,7 +30,7 @@ echo "##################################"
 
   [ -d "${basedir}/${destPath}" ] || mkdir -p $basedir/${destPath}
 
-  dirs=`echo "$targets" | grep '//packages/[^/]*:npm_package' | sed -e 's/\/\/packages\/\(.*\):npm_package/\1/'`
+  dirs=`echo "$targets" | sed -e 's/\/\/packages\/\(.*\):npm_package/\1/'`
 
   for pkg in $dirs; do
     # Skip any that don't have an "npm_package" target
@@ -49,8 +49,8 @@ echo "##################################"
 # packages in their deps[].
 # Until then, we have to manually run bazel first to create the npm packages we
 # want to test.
-LEGACY_TARGETS=`bazel query --output=label 'kind(.*_package, //packages/...)'`
-buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
+BAZEL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 
 # We don't use the ivy build in the integration tests, only when publishing
 # snapshots.
@@ -61,15 +61,7 @@ buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
     || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
 ]] && exit 0
 
-# TODO: do we actually need to query for jit and local targets? shouldn't this be all the packages that we publish to npm?
-IVY_JIT_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-jit.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
-IVY_LOCAL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-local.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
-
 # A clean is needed since build artifacts from previous build can break the following build
 bazel clean
-buildTargetPackages "$IVY_JIT_TARGETS" "dist/packages-dist-ivy-jit" "jit" "Ivy JIT"
-
-# A clean is needed since build artifacts from previous build can break the following build
-bazel clean
-buildTargetPackages "$IVY_LOCAL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
 
