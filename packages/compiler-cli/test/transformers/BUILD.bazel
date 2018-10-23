@@ -26,7 +26,7 @@ jasmine_node_test(
         "//packages/router:npm_package",
     ],
     tags = [
-        "fixme-ivy-local",
+        "fixme-ivy-aot",
         "no-ivy-jit",
     ],
     deps = [

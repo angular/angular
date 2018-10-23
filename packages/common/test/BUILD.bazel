@@ -22,8 +22,8 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     tags = [
+        "fixme-ivy-aot",
         "fixme-ivy-jit",
-        "fixme-ivy-local",
     ],
     deps = [
         ":test_lib",
@@ -34,8 +34,8 @@ jasmine_node_test(
 ts_web_test_suite(
     name = "test_web",
     tags = [
+        "fixme-ivy-aot",
         "fixme-ivy-jit",
-        "fixme-ivy-local",
     ],
     deps = [
         ":test_lib",

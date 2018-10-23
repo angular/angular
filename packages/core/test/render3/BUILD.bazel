@@ -60,8 +60,8 @@ jasmine_node_test(
         "angular/packages/core/test/render3/load_domino",
     ],
     tags = [
+        "fixme-ivy-aot",
         "fixme-ivy-jit",
-        "fixme-ivy-local",
     ],
     deps = [
         ":render3_node_lib",
@@ -72,8 +72,8 @@ jasmine_node_test(
 ts_web_test_suite(
     name = "render3_web",
     tags = [
+        "fixme-ivy-aot",
         "fixme-ivy-jit",
-        "fixme-ivy-local",
     ],
     deps = [
         ":render3_lib",
