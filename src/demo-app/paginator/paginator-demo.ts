@@ -25,6 +25,7 @@ export class PaginatorDemo {
   hidePageSize = false;
   showPageSizeOptions = true;
   showFirstLastButtons = true;
+  disabled = false;
 
   pageEvent: PageEvent;
 

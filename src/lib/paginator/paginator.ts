@@ -25,6 +25,9 @@ import {
   HasInitializedCtor,
   mixinInitialized,
   ThemePalette,
+  mixinDisabled,
+  CanDisableCtor,
+  CanDisable,
 } from '@angular/material/core';
 
 /** The default page size if there is no page size and there are no provided page size options. */
@@ -54,8 +57,8 @@ export class PageEvent {
 // Boilerplate for applying mixins to MatPaginator.
 /** @docs-private */
 export class MatPaginatorBase {}
-export const _MatPaginatorBase: HasInitializedCtor & typeof MatPaginatorBase =
-    mixinInitialized(MatPaginatorBase);
+export const _MatPaginatorBase: CanDisableCtor & HasInitializedCtor & typeof MatPaginatorBase =
+    mixinDisabled(mixinInitialized(MatPaginatorBase));
 
 /**
  * Component to provide navigation between paged information. Displays the size of the current
@@ -68,13 +71,15 @@ export const _MatPaginatorBase: HasInitializedCtor & typeof MatPaginatorBase =
   exportAs: 'matPaginator',
   templateUrl: 'paginator.html',
   styleUrls: ['paginator.css'],
+  inputs: ['disabled'],
   host: {
     'class': 'mat-paginator',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy, HasInitialized {
+export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy, CanDisable,
+  HasInitialized {
   private _initialized: boolean;
   private _intlChanges: Subscription;
 
@@ -232,6 +237,16 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     this.pageIndex = Math.floor(startIndex / pageSize) || 0;
     this.pageSize = pageSize;
     this._emitPageEvent(previousPageIndex);
+  }
+
+  /** Checks whether the buttons for going forwards should be disabled. */
+  _nextButtonsDisabled() {
+    return this.disabled || !this.hasNextPage();
+  }
+
+  /** Checks whether the buttons for going backwards should be disabled. */
+  _previousButtonsDisabled() {
+    return this.disabled || !this.hasPreviousPage();
   }
 
   /**
