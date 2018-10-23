@@ -16,7 +16,6 @@ ts_library(
         "//packages/router/testing",
         "@rxjs",
         "@rxjs//operators",
-        "@rxjs//testing",
     ],
 )
 
