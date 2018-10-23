@@ -59,6 +59,7 @@ buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 [[  "${CI_PULL_REQUEST-}" != "false"
     || "${CI_REPO_OWNER-}" != "angular"
     || "${CI_REPO_NAME-}" != "angular"
+    || "${CI_BRANCH}" != "master"
 ]] && exit 0
 
 buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"
