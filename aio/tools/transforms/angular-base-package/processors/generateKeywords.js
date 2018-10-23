@@ -164,10 +164,18 @@ function extractWords(text, words, keywordMap) {
 }
 
 function extractMemberWords(doc, members, membersMap) {
+  if (!doc) return;
+
   if (doc.members) {
-    doc.members.forEach(function(member) { extractWords(member.name, members, membersMap); });
+    doc.members.forEach(member => extractWords(member.name, members, membersMap));
   }
   if (doc.statics) {
-    doc.statics.forEach(function(member) { extractWords(member.name, members, membersMap); });
+    doc.statics.forEach(member => extractWords(member.name, members, membersMap));
+  }
+  if (doc.extendsClauses) {
+    doc.extendsClauses.forEach(clause => extractMemberWords(clause.doc, members, membersMap));
+  }
+  if (doc.implementsClauses) {
+    doc.implementsClauses.forEach(clause => extractMemberWords(clause.doc, members, membersMap));
   }
 }
