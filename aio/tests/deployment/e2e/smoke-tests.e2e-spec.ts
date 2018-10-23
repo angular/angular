@@ -29,6 +29,8 @@ describe(browser.baseUrl, () => {
       Object.keys(textPerUrl).forEach(url => {
         it(`should show the page at '${url}'`, () => {
           page.goTo(url);
+          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+
           expect(page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
@@ -47,6 +49,8 @@ describe(browser.baseUrl, () => {
       Object.keys(textPerUrl).forEach(url => {
         it(`should show the page at '${url}'`, () => {
           page.goTo(url);
+          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+
           expect(page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
@@ -68,6 +72,8 @@ describe(browser.baseUrl, () => {
       Object.keys(textPerUrl).forEach(url => {
         it(`should show the page at '${url}'`, () => {
           page.goTo(url);
+          browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
+
           expect(page.getDocViewerText()).toContain(textPerUrl[url]);
         });
       });
