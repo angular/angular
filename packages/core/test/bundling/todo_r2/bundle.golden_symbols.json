@@ -1428,6 +1428,9 @@
     "name": "definePipe"
   },
   {
+    "name": "delegateToClassInput"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -2085,6 +2088,9 @@
     "name": "leaveView"
   },
   {
+    "name": "limitToSingleClasses"
+  },
+  {
     "name": "listener"
   },
   {
@@ -2215,9 +2221,6 @@
   },
   {
     "name": "prepareInitialFlag"
-  },
-  {
-    "name": "produceClassStr"
   },
   {
     "name": "projectionNodeStack"

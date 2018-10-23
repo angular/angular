@@ -840,6 +840,9 @@
     "name": "leaveView"
   },
   {
+    "name": "limitToSingleClasses"
+  },
+  {
     "name": "listener"
   },
   {
@@ -889,9 +892,6 @@
   },
   {
     "name": "prepareInitialFlag"
-  },
-  {
-    "name": "produceClassStr"
   },
   {
     "name": "projectionNodeStack"

@@ -7,10 +7,10 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
+import {_getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {TElementNode, TNode, TNodeType} from './interfaces/node';
-import {RComment, RElement} from './interfaces/renderer';
+import {NO_CHANGE, RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';

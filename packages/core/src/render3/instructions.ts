@@ -23,7 +23,8 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {NO_CHANGE, ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {StylingIndex} from './interfaces/styling';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
@@ -1539,24 +1540,25 @@ export function elementStyling(
   const inputData = initializeTNodeInputs(tNode);
 
   if (!tNode.stylingTemplate) {
-    const hasClassInput = inputData && inputData.hasOwnProperty('class');
+    const hasClassInput = inputData && inputData.hasOwnProperty('class') ? true : false;
     if (hasClassInput) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
 
     // initialize the styling template.
     tNode.stylingTemplate = createStylingContextTemplate(
-        hasClassInput ? null : classDeclarations, styleDeclarations, styleSanitizer);
+        classDeclarations, styleDeclarations, styleSanitizer, hasClassInput);
   }
 
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
-    // directives with a [class] input expect the starting CSS classes to be passed in
+    const index = tNode.index - HEADER_OFFSET;
     if (delegateToClassInput(tNode)) {
-      const dirWithClassInput = inputData!['class']!;
-      setInputsForProperty(dirWithClassInput, classDeclarations ? produceClassStr(classDeclarations) : '');
+      const stylingContext = getStylingContext(index, viewData);
+      const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+      setInputsForProperty(tNode.inputs !['class'] !, initialClasses);
     }
-    elementStylingApply(tNode.index - HEADER_OFFSET);
+    elementStylingApply(index);
   }
 }
 
@@ -1646,14 +1648,17 @@ export function elementStyleProp(
  *        removed (unset) from the element's styling.
  */
 export function elementStylingMap<T>(
-    index: number, classes: {[key: string]: any} | string | null,
-    styles?: {[styleName: string]: any} | null): void {
+    index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
+    styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
   const tNode = getTNode(index, viewData);
-  if (delegateToClassInput(tNode)) {
-    setInputsForProperty(tNode.inputs !['class'] !, classes);
-    classes = null;
+  const stylingContext = getStylingContext(index, viewData);
+  if (delegateToClassInput(tNode) && classes !== NO_CHANGE) {
+    const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+    const classInputVal =
+        (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
+    setInputsForProperty(tNode.inputs !['class'] !, classInputVal);
   }
-  updateStylingMap(getStylingContext(index, viewData), classes, styles);
+  updateStylingMap(stylingContext, classes, styles);
 }
 
 //////////////////////////
@@ -2588,14 +2593,6 @@ export function markDirty<T>(component: T) {
 //// Bindings & interpolations
 ///////////////////////////////
 
-export interface NO_CHANGE {
-  // This is a brand that ensures that this type can never match anything else
-  brand: 'NO_CHANGE';
-}
-
-/** A special value which designates that a value has not changed. */
-export const NO_CHANGE = {} as NO_CHANGE;
-
 /**
  * Creates a single value binding.
  *
@@ -2898,17 +2895,4 @@ function initializeTNodeInputs(tNode: TNode | null) {
 
 export function delegateToClassInput(tNode: TNode) {
   return tNode.flags & TNodeFlags.hasClassInput;
-}
-
-export function produceClassStr(classes: (string | boolean | InitialStylingFlags)[]): string {
-  // +1 because the values start after the marker
-  let i = classes.indexOf(InitialStylingFlags.VALUES_MODE) + 1;
-  let str = '';
-  if (i > 0) {
-    while (i < classes.length) {
-      str += (str.length ? ' ' : '') + classes[i];
-      i += 2;
-    }
-  }
-  return str;
 }
