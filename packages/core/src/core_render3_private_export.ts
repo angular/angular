@@ -226,4 +226,8 @@ export {
 export {
   publishGlobalUtil as ɵpublishGlobalUtil
 } from './render3/publish_global_util';
+export {
+  SWITCH_INJECTOR_FACTORY__POST_R3__ as ɵSWITCH_INJECTOR_FACTORY__POST_R3__,
+} from './di/injector';
+
 // clang-format on

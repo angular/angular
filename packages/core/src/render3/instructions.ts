@@ -9,7 +9,7 @@
 import './ng_dev_mode';
 
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags} from '../di/injector';
+import {InjectFlags} from '../di/injector_compatibility';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';

@@ -570,7 +570,7 @@
     "name": "DomElementSchemaRegistry"
   },
   {
-    "name": "EMPTY"
+    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY_ARRAY$4"
@@ -780,7 +780,7 @@
     "name": "INHERITED_CLASS_WITH_CTOR"
   },
   {
-    "name": "INJECTOR"
+    "name": "INJECTOR$1"
   },
   {
     "name": "INJECTORRefTokenKey"
@@ -1342,6 +1342,9 @@
   },
   {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_INJECTOR_FACTORY"
   },
   {
     "name": "SWITCH_RENDERER2_FACTORY"

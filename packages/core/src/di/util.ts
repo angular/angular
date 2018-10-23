@@ -10,7 +10,7 @@ import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
 import {getClosureSafeProperty} from '../util/property';
 
-import {inject, injectArgs} from './injector';
+import {inject, injectArgs} from './injector_compatibility';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
 const USE_VALUE =
