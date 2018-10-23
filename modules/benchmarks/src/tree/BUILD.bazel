@@ -23,5 +23,6 @@ ts_library(
     deps = [
         "//modules/e2e_util:lib",
         "//packages:types",
+        "@ngdeps//protractor",
     ],
 )
