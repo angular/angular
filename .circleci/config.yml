@@ -141,7 +141,7 @@ jobs:
             && "$CI_REPO_OWNER" == "angular"
             && "$CI_REPO_NAME" == "angular"
             && "$CI_BRANCH" != "master"
-        ]] && circleci step halt || true'
+            ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
@@ -163,7 +163,7 @@ jobs:
             && "$CI_REPO_OWNER" == "angular"
             && "$CI_REPO_NAME" == "angular"
             && "$CI_BRANCH" != "master"
-        ]] && circleci step halt || true'
+            ]] && circleci step halt || true'
       - checkout:
           <<: *post_checkout
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
