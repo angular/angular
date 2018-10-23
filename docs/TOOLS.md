@@ -14,9 +14,9 @@ Ctrl + Shift + j.
 By default the debug tools are disabled. You can enable debug tools as follows:
 
 ```typescript
-import {ApplicationRef} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {enableDebugTools} from '@angular/platform-browser';
+import { ApplicationRef } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableDebugTools } from '@angular/platform-browser';
 
 
 platformBrowserDynamic().bootstrapModule(AppModule)
@@ -30,7 +30,7 @@ platformBrowserDynamic().bootstrapModule(AppModule)
 ### Using debug tools
 
 In the browser open the developer console (Ctrl + Shift + j in Chrome). The
-top level object is called `ng` and contains more specific tools inside it.
+top-level object is called `ng` and contains more specific tools inside it.
 
 Example:
 
@@ -49,7 +49,7 @@ bound to UI, and if it finds a change it performs the corresponding UI update.
 However, sometimes it is hard to tell if the slowness is due to the act of
 computing the changes being slow, or due to the act of applying those changes
 to the UI. For your application to be performant it is important that the
-process of computing changes is very fast. For best results it should be under
+process of computing changes is very fast. For best results, it should be under
 3 milliseconds in order to leave room for the application logic, the UI updates
 and browser's rendering pipeline to fit within the 16 millisecond frame
 (assuming the 60 FPS target frame rate).
@@ -124,7 +124,7 @@ kinds of computation. Example:
 
 ```typescript
 @Component({
-  template: '<button [enabled]="isEnabled">{{title}}</button>'
+  template: '<button [enabled]="isEnabled">{{ title }}</button>'
 })
 class FancyButton {
   // GOOD: no computation, just return the value
@@ -140,7 +140,7 @@ Most cases like these could be solved by precomputing the value and storing the
 final value in a field.
 
 Angular also supports a second type of change detection - the "push" model. In
-this model Angular does not poll your component for changes. Instead, the
+this model, Angular does not poll your component for changes. Instead, the
 component "tells" Angular when it changes and only then does Angular perform
 the update. This model is suitable in situations when your data model uses
 observable or immutable objects (also a discussion for another time).
