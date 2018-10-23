@@ -21,7 +21,7 @@ function check {
   actual=$(
     export BASH_ENV=/dev/null
     export CI_REPO_OWNER=angular
-    export CI_REPO_NAxport CI_REPO_NAME=notangular
+    export CI_REPO_NAME=notangular
     $deployToFirebaseDryRun
   )
   expected="Skipping deploy because this is not angular/angular."
@@ -33,7 +33,7 @@ function check {
   actual=$(
     export BASH_ENV=/dev/null
     export CI_REPO_OWNER=notangular
-    export CI_REPO_NAxport CI_REPO_NAME=angular
+    export CI_REPO_NAME=angular
     $deployToFirebaseDryRun
   )
   expected="Skipping deploy because this is not angular/angular."
@@ -46,7 +46,7 @@ function check {
     export BASH_ENV=/dev/null
     export CI_REPO_OWNER=angular
     export CI_REPO_NAME=angular
-    export CI_PULL_RExport CI_PULL_REQUEST=true
+    export CI_PULL_REQUEST=true
     $deployToFirebaseDryRun
   )
   expected="Skipping deploy because this is a PR build."
@@ -80,7 +80,7 @@ Deployment URL    : https://next.angular.io/"
     export CI_REPO_NAME=angular
     export CI_PULL_REQUEST=false
     export CI_BRANCH=master
-    export CI_COMMIT=xport CI_COMMIT=DUMMY_TEST_COMMIT
+    export CI_COMMIT=DUMMY_TEST_COMMIT
     $deployToFirebaseDryRun
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin master | cut -c1-40))."
@@ -116,7 +116,7 @@ Deployment URL    : https://angular.io/"
     export CI_PULL_REQUEST=false
     export CI_BRANCH=4.3.x
     export CI_STABLE_BRANCH=4.3.x
-    export CI_COMMIT=xport CI_COMMIT=DUMMY_TEST_COMMIT
+    export CI_COMMIT=DUMMY_TEST_COMMIT
     $deployToFirebaseDryRun
   )
   expected="Skipping deploy because DUMMY_TEST_COMMIT is not the latest commit ($(git ls-remote origin 4.3.x | cut -c1-40))."
