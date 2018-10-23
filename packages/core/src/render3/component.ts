@@ -22,8 +22,8 @@ import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {publishDefaultGlobalUtils} from './publish_global_util';
 import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
-
 
 
 // Root component will always have an element index of 0 and an injector size of 1
@@ -106,6 +106,7 @@ export function renderComponent<T>(
         Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
+  ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
