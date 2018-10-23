@@ -59,9 +59,9 @@ protractor_web_test(
     tags = ["ivy-only"],
     deps = [
         "//modules/benchmarks/src/tree:perf_lib",
-        "@ngdeps//protractor",
-        "@ngdeps//yargs",
         "@ngdeps//node-uuid",
+        "@ngdeps//protractor",
         "@ngdeps//reflect-metadata",
+        "@ngdeps//yargs",
     ],
 )
