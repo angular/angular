@@ -9,9 +9,9 @@ import {MergeInheritedProperties} from './processors/merge-inherited-properties'
 import {EntryPointGrouper} from './processors/entry-point-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
+import {TypeFormatFlags} from 'dgeni-packages/node_modules/typescript';
 import {sync as globSync} from 'glob';
 import * as path from 'path';
-import {NoTruncateConstTypeProcessor} from './processors/no-truncate-const-type';
 
 // Dgeni packages that the Material docs package depends on.
 const jsdocPackage = require('dgeni-packages/jsdoc');
@@ -51,9 +51,6 @@ export const apiDocsPackage = new Package('material2-api-docs', [
   nunjucksPackage,
   typescriptPackage,
 ]);
-
-// Processor that ensures that Dgeni const docs don't truncate the resolved type string.
-apiDocsPackage.processor(new NoTruncateConstTypeProcessor());
 
 // Processor that filters out duplicate exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterDuplicateExports());
@@ -138,6 +135,10 @@ apiDocsPackage.config((tsHost: Host) => {
   // should only use the first leading comment, we need to disable comment concatenation.
   // See for example: src/cdk/coercion/boolean-property.ts
   tsHost.concatMultipleLeadingComments = false;
+
+  // Explicitly disable truncation for types that will be displayed as strings. Otherwise
+  // TypeScript by default truncates long types and causes misleading API documentation.
+  tsHost.typeFormatFlags = TypeFormatFlags.NoTruncation;
 });
 
 // Configure processor for finding nunjucks templates.
