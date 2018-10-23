@@ -390,7 +390,7 @@ export interface Route {
 }
 
 export class LoadedRouterConfig {
-  constructor(public routes: Route[], public module: NgModuleRef<any>) {}
+  constructor(public routes: Routes, public module: NgModuleRef<any>) {}
 }
 
 export function validateConfig(config: Routes, parentPath: string = ''): void {
