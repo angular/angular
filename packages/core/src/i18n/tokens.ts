@@ -33,6 +33,28 @@ import {InjectionToken} from '../di/injection_token';
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
 /**
+ * Provide this token to set the default currency of your application.
+ * It is used  by CurrencyPipe to show a default currency symbol without expliciting in every template use.
+ *
+ *
+ * @usageNotes
+ * ### Example
+ *
+ * ```typescript
+ * import { CURRENCY_ID } from '@angular/core';
+ * import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+ * import { AppModule } from './app/app.module';
+ *
+ * platformBrowserDynamic().bootstrapModule(AppModule, {
+ *   providers: [{provide: CURRENCY_ID, useValue: 'GBP' }]
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export const CURRENCY_ID = new InjectionToken<string>('CurrencyId');
+
+/**
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
  * `xlf` or `xlf2`) when you want to translate your application in another language.
  *

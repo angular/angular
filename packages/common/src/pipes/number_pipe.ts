@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {Inject, LOCALE_ID, CURRENCY_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
@@ -155,13 +155,14 @@ export class PercentPipe implements PipeTransform {
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
-  constructor(@Inject(LOCALE_ID) private _locale: string) {}
+  constructor(@Inject(LOCALE_ID) private _locale: string, @Inject(CURRENCY_ID) private _currencyCode?: string) {}
 
   /**
    *
    * @param value The number to be formatted as currency.
    * @param currencyCode The [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code,
-   * such as `USD` for the US dollar and `EUR` for the euro.
+   * such as `USD` for the US dollar and `EUR` for the euro. If not provided, it will use injected CURRENCY_ID,
+   * and if no value was injected, it will default to 'USD'.
    * @param display The format for the currency indicator. One of the following:
    *   - `code`: Show the code (such as `USD`).
    *   - `symbol`(default): Show the symbol (such as `$`).
@@ -205,7 +206,7 @@ export class CurrencyPipe implements PipeTransform {
       display = display ? 'symbol' : 'code';
     }
 
-    let currency: string = currencyCode || 'USD';
+    let currency: string = currencyCode || this._currencyCode || 'USD';
     if (display !== 'code') {
       if (display === 'symbol' || display === 'symbol-narrow') {
         currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);

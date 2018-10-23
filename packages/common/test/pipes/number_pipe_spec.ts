@@ -79,12 +79,31 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       });
     });
 
+
     describe('CurrencyPipe', () => {
       let pipe: CurrencyPipe;
 
-      beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
+      describe('Constructor', ()=>{
+        it('should show EUR symbol', ()=>{
+          const pipe = new CurrencyPipe('en-US', 'EUR');
+          expect(pipe.transform(12, undefined, 'code', '.1')).toEqual('EUR12.0');
+        }),
+          it('should show CAD symbol', ()=>{
+            const pipe = new CurrencyPipe('en-US', 'EUR');
+            expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
+          }),
+          it('should show $ symbol', ()=>{
+            const pipe = new CurrencyPipe('en-US');
+            expect(pipe.transform(123)).toEqual('$123.00');
+          }),
+          it('should show CAD symbol', ()=>{
+            const pipe = new CurrencyPipe('en-US');
+            expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
+          })
+      })
 
       describe('transform', () => {
+        beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
         it('should return correct value for numbers', () => {
           expect(pipe.transform(123)).toEqual('$123.00');
           expect(pipe.transform(12, 'EUR', 'code', '.1')).toEqual('EUR12.0');
