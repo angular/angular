@@ -76,16 +76,21 @@ $mat-stepper-line-gap: 8px !default;
     height: auto;
     padding: $mat-stepper-side-gap;
 
-    [dir='ltr'] &:not(:last-child)::after,
+    &:not(:last-child)::after,
     [dir='rtl'] &:not(:first-child)::after {
       @extend %mat-header-horizontal-line-label-position-bottom;
       right: 0;
     }
 
-    [dir='ltr'] &:not(:first-child)::before,
+    &:not(:first-child)::before,
     [dir='rtl'] &:not(:last-child)::before {
       @extend %mat-header-horizontal-line-label-position-bottom;
       left: 0;
+    }
+
+    [dir='rtl'] &:last-child::before,
+    [dir='rtl'] &:first-child::after {
+      display: none;
     }
 
     & .mat-step-icon,
