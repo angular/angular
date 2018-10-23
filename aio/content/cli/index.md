@@ -49,8 +49,6 @@ You can edit the generated files directly, or add to and modify them using CLI c
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on. 
 Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on apps and libraries, must be executed from within a workspace or project folder.
 
-When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
-
 * See more about the [Workspace file structure](guide/file-structure).
 
 When you use the [ng serve](cli/serve) command to build an app and serve it locally, the server automatically rebuilds the app and reloads the page when you change any of the source files.
