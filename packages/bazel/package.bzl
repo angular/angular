@@ -21,12 +21,12 @@ def rules_angular_dependencies():
     #
     # Download Bazel toolchain dependencies as needed by build actions
     #
+    # TODO(gmagolan): updated to next tagged rules_typescript release
     _maybe(
         http_archive,
         name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.20.3.zip",
-        strip_prefix = "rules_typescript-0.20.3",
-        sha256 = "2a03b23c30c5109ab0863cfa60acce73ceb56337d41efc2dd67f8455a1c1d5f3",
+        url = "https://github.com/bazelbuild/rules_typescript/archive/8ea1a55cf5cf8be84ddfeefc0940769b80da792f.zip",
+        strip_prefix = "rules_typescript-8ea1a55cf5cf8be84ddfeefc0940769b80da792f",
     )
 
     # Needed for Remote Execution
