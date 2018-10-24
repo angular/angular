@@ -1979,18 +1979,6 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
-**Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a>
-discourage the `I` prefix.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
 **Why?** A class alone is less code than a _class-plus-interface_.
 
 
