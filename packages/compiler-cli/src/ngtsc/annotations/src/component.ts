@@ -7,7 +7,7 @@
  */
 
 import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
-import * as path from 'path';
+import * as path from 'canonical-path';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -62,7 +62,7 @@ export class ComponentDecoratorHandler implements
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
+      const url = path.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
       return this.resourceLoader.preload(url);
     }
     return undefined;
@@ -94,7 +94,7 @@ export class ComponentDecoratorHandler implements
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
+      const url = path.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
       templateStr = this.resourceLoader.load(url);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
@@ -128,7 +128,7 @@ export class ComponentDecoratorHandler implements
     // relative path representation.
     const filePath = node.getSourceFile().fileName;
     const relativeFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, filePath);
+      const candidate = path.relative(rootDir, filePath);
       if (previous === undefined || candidate.length < previous.length) {
         return candidate;
       } else {

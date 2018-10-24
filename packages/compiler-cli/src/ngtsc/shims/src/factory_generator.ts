@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
+import * as path from 'canonical-path';
 import * as ts from 'typescript';
 
 import {relativePathBetween} from '../../util/src/path';
@@ -29,8 +29,7 @@ export class FactoryGenerator implements ShimGenerator {
   getOriginalSourceOfShim(fileName: string): string|null { return this.map.get(fileName) || null; }
 
   generate(original: ts.SourceFile, genFilePath: string): ts.SourceFile {
-    const relativePathToSource =
-        './' + path.posix.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
+    const relativePathToSource = './' + path.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker hasn't been created, and can't be used to
     // semantically understand which decorated types are actually decorated with Angular decorators.
