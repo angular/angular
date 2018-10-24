@@ -3,17 +3,17 @@ workspace(name = "angular_material")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.0.zip",
-  strip_prefix = "rules_nodejs-0.15.0",
-  sha256 = "5f5b6464ca20aa63d278caaf4736f0381eb838800d7375132057a48f09d0b837",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.3.zip",
+  strip_prefix = "rules_nodejs-0.15.3",
+  sha256 = "05afbbc13b0b7d5056e412d66c98853978bd46a94bc8e7b71c7fba4349b77eef",
 )
 
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.20.2.zip",
-  strip_prefix = "rules_typescript-0.20.2",
-  sha256 = "2879fbd7168ba5d17db22bc2f585c0d1d3a82dd5e6f8af118e8b2f74d290024e",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.20.3.zip",
+  strip_prefix = "rules_typescript-0.20.3",
+  sha256 = "2a03b23c30c5109ab0863cfa60acce73ceb56337d41efc2dd67f8455a1c1d5f3",
 )
 
 # Fetch transient dependencies of the TypeScript bazel rules.
@@ -34,12 +34,13 @@ sass_repositories()
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  # Temporarily locked down to the angular/angular:bazel branch. This branch includes necessary
-  # commits that make building from source possible.
-  # TODO(devversion): switch to release archive if workaround can be removed
-  url = "https://github.com/angular/angular/archive/08e4489cf5a93a352954f1639da5e92112993753.zip",
-  strip_prefix = "angular-08e4489cf5a93a352954f1639da5e92112993753",
-  sha256 = "a59c85426048cc95f51937d0c26f4d1143b7bef730152b68ac4b79d1438e746b",
+  # Locked to commit "07b89902d5178afefeedeb18d316f4a1c77c6025" that has been merged after v7.0.0
+  # has been released. This explicitly used version of angular/angular includes the latest changes
+  # to @angular/bazel that have been merged from the `bazel` branch into `master.`
+  # TODO(devversion): start using release archives once 7.0.1 is available w/ the Bazel changes.
+  url = "https://github.com/angular/angular/archive/07b89902d5178afefeedeb18d316f4a1c77c6025.zip",
+  strip_prefix = "angular-07b89902d5178afefeedeb18d316f4a1c77c6025",
+  sha256 = "6439dcd01afa5ef3456f9f454ba546a385f7fc56bbc8b6e4ec990dbd9773ba8f",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.
