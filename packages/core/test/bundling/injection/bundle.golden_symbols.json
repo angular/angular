@@ -6,7 +6,7 @@
     "name": "CIRCULAR$1"
   },
   {
-    "name": "EMPTY_ARRAY$2"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "EmptyErrorImpl"
@@ -60,7 +60,7 @@
     "name": "THROW_IF_NOT_FOUND"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE"
   },
   {
     "name": "UnsubscriptionErrorImpl"
@@ -159,12 +159,12 @@
     "name": "providerToRecord"
   },
   {
-    "name": "resolveForwardRef$1"
+    "name": "resolveForwardRef"
   },
   {
     "name": "setCurrentInjector"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify"
   }
 ]

@@ -332,8 +332,9 @@ function parseFieldToPropertyMapping(
  */
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
-    checker: ts.TypeChecker, mapValueResolver: (publicName: string, internalName: string) =>
-                                 string | string[]): {[field: string]: string | string[]} {
+    checker: ts.TypeChecker,
+    mapValueResolver: (publicName: string, internalName: string) =>
+        string | [string, string]): {[field: string]: string | [string, string]} {
   return fields.reduce(
       (results, field) => {
         const fieldName = field.member.name;
@@ -356,10 +357,10 @@ function parseDecoratedFields(
         });
         return results;
       },
-      {} as{[field: string]: string | string[]});
+      {} as{[field: string]: string | [string, string]});
 }
 
-function resolveInput(publicName: string, internalName: string) {
+function resolveInput(publicName: string, internalName: string): [string, string] {
   return [publicName, internalName];
 }
 

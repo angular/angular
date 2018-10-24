@@ -45,7 +45,7 @@
     "name": "EMPTY"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "ElementRef"
@@ -231,7 +231,7 @@
     "name": "ViewContainerRef"
   },
   {
-    "name": "ViewEncapsulation$1"
+    "name": "ViewEncapsulation"
   },
   {
     "name": "ViewRef"
@@ -453,7 +453,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createRootComponent"
@@ -1143,10 +1143,10 @@
     "name": "storeCleanupWithContext"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "syncViewWithBlueprint"

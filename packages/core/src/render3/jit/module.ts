@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, WrappedNodeExpr, compileInjector, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
-
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_INJECTOR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 
+import {R3InjectorMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
 import {reflectDependencies} from './util';
 
@@ -37,48 +36,39 @@ export function compileNgModuleDefs(moduleType: Type<any>, ngModule: NgModule): 
 
   let ngModuleDef: any = null;
   Object.defineProperty(moduleType, NG_MODULE_DEF, {
+    configurable: true,
     get: () => {
       if (ngModuleDef === null) {
-        const meta: R3NgModuleMetadata = {
-          type: wrap(moduleType),
-          bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(wrapReference),
-          declarations: declarations.map(wrapReference),
-          imports: flatten(ngModule.imports || EMPTY_ARRAY)
-                       .map(expandModuleWithProviders)
-                       .map(wrapReference),
-          exports: flatten(ngModule.exports || EMPTY_ARRAY)
-                       .map(expandModuleWithProviders)
-                       .map(wrapReference),
-          emitInline: true,
-        };
-        const res = compileR3NgModule(meta);
-        ngModuleDef = jitExpression(
-            res.expression, angularCoreEnv, `ng://${moduleType.name}/ngModuleDef.js`, []);
+        ngModuleDef = getCompilerFacade().compileNgModule(
+            angularCoreEnv, `ng://${moduleType.name}/ngModuleDef.js`, {
+              type: moduleType,
+              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY),
+              declarations: declarations,
+              imports: flatten(ngModule.imports || EMPTY_ARRAY).map(expandModuleWithProviders),
+              exports: flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders),
+              emitInline: true,
+            });
       }
       return ngModuleDef;
-    },
-    // Make the property configurable in dev mode to allow overriding in tests
-    configurable: !!ngDevMode,
+    }
   });
 
   let ngInjectorDef: any = null;
   Object.defineProperty(moduleType, NG_INJECTOR_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        const meta: R3InjectorMetadata = {
+        const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
-          type: wrap(moduleType),
+          type: moduleType,
           deps: reflectDependencies(moduleType),
-          providers: new WrappedNodeExpr(ngModule.providers || EMPTY_ARRAY),
-          imports: new WrappedNodeExpr([
+          providers: ngModule.providers || EMPTY_ARRAY,
+          imports: [
             ngModule.imports || EMPTY_ARRAY,
             ngModule.exports || EMPTY_ARRAY,
-          ]),
+          ],
         };
-        const res = compileInjector(meta);
-        ngInjectorDef = jitExpression(
-            res.expression, angularCoreEnv, `ng://${moduleType.name}/ngInjectorDef.js`,
-            res.statements);
+        ngInjectorDef = getCompilerFacade().compileInjector(
+            angularCoreEnv, `ng://${moduleType.name}/ngInjectorDef.js`, meta);
       }
       return ngInjectorDef;
     },
@@ -233,15 +223,6 @@ function expandModuleWithProviders(value: Type<any>| ModuleWithProviders<{}>): T
     return value.ngModule;
   }
   return value;
-}
-
-function wrap(value: Type<any>): Expression {
-  return new WrappedNodeExpr(value);
-}
-
-function wrapReference(value: Type<any>): R3Reference {
-  const wrapped = wrap(value);
-  return {value: wrapped, type: wrapped};
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
