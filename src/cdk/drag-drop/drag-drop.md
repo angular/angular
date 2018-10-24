@@ -104,6 +104,14 @@ This preview can be customized, though, by providing a custom template via `*cdk
 
 <!-- example(cdk-drag-drop-custom-preview) -->
 
+### Customizing the drag placeholder
+While a `cdkDrag` element is being dragged, the CDK will create a placeholder element that will
+show where it will be placed when it's dropped. By default the placeholder is a clone of the element
+that is being dragged, however you can replace it with a custom one using the `*cdkDragPlaceholder`
+directive:
+
+<!-- example(cdk-drag-drop-custom-placeholder) -->
+
 ### List orientation
 The `cdkDropList` directive assumes that lists are vertical by default. This can be
 changed by setting the `orientation` property to `"horizontal".
