@@ -1,31 +1,17 @@
-// TypeScript config file that is used to compile the library into ES2015.
+// TypeScript config file that is used to compile the Material package through Gulp. As the
+// long term goal is to switch to Bazel, and we already want to run tests with Bazel, we need to
+// ensure the TypeScript build options are the same for Gulp and Bazel. We achieve this by
+// extending the generic Bazel build tsconfig which will be used for each entry-point.
 {
+  "extends": "../bazel-tsconfig-build.json",
   "compilerOptions": {
-    "declaration": true,
-    "stripInternal": false,
-    "experimentalDecorators": true,
-    "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "importHelpers": true,
-    "newLine": "lf",
-    "module": "es2015",
-    "moduleResolution": "node",
+    "baseUrl": ".",
     "outDir": "../../dist/packages/material",
     "rootDir": ".",
     "rootDirs": [
       ".",
       "../../dist/packages/material"
     ],
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "lib": ["es2015", "dom"],
-    "skipLibCheck": true,
-    "types": [],
-    "baseUrl": ".",
     "paths": {
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
       "@angular/material/*": ["../../dist/packages/material/*"]
@@ -42,8 +28,5 @@
     "flatModuleId": "@angular/material",
     "skipTemplateCodegen": true,
     "fullTemplateTypeCheck": true
-  },
-  "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
   }
 }
