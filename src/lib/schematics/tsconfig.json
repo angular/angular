@@ -26,11 +26,11 @@
   "exclude": [
     "**/*.spec.ts",
     // Exclude the test-setup utility files. Those should not be part of the output.
-    "test-setup/**/*",
+    "test-setup/**/*.ts",
     // Exclude template files that will be copied by the schematics. Those are not valid TS.
-    "*/files/**/*",
+    "ng-generate/*/files/**/*.ts",
     // Exclude all test-case files because those should not be included in the schematics output.
-    "ng-update/test-cases/**/*"
+    "ng-update/test-cases/**/*.ts"
   ],
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

@@ -12,7 +12,7 @@ describe('Material tree schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    runner = new SchematicTestRunner('schematics', require.resolve('../../collection.json'));
   });
 
   it('should create tree component files and add them to module', () => {

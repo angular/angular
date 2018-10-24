@@ -18,36 +18,36 @@
     // Create a dashboard component
     "dashboard": {
       "description": "Create a card-based dashboard component",
-      "factory": "./dashboard/index",
-      "schema": "./dashboard/schema.json",
+      "factory": "./ng-generate/dashboard/index",
+      "schema": "./ng-generate/dashboard/schema.json",
       "aliases": ["material-dashboard"]
     },
     // Creates a table component
     "table": {
       "description": "Create a component that displays data with a data-table",
-      "factory": "./table/index",
-      "schema": "./table/schema.json",
+      "factory": "./ng-generate/table/index",
+      "schema": "./ng-generate/table/schema.json",
       "aliases": ["material-table"]
     },
     // Creates toolbar and navigation components
     "nav": {
       "description": "Create a component with a responsive sidenav for navigation",
-      "factory": "./nav/index",
-      "schema": "./nav/schema.json",
+      "factory": "./ng-generate/nav/index",
+      "schema": "./ng-generate/nav/schema.json",
       "aliases": ["material-nav", "materialNav"]
     },
     // Create a file tree component
     "tree": {
       "description": "Create a file tree component.",
-      "factory": "./tree/index",
-      "schema": "./tree/schema.json",
+      "factory": "./ng-generate/tree/index",
+      "schema": "./ng-generate/tree/schema.json",
       "aliases": ["material-tree"]
     },
     // Creates a address form component
     "addressForm": {
       "description": "Create a component with a address form",
-      "factory": "./address-form/index",
-      "schema": "./address-form/schema.json",
+      "factory": "./ng-generate/address-form/index",
+      "schema": "./ng-generate/address-form/schema.json",
       "aliases": ["address-form", "material-address-form", "material-addressForm"]
     }
   }

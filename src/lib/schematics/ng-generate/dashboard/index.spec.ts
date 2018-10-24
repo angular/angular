@@ -3,7 +3,7 @@ import {createTestApp} from '@angular/cdk/schematics/testing';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {Schema} from './schema';
 
-describe('Material address-form schematic', () => {
+describe('material-dashboard-schematic', () => {
   let runner: SchematicTestRunner;
 
   const baseOptions: Schema = {
@@ -12,11 +12,11 @@ describe('Material address-form schematic', () => {
   };
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', require.resolve('../collection.json'));
+    runner = new SchematicTestRunner('schematics', require.resolve('../../collection.json'));
   });
 
-  it('should create address-form files and add them to module', () => {
-    const tree = runner.runSchematic('address-form', baseOptions, createTestApp(runner));
+  it('should create dashboard files and add them to module', () => {
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp(runner));
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -29,34 +29,38 @@ describe('Material address-form schematic', () => {
     expect(moduleContent).toMatch(/declarations:\s*\[[^\]]+?,\r?\n\s+FooComponent\r?\n/m);
   });
 
-  it('should add address-form imports to module', () => {
-    const tree = runner.runSchematic('address-form', baseOptions, createTestApp(runner));
+  it('should add dashboard imports to module', () => {
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp(runner));
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
-    expect(moduleContent).toContain('MatInputModule');
+    expect(moduleContent).toContain('MatGridListModule');
+    expect(moduleContent).toContain('MatCardModule');
+    expect(moduleContent).toContain('MatMenuModule');
+    expect(moduleContent).toContain('MatIconModule');
     expect(moduleContent).toContain('MatButtonModule');
-    expect(moduleContent).toContain('MatSelectModule');
-    expect(moduleContent).toContain('MatRadioModule');
-    expect(moduleContent).toContain('ReactiveFormsModule');
+
+    expect(moduleContent).toContain(
+      `import { MatGridListModule, MatCardModule, MatMenuModule, MatIconModule, MatButtonModule }` +
+      ` from '@angular/material';`);
   });
 
   it('should throw if no name has been specified', () => {
     expect(() => {
-      runner.runSchematic('address-form', {project: 'material'}, createTestApp(runner));
+      runner.runSchematic('dashboard', {project: 'material'}, createTestApp(runner));
     }).toThrowError(/required property 'name'/);
   });
 
   describe('styleext option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {styleext: 'scss', ...baseOptions}, createTestApp(runner));
+          'dashboard', {styleext: 'scss', ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
     });
 
     it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'address-form', baseOptions, createTestApp(runner, {style: 'less'}));
+          'dashboard', baseOptions, createTestApp(runner, {style: 'less'}));
 
       expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
     });
@@ -65,14 +69,14 @@ describe('Material address-form schematic', () => {
   describe('inlineStyle option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {inlineStyle: true, ...baseOptions}, createTestApp(runner));
+          'dashboard', {inlineStyle: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
 
     it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'address-form', baseOptions, createTestApp(runner, {inlineStyle: true}));
+          'dashboard', baseOptions, createTestApp(runner, {inlineStyle: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
     });
@@ -81,14 +85,14 @@ describe('Material address-form schematic', () => {
   describe('inlineTemplate option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {inlineTemplate: true, ...baseOptions}, createTestApp(runner));
+          'dashboard', {inlineTemplate: true, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
 
     it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'address-form', baseOptions, createTestApp(runner, {inlineTemplate: true}));
+          'dashboard', baseOptions, createTestApp(runner, {inlineTemplate: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
     });
@@ -97,14 +101,14 @@ describe('Material address-form schematic', () => {
   describe('spec option', () => {
     it('should respect the option value', () => {
       const tree = runner.runSchematic(
-          'address-form', {spec: false, ...baseOptions}, createTestApp(runner));
+          'dashboard', {spec: false, ...baseOptions}, createTestApp(runner));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });
 
     it('should fall back to the @schematics/angular:component option value', () => {
       const tree = runner.runSchematic(
-          'address-form', baseOptions, createTestApp(runner, {skipTests: true}));
+          'dashboard', baseOptions, createTestApp(runner, {skipTests: true}));
 
       expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
     });

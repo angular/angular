@@ -7,16 +7,16 @@ load("//tools:defaults.bzl", "jasmine_node_test")
 
 filegroup(
   name = "schematics_assets",
-  srcs = glob(["**/files/**/*", "**/*.json"]),
+  srcs = glob(["ng-generate/*/files/**/*", "**/*.json"]),
 )
 
 ts_library(
   name = "schematics",
   module_name = "@angular/material/schematics",
   srcs = glob(["**/*.ts"], exclude=[
-    "**/files/**/*.ts",
     "**/*.spec.ts",
-    "ng-update/test-cases/**/*",
+    "ng-update/test-cases/**/*.ts",
+    "ng-generate/*/files/**/*.ts",
   ]),
   deps = [
     "//src/cdk/schematics",
@@ -49,7 +49,7 @@ jasmine_node_test(
 
 ts_library(
   name = "schematics_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude=["**/files/**/*.spec.ts"]),
+  srcs = glob(["**/*.spec.ts"], exclude=["ng-generate/*/files/**/*.spec.ts"]),
   deps = [
     ":schematics",
     "//src/cdk/schematics",
