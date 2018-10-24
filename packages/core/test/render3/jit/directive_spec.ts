@@ -88,8 +88,8 @@ describe('jit directive helper functions', () => {
         read: Directive
       });
 
-      expect(converted.predicate).toEqual(jasmine.any(WrappedNodeExpr));
-      expect(converted.read).toEqual(jasmine.any(WrappedNodeExpr));
+      expect(converted.predicate).toEqual(Directive);
+      expect(converted.read).toEqual(Directive);
     });
 
   });

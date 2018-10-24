@@ -240,7 +240,7 @@
     "name": "BINDING_INDEX"
   },
   {
-    "name": "BIND_NAME_REGEXP"
+    "name": "BIND_NAME_REGEXP$1"
   },
   {
     "name": "BLOCK_PLACEHOLDER"
@@ -813,16 +813,16 @@
     "name": "IDENT"
   },
   {
-    "name": "IDENT_BANANA_BOX_IDX"
+    "name": "IDENT_BANANA_BOX_IDX$1"
   },
   {
-    "name": "IDENT_EVENT_IDX"
+    "name": "IDENT_EVENT_IDX$1"
   },
   {
-    "name": "IDENT_KW_IDX"
+    "name": "IDENT_KW_IDX$1"
   },
   {
-    "name": "IDENT_PROPERTY_IDX"
+    "name": "IDENT_PROPERTY_IDX$1"
   },
   {
     "name": "ID_SEPARATOR"
@@ -939,22 +939,22 @@
     "name": "KEY_CONTEXT"
   },
   {
-    "name": "KW_AT_IDX"
+    "name": "KW_AT_IDX$1"
   },
   {
-    "name": "KW_BINDON_IDX"
+    "name": "KW_BINDON_IDX$1"
   },
   {
-    "name": "KW_BIND_IDX"
+    "name": "KW_BIND_IDX$1"
   },
   {
-    "name": "KW_LET_IDX"
+    "name": "KW_LET_IDX$1"
   },
   {
-    "name": "KW_ON_IDX"
+    "name": "KW_ON_IDX$1"
   },
   {
-    "name": "KW_REF_IDX"
+    "name": "KW_REF_IDX$1"
   },
   {
     "name": "KeyVisitor"
@@ -1116,7 +1116,7 @@
     "name": "NG_TOKEN_PATH"
   },
   {
-    "name": "NON_BINDABLE_VISITOR"
+    "name": "NON_BINDABLE_VISITOR$1"
   },
   {
     "name": "NOOP"
@@ -1209,7 +1209,7 @@
     "name": "NodeInjectorFactory"
   },
   {
-    "name": "NonBindableVisitor"
+    "name": "NonBindableVisitor$1"
   },
   {
     "name": "NonNullAssert"
@@ -1410,7 +1410,7 @@
     "name": "RecurseVisitor"
   },
   {
-    "name": "RecursiveAstVisitor"
+    "name": "RecursiveAstVisitor$1"
   },
   {
     "name": "RefCountOperator"
@@ -1629,7 +1629,7 @@
     "name": "TAIL"
   },
   {
-    "name": "TEMPLATE_ATTR_PREFIX"
+    "name": "TEMPLATE_ATTR_PREFIX$1"
   },
   {
     "name": "TEXT_CSS_SELECTOR"
@@ -1704,10 +1704,10 @@
     "name": "Text"
   },
   {
-    "name": "Text$1"
+    "name": "Text$2"
   },
   {
-    "name": "Text$2"
+    "name": "Text$3"
   },
   {
     "name": "TextAst"
@@ -1770,7 +1770,7 @@
     "name": "URL_WITH_SCHEMA_REGEXP"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE$2"
   },
   {
     "name": "UnsubscriptionError"
@@ -1782,7 +1782,7 @@
     "name": "UrlResolver"
   },
   {
-    "name": "VERSION$1"
+    "name": "VERSION"
   },
   {
     "name": "VERSION$2"
@@ -2151,7 +2151,7 @@
     "name": "__read"
   },
   {
-    "name": "__self"
+    "name": "__self$1"
   },
   {
     "name": "__spread"
@@ -2163,7 +2163,7 @@
     "name": "__values"
   },
   {
-    "name": "__window"
+    "name": "__window$1"
   },
   {
     "name": "_addDebugContext"
@@ -2283,7 +2283,7 @@
     "name": "_getViewQueries"
   },
   {
-    "name": "_global"
+    "name": "_global$1"
   },
   {
     "name": "_isClosingComment"

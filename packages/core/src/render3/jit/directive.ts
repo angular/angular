@@ -6,23 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseHostBindings, parseTemplate} from '@angular/compiler';
-
 import {Query} from '../../metadata/di';
-import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
+import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
 import {stringify} from '../../util';
+import {EMPTY_ARRAY} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 
+import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
 import {angularCoreEnv} from './environment';
 import {patchComponentDefWithScope, transitiveScopesFor} from './module';
 import {getReflect, reflectDependencies} from './util';
 
-type StringMap = {
-  [key: string]: string
-};
+
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
@@ -39,6 +38,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   maybeQueueResolutionOfComponentResources(metadata);
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
+      const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${stringify(type)}' is not resolved:`];
@@ -51,43 +51,20 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           error.push(`Did you run and wait for 'resolveComponentResources()'?`);
           throw new Error(error.join('\n'));
         }
-        // The ConstantPool is a requirement of the JIT'er.
-        const constantPool = new ConstantPool();
-
-        // Parse the template and check for errors.
-        const template = parseTemplate(
-            metadata.template !, `ng://${stringify(type)}/template.html`, {
-              preserveWhitespaces: metadata.preserveWhitespaces || false,
-            },
-            '');
-        if (template.errors !== undefined) {
-          const errors = template.errors.map(err => err.toString()).join(', ');
-          throw new Error(
-              `Errors during JIT compilation of template for ${stringify(type)}: ${errors}`);
-        }
-
-        const animations =
-            metadata.animations !== null ? new WrappedNodeExpr(metadata.animations) : null;
-
-        // Compile the component metadata, including template, into an expression.
-        const res = compileR3Component(
-            {
-              ...directiveMetadata(type, metadata),
-              template,
-              directives: new Map(),
-              pipes: new Map(),
-              viewQueries: extractQueriesMetadata(getReflect().propMetadata(type), isViewQuery),
-              wrapDirectivesAndPipesInClosure: false,
-              styles: metadata.styles || [],
-              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated, animations,
-              viewProviders: metadata.viewProviders ? new WrappedNodeExpr(metadata.viewProviders) :
-                                                      null
-            },
-            constantPool, makeBindingParser());
-        const preStatements = [...constantPool.statements, ...res.statements];
-
-        ngComponentDef = jitExpression(
-            res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, preStatements);
+        const meta: R3ComponentMetadataFacade = {
+          ...directiveMetadata(type, metadata),
+          template: metadata.template || '',
+          preserveWhitespaces: metadata.preserveWhitespaces || false,
+          styles: metadata.styles || EMPTY_ARRAY,
+          animations: metadata.animations,
+          viewQueries: extractQueriesMetadata(getReflect().propMetadata(type), isViewQuery),
+          directives: new Map(),
+          pipes: new Map(),
+          encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          viewProviders: metadata.viewProviders || null,
+        };
+        ngComponentDef = compiler.compileComponent(
+            angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
@@ -122,12 +99,9 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
       if (ngDirectiveDef === null) {
-        const constantPool = new ConstantPool();
-        const sourceMapUrl = `ng://${type && type.name}/ngDirectiveDef.js`;
-        const res = compileR3Directive(
-            directiveMetadata(type, directive), constantPool, makeBindingParser());
-        const preStatements = [...constantPool.statements, ...res.statements];
-        ngDirectiveDef = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+        const facade = directiveMetadata(type, directive);
+        ngDirectiveDef = getCompilerFacade().compileDirective(
+            angularCoreEnv, `ng://${type && type.name}/ngDirectiveDef.js`, facade);
       }
       return ngDirectiveDef;
     },
@@ -144,38 +118,20 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
  * Extract the `R3DirectiveMetadata` for a particular directive (either a `Directive` or a
  * `Component`).
  */
-function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadata {
+function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
   const propMetadata = getReflect().propMetadata(type);
 
-  const host = extractHostBindings(metadata, propMetadata);
-
-  const inputsFromMetadata = parseInputOutputs(metadata.inputs || []);
-  const outputsFromMetadata = parseInputOutputs(metadata.outputs || []);
-
-  const inputsFromType: {[key: string]: string | string[]} = {};
-  const outputsFromType: StringMap = {};
-  for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
-      propMetadata[field].forEach(ann => {
-        if (isInput(ann)) {
-          inputsFromType[field] =
-              ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
-        } else if (isOutput(ann)) {
-          outputsFromType[field] = ann.bindingPropertyName || field;
-        }
-      });
-    }
-  }
-
   return {
     name: type.name,
-    type: new WrappedNodeExpr(type),
+    type: type,
     typeArgumentCount: 0,
     selector: metadata.selector !,
-    deps: reflectDependencies(type), host,
-    inputs: {...inputsFromMetadata, ...inputsFromType},
-    outputs: {...outputsFromMetadata, ...outputsFromType},
+    deps: reflectDependencies(type),
+    host: metadata.host || EMPTY_OBJ,
+    propMetadata: propMetadata,
+    inputs: metadata.inputs || EMPTY_ARRAY,
+    outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(propMetadata, isContentQuery),
     lifecycle: {
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
@@ -183,57 +139,29 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: metadata.exportAs || null,
-    providers: metadata.providers ? new WrappedNodeExpr(metadata.providers) : null
+    providers: metadata.providers || null,
   };
 }
 
-function extractHostBindings(metadata: Directive, propMetadata: {[key: string]: any[]}): {
-  attributes: StringMap,
-  listeners: StringMap,
-  properties: StringMap,
-} {
-  // First parse the declarations from the metadata.
-  const {attributes, listeners, properties, animations} = parseHostBindings(metadata.host || {});
+const EMPTY_OBJ = {};
 
-  if (Object.keys(animations).length > 0) {
-    throw new Error(`Animation bindings are as-of-yet unsupported in Ivy`);
-  }
-
-  // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
-  for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
-      propMetadata[field].forEach(ann => {
-        if (isHostBinding(ann)) {
-          properties[ann.hostPropertyName || field] = field;
-        } else if (isHostListener(ann)) {
-          listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
-        }
-      });
-    }
-  }
-
-  return {attributes, listeners, properties};
+function convertToR3QueryPredicate(selector: any): any|string[] {
+  return typeof selector === 'string' ? splitByComma(selector) : selector;
 }
 
-function convertToR3QueryPredicate(selector: any): Expression|string[] {
-  return typeof selector === 'string' ? splitByComma(selector) : new WrappedNodeExpr(selector);
-}
-
-export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadata {
+export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadataFacade {
   return {
     propertyName: propertyName,
     predicate: convertToR3QueryPredicate(ann.selector),
     descendants: ann.descendants,
     first: ann.first,
-    read: ann.read ? new WrappedNodeExpr(ann.read) : null
+    read: ann.read ? ann.read : null
   };
 }
-
 function extractQueriesMetadata(
     propMetadata: {[key: string]: any[]},
-    isQueryAnn: (ann: any) => ann is Query): R3QueryMetadata[] {
-  const queriesMeta: R3QueryMetadata[] = [];
-
+    isQueryAnn: (ann: any) => ann is Query): R3QueryMetadataFacade[] {
+  const queriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
@@ -243,24 +171,7 @@ function extractQueriesMetadata(
       });
     }
   }
-
   return queriesMeta;
-}
-
-function isInput(value: any): value is Input {
-  return value.ngMetadataName === 'Input';
-}
-
-function isOutput(value: any): value is Output {
-  return value.ngMetadataName === 'Output';
-}
-
-function isHostBinding(value: any): value is HostBinding {
-  return value.ngMetadataName === 'HostBinding';
-}
-
-function isHostListener(value: any): value is HostListener {
-  return value.ngMetadataName === 'HostListener';
 }
 
 function isContentQuery(value: any): value is Query {
@@ -275,14 +186,4 @@ function isViewQuery(value: any): value is Query {
 
 function splitByComma(value: string): string[] {
   return value.split(',').map(piece => piece.trim());
-}
-
-function parseInputOutputs(values: string[]): StringMap {
-  return values.reduce(
-      (map, value) => {
-        const [field, property] = splitByComma(value);
-        map[field] = property || field;
-        return map;
-      },
-      {} as StringMap);
 }
