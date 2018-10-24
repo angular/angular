@@ -2,12 +2,24 @@
 
 set -e -o pipefail
 
+tunnelTmpDir="/tmp/material-browserstack"
+tunnelReadyFile="${tunnelTmpDir}/readyfile"
 
-echo "Shutting down Browserstack tunnel"
+if [[ ! -f ${tunnelReadyFile} ]]; then
+  echo "BrowserStack tunnel has not been started. Cannot stop tunnel.."
+  exit 1
+fi
 
-killall BrowserStackLocal
+echo "Shutting down Browserstack tunnel.."
 
-while [[ -n `ps -ef | grep "BrowserStackLocal" | grep -v "grep"` ]]; do
+# The process id for the BrowserStack local instance is stored inside of the readyfile.
+tunnelProcessId=$(cat ${tunnelReadyFile})
+
+# Kill the process by using the PID that has been read from the readyfile. Note that
+# we cannot use killall because CircleCI base container images don't have it installed.
+kill ${tunnelProcessId}
+
+while (ps -p ${tunnelProcessId} &> /dev/null); do
   printf "."
   sleep .5
 done

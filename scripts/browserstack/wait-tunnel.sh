@@ -1,13 +1,17 @@
 #!/bin/bash
 
-TUNNEL_LOG="$LOGS_DIR/browserstack-tunnel.log"
+tunnelTmpDir="/tmp/material-browserstack"
+tunnelLogFile="${tunnelTmpDir}/browserstack-local.log"
+tunnelReadyFile="${tunnelTmpDir}/readyfile"
+tunnelErrorFile="${tunnelTmpDir}/errorfile"
+
 WAIT_DELAY=30
 
 # Method that prints the logfile output of the browserstack tunnel.
 printLog() {
-  echo "Logfile output of Browserstack tunnel (${TUNNEL_LOG}):"
+  echo "Logfile output of Browserstack tunnel (${tunnelLogFile}):"
   echo ""
-  cat ${TUNNEL_LOG}
+  cat ${tunnelLogFile}
 }
 
 # Wait for Connect to be ready before exiting
@@ -15,14 +19,14 @@ printLog() {
 let "counter=0"
 
 # Exit the process if there are errors reported. Print the tunnel log to the console.
-if [ -f $BROWSER_PROVIDER_ERROR_FILE ]; then
+if [ -f ${tunnelErrorFile} ]; then
   echo
   echo "An error occurred while starting the tunnel. See error:"
   printLog
   exit 5
 fi
 
-while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
+while [ ! -f ${tunnelReadyFile} ]; do
   let "counter++"
 
   # Counter needs to be multiplied by two because the while loop only sleeps a half second.

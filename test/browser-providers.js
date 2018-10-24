@@ -71,8 +71,7 @@ function decodeToken(token) {
   return (token || '').split('').reverse().join('');
 }
 
-
-/** Ensures that the Travis access keys work properly. */
+/** Ensures that the Saucelabs and Browserstack access keys work properly. */
 if (process.env.TRAVIS) {
   process.env.SAUCE_ACCESS_KEY = decodeToken(process.env.SAUCE_ACCESS_KEY);
   process.env.BROWSER_STACK_ACCESS_KEY = decodeToken(process.env.BROWSER_STACK_ACCESS_KEY);

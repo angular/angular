@@ -101,7 +101,17 @@ module.exports = (config) => {
   });
 
   if (process.env['CIRCLECI']) {
-    config.browsers = platformMap[process.env['TEST_PLATFORM']];
+    const tunnelIdentifier = process.env['CIRCLE_BUILD_NUM'];
+    const buildIdentifier = `angular-material-${tunnelIdentifier}`;
+    const testPlatform = process.env['TEST_PLATFORM'];
+
+    if (testPlatform === 'browserstack') {
+      config.browserStack.build = buildIdentifier;
+      config.browserStack.tunnelIdentifier = tunnelIdentifier;
+    }
+
+    // Configure Karma launch the browsers that belong to the given test platform.
+    config.browsers = platformMap[testPlatform];
   }
 
   if (process.env['TRAVIS']) {

@@ -125,6 +125,25 @@ jobs:
 
       - *save_cache
 
+  # ----------------------------------------------------------------------------
+  # Job that runs the unit tests on Browserstack. The browsers that will be used
+  # to run the unit tests on Browserstack are set in: test/browser-providers.js
+  # ----------------------------------------------------------------------------
+  tests_browserstack:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      BROWSER_STACK_USERNAME: "angularteam1"
+      BROWSER_STACK_ACCESS_KEY: "CaXMeMHD9pr5PHg8N7Jq"
+    steps:
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+
+      - run: ./scripts/circleci/run-browserstack-tests.sh
+
+      - *save_cache
+
   # --------------------------------------
   # Job that builds the demo-app with AOT
   # --------------------------------------
@@ -189,6 +208,7 @@ workflows:
   unit_tests:
     jobs:
       - tests_local_browsers
+      - tests_browserstack
 
   integration_tests:
     jobs:
