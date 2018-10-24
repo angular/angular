@@ -1,6 +1,6 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, by, element, ElementFinder, ExpectedConditions as EC, until } from 'protractor';
+import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
 
 /* tslint:disable:quotemark */
 describe('Elements', () => {
@@ -15,7 +15,7 @@ describe('Elements', () => {
   };
   const waitForText = (elem: ElementFinder) => {
     // Waiting for the element to have some text, makes the tests less flaky.
-    browser.wait(until.elementTextMatches(elem, /\S/), 5000);
+    browser.wait(async () => /\S/.test(await elem.getText()), 5000);
   }
 
   beforeEach(() => browser.get(''));
