@@ -6,9 +6,9 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "reflect_metadata",
     srcs = [
+        "src/reflect_metadata_aot.ts",
         "src/reflect_metadata_jit.ts",
         "src/reflect_metadata_legacy.ts",
-        "src/reflect_metadata_local.ts",
         ":metadata_switch",
     ],
     module_name = "@angular/core/test/bundling/util/src/reflect_metadata",
