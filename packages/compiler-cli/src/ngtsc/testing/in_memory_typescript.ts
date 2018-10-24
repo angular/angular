@@ -8,7 +8,7 @@
 
 ///<reference types="jasmine"/>
 
-import * as path from 'path';
+import * as path from 'canonical-path';
 import * as ts from 'typescript';
 
 export function makeProgram(
@@ -93,7 +93,7 @@ export class InMemoryHost implements ts.CompilerHost {
   }
 
   getCanonicalFileName(fileName: string): string {
-    return path.posix.normalize(`${this.getCurrentDirectory()}/${fileName}`);
+    return path.normalize(`${this.getCurrentDirectory()}/${fileName}`);
   }
 
   useCaseSensitiveFileNames(): boolean { return true; }

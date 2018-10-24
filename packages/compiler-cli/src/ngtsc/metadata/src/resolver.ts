@@ -12,7 +12,7 @@
  */
 
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
-import * as path from 'path';
+import * as path from 'canonical-path';
 import * as ts from 'typescript';
 
 import {ClassMemberKind, ReflectionHost} from '../../host';
@@ -155,7 +155,7 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
       // TODO(alxhub): investigate the impact of multiple source roots here.
       // TODO(alxhub): investigate the need to map such paths via the Host for proper g3 support.
       let relative =
-          path.posix.relative(path.dirname(context.fileName), this.node.getSourceFile().fileName)
+          path.relative(path.dirname(context.fileName), this.node.getSourceFile().fileName)
               .replace(TS_DTS_JS_EXTENSION, '');
 
       // path.relative() does not include the leading './'.
