@@ -1,3 +1,9 @@
+<a name="7.0.1"></a>
+## [7.0.1](https://github.com/angular/angular/compare/7.0.0...7.0.1) (2018-10-24)
+
+
+
+
 <a name="7.0.0"></a>
 # [7.0.0](https://github.com/angular/angular/compare/7.0.0-rc.1...7.0.0) (2018-10-18)
 
