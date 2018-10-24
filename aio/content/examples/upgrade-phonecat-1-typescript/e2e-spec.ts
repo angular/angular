@@ -1,6 +1,6 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by, ElementArrayFinder, ElementFinder } from 'protractor';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
@@ -20,6 +20,12 @@ describe('PhoneCat Application', function() {
 
   describe('View: Phone list', function() {
 
+    // Helpers
+    const waitForCount = (elems: ElementArrayFinder, count: number) => {
+      // Wait for the list to stabilize, which may take a while (e.g. due to animations).
+      browser.wait(() => elems.count().then(c => c === count), 5000);
+    };
+
     beforeEach(function() {
       browser.get('index.html#!/phones');
     });
@@ -28,13 +34,16 @@ describe('PhoneCat Application', function() {
       let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       let query = element(by.model('$ctrl.query'));
 
+      waitForCount(phoneList, 20);
       expect(phoneList.count()).toBe(20);
 
       query.sendKeys('nexus');
+      waitForCount(phoneList, 1);
       expect(phoneList.count()).toBe(1);
 
       query.clear();
       query.sendKeys('motorola');
+      waitForCount(phoneList, 8);
       expect(phoneList.count()).toBe(8);
     });
 
@@ -51,6 +60,7 @@ describe('PhoneCat Application', function() {
       }
 
       queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
+      waitForCount(phoneNameColumn, 2);
 
       expect(getNames()).toEqual([
         'Motorola XOOM\u2122 with Wi-Fi',
@@ -66,10 +76,16 @@ describe('PhoneCat Application', function() {
     });
 
     it('should render phone specific links', function() {
+      let phoneList = element.all(by.repeater('phone in $ctrl.phones'));
       let query = element(by.model('$ctrl.query'));
-      query.sendKeys('nexus');
 
-      element.all(by.css('.phones li a')).first().click();
+      query.sendKeys('nexus');
+      waitForCount(phoneList, 1);
+
+      let nexusPhone = phoneList.first();
+      let detailLink = nexusPhone.all(by.css('a')).first()
+
+      detailLink.click();
       expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
 
