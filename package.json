@@ -57,7 +57,7 @@
     "angular-mocks-1.5": "npm:angular-mocks@1.5",
     "angular-mocks-1.6": "npm:angular-mocks@1.6",
     "base64-js": "1.2.1",
-    "canonical-path": "0.0.2",
+    "canonical-path": "1.0.0",
     "chokidar": "1.7.0",
     "convert-source-map": "^1.5.1",
     "dependency-graph": "^0.7.2",
