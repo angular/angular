@@ -26,8 +26,10 @@ export default function(options: Schema): Rule {
     // have the same version tag if possible.
     const ngCoreVersionTag = getPackageVersionFromPackageJson(host, '@angular/core');
 
-    addPackageToPackageJson(host, '@angular/cdk', `^${materialVersion}`);
-    addPackageToPackageJson(host, '@angular/material', `^${materialVersion}`);
+    // In order to align the Material and CDK version with the other Angular dependencies,
+    // we use tilde instead of caret. This is default for Angular dependencies in new CLI projects.
+    addPackageToPackageJson(host, '@angular/cdk', `~${materialVersion}`);
+    addPackageToPackageJson(host, '@angular/material', `~${materialVersion}`);
     addPackageToPackageJson(host, '@angular/animations',
         ngCoreVersionTag || requiredAngularVersionRange);
 
