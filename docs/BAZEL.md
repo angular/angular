@@ -79,11 +79,11 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 - `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This switches which compiler is used (ngc, ngtsc, or a tsc pass-through mode).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
     - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
-    - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`
+    - `aot`: Compile in ivy AOT move, e.g. `--define=compile=aot`
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config
 of your rules in any given `BUILD.bazel`.
     - `ivy-jit`: This flag should be set for tests that should be excuted with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
-    - `ivy-local`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=local`, e.g. `--test_tag_filters=ivy-local`..
+    - `ivy-aot`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=aot`, e.g. `--test_tag_filters=ivy-aot`..
     - `ivy-only`: Only run ivy related tests, e.g. `--test_tag_filters=ivy-only`.
 
 
