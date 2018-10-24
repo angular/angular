@@ -86,7 +86,7 @@ export interface R3DirectiveMetadata {
   /**
    * A mapping of input field names to the property names.
    */
-  inputs: {[field: string]: string};
+  inputs: {[field: string]: string | [string, string]};
 
   /**
    * A mapping of output field names to the property names.
@@ -103,6 +103,11 @@ export interface R3DirectiveMetadata {
    * if any.
    */
   exportAs: string|null;
+
+  /**
+   * The list of providers defined in the directive.
+   */
+  providers: o.Expression|null;
 }
 
 /**
@@ -180,6 +185,11 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * A collection of animation triggers that will be used in the component template.
    */
   animations: o.Expression|null;
+
+  /**
+   * The list of view providers defined in the component.
+   */
+  viewProviders: o.Expression|null;
 }
 
 /**

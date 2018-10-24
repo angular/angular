@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+//////////////////////////////////////
+// THIS FILE HAS GLOBAL SIDE EFFECT //
+//       (see bottom of file)       //
+//////////////////////////////////////
+
 /**
  * @module
  * @description
@@ -23,6 +28,8 @@
  */
 
 import * as core from './core';
+import {publishFacade} from './jit_compiler_facade';
+import {global} from './util';
 
 export {core};
 
@@ -91,4 +98,9 @@ export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compile
 export {makeBindingParser, parseTemplate} from './render3/view/template';
 export {R3Reference} from './render3/util';
 export {compileBaseDefFromMetadata, R3BaseRefMetaData, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings} from './render3/view/compiler';
+export {publishFacade} from './jit_compiler_facade';
 // This file only reexports content of the `src` folder. Keep it that way.
+
+// This function call has a global side effects and publishes the compiler into global namespace for
+// the late binding of the Compiler to the @angular/core for jit compilation.
+publishFacade(global);

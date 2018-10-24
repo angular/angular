@@ -109,7 +109,7 @@ class ToDoAppComponent {
   selector: 'todo',
   template: `
     <div [class.done]="todo.done">
-      <input type="checkbox" [value]="todo.done" (click)="onCheckboxClick()"></input>
+      <input type="checkbox" [value]="todo.done" (click)="onCheckboxClick()">
       <span>{{todo.text}}</span>
       <button (click)="onArchiveClick()">archive</button>
     </div>
