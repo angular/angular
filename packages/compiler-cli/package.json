@@ -12,7 +12,7 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
-    "canonical-path": "0.0.2",
+    "canonical-path": "1.0.0",
     "chokidar": "^1.4.2",
     "convert-source-map": "^1.5.1",
     "dependency-graph": "^0.7.2",
