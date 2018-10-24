@@ -54,6 +54,8 @@
     border-left-color: mat-color($foreground, divider);
   }
 
+  .mat-horizontal-stepper-header::before,
+  .mat-horizontal-stepper-header::after,
   .mat-stepper-horizontal-line {
     border-top-color: mat-color($foreground, divider);
   }

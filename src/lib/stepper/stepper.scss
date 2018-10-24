@@ -40,7 +40,6 @@ $mat-stepper-line-gap: 8px !default;
 }
 
 %mat-header-horizontal-line-label-position-bottom {
-  border-top-color: rgba(0, 0, 0, 0.12);
   border-top-width: $mat-stepper-line-width;
   border-top-style: solid;
   content: '';
