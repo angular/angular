@@ -72,6 +72,7 @@ js_expected_symbol_test(
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
     tags = [
+        "ivy-aot",
         "ivy-only",
     ],
 )
