@@ -404,7 +404,7 @@ describe('MatInput without forms', () => {
     const el = fixture.debugElement.query(By.css('label'));
 
     expect(el).not.toBeNull();
-    expect(el.nativeElement.textContent).toMatch(/^hello$/);
+    expect(el.nativeElement.textContent!.trim()).toMatch(/^hello$/);
   });
 
   it('should hide the required star from screen readers', fakeAsync(() => {

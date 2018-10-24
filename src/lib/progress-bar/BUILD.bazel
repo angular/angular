@@ -1,7 +1,7 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
   name = "progress-bar",
@@ -18,7 +18,6 @@ ng_module(
   ],
 )
 
-
 # TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
 filegroup(
   name = "progress_bar_scss_partials",
@@ -34,4 +33,20 @@ sass_binary(
 sass_library(
   name = "theme",
   srcs = glob(["**/*-theme.scss"]),
+)
+
+ng_test_library(
+  name = "progress_bar_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@angular//packages/platform-browser",
+    "@angular//packages/platform-browser/animations",
+    "//src/cdk/testing",
+    ":progress-bar",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":progress_bar_test_sources"],
 )

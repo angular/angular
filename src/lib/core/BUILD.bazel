@@ -2,7 +2,7 @@ package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
 load("//:packages.bzl", "MATERIAL_PACKAGES")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 exports_files(["theming/_theming.scss"])
 
@@ -29,7 +29,6 @@ ng_module(
     "//src/cdk/platform",
   ],
 )
-
 
 # TODO(jelbourn): remove this when sass_library acts like a filegroup
 filegroup(
@@ -105,4 +104,25 @@ sass_binary(
 sass_library(
   name = "theme",
   srcs = glob(["**/*-theme.scss"]),
+)
+
+#################
+#  Test targets
+#################
+
+ng_test_library(
+  name = "core_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@angular//packages/platform-browser",
+    "@angular//packages/platform-browser/animations",
+    "//src/cdk/platform",
+    "//src/cdk/testing",
+    "//src/lib/core",
+  ]
+)
+
+ng_web_test_suite(
+  name = "unit_tests",
+  deps = [":core_test_sources"],
 )

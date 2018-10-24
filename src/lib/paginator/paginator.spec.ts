@@ -101,7 +101,7 @@ describe('MatPaginator', () => {
         intl.changes.next();
         fixture.detectChanges();
 
-        expect(label.textContent).toBe('1337 items per page');
+        expect(label.textContent!.trim()).toBe('1337 items per page');
       }));
   });
 

@@ -604,7 +604,7 @@ describe('MatDatepicker', () => {
 
         // When the calendar is in year view, the first cell should be for a month rather than
         // for a date.
-        expect(firstCalendarCell.textContent)
+        expect(firstCalendarCell.textContent!.trim())
             .toBe('JAN', 'Expected the calendar to be in year-view');
       });
 
@@ -654,7 +654,7 @@ describe('MatDatepicker', () => {
 
         // When the calendar is in year view, the first cell should be for a month rather than
         // for a date.
-        expect(firstCalendarCell.textContent)
+        expect(firstCalendarCell.textContent!.trim())
             .toBe('2016', 'Expected the calendar to be in multi-year-view');
       });
 
