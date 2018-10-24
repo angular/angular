@@ -15,6 +15,12 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 _CONF_TMPL = "//packages/bazel/src/protractor:protractor.conf.js"
 
+def _short_path_to_manifest_path(ctx, short_path):
+    if short_path.startswith("../"):
+        return short_path[3:]
+    else:
+        return ctx.workspace_name + "/" + short_path
+
 def _protractor_web_test_impl(ctx):
     configuration = ctx.actions.declare_file(
         "%s.conf.js" % ctx.label.name,
@@ -53,16 +59,6 @@ def _protractor_web_test_impl(ctx):
     if hasattr(ctx.attr.on_prepare, "typescript"):
         on_prepare_file = ctx.attr.on_prepare.typescript.es5_sources.to_list()[0]
 
-    protractor_executable_path = ctx.executable.protractor.short_path
-    if protractor_executable_path.startswith(".."):
-        protractor_executable_path = "external" + protractor_executable_path[2:]
-
-    server_executable_path = ""
-    if ctx.executable.server:
-        server_executable_path = ctx.executable.server.short_path
-        if server_executable_path.startswith(".."):
-            server_executable_path = "external" + protractor_executable_path[2:]
-
     ctx.actions.expand_template(
         output = configuration,
         template = ctx.file._conf_tmpl,
@@ -70,7 +66,7 @@ def _protractor_web_test_impl(ctx):
             "TMPL_config": expand_path_into_runfiles(ctx, configuration_file.short_path) if configuration_file else "",
             "TMPL_on_prepare": expand_path_into_runfiles(ctx, on_prepare_file.short_path) if on_prepare_file else "",
             "TMPL_workspace": ctx.workspace_name,
-            "TMPL_server": server_executable_path,
+            "TMPL_server": ctx.executable.server.short_path if ctx.executable.server else "",
             "TMPL_specs": "\n".join(["      '%s'," % e for e in specs]),
         },
     )
@@ -84,15 +80,15 @@ def _protractor_web_test_impl(ctx):
 if [ -e "$RUNFILE_MANIFEST_FILE" ]; then
   while read line; do
     declare -a PARTS=($line)
-    if [ "${{PARTS[0]}}" == "angular/{TMPL_protractor}" ]; then
+    if [ "${{PARTS[0]}}" == "{TMPL_protractor}" ]; then
       readonly PROTRACTOR=${{PARTS[1]}}
-    elif [ "${{PARTS[0]}}" == "angular/{TMPL_conf}" ]; then
+    elif [ "${{PARTS[0]}}" == "{TMPL_conf}" ]; then
       readonly CONF=${{PARTS[1]}}
     fi
   done < $RUNFILE_MANIFEST_FILE
 else
-  readonly PROTRACTOR={TMPL_protractor}
-  readonly CONF={TMPL_conf}
+  readonly PROTRACTOR=../{TMPL_protractor}
+  readonly CONF=../{TMPL_conf}
 fi
 
 export HOME=$(mktemp -d)
@@ -104,8 +100,8 @@ echo "Protractor $PROTRACTOR_VERSION"
 # Run the protractor binary
 $PROTRACTOR $CONF
 """.format(
-            TMPL_protractor = protractor_executable_path,
-            TMPL_conf = configuration.short_path,
+            TMPL_protractor = _short_path_to_manifest_path(ctx, ctx.executable.protractor.short_path),
+            TMPL_conf = _short_path_to_manifest_path(ctx, configuration.short_path),
         ),
     )
     return [DefaultInfo(
