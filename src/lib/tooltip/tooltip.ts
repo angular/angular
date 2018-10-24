@@ -11,6 +11,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
+import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
 import {
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
@@ -201,26 +202,33 @@ export class MatTooltip implements OnDestroy {
     private _scrollDispatcher: ScrollDispatcher,
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,
-    private _platform: Platform,
+    platform: Platform,
     private _ariaDescriber: AriaDescriber,
     private _focusMonitor: FocusMonitor,
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() private _dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
-      private _defaultOptions: MatTooltipDefaultOptions) {
+      private _defaultOptions: MatTooltipDefaultOptions,
+    @Optional() @Inject(HAMMER_LOADER) hammerLoader?: HammerLoader) {
 
     this._scrollStrategy = scrollStrategy;
     const element: HTMLElement = _elementRef.nativeElement;
     const elementStyle = element.style as CSSStyleDeclaration & {webkitUserDrag: string};
+    const hasGestures = typeof window === 'undefined' || (window as any).Hammer || hammerLoader;
 
     // The mouse events shouldn't be bound on mobile devices, because they can prevent the
     // first tap from firing its click event or can cause the tooltip to open for clicks.
-    if (!_platform.IOS && !_platform.ANDROID) {
+    if (!platform.IOS && !platform.ANDROID) {
       this._manualListeners
         .set('mouseenter', () => this.show())
-        .set('mouseleave', () => this.hide())
-        .forEach((listener, event) => element.addEventListener(event, listener));
+        .set('mouseleave', () => this.hide());
+    } else if (!hasGestures) {
+      // If Hammerjs isn't loaded, fall back to showing on `touchstart`, otherwise
+      // there's no way for the user to trigger the tooltip on a touch device.
+      this._manualListeners.set('touchstart', () => this.show());
     }
+
+    this._manualListeners.forEach((listener, event) => element.addEventListener(event, listener));
 
     if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
       // When we bind a gesture event on an element (in this case `longpress`), HammerJS
@@ -258,12 +266,10 @@ export class MatTooltip implements OnDestroy {
     }
 
     // Clean up the event listeners set in the constructor
-    if (!this._platform.IOS) {
-      this._manualListeners.forEach((listener, event) =>
-        this._elementRef.nativeElement.removeEventListener(event, listener));
-
-      this._manualListeners.clear();
-    }
+    this._manualListeners.forEach((listener, event) => {
+      this._elementRef.nativeElement.removeEventListener(event, listener);
+    });
+    this._manualListeners.clear();
 
     this._destroyed.next();
     this._destroyed.complete();
