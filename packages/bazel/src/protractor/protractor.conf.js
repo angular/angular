@@ -108,10 +108,7 @@ if (process.env['WEB_TEST_METADATA']) {
         args.push('--disable-gpu');
       }
       setConf(conf, 'directConnect', true, 'is set to true for chrome');
-      setConf(
-          conf, 'chromeDriver',
-          chromeDriver,
-          'is determined by the browsers attribute');
+      setConf(conf, 'chromeDriver', chromeDriver, 'is determined by the browsers attribute');
       setConf(
           conf, 'capabilities', {
             browserName: 'chrome',
