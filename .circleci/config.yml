@@ -423,6 +423,10 @@ workflows:
             - test_ivy_jit
             - test_ivy_aot
             - integration_test
+            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+            - test_aio_local
+            - test_docs_examples_0
+            - test_docs_examples_1
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
