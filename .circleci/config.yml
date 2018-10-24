@@ -182,7 +182,7 @@ jobs:
       - run: yarn --cwd aio redirects-test
         # Deploy angular.io to production (if necessary)
       - run: echo "export CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')" | tee -a $BASH_ENV
-      - run: yarn --cwd aio deploy-production
+      - run: xvfb-run --auto-servernum yarn --cwd aio deploy-production
 
   test_aio_local:
     <<: *job_defaults
