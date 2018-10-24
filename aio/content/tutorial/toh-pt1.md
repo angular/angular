@@ -25,12 +25,8 @@ Using the Angular CLI, generate a new component named `heroes`.
   ng generate component heroes
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The CLI creates a new folder, `src/app/heroes/` and generates
-=======
 The CLI creates a new folder, `src/app/heroes/`, and generates
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 the three files of the  `HeroesComponent`.
 -->
 CLI는 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 위한 3개의 파일을 생성합니다.
@@ -78,12 +74,8 @@ The [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type
 [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors)인 
 `'app-heroes'`는 부모 컴포넌트 템플릿 내에 해당 컴포넌트를 대표하는 HTML element 이름입니다. 
 
-<<<<<<< HEAD
 <!--
-The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit) 
-=======
 The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit). 
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 Angular calls `ngOnInit` shortly after creating a component.
 It's a good place to put initialization logic.
 -->
@@ -213,14 +205,10 @@ and show both `id` and `name` in a details layout like this:
   header="heroes.component.html (HeroesComponent's template)" linenums="false">
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The browser refreshes and display's the hero's information.
+The browser refreshes and displays the hero's information.
 -->
 브라우저가 리프레시되며 히어로의 정보가 표시됩니다.
-=======
-The browser refreshes and displays the hero's information.
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 <!--
 ## Format with the _UppercasePipe_

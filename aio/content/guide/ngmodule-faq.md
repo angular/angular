@@ -33,7 +33,7 @@ Add [declarable](guide/bootstrapping#the-declarations-array) classes&mdash;compo
 Declare these classes in _exactly one_ module of the application.
 Declare them in a module if they belong to that particular module.
 -->
-이 배열에는 모듈에 포함되는 컴포넌트나 디렉티브, 파이프를 등록하며, 이 Angular 구성요소들을 [declarable](guide/bootstrapping#the-declarations-array)이라고도 합니다.
+이 배열에는 모듈에 포함되는 컴포넌트나 디렉티브, 파이프를 등록하며, 이 Angular 구성요소들을 [declarable](guide/bootstrapping#declarations-배열)이라고도 합니다.
 대상 클래스는 _딱 하나의_ 모듈에만 등록해야 합니다.
 
 <hr/>
@@ -63,7 +63,7 @@ Declarable은 Angular 구성요소이면서, JavaScript 클래스이기도 합�
 <!--
 Add only [declarable](guide/bootstrapping#the-declarations-array) classes to an NgModule's `declarations` list.
 -->
-NgModule의 `declarations` 배열에는 [declarable](guide/bootstrapping#the-declarations-array) 클래스만 추가해야 합니다.
+NgModule의 `declarations` 배열에는 [declarable](guide/bootstrapping#declarations-배열) 클래스만 추가해야 합니다.
 
 <!--
 Do *not* declare the following:
@@ -154,7 +154,7 @@ The "x" class isn't visible to other modules until you add it to the `exports` l
 Import NgModules whose public (exported) [declarable classes](guide/bootstrapping#the-declarations-array)
 you need to reference in this module's component templates.
 -->
-이 모듈의 컴포넌트 템플릿에서 사용하려는 [Angular 구성요소의 클래스](guide/bootstrapping#the-declarations-array)를 제공하는 NgModule을 로드하면 됩니다.
+이 모듈의 컴포넌트 템플릿에서 사용하려는 [Angular 구성요소의 클래스](guide/bootstrapping#declarations-배열)를 제공하는 NgModule을 로드하면 됩니다.
 
 <!--
 This always means importing `CommonModule` from `@angular/common` for access to
@@ -261,7 +261,7 @@ are able to reference in their templates. These are your _public_ classes.
 If you don't export a declarable class, it stays _private_, visible only to other components
 declared in this NgModule.
 -->
-다른 모듈의 템플릿에서 사용되어야 할 [컴포넌트나 디렉티브, 파이프](guide/bootstrapping#the-declarations-array) 클래스를 모듈 외부로 공개해야 합니다.
+다른 모듈의 템플릿에서 사용되어야 할 [컴포넌트나 디렉티브, 파이프](guide/bootstrapping#declarations-배열) 클래스를 모듈 외부로 공개해야 합니다.
 이렇게 지정하는 클래스들이 이 모듈의 _public_ 클래스입니다.
 모듈 외부로 지정하지 않은 Angular 구성요소는 기본적으로 _private_ 이며, 해당 모듈 안에서만 사용할 수 있습니다.
 
@@ -350,7 +350,7 @@ For example, there's no point in re-exporting `HttpClientModule` because it does
 Its only purpose is to add http service providers to the application as a whole.
 -->
 다만 서비스 모듈은 모듈 외부로 다시 공개하면 안됩니다.
-왜냐하면 서비스 모듈에는 모듈 외부로 공개된 [declarable](guide/bootstrapping#the-declarations-array) 클래스가 없기 때문에 이 모듈을 다시 `exports`로 지정하는 것은 의미가 없습니다.
+왜냐하면 서비스 모듈에는 모듈 외부로 공개된 [declarable](guide/bootstrapping#declarations-배열) 클래스가 없기 때문에 이 모듈을 다시 `exports`로 지정하는 것은 의미가 없습니다.
 예를 들어 `HttpClientModule`은 아무것도 모듈 외부로 공개하지 않습니다.
 이 모듈의 목적은 앱 전역에 http 서비스 프로바이더를 제공하는 것 뿐입니다.
 

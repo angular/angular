@@ -293,7 +293,7 @@ When you provide multiple sets of routes using [RouterModule.forRoot](api/router
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
 Search for [Constants in API documentation](api?type=const) to find more built-in tokens. 
 
@@ -302,7 +302,10 @@ Search for [Constants in API documentation](api?type=const) to find more built-i
 {@a tree-shakable-provider}
 {@a tree-shakable-providers}
 
+<!--
 ## Tree-shakable providers
+-->
+## 트리 셰이킹 대상이 되는 프로바이더
 
 Tree shaking refers to a compiler option that removes code from the final bundle if that code not referenced in an application.
 When providers are tree-shakable, the Angular compiler removes the associated

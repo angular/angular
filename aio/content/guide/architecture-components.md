@@ -149,6 +149,7 @@ This template uses typical HTML elements like `<h2>` and  `<p>`, and also includ
 -->
 이 템플릿에는 일반적으로 HTML 문서에 사용되는 `<h2>`나 `<p>` 엘리먼트가 사용되었으며, `*ngFor`나 `{{hero.name}}`, `(click)`, `[hero]`, `<app-hero-detail>`와 같은 문법은 Angular의 템플릿 문법을 활용한 것입니다. 템플릿 문법을 사용하면 HTML를 화면에 렌더링할 때 애플리케이션의 로직이나 데이터를 활용할 수 있습니다.
 
+<!--
 * The `*ngFor` directive tells Angular to iterate over a list.
 * `{{hero.name}}`, `(click)`, and `[hero]` bind program data to and from the DOM, responding to user input. See more about [data binding](#data-binding) below.
 * The `<app-hero-detail>` tag in the example is an element that represents a new component, `HeroDetailComponent`.  

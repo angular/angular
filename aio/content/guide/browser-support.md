@@ -221,7 +221,7 @@ Then open the `polyfills.ts` file and un-comment the corresponding `import` stat
   import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 </code-example>
 -->
-<code-example title="src/polyfills.ts">
+<code-example header="src/polyfills.ts">
   /**
   * `@angular/platform-browser/animations` 패키지로 웹 애니메이션을 사용할 때 필요합니다.
   * Chrome, Firefox, Opera를 제외한 브라우저에 필요합니다. http://caniuse.com/#feat=web-animation

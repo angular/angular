@@ -249,6 +249,7 @@ Each of these subjects is introduced in more detail in the following pages.
 -->
 그리고 다음 주제들은 다른 문서에서 좀 더 자세하게 다룹니다.
 
+<!--
 * [Introduction to Modules](guide/architecture-modules)
 
 * [Introduction to Components](guide/architecture-components)
@@ -262,6 +263,22 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Directives](guide/architecture-components#directives)
 
   * [Pipes](guide/architecture-components#pipes)
+
+* [Introduction to services and dependency injection](guide/architecture-services)
+-->
+* [Introduction to Modules](guide/architecture-modules)
+
+* [Introduction to Components](guide/architecture-components)
+
+  * [템플릿과 뷰](guide/architecture-components#템플릿과-뷰)
+
+  * [컴포넌트 메타데이터](guide/architecture-components#컴포넌트-메타데이터)
+
+  * [데이터 바인딩](guide/architecture-components#데이터-바인딩)
+
+  * [디렉티브](guide/architecture-components#디렉티브)
+
+  * [파이프](guide/architecture-components#파이프)
 
 * [Introduction to services and dependency injection](guide/architecture-services)
 

@@ -263,12 +263,21 @@ Choosing a strategy begins with understanding the strengths and weaknesses of th
 
 To learn more about reactive forms, see the following guides:
 
+<!--
 * [Reactive Forms](guide/reactive-forms)
 * [Form Validation](guide/form-validation#reactive-form-validation)
+* [Dynamic Forms](guide/dynamic-form)
+-->
+* [Reactive Forms](guide/reactive-forms)
+* [폼 유효성 검사](guide/form-validation#반응형-폼-유효성-검사)
 * [Dynamic Forms](guide/dynamic-form)
 
 To learn more about template-driven forms, see the following guides:
 
+<!--
 * [Template-driven Forms](guide/forms#template-driven-forms)
 * [Form Validation](guide/form-validation#template-driven-validation)
+-->
+* [템플릿 기반 폼](guide/forms#템플릿-기반-폼)
+* [폼 유효성 검사](guide/form-validation#템플릿-기반-폼-유효성-검사)
 

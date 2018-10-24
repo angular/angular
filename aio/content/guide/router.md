@@ -304,7 +304,10 @@ The router resolves that array into a complete URL.
 
 The `RouterLinkActive` directive toggles css classes for active `RouterLink` bindings based on the current `RouterState`.
 
+<!--
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+-->
+On each anchor tag, you see a [property binding](guide/template-syntax#프로퍼티-바인딩) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
 that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 

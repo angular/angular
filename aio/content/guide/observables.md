@@ -45,14 +45,10 @@ Here's an example that demonstrates the basic usage model by showing how an obse
 -->
 다음 코드는 옵저버블을 사용해서 사용자의 접속 위치를 확인하는 예제 코드입니다.
 
-<<<<<<< HEAD
 <!--
-<code-example path="observables/src/geolocation.ts" title="Observe geolocation updates"></code-example>
--->
-<code-example path="observables/src/geolocation.ts" title="접속 위치 추적하기"></code-example>
-=======
 <code-example path="observables/src/geolocation.ts" header="Observe geolocation updates"></code-example>
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
+-->
+<code-example path="observables/src/geolocation.ts" header="접속 위치 추적하기"></code-example>
 
 <!--
 ## Defining observers
@@ -115,7 +111,7 @@ Here's an example of creating and subscribing to a simple observable, with an ob
 <code-example
   path="observables/src/subscribing.ts"
   region="observer"
-  title="옵저버 객체로 구독하기"></code-example>
+  header="옵저버 객체로 구독하기"></code-example>
 
 <!--
 Alternatively, the `subscribe()` method can accept callback function definitions in line, for `next`, `error`, and `complete` handlers. For example, the following `subscribe()` call is the same as the one that specifies the predefined observer:
@@ -167,7 +163,7 @@ To take this example a little further, we can create an observable that publishe
 <!--
 <code-example path="observables/src/creating.ts" region="fromevent" header="Create with custom fromEvent function"></code-example>
 -->
-<code-example path="observables/src/creating.ts" region="fromevent" title="fromEvent() 함수 정의하기"></code-example>
+<code-example path="observables/src/creating.ts" region="fromevent" header="fromEvent() 함수 정의하기"></code-example>
 
 <!--
 Now you can use this function to create an observable that publishes keydown events:

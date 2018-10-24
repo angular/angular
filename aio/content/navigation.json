@@ -259,7 +259,7 @@
               "title": "파이프",
               "tooltip!": "Pipes transform displayed values within a template.",
               "tooltip": "파이프는 템플릿에 표시되는 데이터의 형식을 지정합니다."
-            },
+            }
           ]
         },
         {
@@ -272,8 +272,8 @@
               "url": "guide/forms-overview",
               "title": "Introduction",
               "title": "Form 소개",
-              "tooltip!": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
-	      "tooltip": "폼을 구성하면 사용자 입력을 일관되고 효율적으로 처리할 수 있습니다. Angular 폼은 입력 컨트롤을 묶어서 구성하고, 변화를 감지하며, 입력값의 유효성을 판단하고 에러를 표시할 수 있습니다."
+              "tooltip!": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors.",
+	            "tooltip": "폼을 구성하면 사용자 입력을 일관되고 효율적으로 처리할 수 있습니다. Angular 폼은 입력 컨트롤을 묶어서 구성하고, 변화를 감지하며, 입력값의 유효성을 판단하고 에러를 표시할 수 있습니다."
             },
             {
               "url": "guide/reactive-forms",

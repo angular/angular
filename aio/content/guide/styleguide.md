@@ -63,16 +63,10 @@ If you fully understand the meaning behind the guideline and have a good reason 
 <div class="s-rule avoid">
 
 
-<<<<<<< HEAD
 <!--
-**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
+**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakable red header.
 -->
 **"~하는 것은 피하세요"**는 되도록 피해야 하는 스타일을 의미합니다. 오해를 방지하기 위해 이 스타일은 빨간색 헤더로 표시합니다.
-=======
-
-**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakable red header.
-
->>>>>>> 213c25fb087939cb668bd47ca34ec7a616d3e371
 
 </div>
 
