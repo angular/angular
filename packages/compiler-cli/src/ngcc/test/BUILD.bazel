@@ -15,6 +15,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/transform",
         "@ngdeps//@types/convert-source-map",
         "@ngdeps//@types/mock-fs",
+        "@ngdeps//canonical-path",
         "@ngdeps//magic-string",
         "@ngdeps//typescript",
     ],
