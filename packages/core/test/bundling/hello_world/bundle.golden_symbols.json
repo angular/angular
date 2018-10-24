@@ -27,7 +27,7 @@
     "name": "EMPTY"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "EmptyErrorImpl"
@@ -117,7 +117,7 @@
     "name": "VIEWS"
   },
   {
-    "name": "ViewEncapsulation$1"
+    "name": "ViewEncapsulation"
   },
   {
     "name": "_renderCompCount"
@@ -438,7 +438,7 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "syncViewWithBlueprint"

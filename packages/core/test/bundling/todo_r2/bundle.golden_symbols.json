@@ -99,13 +99,13 @@
     "name": "COMPONENT_REGEX"
   },
   {
-    "name": "COMPONENT_VARIABLE$1"
+    "name": "COMPONENT_VARIABLE"
   },
   {
     "name": "CONTAINER_INDEX"
   },
   {
-    "name": "CONTENT_ATTR$1"
+    "name": "CONTENT_ATTR"
   },
   {
     "name": "CONTEXT"
@@ -252,10 +252,10 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EMPTY_ARRAY$2"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "EMPTY_PAYLOAD"
@@ -330,7 +330,7 @@
     "name": "HOST"
   },
   {
-    "name": "HOST_ATTR$1"
+    "name": "HOST_ATTR"
   },
   {
     "name": "HOST_NODE"
@@ -792,7 +792,7 @@
     "name": "SanitizingHtmlSerializer"
   },
   {
-    "name": "SecurityContext$1"
+    "name": "SecurityContext"
   },
   {
     "name": "Self"
@@ -906,7 +906,7 @@
     "name": "URL_RE"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE"
   },
   {
     "name": "UnsubscriptionError"
@@ -930,13 +930,13 @@
     "name": "VOID_ELEMENTS"
   },
   {
-    "name": "Version$1"
+    "name": "Version"
   },
   {
     "name": "ViewContainerRef"
   },
   {
-    "name": "ViewEncapsulation$1"
+    "name": "ViewEncapsulation"
   },
   {
     "name": "ViewRef"
@@ -1341,7 +1341,7 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createPlatform"
@@ -2118,10 +2118,10 @@
     "name": "isProceduralRenderer"
   },
   {
-    "name": "isPromise$1"
+    "name": "isPromise"
   },
   {
-    "name": "isPromise$2"
+    "name": "isPromise$1"
   },
   {
     "name": "isRootView"
@@ -2244,10 +2244,10 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop$2"
+    "name": "noop$1"
   },
   {
-    "name": "noop$3"
+    "name": "noop$2"
   },
   {
     "name": "noopScope"
@@ -2274,7 +2274,7 @@
     "name": "parseCookieValue"
   },
   {
-    "name": "parseIntAutoRadix$1"
+    "name": "parseIntAutoRadix"
   },
   {
     "name": "parseNumber"
@@ -2400,7 +2400,7 @@
     "name": "resolveDirectives"
   },
   {
-    "name": "resolveForwardRef$1"
+    "name": "resolveForwardRef"
   },
   {
     "name": "resolveProvider"
@@ -2550,10 +2550,10 @@
     "name": "strToNumber"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "subscribeTo"

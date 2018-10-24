@@ -48,6 +48,7 @@ ts_library(
     deps = [
         ":injection",
         "//packages:types",
+        "//packages/compiler",
         "//packages/core/testing",
         "//packages/private/testing",
     ],
