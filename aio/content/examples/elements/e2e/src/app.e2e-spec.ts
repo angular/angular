@@ -1,6 +1,6 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
+import { browser, by, element, ElementFinder, ExpectedConditions as EC, until } from 'protractor';
 
 /* tslint:disable:quotemark */
 describe('Elements', () => {
@@ -13,6 +13,10 @@ describe('Elements', () => {
     browser.wait(EC.elementToBeClickable(elem), 5000);
     elem.click();
   };
+  const waitForText = (elem: ElementFinder) => {
+    // Waiting for the element to have some text, makes the tests less flaky.
+    browser.wait(until.elementTextMatches(elem, /\S/), 5000);
+  }
 
   beforeEach(() => browser.get(''));
 
@@ -33,6 +37,8 @@ describe('Elements', () => {
       messageInput.sendKeys('Angular rocks!');
 
       click(popupComponentButton);
+      waitForText(popupComponent);
+
       expect(popupComponent.getText()).toContain('Popup: Angular rocks!');
     });
 
@@ -62,6 +68,8 @@ describe('Elements', () => {
       messageInput.sendKeys('Angular rocks!');
 
       click(popupElementButton);
+      waitForText(popupElement);
+
       expect(popupElement.getText()).toContain('Popup: Angular rocks!');
     });
 
