@@ -61,7 +61,7 @@ js_expected_symbol_test(
     tags = [
         "ivy-aot",
         "ivy-only",
-    ],w
+    ],
 )
 
 http_server(
