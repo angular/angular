@@ -23,8 +23,6 @@ import {assertNodeOfPossibleTypes} from './node_assert';
 import {getPreviousOrParentTNode, getViewData, setTNodeAndViewData} from './state';
 import {getParentInjectorIndex, getParentInjectorView, getParentInjectorViewOffset, hasParentInjector, isComponent, stringify} from './util';
 
-
-
 /**
  * Defines if the call to `inject` should include `viewProviders` in its resolution.
  *
@@ -300,7 +298,12 @@ export function getOrCreateInjectable<T>(
     const saveViewData = getViewData();
     setTNodeAndViewData(tNode, lViewData);
     try {
-      return bloomHash();
+      const value = bloomHash();
+      if (value == null && !(flags & InjectFlags.Optional)) {
+        throw new Error(`No provider for ${stringify(token)}`);
+      } else {
+        return value;
+      }
     } finally {
       setTNodeAndViewData(savePreviousOrParentTNode, saveViewData);
     }
