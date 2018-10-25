@@ -1,4 +1,4 @@
-/*
+/**
  * @license
  * Copyright Google Inc. All Rights Reserved.
  *
@@ -56,8 +56,8 @@ export function providersResolver<T>(
 }
 
 /**
-* Resolves a provider and publishes it to the DI system.
-*/
+ * Resolves a provider and publishes it to the DI system.
+ */
 function resolveProvider(
     provider: Provider, tInjectables: TData, lInjectablesBlueprint: NodeInjectorFactory[],
     isComponent: boolean, isViewProvider: boolean): void {
@@ -173,8 +173,8 @@ function resolveProvider(
 }
 
 /**
-* Add a factory in a multi factory.
-*/
+ * Add a factory in a multi factory.
+ */
 function multiFactoryAdd(
     multiFactory: NodeInjectorFactory, factory: () => any, isComponentProvider: boolean): void {
   multiFactory.multi !.push(factory);
@@ -184,8 +184,8 @@ function multiFactoryAdd(
 }
 
 /**
-* Returns the index of item in the array, but only in the begin to end range.
-*/
+ * Returns the index of item in the array, but only in the begin to end range.
+ */
 function indexOf(item: any, arr: any[], begin: number, end: number) {
   for (let i = begin; i < end; i++) {
     if (arr[i] === item) return i;
@@ -194,8 +194,8 @@ function indexOf(item: any, arr: any[], begin: number, end: number) {
 }
 
 /**
-* Use this with `multi` `providers`.
-*/
+ * Use this with `multi` `providers`.
+ */
 function multiProvidersFactoryResolver(
     this: NodeInjectorFactory, _: null, tData: TData, lData: LViewData,
     tNode: TElementNode): any[] {
@@ -203,10 +203,10 @@ function multiProvidersFactoryResolver(
 }
 
 /**
-* Use this with `multi` `viewProviders`.
-*
-* This factory knows how to concatenate itself with the existing `multi` `providers`.
-*/
+ * Use this with `multi` `viewProviders`.
+ *
+ * This factory knows how to concatenate itself with the existing `multi` `providers`.
+ */
 function multiViewProvidersFactoryResolver(
     this: NodeInjectorFactory, _: null, tData: TData, lData: LViewData,
     tNode: TElementNode): any[] {
@@ -232,8 +232,8 @@ function multiViewProvidersFactoryResolver(
 }
 
 /**
-* Maps an array of factories into an array of values.
-*/
+ * Maps an array of factories into an array of values.
+ */
 function multiResolve(factories: Array<() => any>, result: any[]): any[] {
   for (let i = 0; i < factories.length; i++) {
     const factory = factories[i] !as() => null;
@@ -243,8 +243,8 @@ function multiResolve(factories: Array<() => any>, result: any[]): any[] {
 }
 
 /**
-* Creates a multi factory.
-*/
+ * Creates a multi factory.
+ */
 function multiFactory(
     factoryFn:
         (this: NodeInjectorFactory, _: null, tData: TData, lData: LViewData, tNode: TElementNode) =>
