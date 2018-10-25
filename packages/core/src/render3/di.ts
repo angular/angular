@@ -368,6 +368,11 @@ export function getOrCreateInjectable<T>(
     }
   }
 
+  if (flags & InjectFlags.Optional && notFoundValue === undefined) {
+    // This must be set or the NullInjector will throw for optional deps
+    notFoundValue = null;
+  }
+
   if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
     const moduleInjector = lViewData[INJECTOR];
     if (moduleInjector) {
