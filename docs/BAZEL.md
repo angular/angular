@@ -72,7 +72,7 @@ keeps the outputs up-to-date as you save sources.
 
 If you're experiencing problems with seemingly unrelated tests failing, it may be because you're not using the proper flags with your Bazel test runs in Angular.
 
-See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc) where `--define=ivy=false` is defined as default.
+See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc) where `--define=compile=legacy` is defined as default.
 
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
@@ -80,11 +80,12 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
     - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
     - `aot`: Compile in ivy AOT move, e.g. `--define=compile=aot`
-- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config
-of your rules in any given `BUILD.bazel`.
-    - `ivy-jit`: This flag should be set for tests that should be excuted with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
-    - `ivy-aot`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=aot`, e.g. `--test_tag_filters=ivy-aot`..
-    - `ivy-only`: Only run ivy related tests, e.g. `--test_tag_filters=ivy-only`.
+- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
+    - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--define=compile=aot`).
+    - `no-ivy-jit`: Useful for excluding build and test targets that are not meant to be executed in Ivy JIT mode (`--define=compile=jit`).
+    - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--define=compile=legacy`.
+    - `fixme-ivy-aot`: Useful for including/excluding build and test targets that are currently broken in Ivy AOT mode (`--define=compile=aot`).
+    - `fixme-ivy-jit`: Useful for including/excluding build and test targets that are currently broken in Ivy JIT mode (`--define=compile=jit`).
 
 
 ### Debugging a Node Test
