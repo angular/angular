@@ -42,12 +42,31 @@ export function transferArrayItem<T = any>(currentArray: T[],
                                            targetArray: T[],
                                            currentIndex: number,
                                            targetIndex: number): void {
-
   const from = clamp(currentIndex, currentArray.length - 1);
   const to = clamp(targetIndex, targetArray.length);
 
   if (currentArray.length) {
     targetArray.splice(to, 0, currentArray.splice(from, 1)[0]);
+  }
+}
+
+/**
+ * Copies an item from one array to another, leaving it in its
+ * original position in current array.
+ * @param currentArray Array from which to copy the item.
+ * @param targetArray Array into which is copy the item.
+ * @param currentIndex Index of the item in its current array.
+ * @param targetIndex Index at which to insert the item.
+ *
+ */
+export function copyArrayItem<T = any>(currentArray: T[],
+                                       targetArray: T[],
+                                       currentIndex: number,
+                                       targetIndex: number): void {
+  const to = clamp(targetIndex, targetArray.length);
+
+  if (currentArray.length) {
+    targetArray.splice(to, 0, currentArray[currentIndex]);
   }
 }
 

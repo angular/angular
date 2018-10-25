@@ -9,7 +9,12 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+  copyArrayItem
+} from '@angular/cdk/drag-drop';
 
 @Component({
   moduleId: module.id,
@@ -19,6 +24,8 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
   encapsulation: ViewEncapsulation.None,
 })
 export class DragAndDropDemo {
+
+  cloneMode = false;
   axisLock: 'x' | 'y';
   todo = [
     'Go out for Lunch',
@@ -56,10 +63,19 @@ export class DragAndDropDemo {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
+      if (this.cloneMode) {
+        copyArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex);
+      } else {
+        transferArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex);
+      }
     }
   }
 }
