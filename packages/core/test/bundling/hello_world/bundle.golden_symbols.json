@@ -123,9 +123,6 @@
     "name": "ViewEncapsulation$1"
   },
   {
-    "name": "_getViewData"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
@@ -313,6 +310,9 @@
   },
   {
     "name": "getTView"
+  },
+  {
+    "name": "getViewData"
   },
   {
     "name": "hasParentInjector"
