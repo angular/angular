@@ -77,7 +77,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               directives: new Map(),
               pipes: new Map(),
               viewQueries: [],
-              wrapDirectivesInClosure: false,
+              wrapDirectivesAndPipesInClosure: false,
               styles: metadata.styles || [],
               encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated, animations,
               viewProviders: metadata.viewProviders ? new WrappedNodeExpr(metadata.viewProviders) :
