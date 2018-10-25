@@ -357,20 +357,19 @@ function providerToRecord(provider: SingleProvider): Record<any> {
  * @param provider provider to convert to factory
  */
 export function providerToFactory(provider: SingleProvider): () => any {
-  let token = resolveForwardRef(provider);
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
-    return injectableDefFactory(provider);
+    return injectableDefFactory(resolveForwardRef(provider));
   } else {
-    token = resolveForwardRef(provider.provide);
     if (isValueProvider(provider)) {
-      factory = () => provider.useValue;
+      factory = () => resolveForwardRef(provider.useValue);
     } else if (isExistingProvider(provider)) {
-      factory = () => inject(provider.useExisting);
+      factory = () => inject(resolveForwardRef(provider.useExisting));
     } else if (isFactoryProvider(provider)) {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else {
-      const classRef = (provider as StaticClassProvider | ClassProvider).useClass || token;
+      const classRef = resolveForwardRef(
+          (provider as StaticClassProvider | ClassProvider).useClass || provider.provide);
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
