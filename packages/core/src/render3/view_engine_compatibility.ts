@@ -77,7 +77,7 @@ let R3TemplateRef: {
  */
 export function injectTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef,
-    ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T> {
+    ElementRefToken: typeof ViewEngine_ElementRef): ViewEngine_TemplateRef<T>|null {
   return createTemplateRef<T>(
       TemplateRefToken, ElementRefToken, getPreviousOrParentTNode(), getViewData());
 }
@@ -93,7 +93,7 @@ export function injectTemplateRef<T>(
  */
 export function createTemplateRef<T>(
     TemplateRefToken: typeof ViewEngine_TemplateRef, ElementRefToken: typeof ViewEngine_ElementRef,
-    hostTNode: TNode, hostView: LViewData): ViewEngine_TemplateRef<T> {
+    hostTNode: TNode, hostView: LViewData): ViewEngine_TemplateRef<T>|null {
   if (!R3TemplateRef) {
     // TODO: Fix class name, should be TemplateRef, but there appears to be a rollup bug
     R3TemplateRef = class TemplateRef_<T> extends TemplateRefToken<T> {
@@ -122,12 +122,15 @@ export function createTemplateRef<T>(
     };
   }
 
-  const hostContainer: LContainer = hostView[hostTNode.index];
-  ngDevMode && assertNodeType(hostTNode, TNodeType.Container);
-  ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
-  return new R3TemplateRef(
-      hostView, createElementRef(ElementRefToken, hostTNode, hostView), hostTNode.tViews as TView,
-      getRenderer(), hostContainer[QUERIES], hostTNode.injectorIndex);
+  if (hostTNode.type === TNodeType.Container) {
+    const hostContainer: LContainer = hostView[hostTNode.index];
+    ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
+    return new R3TemplateRef(
+        hostView, createElementRef(ElementRefToken, hostTNode, hostView), hostTNode.tViews as TView,
+        getRenderer(), hostContainer[QUERIES], hostTNode.injectorIndex);
+  } else {
+    return null;
+  }
 }
 
 let R3ViewContainerRef: {
