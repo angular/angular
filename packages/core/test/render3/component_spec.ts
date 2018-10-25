@@ -708,20 +708,54 @@ describe('providers', () => {
       });
     });
 
-    it('forwardRef', (done) => {
-      setTimeout(() => {
-        expectProvidersScenario({
-          parent: {
-            providers: [forwardRef(() => ForLater)],
-            componentAssertion:
-                () => { expect(directiveInject(ForLater) instanceof ForLater).toBeTruthy(); }
-          }
-        });
-        done();
-      }, 0);
+    describe('forwardRef', () => {
+      it('forwardRef resolves later', (done) => {
+        setTimeout(() => {
+          expectProvidersScenario({
+            parent: {
+              providers: [forwardRef(() => ForLater)],
+              componentAssertion:
+                  () => { expect(directiveInject(ForLater) instanceof ForLater).toBeTruthy(); }
+            }
+          });
+          done();
+        }, 0);
+      });
 
       class ForLater {}
+
+      // The following test that forwardRefs are called, so we don't search for an anon fn
+      it('ValueProvider wrapped in forwardRef', () => {
+        expectProvidersScenario({
+          parent: {
+            providers:
+                [{provide: GREETER, useValue: forwardRef(() => { return {greet: 'Value'}; })}],
+            componentAssertion: () => { expect(directiveInject(GREETER).greet).toEqual('Value'); }
+          }
+        });
+      });
+
+      it('ClassProvider wrapped in forwardRef', () => {
+        expectProvidersScenario({
+          parent: {
+            providers: [{provide: GREETER, useClass: forwardRef(() => GreeterClass)}],
+            componentAssertion: () => { expect(directiveInject(GREETER).greet).toEqual('Class'); }
+          }
+        });
+      });
+
+      it('ExistingProvider wrapped in forwardRef', () => {
+        expectProvidersScenario({
+          parent: {
+            providers:
+                [GreeterClass, {provide: GREETER, useExisting: forwardRef(() => GreeterClass)}],
+            componentAssertion: () => { expect(directiveInject(GREETER).greet).toEqual('Class'); }
+          }
+        });
+      });
+
     });
+
   });
 
   /*
