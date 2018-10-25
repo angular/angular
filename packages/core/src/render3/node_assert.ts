@@ -11,7 +11,7 @@ import {TNode, TNodeType} from './interfaces/node';
 
 export function assertNodeType(tNode: TNode, type: TNodeType) {
   assertDefined(tNode, 'should be called with a TNode');
-  assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
+  assertEqual(tNode.type, type, `should be a ${typeName(type)} but got ${typeName(tNode.type)}`);
 }
 
 export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]) {
