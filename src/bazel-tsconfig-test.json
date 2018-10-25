@@ -6,5 +6,8 @@
   "compilerOptions": {
     "importHelpers": false,
     "types": ["jasmine"]
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
   }
 }
