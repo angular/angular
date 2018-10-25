@@ -13,7 +13,7 @@ readonly deployedUrl=https://pr${prNumber}-${prLastSha:0:7}.ngbuilds.io/
   cd $PROJECT_ROOT/aio
 
   # Build and store the app
-  yarn build
+  yarn build --progress=false
 
   # Set deployedUrl as parameter in the opensearch description
   # deployedUrl must end with /
