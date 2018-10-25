@@ -204,7 +204,7 @@ export class ComponentDecoratorHandler implements
           // analyzed and the full compilation scope for the component can be realized.
           pipes: EMPTY_MAP,
           directives: EMPTY_MAP,
-          wrapDirectivesInClosure: false,  //
+          wrapDirectivesAndPipesInClosure: false,  //
           animations,
           viewProviders
         },
@@ -237,8 +237,8 @@ export class ComponentDecoratorHandler implements
       const {pipes, containsForwardDecls} = scope;
       const directives = new Map<string, Expression>();
       scope.directives.forEach((meta, selector) => directives.set(selector, meta.directive));
-      const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
-      metadata = {...metadata, directives, pipes, wrapDirectivesInClosure};
+      const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
+      metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }
 
     const res = compileComponentFromMetadata(metadata, pool, makeBindingParser());
