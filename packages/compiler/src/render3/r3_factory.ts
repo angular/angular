@@ -53,7 +53,7 @@ export interface R3ConstructorFactoryMetadata {
   /**
    * Function that allows extra statements to be inserted into factory function.
    */
-  extraStatementFn?: ((instance: o.Expression) => o.Statement[])|null;
+  extraStatementFn: ((instance: o.Expression) => o.Statement[])|null;
 }
 
 export enum R3FactoryDelegateType {
