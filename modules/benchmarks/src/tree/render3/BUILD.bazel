@@ -63,5 +63,6 @@ protractor_web_test(
         "@ngdeps//node-uuid",
         "@ngdeps//protractor",
         "@ngdeps//yargs",
+        "@ngdeps//reflect-metadata"
     ],
 )
