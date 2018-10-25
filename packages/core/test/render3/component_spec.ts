@@ -1565,10 +1565,8 @@ describe('providers', () => {
         parent: {
           componentAssertion: () => {
             expect(directiveInject(String)).toEqual('Module');
-            expect(directiveInject(String, InjectFlags.Optional | InjectFlags.Self))
-                .toEqual(undefined as any);
-            expect(directiveInject(String, InjectFlags.Optional | InjectFlags.Host))
-                .toEqual(undefined as any);
+            expect(directiveInject(String, InjectFlags.Optional | InjectFlags.Self)).toBeNull();
+            expect(directiveInject(String, InjectFlags.Optional | InjectFlags.Host)).toBeNull();
           }
         }
       });
