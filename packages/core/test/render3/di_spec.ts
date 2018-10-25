@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
@@ -857,8 +857,8 @@ describe('di', () => {
         });
       }
 
-      it('should not throw if dependency is @Optional', () => {
-        let dirA: DirA;
+      describe('Optional', () => {
+        let dirA: DirA|null = null;
 
         class DirA {
           constructor(@Optional() public dirB: DirB|null) {}
@@ -870,47 +870,94 @@ describe('di', () => {
           });
         }
 
-        /** <div dirA></div> */
-        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            element(0, 'div', ['dirA', '']);
-          }
-        }, 1, 0, [DirA, DirB]);
+        beforeEach(() => dirA = null);
 
-        expect(() => {
-          new ComponentFixture(App);
+        it('should not throw if dependency is @Optional (limp mode)', () => {
+
+          /** <div dirA></div> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirA', '']);
+            }
+          }, 1, 0, [DirA, DirB]);
+
+          expect(() => { new ComponentFixture(App); }).not.toThrow();
           expect(dirA !.dirB).toEqual(null);
-        }).not.toThrow();
-      });
+        });
 
-      it('should not throw if dependency is @Optional but defined elsewhere', () => {
-        let dirA: DirA;
-
-        class DirA {
-          constructor(@Optional() public dirB: DirB|null) {}
-
-          static ngDirectiveDef = defineDirective({
-            type: DirA,
-            selectors: [['', 'dirA', '']],
-            factory: () => dirA = new DirA(directiveInject(DirB, InjectFlags.Optional))
-          });
-        }
-
-        /**
-         * <div dirB></div>
-         * <div dirA></div>
-         */
-        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            element(0, 'div', ['dirB', '']);
-            element(1, 'div', ['dirA', '']);
+        it('should not throw if dependency is @Optional (module injector)', () => {
+          class SomeModule {
+            static ngInjectorDef = defineInjector({factory: () => new SomeModule()});
           }
-        }, 2, 0, [DirA, DirB]);
 
-        expect(() => {
-          new ComponentFixture(App);
+          /** <div dirA></div> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirA', '']);
+            }
+          }, 1, 0, [DirA, DirB]);
+
+          expect(() => {
+            const injector = createInjector(SomeModule);
+            new ComponentFixture(App, {injector});
+          }).not.toThrow();
           expect(dirA !.dirB).toEqual(null);
-        }).not.toThrow();
+        });
+
+        it('should return null if @Optional dependency has @Self flag', () => {
+          let dirC !: DirC;
+
+          class DirC {
+            constructor(@Optional() @Self() public dirB: DirB|null) {}
+
+            static ngDirectiveDef = defineDirective({
+              type: DirC,
+              selectors: [['', 'dirC', '']],
+              factory: () => dirC =
+                           new DirC(directiveInject(DirB, InjectFlags.Optional|InjectFlags.Self))
+            });
+          }
+
+          /** <div dirC></div> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirC', '']);
+            }
+          }, 1, 0, [DirC, DirB]);
+
+          expect(() => { new ComponentFixture(App); }).not.toThrow();
+          expect(dirC !.dirB).toEqual(null);
+        });
+
+        it('should not throw if dependency is @Optional but defined elsewhere', () => {
+          let dirA: DirA;
+
+          class DirA {
+            constructor(@Optional() public dirB: DirB|null) {}
+
+            static ngDirectiveDef = defineDirective({
+              type: DirA,
+              selectors: [['', 'dirA', '']],
+              factory: () => dirA = new DirA(directiveInject(DirB, InjectFlags.Optional))
+            });
+          }
+
+          /**
+           * <div dirB></div>
+           * <div dirA></div>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirB', '']);
+              element(1, 'div', ['dirA', '']);
+            }
+          }, 2, 0, [DirA, DirB]);
+
+          expect(() => {
+            new ComponentFixture(App);
+            expect(dirA !.dirB).toEqual(null);
+          }).not.toThrow();
+        });
       });
 
       it('should skip the current node with @SkipSelf', () => {
