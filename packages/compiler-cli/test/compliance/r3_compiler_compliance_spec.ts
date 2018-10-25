@@ -1473,7 +1473,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
                 import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
-  
+
                 @Pipe({
                   name: 'myPipe',
                   pure: false
@@ -1483,7 +1483,7 @@ describe('compiler compliance', () => {
                   transform(value: any, ...args: any[]) { return value; }
                   ngOnDestroy(): void {  }
                 }
-  
+
                 @Pipe({
                   name: 'myPurePipe',
                   pure: true,
@@ -1491,7 +1491,7 @@ describe('compiler compliance', () => {
                 export class MyPurePipe implements PipeTransform {
                   transform(value: any, ...args: any[]) { return value; }
                 }
-  
+
                 @Component({
                   selector: 'my-app',
                   template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
@@ -1500,7 +1500,7 @@ describe('compiler compliance', () => {
                   name = 'World';
                   size = 0;
                 }
-  
+
                 @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
                 export class MyModule {}
             `
@@ -1566,7 +1566,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
                 import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
-  
+
                 @Pipe({
                   name: 'myPipe',
                   pure: false
@@ -1576,14 +1576,14 @@ describe('compiler compliance', () => {
                   transform(value: any, ...args: any[]) { return value; }
                   ngOnDestroy(): void {  }
                 }
-  
+
                 @Component({
                   selector: 'my-app',
                   template: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}'
                 })
                 export class MyApp {
                 }
-  
+
                 @NgModule({declarations:[MyPipe, MyApp]})
                 export class MyModule {}
             `
@@ -1609,8 +1609,8 @@ describe('compiler compliance', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵtextBinding(0, $r3$.ɵinterpolation5(
-                    "0:", i0.ɵpipeBind1(1, 5, ctx.name), 
-                    "1:", i0.ɵpipeBind2(2, 7, ctx.name, 1), 
+                    "0:", i0.ɵpipeBind1(1, 5, ctx.name),
+                    "1:", i0.ɵpipeBind2(2, 7, ctx.name, 1),
                     "2:", i0.ɵpipeBind3(3, 10, ctx.name, 1, 2),
                     "3:", i0.ɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
                     "4:", i0.ɵpipeBindV(5, 19, $r3$.ɵpureFunction1(25, $c0$, ctx.name)),
@@ -2224,6 +2224,80 @@ describe('compiler compliance', () => {
         const source = result.source;
         expectEmit(source, MyComponentDefinition, 'Invalid component definition');
       });
+    });
+
+    it('should instantiate directives in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              template: \`
+                <my-forward-directive></my-forward-directive>
+              \`
+            })
+            export class HostBindingComp {
+            }
+
+            @Directive({
+              selector: 'my-forward-directive'
+            })
+            class MyForwardDirective {}
+
+            @NgModule({declarations: [HostBindingComp, MyForwardDirective]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDefinition = `
+        …
+        directives: function () { return [MyForwardDirective]; }
+        …
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
+    });
+
+    it('should instantiate pipes in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Pipe} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              template: \`
+                <div [attr.style]="{} | my_forward_pipe">...</div>
+              \`
+            })
+            export class HostBindingComp {
+            }
+
+            @Pipe({
+              name: 'my_forward_pipe'
+            })
+            class MyForwardPipe {}
+
+            @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDefinition = `
+        …
+        pipes: function () { return [MyForwardPipe]; }
+        …
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
     });
   });
 
