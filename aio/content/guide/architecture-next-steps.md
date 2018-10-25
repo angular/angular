@@ -11,7 +11,7 @@ Here are some key features.
 Angular 애플리케이션을 구성하는 기본 요소에 대해 이해했다면, 이제 Angular 애플리케이션을 개발하고 배포할 때 도움이 되는 툴과 기능에 대해 알아보는 것도 좋습니다. 이 문서에서는 Angular에서 제공하는 기능과 서비스에 대해 알아봅니다.
 
 <!---
-## Responsive programming tools
+## Responsive programming
 -->
 ## 반응형 프로그래밍
 
@@ -26,7 +26,7 @@ Angular 애플리케이션을 구성하는 기본 요소에 대해 이해했다�
 * [옵저버블, 이벤트 처리](guide/observables): 컴포넌트나 서비스에서 옵저버블을 사용하면 어떻게 메시지를 발행하고 구독할 수 있는지 알아봅니다. 옵저버블은 사용자의 동작 이벤트나 비동기 로직도 모두 처리할 수 있습니다.
 
 <!--
-## Client-server interaction tools
+## Client-server interaction
 -->
 ## 클라이언트-서버 통신
 
@@ -42,7 +42,7 @@ Angular 애플리케이션을 구성하는 기본 요소에 대해 이해했다�
 
 <!--
 * [Service Workers](guide/service-worker-intro): Use a service worker to reduce dependency on the network
-significantly improving the use experience.
+significantly improving the user experience.
 -->
 * [서비스 워커](guide/service-worker-intro): 네트워크 연결에 관계없이 동작하는 서비스 워커를 사용해 보세요. 사용성이 대폭 향상될 것입니다.
 
@@ -67,6 +67,8 @@ without deep knowledge of animation techniques or CSS.
 -->
 ## 개발 지원
 
+* [Compilation](guide/aot-compiler): Angular provides just-in-time (JIT) compilation for the development environment, and ahead-of-time (AOT) compilation for the production environment.
+
 <!--
 * [Testing platform](guide/testing): Run unit tests on your application parts as they interact with the Angular framework.
 -->
@@ -88,19 +90,15 @@ without deep knowledge of animation techniques or CSS.
 * [보안 가이드라인](guide/security):  크로스사이트 스크립트 공격과 같은 일반적인 웹앱의 취약점을 Angular에서 어떻게 방어하는지 확인해 보세요.
 
 <!--
-## Setup and deployment tools
+## Setup, build, and deployment configuration
 -->
-## 개발 환경 설정
+## 개발, 빌드, 배포 환경 설정
 
-<!--
-* [Setup for local development](guide/setup): Set up a new project for development with QuickStart.
--->
-* [로컬 개발환경 설정](guide/setup): 퀵스타트 문서를 확인하면서 새로운 프로젝트를 개발하기 위한 로컬 개발 환경을 설정해 보세요.
+* [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
 
-<!--
-* [Installation](guide/npm-packages): The [Angular CLI](https://cli.angular.io/), Angular applications, and Angular itself depend on features and functionality provided by libraries that are available as [npm](https://docs.npmjs.com/) packages.
--->
-* [npm 패키지 설치](guide/npm-packages): [Angular CLI](https://cli.angular.io/)와 Angular 애플리케이셔, Angular 프레임워크는 모두 [npm](https://docs.npmjs.com/) 패키지를 활용합니다. Angular는 어떤 npm를 활용하는지, Angular 프레임워크는 어떤 패키지로 구성되는지 확인해 보세요.
+* [Workspace and File Structure](guide/file-structure): Understand the structure of Angular workspace and project folders. 
+
+* [npm Packages](guide/npm-packages): The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm](https://docs.npmjs.com/) packages and distributed via the npm registry. The Angular CLI creates a default `package.json` file, which specifies a starter set of packages that work well together and jointly support many common application scenarios.
 
 <!--
 * [TypeScript configuration](guide/typescript-configuration): TypeScript is the primary language for Angular application development.
@@ -111,6 +109,8 @@ without deep knowledge of animation techniques or CSS.
 * [Browser support](guide/browser-support): Make your apps compatible across a wide range of browsers.
 -->
 * [브라우저 지원](guide/browser-support): 개발하려는 앱이 얼마나 많은 브라우저에서 동작할 수 있는지 확인해 보세요.
+
+* [Building and Serving](guide/build): Learn to define different build and proxy server configurations for your project, such as development, staging, and production.
 
 <!--
 * [Deployment](guide/deployment): Learn techniques for deploying your Angular application to a remote server.

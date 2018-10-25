@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableDef} from '../di/defs';
+import {InjectableDef, getInjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
 import {INJECTOR, InjectFlags, Injector, setCurrentInjector} from '../di/injector';
 import {APP_ROOT} from '../di/scope';
@@ -97,6 +97,7 @@ export function resolveNgModuleDep(
         return data;
     }
     const providerDef = data._def.providersByKey[tokenKey];
+    let injectableDef: InjectableDef<any>|null;
     if (providerDef) {
       let providerInstance = data._providers[providerDef.index];
       if (providerInstance === undefined) {
@@ -104,9 +105,8 @@ export function resolveNgModuleDep(
             _createProviderInstance(data, providerDef);
       }
       return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
-    } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
-      const injectableDef = depDef.token.ngInjectableDef as InjectableDef<any>;
-      const key = tokenKey;
+    } else if (
+        (injectableDef = getInjectableDef(depDef.token)) && targetsModule(data, injectableDef)) {
       const index = data._providers.length;
       data._def.providersByKey[depDef.tokenKey] = {
         flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,

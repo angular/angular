@@ -39,11 +39,8 @@ export const modelGroupProvider: any = {
  *
  * {@example forms/ts/ngModelGroup/ng_model_group_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `FormsModule`
- *
- *
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({selector: '[ngModelGroup]', providers: [modelGroupProvider], exportAs: 'ngModelGroup'})
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {

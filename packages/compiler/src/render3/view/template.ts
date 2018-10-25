@@ -29,17 +29,19 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nContext, assembleI18nBoundString} from './i18n';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
     case BindingType.Property:
       return R3.elementProperty;
-    case BindingType.Attribute:
-      return R3.elementAttribute;
     case BindingType.Class:
       return R3.elementClassProp;
+    case BindingType.Attribute:
+    case BindingType.Animation:
+      return R3.elementAttribute;
     default:
       return undefined;
   }
@@ -84,11 +86,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
 
-  // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
-  private _inI18nSection: boolean = false;
-  private _i18nSectionIndex = -1;
-  // Maps of placeholder to node indexes for each of the i18n section
-  private _phToNodeIdxes: {[phName: string]: number[]}[] = [{}];
+  // i18n context local to this template
+  private i18n: I18nContext|null = null;
 
   // Number of slots to reserve for pureFunctions
   private _pureFunctionSlots = 0;
@@ -96,17 +95,25 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Number of binding slots
   private _bindingSlots = 0;
 
+  private fileBasedI18nSuffix: string;
+
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
-      private contextName: string|null, private templateName: string|null,
+      private contextName: string|null, private i18nContext: I18nContext|null,
+      private templateIndex: number|null, private templateName: string|null,
       private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
       private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
-      private pipes: Set<o.Expression>, private _namespace: o.ExternalReference) {
+      private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
+      private relativeContextFilePath: string) {
     // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
     // function)
     this._dataIndex = viewQueries.length;
 
     this._bindingScope = parentBindingScope.nestedScope(level);
+
+    // Turn the relative context file path into an identifier by replacing non-alphanumeric
+    // characters with underscores.
+    this.fileBasedI18nSuffix = relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_') + '_';
 
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
@@ -168,6 +175,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.creationInstruction(null, R3.projectionDef, parameters);
     }
 
+    if (this.i18nContext) {
+      this.i18nStart();
+    }
+
     // This is the initial pass through the nodes of this template. In this pass, we
     // queue all creation mode and update mode instructions for generation in the second
     // pass. It's necessary to separate the passes to ensure local refs are defined before
@@ -186,6 +197,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Nested templates must be processed before creation instructions so template()
     // instructions can be generated with the correct internal const count.
     this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
+
+    if (this.i18nContext) {
+      this.i18nEnd();
+    }
 
     // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
     const creationStatements = this._creationCodeFns.map((fn: () => o.Statement) => fn());
@@ -207,17 +222,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         [renderFlagCheckIfStmt(core.RenderFlags.Update, updateVariables.concat(updateStatements))] :
         [];
 
-    // Generate maps of placeholder name to node indexes
-    // TODO(vicb): This is a WIP, not fully supported yet
-    for (const phToNodeIdx of this._phToNodeIdxes) {
-      if (Object.keys(phToNodeIdx).length > 0) {
-        const scopedName = this._bindingScope.freshReferenceName();
-        const phMap = o.variable(scopedName).set(mapToExpression(phToNodeIdx, true)).toConstDecl();
-
-        this._prefixCode.push(phMap);
-      }
-    }
-
     return o.fn(
         // i.e. (rf: RenderFlags, ctx: any)
         [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
@@ -234,6 +238,62 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   // LocalResolver
   getLocal(name: string): o.Expression|null { return this._bindingScope.get(name); }
+
+  i18nTranslate(label: string, meta: string = ''): o.Expression {
+    return this.constantPool.getTranslation(label, meta, this.fileBasedI18nSuffix);
+  }
+
+  i18nAppendTranslationMeta(meta: string = '') { this.constantPool.appendTranslationMeta(meta); }
+
+  i18nAllocateRef(): o.ReadVarExpr {
+    return this.constantPool.getDeferredTranslationConst(this.fileBasedI18nSuffix);
+  }
+
+  i18nUpdateRef(context: I18nContext): void {
+    if (context.isRoot() && context.isResolved()) {
+      this.constantPool.setDeferredTranslationConst(context.getRef(), context.getContent());
+    }
+  }
+
+  i18nStart(span: ParseSourceSpan|null = null, meta?: string): void {
+    const index = this.allocateDataSlot();
+    if (this.i18nContext) {
+      this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !);
+    } else {
+      this.i18nAppendTranslationMeta(meta);
+      const ref = this.i18nAllocateRef();
+      this.i18n = new I18nContext(index, this.templateIndex, ref);
+    }
+
+    // generate i18nStart instruction
+    const params: o.Expression[] = [o.literal(index), this.i18n.getRef()];
+    if (this.i18n.getId() > 0) {
+      // do not push 3rd argument (sub-block id)
+      // into i18nStart call for top level i18n context
+      params.push(o.literal(this.i18n.getId()));
+    }
+    this.creationInstruction(span, R3.i18nStart, params);
+  }
+
+  i18nEnd(span: ParseSourceSpan|null = null): void {
+    if (this.i18nContext) {
+      this.i18nContext.reconcileChildContext(this.i18n !);
+      this.i18nUpdateRef(this.i18nContext);
+    } else {
+      this.i18nUpdateRef(this.i18n !);
+    }
+
+    // setup accumulated bindings
+    const bindings = this.i18n !.getBindings();
+    if (bindings.size) {
+      bindings.forEach(binding => { this.updateInstruction(span, R3.i18nExp, [binding]); });
+      const index: o.Expression = o.literal(this.i18n !.getIndex());
+      this.updateInstruction(span, R3.i18nApply, [index]);
+    }
+
+    this.creationInstruction(span, R3.i18nEnd);
+    this.i18n = null;  // reset local i18n context
+  }
 
   visitContent(ngContent: t.Content) {
     const slot = this.allocateDataSlot();
@@ -277,7 +337,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitElement(element: t.Element) {
     const elementIndex = this.allocateDataSlot();
-    const wasInI18nSection = this._inI18nSection;
+
+    let isNonBindableMode: boolean = false;
+    let isI18nRootElement: boolean = false;
 
     const outputAttrs: {[name: string]: string} = {};
     const attrI18nMetas: {[name: string]: string} = {};
@@ -286,28 +348,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const [namespaceKey, elementName] = splitNsName(element.name);
     const isNgContainer = checkIsNgContainer(element.name);
 
-    // Elements inside i18n sections are replaced with placeholders
-    // TODO(vicb): nested elements are a WIP in this phase
-    if (this._inI18nSection) {
-      const phName = element.name.toLowerCase();
-      if (!this._phToNodeIdxes[this._i18nSectionIndex][phName]) {
-        this._phToNodeIdxes[this._i18nSectionIndex][phName] = [];
-      }
-      this._phToNodeIdxes[this._i18nSectionIndex][phName].push(elementIndex);
-    }
-
-    // Handle i18n attributes
+    // Handle i18n and ngNonBindable attributes
     for (const attr of element.attributes) {
       const name = attr.name;
       const value = attr.value;
-      if (name === I18N_ATTR) {
-        if (this._inI18nSection) {
+      if (name === NON_BINDABLE_ATTR) {
+        isNonBindableMode = true;
+      } else if (name === I18N_ATTR) {
+        if (this.i18n) {
           throw new Error(
               `Could not mark an element as translatable inside of a translatable section`);
         }
-        this._inI18nSection = true;
-        this._i18nSectionIndex++;
-        this._phToNodeIdxes[this._i18nSectionIndex] = {};
+        isI18nRootElement = true;
         i18nMeta = value;
       } else if (name.startsWith(I18N_ATTR_PREFIX)) {
         attrI18nMetas[name.slice(I18N_ATTR_PREFIX.length)] = value;
@@ -317,11 +369,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // Match directives on non i18n attributes
-    if (this.directiveMatcher) {
-      const selector = createCssSelector(element.name, outputAttrs);
-      this.directiveMatcher.match(
-          selector, (sel: CssSelector, staticType: any) => { this.directives.add(staticType); });
-    }
+    this.matchDirectives(element.name, element);
 
     // Regular element or ng-container creation mode
     const parameters: o.Expression[] = [o.literal(elementIndex)];
@@ -338,6 +386,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const classInputs: t.BoundAttribute[] = [];
     const allOtherInputs: t.BoundAttribute[] = [];
 
+    const i18nAttrs: Array<{name: string, value: string | AST}> = [];
+
     element.inputs.forEach((input: t.BoundAttribute) => {
       switch (input.type) {
         // [attr.style] or [attr.class] should not be treated as styling-based
@@ -352,6 +402,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           } else if (isClassBinding(input)) {
             // this should always go first in the compilation (for [class])
             classInputs.splice(0, 0, input);
+          } else if (attrI18nMetas.hasOwnProperty(input.name)) {
+            i18nAttrs.push({name: input.name, value: input.value});
           } else {
             allOtherInputs.push(input);
           }
@@ -386,13 +438,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           staticClassesMap ![className] = true;
         });
       } else {
-        attributes.push(o.literal(name));
         if (attrI18nMetas.hasOwnProperty(name)) {
-          const meta = parseI18nMeta(attrI18nMetas[name]);
-          const variable = this.constantPool.getTranslation(value, meta);
-          attributes.push(variable);
+          i18nAttrs.push({name, value});
         } else {
-          attributes.push(o.literal(value));
+          attributes.push(o.literal(name), o.literal(value));
         }
       }
     });
@@ -455,10 +504,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const hasStylingInstructions = initialStyleDeclarations.length || styleInputs.length ||
         initialClassDeclarations.length || classInputs.length;
 
-    const attrArg: o.Expression = attributes.length > 0 ?
-        this.constantPool.getConstLiteral(o.literalArr(attributes), true) :
-        o.TYPED_NULL_EXPR;
-    parameters.push(attrArg);
+    // add attributes for directive matching purposes
+    attributes.push(...this.prepareSyntheticAndSelectOnlyAttrs(allOtherInputs, element.outputs));
+    parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
     parameters.push(this.prepareRefsParameter(element.references));
@@ -474,8 +522,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const implicit = o.variable(CONTEXT_NAME);
 
+    if (this.i18n) {
+      this.i18n.appendElement(elementIndex);
+    }
+
+    const hasChildren = () => {
+      if (!isI18nRootElement && this.i18n) {
+        // we do not append text node instructions inside i18n section, so we
+        // exclude them while calculating whether current element has children
+        return element.children.find(
+            child => !(child instanceof t.Text || child instanceof t.BoundText));
+      }
+      return element.children.length > 0;
+    };
+
     const createSelfClosingInstruction = !hasStylingInstructions && !isNgContainer &&
-        element.children.length === 0 && element.outputs.length === 0;
+        element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
@@ -483,6 +545,49 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.creationInstruction(
           element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
           trimTrailingNulls(parameters));
+
+      if (isNonBindableMode) {
+        this.creationInstruction(element.sourceSpan, R3.disableBindings);
+      }
+
+      if (isI18nRootElement) {
+        this.i18nStart(element.sourceSpan, i18nMeta);
+      }
+
+      // process i18n element attributes
+      if (i18nAttrs.length) {
+        let hasBindings: boolean = false;
+        const i18nAttrArgs: o.Expression[] = [];
+        i18nAttrs.forEach(({name, value}) => {
+          const meta = attrI18nMetas[name];
+          if (typeof value === 'string') {
+            // in case of static string value, 3rd argument is 0 declares
+            // that there are no expressions defined in this translation
+            i18nAttrArgs.push(o.literal(name), this.i18nTranslate(value, meta), o.literal(0));
+          } else {
+            const converted = value.visit(this._valueConverter);
+            if (converted instanceof Interpolation) {
+              const {strings, expressions} = converted;
+              const label = assembleI18nBoundString(strings);
+              i18nAttrArgs.push(
+                  o.literal(name), this.i18nTranslate(label, meta), o.literal(expressions.length));
+              expressions.forEach(expression => {
+                hasBindings = true;
+                const binding = this.convertExpressionBinding(implicit, expression);
+                this.updateInstruction(element.sourceSpan, R3.i18nExp, [binding]);
+              });
+            }
+          }
+        });
+        if (i18nAttrArgs.length) {
+          const index: o.Expression = o.literal(this.allocateDataSlot());
+          const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
+          this.creationInstruction(element.sourceSpan, R3.i18nAttribute, [index, args]);
+          if (hasBindings) {
+            this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
+          }
+        }
+      }
 
       // initial styling for static style="..." attributes
       if (hasStylingInstructions) {
@@ -521,28 +626,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
-        const elName = sanitizeIdentifier(element.name);
-        const evName = sanitizeIdentifier(outputAst.name);
-        const functionName = `${this.templateName}_${elName}_${evName}_listener`;
-
-        this.creationInstruction(outputAst.sourceSpan, R3.listener, () => {
-          const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
-
-          const bindingExpr = convertActionBinding(
-              listenerScope, implicit, outputAst.handler, 'b',
-              () => error('Unexpected interpolation'));
-
-          const statements = [
-            ...listenerScope.restoreViewStatement(), ...listenerScope.variableDeclarations(),
-            ...bindingExpr.render3Stmts
-          ];
-
-          const handler = o.fn(
-              [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
-              functionName);
-
-          return [o.literal(outputAst.name), handler];
-        });
+        this.creationInstruction(
+            outputAst.sourceSpan, R3.listener,
+            this.prepareListenerParameter(element.name, outputAst));
       });
     }
 
@@ -557,21 +643,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       const stylingInput = mapBasedStyleInput || mapBasedClassInput;
       if (stylingInput) {
-        const params: o.Expression[] = [];
-        let value: AST;
-        if (mapBasedClassInput) {
-          value = mapBasedClassInput.value.visit(this._valueConverter);
-        } else if (mapBasedStyleInput) {
-          params.push(o.NULL_EXPR);
-        }
-
-        if (mapBasedStyleInput) {
-          value = mapBasedStyleInput.value.visit(this._valueConverter);
-        }
-
         this.updateInstruction(stylingInput.sourceSpan, R3.elementStylingMap, () => {
-          params.push(this.convertPropertyBinding(implicit, value, true));
-          return [indexLiteral, ...params];
+          const params: o.Expression[] = [indexLiteral];
+
+          if (mapBasedClassInput) {
+            const mapBasedClassValue = mapBasedClassInput.value.visit(this._valueConverter);
+            params.push(this.convertPropertyBinding(implicit, mapBasedClassValue, true));
+          } else if (mapBasedStyleInput) {
+            params.push(o.NULL_EXPR);
+          }
+
+          if (mapBasedStyleInput) {
+            const mapBasedStyleValue = mapBasedStyleInput.value.visit(this._valueConverter);
+            params.push(this.convertPropertyBinding(implicit, mapBasedStyleValue, true));
+          }
+
+          return params;
         });
       }
 
@@ -580,19 +667,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         let i = mapBasedStyleInput ? 1 : 0;
         for (i; i < styleInputs.length; i++) {
           const input = styleInputs[i];
-          const params: any[] = [];
-          const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
-          if (sanitizationRef) params.push(sanitizationRef);
-
           const key = input.name;
           const styleIndex: number = stylesIndexMap[key] !;
           const value = input.value.visit(this._valueConverter);
-          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, () => {
-            return [
-              indexLiteral, o.literal(styleIndex),
-              this.convertPropertyBinding(implicit, value, true), ...params
-            ];
-          });
+          const params: o.Expression[] = [
+            indexLiteral, o.literal(styleIndex), this.convertPropertyBinding(implicit, value, true)
+          ];
+
+          if (input.unit != null) {
+            params.push(o.literal(input.unit));
+          }
+
+          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, params);
         }
 
         lastInputCommand = styleInputs[styleInputs.length - 1];
@@ -625,20 +711,27 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
-      if (input.type === BindingType.Animation) {
-        console.error('warning: animation bindings not yet supported');
-        return;
-      }
-
       const instruction = mapBindingToInstruction(input.type);
-      if (instruction) {
+      if (input.type === BindingType.Animation) {
+        const value = input.value.visit(this._valueConverter);
+        // setAttribute without a value doesn't make any sense
+        if (value.name || value.value) {
+          const name = prepareSyntheticAttributeName(input.name);
+          this.updateInstruction(input.sourceSpan, R3.elementAttribute, () => {
+            return [
+              o.literal(elementIndex), o.literal(name), this.convertPropertyBinding(implicit, value)
+            ];
+          });
+        }
+      } else if (instruction) {
         const params: any[] = [];
         const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
         if (sanitizationRef) params.push(sanitizationRef);
 
-        // TODO(chuckj): runtime: security context?
+        // TODO(chuckj): runtime: security context
         const value = input.value.visit(this._valueConverter);
         this.allocateBindingSlots(value);
+
         this.updateInstruction(input.sourceSpan, instruction, () => {
           return [
             o.literal(elementIndex), o.literal(input.name),
@@ -651,27 +744,31 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     // Traverse element child nodes
-    if (this._inI18nSection && element.children.length == 1 &&
-        element.children[0] instanceof t.Text) {
-      const text = element.children[0] as t.Text;
-      this.visitSingleI18nTextChild(text, i18nMeta);
-    } else {
-      t.visitAll(this, element.children);
+    t.visitAll(this, element.children);
+
+    if (!isI18nRootElement && this.i18n) {
+      this.i18n.appendElement(elementIndex, true);
     }
 
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
-      this.creationInstruction(
-          element.endSourceSpan || element.sourceSpan,
-          isNgContainer ? R3.elementContainerEnd : R3.elementEnd);
+      const span = element.endSourceSpan || element.sourceSpan;
+      if (isI18nRootElement) {
+        this.i18nEnd(span);
+      }
+      if (isNonBindableMode) {
+        this.creationInstruction(span, R3.enableBindings);
+      }
+      this.creationInstruction(span, isNgContainer ? R3.elementContainerEnd : R3.elementEnd);
     }
-
-    // Restore the state before exiting this node
-    this._inI18nSection = wasInI18nSection;
   }
 
   visitTemplate(template: t.Template) {
     const templateIndex = this.allocateDataSlot();
+
+    if (this.i18n) {
+      this.i18n.appendTemplate(templateIndex);
+    }
 
     let elName = '';
     if (template.children.length === 1 && template.children[0] instanceof t.Element) {
@@ -690,31 +787,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       o.TYPED_NULL_EXPR,
     ];
 
-    // Match directives on both attributes and bound properties
-    const attributeNames: o.Expression[] = [];
-    const attributeMap: {[name: string]: string} = {};
+    // find directives matching on a given <ng-template> node
+    this.matchDirectives('ng-template', template);
 
-    template.attributes.forEach(a => {
-      attributeNames.push(asLiteral(a.name), asLiteral(''));
-      attributeMap[a.name] = a.value;
-    });
-
-    template.inputs.forEach(i => {
-      attributeNames.push(asLiteral(i.name), asLiteral(''));
-      attributeMap[i.name] = '';
-    });
-
-    if (this.directiveMatcher) {
-      const selector = createCssSelector('ng-template', attributeMap);
-      this.directiveMatcher.match(
-          selector, (cssSelector, staticType) => { this.directives.add(staticType); });
-    }
-
-    if (attributeNames.length) {
-      parameters.push(this.constantPool.getConstLiteral(o.literalArr(attributeNames), true));
-    } else {
-      parameters.push(o.TYPED_NULL_EXPR);
-    }
+    // prepare attributes parameter (including attributes used for directive matching)
+    const attrsExprs: o.Expression[] = [];
+    template.attributes.forEach(
+        (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
+    attrsExprs.push(...this.prepareSyntheticAndSelectOnlyAttrs(template.inputs, template.outputs));
+    parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {
@@ -722,7 +803,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
-    // e.g. p(1, 'forOf', ɵbind(ctx.items));
+    // handle property bindings e.g. p(1, 'forOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);
     template.inputs.forEach(input => {
       const value = input.value.visit(this._valueConverter);
@@ -737,8 +818,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
-        this.constantPool, this._bindingScope, this.level + 1, contextName, templateName, [],
-        this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes, this._namespace);
+        this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
+        templateIndex, templateName, [], this.directiveMatcher, this.directives,
+        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -757,6 +839,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           o.literal(templateVisitor.getVarCount()));
       return trimTrailingNulls(parameters);
     });
+
+    // Generate listeners for directive output
+    template.outputs.forEach((outputAst: t.BoundEvent) => {
+      this.creationInstruction(
+          outputAst.sourceSpan, R3.listener,
+          this.prepareListenerParameter('ng_template', outputAst));
+    });
   }
 
   // These should be handled in the template or element directly.
@@ -767,6 +856,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   readonly visitBoundEvent = invalid;
 
   visitBoundText(text: t.BoundText) {
+    if (this.i18n) {
+      const value = text.value.visit(this._valueConverter);
+      if (value instanceof Interpolation) {
+        const {strings, expressions} = value;
+        const label =
+            assembleI18nBoundString(strings, this.i18n.getBindings().size, this.i18n.getId());
+        const implicit = o.variable(CONTEXT_NAME);
+        expressions.forEach(expression => {
+          const binding = this.convertExpressionBinding(implicit, expression);
+          this.i18n !.appendBinding(binding);
+        });
+        this.i18n.appendText(label);
+      }
+      return;
+    }
+
     const nodeIndex = this.allocateDataSlot();
 
     this.creationInstruction(text.sourceSpan, R3.text, [o.literal(nodeIndex)]);
@@ -779,27 +884,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitText(text: t.Text) {
+    if (this.i18n) {
+      this.i18n.appendText(text.value);
+      return;
+    }
     this.creationInstruction(
         text.sourceSpan, R3.text, [o.literal(this.allocateDataSlot()), o.literal(text.value)]);
-  }
-
-  // When the content of the element is a single text node the translation can be inlined:
-  //
-  // `<p i18n="desc|mean">some content</p>`
-  // compiles to
-  // ```
-  // /**
-  // * @desc desc
-  // * @meaning mean
-  // */
-  // const MSG_XYZ = goog.getMsg('some content');
-  // i0.ɵtext(1, MSG_XYZ);
-  // ```
-  visitSingleI18nTextChild(text: t.Text, i18nMeta: string) {
-    const meta = parseI18nMeta(i18nMeta);
-    const variable = this.constantPool.getTranslation(text.value, meta);
-    this.creationInstruction(
-        text.sourceSpan, R3.text, [o.literal(this.allocateDataSlot()), variable]);
   }
 
   private allocateDataSlot() { return this._dataIndex++; }
@@ -845,6 +935,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this._bindingSlots += value instanceof Interpolation ? value.expressions.length : 1;
   }
 
+  private convertExpressionBinding(implicit: o.Expression, value: AST): o.Expression {
+    const convertedPropertyBinding =
+        convertPropertyBinding(this, implicit, value, this.bindingContext(), BindingForm.TrySimple);
+    const valExpr = convertedPropertyBinding.currValExpr;
+    return o.importExpr(R3.bind).callFn([valExpr]);
+  }
+
   private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
       o.Expression {
     const interpolationFn =
@@ -857,6 +954,49 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const valExpr = convertedPropertyBinding.currValExpr;
     return value instanceof Interpolation || skipBindFn ? valExpr :
                                                           o.importExpr(R3.bind).callFn([valExpr]);
+  }
+
+  private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
+    if (this.directiveMatcher) {
+      const selector = createCssSelector(tagName, getAttrsForDirectiveMatching(elOrTpl));
+      this.directiveMatcher.match(
+          selector, (cssSelector, staticType) => { this.directives.add(staticType); });
+    }
+  }
+
+  private prepareSyntheticAndSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
+      o.Expression[] {
+    const attrExprs: o.Expression[] = [];
+    const nonSyntheticInputs: t.BoundAttribute[] = [];
+
+    if (inputs.length) {
+      const EMPTY_STRING_EXPR = asLiteral('');
+      inputs.forEach(input => {
+        if (input.type === BindingType.Animation) {
+          // @attributes are for Renderer2 animation @triggers, but this feature
+          // may be supported differently in future versions of angular. However,
+          // @triggers should always just be treated as regular attributes (it's up
+          // to the renderer to detect and use them in a special way).
+          attrExprs.push(asLiteral(prepareSyntheticAttributeName(input.name)), EMPTY_STRING_EXPR);
+        } else {
+          nonSyntheticInputs.push(input);
+        }
+      });
+    }
+
+    if (nonSyntheticInputs.length || outputs.length) {
+      attrExprs.push(o.literal(core.AttributeMarker.SelectOnly));
+      nonSyntheticInputs.forEach((i: t.BoundAttribute) => attrExprs.push(asLiteral(i.name)));
+      outputs.forEach((o: t.BoundEvent) => attrExprs.push(asLiteral(o.name)));
+    }
+
+    return attrExprs;
+  }
+
+  private toAttrsParam(attrsExprs: o.Expression[]): o.Expression {
+    return attrsExprs.length > 0 ?
+        this.constantPool.getConstLiteral(o.literalArr(attrsExprs), true) :
+        o.TYPED_NULL_EXPR;
   }
 
   private prepareRefsParameter(references: t.Reference[]): o.Expression {
@@ -886,9 +1026,35 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     return this.constantPool.getConstLiteral(asLiteral(refsParam), true);
   }
+
+  private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent): () => o.Expression[] {
+    const evNameSanitized = sanitizeIdentifier(outputAst.name);
+    const tagNameSanitized = sanitizeIdentifier(tagName);
+    const functionName = `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_listener`;
+
+    return () => {
+
+      const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
+
+      const bindingExpr = convertActionBinding(
+          listenerScope, o.variable(CONTEXT_NAME), outputAst.handler, 'b',
+          () => error('Unexpected interpolation'));
+
+      const statements = [
+        ...listenerScope.restoreViewStatement(), ...listenerScope.variableDeclarations(),
+        ...bindingExpr.render3Stmts
+      ];
+
+      const handler = o.fn(
+          [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
+          functionName);
+
+      return [o.literal(outputAst.name), handler];
+    };
+  }
 }
 
-class ValueConverter extends AstMemoryEfficientTransformer {
+export class ValueConverter extends AstMemoryEfficientTransformer {
   private _pipeBindExprs: FunctionCall[] = [];
 
   constructor(
@@ -1058,8 +1224,14 @@ export class BindingScope implements LocalResolver {
   private map = new Map<string, BindingData>();
   private referenceNameIndex = 0;
   private restoreViewVariable: o.ReadVarExpr|null = null;
+  private static _ROOT_SCOPE: BindingScope;
 
-  static ROOT_SCOPE = new BindingScope().set(0, '$event', o.variable('$event'));
+  static get ROOT_SCOPE(): BindingScope {
+    if (!BindingScope._ROOT_SCOPE) {
+      BindingScope._ROOT_SCOPE = new BindingScope().set(0, '$event', o.variable('$event'));
+    }
+    return BindingScope._ROOT_SCOPE;
+  }
 
   private constructor(public bindingLevel: number = 0, private parent: BindingScope|null = null) {}
 
@@ -1240,31 +1412,6 @@ function createCssSelector(tag: string, attributes: {[name: string]: string}): C
   return cssSelector;
 }
 
-// Parse i18n metas like:
-// - "@@id",
-// - "description[@@id]",
-// - "meaning|description[@@id]"
-function parseI18nMeta(i18n?: string): {description?: string, id?: string, meaning?: string} {
-  let meaning: string|undefined;
-  let description: string|undefined;
-  let id: string|undefined;
-
-  if (i18n) {
-    // TODO(vicb): figure out how to force a message ID with closure ?
-    const idIndex = i18n.indexOf(ID_SEPARATOR);
-
-    const descIndex = i18n.indexOf(MEANING_SEPARATOR);
-    let meaningAndDesc: string;
-    [meaningAndDesc, id] =
-        (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
-    [meaning, description] = (descIndex > -1) ?
-        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-        ['', meaningAndDesc];
-  }
-
-  return {description, id, meaning};
-}
-
 function interpolate(args: o.Expression[]): o.Expression {
   args = args.slice(1);  // Ignore the length prefix added for render2
   switch (args.length) {
@@ -1297,14 +1444,25 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {}):
-    {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
+    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {},
+    relativeContextFilePath: string): {
+  errors?: ParseError[],
+  nodes: t.Node[],
+  hasNgContent: boolean,
+  ngContentSelectors: string[],
+  relativeContextFilePath: string
+} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl);
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+    return {
+      errors: parseResult.errors,
+      nodes: [],
+      hasNgContent: false,
+      ngContentSelectors: [], relativeContextFilePath
+    };
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -1315,10 +1473,15 @@ export function parseTemplate(
   const {nodes, hasNgContent, ngContentSelectors, errors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+    return {
+      errors,
+      nodes: [],
+      hasNgContent: false,
+      ngContentSelectors: [], relativeContextFilePath
+    };
   }
 
-  return {nodes, hasNgContent, ngContentSelectors};
+  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath};
 }
 
 /**
@@ -1365,4 +1528,8 @@ function isStyleSanitizable(prop: string): boolean {
       return true;
   }
   return false;
+}
+
+function prepareSyntheticAttributeName(name: string) {
+  return '@' + name;
 }

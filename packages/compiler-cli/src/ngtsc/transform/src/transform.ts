@@ -10,12 +10,12 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
+import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {relativePathBetween} from '../../util/src/path';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
-import {ImportManager, translateExpression, translateStatement} from './translator';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 

@@ -43,7 +43,7 @@ typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs
 -->
 `HeroChildComponent`에는 ***입력 프로퍼티***가 두 개 있습니다. 이 프로퍼티들은 [@Input 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 선언합니다.
 
-<code-example path="component-interaction/src/app/hero-child.component.ts" title="component-interaction/src/app/hero-child.component.ts">
+<code-example path="component-interaction/src/app/hero-child.component.ts" header="component-interaction/src/app/hero-child.component.ts">
 
 </code-example>
 
@@ -62,7 +62,7 @@ and each iteration's `hero` instance to the child's `hero` property.
 각 컴포넌트를 만들때마다 `master` 문자열 프로퍼티를 자식 컴포넌트의 `master`로 연결하고,
 반복되는 `hero` 인스턴스를 자식 컴포넌트의 `hero` 프로퍼티로 바인딩 합니다.
 
-<code-example path="component-interaction/src/app/hero-parent.component.ts" title="component-interaction/src/app/hero-parent.component.ts">
+<code-example path="component-interaction/src/app/hero-parent.component.ts" header="component-interaction/src/app/hero-parent.component.ts">
 
 </code-example>
 
@@ -88,7 +88,7 @@ E2E test that all children were instantiated and displayed as expected:
 -->
 반복문을 순회하며 각각의 히어로마다 결과를 제대로 표시하는지 확인하기 위해 E2E 테스트 환경을 다음과 같이 설정합니다:
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -116,7 +116,7 @@ trims the whitespace from a name and replaces an empty value with default text.
 -->
 자식 컴포넌트인 `NameChildComponent`의 입력 프로퍼티인 `name`에 세터를 연결해서 전달되는 문자열의 여백 문자를 다른 문자로 변경해 봅시다.
 
-<code-example path="component-interaction/src/app/name-child.component.ts" title="component-interaction/src/app/name-child.component.ts">
+<code-example path="component-interaction/src/app/name-child.component.ts" header="component-interaction/src/app/name-child.component.ts">
 
 </code-example>
 
@@ -127,7 +127,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 그리고 부모 컴포넌트인 `NameParentComponent`는 자식 컴포넌트에 다음과 같이 몇 가지 경우를 적용해 봅니다:
 
 
-<code-example path="component-interaction/src/app/name-parent.component.ts" title="component-interaction/src/app/name-parent.component.ts">
+<code-example path="component-interaction/src/app/name-parent.component.ts" header="component-interaction/src/app/name-parent.component.ts">
 
 </code-example>
 
@@ -148,7 +148,7 @@ E2E tests of input property setter with empty and non-empty names:
 -->
 입력 프로퍼티 세터를 테스트하는 E2E 환경은 다음과 같이 설정합니다:
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-setter" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -191,7 +191,7 @@ This `VersionChildComponent` detects changes to the `major` and `minor` input pr
 -->
 `VersionChildComponent`는 `major`와 `minor` 두 입력 프로퍼티 값이 변경되는 것을 감지하고 이 내용을 로그로 출력합니다:
 
-<code-example path="component-interaction/src/app/version-child.component.ts" title="component-interaction/src/app/version-child.component.ts">
+<code-example path="component-interaction/src/app/version-child.component.ts" header="component-interaction/src/app/version-child.component.ts">
 
 </code-example>
 
@@ -201,7 +201,7 @@ The `VersionParentComponent` supplies the `minor` and `major` values and binds b
 -->
 그리고 부모 컴포넌트인 `VersionParentComponent`는 자식 컴포넌트에 바인딩되는 `minor`, `major` 두 값을 버튼으로 조정합니다.
 
-<code-example path="component-interaction/src/app/version-parent.component.ts" title="component-interaction/src/app/version-parent.component.ts">
+<code-example path="component-interaction/src/app/version-parent.component.ts" header="component-interaction/src/app/version-parent.component.ts">
 
 </code-example>
 
@@ -227,7 +227,7 @@ the expected `ngOnChanges` calls and values:
 -->
 ***두*** 입력 프로퍼티는 초기값이 설정된 이후에 버튼을 누를 때마다 변경되면서 `ngOnChanges()`를 실행하는데, 이 동작을 테스트하는 E2E 환경을 다음과 같이 정의합니다:
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-onchanges" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -258,7 +258,7 @@ The child's `EventEmitter` property is an ***output property***,
 자식 컴포넌트에서 외부로 이벤트를 보내려면 `EventEmitter` 타입으로 선언한 프로퍼티에 [@Output 데코레이터](guide/template-syntax#inputs-outputs)를 사용해서 ***출력 프로퍼티***로 지정합니다. `VoterComponent`에서는 다음과 같이 선언했습니다:
 
 
-<code-example path="component-interaction/src/app/voter.component.ts" title="component-interaction/src/app/voter.component.ts">
+<code-example path="component-interaction/src/app/voter.component.ts" header="component-interaction/src/app/voter.component.ts">
 
 </code-example>
 
@@ -274,7 +274,7 @@ payload `$event` and updates a counter.
 -->
 그러면 `VoteTakerComponent`의 `onVoted()` 함수가 이벤트 객체를 인자로 받아서 `agree`와 `disagree` 카운터를 갱신합니다.
 
-<code-example path="component-interaction/src/app/votetaker.component.ts" title="component-interaction/src/app/votetaker.component.ts">
+<code-example path="component-interaction/src/app/votetaker.component.ts" header="component-interaction/src/app/votetaker.component.ts">
 
 </code-example>
 
@@ -300,7 +300,7 @@ Test that clicking the *Agree* and *Disagree* buttons update the appropriate cou
 -->
 *Agree* 버튼이나 *Disagree* 버튼을 클릭하면 해당 카운터 값이 증가합니다.
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="child-to-parent" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -334,7 +334,7 @@ countdown status message in its own template.
 다음 예제에서 `CountdownTimerComponent`는 타이머를 동작시켜서 카운트가 0이 되면 로켓을 발사한다고 합시다.
 그리고 이 컴포넌트에 있는 `start` 메소드와 `stop` 메소드는 각각 타이머를 시작하거나 정지합니다.
 
-<code-example path="component-interaction/src/app/countdown-timer.component.ts" title="component-interaction/src/app/countdown-timer.component.ts">
+<code-example path="component-interaction/src/app/countdown-timer.component.ts" header="component-interaction/src/app/countdown-timer.component.ts">
 
 </code-example>
 
@@ -344,7 +344,7 @@ The `CountdownLocalVarParentComponent` that hosts the timer component is as foll
 -->
 부모 컴포넌트인 `CountdownLocalVarParentComponent`는 자식 컴포넌트를 다음과 같이 활용합니다:
 
-<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" title="component-interaction/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" header="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -395,7 +395,7 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 부모 컴포넌트의 템플릿에 표시되는 타이머는 자식 컴포넌트에 있는 프로퍼티를 참조하기 때문에 자식 컴포넌트에서 표시하는 메시지와 같은 값을 표시합니다.
 그리고 다음 테스트 코드는 *Stop* 버튼을 클릭했을 때 카운트다운 타이머가 멈추는지도 확인합니다:
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="countdown-timer-tests" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -461,7 +461,7 @@ Here is the parent, `CountdownViewChildParentComponent`:
 -->
 그리고 부모 컴포넌트인 `CountdownViewChildParentComponent`는 다음과 같이 구현합니다:
 
-<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" title="component-interaction/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" header="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -559,7 +559,7 @@ This `MissionService` connects the `MissionControlComponent` to multiple `Astron
 -->
 `MissionControlComponent`가 여러 개의 `AstronautComponent`와 통신하기 위해 `MissionService`를 만들어 봅시다.
 
-<code-example path="component-interaction/src/app/mission.service.ts" title="component-interaction/src/app/mission.service.ts">
+<code-example path="component-interaction/src/app/mission.service.ts" header="component-interaction/src/app/mission.service.ts">
 
 </code-example>
 
@@ -570,7 +570,7 @@ The `MissionControlComponent` both provides the instance of the service that it 
 -->
 `MissionControlComponent`는 생성자를 통해 `MissionService`의 인스턴스를 주입받으며, `providers` 메타데이터를 사용해서 서비스 인스턴스를 자식 컴포넌트에서도 사용할 수 있도록 공유합니다:
 
-<code-example path="component-interaction/src/app/missioncontrol.component.ts" title="component-interaction/src/app/missioncontrol.component.ts">
+<code-example path="component-interaction/src/app/missioncontrol.component.ts" header="component-interaction/src/app/missioncontrol.component.ts">
 
 </code-example>
 
@@ -581,7 +581,7 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 -->
 그리고 자식 컴포넌트 `AstronautComponent`도 생성자를 통해 서비스 인스턴스를 주입 받습니다:
 
-<code-example path="component-interaction/src/app/astronaut.component.ts" title="component-interaction/src/app/astronaut.component.ts">
+<code-example path="component-interaction/src/app/astronaut.component.ts" header="component-interaction/src/app/astronaut.component.ts">
 
 </code-example>
 
@@ -633,7 +633,7 @@ and verify that the history meets expectations:
 -->
 부모 컴포넌트 `MissionControlComponent`와 자식 컴포넌트 `AstronautComponent`의 버튼을 클릭했을 때 로그를 제대로 출력하는지 확인하기 위해 테스트 코드를 다음과 같이 작성합니다:
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="bidirectional-service" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 

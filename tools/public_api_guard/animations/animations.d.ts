@@ -32,7 +32,6 @@ export declare abstract class AnimationBuilder {
     abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
 
-/** @experimental */
 export interface AnimationEvent {
     disabled: boolean;
     element: any;
@@ -212,7 +211,6 @@ export declare function transition(stateChangeExpr: string | ((fromState: string
     [key: string]: any;
 }) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
 
-/** @experimental */
 export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;
 
 export declare function useAnimation(animation: AnimationReferenceMetadata, options?: AnimationOptions | null): AnimationAnimateRefMetadata;

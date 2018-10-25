@@ -6,12 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * This file is used to control if the default rendering pipeline should be `ViewEngine` or `Ivy`.
- *
- * For more information on how to run and debug tests with either Ivy or View Engine (legacy),
- * please see [BAZEL.md](./docs/BAZEL.md).
- */
-export * from './ivy_switch_legacy';
-
-// TODO(alxhub): debug why metadata doesn't properly propagate through this file.
+export const SWITCH_IVY_ENABLED__POST_R3__ = true;
+const SWITCH_IVY_ENABLED__PRE_R3__ = false;
+export const ivyEnabled = SWITCH_IVY_ENABLED__PRE_R3__;

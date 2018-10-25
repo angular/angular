@@ -9,6 +9,7 @@
 import {Component, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
 import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
@@ -19,7 +20,7 @@ type WithFooBar = {
   barBar: string
 };
 
-if (typeof customElements !== 'undefined') {
+if (browserDetection.supportsCustomElements) {
   describe('createCustomElement', () => {
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;

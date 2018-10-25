@@ -115,6 +115,7 @@ button.vertical-menu-item {
 }
 
 .heading-children.collapsed {
+  overflow: hidden;  // Needed to prevent unnecessary sidenav scrollbar.
   visibility: hidden;
   opacity: 0;
   max-height: 1px; // Must have measurement to transition height.

@@ -46,7 +46,7 @@ By the end of the tutorial you will be able to do the following:
 
 <!--
 You'll learn enough Angular to get started and gain confidence that
-Angular can do whatever you need it to do.
+Angular can do whatever you need it to do. 
 -->
 위 내용을 구현하면서 Angular가 제공하는 기능을 다양하게 살펴보기 때문에, 튜토리얼을 끝낼 쯤이면 Angular로 새로운 프로젝트를 시작하는 것에 어려움을 느끼지 않을 것입니다.
 

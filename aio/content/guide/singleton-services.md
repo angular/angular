@@ -46,7 +46,7 @@ Beginning with Angular 6.0, the preferred way to create a singleton services is 
 -->
 Angular 6.0부터는 싱글턴 서비스를 만들 때 서비스 프로바이더를 애플리케이션 루트에 등록하도록 명시적으로 정의하는 방법을 권장합니다. 이 방법은 `@Injectable` 데코레이터 중 `providedIn` 프로퍼티를 `root`로 지정하면 됩니다:
 
-<code-example path="providers/src/app/user.service.0.ts"  title="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
 
 <!--
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
@@ -135,9 +135,9 @@ extends the core `UserService`. If a `UserServiceConfig` exists, the `UserServic
 아래 예제에서 `@Optional`로 주입되는 `UserServiceConfig` 객체는 `UserService`의 환경을 설정하는 용도로 사용됩니다. 그래서 `UserServiceConfig` 객체가 존재하면 이 객체로 전달받은 사용자의 이름으로 `UserService`를 설정할 수 있습니다.
 
 <!--
-<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" title="src/app/core/user.service.ts (constructor)" linenums="false">
+<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" header="src/app/core/user.service.ts (constructor)" linenums="false">
 -->
-<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" title="src/app/core/user.service.ts (생성자)" linenums="false">
+<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" header="src/app/core/user.service.ts (생성자)" linenums="false">
 
 </code-example>
 
@@ -146,7 +146,7 @@ Here's `forRoot()` that takes a `UserServiceConfig` object:
 -->
 그리고 `UserServiceConfig` 객체를 활용하는 `forRoot()` 함수는 다음과 같이 정의합니다.
 
-<code-example path="ngmodules/src/app/core/core.module.ts" region="for-root" title="src/app/core/core.module.ts (forRoot)" linenums="false">
+<code-example path="ngmodules/src/app/core/core.module.ts" region="for-root" header="src/app/core/core.module.ts (forRoot)" linenums="false">
 
 </code-example>
 
@@ -155,7 +155,7 @@ Lastly, call it within the `imports` list of the `AppModule`.
 -->
 이제 이 `forRoot()` 메소드는 `AppModule`의 `imports`에 다음과 같이 사용합니다.
 
-<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" title="src/app/app.module.ts (imports)" linenums="false">
+<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)" linenums="false">
 
 </code-example>
 
@@ -188,7 +188,7 @@ To guard against a lazy-loaded module re-importing `CoreModule`, add the followi
 -->
 그래서 지연로딩하는 모듈이 `CoreModule`을 중복로드하는 것을 방지하려면 `CoreModule` 생성자를 다음과 같이 작성하면 됩니다.
 
-<code-example path="ngmodules/src/app/core/core.module.ts" region="ctor" title="src/app/core/core.module.ts" linenums="false">
+<code-example path="ngmodules/src/app/core/core.module.ts" region="ctor" header="src/app/core/core.module.ts" linenums="false">
 
 </code-example>
 
@@ -239,11 +239,11 @@ Here are the two files in their entirety for reference:
 
 <code-tabs linenums="false">
  <code-pane
-   title="app.module.ts"
+   header="app.module.ts"
    path="ngmodules/src/app/app.module.ts">
  </code-pane>
  <code-pane
-   title="core.module.ts"
+   header="core.module.ts"
    region="whole-core-module"
    path="ngmodules/src/app/core/core.module.ts">
  </code-pane>

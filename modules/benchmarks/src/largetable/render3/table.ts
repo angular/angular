@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementStart, ɵelementStyling, ɵelementStylingProp, ɵembeddedViewEnd, ɵembeddedViewStart, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
-import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
+import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementStart, ɵelementStyleProp, ɵelementStyling, ɵembeddedViewEnd, ɵembeddedViewStart, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
+import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
 
@@ -16,7 +16,7 @@ export class LargeTableComponent {
   data: TableCell[][] = emptyTable;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDefInternal<LargeTableComponent> = ɵdefineComponent({
+  static ngComponentDef: ComponentDef<LargeTableComponent> = ɵdefineComponent({
     type: LargeTableComponent,
     selectors: [['largetable']],
     consts: 3,
@@ -55,7 +55,7 @@ export class LargeTableComponent {
                         ɵelementEnd();
                       }
                       if (rf2 & ɵRenderFlags.Update) {
-                        ɵelementStylingProp(0, 0, null, cell.row % 2 ? '' : 'grey');
+                        ɵelementStyleProp(0, 0, null, cell.row % 2 ? '' : 'grey');
                         ɵtextBinding(1, ɵbind(cell.value));
                       }
                     }

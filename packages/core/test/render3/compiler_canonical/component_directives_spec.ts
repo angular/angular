@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -82,9 +82,8 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs = [
-      (ChildComponent.ngComponentDef as ComponentDefInternal<any>), SomeDirective.ngDirectiveDef
-    ];
+    (MyComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
+        [(ChildComponent.ngComponentDef as ComponentDef<any>), SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
     expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
@@ -106,7 +105,7 @@ describe('components & directives', () => {
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementProperty(
-              elIndex, 'id', $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).dirId));
+              elIndex, 'id', $r3$.ɵbind($r3$.ɵload<HostBindingDir>(dirIndex).dirId));
         }
       });
       // /NORMATIVE
@@ -136,8 +135,7 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        [HostBindingDir.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [HostBindingDir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div hostbindingdir="" id="some id"></div>`);
@@ -191,8 +189,7 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        [HostListenerDir.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [HostListenerDir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<button hostlistenerdir="">Click</button>`);
@@ -238,8 +235,7 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        [HostAttributeDir.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [HostAttributeDir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div hostattributedir="" role="listbox"></div>`);
@@ -260,8 +256,7 @@ describe('components & directives', () => {
         hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementAttribute(
-              elIndex, 'aria-label',
-              $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).label));
+              elIndex, 'aria-label', $r3$.ɵbind($r3$.ɵload<HostBindingDir>(dirIndex).label));
         }
       });
       // /NORMATIVE
@@ -291,8 +286,7 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        [HostBindingDir.ngDirectiveDef];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs = [HostBindingDir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
@@ -361,8 +355,8 @@ describe('components & directives', () => {
     }
 
     // NON-NORMATIVE (done by defineNgModule)
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        [(MyComp.ngComponentDef as ComponentDefInternal<any>)];
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+        [(MyComp.ngComponentDef as ComponentDef<any>)];
     // /NON-NORMATIVE
 
     expect(renderComp(MyApp)).toEqual(`<my-comp>some name</my-comp>`);
@@ -394,7 +388,7 @@ describe('components & directives', () => {
       static ngDirectiveDef = $r3$.ɵdefineDirective({
         type: IfDirective,
         selectors: [['', 'if', '']],
-        factory: () => new IfDirective($r3$.ɵinjectTemplateRef()),
+        factory: () => new IfDirective($r3$.ɵdirectiveInject(TemplateRef as any)),
       });
       // /NORMATIVE
     }
@@ -495,8 +489,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(MyArrayComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(MyArrayComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
@@ -542,8 +536,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(MyArrayComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(MyArrayComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>NANCY Bess</my-array-comp>`);
@@ -612,8 +606,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(MyComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(MyComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-comp>3</my-comp>`);
@@ -657,8 +651,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(MyArrayComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(MyArrayComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-array-comp>Nancy Bess</my-array-comp>`);
@@ -757,7 +751,7 @@ describe('components & directives', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           consts: 1,
-          vars: 10,
+          vars: 11,
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');
@@ -774,8 +768,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(MyComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(MyComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<my-comp>start-abcde-middle-fghi-end</my-comp>`);
@@ -854,8 +848,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(ObjectComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(ObjectComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp)).toEqual(`<object-comp><p>500</p><p>slide</p></object-comp>`);
@@ -948,8 +942,8 @@ describe('components & directives', () => {
       }
 
       // NON-NORMATIVE (done by defineNgModule)
-      (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-          [(NestedComp.ngComponentDef as ComponentDefInternal<any>)];
+      (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+          [(NestedComp.ngComponentDef as ComponentDef<any>)];
       // /NON-NORMATIVE
 
       expect(renderComp(MyApp))

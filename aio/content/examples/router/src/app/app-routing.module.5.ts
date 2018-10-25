@@ -5,11 +5,10 @@ import { NgModule }     from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 // #enddocregion import-router
 
-import { ComposeMessageComponent } from './compose-message.component';
-import { PageNotFoundComponent }   from './not-found.component';
+import { ComposeMessageComponent } from './compose-message/compose-message.component';
+import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
 
-import { CanDeactivateGuard }      from './can-deactivate-guard.service';
-import { AuthGuard }               from './auth-guard.service';
+import { AuthGuard }               from './auth/auth.guard';
 
 
 const appRoutes: Routes = [
@@ -21,7 +20,7 @@ const appRoutes: Routes = [
 // #docregion admin, admin-1
   {
     path: 'admin',
-    loadChildren: 'app/admin/admin.module#AdminModule',
+    loadChildren: './admin/admin.module#AdminModule',
 // #enddocregion admin-1
     canLoad: [AuthGuard]
 // #docregion admin-1
@@ -40,9 +39,6 @@ const appRoutes: Routes = [
   ],
   exports: [
     RouterModule
-  ],
-  providers: [
-    CanDeactivateGuard
   ]
 })
 export class AppRoutingModule {}

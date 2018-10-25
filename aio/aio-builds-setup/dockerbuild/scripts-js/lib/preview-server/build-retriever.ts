@@ -4,7 +4,7 @@ import {dirname} from 'path';
 import {mkdir} from 'shelljs';
 import {promisify} from 'util';
 import {CircleCiApi} from '../common/circle-ci-api';
-import {assert, assertNotMissingOrEmpty, computeArtifactDownloadPath, createLogger} from '../common/utils';
+import {assert, assertNotMissingOrEmpty, computeArtifactDownloadPath, Logger} from '../common/utils';
 import {PreviewServerError} from './preview-error';
 
 export interface GithubInfo {
@@ -19,7 +19,7 @@ export interface GithubInfo {
  * A helper that can get information about builds and download build artifacts.
  */
 export class BuildRetriever {
-  private logger = createLogger('BuildRetriever');
+  private logger = new Logger('BuildRetriever');
   constructor(private api: CircleCiApi, private downloadSizeLimit: number, private downloadDir: string) {
     assert(downloadSizeLimit > 0, 'Invalid parameter "downloadSizeLimit" should be a number greater than 0.');
     assertNotMissingOrEmpty('downloadDir', downloadDir);
@@ -34,7 +34,7 @@ export class BuildRetriever {
     const buildInfo = await this.api.getBuildInfo(buildNum);
     const githubInfo: GithubInfo = {
       org: buildInfo.username,
-      pr: getPrfromBranch(buildInfo.branch),
+      pr: getPrFromBranch(buildInfo.branch),
       repo: buildInfo.reponame,
       sha: buildInfo.vcs_revision,
       success: !buildInfo.failed,
@@ -73,7 +73,7 @@ export class BuildRetriever {
   }
 }
 
-function getPrfromBranch(branch: string): number {
+function getPrFromBranch(branch: string): number {
   // CircleCI only exposes PR numbers via the `branch` field :-(
   const match = /^pull\/(\d+)$/.exec(branch);
   if (!match) {

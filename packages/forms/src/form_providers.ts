@@ -13,8 +13,13 @@ import {RadioControlRegistry} from './directives/radio_control_value_accessor';
 import {FormBuilder} from './form_builder';
 
 /**
- * The ng module for forms.
+ * Exports the required providers and directives for template-driven forms,
+ * making them available for import by NgModules that import this module.
+ * @see [Forms](guide/forms)
  *
+ * @see [Forms Guide](/guide/forms)
+ *
+ * @publicApi
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -22,9 +27,17 @@ import {FormBuilder} from './form_builder';
   exports: [InternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
 })
 export class FormsModule {
+  /**
+   * @description
+   * Provides options for configuring the template-driven forms module.
+   *
+   * @param opts An object of configuration options
+   * * `warnOnDeprecatedNgFormSelector` Configures when to emit a warning when the deprecated
+   * `ngForm` selector is used.
+   */
   static withConfig(opts: {
     /** @deprecated as of v6 */ warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always',
-  }): ModuleWithProviders {
+  }): ModuleWithProviders<FormsModule> {
     return {
       ngModule: FormsModule,
       providers:
@@ -34,8 +47,13 @@ export class FormsModule {
 }
 
 /**
- * The ng module for reactive forms.
+ * Exports the required infrastructure and directives for reactive forms,
+ * making them available for import by NgModules that import this module.
+ * @see [Forms](guide/reactive-forms)
  *
+ * @see [Reactive Forms Guide](/guide/reactive-forms)
+ *
+ * @publicApi
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
@@ -43,6 +61,14 @@ export class FormsModule {
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {
+  /**
+   * @description
+   * Provides options for configuring the reactive forms module.
+   *
+   * @param opts An object of configuration options
+   * * `warnOnNgModelWithFormControl` Configures when to emit a warning when an `ngModel`
+   * binding is used with reactive form directives.
+   */
   static withConfig(opts: {
     /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never' | 'once' | 'always'
   }): ModuleWithProviders<ReactiveFormsModule> {

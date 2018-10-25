@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 # Uses separate test rules to allow the tests to run in parallel
 
@@ -18,6 +17,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -32,6 +32,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -46,6 +47,7 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
     ],
 )
 
@@ -60,11 +62,13 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "ngc",
+    timeout = "long",  # 900 seconds
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
@@ -76,6 +80,8 @@ jasmine_node_test(
         ":ngc_lib",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
+        "@ngdeps//tsickle",
     ],
 )
 
@@ -90,6 +96,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -118,6 +125,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -129,6 +137,33 @@ jasmine_node_test(
     ],
     deps = [
         ":perform_watch_lib",
+        "//packages/core",
+        "//tools/testing:node",
+    ],
+)
+
+# perform_compile_spec
+ts_library(
+    name = "perform_compile_lib",
+    testonly = 1,
+    srcs = [
+        "perform_compile_spec.ts",
+    ],
+    deps = [
+        ":test_utils",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "perform_compile",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+        "//packages/core:npm_package",
+    ],
+    deps = [
+        ":perform_compile_lib",
         "//packages/core",
         "//tools/testing:node",
     ],

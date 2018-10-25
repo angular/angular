@@ -171,7 +171,7 @@ Note that polyfills cannot magically transform an old, slow browser into a moder
 ## 폴리필 적용하기
 
 <!--
-[Angular CLI](https://github.com/angular/angular-cli/wiki) users enable polyfills through the `src/polyfills.ts` file that
+[Angular CLI](cli) users enable polyfills through the `src/polyfills.ts` file that
 the CLI created with your project.
 -->
 [Angular CLI](https://github.com/angular/angular-cli/wiki)를 사용해서 프로젝트를 생성했다면 Angular CLI가 자동으로 만든 `src/polyfills.ts` 파일을 사용해서 폴리필을 적용할 수 있습니다.
@@ -213,7 +213,7 @@ Then open the `polyfills.ts` file and un-comment the corresponding `import` stat
 그리고 `polyfills.ts` 파일을 열어서 해당 `import` 구문에 지정된 주석을 해제합니다:
 
 <!--
-<code-example title="src/polyfills.ts">
+<code-example header="src/polyfills.ts">
   /**
   * Required to support Web Animations `@angular/platform-browser/animations`.
   * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
@@ -221,7 +221,7 @@ Then open the `polyfills.ts` file and un-comment the corresponding `import` stat
   import 'web-animations-js';  // Run `npm install --save web-animations-js`.
 </code-example>
 -->
-<code-example title="src/polyfills.ts">
+<code-example header="src/polyfills.ts">
   /**
   * `@angular/platform-browser/animations` 패키지로 웹 애니메이션을 사용할 때 필요합니다.
   * Chrome, Firefox, Opera를 제외한 브라우저에 필요합니다. http://caniuse.com/#feat=web-animation
@@ -738,8 +738,8 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
 프로젝트를 생성할 때 Angular CLI를 사용하지 않았다면 폴리필 스크립트를 `index.html` 파일에 직접 추가해야 합니다. 이 경우는 폴리필을 다음과 같이 적용합니다.
 
 <!--
-<code-example title="src/index.html">
-  &lt;!-- pre-zone polyfills --&gt;
+<code-example header="src/index.html">
+  &lt;!-- pre-zone polyfills -->
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
   &lt;script>

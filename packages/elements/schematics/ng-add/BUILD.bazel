@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "npm_package", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "npm_package", "ts_library")
 
 ts_library(
     name = "ng-add",
@@ -14,6 +13,7 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
     ],
 )
@@ -30,6 +30,7 @@ ts_library(
         ":ng-add",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -40,5 +41,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/elements/schematics:collection",
+        "@ngdeps//@schematics/angular",
     ],
 )

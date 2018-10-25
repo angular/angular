@@ -53,7 +53,7 @@ An asterisk (*) precedes the directive attribute name as in this example.
 구조 디렉티브가 사용된 것은 확인하기 쉽습니다.
 이 디렉티브는 아래 예제처럼 별표(`*`)로 시작하는 어트리뷰트 이름으로 적용합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
 
@@ -84,7 +84,7 @@ Here's an example of them in a template:
 Angular의 기본 구조 디렉티브 중 가장 많이 사용하는 것은 [NgIf](guide/template-syntax#ngIf), [NgFor](guide/template-syntax#ngFor), [NgSwitch...](guide/template-syntax#ngSwitch) 이렇게 3가지 입니다. 각각은 [_템플릿 문법_](guide/template-syntax) 문서에서 자세하게 다루며, 예제도 함께 확인할 수 있습니다.
 이 문서에서는 예제와 함께 간단하게 알아봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (built-in)" region="built-in">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (built-in)" region="built-in">
 
 </code-example>
 
@@ -180,7 +180,7 @@ It takes a boolean expression and makes an entire chunk of the DOM appear or dis
 구조 디렉티브 중에서 `NgIf`는 가장 간단하며 이해하기도 어렵지 않습니다.
 이 디렉티브는 표현식의 결과에 따라 DOM 조각을 추가하거나 제거합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-true)" region="ngif-true">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-true)" region="ngif-true">
 
 </code-example>
 
@@ -222,7 +222,7 @@ A directive could hide the unwanted paragraph instead by setting its `display` s
 -->
 디렉티브가 화면에 보일 필요가 없으면 `display` 스타일을 `none`으로 지정해서 감추는 방법도 있습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (display-none)" region="display-none">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (display-none)" region="display-none">
 
 </code-example>
 
@@ -302,7 +302,7 @@ Here is `*ngIf` displaying the hero's name if `hero` exists.
 -->
 아래 코드는 `hero` 객체가 지정되었을 때 히어로의 이름을 표시하는 예제입니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (asterisk)" region="asterisk">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (asterisk)" region="asterisk">
 
 </code-example>
 
@@ -314,7 +314,7 @@ Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _e
 별표는 복잡한 문법을 단순하게 표현하는 문법 테크닉입니다.
 Angular가 `*ngIf` _어트리뷰트_ 를 내부적으로 처리할 때는 `ngIf` 디렉티브가 적용된 호스트 엘리먼트를 감싸도록 `<ng-template>` _엘리먼트_ 로 구성합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-template)" region="ngif-template">
 
 </code-example>
 
@@ -365,7 +365,7 @@ Here's a full-featured application of `NgFor`, written both ways:
 -->
 `NgFor` 디렉티브의 기능이 모두 활용된 예제를 확인해 봅시다:
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
 
 </code-example>
 
@@ -579,7 +579,7 @@ Here's an example.
 -->
 예제를 확인해 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch)" region="ngswitch">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch)" region="ngswitch">
 
 </code-example>
 
@@ -629,7 +629,7 @@ can be desugared into the `<ng-template>` element form.
 -->
 다른 구조 디렉티브와 마찬가지로, `NgSwitchCase`와 `NgSwitchDefault`도 Angular가 렌더링할 때는 `<ng-template>` 엘리먼트로 변환됩니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
 
 </code-example>
 
@@ -685,7 +685,7 @@ That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 구조 디렉티브를 하나도 사용하지 않고 엘리먼트를 `<ng-template>`으로 감싸기만 하면, 이 엘리먼트는 화면에 표시되지 않습니다.
 그래서 다음 "Hip! Hip! Hooray!" 문단들 중 두 번째 문단인 "Hip!"은 표시되지 않습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (template-tag)" region="template-tag">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (template-tag)" region="template-tag">
 
 </code-example>
 
@@ -724,7 +724,7 @@ The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 구조 디렉티브의 호스트 엘리먼트는 보통 엘리먼트 하나입니다.
 예를 들어 리스트 엘리먼트(`<li>`)에 `NgFor`를 사용한다면 다음과 같이 구현할 수 있습니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngfor-li)" region="ngfor-li">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngfor-li)" region="ngfor-li">
 
 </code-example>
 
@@ -736,7 +736,7 @@ such as a `<div>`, and attach the directive to that wrapper.
 하지만 호스트 엘리먼트가 하나가 아닌 경우가 있습니다.
 이런 경우라면 네이티브 HTML인 `<div>`로 엘리먼트를 감싸고 이 `<div>`에 디렉티브를 적용해도 됩니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
 
@@ -757,7 +757,7 @@ For example, suppose you have the following paragraph layout.
 엘리먼트를 묶으면 이 엘리먼트가 템플릿에 적용되느냐에 따라서 CSS 스타일이 잘못 지정되거나 레이아웃 자체가 틀어질 수 있습니다.
 예를 들어 다음과 같은 문단이 있다고 합시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-span)" region="ngif-span">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-span)" region="ngif-span">
 
 </code-example>
 
@@ -767,7 +767,7 @@ You also have a CSS style rule that happens to apply to a `<span>` within a `<p>
 -->
 그리고 전역 CSS 스타일에는 `<p>` 안에 있는 `<span>`에 다음과 같은 스타일을 지정하고 있다고 합시다.
 
-<code-example path="structural-directives/src/app/app.component.css" linenums="false" title="src/app/app.component.css (p-span)" region="p-span">
+<code-example path="structural-directives/src/app/app.component.css" linenums="false" header="src/app/app.component.css (p-span)" region="p-span">
 
 </code-example>
 
@@ -801,7 +801,7 @@ When you try this,
 -->
 다음 코드를 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-span)" region="select-span">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-span)" region="select-span">
 
 </code-example>
 
@@ -837,7 +837,7 @@ Here's the conditional paragraph again, this time using `<ng-container>`.
 -->
 `ngIf`를 사용하는 `<p>` 엘리먼트를 생각해 봅시다. 이 엘리먼트는 `<ng-container>`를 사용합니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
 
 </code-example>
 
@@ -857,7 +857,7 @@ Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 -->
 그리고 이번에는 `<select>`태그 안에 있는 `<option>`를 배열에 따라 반복하고 표시 조건도 지정하기 위해 `<ng-container>`를 사용해 봅시다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
 
 </code-example>
 
@@ -916,7 +916,7 @@ that does the opposite of `NgIf`.
 이번에는 `NgIf`의 반대 기능을 하는 `UnlessDirective`를 만들어 봅니다.
 `NgIf`가 조건이 `true`일 때 템플릿 내용을 화면에 표시한다면, `UnlessDirective`는 조건이 ***false*** 일 때 템플릿 내용을 화면에 표시할 것입니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless-1)" region="appUnless-1">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless-1)" region="appUnless-1">
 
 </code-example>
 
@@ -946,7 +946,7 @@ Here's how you might begin:
 
 이렇게 작성하면 다음과 비슷한 코드가 될 것입니다:
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (skeleton)" region="skeleton">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (skeleton)" region="skeleton">
 
 </code-example>
 
@@ -1004,7 +1004,7 @@ You inject both in the directive constructor as private variables of the class.
 -->
 두 객체를 클래스에서 참조할 수 있도록 디렉티브 생성자에 두 심볼을 의존성으로 주입합니다.
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (ctor)" region="ctor">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (ctor)" region="ctor">
 
 </code-example>
 
@@ -1033,7 +1033,7 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outp
 
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (set)" region="set">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (set)" region="set">
 
 </code-example>
 
@@ -1063,7 +1063,7 @@ The completed directive code looks like this:
 
 그러면 다음과 같은 코드가 됩니다:
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (excerpt)" region="no-docs">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (excerpt)" region="no-docs">
 
 </code-example>
 
@@ -1077,7 +1077,7 @@ Then create some HTML to try it.
 
 그러고 HTML에 이 디렉티브를 적용해 봅니다.
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless)" region="appUnless">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless)" region="appUnless">
 
 </code-example>
 
@@ -1116,31 +1116,31 @@ Here is the source from the `src/app/` folder.
 
 <code-tabs>
 
-  <code-pane title="app.component.ts" path="structural-directives/src/app/app.component.ts">
+  <code-pane header="app.component.ts" path="structural-directives/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="app.component.html" path="structural-directives/src/app/app.component.html">
+  <code-pane header="app.component.html" path="structural-directives/src/app/app.component.html">
 
   </code-pane>
 
-  <code-pane title="app.component.css" path="structural-directives/src/app/app.component.css">
+  <code-pane header="app.component.css" path="structural-directives/src/app/app.component.css">
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="structural-directives/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="structural-directives/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="hero.ts" path="structural-directives/src/app/hero.ts">
+  <code-pane header="hero.ts" path="structural-directives/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
+  <code-pane header="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
 
   </code-pane>
 
-  <code-pane title="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">
+  <code-pane header="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">
 
   </code-pane>
 

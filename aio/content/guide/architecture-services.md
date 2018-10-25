@@ -1,6 +1,5 @@
 <!--
 # Introduction to services and dependency injection
-
 -->
 # 서비스와 의존성 주입
 
@@ -59,14 +58,14 @@ Here's an example of a service class that logs to the browser console.
 -->
 브라우저 콘솔에 로그를 출력하는 서비스 클래스를 예로 들어봅시다:
 
-<code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/logger.service.ts" linenums="false" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
 <!--
 Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
 -->
 서비스는 다른 서비스와 독립적일 수 있습니다. 예를 들어 `HeroService`는 `Logger` 서비스를 사용하면서, 서버에서 히어로 목록을 받아오기 위해 `BackendService`라는 서비스를 함께 사용할 수 있습니다. 그리고 `BackendService`는 서버와 통신하기 위해 `HttpClient` 서비스를 다른 의존성으로 사용할 수도 있습니다.
 
-<code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero.service.ts" linenums="false" header="src/app/hero.service.ts (class)" region="class"></code-example>
 
 <!--
 ## Dependency injection (DI)
@@ -128,9 +127,9 @@ When Angular creates a new instance of a component class, it determines which se
 Angular가 컴포넌트 클래스의 인스턴스를 새로 만들 때, 컴포넌트 생성자에 지정된 타입을 보고 이 컴포넌트에 서비스와 같은 의존성이 있는지 확인합니다. 예를 들면 아래 코드에서 `HeroListComponent`는 `HeroService`가 의존성으로 주입되어야 합니다.
 
 <!--
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 -->
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (생성자)" region="ctor"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (생성자)" region="ctor"></code-example>
 
 <!--
 When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
@@ -166,9 +165,9 @@ or in the `@NgModule()` or `@Component()` metadata
 서비스를 사용하려면 *프로바이더(provider)* 를 어디엔가 등록해야 하는데, 서비스 프로바이더를 등록하는 방법은 두 가지입니다. 하나는 서비스 메타데이터(`@Injectable()` 데코레이터)에 자신의 프로바이더를 직접 등록하는 방법이며, 다른 하나는 `@NgModule()`이나 `@Component()` 메타데이터에 프로바이더를 등록하고 하위 계층에서 이 프로바이더를 이용하는 방법입니다.
 
 <!--
-* By default, the Angular CLI command `ng generate service` registers a provider with the root injector for your service by including provider metadata in the `@Injectable()` decorator. The tutorial uses this method to register the provider of  HeroService class definition.
+* By default, the Angular CLI command [`ng generate service`](cli/generate) registers a provider with the root injector for your service by including provider metadata in the `@Injectable()` decorator. The tutorial uses this method to register the provider of  HeroService class definition.
 -->
-* Angular CLI로 `ng generate service` 명령을 실행하면 서비스 클래스를 생성하면서 `@Injectable()` 데코레이터를 사용해서 이 서비스를 최상위 인젝터에 등록합니다. 튜토리얼에서 사용하는 `HeroService` 클래스는 다음과 같이 선언되어 있습니다.
+* Angular CLI로 [`ng generate service`](cli/generate) 명령을 실행하면 서비스 클래스를 생성하면서 `@Injectable()` 데코레이터를 사용해서 이 서비스를 최상위 인젝터에 등록합니다. 튜토리얼에서 사용하는 `HeroService` 클래스는 다음과 같이 선언되어 있습니다.
 
    ``` 
    @Injectable({
@@ -209,11 +208,12 @@ At the component level, register a service provider in the `providers` property 
 컴포넌트 계층에 서비스 프로바이더를 등록하려면 `@Component()` 메타데이터의 `providers` 프로퍼티를 다음과 같이 지정합니다:
 
    <!--
-   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
+   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
    -->
-   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (컴포넌트 프로바이더)" region="providers"></code-example>
+   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (컴포넌트 프로바이더)" region="providers"></code-example>
 
 <!--
 For more detailed information, see the [Dependency Injection](guide/dependency-injection) section.
 -->
 좀 더 자세한 내용을 확인하려면 [의존성 주입](guide/dependency-injection) 문서를 확인하세요.
+

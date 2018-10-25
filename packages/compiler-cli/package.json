@@ -12,15 +12,18 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
-    "tsickle": "^0.32.1",
+    "canonical-path": "0.0.2",
     "chokidar": "^1.4.2",
     "convert-source-map": "^1.5.1",
+    "dependency-graph": "^0.7.2",
     "magic-string": "^0.25.0",
-    "source-map": "^0.6.1"
+    "shelljs": "^0.8.1",
+    "source-map": "^0.6.1",
+    "yargs": "9.0.1"
   },
   "peerDependencies": {
-    "typescript": ">=2.7.2 <2.10",
-    "@angular/compiler": "0.0.0-PLACEHOLDER"
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "typescript": ">=3.1.1 <3.2"
   },
   "engines" : {
     "node" : ">=8.0"

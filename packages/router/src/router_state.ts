@@ -26,6 +26,7 @@ import {Tree, TreeNode} from './utils/tree';
  * RouterState is a tree of activated routes. Every node in this tree knows about the "consumed" URL
  * segments, the extracted parameters, and the resolved data.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -43,7 +44,7 @@ import {Tree, TreeNode} from './utils/tree';
  *
  * See `ActivatedRoute` for more information.
  *
- *
+ * @publicApi
  */
 export class RouterState extends Tree<ActivatedRoute> {
   /** @internal */
@@ -102,7 +103,7 @@ export function createEmptyStateSnapshot(
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class ActivatedRoute {
   /** The current snapshot of this route */
@@ -249,7 +250,7 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
@@ -340,6 +341,7 @@ export class ActivatedRouteSnapshot {
  * This is a tree of activated route snapshots. Every node in this tree knows about
  * the "consumed" URL segments, the extracted parameters, and the resolved data.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -356,7 +358,7 @@ export class ActivatedRouteSnapshot {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /** @internal */

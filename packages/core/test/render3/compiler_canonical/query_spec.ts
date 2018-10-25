@@ -8,8 +8,8 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
-import {renderComponent, toHtml} from '../render_util';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {getDirectiveOnNode, renderComponent, toHtml} from '../render_util';
 
 
 /// See: `normative.md`
@@ -80,7 +80,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (ViewQueryComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (ViewQueryComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
         [SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
@@ -121,7 +121,7 @@ describe('queries', () => {
         contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(
             dirIndex: $number$, queryStartIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵloadDirective<ContentQueryComponent>(dirIndex);
+          const $instance$ = $r3$.ɵload<ContentQueryComponent>(dirIndex);
           $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex)) &&
               ($instance$.someDir = $tmp$.first);
           $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex + 1)) &&
@@ -161,7 +161,7 @@ describe('queries', () => {
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'content-query-component');
-            contentQueryComp = $r3$.ɵloadDirective<ContentQueryComponent>(0);
+            contentQueryComp = getDirectiveOnNode(0);
             $r3$.ɵelement(1, 'div', $e2_attrs$);
             $r3$.ɵelementEnd();
           }
@@ -171,7 +171,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
         [ContentQueryComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 

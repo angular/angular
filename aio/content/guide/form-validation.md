@@ -50,7 +50,7 @@ The following example exports `NgModel` into a variable called `name`:
 폼 컨트롤의 상태는 템플릿 변수로 참조하는 `ngModel`을 활용해서 추적할 수 있습니다.
 다음 코드는 `name` 폼 컨트롤의 유효성을 확인하는 예제입니다:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" title="template/hero-form-template.component.html (name)" linenums="false">
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-with-error-msg" header="template/hero-form-template.component.html (name)" linenums="false">
 
 </code-example>
 
@@ -161,7 +161,7 @@ built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 <!--
@@ -186,7 +186,7 @@ If you look at the template for the name input again, it is fairly similar to th
 -->
 이 내용은 템플릿 기반 폼을 다룰 때와 비슷하게 템플릿에 적용할 수 있습니다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" title="reactive/hero-form-reactive.component.html (name with error msg)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="name-with-error-msg" header="reactive/hero-form-reactive.component.html (name with error msg)" linenums="false">
 </code-example>
 
 <!--
@@ -219,7 +219,7 @@ Angular의 기본 유효성 검사기가 애플리케이션의 요구사항을 �
 
 [이전 예제](guide/form-validation#reactive-component-class)에서 살펴본 `forbiddenNameValidator` 함수를 구현해봅시다. 이 함수는 다음과 같이 정의합니다:
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" title="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator" header="shared/forbidden-name.directive.ts (forbiddenNameValidator)" linenums="false">
 </code-example>
 
 <!--
@@ -264,7 +264,7 @@ to the `FormControl`.
 -->
 커스텀 유효성 검사기를 반응형 폼에 적용하는 것은 아주 간단합니다. `FormControl` 인스턴스를 생성할 때 인자로 전달하기만 하면 됩니다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" header="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 <!--
@@ -289,7 +289,7 @@ with the `NG_VALIDATORS` provider, a provider with an extensible collection of v
 -->
 이 디렉티브의 역할이 유효성 검사라는 것을 Angular에게 알리기 위해 `NG_VALIDATORS` 프로바이더를 사용하며, Angular의 기본 디렉티브 목록에 이 디렉티브를 추가하도록 다음과 같이 등록합니다.
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" title="shared/forbidden-name.directive.ts (providers)" linenums="false">
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers" header="shared/forbidden-name.directive.ts (providers)" linenums="false">
 </code-example>
 
 <!--
@@ -300,7 +300,7 @@ comes together:
 그리고 디렉티브 클래스는 `Validator` 인터페이스를 사용해서 구현하는데, 이 인터페이스를 사용하면 Angular 폼과 호환되도록 클래스를 정의할 수 있습니다.
 디렉티브 클래스는 다음과 같이 정의합니다:
 
-<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" title="shared/forbidden-name.directive.ts (directive)">
+<code-example path="form-validation/src/app/shared/forbidden-name.directive.ts" region="directive" header="shared/forbidden-name.directive.ts (directive)">
 </code-example>
 
 <!--
@@ -308,7 +308,7 @@ Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector
 -->
 `ForbiddenValidatorDirective`를 등록하고 나면 `appForbiddenName` 어트리뷰트를 사용해서 엘리먼트에 적용할 수 있습니다. 다음과 같이 적용합니다:
 
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" title="template/hero-form-template.component.html (forbidden-name-input)" linenums="false">
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="name-input" header="template/hero-form-template.component.html (forbidden-name-input)" linenums="false">
 
 </code-example>
 
@@ -352,7 +352,7 @@ set the color of each form control's border.
 -->
 이 중 `.ng-valid`와 `.ng-invalid` 클래스를 활용해서 폼 컨트롤의 외곽선을 다르게 표시하려면 다음과 같이 작성합니다.
 
-<code-example path="form-validation/src/assets/forms.css" title="forms.css (status classes)">
+<code-example path="form-validation/src/assets/forms.css" header="forms.css (status classes)">
 
 </code-example>
 
@@ -421,7 +421,7 @@ The validator code is as follows:
 -->
 이 때 지정한 유효성 검사기는 다음과 같이 구현되어 있습니다:
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" title="shared/identity-revealed.directive.ts" linenums="false">
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" header="shared/identity-revealed.directive.ts" linenums="false">
 </code-example>
 
 <!--
@@ -444,7 +444,7 @@ Next, to provide better user experience, we show an appropriate error message wh
 -->
 그 다음에는 좀 더 편한 사용성을 제공하기 위해 에러 메시지를 폼에 표시해 봅시다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" title="reactive/hero-form-template.component.html" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" header="reactive/hero-form-template.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -465,21 +465,21 @@ First we must create a directive that will wrap the validator function. We provi
 -->
 먼저, 유효성 검사 함수를 디렉티브로 랩핑해서 `NG_VALIDATORS` 토큰으로 만들어야 합니다. 왜 이렇게 해야하는지, 어떻게 해야하는지 잘 모르겠다면 [이 문서](guide/form-validation#템플릿-기반-폼에-적용하기)를 참고하세요.
 
-<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" title="shared/identity-revealed.directive.ts" linenums="false">
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" header="shared/identity-revealed.directive.ts" linenums="false">
 </code-example>
 
 <!--
 Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
 -->
 그 다음에는 이렇게 만든 디렉티브를 HTML 템플릿에 적용해야 합니다. 이 우효성 검사기는 폼의 최상위 계층에 적용되어야 하기 때문에 `form` 태그에 이 디렉티브를 지정합니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" title="template/hero-form-template.component.html" linenums="false">
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" header="template/hero-form-template.component.html" linenums="false">
 </code-example>
 
 <!--
 To provide better user experience, we show an appropriate error message when the form is invalid.
 -->
 그리고 좀더 나은 사용성을 위해 폼 유효성 검사가 실패했을 때 에러 메시지를 표시해 줍니다.
-<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" title="template/hero-form-template.component.html" linenums="false">
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" header="template/hero-form-template.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -507,7 +507,6 @@ This section shows how to create asynchronous validators. It assumes some basic 
 -->
 ## 비동기 유효성 검증 (Async Validation)
 이번에는 비동기 유효성 검사기를 어떻게 만들 수 있는지 알아봅시다. 이 내용은 [커스텀 유효성 검사기](guide/form-validation#커스텀-유효성-검사기)를 먼저 이해하고 보는 것이 좋습니다.
-
 
 <!--
 ### The Basics

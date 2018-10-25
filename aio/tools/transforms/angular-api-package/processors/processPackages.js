@@ -2,8 +2,8 @@ const { dirname } = require('canonical-path');
 
 module.exports = function processPackages() {
   return {
-    $runAfter: ['extractDecoratedClassesProcessor'],
-    $runBefore: ['computing-ids'],
+    $runAfter: ['extractDecoratedClassesProcessor', 'computeStability'],
+    $runBefore: ['computing-ids', 'generateKeywordsProcessor'],
     $process(docs) {
       const packageContentFiles = {};
       const packageMap = {};
@@ -26,13 +26,17 @@ module.exports = function processPackages() {
 
           // Partition the exports into groups by type
           if (doc.exports) {
-            doc.classes = doc.exports.filter(doc => doc.docType === 'class');
-            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator');
-            doc.functions = doc.exports.filter(doc => doc.docType === 'function');
-            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface');
-            doc.directives = doc.exports.filter(doc => doc.docType === 'directive');
-            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe');
-            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const');
+            doc.ngmodules = doc.exports.filter(doc => doc.docType === 'ngmodule').sort(byId);
+            doc.classes = doc.exports.filter(doc => doc.docType === 'class').sort(byId);
+            doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator').sort(byId);
+            doc.functions = doc.exports.filter(doc => doc.docType === 'function').sort(byId);
+            doc.structures = doc.exports.filter(doc => doc.docType === 'enum' || doc.docType === 'interface').sort(byId);
+            doc.directives = doc.exports.filter(doc => doc.docType === 'directive').sort(byId);
+            doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe').sort(byId);
+            doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
+            if (doc.exports.every(doc => !!doc.deprecated)) {
+              doc.deprecated = 'all exports of this entry point are deprecated.';
+            }
           }
 
           // Copy over docs from the PACKAGE.md file that is used to document packages
@@ -57,7 +61,18 @@ module.exports = function processPackages() {
         }
       });
 
+      // Update package deprecation status (compared to entry point status)
+      Object.keys(packageMap).forEach(key => {
+        const pkg = packageMap[key];
+        pkg.primary.packageDeprecated = pkg.primary.deprecated !== undefined && pkg.secondary.every(entryPoint => entryPoint.deprecated !== undefined);
+      });
+
       return docs;
     }
   };
 };
+
+
+function byId(a, b) {
+  return a.id > b.id ? 1 : -1;
+}

@@ -49,15 +49,14 @@ export class ApiListComponent implements OnInit {
     { value: 'function', title: 'Function' },
     { value: 'interface', title: 'Interface' },
     { value: 'pipe', title: 'Pipe'},
+    { value: 'ngmodule', title: 'NgModule'},
     { value: 'type-alias', title: 'Type alias' },
     { value: 'package', title: 'Package'}
   ];
 
   statuses: Option[] = [
     { value: 'all', title: 'All' },
-    { value: 'stable', title: 'Stable' },
     { value: 'deprecated', title: 'Deprecated' },
-    { value: 'experimental', title: 'Experimental' },
     { value: 'security-risk', title: 'Security Risk' }
   ];
 

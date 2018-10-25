@@ -2,7 +2,7 @@ language: node_js
 sudo: false
 dist: trusty
 node_js:
-  - '8.9.1'
+  - '10.9.0'
 
 addons:
 #  firefox: "38.0"
@@ -49,12 +49,14 @@ env:
     - CI_MODE=browserstack_optional
     - CI_MODE=aio_tools_test
     - CI_MODE=aio
+    - CI_MODE=aio_local
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
 
 matrix:
   fast_finish: true
   allow_failures:
+    - env: "CI_MODE=aio_local"
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
 

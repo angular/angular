@@ -70,7 +70,7 @@ The following table contains our current target release dates for the next two m
  September/October 2018 | 7.0.0          | ^6.0.0
  March/April 2019       | 8.0.0          | ^7.0.0
 
- Compatiblity note: The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
+ Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
 
 {@a lts}

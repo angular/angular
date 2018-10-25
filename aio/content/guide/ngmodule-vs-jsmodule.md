@@ -57,9 +57,9 @@ NgModules are classes decorated with `@NgModule`. The `@NgModule` decorator’s 
 NgModule은 `@NgModule` 데코레이터가 지정된 클래스입니다. 이 데코레이터의 `imports` 배열에는 현재 모듈에 필요한 Angular 모듈이 어떤 것이 있는지 나열하는데, 이때 지정하는 모듈은 JavaScript 모듈이 아니라 Angular 모듈입니다. Angular 모듈을 어떻게 구성하는지는 개별 파일을 어떻게 구성하느냐에 따라 달라집니다.
 
 <!--
-The `AppModule` generated from the Angular CLI demonstrates both kinds of modules in action:
+The `AppModule` generated from the [Angular CLI](cli) demonstrates both kinds of modules in action:
 -->
-Angular CLI로 생성된 기본 `AppModule`은 다음과 같이 구성됩니다:
+[Angular CLI](cli)로 생성된 기본 `AppModule`은 다음과 같이 구성됩니다:
 
 <!--
 ```typescript

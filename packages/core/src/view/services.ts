@@ -8,9 +8,11 @@
 
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {isDevMode} from '../is_dev_mode';
+import {ivyEnabled} from '../ivy_switch';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
@@ -169,8 +171,9 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  if (typeof override.token === 'function' && override.token.ngInjectableDef &&
-      typeof override.token.ngInjectableDef.providedIn === 'function') {
+  let injectableDef: InjectableDef<any>|null;
+  if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
+      typeof injectableDef.providedIn === 'function') {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
   }
 }
@@ -276,7 +279,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     });
     def.modules.forEach(module => {
       providerOverridesWithScope.forEach((override, token) => {
-        if (token.ngInjectableDef.providedIn === module) {
+        if (getInjectableDef(token) !.providedIn === module) {
           hasOverrides = true;
           hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
         }
@@ -304,7 +307,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     if (providerOverridesWithScope.size > 0) {
       let moduleSet = new Set<any>(def.modules);
       providerOverridesWithScope.forEach((override, token) => {
-        if (moduleSet.has(token.ngInjectableDef.providedIn)) {
+        if (moduleSet.has(getInjectableDef(token) !.providedIn)) {
           let provider = {
             token: token,
             flags:
@@ -692,6 +695,8 @@ export class DebugRendererFactory2 implements RendererFactory2 {
 export class DebugRenderer2 implements Renderer2 {
   readonly data: {[key: string]: any};
 
+  private createDebugContext(nativeElement: any) { return this.debugContextFactory(nativeElement); }
+
   /**
    * Factory function used to create a `DebugContext` when a node is created.
    *
@@ -700,9 +705,7 @@ export class DebugRenderer2 implements Renderer2 {
    * The factory is configurable so that the `DebugRenderer2` could instantiate either a View Engine
    * or a Render context.
    */
-  debugContextFactory: () => DebugContext | null = getCurrentDebugContext;
-
-  private get debugContext() { return this.debugContextFactory(); }
+  debugContextFactory: (nativeElement?: any) => DebugContext | null = getCurrentDebugContext;
 
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
@@ -717,7 +720,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(el);
     if (debugCtx) {
       const debugEl = new DebugElement(el, null, debugCtx);
       debugEl.name = name;
@@ -728,7 +731,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(comment);
     if (debugCtx) {
       indexDebugNode(new DebugNode(comment, null, debugCtx));
     }
@@ -737,7 +740,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugCtx = this.debugContext;
+    const debugCtx = this.createDebugContext(text);
     if (debugCtx) {
       indexDebugNode(new DebugNode(text, null, debugCtx));
     }
@@ -773,9 +776,9 @@ export class DebugRenderer2 implements Renderer2 {
     this.delegate.removeChild(parent, oldChild);
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
-    const el = this.delegate.selectRootElement(selectorOrNode);
-    const debugCtx = this.debugContext;
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+    const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
+    const debugCtx = getCurrentDebugContext() || (ivyEnabled ? this.createDebugContext(el) : null);
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));
     }

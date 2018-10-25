@@ -65,7 +65,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 /**
  * The ng module for the server.
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({
   exports: [BrowserModule],
@@ -90,7 +90,7 @@ function _document(injector: Injector) {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export const platformServer =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
@@ -98,7 +98,7 @@ export const platformServer =
 /**
  * The server platform that supports the runtime compiler.
  *
- * @experimental
+ * @publicApi
  */
 export const platformDynamicServer =
     createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);

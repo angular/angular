@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementProperty, ɵelementStart, ɵelementStyling as s, ɵelementStylingProp, ɵembeddedViewEnd, ɵembeddedViewStart, ɵinterpolation1, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
+import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementProperty, ɵelementStart, ɵelementStyleProp, ɵelementStyling as s, ɵembeddedViewEnd, ɵembeddedViewStart, ɵinterpolation1, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
@@ -50,7 +50,7 @@ export class TreeComponent {
         ɵcontainer(3);
       }
       if (rf & ɵRenderFlags.Update) {
-        ɵelementStylingProp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
+        ɵelementStyleProp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
         ɵtextBinding(1, ɵinterpolation1(' ', ctx.data.value, ' '));
         ɵcontainerRefreshStart(2);
         {
@@ -127,7 +127,7 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     ɵelementEnd();
   }
   if (rf & ɵRenderFlags.Update) {
-    ɵelementStylingProp(1, 0, ctx.depth % 2 ? '' : 'grey');
+    ɵelementStyleProp(1, 0, ctx.depth % 2 ? '' : 'grey');
     ɵtextBinding(2, ɵinterpolation1(' ', ctx.value, ' '));
     ɵcontainerRefreshStart(3);
     {

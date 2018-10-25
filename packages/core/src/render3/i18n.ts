@@ -7,12 +7,16 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, load, resetApplicationState} from './instructions';
-import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
-import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
-import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
-import {stringify} from './util';
+import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, load, resetComponentState} from './instructions';
+import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
+import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {RComment, RElement} from './interfaces/renderer';
+import {StylingContext} from './interfaces/styling';
+import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
+import {appendChild, createTextNode, removeChild} from './node_manipulation';
+import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
+
+
 
 /**
  * A list of flags to encode the i18n instructions used to translate the template.
@@ -245,42 +249,56 @@ function generateMappingInstructions(
   return partIndex;
 }
 
-function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
+function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode): TNode {
   if (ngDevMode) {
     ngDevMode.rendererMoveNode++;
   }
 
   const viewData = _getViewData();
 
-  appendChild(parentNode, node.native || null, viewData);
-
   // On first pass, re-organize node tree to put this node in the correct position.
-  const firstTemplatePass = node.view[TVIEW].firstTemplatePass;
+  const firstTemplatePass = viewData[TVIEW].firstTemplatePass;
   if (firstTemplatePass) {
-    if (previousNode === parentNode && node.tNode !== parentNode.tNode.child) {
-      node.tNode.next = parentNode.tNode.child;
-      parentNode.tNode.child = node.tNode;
-    } else if (previousNode !== parentNode && node.tNode !== previousNode.tNode.next) {
-      node.tNode.next = previousNode.tNode.next;
-      previousNode.tNode.next = node.tNode;
+    if (previousTNode === parentTNode && tNode !== parentTNode.child) {
+      tNode.next = parentTNode.child;
+      parentTNode.child = tNode;
+    } else if (previousTNode !== parentTNode && tNode !== previousTNode.next) {
+      tNode.next = previousTNode.next;
+      previousTNode.next = tNode;
     } else {
-      node.tNode.next = null;
+      tNode.next = null;
     }
 
-    if (parentNode.view === node.view) node.tNode.parent = parentNode.tNode as TElementNode;
-  }
-
-  // Template containers also have a comment node for the `ViewContainerRef` that should be moved
-  if (node.tNode.type === TNodeType.Container && node.dynamicLContainerNode) {
-    appendChild(parentNode, node.dynamicLContainerNode.native || null, viewData);
-    if (firstTemplatePass) {
-      node.tNode.dynamicContainerNode = node.dynamicLContainerNode.tNode;
-      node.dynamicLContainerNode.tNode.parent = node.tNode as TContainerNode;
+    if (parentTNode !== viewData[HOST_NODE]) {
+      tNode.parent = parentTNode as TElementNode;
     }
-    return node.dynamicLContainerNode;
   }
 
-  return node;
+  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
+
+  const slotValue = viewData[tNode.index];
+  if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
+    // Nodes that inject ViewContainerRef also have a comment node that should be moved
+    appendChild(slotValue[NATIVE], tNode, viewData);
+  }
+
+  return tNode;
+}
+
+export function i18nAttribute(index: number, attrs: any[]): void {
+  // placeholder for i18nAttribute function
+}
+
+export function i18nExp(expression: any): void {
+  // placeholder for i18nExp function
+}
+
+export function i18nStart(index: number, message: string, subTemplateIndex: number = 0): void {
+  // placeholder for i18nExp function
+}
+
+export function i18nEnd(): void {
+  // placeholder for i18nEnd function
 }
 
 /**
@@ -303,23 +321,25 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
   }
 
   const renderer = getRenderer();
-  let localParentNode: LNode = getParentLNode(load(startIndex)) || getPreviousOrParentNode();
-  let localPreviousNode: LNode = localParentNode;
-  resetApplicationState();  // We don't want to add to the tree with the wrong previous node
+  const startTNode = getTNode(startIndex, viewData);
+  let localParentTNode: TNode = startTNode.parent || viewData[HOST_NODE] !;
+  let localPreviousTNode: TNode = localParentTNode;
+  resetComponentState();  // We don't want to add to the tree with the wrong previous node
 
   for (let i = 0; i < instructions.length; i++) {
     const instruction = instructions[i] as number;
     switch (instruction & I18nInstructions.InstructionMask) {
       case I18nInstructions.Element:
-        const element: LNode = load(instruction & I18nInstructions.IndexMask);
-        localPreviousNode = appendI18nNode(element, localParentNode, localPreviousNode);
-        localParentNode = element;
+        const elementTNode = getTNode(instruction & I18nInstructions.IndexMask, viewData);
+        localPreviousTNode = appendI18nNode(elementTNode, localParentTNode, localPreviousTNode);
+        localParentTNode = elementTNode;
         break;
       case I18nInstructions.Expression:
       case I18nInstructions.TemplateRoot:
       case I18nInstructions.Any:
-        const node: LNode = load(instruction & I18nInstructions.IndexMask);
-        localPreviousNode = appendI18nNode(node, localParentNode, localPreviousNode);
+        const nodeIndex = instruction & I18nInstructions.IndexMask;
+        localPreviousTNode =
+            appendI18nNode(getTNode(nodeIndex, viewData), localParentTNode, localPreviousTNode);
         break;
       case I18nInstructions.Text:
         if (ngDevMode) {
@@ -329,32 +349,34 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         const textRNode = createTextNode(value, renderer);
         // If we were to only create a `RNode` then projections won't move the text.
         // Create text node at the current end of viewData. Must subtract header offset because
-        // createLNode takes a raw index (not adjusted by header offset).
+        // createNodeAtIndex takes a raw index (not adjusted by header offset).
         adjustBlueprintForNewNode(viewData);
-        const lastNodeIndex = viewData.length - 1;
-        const textLNode =
-            createLNode(lastNodeIndex - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
-        localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
-        resetApplicationState();
+        const textTNode = createNodeAtIndex(
+            viewData.length - 1 - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
+        localPreviousTNode = appendI18nNode(textTNode, localParentTNode, localPreviousTNode);
+        resetComponentState();
         break;
       case I18nInstructions.CloseNode:
-        localPreviousNode = localParentNode;
-        localParentNode = getParentLNode(localParentNode) !;
+        localPreviousTNode = localParentTNode;
+        localParentTNode = localParentTNode.parent || viewData[HOST_NODE] !;
         break;
       case I18nInstructions.RemoveNode:
         if (ngDevMode) {
           ngDevMode.rendererRemoveNode++;
         }
-        const index = instruction & I18nInstructions.IndexMask;
-        const removedNode: LNode|LContainerNode = load(index);
-        const parentNode = getParentLNode(removedNode) !;
-        removeChild(parentNode, removedNode.native || null, viewData);
+        const removeIndex = instruction & I18nInstructions.IndexMask;
+        const removedElement: RElement|RComment = getNativeByIndex(removeIndex, viewData);
+        const removedTNode = getTNode(removeIndex, viewData);
+        removeChild(removedTNode, removedElement || null, viewData);
 
-        // For template containers we also need to remove their `ViewContainerRef` from the DOM
-        if (removedNode.tNode.type === TNodeType.Container && removedNode.dynamicLContainerNode) {
-          removeChild(parentNode, removedNode.dynamicLContainerNode.native || null, viewData);
-          removedNode.dynamicLContainerNode.tNode.detached = true;
-          removedNode.dynamicLContainerNode.data[RENDER_PARENT] = null;
+        const slotValue = load(removeIndex) as RElement | RComment | LContainer | StylingContext;
+        if (isLContainer(slotValue)) {
+          const lContainer = slotValue as LContainer;
+          if (removedTNode.type !== TNodeType.Container) {
+            removeChild(removedTNode, lContainer[NATIVE] || null, viewData);
+          }
+          removedTNode.detached = true;
+          lContainer[RENDER_PARENT] = null;
         }
         break;
     }

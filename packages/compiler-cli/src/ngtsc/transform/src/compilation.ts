@@ -9,11 +9,14 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
+import {TypeCheckContext} from '../../typecheck';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
 import {DtsFileTransformer} from './declaration';
+
 
 /**
  * Record of an adapter which decided to emit a static field, and the analysis it performed to
@@ -37,6 +40,7 @@ export class IvyCompilation {
    * information recorded about them for later compilation.
    */
   private analysis = new Map<ts.Declaration, EmitFieldOperation<any, any>>();
+  private typeCheckMap = new Map<ts.Declaration, DecoratorHandler<any, any>>();
 
   /**
    * Tracks factory information which needs to be generated.
@@ -98,23 +102,33 @@ export class IvyCompilation {
 
           // Run analysis on the metadata. This will produce either diagnostics, an
           // analysis result, or both.
-          const analysis = adapter.analyze(node, metadata);
+          try {
+            const analysis = adapter.analyze(node, metadata);
+            if (analysis.analysis !== undefined) {
+              this.analysis.set(node, {
+                adapter,
+                analysis: analysis.analysis,
+                metadata: metadata,
+              });
+              if (!!analysis.typeCheck) {
+                this.typeCheckMap.set(node, adapter);
+              }
+            }
 
-          if (analysis.analysis !== undefined) {
-            this.analysis.set(node, {
-              adapter,
-              analysis: analysis.analysis,
-              metadata: metadata,
-            });
-          }
+            if (analysis.diagnostics !== undefined) {
+              this._diagnostics.push(...analysis.diagnostics);
+            }
 
-          if (analysis.diagnostics !== undefined) {
-            this._diagnostics.push(...analysis.diagnostics);
-          }
-
-          if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
-              this.sourceToFactorySymbols.has(sf.fileName)) {
-            this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
+            if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
+                this.sourceToFactorySymbols.has(sf.fileName)) {
+              this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
+            }
+          } catch (err) {
+            if (err instanceof FatalDiagnosticError) {
+              this._diagnostics.push(err.toDiagnostic());
+            } else {
+              throw err;
+            }
           }
         };
 
@@ -146,6 +160,14 @@ export class IvyCompilation {
     } else {
       return undefined;
     }
+  }
+
+  typeCheck(context: TypeCheckContext): void {
+    this.typeCheckMap.forEach((handler, node) => {
+      if (handler.typeCheck !== undefined) {
+        handler.typeCheck(context, node, this.analysis.get(node) !.analysis);
+      }
+    });
   }
 
   /**

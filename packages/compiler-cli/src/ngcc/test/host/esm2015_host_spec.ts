@@ -32,6 +32,57 @@ const CLASSES = [
   },
 ];
 
+const MARKER_FILE = {
+  name: '/marker.js',
+  contents: `
+    let compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
+
+    function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
+      const compilerFactory = injector.get(CompilerFactory);
+      const compiler = compilerFactory.createCompiler([options]);
+      return compiler.compileModuleAsync(moduleType);
+    }
+
+    function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
+      ngDevMode && assertNgModuleType(moduleType);
+      return Promise.resolve(new R3NgModuleFactory(moduleType));
+    }
+  `
+};
+
+const DECORATED_FILES = [
+  {
+    name: '/primary.js',
+    contents: `
+    import {Directive} from '@angular/core';
+    class A {}
+    A.decorators = [
+      { type: Directive, args: [{ selector: '[a]' }] }
+    ];
+    function x() {}
+    function y() {}
+    class B {}
+    B.decorators = [
+      { type: Directive, args: [{ selector: '[b]' }] }
+    ];
+    class C {}
+    export { A, x, C };
+    export { D } from '/secondary';
+    `
+  },
+  {
+    name: '/secondary.js',
+    contents: `
+    import {Directive} from '@angular/core';
+    class D {}
+    D.decorators = [
+      { type: Directive, args: [{ selector: '[d]' }] }
+    ];
+    export { D };
+    `
+  }
+];
+
 describe('Esm2015ReflectionHost', () => {
   describe('getGenericArityOfClass()', () => {
     it('should properly count type parameters', () => {
@@ -40,7 +91,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeProgram(CLASSES[0]);
 
       const dtsMapper = new DtsMapper('/src', '/typings');
-      const host = new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
       const noTypeParamClass =
           getDeclaration(program, '/src/class.js', 'NoTypeParam', ts.isClassDeclaration);
       expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
@@ -51,5 +102,47 @@ describe('Esm2015ReflectionHost', () => {
           getDeclaration(program, '/src/class.js', 'TwoTypeParams', ts.isClassDeclaration);
       expect(host.getGenericArityOfClass(twoTypeParamsClass)).toBe(2);
     });
+  });
+
+  describe('getSwitchableDeclarations()', () => {
+    it('should return a collection of all the switchable variable declarations in the given module',
+       () => {
+         const program = makeProgram(MARKER_FILE);
+         const dtsMapper = new DtsMapper('/src', '/typings');
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
+         const file = program.getSourceFile(MARKER_FILE.name) !;
+         const declarations = host.getSwitchableDeclarations(file);
+         expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
+           ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_R3__']
+         ]);
+       });
+  });
+
+  describe('findDecoratedFiles()', () => {
+    it('should return an array of objects for each file that has exported and decorated classes',
+       () => {
+         const program = makeProgram(...DECORATED_FILES);
+         const dtsMapper = new DtsMapper('/src', '/typings');
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dtsMapper);
+         const primaryFile = program.getSourceFile(DECORATED_FILES[0].name) !;
+         const secondaryFile = program.getSourceFile(DECORATED_FILES[1].name) !;
+         const decoratedFiles = host.findDecoratedFiles(primaryFile);
+
+         expect(decoratedFiles.size).toEqual(2);
+
+         const primary = decoratedFiles.get(primaryFile) !;
+         expect(primary.decoratedClasses.length).toEqual(1);
+         const classA = primary.decoratedClasses.find(c => c.name === 'A') !;
+         expect(classA.name).toEqual('A');
+         expect(ts.isClassDeclaration(classA.declaration)).toBeTruthy();
+         expect(classA.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+
+         const secondary = decoratedFiles.get(secondaryFile) !;
+         expect(secondary.decoratedClasses.length).toEqual(1);
+         const classD = secondary.decoratedClasses.find(c => c.name === 'D') !;
+         expect(classD.name).toEqual('D');
+         expect(ts.isClassDeclaration(classD.declaration)).toBeTruthy();
+         expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
+       });
   });
 });

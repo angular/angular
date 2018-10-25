@@ -52,7 +52,7 @@ Most apps do so in the root `AppModule`.
 <code-example 
   path="http/src/app/app.module.ts"
   region="sketch"
-  title="app/app.module.ts (excerpt)" linenums="false">
+  header="app/app.module.ts (excerpt)" linenums="false">
 </code-example>
 
 <!--
@@ -64,7 +64,7 @@ into an application class as shown in the following `ConfigService` example.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="proto"
-  title="app/config/config.service.ts (excerpt)" linenums="false">
+  header="app/config/config.service.ts (excerpt)" linenums="false">
 </code-example>
 
 <!--
@@ -82,7 +82,7 @@ that specifies resource URLs.
 
 <code-example 
   path="http/src/assets/config.json"
-  title="assets/config.json" linenums="false">
+  header="assets/config.json" linenums="false">
 </code-example>
 
 <!--
@@ -93,7 +93,7 @@ The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_1"
-  title="app/config/config.service.ts (getConfig v.1)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.1)" linenums="false">
 </code-example>
 
 <!--
@@ -105,7 +105,7 @@ the `getConfig` service method.
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v1"
-  title="app/config/config.component.ts (showConfig v.1)" linenums="false">
+  header="app/config/config.component.ts (showConfig v.1)" linenums="false">
 </code-example>
 
 <!--
@@ -198,7 +198,7 @@ Then, specify that interface as the `HttpClient.get()` call's type parameter in 
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_2" 
-  title="app/config/config.service.ts (getConfig v.2)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.2)" linenums="false">
 </code-example>
 
 <!--
@@ -210,7 +210,7 @@ easier and safer to consume:
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v2"
-  title="app/config/config.component.ts (showConfig v.2)" linenums="false">
+  header="app/config/config.component.ts (showConfig v.2)" linenums="false">
 </code-example>
 
 <!--
@@ -246,7 +246,7 @@ The component's `showConfigResponse()` method displays the response headers as w
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="showConfigResponse" 
-  title="app/config/config.component.ts (showConfigResponse)"
+  header="app/config/config.component.ts (showConfigResponse)"
   linenums="false">
 </code-example>
 
@@ -273,7 +273,7 @@ You _could_ handle in the component by adding a second callback to the `.subscri
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v3" 
-  title="app/config/config.component.ts (showConfig v.3 with error handling)"
+  header="app/config/config.component.ts (showConfig v.3 with error handling)"
   linenums="false">
 </code-example>
 
@@ -326,7 +326,7 @@ You might first devise an error handler like this one:
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="handleError" 
-  title="app/config/config.service.ts (handleError)" linenums="false">
+  header="app/config/config.service.ts (handleError)" linenums="false">
 </code-example>
 
 <!--
@@ -346,7 +346,7 @@ and _pipe them through_ to the error handler.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_3" 
-  title="app/config/config.service.ts (getConfig v.3 with error handler)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.3 with error handler)" linenums="false">
 </code-example>
 
 ### `retry()`
@@ -374,7 +374,7 @@ _Pipe_ it onto the `HttpClient` method result just before the error handler.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig" 
-  title="app/config/config.service.ts (getConfig with retry)" linenums="false">
+  header="app/config/config.service.ts (getConfig with retry)" linenums="false">
 </code-example>
 
 {@a rxjs}
@@ -412,7 +412,7 @@ If you're following along with these code snippets, note that you must import th
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="rxjs-imports" 
-  title="app/config/config.service.ts (RxJS imports)" linenums="false">
+  header="app/config/config.service.ts (RxJS imports)" linenums="false">
 </code-example>
 
 <!--
@@ -431,7 +431,7 @@ as an `Observable<string>`.
 <code-example 
   path="http/src/app/downloader/downloader.service.ts"
   region="getTextFile" 
-  title="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
+  header="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
 </code-example>
 
 <!--
@@ -452,7 +452,7 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 <code-example 
   path="http/src/app/downloader/downloader.component.ts"
   region="download" 
-  title="app/downloader/downloader.component.ts (download)" linenums="false">
+  header="app/downloader/downloader.component.ts (download)" linenums="false">
 </code-example>
 
 <!--
@@ -500,7 +500,7 @@ to every `HttpClient` save method.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="http-options" 
-  title="app/heroes/heroes.service.ts (httpOptions)" linenums="false">
+  header="app/heroes/heroes.service.ts (httpOptions)" linenums="false">
 </code-example>
 
 <!--
@@ -517,7 +517,7 @@ In the following example, the `HeroesService` posts when adding a hero to the da
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="addHero" 
-  title="app/heroes/heroes.service.ts (addHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (addHero)" linenums="false">
 </code-example>
 
 <!--
@@ -552,7 +552,7 @@ the `Observable` returned by this service method.
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
   region="add-hero-subscribe" 
-  title="app/heroes/heroes.component.ts (addHero)" linenums="false">
+  header="app/heroes/heroes.component.ts (addHero)" linenums="false">
 </code-example>
 
 <!--
@@ -575,7 +575,7 @@ in the request URL.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="deleteHero" 
-  title="app/heroes/heroes.service.ts (deleteHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (deleteHero)" linenums="false">
 </code-example>
 
 <!--
@@ -587,7 +587,7 @@ the `Observable` returned by this service method.
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
   region="delete-hero-subscribe" 
-  title="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
+  header="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
 </code-example>
 
 <!--
@@ -693,7 +693,7 @@ The following `HeroesService` example is just like the POST example.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="updateHero" 
-  title="app/heroes/heroes.service.ts (updateHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (updateHero)" linenums="false">
 </code-example>
 
 <!--
@@ -810,7 +810,7 @@ Here's a pertinent excerpt from the template:
 <code-example 
   path="http/src/app/package-search/package-search.component.html"
   region="search" 
-  title="app/package-search/package-search.component.html (search)">
+  header="app/package-search/package-search.component.html (search)">
 </code-example>
 
 <!--
@@ -830,7 +830,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
   region="debounce" 
-  title="app/package-search/package-search.component.ts (excerpt))">
+  header="app/package-search/package-search.component.ts (excerpt))">
 </code-example>
 
 <!--
@@ -960,7 +960,7 @@ To implement an interceptor, declare a class that implements the `intercept()` m
 
 <code-example 
   path="http/src/app/http-interceptors/noop-interceptor.ts"
-  title="app/http-interceptors/noop-interceptor.ts"
+  header="app/http-interceptors/noop-interceptor.ts"
   linenums="false">
 </code-example>
 
@@ -1080,7 +1080,7 @@ Consider creating a "barrel" file that gathers all the interceptor providers int
 <code-example 
   path="http/src/app/http-interceptors/index.ts"
   region="interceptor-providers"
-  title="app/http-interceptors/index.ts" linenums="false">
+  header="app/http-interceptors/index.ts" linenums="false">
 </code-example>
 
 <!--
@@ -1091,7 +1091,7 @@ Then import and add it to the `AppModule` _providers array_ like this:
 <code-example 
   path="http/src/app/app.module.ts"
   region="interceptor-providers"
-  title="app/app.module.ts (interceptor providers)" linenums="false">
+  header="app/app.module.ts (interceptor providers)" linenums="false">
 </code-example>
 
 <!--
@@ -1205,7 +1205,7 @@ You can clone and modify the request in a single step as in this example.
 <code-example 
   path="http/src/app/http-interceptors/ensure-https-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/ensure-https-interceptor.ts (excerpt)" linenums="false">
+  header="app/http-interceptors/ensure-https-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
 <!--
@@ -1243,7 +1243,7 @@ If you must mutate the request body, copy it first, change the copy,
 <code-example 
   path="http/src/app/http-interceptors/trim-name-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/trim-name-interceptor.ts (excerpt)" linenums="false">
+  header="app/http-interceptors/trim-name-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
 <!--
@@ -1295,7 +1295,7 @@ adds an authorization header with that token to every outgoing request:
 
 <code-example 
   path="http/src/app/http-interceptors/auth-interceptor.ts"
-  title="app/http-interceptors/auth-interceptor.ts">
+  header="app/http-interceptors/auth-interceptor.ts">
 </code-example>
 
 <!--
@@ -1343,7 +1343,7 @@ HTTP 요청이 발생한 시간과 응답이 도착한 시간을 확인하고, �
 <code-example 
   path="http/src/app/http-interceptors/logging-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/logging-interceptor.ts)">
+  header="app/http-interceptors/logging-interceptor.ts)">
 </code-example>
 
 <!--
@@ -1382,7 +1382,7 @@ The `CachingInterceptor` demonstrates this approach.
 <code-example 
   path="http/src/app/http-interceptors/caching-interceptor.ts"
   region="v1" 
-  title="app/http-interceptors/caching-interceptor.ts)" linenums="false">
+  header="app/http-interceptors/caching-interceptor.ts)" linenums="false">
 </code-example>
 
 <!--
@@ -1542,7 +1542,7 @@ with the `reportProgress` option set true to enable tracking of progress events.
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="upload-request" 
-  title="app/uploader/uploader.service.ts (upload request)">
+  header="app/uploader/uploader.service.ts (upload request)">
 </code-example>
 
 <div class="alert is-important">
@@ -1563,7 +1563,7 @@ returns an `Observable` of `HttpEvents`, the same events processed by intercepto
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="upload-body" 
-  title="app/uploader/uploader.service.ts (upload body)" linenums="false">
+  header="app/uploader/uploader.service.ts (upload body)" linenums="false">
 </code-example>
 
 <!--
@@ -1574,7 +1574,7 @@ The `getEventMessage` method interprets each type of `HttpEvent` in the event st
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="getEventMessage" 
-  title="app/uploader/uploader.service.ts (getEventMessage)" linenums="false">
+  header="app/uploader/uploader.service.ts (getEventMessage)" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -1677,7 +1677,7 @@ setting up such mocking straightforward.
 
 <!--
 Angular's HTTP testing library is designed for a pattern of testing wherein 
-the the app executes code and makes requests first.
+the app executes code and makes requests first.
 -->
 Angular의 HTTP 테스팅 라이브러리를 활용하면 목업으로 만든 애플리케이션이 실행 환경에서 HTTP 코드가 동작하는지 확인할 수 있으며, HTTP 요청도 실제로 발생합니다.
 
@@ -1724,7 +1724,7 @@ along with the other symbols your tests require.
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="imports" 
-  title="app/testing/http-client.spec.ts (imports)" linenums="false">
+  header="app/testing/http-client.spec.ts (imports)" linenums="false">
 </code-example>
 
 <!--
@@ -1736,7 +1736,7 @@ the setup of the _service-under-test_.
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="setup" 
-  title="app/testing/http-client.spec.ts(setup)" linenums="false">
+  header="app/testing/http-client.spec.ts(setup)" linenums="false">
 </code-example>
 
 <!--
@@ -1763,7 +1763,7 @@ Now you can write a test that expects a GET Request to occur and provides a mock
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="get-test" 
-  title="app/testing/http-client.spec.ts(httpClient.get)" linenums="false">
+  header="app/testing/http-client.spec.ts(httpClient.get)" linenums="false">
 </code-example>
 
 <!--

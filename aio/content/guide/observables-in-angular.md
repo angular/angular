@@ -39,7 +39,7 @@ Here is the component definition:
 -->
 그리고 이벤트를 보내는 컴포넌트는 다음과 같이 정의되어 있습니다:
 
-<code-example path="observables-in-angular/src/main.ts" title="EventEmitter" region="eventemitter"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="EventEmitter" region="eventemitter"></code-example>
 
 ## HTTP
 
@@ -74,7 +74,7 @@ The following example binds the `time` observable to the component's view. The o
 -->
 아래 예제는 컴포넌트의 뷰에서 옵저버블 타입인 `time` 프로퍼티를 바인딩하는 예제입니다. 이 옵저버블은 컴포넌트에서 새로운 스트림을 생성할 때마다 계속 갱신됩니다.
 
-<code-example path="observables-in-angular/src/main.ts" title="Using async pipe" region="pipe"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Using async pipe" region="pipe"></code-example>
 
 ## Router
 
@@ -83,14 +83,14 @@ The following example binds the `time` observable to the component's view. The o
 -->
 [`Router.events`](https://angular.io/api/router/Router#events)는 라우팅 이벤트를 옵저버블로 전달합니다. 이 중 필요한 이벤트만 처리하려면 RxJS에서 제공하는 `filter()` 연산자를 사용할 수 있으며, 이 프로퍼티를 구독하면 네비게이션 진행상황에 맞게 이벤트를 처리할 수 있습니다.
 
-<code-example path="observables-in-angular/src/main.ts" title="Router events" region="router"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Router events" region="router"></code-example>
 
 <!--
 The [ActivatedRoute](https://angular.io/api/router/ActivatedRoute) is an injected router service that makes use of observables to get information about a route path and parameters. For example, `ActivateRoute.url` contains an observable that reports the route path or paths. Here's an example:
 -->
 [ActivatedRoute](https://angular.io/api/router/ActivatedRoute)도 현재 라우팅 경로나 라우팅 인자를 옵저버블로 제공합니다. 그래서 이 서비스의 프로퍼티 중 `ActivateRoute.url`를 구독해도 현재 라우팅 경로를 확인할 수 있습니다.  예제를 봅시다:
 
-<code-example path="observables-in-angular/src/main.ts" title="ActivatedRoute" region="activated_route"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="ActivatedRoute" region="activated_route"></code-example>
 
 <!--
 ## Reactive forms
@@ -103,4 +103,4 @@ Reactive forms have properties that use observables to monitor form control valu
 반응형 폼에서 폼 컨트롤의 값을 추적할 때도 옵저버블을 사용할 수 있습니다. 예를 들면 [`FormControl`](https://angular.io/api/forms/FormControl)의 프로퍼티 중 `valueChanges`와 `statusChanges`를 구독하면 폼 컨트롤의 값과 상태가 변하는 것을 확인할 수 있습니다. 폼 컨트롤의 옵저버블 프로퍼티를 구독하면 컴포넌트 클래스에서 애플리케이션 로직을 자유롭게 작성할 수 있습니다.
 예제 코드를 봅시다:
 
-<code-example path="observables-in-angular/src/main.ts" title="Reactive forms" region="forms"></code-example>
+<code-example path="observables-in-angular/src/main.ts" header="Reactive forms" region="forms"></code-example>

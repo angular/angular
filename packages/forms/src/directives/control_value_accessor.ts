@@ -9,41 +9,55 @@
 import {InjectionToken} from '@angular/core';
 
 /**
- * A `ControlValueAccessor` acts as a bridge between the Angular forms API and a
+ * @description
+ * Defines an interface that acts as a bridge between the Angular forms API and a
  * native element in the DOM.
  *
- * Implement this interface if you want to create a custom form control directive
+ * Implement this interface to create a custom form control directive
  * that integrates with Angular forms.
  *
+ * @see DefaultValueAccessor
  *
+ * @publicApi
  */
 export interface ControlValueAccessor {
   /**
+   * @description
    * Writes a new value to the element.
    *
-   * This method will be called by the forms API to write to the view when programmatic
-   * (model -> view) changes are requested.
+   * This method is called by the forms API to write to the view when programmatic
+   * changes from model to view are requested.
    *
-   * Example implementation of `writeValue`:
+   * @usageNotes
+   * ### Write a value to the element
+   *
+   * The following example writes a value to the native DOM element.
    *
    * ```ts
    * writeValue(value: any): void {
    *   this._renderer.setProperty(this._elementRef.nativeElement, 'value', value);
    * }
    * ```
+   *
+   * @param obj The new value for the element
    */
   writeValue(obj: any): void;
 
   /**
-   * Registers a callback function that should be called when the control's value
+   * @description
+   * Registers a callback function that is called when the control's value
    * changes in the UI.
    *
-   * This is called by the forms API on initialization so it can update the form
-   * model when values propagate from the view (view -> model).
+   * This method is called by the forms API on initialization to update the form
+   * model when values propagate from the view to the model.
    *
-   * If you are implementing `registerOnChange` in your own value accessor, you
-   * will typically want to save the given function so your class can call it
-   * at the appropriate time.
+   * When implementing the `registerOnChange` method in your own value accessor,
+   * save the given function so your class calls it at the appropriate time.
+   *
+   * @usageNotes
+   * ### Store the change function
+   *
+   * The following example stores the provided function as an internal method.
    *
    * ```ts
    * registerOnChange(fn: (_: any) => void): void {
@@ -51,7 +65,7 @@ export interface ControlValueAccessor {
    * }
    * ```
    *
-   * When the value changes in the UI, your class should call the registered
+   * When the value changes in the UI, call the registered
    * function to allow the forms API to update itself:
    *
    * ```ts
@@ -60,19 +74,23 @@ export interface ControlValueAccessor {
    * }
    * ```
    *
+   * @param fn The callback function to register
    */
   registerOnChange(fn: any): void;
 
   /**
-   * Registers a callback function that should be called when the control receives
-   * a blur event.
+   * @description
+   * Registers a callback function is called by the forms API on initialization
+   * to update the form model on blur.
    *
-   * This is called by the forms API on initialization so it can update the form model
-   * on blur.
+   * When implementing `registerOnTouched` in your own value accessor, save the given
+   * function so your class calls it when the control should be considered
+   * blurred or "touched".
    *
-   * If you are implementing `registerOnTouched` in your own value accessor, you
-   * will typically want to save the given function so your class can call it
-   * when the control should be considered blurred (a.k.a. "touched").
+   * @usageNotes
+   * ### Store the callback function
+   *
+   * The following example stores the provided function as an internal method.
    *
    * ```ts
    * registerOnTouched(fn: any): void {
@@ -88,15 +106,19 @@ export interface ControlValueAccessor {
    *    '(blur)': '_onTouched()'
    * }
    * ```
+   *
+   * @param fn The callback function to register
    */
   registerOnTouched(fn: any): void;
 
   /**
-   * This function is called by the forms API when the control status changes to
-   * or from "DISABLED". Depending on the value, it should enable or disable the
+   * @description
+   * Function that is called by the forms API when the control status changes to
+   * or from 'DISABLED'. Depending on the status, it enables or disables the
    * appropriate DOM element.
    *
-   * Example implementation of `setDisabledState`:
+   * @usageNotes
+   * The following is an example of writing the disabled property to a native DOM element:
    *
    * ```ts
    * setDisabledState(isDisabled: boolean): void {
@@ -104,7 +126,7 @@ export interface ControlValueAccessor {
    * }
    * ```
    *
-   * @param isDisabled
+   * @param isDisabled The disabled status to set on the element
    */
   setDisabledState?(isDisabled: boolean): void;
 }
@@ -114,5 +136,6 @@ export interface ControlValueAccessor {
  *
  * See `DefaultValueAccessor` for how to implement one.
  *
+ * @publicApi
  */
 export const NG_VALUE_ACCESSOR = new InjectionToken<ControlValueAccessor>('NgValueAccessor');

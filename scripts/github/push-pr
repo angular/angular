@@ -12,17 +12,19 @@ if (require.main === module) {
 }
 
 async function main(args) {
-  let forceWithLease = '';
+  let flags = '';
   let prNumber = 0;
   let printHelp = false;
 
   args.forEach((arg) => {
-    if (prNumber == 0 && arg > 0) {
-      prNumber = arg;
+    if (prNumber == 0 && Number.parseInt(arg) > 0) {
+      prNumber = Number.parseInt(arg);
     } else if (arg == '--help') {
       printHelp = true;
     } else if (arg == '--force-with-lease') {
-      forceWithLease = ' --force-with-lease';
+      flags += ' --force-with-lease';
+    } else if (arg == '--force') {
+      flags += ' --force';
     } else {
       shell.echo('Unexpected argument: ', arg);
     }
@@ -43,12 +45,13 @@ async function main(args) {
     shell.echo(`${process.argv[1]} [PR_NUMBER] [--force-with-lease]`);
     shell.echo(``);
     shell.echo(`    --force-with-lease    Continues even \if change can\'t be fast-forwarded.`);
+    shell.echo(`    --force               Forces the push with --force.`);
     shell.echo(`    [PR_NUMBER]           If not present the script guesses the PR from the branch name.`);
     return 1;
   }
 
   const prInfo = await util.githubPrInfo(prNumber);
-  const prPushCmd = `git push${forceWithLease} ${prInfo.repository.gitUrl} HEAD:${prInfo.branch}`;
+  const prPushCmd = `git push${flags} ${prInfo.repository.gitUrl} HEAD:${prInfo.branch}`;
   shell.echo(`>>> ${prPushCmd}`);
   shell.exec(prPushCmd);
 

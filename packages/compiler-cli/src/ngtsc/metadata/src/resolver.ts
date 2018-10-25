@@ -183,10 +183,10 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
  * An `AbsoluteReference` can be resolved to an `Expression`, and if that expression is an import
  * the module specifier will be an absolute module name, not a relative path.
  */
-export class AbsoluteReference extends Reference {
+export class AbsoluteReference<T extends ts.Node> extends Reference<T> {
   private identifiers: ts.Identifier[] = [];
   constructor(
-      node: ts.Node, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
+      node: T, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
       readonly symbolName: string) {
     super(node);
   }
@@ -439,10 +439,7 @@ class StaticInterpreter {
     if (this.host.isClass(node)) {
       return this.getReference(node, context);
     } else if (ts.isVariableDeclaration(node)) {
-      if (!node.initializer) {
-        return undefined;
-      }
-      return this.visitExpression(node.initializer, context);
+      return this.visitVariableDeclaration(node, context);
     } else if (ts.isParameter(node) && context.scope.has(node)) {
       return context.scope.get(node) !;
     } else if (ts.isExportAssignment(node)) {
@@ -453,6 +450,17 @@ class StaticInterpreter {
       return this.visitSourceFile(node, context);
     } else {
       return this.getReference(node, context);
+    }
+  }
+
+  private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
+    const value = this.host.getVariableValue(node);
+    if (value !== null) {
+      return this.visitExpression(value, context);
+    } else if (isVariableDeclarationDeclared(node)) {
+      return this.getReference(node, context);
+    } else {
+      return undefined;
     }
   }
 
@@ -727,4 +735,17 @@ function identifierOfDeclaration(decl: ts.Declaration): ts.Identifier|undefined 
 
 function isPossibleClassDeclaration(node: ts.Node): node is ts.Declaration {
   return ts.isClassDeclaration(node) || ts.isVariableDeclaration(node);
+}
+
+function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
+  if (node.parent === undefined || !ts.isVariableDeclarationList(node.parent)) {
+    return false;
+  }
+  const declList = node.parent;
+  if (declList.parent === undefined || !ts.isVariableStatement(declList.parent)) {
+    return false;
+  }
+  const varStmt = declList.parent;
+  return varStmt.modifiers !== undefined &&
+      varStmt.modifiers.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword);
 }

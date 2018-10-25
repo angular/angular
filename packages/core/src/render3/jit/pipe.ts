@@ -10,10 +10,10 @@ import {WrappedNodeExpr, compilePipeFromMetadata, jitExpression} from '@angular/
 
 import {Pipe} from '../../metadata/directives';
 import {Type} from '../../type';
+import {NG_PIPE_DEF} from '../fields';
 import {stringify} from '../util';
 
 import {angularCoreEnv} from './environment';
-import {NG_PIPE_DEF} from './fields';
 import {reflectDependencies} from './util';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {

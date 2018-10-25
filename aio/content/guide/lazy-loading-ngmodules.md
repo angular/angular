@@ -178,7 +178,7 @@ so you can easily navigate to your modules in the browser:
 -->
 주소표시줄에 URL을 입력해도 원하는 모듈로 이동할 수 있지만, 좀 더 편하게 사용하기 위해 `app.component.html` 파일에 버튼을 추가해 봅시다. 이 파일의 내용을 다음과 같이 작성합니다:
 
-<code-example path="lazy-loading-ngmodules/src/app/app.component.html" region="app-component-template" title="src/app/app.component.html" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -238,14 +238,14 @@ In `AppRoutingModule`, update the `routes` array with the following:
 -->
 `AppRoutingModule`의 `routes` 배열을 다음과 같이 수정합니다:
 
-<code-example path="lazy-loading-ngmodules/src/app/app-routing.module.ts" region="const-routes" title="src/app/app-routing.module.ts" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/app-routing.module.ts" region="const-routes" header="src/app/app-routing.module.ts" linenums="false">
 
 </code-example>
 
 <!--
-The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a string that is the path to the module, a hash mark or `#`, and the module’s class name.
+The import statements stay the same. The first two paths are the routes to the `CustomersModule` and the `OrdersModule` respectively. Notice that the lazy loading syntax uses `loadChildren` followed by a string that is the relative path to the module, a hash mark or `#`, and the module’s class name.
 -->
-이 파일의 다른 부분은 그대로 둡니다. 라우터 설정을 지정한 것을 보면, 배열의 첫번째 항목은 `CustomersModule`로 라우팅하도록 지정했고, 두번째 항목은 `OrdersModule`로 라우팅하도록 지정했습니다. 이 떄 지연 로딩하는 모듈은 `loadChildren` 프로퍼티로 지정하며, 라우팅하려는 주소에 `#` 기호와 모듈의 이름을 붙여서 지정합니다.
+이 파일의 다른 부분은 그대로 둡니다. 라우터 설정을 지정한 것을 보면, 배열의 첫번째 항목은 `CustomersModule`로 라우팅하도록 지정했고, 두번째 항목은 `OrdersModule`로 라우팅하도록 지정했습니다. 이 떄 지연 로딩하는 모듈은 `loadChildren` 프로퍼티로 지정하며, 라우팅하려는 상대 주소에 `#` 기호와 모듈의 이름을 붙여서 지정합니다.
 
 <!--
 ### Inside the feature module
@@ -257,7 +257,7 @@ Next, take a look at `customers.module.ts`. If you’re using the CLI and follow
 -->
 다음으로 `customers.module.ts` 파일을 확인하는데, 지금까지 단계를 Angular CLI를 활용하면서 그대로 따라왔다면 추가로 수정할 내용은 없습니다. 기능 모듈 자체는 `AppRoutingModule`과 기능 모듈 안에 있는 라우팅 모듈을 연결하는 역할만 합니다. 그래서 `AppRoutingModule`이 기능 모듈인 `CustomersModule`을 로드하면, `CustomersModule`이 다시 `CustomerRoutingModule`을 로드합니다.
 
-<code-example path="lazy-loading-ngmodules/src/app/customers/customers.module.ts" region="customers-module" title="src/app/customers/customers.module.ts" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/customers/customers.module.ts" region="customers-module" header="src/app/customers/customers.module.ts" linenums="false">
 
 </code-example>
 
@@ -277,7 +277,7 @@ The next step is in `customers-routing.module.ts`. First, import the component a
 -->
 다음으로 볼 파일은 `customers-routing.module.ts` 파일입니다. 먼저, 파일 제일 위쪽에 라우팅과 관련된 심볼을 로드하고, 그 다음에는 라우팅에 사용할 `CustomerListComponent`를 로드합니다.
 
-<code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" region="customers-routing-module" title="src/app/customers/customers-routing.module.ts" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" region="customers-routing-module" header="src/app/customers/customers-routing.module.ts" linenums="false">
 
 </code-example>
 
@@ -291,7 +291,7 @@ Repeat this last step of importing the `OrdersListComponent` and configuring the
 -->
 이 내용은 `orders-routing.module.ts` 파일에서 `OrdersListComponent`에 대한 라우팅 설정을 할 때도 마찬가지입니다:
 
-<code-example path="lazy-loading-ngmodules/src/app/orders/orders-routing.module.ts" region="orders-routing-module-detail" title="src/app/orders/orders-routing.module.ts (excerpt)" linenums="false">
+<code-example path="lazy-loading-ngmodules/src/app/orders/orders-routing.module.ts" region="orders-routing-module-detail" header="src/app/orders/orders-routing.module.ts (excerpt)" linenums="false">
 
 </code-example>
 

@@ -42,14 +42,8 @@ function reflectDependency(dep: any | any[]): R3DependencyMetadata {
   };
 
   function setTokenAndResolvedType(token: any): void {
-    if (token === ElementRef) {
-      meta.resolved = R3ResolvedDependencyType.ElementRef;
-    } else if (token === Injector) {
+    if (token === Injector) {
       meta.resolved = R3ResolvedDependencyType.Injector;
-    } else if (token === TemplateRef) {
-      meta.resolved = R3ResolvedDependencyType.TemplateRef;
-    } else if (token === ViewContainerRef) {
-      meta.resolved = R3ResolvedDependencyType.ViewContainerRef;
     } else {
       meta.resolved = R3ResolvedDependencyType.Token;
     }

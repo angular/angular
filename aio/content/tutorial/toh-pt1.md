@@ -26,7 +26,7 @@ Using the Angular CLI, generate a new component named `heroes`.
 </code-example>
 
 <!--
-The CLI creates a new folder, `src/app/heroes/` and generates
+The CLI creates a new folder, `src/app/heroes/`, and generates
 the three files of the  `HeroesComponent`.
 -->
 CLI는 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 위한 3개의 파일을 생성합니다.
@@ -38,7 +38,7 @@ The `HeroesComponent` class file is as follows:
 
 <code-example 
   path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" 
-  title="app/heroes/heroes.component.ts (initial version)" linenums="false">
+  header="app/heroes/heroes.component.ts (initial version)" linenums="false">
 </code-example>
 
 <!--
@@ -75,7 +75,7 @@ The [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type
 `'app-heroes'`는 부모 컴포넌트 템플릿 내에 해당 컴포넌트를 대표하는 HTML element 이름입니다. 
 
 <!--
-The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit) 
+The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit). 
 Angular calls `ngOnInit` shortly after creating a component.
 It's a good place to put initialization logic.
 -->
@@ -98,7 +98,7 @@ Add a `hero` property to the `HeroesComponent` for a hero named "Windstorm."
 -->
 `HeroesComponent`에 `hero` 프로퍼티를 추가해서 히어로의 이름을 "Windstorm"으로 설정하세요.
 
-<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" title="heroes.component.ts (hero property)" linenums="false">
+<code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" header="heroes.component.ts (hero property)" linenums="false">
 </code-example>
 
 <!--
@@ -114,7 +114,7 @@ replace it with a data binding to the new `hero` property.
 `heroes.component.html` 템플릿 파일을 엽니다.
 Angular CLI가 만든 코드를 삭제하고 새로운 `hero` 프로퍼티를 데이터 바인딩하는 코드로 바꿉니다.
 
-<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" title="heroes.component.html" region="show-hero-1" linenums="false">
+<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" header="heroes.component.html" region="show-hero-1" linenums="false">
 </code-example>
 
 <!--
@@ -134,7 +134,7 @@ So add an `<app-heroes>` element to the `AppComponent` template file, just below
 `app-heroes`는 `HeroesComponent`의 [element selector](#selector) 입니다.
 `<app-heroes>` 엘리먼트를 `AppComponent` 템플릿 파일에서 타이틀 바로 밑에 추가하세요.
 
-<code-example path="toh-pt1/src/app/app.component.html" title="src/app/app.component.html" linenums="false">
+<code-example path="toh-pt1/src/app/app.component.html" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--
@@ -159,7 +159,7 @@ Give it `id` and `name` properties.
 -->
 `src/app`폴더에 `Hero` 클래스 파일을 생성하여 `id`와 `name` 프로퍼티를 추가합니다.
 
-<code-example path="toh-pt1/src/app/hero.ts"  title="src/app/hero.ts" linenums="false">
+<code-example path="toh-pt1/src/app/hero.ts"  header="src/app/hero.ts" linenums="false">
 </code-example>
 
 <!--
@@ -180,7 +180,7 @@ The revised `HeroesComponent` class file should look like this:
 수정된 `HeroesComponent` 클래스 파일은 아래와 같습니다.
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" linenums="false"
-  title= "src/app/heroes/heroes.component.ts">
+  header= "src/app/heroes/heroes.component.ts">
 </code-example>
 
 <!--
@@ -202,11 +202,11 @@ and show both `id` and `name` in a details layout like this:
 <code-example 
   path="toh-pt1/src/app/heroes/heroes.component.1.html"
   region="show-hero-2" 
-  title="heroes.component.html (HeroesComponent's template)" linenums="false">
+  header="heroes.component.html (HeroesComponent's template)" linenums="false">
 </code-example>
 
 <!--
-The browser refreshes and display's the hero's information.
+The browser refreshes and displays the hero's information.
 -->
 브라우저가 리프레시되며 히어로의 정보가 표시됩니다.
 
@@ -277,7 +277,7 @@ Refactor the details area in the `HeroesComponent` template so it looks like thi
 -->
 `HeroesComponent` 템플릿에서 상세 화면 영역을 아래와 같도록 리팩토링합니다.
 
-<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" title="src/app/heroes/heroes.component.html (HeroesComponent's template)" linenums="false">
+<code-example path="toh-pt1/src/app/heroes/heroes.component.1.html" region="name-input" header="src/app/heroes/heroes.component.html (HeroesComponent's template)" linenums="false">
 
 </code-example>
 
@@ -340,7 +340,7 @@ Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
 다른 중요한 메타데이터는 [`@NgModule`](guide/ngmodules) 데코레이터에 있습니다.
 
 <!--
-The most important `@NgModule`decorator annotates the top-level **AppModule** class.
+The most important `@NgModule` decorator annotates the top-level **AppModule** class.
 -->
 최상위 **AppModule** 클래스에 가장 중요한 `@NgModule` 데코레이터를 주석으로 답니다.
 
@@ -360,7 +360,7 @@ Open `AppModule` (`app.module.ts`) and import the `FormsModule` symbol from the 
 -->
 `AppModule` (`app.module.ts`)를 열어 `@angular/forms` 라이브러리로부터 `FormsModule` 심볼을 가져옵니다.
 
-<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts (FormsModule symbol import)"
+<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts (FormsModule symbol import)"
  region="formsmodule-js-import">
 </code-example>
 
@@ -369,7 +369,7 @@ Then add `FormsModule` to the `@NgModule` metadata's `imports` array, which cont
 -->
 그리고나서 앱이 필요로 하는 외부 라이브러리의 리스트를 담고 있는 `@NgModule` 메타데이터의 `imports` 배열에 `FormsModule`를 추가합니다.
 
-<code-example path="toh-pt1/src/app/app.module.ts" title="app.module.ts ( @NgModule imports)"
+<code-example path="toh-pt1/src/app/app.module.ts" header="app.module.ts ( @NgModule imports)"
 region="ng-imports">
 </code-example>
 
@@ -434,23 +434,23 @@ Your app should look like this <live-example></live-example>. Here are the code 
 
 <code-tabs>
 
-  <code-pane title="src/app/heroes/heroes.component.ts" path="toh-pt1/src/app/heroes/heroes.component.ts">
+  <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt1/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.html" path="toh-pt1/src/app/heroes/heroes.component.html">
+  <code-pane header="src/app/heroes/heroes.component.html" path="toh-pt1/src/app/heroes/heroes.component.html">
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" 
+  <code-pane header="src/app/app.module.ts" 
   path="toh-pt1/src/app/app.module.ts">
   </code-pane>
 
-  <code-pane title="src/app/app.component.ts" path="toh-pt1/src/app/app.component.ts">
+  <code-pane header="src/app/app.component.ts" path="toh-pt1/src/app/app.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/app.component.html" path="toh-pt1/src/app/app.component.html">
+  <code-pane header="src/app/app.component.html" path="toh-pt1/src/app/app.component.html">
   </code-pane>
 
-  <code-pane title="src/app/hero.ts" 
+  <code-pane header="src/app/hero.ts" 
   path="toh-pt1/src/app/hero.ts">
   </code-pane>
 

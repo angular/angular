@@ -65,12 +65,12 @@ pipes that it shares.
 ## 기능 모듈을 만드는 방법
 
 <!--
-Assuming you already have a CLI generated app, create a feature
+Assuming you already have an app that you created with the [Angular CLI](cli), create a feature
 module using the CLI by entering the following command in the
 root project directory. Replace `CustomerDashboard` with the
 name of your module. You can omit the "Module" suffix from the name because the CLI appends it:
 -->
-Angular CLI로 애플리케이션을 생성했다면 기능 모듈을 생성하는 것도 간단합니다.
+[Angular CLI](cli)로 애플리케이션을 생성했다면 기능 모듈을 생성하는 것도 간단합니다.
 프로젝트 폴더에서 CLI 명령을 실행하면 되는데, 이 때 모듈 이름을 `CustomerDashboard`로 지정해야 합니다.
 Angular CLI로 모듈을 생성하면 "Module" 접미사가 자동으로 붙습니다:
 
@@ -119,7 +119,7 @@ This generates a folder for the new component within the customer-dashboard fold
 -->
 그러면 customer-dashboard 모듈 폴더 안에 새 컴포넌트 폴더가 생성되고, `CustomDashboardComponent`가 해당 모듈에 자동으로 추가됩니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" title="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" header="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
 </code-example>
 
 
@@ -138,7 +138,7 @@ To incorporate the feature module into your app, you have to let the root module
 -->
 애플리케이션에서 기능 모듈을 사용하려면, 이 기능 모듈을 앱 모듈인 `app.module.ts`에 추가해야 합니다. `customer-dashboard.module.ts` 파일을 다시 보면 가장 아래에 `CustomerDashboardModule` 클래스를 `export` 로 지정한 것을 확인할 수 있습니다. 이제 이 클래스는 다른 모듈에서 참조할 수 있으며, `AppModule`의 `imports` 배열에 이 모듈을 추가하면 됩니다:
 
-<code-example path="feature-modules/src/app/app.module.ts" region="app-module" title="src/app/app.module.ts" linenums="false">
+<code-example path="feature-modules/src/app/app.module.ts" region="app-module" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 <!--
@@ -156,7 +156,7 @@ When the CLI generated the `CustomerDashboardComponent` for the feature module, 
 -->
 Angular CLI로 만든  `CustomerDashboardComponent`의 템플릿 파일인 `customer-dashboard.component.html`에는 다음과 같이 마크업이 구성되어 있습니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" title="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" linenums="false">
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" header="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" linenums="false">
 </code-example>
 
 
@@ -166,7 +166,7 @@ To see this HTML in the `AppComponent`, you first have to export the `CustomerDa
 이 컴포넌트를 `AppComponent`의 템플릿에 추가하려면, 먼저 `CustomerDashboardComponent`를 모듈 외부로 공개해야 합니다.
 `customer-dashboard.module.ts` 파일의 `declarations` 배열 밑에 `exports` 배열을 추가하고 이 배열에 `CustomerDashboardComponent`를 추가합니다:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" title="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
 </code-example>
 
 
@@ -175,7 +175,7 @@ Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-da
 -->
 그리고 `AppComponent`의 템플릿인 `app.component.html` 파일에 `<app-customer-dashboard>` 태그를 추가합니다:
 
-<code-example path="feature-modules/src/app/app.component.html" region="app-component-template" title="src/app/app.component.html" linenums="false">
+<code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <!--

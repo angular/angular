@@ -44,6 +44,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
+ * @publicApi
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
@@ -96,7 +97,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
@@ -150,7 +151,7 @@ export class PercentPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
@@ -169,6 +170,7 @@ export class CurrencyPipe implements PipeTransform {
    * For example, the Canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`. If the
    * locale has no narrow symbol, uses the standard symbol for the locale.
    *   - String: Use the given string value instead of a code or a symbol.
+   * For example, an empty string will suppress the currency & symbol.
    *   - Boolean (marked deprecated in v5): `true` for symbol and false for `code`.
    *
    * @param digitsInfo Decimal representation options, specified by a string

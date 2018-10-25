@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as shx from 'shelljs';
 
 const corePackagePath =
-    path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'core', 'npm_package');
+    path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'core', 'npm_package');
 shx.cd(corePackagePath);
 
 /**

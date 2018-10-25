@@ -76,11 +76,11 @@ Bootstrap the `AppModule` in `main.ts`.
 
 <code-tabs>
 
-  <code-pane title="app.module.ts" path="dynamic-form/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="dynamic-form/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="main.ts" path="dynamic-form/src/main.ts">
+  <code-pane header="main.ts" path="dynamic-form/src/main.ts">
 
   </code-pane>
 
@@ -107,7 +107,7 @@ The following `QuestionBase` is a fundamental question class.
 
 데이터 모델의 공통 부분을 `QuestionBase` 클래스로 정의합니다.
 
-<code-example path="dynamic-form/src/app/question-base.ts" title="src/app/question-base.ts">
+<code-example path="dynamic-form/src/app/question-base.ts" header="src/app/question-base.ts">
 
 </code-example>
 
@@ -126,7 +126,7 @@ via the `type` property.
 
 `TextboxQuestion`은 HTML5 타입으로 제공하는 일반 텍스트, 이메일, url과 대응됩니다.
 
-<code-example path="dynamic-form/src/app/question-textbox.ts" title="src/app/question-textbox.ts" linenums="false">
+<code-example path="dynamic-form/src/app/question-textbox.ts" header="src/app/question-textbox.ts" linenums="false">
 
 </code-example>
 
@@ -137,7 +137,7 @@ via the `type` property.
 그리고 `DropdownQuestion`은 셀렉트 박스로 받는 질문과 대응됩니다.
 
 
-<code-example path="dynamic-form/src/app/question-dropdown.ts" title="src/app/question-dropdown.ts" linenums="false">
+<code-example path="dynamic-form/src/app/question-dropdown.ts" header="src/app/question-dropdown.ts" linenums="false">
 
 </code-example>
 
@@ -150,7 +150,7 @@ allows you to specify default values and validation rules.
 다음은 질문 객체를 `FormGroup`으로 변환하는 `QuestionControlService`를 간단하게 만들어 봅시다.
 이 서비스의 프로토타입은 질문 모델을 받아서 폼 그룹으로 변환하는데, 이 때 기본값과 유효성 검사도 함께 적용할 수 있습니다.
 
-<code-example path="dynamic-form/src/app/question-control.service.ts" title="src/app/question-control.service.ts" linenums="false">
+<code-example path="dynamic-form/src/app/question-control.service.ts" header="src/app/question-control.service.ts" linenums="false">
 
 </code-example>
 
@@ -175,11 +175,11 @@ to create components to represent the dynamic form.
 
 <code-tabs>
 
-  <code-pane title="dynamic-form.component.html" path="dynamic-form/src/app/dynamic-form.component.html">
+  <code-pane header="dynamic-form.component.html" path="dynamic-form/src/app/dynamic-form.component.html">
 
   </code-pane>
 
-  <code-pane title="dynamic-form.component.ts" path="dynamic-form/src/app/dynamic-form.component.ts">
+  <code-pane header="dynamic-form.component.ts" path="dynamic-form/src/app/dynamic-form.component.ts">
 
   </code-pane>
 
@@ -197,11 +197,11 @@ question based on values in the data-bound question object.
 
 <code-tabs>
 
-  <code-pane title="dynamic-form-question.component.html" path="dynamic-form/src/app/dynamic-form-question.component.html">
+  <code-pane header="dynamic-form-question.component.html" path="dynamic-form/src/app/dynamic-form-question.component.html">
 
   </code-pane>
 
-  <code-pane title="dynamic-form-question.component.ts" path="dynamic-form/src/app/dynamic-form-question.component.ts">
+  <code-pane header="dynamic-form-question.component.ts" path="dynamic-form/src/app/dynamic-form-question.component.ts">
 
   </code-pane>
 
@@ -259,7 +259,7 @@ directly since you imported `ReactiveFormsModule` from `AppModule`.
 이 예제에서 중요한 것은, 애플리케이션에서 사용하는 폼은 `QuestionService`에 전달하는 객체 타입의 인자로 정해진다는 것입니다.
 그래서 `questions` 배열에 항목을 추가하거나 제거하면 설문지도 자동으로 변경됩니다.
 
-<code-example path="dynamic-form/src/app/question.service.ts" title="src/app/question.service.ts">
+<code-example path="dynamic-form/src/app/question.service.ts" header="src/app/question.service.ts">
 
 </code-example>
 
@@ -269,7 +269,7 @@ Finally, display an instance of the form in the `AppComponent` shell.
 -->
 마지막으로 폼을 `AppComponent`에 추가합니다.
 
-<code-example path="dynamic-form/src/app/app.component.ts" title="app.component.ts">
+<code-example path="dynamic-form/src/app/app.component.ts" header="app.component.ts">
 
 </code-example>
 

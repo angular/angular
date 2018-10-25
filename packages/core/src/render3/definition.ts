@@ -10,15 +10,17 @@ import './ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/provider';
-import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
+import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
-import {Type} from '../type';
+import {Mutable, Type} from '../type';
+import {noSideEffects} from '../util';
 
-import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
-const EMPTY: {} = {};
-const EMPTY_ARRAY: any[] = [];
+export const EMPTY: {} = {};
+export const EMPTY_ARRAY: any[] = [];
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   Object.freeze(EMPTY);
   Object.freeze(EMPTY_ARRAY);
@@ -264,12 +266,9 @@ export function defineComponent<T>(componentDefinition: {
   pipes?: PipeTypesOrFactory | null;
 }): never {
   const type = componentDefinition.type;
-  const pipeTypes = componentDefinition.pipes !;
-  const directiveTypes = componentDefinition.directives !;
+  const typePrototype = type.prototype;
   const declaredInputs: {[key: string]: string} = {} as any;
-  const encapsulation = componentDefinition.encapsulation || ViewEncapsulation.Emulated;
-  const styles: string[] = componentDefinition.styles || EMPTY_ARRAY;
-  const def: ComponentDefInternal<any> = {
+  const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
     type: type,
     diPublic: null,
     consts: componentDefinition.consts,
@@ -281,60 +280,71 @@ export function defineComponent<T>(componentDefinition: {
     contentQueries: componentDefinition.contentQueries || null,
     contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
     attributes: componentDefinition.attributes || null,
-    inputs: invertObject(componentDefinition.inputs, declaredInputs),
     declaredInputs: declaredInputs,
-    outputs: invertObject(componentDefinition.outputs),
+    inputs: null !,   // assigned in noSideEffects
+    outputs: null !,  // assigned in noSideEffects
     exportAs: componentDefinition.exportAs || null,
-    onInit: type.prototype.ngOnInit || null,
-    doCheck: type.prototype.ngDoCheck || null,
-    afterContentInit: type.prototype.ngAfterContentInit || null,
-    afterContentChecked: type.prototype.ngAfterContentChecked || null,
-    afterViewInit: type.prototype.ngAfterViewInit || null,
-    afterViewChecked: type.prototype.ngAfterViewChecked || null,
-    onDestroy: type.prototype.ngOnDestroy || null,
+    onInit: typePrototype.ngOnInit || null,
+    doCheck: typePrototype.ngDoCheck || null,
+    afterContentInit: typePrototype.ngAfterContentInit || null,
+    afterContentChecked: typePrototype.ngAfterContentChecked || null,
+    afterViewInit: typePrototype.ngAfterViewInit || null,
+    afterViewChecked: typePrototype.ngAfterViewChecked || null,
+    onDestroy: typePrototype.ngOnDestroy || null,
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-    directiveDefs: directiveTypes ?
-        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
-                  .map(extractDirectiveDef) :
-        null,
-    pipeDefs: pipeTypes ?
-        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
-        null,
+    directiveDefs: null !,  // assigned in noSideEffects
+    pipeDefs: null !,       // assigned in noSideEffects
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features || null,
-    data: componentDefinition.data || EMPTY,
+    data: componentDefinition.data || {},
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
-    encapsulation,
+    encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
     providers: EMPTY_ARRAY,
     viewProviders: EMPTY_ARRAY,
-    id: `c${_renderCompCount++}`, styles,
+    id: 'c',
+    styles: componentDefinition.styles || EMPTY_ARRAY,
+    _: null as never,
   };
-  const feature = componentDefinition.features;
-  feature && feature.forEach((fn) => fn(def));
+  def._ = noSideEffects(() => {
+    const directiveTypes = componentDefinition.directives !;
+    const feature = componentDefinition.features;
+    const pipeTypes = componentDefinition.pipes !;
+    def.id += _renderCompCount++;
+    def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
+    def.outputs = invertObject(componentDefinition.outputs),
+    feature && feature.forEach((fn) => fn(def));
+    def.directiveDefs = directiveTypes ?
+        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                  .map(extractDirectiveDef) :
+        null;
+    def.pipeDefs = pipeTypes ?
+        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+        null;
+  }) as never;
   return def as never;
 }
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
-    DirectiveDefInternal<any>|ComponentDefInternal<any> {
-  const def = type.ngComponentDef || type.ngDirectiveDef;
+    DirectiveDef<any>|ComponentDef<any> {
+  const def = getComponentDef(type) || getDirectiveDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
-  return def;
+  return def !;
 }
 
-export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
-  const def = type.ngPipeDef;
+export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+  const def = getPipeDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
-  return def;
+  return def !;
 }
 
-export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
-  const res: NgModuleDefInternal<T> = {
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): never {
+  const res: NgModuleDef<T> = {
     type: def.type,
     bootstrap: def.bootstrap || EMPTY_ARRAY,
     declarations: def.declarations || EMPTY_ARRAY,
@@ -515,7 +525,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
+  factory: () => T;
 
   /**
    * Static attributes to set on host element.
@@ -645,10 +655,32 @@ export function definePipe<T>(pipeDef: {
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
-  return (<PipeDefInternal<T>>{
+  return (<PipeDef<T>>{
     name: pipeDef.name,
     factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
+}
+
+/**
+ * The following getter methods retrieve the definition form the type. Currently the retrieval
+ * honors inheritance, but in the future we may change the rule to require that definitions are
+ * explicit. This would require some sort of migration strategy.
+ */
+
+export function getComponentDef<T>(type: any): ComponentDef<T>|null {
+  return (type as any)[NG_COMPONENT_DEF] || null;
+}
+
+export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
+  return (type as any)[NG_DIRECTIVE_DEF] || null;
+}
+
+export function getPipeDef<T>(type: any): PipeDef<T>|null {
+  return (type as any)[NG_PIPE_DEF] || null;
+}
+
+export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null {
+  return (type as any)[NG_MODULE_DEF] || null;
 }

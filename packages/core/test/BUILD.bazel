@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "test_lib",
@@ -30,6 +29,7 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
+        "@ngdeps//zone.js",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -68,6 +68,9 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
+        "@ngdeps//base64-js",
+        "@ngdeps//source-map",
+        "@ngdeps//zone.js",
     ],
 )
 

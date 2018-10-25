@@ -113,33 +113,18 @@ Angular 컴포넌트는 컴포넌트 클래스에 `@Component()` 데코레이터
 -->
 ### 템플릿, 디렉티브, 데이터 바인딩
 
-<!--
 A template combines HTML with Angular markup that can modify HTML elements before they are displayed.
 Template *directives* provide program logic, and *binding markup* connects your application data and the DOM.
 There are two types of data binding:
--->
-템플릿은 HTML 문법을 바탕으로, 여기에 HTML 엘리먼트를 변형할 수 있는 Angular 마크업을 사용해서 작성합니다.
-이 때 템플릿 *디렉티브*를 사용해서 간단한 로직을 추가할 수 있으며, *바인딩 마크업*으로 애플리케이션 데이터와 DOM을 연결할 수 있습니다.
-데이터 바인딩은 두 종류입니다:
 
-<!--
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.
--->
-* *이벤트 바인딩*을 사용하면 사용자의 입력에 반응하면서 데이터를 처리할 수 있습니다.
-* *프로퍼티 바인딩*을 사용하면 애플리케이션 데이터를 HTML에 반영할 수 있습니다.
 
-<!--
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.
--->
-Angular는 뷰를 화면에 표시하기 전에 디렉티브를 평가하고 바인딩 문법을 처리해서 템플릿에 반영하거나 DOM을 조작합니다. 단방향 바인딩 외에 *양방향 데이터 바인딩* 을 사용할 수도 있는데, 이 바인딩은 컴포넌트 클래스에 있는 데이터를 뷰에 표시한 이후에 뷰에서 발생한 사용자의 동작을 다시 컴포넌트 클래스에 반영할 때 사용합니다.
 
-<!--
 Your templates can use *pipes* to improve the user experience by transforming values for display. 
 For example, use pipes to display dates and currency values that are appropriate for a user's locale.
 Angular provides predefined pipes for common transformations, and you can also define your own pipes.
--->
-데이터를 화면에 표시될 때 특정 형식을 지정하려면 *파이프*를 사용할 수 있습니다. 예를 들면 날짜나 통화 데이터를 사용자의 국가 형식에 맞게 변형할 때 사용할 수 있습니다. 많이 사용하는 파이프는 Angular에서 제공하고 있으며, 필요한 기능이 더 있다면 직접 파이프를 정의해서 사용할 수도 있습니다.
 
 <div class="alert is-helpful">
 
@@ -173,7 +158,7 @@ For data or logic that isn't associated with a specific view, and that you want 
 <div class="alert is-helpful">
 
   <!--
-  For a more detailed discusssion, see [Introduction to services and DI](guide/architecture-services).
+  For a more detailed discussion, see [Introduction to services and DI](guide/architecture-services).
   -->
   서비스와 의존성 주입에 대해 좀 더 자세하게 알아보려면 [서비스와 DI 소개](guide/architecture-services) 문서를 확인해 보세요.
 
@@ -191,7 +176,9 @@ Angular에서 제공하는 `Router` NgModule을 사용하면 네비게이션 주
 
 <!--
 * Enter a URL in the address bar and the browser navigates to a corresponding page.
+
 * Click links on the page and the browser navigates to a new page.
+
 * Click the browser's back and forward buttons and the browser navigates backward and forward through the history of pages you've seen.
 -->
 * 주소표시줄에 URL을 입력하면 브라우저가 해당 페이지로 전환합니다.
@@ -276,22 +263,29 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Directives](guide/architecture-components#directives)
 
   * [Pipes](guide/architecture-components#pipes)
-  
+
 * [Introduction to services and dependency injection](guide/architecture-services)
 -->
-* [모듈](guide/architecture-modules)
-* [컴포넌트](guide/architecture-components)
+* [Introduction to Modules](guide/architecture-modules)
+
+* [Introduction to Components](guide/architecture-components)
+
   * [템플릿과 뷰](guide/architecture-components#템플릿과-뷰)
+
   * [컴포넌트 메타데이터](guide/architecture-components#컴포넌트-메타데이터)
+
   * [데이터 바인딩](guide/architecture-components#데이터-바인딩)
+
   * [디렉티브](guide/architecture-components#디렉티브)
+
   * [파이프](guide/architecture-components#파이프)
-* [서비스와 의존성 주입](guide/architecture-services)
+
+* [Introduction to services and dependency injection](guide/architecture-services)
 
 <div class="alert is-helpful">
 <!--
    Note that the code referenced on these pages is available as a <live-example></live-example>.
- -->
+-->
  이 문서에서 다룬 코드는 <live-example></live-example>에서도 확인할 수 있습니다.
 </div>
 
@@ -299,3 +293,5 @@ Each of these subjects is introduced in more detail in the following pages.
 When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
 -->
 Angular 애플리케이션의 기본 요소에 이미 익숙하다면 각각을 좀 더 깊이 있게 다루는 문서를 확인해 보는 것도 좋습니다. 그리고 애플리케이션 개발이나 배포에 사용하는 툴이나 테크닉을 먼저 알아보려면 [이 문서](guide/architecture-next-steps)를 확인해 보세요.
+
+</div>

@@ -11,6 +11,7 @@ import {NgModuleFactory} from './ng_module_factory';
 /**
  * Used to load ng module factories.
  *
+ * @publicApi
  */
 export abstract class NgModuleFactoryLoader {
   abstract load(path: string): Promise<NgModuleFactory<any>>;
@@ -20,7 +21,7 @@ let moduleFactories = new Map<string, NgModuleFactory<any>>();
 
 /**
  * Registers a loaded module. Should only be called from generated NgModuleFactory code.
- * @experimental
+ * @publicApi
  */
 export function registerModuleFactory(id: string, factory: NgModuleFactory<any>) {
   const existing = moduleFactories.get(id);
@@ -39,7 +40,7 @@ export function clearModulesForTest() {
  * Returns the NgModuleFactory with the given id, if it exists and has been loaded.
  * Factories for modules that do not specify an `id` cannot be retrieved. Throws if the module
  * cannot be found.
- * @experimental
+ * @publicApi
  */
 export function getModuleFactory(id: string): NgModuleFactory<any> {
   const factory = moduleFactories.get(id);

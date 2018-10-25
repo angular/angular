@@ -33,6 +33,9 @@ class _NullComponentFactoryResolver implements ComponentFactoryResolver {
   }
 }
 
+/**
+ * @publicApi
+ */
 export abstract class ComponentFactoryResolver {
   static NULL: ComponentFactoryResolver = new _NullComponentFactoryResolver();
   abstract resolveComponentFactory<T>(component: Type<T>): ComponentFactory<T>;

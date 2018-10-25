@@ -31,6 +31,7 @@ import { ParentFinderComponent,
          BarryComponent,
          BethComponent,
          BobComponent }                 from './parent-finder.component';
+import { StorageComponent }             from './storage.component';
 
 const declarations = [
     AppComponent,
@@ -63,6 +64,7 @@ const c_components = [
     a_components,
     b_components,
     c_components,
+    StorageComponent,
   ],
   bootstrap: [ AppComponent ],
   // #docregion providers

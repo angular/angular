@@ -90,18 +90,18 @@ import {NgAdapterInjector} from './util';
  * This class is an `NgModule`, which you import to provide AngularJS core services,
  * and has an instance method used to bootstrap the hybrid upgrade application.
  *
- * #### Core AngularJS services
- * Importing this `NgModule` will add providers for the core
- * [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
+ * * Core AngularJS services
+ *   Importing this `NgModule` will add providers for the core
+ *   [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
  *
- * #### Bootstrap
- * The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
- * method, which you use to bootstrap the top level AngularJS module onto an element in the
- * DOM for the hybrid upgrade app.
+ * * Bootstrap
+ *   The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
+ *   method, which you use to bootstrap the top level AngularJS module onto an element in the
+ *   DOM for the hybrid upgrade app.
  *
- * It also contains properties to access the {@link UpgradeModule#injector root injector}, the
- * bootstrap `NgZone` and the
- * [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
+ *   It also contains properties to access the {@link UpgradeModule#injector root injector}, the
+ *   bootstrap `NgZone` and the
+ *   [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
  *
  * ### Examples
  *
@@ -139,7 +139,7 @@ import {NgAdapterInjector} from './util';
  *
  * {@example upgrade/static/ts/full/module.ts region="use-ng1-upgraded-service"}
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({providers: [angular1Providers]})
 export class UpgradeModule {

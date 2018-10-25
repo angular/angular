@@ -20,39 +20,45 @@ import {SecurityContext} from '../core';
 // =================================================================================================
 
 /** Map from tagName|propertyName SecurityContext. Properties applying to all tags use '*'. */
-export const SECURITY_SCHEMA: {[k: string]: SecurityContext} = {};
+let _SECURITY_SCHEMA !: {[k: string]: SecurityContext};
 
-function registerContext(ctx: SecurityContext, specs: string[]) {
-  for (const spec of specs) SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
+export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
+  if (!_SECURITY_SCHEMA) {
+    _SECURITY_SCHEMA = {};
+    // Case is insignificant below, all element and attribute names are lower-cased for lookup.
+
+    registerContext(SecurityContext.HTML, [
+      'iframe|srcdoc',
+      '*|innerHTML',
+      '*|outerHTML',
+    ]);
+    registerContext(SecurityContext.STYLE, ['*|style']);
+    // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
+    registerContext(SecurityContext.URL, [
+      '*|formAction', 'area|href',       'area|ping',       'audio|src',    'a|href',
+      'a|ping',       'blockquote|cite', 'body|background', 'del|cite',     'form|action',
+      'img|src',      'img|srcset',      'input|src',       'ins|cite',     'q|cite',
+      'source|src',   'source|srcset',   'track|src',       'video|poster', 'video|src',
+    ]);
+    registerContext(SecurityContext.RESOURCE_URL, [
+      'applet|code',
+      'applet|codebase',
+      'base|href',
+      'embed|src',
+      'frame|src',
+      'head|profile',
+      'html|manifest',
+      'iframe|src',
+      'link|href',
+      'media|src',
+      'object|codebase',
+      'object|data',
+      'script|src',
+    ]);
+  }
+  return _SECURITY_SCHEMA;
 }
 
-// Case is insignificant below, all element and attribute names are lower-cased for lookup.
-
-registerContext(SecurityContext.HTML, [
-  'iframe|srcdoc',
-  '*|innerHTML',
-  '*|outerHTML',
-]);
-registerContext(SecurityContext.STYLE, ['*|style']);
-// NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
-registerContext(SecurityContext.URL, [
-  '*|formAction', 'area|href',       'area|ping',       'audio|src',    'a|href',
-  'a|ping',       'blockquote|cite', 'body|background', 'del|cite',     'form|action',
-  'img|src',      'img|srcset',      'input|src',       'ins|cite',     'q|cite',
-  'source|src',   'source|srcset',   'track|src',       'video|poster', 'video|src',
-]);
-registerContext(SecurityContext.RESOURCE_URL, [
-  'applet|code',
-  'applet|codebase',
-  'base|href',
-  'embed|src',
-  'frame|src',
-  'head|profile',
-  'html|manifest',
-  'iframe|src',
-  'link|href',
-  'media|src',
-  'object|codebase',
-  'object|data',
-  'script|src',
-]);
+function registerContext(ctx: SecurityContext, specs: string[]) {
+  for (const spec of specs) _SECURITY_SCHEMA[spec.toLowerCase()] = ctx;
+}

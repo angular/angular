@@ -651,6 +651,9 @@
     "name": "EmitterVisitorContext"
   },
   {
+    "name": "EmptyErrorImpl"
+  },
+  {
     "name": "EmptyExpr"
   },
   {
@@ -711,12 +714,6 @@
     "name": "FunctionExpr"
   },
   {
-    "name": "GET_PROPERTY_NAME"
-  },
-  {
-    "name": "GET_PROPERTY_NAME$2"
-  },
-  {
     "name": "GOOG_GET_MSG"
   },
   {
@@ -739,6 +736,12 @@
   },
   {
     "name": "I18NHtmlParser"
+  },
+  {
+    "name": "I18N_ID_SEPARATOR"
+  },
+  {
+    "name": "I18N_MEANING_SEPARATOR"
   },
   {
     "name": "I18nError"
@@ -1002,6 +1005,9 @@
     "name": "NG_CONTENT_SELECT_ATTR"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_NON_BINDABLE_ATTR"
   },
   {
@@ -1099,6 +1105,9 @@
   },
   {
     "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "ObjectUnsubscribedErrorImpl"
   },
   {
     "name": "Observable"
@@ -1242,9 +1251,6 @@
     "name": "Quote"
   },
   {
-    "name": "R3_COMPILE_INJECTABLE$1"
-  },
-  {
     "name": "ReadKeyExpr"
   },
   {
@@ -1327,6 +1333,24 @@
   },
   {
     "name": "STYLE_PREFIX"
+  },
+  {
+    "name": "SWITCH_CHANGE_DETECTOR_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_COMPILE_INJECTABLE"
+  },
+  {
+    "name": "SWITCH_ELEMENT_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_RENDERER2_FACTORY"
+  },
+  {
+    "name": "SWITCH_TEMPLATE_REF_FACTORY"
+  },
+  {
+    "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
   },
   {
     "name": "SafeMethodCall"
@@ -1438,9 +1462,6 @@
   },
   {
     "name": "SyncAsync"
-  },
-  {
-    "name": "TAG_DEFINITIONS"
   },
   {
     "name": "TAG_TO_PLACEHOLDER_NAMES"
@@ -1578,13 +1599,16 @@
     "name": "URL_WITH_SCHEMA_REGEXP"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$1"
   },
   {
-    "name": "USE_VALUE$3"
+    "name": "USE_VALUE$2"
   },
   {
     "name": "UnsubscriptionError"
+  },
+  {
+    "name": "UnsubscriptionErrorImpl"
   },
   {
     "name": "UrlResolver"
@@ -1729,9 +1753,6 @@
   },
   {
     "name": "_DEFAULT_SOURCE_LANG$1"
-  },
-  {
-    "name": "_DEFAULT_TAG_DEFINITION"
   },
   {
     "name": "_DOCTYPE"
@@ -1935,22 +1956,16 @@
     "name": "__extends$5"
   },
   {
-    "name": "__extends$6"
+    "name": "__extends$l"
   },
   {
-    "name": "__extends$7"
+    "name": "__extends$m"
   },
   {
-    "name": "__extends$q"
+    "name": "__extends$n"
   },
   {
-    "name": "__extends$r"
-  },
-  {
-    "name": "__extends$s"
-  },
-  {
-    "name": "__extends$u"
+    "name": "__extends$p"
   },
   {
     "name": "__metadata"
@@ -2361,6 +2376,9 @@
     "name": "camelCaseToDashCase"
   },
   {
+    "name": "canReportError"
+  },
+  {
     "name": "checkAndUpdateBinding"
   },
   {
@@ -2442,7 +2460,7 @@
     "name": "compileNgModuleFactory"
   },
   {
-    "name": "compileNgModuleFactory__PRE_NGCC__"
+    "name": "compileNgModuleFactory__PRE_R3__"
   },
   {
     "name": "componentFactoryName"
@@ -2946,9 +2964,6 @@
     "name": "getClosureSafeProperty"
   },
   {
-    "name": "getClosureSafeProperty$1"
-  },
-  {
     "name": "getComponentViewDefinitionFactory"
   },
   {
@@ -2974,6 +2989,9 @@
   },
   {
     "name": "getHtmlTagDefinition"
+  },
+  {
+    "name": "getInjectableDef"
   },
   {
     "name": "getNgZone"
@@ -3156,6 +3174,9 @@
     "name": "isIdentifierStart"
   },
   {
+    "name": "isInteropObservable"
+  },
+  {
     "name": "isIterable"
   },
   {
@@ -3189,9 +3210,6 @@
     "name": "isObject"
   },
   {
-    "name": "isObservable"
-  },
-  {
     "name": "isObservable$1"
   },
   {
@@ -3217,9 +3235,6 @@
   },
   {
     "name": "isStyleUrlResolvable"
-  },
-  {
-    "name": "isTrustedSubscriber"
   },
   {
     "name": "isType"
@@ -3396,6 +3411,9 @@
     "name": "noop$1"
   },
   {
+    "name": "noop$2"
+  },
+  {
     "name": "noop$3"
   },
   {
@@ -3438,6 +3456,9 @@
     "name": "parseCookieValue"
   },
   {
+    "name": "parseI18nMeta"
+  },
+  {
     "name": "parseIntAutoRadix"
   },
   {
@@ -3454,9 +3475,6 @@
   },
   {
     "name": "platformCoreDynamic"
-  },
-  {
-    "name": "preR3InjectableCompile"
   },
   {
     "name": "preparseElement"
@@ -3510,6 +3528,9 @@
     "name": "refCount"
   },
   {
+    "name": "registerContext"
+  },
+  {
     "name": "registerModuleFactory"
   },
   {
@@ -3529,6 +3550,9 @@
   },
   {
     "name": "removeWhitespaces"
+  },
+  {
+    "name": "render2CompileInjectable"
   },
   {
     "name": "renderAttachEmbeddedView"

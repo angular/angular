@@ -9,7 +9,7 @@
 import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {AttributeMarker} from '../../../src/render3';
-import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
+import {ComponentDef, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 
@@ -107,8 +107,7 @@ describe('elements', () => {
     }
 
     // NON-NORMATIVE
-    (LocalRefComp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
-        () => [Dir.ngDirectiveDef];
+    (LocalRefComp.ngComponentDef as ComponentDef<any>).directiveDefs = () => [Dir.ngDirectiveDef];
     // /NON-NORMATIVE
 
     const fixture = new ComponentFixture(LocalRefComp);
@@ -309,7 +308,11 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      expect(toHtml(comp)).toEqual('<div></div>');
+
+      // This is a fix for a change in how Domino renders this on the server in v2.1.0
+      const source = toHtml(comp);
+      const matches = source === '<div></div>' || source === '<div class=""></div>';
+      expect(matches).toBeTruthy();
 
       comp.someFlag = true;
       $r3$.ɵdetectChanges(comp);
@@ -341,8 +344,8 @@ describe('elements', () => {
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵelementStylingProp(0, 0, ctx.someColor);
-              $r3$.ɵelementStylingProp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵelementStyleProp(0, 0, ctx.someColor);
+              $r3$.ɵelementStyleProp(0, 1, ctx.someWidth, 'px');
               $r3$.ɵelementStylingApply(0);
             }
           }

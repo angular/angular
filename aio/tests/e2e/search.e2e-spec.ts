@@ -12,7 +12,7 @@ describe('site search', () => {
     page.enterSearch('ngCont');
     expect(page.getSearchResults()).toContain('NgControl');
 
-    page.enterSearch('accessor');
+    page.enterSearch('valueaccess');
     expect(page.getSearchResults()).toContain('ControlValueAccessor');
   });
 

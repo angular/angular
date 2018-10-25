@@ -20,6 +20,7 @@ import {INJECTOR_KEY} from './constants';
  * This helper function returns a factory function that provides access to the Angular
  * service identified by the `token` parameter.
  *
+ * @usageNotes
  * ### Examples
  *
  * First ensure that the service to be downgraded is provided in an `NgModule`
@@ -47,7 +48,7 @@ import {INJECTOR_KEY} from './constants';
  * @returns a [factory function](https://docs.angularjs.org/guide/di) that can be
  * used to register the service on an AngularJS module.
  *
- * @experimental
+ * @publicApi
  */
 export function downgradeInjectable(token: any): Function {
   const factory = function(i: Injector) { return i.get(token); };

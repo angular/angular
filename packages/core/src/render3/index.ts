@@ -11,10 +11,10 @@ import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
-import {BaseDef, ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2} from './component_ref';
-export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, getFactoryOf, getInheritedFactory, injectAttribute, injectChangeDetectorRef, injectComponentFactoryResolver, injectElementRef, injectTemplateRef, injectViewContainerRef, templateRefExtractor} from './di';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2, injectComponentFactoryResolver} from './component_ref';
+export {directiveInject, getFactoryOf, getInheritedFactory, injectAttribute} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
@@ -61,11 +61,13 @@ export {
   listener,
   store,
   load,
-  loadDirective,
 
   namespaceHTML,
   namespaceMathML,
   namespaceSVG,
+
+  enableBindings,
+  disableBindings,
 
   projection,
   projectionDef,
@@ -84,6 +86,10 @@ export {
 } from './instructions';
 
 export {
+  i18nAttribute,
+  i18nExp,
+  i18nStart,
+  i18nEnd,
   i18nApply,
   i18nMapping,
   i18nInterpolation1,
@@ -138,23 +144,26 @@ export {
   pureFunctionV,
 } from './pure_function';
 
+export {templateRefExtractor} from './view_engine_compatibility_prebound';
+
 
 // clang-format on
 
 export {
   BaseDef,
   ComponentDef,
-  ComponentDefInternal,
+  ComponentDefWithMeta,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,
   DirectiveDefFlags,
-  DirectiveDefInternal,
+  DirectiveDefWithMeta,
   DirectiveType,
   NgOnChangesFeature,
   InheritDefinitionFeature,
   PublicFeature,
   PipeDef,
+  PipeDefWithMeta,
   LifecycleHooksFeature,
   defineComponent,
   defineDirective,

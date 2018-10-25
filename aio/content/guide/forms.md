@@ -1,7 +1,7 @@
 <!--
-# Forms
+# Template-driven forms
 -->
-# 폼(Forms)
+# 템플릿 기반 폼
 
 <!--
 Forms are the mainstay of business applications.
@@ -16,6 +16,8 @@ In developing a form, it's important to create a data-entry experience that guid
 user efficiently and effectively through the workflow.
 -->
 그리고 폼을 구성할 때는 사용자가 전체 흐름에 맞도록 폼 전체를 자연스럽게 입력할 수 있도록, 순서를 고민해보는 것이 좋습니다.
+
+## Introduction to Template-driven forms
 
 <!--
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
@@ -50,12 +52,6 @@ You can run the <live-example></live-example> in Stackblitz and download the cod
 
 {@a template-driven}
 
-<!--
-## Template-driven forms
--->
-## 템플릿 기반 폼(template-driven forms)
-
-<!--
 You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
 -->
@@ -180,7 +176,7 @@ A model can be as simple as a "property bag" that holds facts about a thing of a
 That describes well the `Hero` class with its three required fields (`id`, `name`, `power`)
 and one optional field (`alterEgo`).
 
-Using the Angular CLI, generate a new class named `Hero`:
+Using the Angular CLI command [`ng generate class`](cli/generate), generate a new class named `Hero`:
 -->
 사용자가 폼에 데이터를 입력하면 이 데이터가 변경되는 것을 감지해서 모델 인스턴스를 갱신해야 하는데,
 그 전에 데이터 모델을 먼저 정의해야 합니다.
@@ -188,7 +184,7 @@ Using the Angular CLI, generate a new class named `Hero`:
 모델은 애플리케이션에 사용되는 정보를 담아두는 "프로퍼티 모음"이라고 생각할 수 있습니다.
 이 객체는 `Hero` 클래스를 표현하는 정보를 담도록 정의하며, 3개의 필수 항목(`id`, `name`, `power`)과 한 개의 옵션 항목(`alterEgo`)으로 구성됩니다.
 
-Angular CLI로 다음 명령을 실행해서 `Hero` 클래스를 생성합니다:
+Angular CLI로 [`ng generate class`](cli/generate) 명령을 실행해서 `Hero` 클래스를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -201,7 +197,7 @@ With this content:
 -->
 그러면 다음과 같은 클래스가 생성됩니다:
 
-<code-example path="forms/src/app/hero.ts" title="src/app/hero.ts">
+<code-example path="forms/src/app/hero.ts" header="src/app/hero.ts">
 
 </code-example>
 
@@ -237,11 +233,11 @@ An Angular form has two parts: an HTML-based _template_ and a component _class_
 to handle data and user interactions programmatically.
 Begin with the class because it states, in brief, what the hero editor can do.
 
-Using the Angular CLI, generate a new component named `HeroForm`:
+Using the Angular CLI command [`ng generate component`](cli/generate), generate a new component named `HeroForm`:
 -->
 Angular 폼은 HTML 기반의 _템플릿_ 과 컴포넌트 _클래스_ 로 구성됩니다. 이 중 컴포넌트 클래스는 데이터를 처리하거나 사용자의 동작에 반응하는 로직을 작성합니다.
 
-Angular CLI로 다음 명령을 실행해서 `HeroForm` 컴포넌트를 생성합니다:
+Angular CLI로 [`ng generate component`](cli/generate) 명령을 실행해서 `HeroForm` 컴포넌트를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -254,7 +250,7 @@ With this content:
 -->
 그리고 컴포넌트 클래스를 다음과 같이 작성합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" title="src/app/hero-form/hero-form.component.ts (v1)" region="v1">
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" header="src/app/hero-form/hero-form.component.ts (v1)" region="v1">
 
 </code-example>
 
@@ -313,7 +309,7 @@ Update it with the following:
 
 앱 모듈을 다음과 같이 수정합니다:
 
-<code-example path="forms/src/app/app.module.ts" title="src/app/app.module.ts">
+<code-example path="forms/src/app/app.module.ts" header="src/app/app.module.ts">
 
 </code-example>
 
@@ -358,7 +354,7 @@ Replace the contents of its template with the following:
 -->
 `AppComponent`는 애플리케이션의 최상위 컴포넌트 입니다. 이 컴포넌트에 `HeroFormComponent`를 추가하기 위해 템플릿을 다음과 같이 추가합니다:
 
-<code-example path="forms/src/app/app.component.html" title="src/app/app.component.html">
+<code-example path="forms/src/app/app.component.html" header="src/app/app.component.html">
 
 </code-example>
 
@@ -387,7 +383,7 @@ Update the template file with the following contents:
 -->
 이제 폼 컴포넌트의 템플릿을 다음과 같이 수정합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="start" title="src/app/hero-form/hero-form.component.html">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="start" header="src/app/hero-form/hero-form.component.html">
 
 </code-example>
 
@@ -449,7 +445,7 @@ To add the stylesheet, open `styles.css` and add the following import line at th
 -->
 스타일시트를 추가하려면 `styles.css` 파일을 열고 다음 내용을 추가하면 됩니다:
 
-<code-example path="forms/src/styles.1.css" linenums="false" title="src/styles.css">
+<code-example path="forms/src/styles.1.css" linenums="false" header="src/styles.css">
 
 </code-example>
 
@@ -476,7 +472,7 @@ Add the following HTML *immediately below* the *Alter Ego* group:
 
 이 내용은 *특수 능력*을 입력받는 필드 *바로 아래* 다음과 같이 추가합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (powers)" region="powers">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (powers)" region="powers">
 
 </code-example>
 
@@ -530,7 +526,7 @@ Find the `<input>` tag for *Name* and update it like this:
 
 *이름*에 해당하는 `<input>` 태그에 이 방법을 적용해 봅시다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1">
 
 </code-example>
 
@@ -557,7 +553,7 @@ a template variable for the form. Update the `<form>` tag with
 
 입력 필드는 현재 값을 화면에 표시하면서 또 다른 기능을 동시에 수행해야 합니다. 폼에 다음과 같이 템플릿 변수를 선언합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable">
 
 </code-example>
 
@@ -663,7 +659,7 @@ After revision, the core of the form should look like this:
 
 이렇게 수정하고 나면 폼 템플릿의 내용은 다음과 같습니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2">
 
 </code-example>
 
@@ -807,7 +803,7 @@ to the _Name_ `<input>` tag and use it to display the input's CSS classes.
 -->
 클래스가 지정되는 것을 확인하기 위해 임시로 [템플릿 참조 변수](guide/template-syntax#ref-vars) `spy`를 _이름_ 에 해당하는 `<input>` 태그에 지정하고, 템플릿에 표시하도록 다음과 같이 작성해 봅시다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2">
 
 </code-example>
 
@@ -878,7 +874,7 @@ that you add to the project as a sibling to `index.html`:
 이 스타일은 `index.html` 파일이 위치하는 폴더에 `forms.css` 파일을 새로 만들어서 지정해 봅시다.
 이 파일의 내용은 다음과 같이 작성합니다:
 
-<code-example path="forms/src/assets/forms.css" title="src/assets/forms.css">
+<code-example path="forms/src/assets/forms.css" header="src/assets/forms.css">
 
 </code-example>
 
@@ -887,7 +883,7 @@ Update the `<head>` of `index.html` to include this style sheet:
 -->
 그리고 `index.html` 파일의 `<head>`에서 이 스타일 시트를 불러오도록 수정합니다:
 
-<code-example path="forms/src/index.html" linenums="false" title="src/index.html (styles)" region="styles">
+<code-example path="forms/src/index.html" linenums="false" header="src/index.html (styles)" region="styles">
 
 </code-example>
 
@@ -926,7 +922,7 @@ Here's an example of an error message added to the _name_ input box:
 * [템플릿 참조 변수](guide/template-syntax#ref-vars)
 * 폼 컨트롤 값이 유효하지 않을 때 에러 메시지를 표시할 `<div>`
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg">
 
 </code-example>
 
@@ -957,7 +953,7 @@ control to the message `<div>` element's `hidden` property.
 -->
 그리고 이 에러 메시지가 표시되는 것을 제어하기 위해, `name`으로 참조하는 폼 컨트롤을 활용해서 새로 추가한 `<div>` 엘리먼트의 `hidden` 프로퍼티를 지정합니다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg">
 
 </code-example>
 
@@ -1007,11 +1003,11 @@ Place a *New Hero* button at the bottom of the form and bind its click event to 
 이제 폼에 입력된 내용을 초기화하는 기능을 구현해 봅시다.
 폼 가장 아래에 *New Hero* 버튼을 만들고 이 버튼의 클릭 이벤트를 컴포넌트 메소드 `newHero`에 연결합니다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" title="src/app/hero-form/hero-form.component.html (New Hero button)">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" header="src/app/hero-form/hero-form.component.html (New Hero button)">
 
 </code-example>
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" title="src/app/hero-form/hero-form.component.ts (New Hero method)" linenums="false">
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" region="new-hero" header="src/app/hero-form/hero-form.component.ts (New Hero method)" linenums="false">
 
 </code-example>
 
@@ -1053,7 +1049,7 @@ by calling the form's `reset()` method after calling the `newHero()` method.
 그래서 `newHero()` 메소드를 실행한 후에는 폼 컨트롤의 상태를 초기화하는 동작을 수행해야 합니다.
 이 동작은 폼에서 제공하는 `reset()` 메소드를 활용할 수 있으며, *New Hero* 버튼에서 `newHero()` 메소드를 실행한 이후에 이 메소드를 실행하도록 다음과 같이 수정합니다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" title="src/app/hero-form/hero-form.component.html (Reset the form)">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" header="src/app/hero-form/hero-form.component.html (Reset the form)">
 
 </code-example>
 
@@ -1083,7 +1079,7 @@ to the hero form component's `onSubmit()` method:
 하지만 지금 코드로는 "폼 제출" 기능이 동작하지 않습니다.
 폼에서 발생하는 `ngSubmit` 이벤트를 컴포넌트의 `onSubmit()` 메소드로 바인딩해서 폼 제출 기능을 구현해 봅시다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (ngSubmit)" region="ngSubmit">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (ngSubmit)" region="ngSubmit">
 
 </code-example>
 
@@ -1101,7 +1097,7 @@ using an event binding. Here's the code:
 
 이제 전체 폼 유효성 결과를 활용해서 버튼의 `disabled` 프로퍼티를 설정합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button">
 
 </code-example>
 
@@ -1169,7 +1165,7 @@ its `hidden` property to the `HeroFormComponent.submitted` property.
 
 폼을 `<div>`로 감싸고 이 엘리먼트의 `hidden` 프로퍼티에 `HeroFormComponent.submitted` 프로퍼티를 바인딩합니다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="edit-div">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="edit-div">
 
 </code-example>
 
@@ -1181,7 +1177,7 @@ as this fragment from the `HeroFormComponent` shows:
 그러면 사용자가 폼을 제출하기 전까지는 `submitted` 프로퍼티 값이 `false`이기 때문에 폼이 표시될 것입니다.
 이 프로퍼티는 `onSubmit()`에서 `true`로 지정합니다.
 
-<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" title="src/app/hero-form/hero-form.component.ts (submitted)" region="submitted">
+<code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" header="src/app/hero-form/hero-form.component.ts (submitted)" region="submitted">
 
 </code-example>
 
@@ -1197,7 +1193,7 @@ Add the following HTML below the `<div>` wrapper you just wrote:
 그러면 폼 대신 표시할 무언가를 만들어 봅시다.
 다음 내용을 HTML 템플릿에 추가합니다:
 
-<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="submitted">
+<code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (excerpt)" region="submitted">
 
 </code-example>
 
@@ -1255,35 +1251,35 @@ Here’s the code for the final version of the application:
 
 <code-tabs>
 
-  <code-pane title="hero-form/hero-form.component.ts" path="forms/src/app/hero-form/hero-form.component.ts" region="final">
+  <code-pane header="hero-form/hero-form.component.ts" path="forms/src/app/hero-form/hero-form.component.ts" region="final">
 
   </code-pane>
 
-  <code-pane title="hero-form/hero-form.component.html" path="forms/src/app/hero-form/hero-form.component.html" region="final">
+  <code-pane header="hero-form/hero-form.component.html" path="forms/src/app/hero-form/hero-form.component.html" region="final">
 
   </code-pane>
 
-  <code-pane title="hero.ts" path="forms/src/app/hero.ts">
+  <code-pane header="hero.ts" path="forms/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="forms/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="forms/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="app.component.html" path="forms/src/app/app.component.html">
+  <code-pane header="app.component.html" path="forms/src/app/app.component.html">
 
   </code-pane>
 
-  <code-pane title="app.component.ts" path="forms/src/app/app.component.ts">
+  <code-pane header="app.component.ts" path="forms/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="main.ts" path="forms/src/main.ts">
+  <code-pane header="main.ts" path="forms/src/main.ts">
 
   </code-pane>
 
-  <code-pane title="forms.css" path="forms/src/assets/forms.css">
+  <code-pane header="forms.css" path="forms/src/assets/forms.css">
 
   </code-pane>
 
