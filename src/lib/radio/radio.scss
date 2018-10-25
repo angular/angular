@@ -151,6 +151,16 @@ $mat-radio-ripple-radius: 20px;
   &, .mat-radio-disabled .mat-radio-container:hover & {
     opacity: 0;
   }
+
+  // Hover styles will be displayed after tapping on touch devices.
+  // Disable the hover styling if the user's device doesn't support hovering.
+  @media (hover: none) {
+    // Note that we only negate the `:hover` rather than setting it to always be `display: none`,
+    // in order to maintain the focus indication for hybrid touch + keyboard devices.
+    .mat-radio-container:hover & {
+      display: none;
+    }
+  }
 }
 
 .mat-radio-input {
