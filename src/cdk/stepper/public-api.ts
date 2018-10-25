@@ -10,3 +10,4 @@ export * from './stepper';
 export * from './step-label';
 export * from './stepper-button';
 export * from './stepper-module';
+export * from './step-header';

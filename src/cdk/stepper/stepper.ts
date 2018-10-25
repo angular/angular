@@ -38,6 +38,7 @@ import {AbstractControl} from '@angular/forms';
 import {CdkStepLabel} from './step-label';
 import {Observable, Subject, of as obaservableOf} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
+import {CdkStepHeader} from './step-header';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;
@@ -242,8 +243,12 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   /** The list of step components that the stepper is holding. */
   @ContentChildren(CdkStep) _steps: QueryList<CdkStep>;
 
-  /** The list of step headers of the steps in the stepper. */
-  _stepHeader: QueryList<FocusableOption>;
+  /**
+   * The list of step headers of the steps in the stepper.
+   * @deprecated Type to be changed to `QueryList<CdkStepHeader>`.
+   * @breaking-change 8.0.0
+   */
+  @ContentChildren(CdkStepHeader) _stepHeader: QueryList<FocusableOption>;
 
   /** Whether the validity of previous steps should be checked or not. */
   @Input()
@@ -302,7 +307,10 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this._keyManager = new FocusKeyManager(this._stepHeader)
+    // Note that while the step headers are content children by default, any components that
+    // extend this one might have them as view chidren. We initialize the keyboard handling in
+    // AfterViewInit so we're guaranteed for both view and content children to be defined.
+    this._keyManager = new FocusKeyManager<FocusableOption>(this._stepHeader)
       .withWrap()
       .withVerticalOrientation(this._orientation === 'vertical');
 

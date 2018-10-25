@@ -21,7 +21,8 @@ import {Subscription} from 'rxjs';
 import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
 import {MatStepperIconContext} from './stepper-icon';
-import {StepState} from '@angular/cdk/stepper';
+import {CdkStepHeader, StepState} from '@angular/cdk/stepper';
+
 
 @Component({
   moduleId: module.id,
@@ -35,7 +36,7 @@ import {StepState} from '@angular/cdk/stepper';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStepHeader implements OnDestroy {
+export class MatStepHeader extends CdkStepHeader implements OnDestroy {
   private _intlSubscription: Subscription;
 
   /** State of the given step. */
@@ -65,15 +66,16 @@ export class MatStepHeader implements OnDestroy {
   constructor(
     public _intl: MatStepperIntl,
     private _focusMonitor: FocusMonitor,
-    private _element: ElementRef<HTMLElement>,
+    _elementRef: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef) {
-    _focusMonitor.monitor(_element, true);
+    super(_elementRef);
+    _focusMonitor.monitor(_elementRef, true);
     this._intlSubscription = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
   }
 
   ngOnDestroy() {
     this._intlSubscription.unsubscribe();
-    this._focusMonitor.stopMonitoring(this._element);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /** Returns string label of given step if it is a text label. */
@@ -88,7 +90,7 @@ export class MatStepHeader implements OnDestroy {
 
   /** Returns the host HTML element. */
   _getHostElement() {
-    return this._element.nativeElement;
+    return this._elementRef.nativeElement;
   }
 
   /** Template context variables that are exposed to the `matStepperIcon` instances. */
@@ -98,9 +100,5 @@ export class MatStepHeader implements OnDestroy {
       active: this.active,
       optional: this.optional
     };
-  }
-
-  focus() {
-    this._getHostElement().focus();
   }
 }
