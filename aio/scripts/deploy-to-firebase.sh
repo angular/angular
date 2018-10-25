@@ -93,7 +93,7 @@ fi
   cd "`dirname $0`/.."
 
   # Build the app
-  yarn build-for $deployEnv
+  yarn build-for $deployEnv --progress=false
 
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
