@@ -202,8 +202,10 @@
             },
             {
               "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
+              "!title": "User Input",
+              "title": "사용자 동작",
+              "!tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models.",
+              "tooltip": "사용자가 애플리케이션을 실행할 때 DOM 이벤트가 발생합니다. Angular는 이 이벤트를 사용해서 애플리케이션 컴포넌트와 모델을 갱신합니다."
             },
             {
               "url": "guide/lifecycle-hooks",
@@ -270,20 +272,24 @@
           "children": [
             {
               "url": "guide/forms-overview",
-              "title": "Introduction",
-              "title": "Form 소개",
+              "!title": "Introduction",
+              "title": "폼 소개",
               "tooltip!": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors.",
 	            "tooltip": "폼을 구성하면 사용자 입력을 일관되고 효율적으로 처리할 수 있습니다. Angular 폼은 입력 컨트롤을 묶어서 구성하고, 변화를 감지하며, 입력값의 유효성을 판단하고 에러를 표시할 수 있습니다."
             },
             {
               "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+              "!title": "Reactive Forms",
+              "title": "반응형 폼",
+              "!tooltip": "Create a reactive form using FormBuilder, groups, and arrays.",
+              "tooltip": "FormBuilder, 그룹, 배열을 사용해서 반응형 폼을 만들어 보세요."
             },
             {
               "url": "guide/forms",
-              "title": "Template-driven Forms",
-              "tooltip": "Create a template-driven form using directives and Angular template syntax."
+              "!title": "Template-driven Forms",
+              "title": "템플릿 기반 폼",
+              "!tooltip": "Create a template-driven form using directives and Angular template syntax.",
+              "tooltip": "디렉티브와 Angular 템플릿 문법을 활용해서 템플릿 기반 폼을 만들어 보세요."
             },
             {
               "url": "guide/form-validation",
@@ -294,8 +300,10 @@
             },
             {
               "url": "guide/dynamic-form",
-              "title": "Dynamic Forms",
-              "tooltip": "Render dynamic forms with FormGroup."
+              "!title": "Dynamic Forms",
+              "title": "동적 폼",
+              "!tooltip": "Render dynamic forms with FormGroup.",
+              "tooltip": "FormGroup으로 동적 폼을 구성해 보세요."
             }
           ]
        },
@@ -447,23 +455,31 @@
             },
             {
               "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "An injector tree parallels the component tree and supports nested dependencies."
+              "!title": "Hierarchical Injectors",
+              "title": "인젝터 계층",
+              "tooltip": "An injector tree parallels the component tree and supports nested dependencies.",
+              "!tooltip": "인젝터는 컴포넌트 트리와 동일하게 트리 형태로 구성됩니다."
             },
             {
               "url": "guide/dependency-injection-providers",
-              "title": "DI Providers",
-              "tooltip": "More about the different kinds of providers."
+              "!title": "DI Providers",
+              "title": "의존성 주입 프로바이더",
+              "!tooltip": "More about the different kinds of providers.",
+              "tooltip": "프로바이더의 종류에 대해 알아보세요."
             },
             {
               "url": "guide/dependency-injection-in-action",
-              "title": "DI in Action",
-              "tooltip": "Techniques for dependency injection."
+              "!title": "DI in Action",
+              "title": "실전 의존성 주입",
+              "!tooltip": "Techniques for dependency injection.",
+              "tooltip": "의존성 주입 테크닉에 대해 알아보세요."
             },
             {
               "url": "guide/dependency-injection-navtree",
-              "title": "Navigate the Component Tree",
-              "tooltip": "Use the injection tree to find parent components."
+              "!title": "Navigate the Component Tree",
+              "title": "컴포넌트 트리 참조하기",
+              "!tooltip": "Use the injection tree to find parent components.",
+              "tooltip": "인젝터 트리를 활용하면 부모 컴포넌트를 참조할 수 있습니다."
             }
           ]
         },
@@ -482,33 +498,45 @@
           "tooltip": "Angular 라우터를 사용해서 화면을 전환할 수 있습니다."
         },
         {
-          "title": "Animations",
-          "tooltip": "A guide to Angular's animation system.",
+          "!title": "Animations",
+          "title": "애니메이션",
+          "!tooltip": "A guide to Angular's animation system.",
+          "tooltip": "Angular 애니메이션 시스템에 대해 알아보세요.",
           "children": [
             {
               "url": "guide/animations",
-              "title": "Introduction",
-              "tooltip": "Basic techniques in Angular animations."
+              "!title": "Introduction",
+              "title": "소개",
+              "!tooltip": "Basic techniques in Angular animations.",
+              "tooltip": "Angular 애니메이션 기초"
             },
             {
               "url": "guide/transition-and-triggers",
-              "title": "Transition and Triggers",
-              "tooltip": "Advanced techniques in transition and triggers."
+              "!title": "Transition and Triggers",
+              "title": "트랜지션 & 트리거",
+              "!tooltip": "Advanced techniques in transition and triggers.",
+              "tooltip": "트랜지션과 트리거를 활용하는 테크닉"
             },
             {
               "url": "guide/complex-animation-sequences",
-              "title": "Complex Sequences",
-              "tooltip": "Complex Angular animation sequences."
+              "!title": "Complex Sequences",
+              "title": "복잡한 시퀀스 처리하기",
+              "!tooltip": "Complex Angular animation sequences.",
+              "tooltip": "복잡한 애니메이션 시퀀스도 구현할 수 있습니다."
             },
             {
               "url": "guide/reusable-animations",
-              "title": "Reusable Animations",
-              "tooltip": "Creating reusable animations."
+              "!title": "Reusable Animations",
+              "title": "애니메이션 재사용하기",
+              "!tooltip": "Creating reusable animations.",
+              "tooltip": "재사용할 수 있는 애니메이션을 정의해 보세요."
             },
             {
               "url": "guide/route-animations",
-              "title": "Route Transition Animations",
-              "tooltip": "Animate route transitions."
+              "!title": "Route Transition Animations",
+              "title": "페이지 전환 애니메이션",
+              "!tooltip": "Animate route transitions.",
+              "tooltip": "페이지를 전환할 때도 애니메이션을 사용할 수 있습니다."
             }
           ]
         }
@@ -537,8 +565,10 @@
         },
 
         {
-          "title": "Service Workers & PWA",
-          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "!title": "Service Workers & PWA",
+          "title": "서비스 워커 & PWA",
+          "!tooltip": "Angular service workers: Controlling caching of application resources.",
+          "tooltip": "Angular 서비스 워커: 애플리케이션 리소스를 캐싱할 수 있습니다.",
           "children": [
             {
               "url": "guide/service-worker-intro",
@@ -579,8 +609,10 @@
         },
         {
           "url": "guide/universal",
-          "title": "Server-side Rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
+          "!title": "Server-side Rendering",
+          "title": "서버 사이드 렌더링",
+          "!tooltip": "Render HTML server-side with Angular Universal.",
+          "tooltip": "Angular Universal을 사용하면 서버에 HTML 문서를 렌더링 해둘 수 있습니다."
         },
         {
           "title!": "Upgrading from AngularJS",
@@ -591,7 +623,7 @@
             {
               "url": "guide/upgrade",
               "title!": "Upgrading Instructions",
-              "title": "AngularJS 애플리케이션 업그레이드 하기",
+              "title": "AngularJS 앱 업그레이드 하기",
               "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
               "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
             },
@@ -615,8 +647,10 @@
     },
 
     {
-      "title": "Setup & Deployment",
-      "tooltip": "Setup, build, testing, and deployment environment and tool information.",
+      "!title": "Setup & Deployment",
+      "title": "환경설정 & 배포",
+      "!tooltip": "Setup, build, testing, and deployment environment and tool information.",
+      "tooltip": "개발, 빌드, 테스트, 배포 환경을 모두 구성해 보세요.",
       "children": [
 
         {
@@ -628,53 +662,73 @@
 
         {
           "url": "guide/file-structure",
-          "title": "Project File Structure",
-          "tooltip": "How your Angular workspace looks in your filesystem."
+          "!title": "Project File Structure",
+          "title": "프로젝트 파일 구성",
+          "!tooltip": "How your Angular workspace looks in your filesystem.",
+          "tooltip": "Angular 프로젝트가 어떻게 구성되는지 확인해 보세요."
         },
         {
           "url": "guide/npm-packages",
-          "title": "Packages",
-          "tooltip": "Explanation of npm packages installed into a project by default."
+          "!title": "Packages",
+          "title": "npm 패키지",
+          "!tooltip": "Explanation of npm packages installed into a project by default.",
+          "tooltip": "기본 프로젝트에 설치되는 npm 패키지에 대해 안내합니다."
         },
         {
           "url": "guide/typescript-configuration",
-          "title": "TypeScript Configuration",
-          "tooltip": "TypeScript configuration for Angular developers."
+          "!title": "TypeScript Configuration",
+          "title": "TypeScript 설정",
+          "!tooltip": "TypeScript configuration for Angular developers.",
+          "tooltip": "Angular 개발을 위한 TypeScript configuration에 대해 안내합니다."
         },
         {
           "url": "guide/aot-compiler",
-          "title": "Ahead-of-Time Compilation",
-          "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+          "!title": "Ahead-of-Time Compilation",
+          "title": "AOT 컴파일",
+          "!tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler.",
+          "tooltip": "AOT 컴파일러를 사용하는 이유와 활용 방법에 대해 안내합니다."
         },
         {
           "url": "guide/build",
-          "title": "Building & Serving",
-          "tooltip": "Building and serving Angular apps."
+          "!title": "Building & Serving",
+          "title": "프로젝트 빌드 & 개발용 서버",
+          "!tooltip": "Building and serving Angular apps.",
+          "tooltip": "Angular 앱을 개발용, 운영용으로 빌드해 보세요."
         },
         {
           "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
+          "!title": "Testing",
+          "title": "테스트",
+          "!tooltip": "Techniques and practices for testing an Angular app.",
+          "tooltip": "Angular 앱에 테스트를 적용하는 방법에 대해 안내합니다."
         },
         {
           "url": "guide/deployment",
-          "title": "Deployment",
-          "tooltip": "Learn how to deploy your Angular app."
+          "!title": "Deployment",
+          "title": "배포",
+          "!tooltip": "Learn how to deploy your Angular app.",
+          "tooltip": "Angular 앱을 배포하는 방법에 대해 안내합니다."
         },
         {
           "url": "guide/browser-support",
-          "title": "Browser Support",
-          "tooltip": "Browser support and polyfills guide."
+          "!title": "Browser Support",
+          "title": "브라우저 지원",
+          "!tooltip": "Browser support and polyfills guide.",
+          "tooltip": "지원하는 브라우저와 폴리필에 대해 안내합니다."
         },
 
         {
-          "title": "Dev Tool Integration",
-          "tooltip": "Integrate with your development environment and tools.",
+          "!title": "Dev Tool Integration",
+          "title": "개발 툴 지원",
+          "!tooltip": "Integrate with your development environment and tools.",
+          "tooltip": "개발 툴 지원 기능에 대해 안내합니다.",
           "children": [
            {
              "url": "guide/language-service",
-             "title": "Language Service",
-             "tooltip": "Use Angular Language Service to speed up dev time."
+             "!title": "Language Service",
+             "title": "언어 지원 서비스",
+             "!tooltip": "Use Angular Language Service to speed up dev time.",
+             "tooltip": "개발 효율을 향상시키는 Angular 언어 지원 서비스에 대해 알아보세요."
            },
            {
              "url": "guide/visual-studio-2015",
@@ -689,31 +743,41 @@
 
 
     {
-      "title": "Release Information",
-      "tooltip": "Angular release practices, updating, and upgrading.",
+      "!title": "Release Information",
+      "title": "릴리즈 정보",
+      "!tooltip": "Angular release practices, updating, and upgrading.",
+      "tooltip": "Angular 릴리즈에 대응하는 방법을 안내합니다.",
       "children": [
         {
           "url": "guide/updating",
-           "title": "Keeping Up-to-Date",
-           "tooltip": "Information about updating Angular applications and libraries to the latest version."
+           "!title": "Keeping Up-to-Date",
+           "title": "최신 버전 적용하기",
+           "!tooltip": "Information about updating Angular applications and libraries to the latest version.",
+           "tooltip": "Angular 프레임워크를 최신 버전으로 업데이트하는 방법을 안내합니다."
        },
         {
           "url": "guide/releases",
-          "title": "Angular Releases",
-          "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+          "!title": "Angular Releases",
+          "title": "Angular 릴리즈",
+          "!tooltip": "Angular versioning, release, support, and deprecation policies and practices.",
+          "tooltip": "Angular 버전 정책, 릴리즈 주기, 지원 정책, 지원 중단 정책에 대해 안내합니다."
         }
       ]
     },
 
     {
-      "title": "Quick Reference",
-      "tooltip": "Summaries of Angular syntax, coding, and terminology.",
+      "!title": "Quick Reference",
+      "title": "참고",
+      "!tooltip": "Summaries of Angular syntax, coding, and terminology.",
+      "tooltip": "Angular의 문법, 코딩 패턴, 기술에 대한 요약본을 제공합니다.",
       "children": [
 
         {
           "url": "guide/cheatsheet",
-          "title": "Cheat Sheet",
-          "tooltip": "A quick guide to common Angular coding techniques."
+          "!title": "Cheat Sheet",
+          "title": "치트 시트",
+          "!tooltip": "A quick guide to common Angular coding techniques.",
+          "tooltip": "Angular에서 사용하는 문법을 빠르게 훑어보세요."
         },
         {
           "url": "guide/styleguide",
@@ -732,19 +796,24 @@
       ]
     },
     {
-      "title": "CLI Commands",
-      "tooltip": "Angular CLI command reference.",
+      "!title": "CLI Commands",
+      "title": "CLI 명령",
+      "!tooltip": "Angular CLI command reference.",
+      "tooltip": "Angular CLI 명령에 대해 안내합니다.",
       "children": [
         {
-          "title": "Overview",
-          "tooltip": "An introduction to the CLI tool, commands, and syntax.",
+          "!title": "Overview",
+          "title": "개요",
+          "!tooltip": "An introduction to the CLI tool, commands, and syntax.",
+          "tooltip": "Angular CLI 사용방법을 소개합니다.",
           "url": "cli"
         }
       ]
     },
     {
       "title": "API",
-      "tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
+      "!tooltip": "Details of the Angular packages, classes, interfaces, and other types.",
+      "tooltip": "Angular 패키지, 클래스, 인터페이스, 타입 정보에 대해 알아보세요.",
       "url": "api"
     },
     {
