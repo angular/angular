@@ -2226,18 +2226,53 @@ describe('compiler compliance', () => {
       });
     });
 
-    it('should instantiate directives and pipes in a closure when they are forward referenced',
-       () => {
-         const files = {
-           app: {
-             'spec.ts': `
-            import {Component, NgModule, Pipe, Directive} from '@angular/core';
+    it('should instantiate directives in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              template: \`
+                <my-forward-directive></my-forward-directive>
+              \`
+            })
+            export class HostBindingComp {
+            }
+
+            @Directive({
+              selector: 'my-forward-directive'
+            })
+            class MyForwardDirective {}
+
+            @NgModule({declarations: [HostBindingComp, MyForwardDirective]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDefinition = `
+        …
+        directives: function () { return [MyForwardDirective]; }
+        …
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
+    });
+
+    it('should instantiate pipes in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Pipe} from '@angular/core';
 
             @Component({
               selector: 'host-binding-comp',
               template: \`
                 <div [attr.style]="{} | my_forward_pipe">...</div>
-                <my-forward-directive></my-forward-directive>
               \`
             })
             export class HostBindingComp {
@@ -2248,28 +2283,22 @@ describe('compiler compliance', () => {
             })
             class MyForwardPipe {}
 
-            @Directive({
-              selector: 'my-forward-directive'
-            })
-            class MyForwardDirective {}
-
-            @NgModule({declarations: [HostBindingComp, MyForwardPipe, MyForwardDirective]})
+            @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
             export class MyModule {}
           `
-           }
-         };
+        }
+      };
 
-         const MyAppDefinition = `
+      const MyAppDefinition = `
         …
-        directives: function () { return [MyForwardDirective]; },
         pipes: function () { return [MyForwardPipe]; }
         …
       `;
 
-         const result = compile(files, angularFiles);
-         const source = result.source;
-         expectEmit(source, MyAppDefinition, 'Invalid component definition');
-       });
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
+    });
   });
 
   describe('inherited bare classes', () => {
