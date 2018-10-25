@@ -178,8 +178,8 @@ export class R3Injector {
 
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
-      let next = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
-      return this.parent.get(token, notFoundValue);
+      const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
+      return nextInjector.get(token, notFoundValue);
     } finally {
       // Lastly, clean up the state by restoring the previous injector.
       setCurrentInjector(previousInjector);
