@@ -131,7 +131,7 @@ jobs:
 
       - run: bazel run @yarn//:yarn
       - *setup_bazel_remote_execution
-      - run: bazel test //... --define=compile=jit --build_tag_filters=ivy-jit --test_tag_filters=ivy-jit
+      - run: bazel test //... --define=compile=jit --build_tag_filters=-no-ivy-jit,-fixme-ivy-jit --test_tag_filters=-no-ivy-jit,-fixme-ivy-jit
 
   test_ivy_aot:
     <<: *job_defaults
@@ -144,7 +144,7 @@ jobs:
 
       - run: bazel run @yarn//:yarn
       - *setup_bazel_remote_execution
-      - run: bazel test //... --define=compile=aot --build_tag_filters=ivy-aot --test_tag_filters=ivy-aot
+      - run: bazel test //... --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot
 
   test_aio:
     <<: *job_defaults
