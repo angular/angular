@@ -5,20 +5,30 @@ set -eu -o pipefail
 readonly PROJECT_NAME="angular-payload-size"
 NODE_MODULES_BIN=$PROJECT_ROOT/node_modules/.bin/
 
+# Get the gzip size of a file with the specified compression level.
+#   $1: string - The file path.
+#   $2: number - The level of compression.
+getGzipSize() {
+  local filePath=$1
+  local compLevel=$2
+  local compPath=$1$2.gz
+  local size=-1
+
+  gzip -c -$compLevel "$filePath" >> "$compPath"
+  size=$(stat -c%s "$compPath")
+  rm "$compPath"
+
+  echo $size
+}
+
 # Calculate the size of target file uncompressed size, gzip7 size, gzip9 size
 # Write to global variable $payloadData, $filename
 calculateSize() {
-  size["uncompressed"]=$(stat -c%s "$filename")
   label=$(echo "$filename" | sed "s/.*\///" | sed "s/\..*//")
-  payloadData="$payloadData\"uncompressed/$label\": ${size["uncompressed"]}, "
 
-  gzip -7 $filename -c >> "${filename}7.gz"
-  size["gzip7"]=$(stat -c%s "${filename}7.gz")
-  payloadData="$payloadData\"gzip7/$label\": ${size["gzip7"]}, "
-
-  gzip -9 $filename -c >> "${filename}9.gz"
-  size["gzip9"]=$(stat -c%s "${filename}9.gz")
-  payloadData="$payloadData\"gzip9/$label\": ${size["gzip9"]}, "
+  payloadData="$payloadData\"uncompressed/$label\": $(stat -c%s "$filename"), "
+  payloadData="$payloadData\"gzip7/$label\": $(getGzipSize "$filename" 7), "
+  payloadData="$payloadData\"gzip9/$label\": $(getGzipSize "$filename" 9), "
 }
 
 # Check whether the file size is under limit.
@@ -120,7 +130,6 @@ trackPayloadSize() {
 
   # Calculate the file sizes.
   for filename in $path; do
-    declare -A size
     calculateSize
   done
 
