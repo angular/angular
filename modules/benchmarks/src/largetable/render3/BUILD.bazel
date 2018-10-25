@@ -29,6 +29,8 @@ ng_rollup_bundle(
     tags = ["ivy-only"],
     deps = [
         ":largetable_lib",
+        # TODO: why do we need reflect-metadata here?
+        "@ngdeps//reflect-metadata",
     ],
 )
 
