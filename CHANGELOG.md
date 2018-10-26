@@ -1,3 +1,29 @@
+<a name="7.0.2"></a>
+## 7.0.2 limestone-linguine (2018-10-26)
+
+
+### Bug Fixes
+
+* **build:** material not working with ES2015 ([#13709](https://github.com/angular/material2/issues/13709)) ([e9103a6](https://github.com/angular/material2/commit/e9103a6)), closes [#12760](https://github.com/angular/material2/issues/12760) [#13695](https://github.com/angular/material2/issues/13695)
+* **button-toggle:** webkit tap highlight conflicting with ripples ([#13721](https://github.com/angular/material2/issues/13721)) ([abd0278](https://github.com/angular/material2/commit/abd0278))
+* **cdk-platform:** pass `{}` to `@NgModule` since passing nothing breaks ([#13792](https://github.com/angular/material2/issues/13792)) ([5abb644](https://github.com/angular/material2/commit/5abb644))
+* **checkbox:** disabled property not being coerced ([#13755](https://github.com/angular/material2/issues/13755)) ([cee8c65](https://github.com/angular/material2/commit/cee8c65)), closes [#13739](https://github.com/angular/material2/issues/13739)
+* **expansion-panel:** don't handle enter/space if modifier is pressed ([#13790](https://github.com/angular/material2/issues/13790)) ([3e6cc77](https://github.com/angular/material2/commit/3e6cc77)), closes [#13783](https://github.com/angular/material2/issues/13783)
+* **radio:** don't show hover ripples on touch devices ([#13701](https://github.com/angular/material2/issues/13701)) ([b89c139](https://github.com/angular/material2/commit/b89c139)), closes [#13675](https://github.com/angular/material2/issues/13675)
+* **slide-toggle:** don't show hover ripples on touch devices ([#13702](https://github.com/angular/material2/issues/13702)) ([9d495f1](https://github.com/angular/material2/commit/9d495f1)), closes [#13675](https://github.com/angular/material2/issues/13675)
+* **stepper:** incorrect border color in dark theme for header with label position ([#13791](https://github.com/angular/material2/issues/13791)) ([afa5a28](https://github.com/angular/material2/commit/afa5a28))
+* **stepper:** selector assuming that there will always be a dir attribute ([#13751](https://github.com/angular/material2/issues/13751)) ([576118e](https://github.com/angular/material2/commit/576118e)), closes [#13741](https://github.com/angular/material2/issues/13741)
+* **stroked-button:** ripples and focus overlay have incorrect radius ([#13745](https://github.com/angular/material2/issues/13745)) ([7877404](https://github.com/angular/material2/commit/7877404)), closes [#13738](https://github.com/angular/material2/issues/13738)
+* **tooltip:** add fallback for touch devices if Hammer isn't loaded ([#13580](https://github.com/angular/material2/issues/13580)) ([9ae6c84](https://github.com/angular/material2/commit/9ae6c84)), closes [#13536](https://github.com/angular/material2/issues/13536)
+
+
+### Features
+
+* **drag-utils:** add utility function for cloning array items from one array to another ([#13743](https://github.com/angular/material2/issues/13743)) ([13395c5](https://github.com/angular/material2/commit/13395c5)), closes [#13100](https://github.com/angular/material2/issues/13100)
+* **ng-add:** add preview URLs for theme choices ([#13723](https://github.com/angular/material2/issues/13723)) ([f1d1fc5](https://github.com/angular/material2/commit/f1d1fc5)), closes [/github.com/angular/angular-cli/blob/907ce5c94c774147c4b52870b3522aed4e087c76/packages/schematics/angular/ng-new/schema.json#L121](https://github.com//github.com/angular/angular-cli/blob/907ce5c94c774147c4b52870b3522aed4e087c76/packages/schematics/angular/ng-new/schema.json/issues/L121) [#13708](https://github.com/angular/material2/issues/13708)
+
+
+
 <a name="7.0.1"></a>
 ## 7.0.1 emerald-egret (2018-10-22)
 
