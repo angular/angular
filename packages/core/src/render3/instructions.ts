@@ -23,7 +23,7 @@ import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} fro
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_SIZE, NodeInjectorFactory} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
@@ -105,8 +105,9 @@ export function setHostBindings(tView: TView, viewData: LViewData): void {
           // Negative numbers mean that we are starting new EXPANDO block and need to update
           // the current element and directive index.
           currentElementIndex = -instruction;
-          // Injector block is taken into account.
-          bindingRootIndex += INJECTOR_SIZE;
+          // Injector block and providers are taken into account.
+          const providerCount = (tView.expandoInstructions[++i] as number);
+          bindingRootIndex += INJECTOR_SIZE + providerCount;
 
           currentDirectiveIndex = bindingRootIndex;
         } else {
@@ -1296,14 +1297,15 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  */
 export function instantiateRootComponent<T>(
     tView: TView, viewData: LViewData, def: ComponentDef<T>): T {
-  if (getFirstTemplatePass()) {
+  const rootTNode = getPreviousOrParentTNode();
+  if (tView.firstTemplatePass) {
     if (def.providersResolver) def.providersResolver(def);
+    generateExpandoInstructionBlock(tView, rootTNode, 1);
     baseResolveDirective(tView, viewData, def, def.factory);
   }
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const directive = getNodeInjectable(
-      tView.data, viewData, viewData.length - 1, previousOrParentTNode as TElementNode);
-  postProcessBaseDirective(viewData, previousOrParentTNode, directive, def as DirectiveDef<T>);
+  const directive =
+      getNodeInjectable(tView.data, viewData, viewData.length - 1, rootTNode as TElementNode);
+  postProcessBaseDirective(viewData, rootTNode, directive, def as DirectiveDef<T>);
   return directive;
 }
 
@@ -1316,7 +1318,6 @@ function resolveDirectives(
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
   ngDevMode && assertEqual(getFirstTemplatePass(), true, 'should run on first template pass only');
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
-  generateExpandoInstructionBlock(tView, tNode, directives);
   let totalHostVars = 0;
   if (directives) {
     initNodeFlags(tNode, tView.data.length, directives.length);
@@ -1330,6 +1331,7 @@ function resolveDirectives(
       const def = directives[i] as DirectiveDef<any>;
       if (def.providersResolver) def.providersResolver(def);
     }
+    generateExpandoInstructionBlock(tView, tNode, directives.length);
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
@@ -1375,14 +1377,17 @@ function instantiateAllDirectives(tView: TView, viewData: LViewData, previousOrP
 * Each expando block starts with the element index (turned negative so we can distinguish
 * it from the hostVar count) and the directive count. See more in VIEW_DATA.md.
 */
-function generateExpandoInstructionBlock(
-    tView: TView, tNode: TNode, directives: DirectiveDef<any>[] | null): void {
-  const directiveCount = directives ? directives.length : 0;
+export function generateExpandoInstructionBlock(
+    tView: TView, tNode: TNode, directiveCount: number): void {
+  ngDevMode && assertEqual(
+                   tView.firstTemplatePass, true,
+                   'Expando block should only be generated on first template pass.');
+
   const elementIndex = -(tNode.index - HEADER_OFFSET);
-  if (directiveCount > 0) {
-    (tView.expandoInstructions || (tView.expandoInstructions = [
-     ])).push(elementIndex, directiveCount);
-  }
+  const providerStartIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+  const providerCount = tView.data.length - providerStartIndex;
+  (tView.expandoInstructions || (tView.expandoInstructions = [
+   ])).push(elementIndex, providerCount, directiveCount);
 }
 
 /**
