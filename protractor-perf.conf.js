@@ -18,7 +18,7 @@ const BASE = isBazel ? 'angular/modules' : 'dist/all';
 require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
 
 var CHROME_OPTIONS = {
-  'args': ['--js-flags=--expose-gc', '--no-sandbox'],
+  'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
   'perfLoggingPrefs': {
     'traceCategories':
         'v8,blink.console,devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing'
