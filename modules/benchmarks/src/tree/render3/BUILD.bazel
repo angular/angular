@@ -17,6 +17,7 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//reflect-metadata",
     ],
 )
 
@@ -61,7 +62,6 @@ protractor_web_test(
         "//modules/benchmarks/src/tree:perf_lib",
         "@ngdeps//node-uuid",
         "@ngdeps//protractor",
-        "@ngdeps//reflect-metadata",
         "@ngdeps//yargs",
     ],
 )
