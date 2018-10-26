@@ -18,7 +18,7 @@ jasmine_node_test(
         "angular/packages/core/test/render3/load_domino",
     ],
     tags = [
-        "ivy-jit",
+        "ivy-only",
     ],
     deps = [
         ":ivy_lib",

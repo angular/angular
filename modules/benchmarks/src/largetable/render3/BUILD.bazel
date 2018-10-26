@@ -17,7 +17,7 @@ ts_library(
         "//modules/benchmarks/src/largetable:util_lib",
         "//packages:types",
         "//packages/core",
-        "@rxjs",
+        "@ngdeps//reflect-metadata",
     ],
 )
 
