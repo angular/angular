@@ -92,10 +92,10 @@ describe('host', () => {
   it('should support host bindings on nodes with providers', () => {
 
     class ServiceOne {
-      value = 'one'
+      value = 'one';
     }
     class ServiceTwo {
-      value = 'two'
+      value = 'two';
     }
 
     class CompWithProviders {
