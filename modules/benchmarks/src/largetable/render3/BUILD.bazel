@@ -59,7 +59,11 @@ protractor_web_test(
     ],
     on_prepare = ":protractor.on-prepare.js",
     server = ":devserver",
-    tags = ["manual"],
+    tags = [
+        "fixme-ivy-aot",
+        "fixme-ivy-jit",
+        "ivy-only",
+    ],
     deps = [
         "//modules/benchmarks/src/largetable:perf_lib",
     ],
