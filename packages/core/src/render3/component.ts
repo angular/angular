@@ -28,9 +28,6 @@ import {enterView, leaveView, resetComponentState} from './state';
 import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
-// Root component will always have an element index of 0 and an injector size of 1
-const ROOT_EXPANDO_INSTRUCTIONS = [0, 1];
-
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
   /** Which renderer factory to use. */
@@ -171,7 +168,6 @@ export function createRootComponentView(
   const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
 
   if (tView.firstTemplatePass) {
-    tView.expandoInstructions = ROOT_EXPANDO_INSTRUCTIONS.slice();
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
     tNode.flags = TNodeFlags.isComponent;
     initNodeFlags(tNode, rootView.length, 1);
