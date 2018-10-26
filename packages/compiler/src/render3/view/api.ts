@@ -86,7 +86,7 @@ export interface R3DirectiveMetadata {
   /**
    * A mapping of input field names to the property names.
    */
-  inputs: {[field: string]: string};
+  inputs: {[field: string]: string | string[]};
 
   /**
    * A mapping of output field names to the property names.

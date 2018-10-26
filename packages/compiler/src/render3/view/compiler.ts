@@ -528,7 +528,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string}): o.Type {
+function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
   const mapValues = Object.keys(map).map(key => ({
                                            key,
                                            value: o.literal(map[key]),

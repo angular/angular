@@ -110,12 +110,14 @@ export function extractDirectiveMetadata(
   // fields.
   const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', reflector, checker);
   const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), reflector, checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), reflector, checker,
+      resolveInput);
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', reflector, checker);
   const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), reflector, checker);
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), reflector, checker,
+      resolveOutput) as{[field: string]: string};
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -330,7 +332,8 @@ function parseFieldToPropertyMapping(
  */
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
-    checker: ts.TypeChecker): {[field: string]: string} {
+    checker: ts.TypeChecker, mapValueResolver: (publicName: string, internalName: string) =>
+                                 string | string[]): {[field: string]: string | string[]} {
   return fields.reduce(
       (results, field) => {
         const fieldName = field.member.name;
@@ -344,7 +347,7 @@ function parseDecoratedFields(
             if (typeof property !== 'string') {
               throw new Error(`Decorator argument must resolve to a string`);
             }
-            results[fieldName] = property;
+            results[fieldName] = mapValueResolver(property, fieldName);
           } else {
             // Too many arguments.
             throw new Error(
@@ -353,7 +356,15 @@ function parseDecoratedFields(
         });
         return results;
       },
-      {} as{[field: string]: string});
+      {} as{[field: string]: string | string[]});
+}
+
+function resolveInput(publicName: string, internalName: string) {
+  return [publicName, internalName];
+}
+
+function resolveOutput(publicName: string, internalName: string) {
+  return publicName;
 }
 
 export function queriesFromFields(
