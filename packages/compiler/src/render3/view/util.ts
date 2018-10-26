@@ -67,8 +67,8 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(keys: {[key: string]: string}): o.Expression|
-    null {
+export function conditionallyCreateMapObjectLiteral(keys: {[key: string]: string | string[]}):
+    o.Expression|null {
   if (Object.getOwnPropertyNames(keys).length > 0) {
     return mapToExpression(keys);
   }
