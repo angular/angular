@@ -7,6 +7,10 @@ load("//tools/http-server:http_server.bzl", "http_server")
 ng_module(
     name = "hello_world",
     srcs = ["index.ts"],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages/core",
         "//packages/platform-browser-dynamic",
@@ -22,6 +26,10 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/hello_world_r2/index.js",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         ":hello_world",
         "//packages/core",
@@ -33,6 +41,10 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages:types",
         "//packages/core/testing",
@@ -48,6 +60,10 @@ jasmine_node_test(
         ":bundle.min.js.br",
         ":bundle.min_debug.js",
     ],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [":test_lib"],
 )
 
@@ -55,6 +71,10 @@ js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
 )
 
 http_server(
@@ -63,5 +83,9 @@ http_server(
         "index.html",
         ":bundle.min.js",
         ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
     ],
 )

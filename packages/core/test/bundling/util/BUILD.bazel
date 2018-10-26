@@ -12,6 +12,7 @@ ts_library(
         ":metadata_switch",
     ],
     module_name = "@angular/core/test/bundling/util/src/reflect_metadata",
+    deps = ["@ngdeps//reflect-metadata"],
 )
 
 # See packages/core/BUILD.bazel.
