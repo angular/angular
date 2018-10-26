@@ -32,11 +32,11 @@ For example:
 
 The base file `environment.ts`, contains the default environment settings. For example:
 
-<code-example language="none" class="code-shell">
+```
 export const environment = {
   production: false
 };
-</code-example>
+```
 
 The `build` command uses this as the build target when no environment is specified. 
 You can add further variables, either as additional properties on the environment object, or as separate objects. 
@@ -144,7 +144,11 @@ You can add additional configurations as required. To add a staging environment,
 You can add more configuration options to this target environment as well. 
 Any option that your build supports can be overridden in a build target configuration.
 
-To build using the staging configuration, run `ng build --configuration=staging`.
+To build using the staging configuration, run the following command:
+
+<code-example language="sh" class="code-shell">
+ ng build --configuration=staging
+</code-example>
 
 You can also configure the `serve` command to use the targeted build configuration if you add it to the "serve:configurations" section of `angular.json`:
 
