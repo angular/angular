@@ -12,7 +12,7 @@ import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 
@@ -250,6 +250,33 @@ ivyEnabled && describe('render3 jit', () => {
 
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
     expect(pipeDef.pure).toBe(true, 'pipe should be pure');
+  });
+
+  it('should add @Input properties to a component', () => {
+    @Component({
+      selector: 'input-comp',
+      template: 'test',
+    })
+    class InputComp {
+      @Input('publicName') privateName = 'name1';
+    }
+
+    const InputCompAny = InputComp as any;
+    expect(InputCompAny.ngComponentDef.inputs).toEqual({publicName: 'privateName'});
+    expect(InputCompAny.ngComponentDef.declaredInputs).toEqual({privateName: 'privateName'});
+  });
+
+  it('should add @Input properties to a directive', () => {
+    @Directive({
+      selector: '[dir]',
+    })
+    class InputDir {
+      @Input('publicName') privateName = 'name1';
+    }
+
+    const InputDirAny = InputDir as any;
+    expect(InputDirAny.ngDirectiveDef.inputs).toEqual({publicName: 'privateName'});
+    expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({privateName: 'privateName'});
   });
 
   it('should add ngBaseDef to types with @Input properties', () => {

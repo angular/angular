@@ -532,12 +532,15 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string}): o.Type {
-  const mapValues = Object.keys(map).map(key => ({
-                                           key,
-                                           value: o.literal(map[key]),
-                                           quoted: true,
-                                         }));
+function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
+  const mapValues = Object.keys(map).map(key => {
+    const value = Array.isArray(map[key]) ? map[key][0] : map[key];
+    return {
+      key,
+      value: o.literal(value),
+      quoted: true,
+    };
+  });
   return o.expressionType(o.literalMap(mapValues));
 }
 
