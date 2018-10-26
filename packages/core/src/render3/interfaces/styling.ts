@@ -196,7 +196,7 @@ export const enum StylingFlags {
   // The max amount of bits used to represent these configuration values
   BitCountSize = 5,
   // There are only five bits here
-  BitMask = 0b1111
+  BitMask = 0b11111
 }
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
