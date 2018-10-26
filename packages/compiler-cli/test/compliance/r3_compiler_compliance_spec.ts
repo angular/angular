@@ -1887,7 +1887,7 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
-            inputs: {nameMin: "name"},
+            inputs: {nameMin: ["name", "nameMin"]},
             features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
@@ -2301,7 +2301,7 @@ describe('compiler compliance', () => {
     });
   });
 
-  describe('inherited bare classes', () => {
+  describe('inherited base classes', () => {
     it('should add ngBaseDef if one or more @Input is present', () => {
       const files = {
         app: {

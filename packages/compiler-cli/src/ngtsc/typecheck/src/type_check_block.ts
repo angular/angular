@@ -518,7 +518,10 @@ function tcbGetInputBindingExpressions(
   // is desired. Invert `dir.inputs` into `propMatch` to create this map.
   const propMatch = new Map<string, string>();
   const inputs = dir.inputs;
-  Object.keys(inputs).forEach(key => propMatch.set(inputs[key], key));
+  Object.keys(inputs).forEach(key => {
+    Array.isArray(inputs[key]) ? propMatch.set(inputs[key][0], key) :
+                                 propMatch.set(inputs[key] as string, key);
+  });
 
   // Add a binding expression to the map for each input of the directive that has a
   // matching binding.

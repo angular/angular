@@ -153,13 +153,14 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
   const inputsFromMetadata = parseInputOutputs(metadata.inputs || []);
   const outputsFromMetadata = parseInputOutputs(metadata.outputs || []);
 
-  const inputsFromType: StringMap = {};
+  const inputsFromType: {[key: string]: string | string[]} = {};
   const outputsFromType: StringMap = {};
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isInput(ann)) {
-          inputsFromType[field] = ann.bindingPropertyName || field;
+          inputsFromType[field] =
+              ann.bindingPropertyName ? [ann.bindingPropertyName, field] : field;
         } else if (isOutput(ann)) {
           outputsFromType[field] = ann.bindingPropertyName || field;
         }
