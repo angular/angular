@@ -8,7 +8,10 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 ng_module(
     name = "todo",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages/common",
         "//packages/core",
@@ -27,7 +30,10 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/todo_r2/index.js",
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         ":todo",
         "//packages/common",
@@ -35,7 +41,6 @@ ng_rollup_bundle(
         "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
-        "@ngdeps//reflect-metadata",
     ],
 )
 
@@ -43,6 +48,10 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages:types",
         "//packages/core",
@@ -63,6 +72,7 @@ jasmine_node_test(
     ],
     tags = [
         "ivy-only",
+        "no-ivy-jit",
     ],
     deps = [":test_lib"],
 )
@@ -74,6 +84,7 @@ js_expected_symbol_test(
     tags = [
         "ivy-aot",
         "ivy-only",
+        "no-ivy-jit",
     ],
 )
 
@@ -86,6 +97,10 @@ genrule(
         "tslib.js",
     ],
     cmd = "cp $< $@",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
 )
 
 ts_devserver(
@@ -98,6 +113,10 @@ ts_devserver(
         "todo.css",
         "base.css",
     ],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [":todo"],
 )
 
@@ -109,5 +128,9 @@ http_server(
         "todo.css",
         ":bundle.min.js.br",
         ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
     ],
 )

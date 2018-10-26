@@ -25,7 +25,6 @@ ng_package(
     srcs = ["package.json"],
     entry_point = "packages/platform-webworker-dynamic/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
     deps = [":platform-webworker-dynamic"],

@@ -19,6 +19,7 @@ ng_module(
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//reflect-metadata",
     ],
 )
 
