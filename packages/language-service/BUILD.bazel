@@ -25,7 +25,6 @@ npm_package(
     name = "npm_package",
     srcs = ["package.json"],
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
     deps = [

@@ -9,6 +9,10 @@ ts_library(
         "index.ts",
         "usage.ts",
     ],
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages/core",
     ],
@@ -23,6 +27,10 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/injection/index.js",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         ":injection",
         "//packages/core",
@@ -33,6 +41,10 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [
         ":injection",
         "//packages:types",
@@ -43,6 +55,10 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
     deps = [":test_lib"],
 )
 
@@ -50,4 +66,8 @@ js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
+    tags = [
+        "ivy-only",
+        "no-ivy-jit",
+    ],
 )
