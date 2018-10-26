@@ -105,9 +105,6 @@
     "name": "RENDER_PARENT"
   },
   {
-    "name": "ROOT_EXPANDO_INSTRUCTIONS"
-  },
-  {
     "name": "SANITIZER"
   },
   {
@@ -217,6 +214,9 @@
   },
   {
     "name": "firstTemplatePass"
+  },
+  {
+    "name": "generateExpandoInstructionBlock"
   },
   {
     "name": "getBeforeNodeForView"
