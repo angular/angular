@@ -1398,9 +1398,6 @@
     "name": "ROOT_CONTEXT"
   },
   {
-    "name": "ROOT_EXPANDO_INSTRUCTIONS"
-  },
-  {
     "name": "ReadKeyExpr"
   },
   {
@@ -3319,6 +3316,9 @@
   },
   {
     "name": "fromPromise"
+  },
+  {
+    "name": "generateExpandoInstructionBlock"
   },
   {
     "name": "getAllLifecycleHooks"
