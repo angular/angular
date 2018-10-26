@@ -120,6 +120,15 @@
     "name": "ViewEncapsulation"
   },
   {
+    "name": "__self"
+  },
+  {
+    "name": "__window"
+  },
+  {
+    "name": "_global"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -181,6 +190,9 @@
   },
   {
     "name": "createViewQuery"
+  },
+  {
+    "name": "defaultScheduler"
   },
   {
     "name": "defineComponent"
@@ -304,6 +316,12 @@
   },
   {
     "name": "getRendererFactory"
+  },
+  {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
   },
   {
     "name": "getTView"
