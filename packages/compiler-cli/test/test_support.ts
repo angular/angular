@@ -136,7 +136,7 @@ export function setupBazelTo(basePath: string) {
   }
 
   // Link typescript
-  const typescriptSource = path.join(sources, 'angular/external/ngdeps/node_modules/typescript');
+  const typescriptSource = path.join(sources, 'ngdeps/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
   if (fs.existsSync(typescriptSource)) {
     fs.symlinkSync(typescriptSource, typescriptDest);

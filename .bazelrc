@@ -24,6 +24,10 @@ build --symlink_prefix=/
 # Performance: avoid stat'ing input files
 build --watchfs
 
+# Turn off legacy external runfiles
+run --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+
 ###############################
 # Release support             #
 ###############################
