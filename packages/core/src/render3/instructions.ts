@@ -1161,8 +1161,9 @@ export function elementStyling(
  */
 export function elementStylingApply(index: number): void {
   const viewData = getViewData();
-  const totalPlayersQueued =
-      renderStyleAndClassBindings(getStylingContext(index, viewData), getRenderer(), viewData);
+  const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
+  const totalPlayersQueued = renderStyleAndClassBindings(
+      getStylingContext(index, viewData), getRenderer(), viewData, isFirstRender);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(viewData);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);

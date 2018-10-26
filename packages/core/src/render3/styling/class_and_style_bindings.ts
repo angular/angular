@@ -480,8 +480,10 @@ export function updateClassProp(
  */
 export function renderStyleAndClassBindings(
     context: StylingContext, renderer: Renderer3, rootOrView: RootContext | LViewData,
-    classesStore?: BindingStore | null, stylesStore?: BindingStore | null): number {
+    isFirstRender: boolean, classesStore?: BindingStore | null,
+    stylesStore?: BindingStore | null): number {
   let totalPlayersQueued = 0;
+
   if (isContextDirty(context)) {
     const flushPlayerBuilders: any =
         context[StylingIndex.MasterFlagPosition] & StylingFlags.PlayerBuildersDirty;
@@ -523,15 +525,23 @@ export function renderStyleAndClassBindings(
           valueToApply = getInitialValue(context, flag);
         }
 
-        if (isClassBased) {
-          setClass(
-              native, prop, valueToApply ? true : false, renderer, classesStore, playerBuilder);
-        } else {
-          const sanitizer = (flag & StylingFlags.Sanitize) ? styleSanitizer : null;
-          setStyle(
-              native, prop, valueToApply as string | null, renderer, sanitizer, stylesStore,
-              playerBuilder);
+        // if the first render is true then we do not want to start applying falsy
+        // values to the DOM element's styling. Otherwise then we know there has
+        // been a change and even if it's falsy then it's removing something that
+        // was truthy before.
+        const doApplyValue = isFirstRender ? valueToApply : true;
+        if (doApplyValue) {
+          if (isClassBased) {
+            setClass(
+                native, prop, valueToApply ? true : false, renderer, classesStore, playerBuilder);
+          } else {
+            const sanitizer = (flag & StylingFlags.Sanitize) ? styleSanitizer : null;
+            setStyle(
+                native, prop, valueToApply as string | null, renderer, sanitizer, stylesStore,
+                playerBuilder);
+          }
         }
+
         setDirty(context, i, false);
       }
     }
@@ -547,7 +557,7 @@ export function renderStyleAndClassBindings(
         const playerInsertionIndex = i + PlayerIndex.PlayerOffsetPosition;
         const oldPlayer = playerContext[playerInsertionIndex] as Player | null;
         if (builder) {
-          const player = builder.buildPlayer(oldPlayer);
+          const player = builder.buildPlayer(oldPlayer, isFirstRender);
           if (player !== undefined) {
             if (player != null) {
               const wasQueued = addPlayerInternal(
@@ -924,13 +934,13 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
     }
   }
 
-  buildPlayer(currentPlayer?: Player|null): Player|undefined|null {
+  buildPlayer(currentPlayer: Player|null, isFirstRender: boolean): Player|undefined|null {
     // if no values have been set here then this means the binding didn't
     // change and therefore the binding values were not updated through
     // `setValue` which means no new player will be provided.
     if (this._dirty) {
-      const player =
-          this._factory.fn(this._element, this._type, this._values !, currentPlayer || null);
+      const player = this._factory.fn(
+          this._element, this._type, this._values !, isFirstRender, currentPlayer || null);
       this._values = {};
       this._dirty = false;
       return player;

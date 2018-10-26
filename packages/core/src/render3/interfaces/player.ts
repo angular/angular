@@ -21,8 +21,8 @@ export interface Player {
 
 export const enum BindingType {
   Unset = 0,
-  Class = 2,
-  Style = 3,
+  Class = 1,
+  Style = 2,
 }
 
 export interface BindingStore { setValue(prop: string, value: any): void; }
@@ -35,7 +35,7 @@ export interface BindingStore { setValue(prop: string, value: any): void; }
  * to be used with `PlayerFactory`.
  */
 export interface PlayerFactoryBuildFn {
-  (element: HTMLElement, type: BindingType, values: {[key: string]: any},
+  (element: HTMLElement, type: BindingType, values: {[key: string]: any}, isFirstRender: boolean,
    currentPlayer: Player|null): Player|null;
 }
 
@@ -53,7 +53,7 @@ export interface PlayerFactoryBuildFn {
 export interface PlayerFactory { '__brand__': 'Brand for PlayerFactory that nothing will match'; }
 
 export interface PlayerBuilder extends BindingStore {
-  buildPlayer(currentPlayer: Player|null): Player|undefined|null;
+  buildPlayer(currentPlayer: Player|null, isFirstRender: boolean): Player|undefined|null;
 }
 
 /**

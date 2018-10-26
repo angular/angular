@@ -48,48 +48,55 @@ describe('style and class based bindings', () => {
     return lViewData[CONTEXT] as RootContext;
   }
 
-  function renderStyles(context: StylingContext, renderer?: Renderer3, lViewData?: LViewData) {
+  function renderStyles(
+      context: StylingContext, firstRender?: boolean, renderer?: Renderer3, lViewData?: LViewData) {
     const store = new MockStylingStore(element as HTMLElement, BindingType.Style);
     const handler = new CorePlayerHandler();
     _renderStyling(
         context, (renderer || {}) as Renderer3,
-        getRootContextInternal(lViewData || createMockViewData(handler, context)), null, store);
+        getRootContextInternal(lViewData || createMockViewData(handler, context)), !!firstRender,
+        null, store);
     return store.getValues();
   }
 
-  function trackStylesFactory() {
-    const store = new MockStylingStore(element as HTMLElement, BindingType.Style);
+  function trackStylesFactory(store?: MockStylingStore) {
+    store = store || new MockStylingStore(element as HTMLElement, BindingType.Style);
     const handler = new CorePlayerHandler();
-    return function(context: StylingContext, renderer?: Renderer3): {[key: string]: any} {
-      const lViewData = createMockViewData(handler, context);
-      _renderStyling(
-          context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData), null, store);
-      return store.getValues();
-    };
+    return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
+        {[key: string]: any} {
+          const lViewData = createMockViewData(handler, context);
+          _renderStyling(
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
+              !!firstRender, null, store);
+          return store !.getValues();
+        };
   }
 
-  function trackClassesFactory() {
-    const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
+  function trackClassesFactory(store?: MockStylingStore) {
+    store = store || new MockStylingStore(element as HTMLElement, BindingType.Class);
     const handler = new CorePlayerHandler();
-    return function(context: StylingContext, renderer?: Renderer3): {[key: string]: any} {
-      const lViewData = createMockViewData(handler, context);
-      _renderStyling(
-          context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData), store);
-      return store.getValues();
-    };
+    return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
+        {[key: string]: any} {
+          const lViewData = createMockViewData(handler, context);
+          _renderStyling(
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
+              !!firstRender, store);
+          return store !.getValues();
+        };
   }
 
   function trackStylesAndClasses() {
     const classStore = new MockStylingStore(element as HTMLElement, BindingType.Class);
     const styleStore = new MockStylingStore(element as HTMLElement, BindingType.Style);
     const handler = new CorePlayerHandler();
-    return function(context: StylingContext, renderer?: Renderer3): {[key: string]: any} {
-      const lViewData = createMockViewData(handler, context);
-      _renderStyling(
-          context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData), classStore,
-          styleStore);
-      return [classStore.getValues(), styleStore.getValues()];
-    };
+    return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
+        {[key: string]: any} {
+          const lViewData = createMockViewData(handler, context);
+          _renderStyling(
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
+              !!firstRender, classStore, styleStore);
+          return [classStore.getValues(), styleStore.getValues()];
+        };
   }
 
   function updateClasses(context: StylingContext, classes: string | {[key: string]: any} | null) {
@@ -234,7 +241,7 @@ describe('style and class based bindings', () => {
           height: '100px',
         });
         updateStyles(stylingContext, {height: '200px'});
-        expect(getStyles(stylingContext)).toEqual({width: null, height: '200px'});
+        expect(getStyles(stylingContext, true)).toEqual({height: '200px'});
       });
 
       it('should evaluate the delta between style changes when rendering occurs', () => {
@@ -1029,6 +1036,32 @@ describe('style and class based bindings', () => {
          });
     });
 
+    it('should skip issuing style updates if there is nothing to update upon first render', () => {
+      const stylingContext = initContext([InitialStylingFlags.VALUES_MODE, 'color', '']);
+      const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
+      const getStyles = trackStylesFactory(store);
+
+      let styles: any = {fontSize: ''};
+      updateStyleProp(stylingContext, 0, '');
+      updateStylingMap(stylingContext, null, styles);
+
+      getStyles(stylingContext, true);
+      expect(store.getValues()).toEqual({});
+
+      styles = {fontSize: '20px'};
+      updateStyleProp(stylingContext, 0, 'red');
+      updateStylingMap(stylingContext, null, styles);
+
+      getStyles(stylingContext);
+      expect(store.getValues()).toEqual({fontSize: '20px', color: 'red'});
+
+      styles = {};
+      updateStyleProp(stylingContext, 0, '');
+      updateStylingMap(stylingContext, null, styles);
+
+      getStyles(stylingContext);
+      expect(store.getValues()).toEqual({fontSize: null, color: ''});
+    });
   });
 
   describe('classes', () => {
@@ -1447,6 +1480,34 @@ describe('style and class based bindings', () => {
       // apply the styles
       expect(getClasses(stylingContext)).toEqual({apple: true, orange: true, banana: true});
     });
+
+    it('should skip issuing class updates if there is nothing to update upon first render', () => {
+      const stylingContext = initContext(null, [InitialStylingFlags.VALUES_MODE, 'blue', false]);
+      const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
+      const getClasses = trackClassesFactory(store);
+
+      let classes: any = {red: false};
+      updateClassProp(stylingContext, 0, false);
+      updateStylingMap(stylingContext, classes);
+
+      // apply the styles
+      getClasses(stylingContext, true);
+      expect(store.getValues()).toEqual({});
+
+      classes = {red: true};
+      updateClassProp(stylingContext, 0, true);
+      updateStylingMap(stylingContext, classes);
+
+      getClasses(stylingContext);
+      expect(store.getValues()).toEqual({red: true, blue: true});
+
+      classes = {red: false};
+      updateClassProp(stylingContext, 0, false);
+      updateStylingMap(stylingContext, classes);
+
+      getClasses(stylingContext);
+      expect(store.getValues()).toEqual({red: false, blue: false});
+    });
   });
 
   describe('players', () => {
@@ -1457,20 +1518,22 @@ describe('style and class based bindings', () => {
       const classes = 'foo bar';
 
       let classResult: any;
-      const classFactory =
-          bindPlayerFactory((element: HTMLElement, type: BindingType, value: any) => {
+      const classFactory = bindPlayerFactory(
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean) => {
             const player = new MockPlayer();
             classResult = {player, element, type, value};
             return player;
-          }, classes);
+          },
+          classes);
 
       let styleResult: any;
-      const styleFactory =
-          bindPlayerFactory((element: HTMLElement, type: BindingType, value: any) => {
+      const styleFactory = bindPlayerFactory(
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean) => {
             const player = new MockPlayer();
             styleResult = {player, element, type, value};
             return player;
-          }, styles);
+          },
+          styles);
 
       updateStylingMap(context, classFactory, styleFactory);
       expect(classResult).toBeFalsy();
@@ -1562,7 +1625,7 @@ describe('style and class based bindings', () => {
         5, classPlayerBuilder, null, stylePlayerBuilder, null
       ]);
 
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(context[StylingIndex.PlayerContext]).toEqual([
         5, classPlayerBuilder, currentClassPlayer !, stylePlayerBuilder, currentStylePlayer !
       ]);
@@ -1638,7 +1701,7 @@ describe('style and class based bindings', () => {
            barPlayerBuilder, null
          ]);
 
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
          const classMapPlayer = capturedClassPlayers.shift() !;
          const barPlayer = capturedClassPlayers.shift() !;
          const styleMapPlayer = capturedStylePlayers.shift() !;
@@ -1671,7 +1734,7 @@ describe('style and class based bindings', () => {
            bazPlayerBuilder, null
          ]);
 
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
          const heightPlayer = capturedStylePlayers.shift() !;
          const bazPlayer = capturedClassPlayers.shift() !;
 
@@ -1698,7 +1761,7 @@ describe('style and class based bindings', () => {
 
          const players: MockPlayer[] = [];
          const buildFn =
-             (element: HTMLElement, type: BindingType, value: any,
+             (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
               oldPlayer: MockPlayer | null) => {
                const player = new MockPlayer(value);
                players.push(player);
@@ -1709,7 +1772,7 @@ describe('style and class based bindings', () => {
 
          let mapFactory = bindPlayerFactory(buildFn, {width: '200px'});
          updateStylingMap(context, null, mapFactory);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(players.length).toEqual(1);
          const p1 = players.pop() !;
@@ -1717,7 +1780,7 @@ describe('style and class based bindings', () => {
 
          mapFactory = bindPlayerFactory(buildFn, {width: '100px'});
          updateStylingMap(context, null, mapFactory);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(players.length).toEqual(1);
          const p2 = players.pop() !;
@@ -1792,7 +1855,7 @@ describe('style and class based bindings', () => {
          const fooPlayerBuilder = makePlayerBuilder(fooWithPlayerFactory, true);
          updateStyleProp(context, 0, colorWithPlayerFactory as any);
          updateClassProp(context, 0, fooWithPlayerFactory as any);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          const p1 = classPlayers.shift();
          const p2 = stylePlayers.shift();
@@ -1856,7 +1919,7 @@ describe('style and class based bindings', () => {
          const fooWithoutPlayerFactory = false;
          updateStyleProp(context, 0, colorWithoutPlayerFactory);
          updateClassProp(context, 0, fooWithoutPlayerFactory);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(context).toEqual([
            ([9, null, null, null, null, null, null, null, null] as any),
@@ -1930,28 +1993,28 @@ describe('style and class based bindings', () => {
       expect(styleCalls).toEqual(0);
       expect(classCalls).toEqual(0);
 
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(styleCalls).toEqual(1);
       expect(classCalls).toEqual(1);
 
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(styleCalls).toEqual(1);
       expect(classCalls).toEqual(1);
 
       styleFactory.value = {opacity: '0.5'};
       updateStylingMap(context, classFactory, styleFactory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(1);
 
       classFactory.value = 'foo';
       updateStylingMap(context, classFactory, styleFactory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
 
       updateStylingMap(context, 'foo', {opacity: '0.5'});
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
     });
@@ -1975,14 +2038,14 @@ describe('style and class based bindings', () => {
          const mapFactory = bindPlayerFactory(mapBuildFn, {color: 'black'});
          updateStylingMap(context, null, mapFactory);
          updateStyleProp(context, 0, 'green');
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeFalsy();
 
          const propFactory = bindPlayerFactory(propBuildFn, 'orange');
          updateStyleProp(context, 0, propFactory as any);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeTruthy();
          expect(styleMapPlayer).toBeFalsy();
@@ -1990,7 +2053,7 @@ describe('style and class based bindings', () => {
          propPlayer = styleMapPlayer = null;
 
          updateStyleProp(context, 0, null);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeTruthy();
@@ -1998,7 +2061,7 @@ describe('style and class based bindings', () => {
          propPlayer = styleMapPlayer = null;
 
          updateStylingMap(context, null, null);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeFalsy();
@@ -2012,14 +2075,15 @@ describe('style and class based bindings', () => {
       let previousPlayer: MockPlayer|null = null;
       let currentPlayer: MockPlayer|null = null;
       const buildFn =
-          (element: HTMLElement, type: BindingType, value: any, existingPlayer: MockPlayer) => {
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
+           existingPlayer: MockPlayer) => {
             previousPlayer = existingPlayer;
             return currentPlayer = new MockPlayer(value);
           };
 
       let factory = bindPlayerFactory<{[key: string]: any}>(buildFn, {width: '200px'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(previousPlayer).toEqual(null);
       expect(currentPlayer !.value).toEqual({width: '200px'});
@@ -2027,7 +2091,7 @@ describe('style and class based bindings', () => {
       factory = bindPlayerFactory(buildFn, {height: '200px'});
 
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(previousPlayer !.value).toEqual({width: '200px'});
       expect(currentPlayer !.value).toEqual({width: null, height: '200px'});
@@ -2041,7 +2105,7 @@ describe('style and class based bindings', () => {
       let currentPlayer: MockPlayer|null = null;
       let previousPlayer: MockPlayer|null = null;
       const buildFn =
-          (element: HTMLElement, type: BindingType, value: any,
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
            existingPlayer: MockPlayer | null) => {
             previousPlayer = existingPlayer;
             return currentPlayer = new MockPlayer(value);
@@ -2049,7 +2113,7 @@ describe('style and class based bindings', () => {
 
       let factory = bindPlayerFactory<any>(buildFn, {foo: true});
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(currentPlayer).toBeTruthy();
       expect(previousPlayer).toBeFalsy();
@@ -2059,7 +2123,7 @@ describe('style and class based bindings', () => {
 
       factory = bindPlayerFactory(buildFn, {bar: true});
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(currentPlayer).toBeTruthy();
       expect(previousPlayer).toBeTruthy();
@@ -2081,21 +2145,22 @@ describe('style and class based bindings', () => {
       const lViewData = createMockViewData(handler, context);
 
       let values: {[key: string]: any}|null = null;
-      const buildFn = (element: HTMLElement, type: BindingType, value: any) => {
-        values = value;
-        return new MockPlayer();
-      };
+      const buildFn =
+          (element: HTMLElement, type: BindingType, value: any, isFirstRender: boolean) => {
+            values = value;
+            return new MockPlayer();
+          };
 
       let factory = bindPlayerFactory<{[key: string]: any}>(
           buildFn, {width: '200px', height: '100px', opacity: '1'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(values !).toEqual({width: '200px-safe!', height: '100px-safe!', opacity: '1'});
 
       factory = bindPlayerFactory(buildFn, {width: 'auto'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, undefined, lViewData);
+      renderStyles(context, false, undefined, lViewData);
 
       expect(values !).toEqual({width: 'auto-safe!', height: null, opacity: null});
     });
@@ -2127,7 +2192,7 @@ describe('style and class based bindings', () => {
          updateStyleProp(context, 0, bindPlayerFactory(styleBuildFn, '100px') as any);
          updateClassProp(context, 0, bindPlayerFactory(classBuildFn, true) as any);
          updateClassProp(context, 1, bindPlayerFactory(classBuildFn, true) as any);
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
          handler.flushPlayers();
 
          const [p1, p2, p3, p4, p5] = players;
@@ -2145,7 +2210,7 @@ describe('style and class based bindings', () => {
          expect(p4.state).toEqual(PlayState.Running);
          expect(p5.state).toEqual(PlayState.Running);
 
-         renderStyles(context, undefined, lViewData);
+         renderStyles(context, false, undefined, lViewData);
          expect(p1.state).toEqual(PlayState.Destroyed);
          expect(p2.state).toEqual(PlayState.Destroyed);
          expect(p3.state).toEqual(PlayState.Destroyed);
@@ -2226,6 +2291,74 @@ describe('style and class based bindings', () => {
 
          expect(getPlayers(target)).toEqual([p1, p2, p4, p6]);
        });
+
+    it('should build a player and signal that the first render is active', () => {
+      const firstRenderCaptures: any[] = [];
+      const otherRenderCaptures: any[] = [];
+      const buildFn =
+          (element: HTMLElement, type: BindingType, value: any, isFirstRender: boolean) => {
+            if (isFirstRender) {
+              firstRenderCaptures.push({type, value});
+            } else {
+              otherRenderCaptures.push({type, value});
+            }
+            return new MockPlayer();
+          };
+
+      const styleMapFactory =
+          bindPlayerFactory(buildFn, {height: '200px'}) as BoundPlayerFactory<any>;
+      const classMapFactory = bindPlayerFactory(buildFn, {bar: true}) as BoundPlayerFactory<any>;
+      const widthFactory = bindPlayerFactory(buildFn, '100px') as BoundPlayerFactory<any>;
+      const fooFactory = bindPlayerFactory(buildFn, true) as BoundPlayerFactory<any>;
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          directives: [Comp],
+          factory: () => new Comp(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: Comp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              elementStyling(['foo'], ['width']);
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementStylingMap(0, classMapFactory, styleMapFactory);
+              elementStyleProp(0, 0, widthFactory);
+              elementClassProp(0, 0, fooFactory);
+              elementStylingApply(0);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(Comp);
+
+      expect(firstRenderCaptures.length).toEqual(4);
+      expect(firstRenderCaptures[0]).toEqual({type: BindingType.Class, value: {bar: true}});
+      expect(firstRenderCaptures[1]).toEqual({type: BindingType.Style, value: {height: '200px'}});
+      expect(firstRenderCaptures[2]).toEqual({type: BindingType.Style, value: {width: '100px'}});
+      expect(firstRenderCaptures[3]).toEqual({type: BindingType.Class, value: {foo: true}});
+      expect(otherRenderCaptures.length).toEqual(0);
+
+      firstRenderCaptures.length = 0;
+      styleMapFactory.value = {height: '100px'};
+      classMapFactory.value = {bar: false};
+      widthFactory.value = '50px';
+      fooFactory.value = false;
+
+      fixture.update();
+
+      expect(firstRenderCaptures.length).toEqual(0);
+      expect(otherRenderCaptures.length).toEqual(4);
+      expect(otherRenderCaptures[0]).toEqual({type: BindingType.Class, value: {bar: false}});
+      expect(otherRenderCaptures[1]).toEqual({type: BindingType.Style, value: {height: '100px'}});
+      expect(otherRenderCaptures[2]).toEqual({type: BindingType.Style, value: {width: '50px'}});
+      expect(otherRenderCaptures[3]).toEqual({type: BindingType.Class, value: {foo: false}});
+    });
   });
 });
 
