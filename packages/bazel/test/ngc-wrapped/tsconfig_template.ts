@@ -70,7 +70,7 @@ export function createTsConfig(options: TsConfigOptions) {
       'tsickleExternsPath': '',
       // we don't copy the node_modules into our tmp dir, so we should look in
       // the original workspace directory for it
-      'nodeModulesPrefix': '../angular/external/ngdeps/node_modules',
+      'nodeModulesPrefix': '../ngdeps/node_modules',
     },
     'files': options.files,
     'angularCompilerOptions': {
