@@ -1416,6 +1416,9 @@
     "name": "defaultKeyValueDiffers"
   },
   {
+    "name": "defaultScheduler"
+  },
+  {
     "name": "defineComponent"
   },
   {

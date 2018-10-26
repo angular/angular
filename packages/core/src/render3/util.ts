@@ -154,7 +154,10 @@ export function getRootView(target: LViewData | {}): LViewData {
 }
 
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
-  return getRootView(viewOrComponent)[CONTEXT] as RootContext;
+  const rootView = getRootView(viewOrComponent);
+  ngDevMode &&
+      assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
+  return rootView[CONTEXT] as RootContext;
 }
 
 /**
@@ -241,3 +244,14 @@ export function getParentInjectorTNode(
   }
   return parentTNode;
 }
+
+declare const global: any;
+export const defaultScheduler =
+    (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
+     setTimeout                                                                // everything else
+     )
+        .bind(
+            typeof window !== 'undefined' && window ||  // Browser main thread
+            typeof global !== 'undefined' && global ||  // NodeJS
+            this                                        // WebWorker
+            );

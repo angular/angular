@@ -183,6 +183,9 @@
     "name": "createViewQuery"
   },
   {
+    "name": "defaultScheduler"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -304,6 +307,12 @@
   },
   {
     "name": "getRendererFactory"
+  },
+  {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
   },
   {
     "name": "getTView"

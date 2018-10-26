@@ -358,7 +358,7 @@ export function renderEmbeddedTemplate<T>(
   let oldView: LViewData;
   if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
-    tickRootContext(viewToRender[CONTEXT] as RootContext);
+    tickRootContext(getRootContext(viewToRender));
   } else {
     try {
       setIsParent(true);
