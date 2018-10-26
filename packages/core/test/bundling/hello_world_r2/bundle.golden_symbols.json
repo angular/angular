@@ -681,6 +681,9 @@
     "name": "defaultErrorLogger"
   },
   {
+    "name": "defaultScheduler"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -928,6 +931,12 @@
   },
   {
     "name": "getRendererFactory"
+  },
+  {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
   },
   {
     "name": "getSymbolIterator$1"

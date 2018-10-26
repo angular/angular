@@ -7,6 +7,7 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
+import {global} from '../util';
 
 import {assertDefined, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
@@ -154,7 +155,10 @@ export function getRootView(target: LViewData | {}): LViewData {
 }
 
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
-  return getRootView(viewOrComponent)[CONTEXT] as RootContext;
+  const rootView = getRootView(viewOrComponent);
+  ngDevMode &&
+      assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
+  return rootView[CONTEXT] as RootContext;
 }
 
 /**
@@ -241,3 +245,8 @@ export function getParentInjectorTNode(
   }
   return parentTNode;
 }
+
+export const defaultScheduler =
+    (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
+     setTimeout                                                                // everything else
+     ).bind(global);

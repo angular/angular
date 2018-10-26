@@ -26,7 +26,7 @@ import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {FLAGS, HEADER_OFFSET, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
-import {getTNode} from './util';
+import {defaultScheduler, getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -62,10 +62,7 @@ export const ROOT_CONTEXT = new InjectionToken<RootContext>(
  */
 export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDULER_TOKEN', {
   providedIn: 'root',
-  factory: () => {
-    const useRaf = typeof requestAnimationFrame !== 'undefined' && typeof window !== 'undefined';
-    return useRaf ? requestAnimationFrame.bind(window) : setTimeout;
-  },
+  factory: () => defaultScheduler,
 });
 
 /**
@@ -118,9 +115,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootContext: RootContext = ngModule && !isInternalRootView ?
-        ngModule.injector.get(ROOT_CONTEXT) :
-        createRootContext(requestAnimationFrame.bind(window));
+    const rootContext: RootContext =
+        ngModule && !isInternalRootView ? ngModule.injector.get(ROOT_CONTEXT) : createRootContext();
 
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
     // Create the root view. Uses empty TView and ContentTemplate.
@@ -174,8 +170,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // executed here?
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
-          hostRNode, componentView, this.componentDef, rootView, rootContext,
-          [LifecycleHooksFeature]);
+          componentView, this.componentDef, rootView, rootContext, [LifecycleHooksFeature]);
 
       refreshDescendantViews(rootView, RenderFlags.Create);
     } finally {
