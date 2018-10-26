@@ -2,6 +2,7 @@ load("//packages/bazel:index.bzl", "ng_module")
 
 ng_module(
     name = "test_module",
+    testonly = True,
     srcs = glob(["*.ts"]),
     compiler = "//packages/bazel/src/ngc-wrapped",
     entry_point = "index.ts",
@@ -9,6 +10,10 @@ ng_module(
     module_name = "some_npm_module",
     ng_xi18n = "//packages/bazel/src/ngc-wrapped:xi18n",
     node_modules = "@ngdeps//typescript:typescript__typings",
+    tags = [
+        "fixme-ivy-aot",
+        "no-ivy-jit",
+    ],
     deps = [
         "//packages/core",
         "@ngdeps//@types",
@@ -19,6 +24,7 @@ load(":extract_flat_module_index.bzl", "extract_flat_module_index")
 
 extract_flat_module_index(
     name = "flat_module_index",
+    testonly = True,
     deps = [":test_module"],
 )
 

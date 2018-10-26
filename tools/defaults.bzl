@@ -210,6 +210,7 @@ def ng_rollup_bundle(deps = [], **kwargs):
     """Default values for ng_rollup_bundle"""
     deps = deps + [
         "@ngdeps//tslib",
+        "@ngdeps//reflect-metadata",
     ]
     _ng_rollup_bundle(
         deps = deps,

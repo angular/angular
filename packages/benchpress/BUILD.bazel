@@ -15,5 +15,6 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "@ngdeps//@types/node",
+        "@ngdeps//reflect-metadata",
     ],
 )
