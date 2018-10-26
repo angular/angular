@@ -147,7 +147,7 @@ renderComponent(AnimationWorldComponent, {playerHandler});
 function animateStyleFactory(keyframes: any[], duration: number, easing: string) {
   const limit = keyframes.length - 1;
   const finalKeyframe = keyframes[limit];
-  return bindPlayerFactory((element: HTMLElement, type: number, values: {[key: string]: any}) => {
+  return bindPlayerFactory((element: HTMLElement, type: number, isFirstRender: boolean, values: {[key: string]: any}) => {
     const kf = keyframes.slice(0, limit);
     kf.push(values);
     return new WebAnimationsPlayer(element, keyframes, duration, easing);
