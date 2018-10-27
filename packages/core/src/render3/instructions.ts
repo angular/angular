@@ -78,11 +78,13 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
   if (rf !== RenderFlags.Create) {
     const creationMode = getCreationMode();
     const checkNoChangesMode = getCheckNoChangesMode();
-    setHostBindings(tView, viewData);
 
     if (!checkNoChangesMode) {
       executeInitHooks(viewData, tView, creationMode);
     }
+
+    setHostBindings(tView, viewData);
+
     refreshDynamicEmbeddedViews(viewData);
 
     // Content query results must be refreshed before content hooks are called.
