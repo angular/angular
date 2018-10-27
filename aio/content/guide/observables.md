@@ -1,7 +1,7 @@
 <!--
 # Observables
 -->
-# 옵저버블 (Pbservables)
+# 옵저버블 (Observables)
 
 <!--
 Observables provide support for passing messages between publishers and subscribers in your application. Observables offer significant benefits over other techniques for event handling, asynchronous programming, and handling multiple values.
@@ -81,7 +81,7 @@ An observer object can define any combination of these handlers. If you don't su
 <!--
 ## Subscribing
 -->
-## 구독
+## 구독 (Subscribing)
 
 <!--
 An `Observable` instance begins publishing values only when someone subscribes to it. You subscribe by calling the `subscribe()` method of the instance, passing an observer object to receive the notifications.
@@ -90,10 +90,16 @@ An `Observable` instance begins publishing values only when someone subscribes t
 
 <div class="alert is-helpful">
 
+<!--
 In order to show how subscribing works, we need to create a new observable. There is a constructor that you use to create new instances, but for illustration, we can use some methods from the RxJS library that create simple observables of frequently used types:
 
   * `of(...items)`&mdash;Returns an `Observable` instance that synchronously delivers the values provided as arguments.
   * `from(iterable)`&mdash;Converts its argument to an `Observable` instance. This method is commonly used to convert an array to an observable.
+-->
+구독이 동작하는 것을 확인하려면 새로운 옵저버블을 생성해야 합니다. 이 때 활용할 수 있는 RxJS 함수는 여러가지지만, 이 문서에서는 간단하게 개념만 살펴볼 것이기 때문에 다음 함수들을 주로 사용할 것입니다:
+
+  * `of(...배열)`&mdash;인자로 전달한 배열의 항목을 하나씩 전달하는 `Observable` 인스턴스를 생성합니다.
+  * `from(이터러블)`&mdash;인자로 전달한 이터러블의 항목을 하나씩 전달하는 `Observable` 인스턴스를 생성합니다. 이 메소드는 배열을 옵저버블로 변환할 때 자주 사용합니다.
 
 </div>
 

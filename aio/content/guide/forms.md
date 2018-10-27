@@ -17,7 +17,10 @@ user efficiently and effectively through the workflow.
 -->
 그리고 폼을 구성할 때는 사용자가 전체 흐름에 맞도록 폼 전체를 자연스럽게 입력할 수 있도록, 순서를 고민해보는 것이 좋습니다.
 
+<!--
 ## Introduction to Template-driven forms
+-->
+## 템플릿 기반 폼 소개
 
 <!--
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
@@ -52,6 +55,7 @@ You can run the <live-example></live-example> in Stackblitz and download the cod
 
 {@a template-driven}
 
+<!--
 You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
 -->
