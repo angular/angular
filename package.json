@@ -29,7 +29,8 @@
     "test-ivy-jit": "bazel test --define=compile=jit --build_tag_filters=-no-ivy-jit,-fixme-ivy-jit --test_tag_filters=-no-ivy-jit,-fixme-ivy-jit",
     "test-fixme-ivy-jit": "bazel test --define=compile=jit --build_tag_filters=-no-ivy-jit --test_tag_filters=-no-ivy-jit",
     "test-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
-    "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot"
+    "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
+    "bazel": "bazel"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -87,6 +88,7 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
+    "@bazel/bazel": "^0.18.1",
     "@bazel/ibazel": "^0.1.1",
     "@bazel/karma": "0.20.3",
     "@types/angular": "^1.6.47",

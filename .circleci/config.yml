@@ -7,31 +7,31 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-# Variables
-
-## IMPORTANT
-# If you change the `docker_image` version, also change the `cache_key` suffix and the version of
-# `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.7.0
-var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.7.0
+# Note that the browser docker image comes with Chrome and Firefox preinstalled. This is just
+# needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
+# fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
+# docker image with browsers pre-installed.
+# **NOTE**: If you change the version of the docker images, also change the `cache_key` suffix.
+var_1: &default_docker_image circleci/node:10.12
+var_2: &browsers_docker_image circleci/node:10.12-browsers
+var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
 
 # Define common ENV vars
-var_3: &define_env_vars
+var_4: &define_env_vars
   run:
     name: Define environment variables
     command: ./.circleci/env.sh
-
-# See remote cache documentation in /docs/BAZEL.md
-var_4: &setup-bazel-remote-cache
-  run:
-    name: Start up bazel remote cache proxy
-    command: ~/bazel-remote-proxy -backend circleci://
-    background: true
 
 var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
     command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
+
+# Settings common to each job
+var_6: &job_defaults
+  working_directory: ~/ng
+  docker:
+  - image: *default_docker_image
 
 var_7: &start-xvfb
   run:
@@ -39,17 +39,21 @@ var_7: &start-xvfb
     command: Xvfb :99 -screen 0 1280x1024x24
     background: true
 
-# Settings common to each job
-anchor_1: &job_defaults
-  working_directory: ~/ng
-  docker:
-    - image: *docker_image
-
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
 # See https://discuss.circleci.com/t/1662
-anchor_2: &post_checkout
+var_8: &post_checkout
   post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+
+var_9: &yarn_install
+  run:
+    name: Running Yarn install
+    command: yarn install --frozen-lockfile --non-interactive
+
+var_10: &setup_circleci_bazel_config
+  run:
+    name: Setting up CircleCI bazel configuration
+    command: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
 version: 2
 jobs:
@@ -59,21 +63,18 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
       - *define_env_vars
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup_circleci_bazel_config
+      - *yarn_install
 
-      # Check BUILD.bazel formatting before we have a node_modules directory
-      # Then we don't need any exclude pattern to avoid checking those files
       - run: 'yarn buildifier -mode=check ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
       - run: 'yarn skylint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
 
-      - restore_cache:
-          key: *cache_key
-
-      - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
 
   test:
@@ -82,17 +83,18 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
       - *define_env_vars
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup_circleci_bazel_config
+      - *yarn_install
 
-      - run: bazel info release
-      - run: bazel run @nodejs//:yarn
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
-      - run: bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-local
+      - run: yarn bazel test //... --build_tag_filters=-ivy-only --test_tag_filters=-ivy-only,-local
       # Now run RBE incompatible tests locally.
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - run: bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
+      - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
@@ -126,11 +128,13 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
       - *define_env_vars
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-
-      - run: bazel run @yarn//:yarn
+      - *setup_circleci_bazel_config
+      - *yarn_install
       - *setup_bazel_remote_execution
+
       - run: yarn test-ivy-jit //...
 
   test_ivy_aot:
@@ -139,22 +143,27 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
       - *define_env_vars
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-
-      - run: bazel run @yarn//:yarn
+      - *setup_circleci_bazel_config
+      - *yarn_install
       - *setup_bazel_remote_execution
+
       - run: yarn test-ivy-aot //...
 
   test_aio:
     <<: *job_defaults
+    docker:
+      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
       - restore_cache:
           key: *cache_key
+      - *define_env_vars
+      - *start-xvfb
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -174,28 +183,34 @@ jobs:
 
   deploy_aio:
     <<: *job_defaults
+    docker:
+    # Needed because before deploying the deploy-production script runs the PWA score tests.
+    - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
       - restore_cache:
           key: *cache_key
+      - *define_env_vars
+      - *start-xvfb
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
     <<: *job_defaults
+    docker:
+      # Needed because the AIO tests and the PWA score test depend on Chrome being available.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
-      - attach_workspace:
-          at: dist
       - restore_cache:
           key: *cache_key
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
+      - *start-xvfb
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
         # Run PWA-score tests
@@ -211,11 +226,11 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - attach_workspace:
-          at: dist
       - restore_cache:
           key: *cache_key
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run: yarn --cwd aio extract-cli-command-docs
@@ -225,17 +240,20 @@ jobs:
 
   test_docs_examples_0:
     <<: *job_defaults
+    docker:
+      # Needed because the example e2e tests depend on Chrome.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
-      - attach_workspace:
-          at: dist
       - restore_cache:
           key: *cache_key
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
+      - *start-xvfb
         # Install root
-      - run: yarn install --frozen-lockfile --non-interactive
+      - *yarn_install
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests
@@ -243,17 +261,20 @@ jobs:
 
   test_docs_examples_1:
     <<: *job_defaults
+    docker:
+      # Needed because the example e2e tests depend on Chrome.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
-      - attach_workspace:
-          at: dist
       - restore_cache:
           key: *cache_key
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
+      - *start-xvfb
         # Install root
-      - run: yarn install --frozen-lockfile --non-interactive
+      - *yarn_install
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests
@@ -267,10 +288,10 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
       - restore_cache:
           key: *cache_key
-      - run: yarn install --frozen-lockfile --non-interactive
+      - *define_env_vars
+      - *yarn_install
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
@@ -281,13 +302,16 @@ jobs:
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
     <<: *job_defaults
+    docker:
+      # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
       - restore_cache:
           key: *cache_key
+      - *define_env_vars
+      - *start-xvfb
       - run: yarn install --cwd aio --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
@@ -306,10 +330,13 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
       - *define_env_vars
-      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - run: bazel run @nodejs//:yarn
+      - *setup_circleci_bazel_config
+      - *yarn_install
       - *setup_bazel_remote_execution
+
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
@@ -329,6 +356,9 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     <<: *job_defaults
+    docker:
+      # Needed because the integration tests expect Chrome to be installed (e.g cli-hello-world)
+      - image: *browsers_docker_image
     # Note: we run Bazel in one of the integration tests, and it can consume >2G
     # of memory. Together with the system under test, this can exhaust the RAM
     # on a 4G worker so we use a larger machine here too.
@@ -336,10 +366,12 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
+      - restore_cache:
+          key: *cache_key
       - attach_workspace:
           at: dist
+      - *define_env_vars
+      - *start-xvfb
       - run: ./integration/run_tests.sh
 
   # This job updates the content of repos like github.com/angular/core-builds
@@ -373,13 +405,17 @@ jobs:
 
   aio_monitoring:
     <<: *job_defaults
+    docker:
+      # This job needs Chrome to be globally installed because the tests run with Protractor
+      # which does not load the browser through the Bazel webtesting rules.
+      - image: *browsers_docker_image
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *start-xvfb
       - restore_cache:
           key: *cache_key
+      - *define_env_vars
+      - *start-xvfb
       - run:
           name: Run tests against the deployed apps
           command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
