@@ -164,7 +164,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
         deps = local_deps,
         # Run unit tests on local Chromium by default.
         # You can exclude tests based on tags, e.g. to skip Firefox testing,
-        #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
+        #   `yarn bazel test --test_tag_filters=-browser:firefox-local [targets]`
         browsers = [
             "@io_bazel_rules_webtesting//browsers:chromium-local",
             # Don't test on local Firefox by default, for faster builds.
