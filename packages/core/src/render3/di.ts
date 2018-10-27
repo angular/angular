@@ -21,7 +21,7 @@ import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TN
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getPreviousOrParentTNode, getViewData, setTNodeAndViewData} from './state';
-import {getParentInjectorIndex, getParentInjectorView, getParentInjectorViewOffset, hasParentInjector, isComponent, stringify} from './util';
+import {getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, stringify} from './util';
 
 /**
  * Defines if the call to `inject` should include `viewProviders` in its resolution.
@@ -196,7 +196,7 @@ export function getInjectorIndex(tNode: TNode, hostView: LViewData): number {
  */
 export function getParentInjectorLocation(tNode: TNode, view: LViewData): RelativeInjectorLocation {
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
-    return tNode.parent.injectorIndex as any;  // view offset is 0
+    return tNode.parent.injectorIndex as any;  // ViewOffset is 0, AcrossHostBoundary is 0
   }
 
   // For most cases, the parent injector index can be found on the host node (e.g. for component
@@ -209,8 +209,13 @@ export function getParentInjectorLocation(tNode: TNode, view: LViewData): Relati
     hostTNode = view[HOST_NODE] !;
     viewOffset++;
   }
+  const acrossHostBoundary = hostTNode && hostTNode.type === TNodeType.Element ?
+      RelativeInjectorLocationFlags.AcrossHostBoundary :
+      0;
+
   return hostTNode ?
-      hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift) :
+      hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift) |
+          acrossHostBoundary :
       -1 as any;
 }
 
@@ -507,7 +512,8 @@ function shouldSearchParent(flags: InjectFlags, parentLocation: RelativeInjector
     number {
   return !(
       flags & InjectFlags.Self ||
-      (flags & InjectFlags.Host && getParentInjectorViewOffset(parentLocation) > 0));
+      (flags & InjectFlags.Host &&
+       ((parentLocation as any as number) & RelativeInjectorLocationFlags.AcrossHostBoundary)));
 }
 
 export function injectInjector() {
