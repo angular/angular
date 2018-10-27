@@ -2244,6 +2244,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "noop"
+  },
+  {
     "name": "noop$1"
   },
   {

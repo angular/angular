@@ -960,6 +960,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "noop"
+  },
+  {
     "name": "pointers"
   },
   {
