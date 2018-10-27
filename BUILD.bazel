@@ -8,13 +8,6 @@ exports_files([
     "protractor-perf.conf.js",
 ])
 
-# Developers should always run `bazel run :install`
-# This ensures that package.json in subdirectories get installed as well.
-alias(
-    name = "install",
-    actual = "@nodejs//:yarn",
-)
-
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort

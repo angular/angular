@@ -9,21 +9,14 @@ Bazel.
 
 ## Installation
 
-Install Bazel from the distribution, see [install] instructions.
-On Mac, just `brew install bazel`.
+In order to ensure that everyone builds Angular in a _consistent_ way, Bazel
+will be installed through NPM and therefore it's not necessary to install Bazel
+manually.
 
-Bazel will install a hermetic version of Node, npm, and Yarn when
-you run the first build.
+The binaries for Bazel will be provided by the [`@bazel/bazel`](https://github.com/bazelbuild/rules_nodejs/tree/master/packages)
+NPM package and its platform-specific dependencies.
 
-[install]: https://bazel.build/versions/master/docs/install.html
-
-### Installation of ibazel
-
-Install interactive bazel runner / fs watcher via:
-
-```
-yarn global add @bazel/ibazel
-```
+You can access Bazel with the `yarn bazel` command
 
 ## Configuration
 
@@ -32,12 +25,6 @@ Bazel project. It contains the version of the Bazel rules we
 use to execute build steps, from `build_bazel_rules_typescript`.
 The sources on [GitHub] are published from Google's internal
 repository (google3).
-
-That repository defines dependencies on specific versions of
-all the tools. You can run the tools Bazel installed, for
-example rather than `yarn install` (which depends on whatever
-version you have installed on your machine), you can
-`bazel run @nodejs//:yarn`.
 
 Bazel accepts a lot of options. We check in some options in the
 `.bazelrc` file. See the [bazelrc doc]. For example, if you don't
@@ -50,8 +37,8 @@ want Bazel to create several symlinks in your project directory
 
 ## Building Angular
 
-- Build a package: `bazel build packages/core`
-- Build all packages: `bazel build packages/...`
+- Build a package: `yarn bazel build packages/core`
+- Build all packages: `yarn bazel build packages/...`
 
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources. Note this is
@@ -61,9 +48,9 @@ new as of May 2017 and not very stable yet.
 
 ## Testing Angular
 
-- Test package in node: `bazel test packages/core/test:test`
-- Test package in karma: `bazel test packages/core/test:test_web`
-- Test all packages: `bazel test packages/...`
+- Test package in node: `yarn bazel test packages/core/test:test`
+- Test package in karma: `yarn bazel test packages/core/test:test_web`
+- Test all packages: `yarn bazel test packages/...`
 
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
@@ -93,7 +80,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 
 - Open chrome at: [chrome://inspect](chrome://inspect)
 - Click on  `Open dedicated DevTools for Node` to launch a debugger.
-- Run test: `bazel test packages/core/test:test --config=debug`
+- Run test: `yarn bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger. For additional info and testing options, see the [nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/node/node.html#nodejs_test).
 
@@ -130,7 +117,7 @@ First time setup:
 
 **Setting breakpoints directly in your code files may not work in VSCode**. This is because the files you're actually debugging are built files that exist in a `./private/...` folder.
 The easiest way to debug a test for now is to add a `debugger` statement in the code
-and launch the bazel corresponding test (`bazel test <target> --config=debug`).
+and launch the bazel corresponding test (`yarn bazel test <target> --config=debug`).
 
 Bazel will wait on a connection. Go to the debug view (by clicking on the sidebar or
 Apple+Shift+D on Mac) and click on the green play icon next to the configuration name
@@ -138,7 +125,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 ### Debugging a Karma Test
 
-- Run test: `bazel run packages/core/test:test_web`
+- Run test: `yarn bazel run packages/core/test:test_web`
 - Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open chrome inspector
 
@@ -151,7 +138,7 @@ open $(bazel info output_base)/external
 
 See subcommands that bazel executes (helpful for debugging):
 ```sh
-bazel build //packages/core:package -s
+yarn bazel build //packages/core:package -s
 ```
 
 To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
@@ -168,7 +155,7 @@ In our repo, here is how it's configured:
 1) In `tools/bazel_stamp_vars.sh` we run the `git` commands to generate our versioning info.
 1) In `.bazelrc` we register this script as the value for the `workspace_status_command` flag. Bazel will run the script when it needs to stamp a binary.
 
-Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
+Note that Bazel has a `--stamp` argument to `yarn bazel build`, but this has no effect since our stamping takes place in Skylark rules. See https://github.com/bazelbuild/bazel/issues/1054
 
 ## Remote cache
 
@@ -206,7 +193,7 @@ See [bazelbuild/intellij#246](https://github.com/bazelbuild/intellij/issues/246)
 If you see the following error:
 
 ```
-$ bazel build packages/...
+$ yarn bazel build packages/...
 ERROR: /private/var/tmp/[...]/external/local_config_cc/BUILD:50:5: in apple_cc_toolchain rule @local_config_cc//:cc-compiler-darwin_x86_64: Xcode version must be specified to use an Apple CROSSTOOL
 ERROR: Analysis of target '//packages/core/test/render3:render3' failed; build aborted: Analysis of target '@local_config_cc//:cc-compiler-darwin_x86_64' failed; build aborted
 ```
@@ -228,7 +215,7 @@ If VSCode is not the root cause, you might try:
 bazel clean --expunge
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
-bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
+yarn bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
 ```
 
 Source: https://stackoverflow.com/questions/45276830/xcode-version-must-be-specified-to-use-an-apple-crosstool

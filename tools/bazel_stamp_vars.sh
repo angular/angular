@@ -22,7 +22,7 @@ if [[ "$(git tag)" == "" ]]; then
   echo "Either fetch the tags:"
   echo "       git fetch git@github.com:angular/angular.git --tags"
   echo "or build without stamping by giving an empty workspace_status_command:"
-  echo "       bazel build --workspace_status_command= ..."
+  echo "       yarn bazel build --workspace_status_command= ..."
   echo ""
 fi
 

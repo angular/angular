@@ -20,6 +20,30 @@
     "@angular-devkit/core" "0.5.13"
     rxjs "^6.0.0"
 
+"@bazel/bazel-darwin_x64@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.18.0.tgz#bab437605a702279d42f59caa4741bb327eb7dbc"
+  integrity sha512-um2OzgLL2Gd/W6joOpvrSTcqpnupliPNpwe/uE7sB0huBSJ/4Im0w2IlCTI6C7OfgMcbpUj4YxgUa9T6u6WY6w==
+
+"@bazel/bazel-linux_x64@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.18.0.tgz#0c02b2404ec95c180e17615cc7079ee07df48a69"
+  integrity sha512-Rq8X8bL6SgQvbOHnfPhSgF6hp+f6Fbt2w6pRmBlFvV1J+CeUyrSrrRXfnnO1bjIuq05Ur3mV8ULA0qK6rtA5lQ==
+
+"@bazel/bazel-win32_x64@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.18.0.tgz#aa4575fb00066dcf59a6d464971774dea6a0bafd"
+  integrity sha512-U2TbfK8B7dc3JqXSFwj2oXCQrxEaSzCCUkAHjAOIGOKzx/HLKIKs+NJj9IQkLLr7BsMU+Qqzo8aqo11E+Vs+aA==
+
+"@bazel/bazel@^0.18.1":
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel/-/bazel-0.18.1.tgz#97c235bcc4d40139dd9029b232273b69270ad3a5"
+  integrity sha512-2KjB0umWsW5or78hTG/RVLmAKmeouyDjqjNsGlOY3pzpj9yqDMG5iDPJh4Q1/hXxiDmF2qZWwqWIEh55LFZXaQ==
+  optionalDependencies:
+    "@bazel/bazel-darwin_x64" "0.18.0"
+    "@bazel/bazel-linux_x64" "0.18.0"
+    "@bazel/bazel-win32_x64" "0.18.0"
+
 "@bazel/ibazel@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.1.1.tgz#f970c08b4e4efb0ab17e04ade3cc610554f33bed"
