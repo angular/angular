@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {AttributeMarker, defineComponent, template, defineDirective, ProvidersFeature} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, template, defineDirective, ProvidersFeature, NgOnChangesFeature} from '../../src/render3/index';
 import {bind, directiveInject, element, elementEnd, elementProperty, elementStart, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
@@ -218,6 +218,72 @@ describe('host bindings', () => {
        expect(hostBindingDiv.id).toEqual('bar');
      });
 
+  it('should support host bindings that rely on values from init hooks', () => {
+    class InitHookComp {
+      // @Input()
+      inputValue = '';
+
+      changesValue = '';
+      initValue = '';
+      checkValue = '';
+
+      ngOnChanges() { this.changesValue = 'changes'; }
+
+      ngOnInit() { this.initValue = 'init'; }
+
+      ngDoCheck() { this.checkValue = 'check'; }
+
+      get value() {
+        return `${this.inputValue}-${this.changesValue}-${this.initValue}-${this.checkValue}`;
+      }
+
+      static ngComponentDef = defineComponent({
+        type: InitHookComp,
+        selectors: [['init-hook-comp']],
+        factory: () => new InitHookComp(),
+        template: (rf: RenderFlags, ctx: InitHookComp) => {},
+        consts: 0,
+        vars: 0,
+        hostVars: 1,
+        features: [NgOnChangesFeature],
+        hostBindings: (dirIndex: number, elIndex: number) => {
+          const ctx = load(dirIndex) as InitHookComp;
+          elementProperty(elIndex, 'title', bind(ctx.value));
+        },
+        inputs: {inputValue: 'inputValue'}
+      });
+    }
+
+    /** <init-hook-comp [inputValue]="value"></init-hook-comp> */
+    class App {
+      value = 'input';
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        template: (rf: RenderFlags, ctx: App) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'init-hook-comp');
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(0, 'inputValue', bind(ctx.value));
+          }
+        },
+        consts: 1,
+        vars: 1,
+        directives: [InitHookComp]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    const initHookComp = fixture.hostElement.querySelector('init-hook-comp') as HTMLElement;
+    expect(initHookComp.title).toEqual('input-changes-init-check');
+
+    fixture.component.value = 'input2';
+    fixture.update();
+    expect(initHookComp.title).toEqual('input2-changes-init-check');
+  });
 
   it('should support host bindings on second template pass', () => {
     /** <div hostBindingDir></div> */
