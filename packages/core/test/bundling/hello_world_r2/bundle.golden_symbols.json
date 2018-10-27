@@ -4017,6 +4017,9 @@
     "name": "nodeValue"
   },
   {
+    "name": "noop"
+  },
+  {
     "name": "noop$1"
   },
   {
