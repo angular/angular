@@ -12,7 +12,10 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
-readonly bin=$(bazel info bazel-bin)
+# We need to resolve the Bazel binary in the node modules because running Bazel
+# through `yarn bazel` causes additional output that throws off command stdout.
+readonly bazelBin=$(yarn bin)/bazel
+readonly bin=$(${bazelBin} info bazel-bin)
 
 function buildTargetPackages() {
   targets="$1"
@@ -20,13 +23,13 @@ function buildTargetPackages() {
   compileMode="$3"
   desc="$4"
 
-echo "##################################"
-echo "scripts/build-packages-dist.sh:"
-echo "  building @angular/* npm packages"
-echo "  mode: ${desc}"
-echo "##################################"
+  echo "##################################"
+  echo "scripts/build-packages-dist.sh:"
+  echo "  building @angular/* npm packages"
+  echo "  mode: ${desc}"
+  echo "##################################"
 
-  echo "$targets" | xargs bazel build --define=compile=$compileMode
+  echo "$targets" | xargs ${bazelBin} build --define=compile=$compileMode
 
   [ -d "${basedir}/${destPath}" ] || mkdir -p $basedir/${destPath}
 
@@ -49,7 +52,7 @@ echo "##################################"
 # packages in their deps[].
 # Until then, we have to manually run bazel first to create the npm packages we
 # want to test.
-BAZEL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+BAZEL_TARGETS=`${bazelBin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
 buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 
 # We don't use the ivy build in the integration tests, only when publishing
