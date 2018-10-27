@@ -14,6 +14,7 @@ import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
+import {noop} from '../util/noop';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
@@ -39,7 +40,6 @@ import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
-
 
 
 /**
@@ -1490,7 +1490,8 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
 function queueHostBindingForCheck(tView: TView, def: DirectiveDef<any>| ComponentDef<any>): void {
   ngDevMode &&
       assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
-  tView.expandoInstructions !.push(def.hostBindings !, def.hostVars);
+  tView.expandoInstructions !.push(def.hostBindings || noop);
+  if (def.hostVars) tView.expandoInstructions !.push(def.hostVars);
 }
 
 /** Caches local names and their matching directive indices for query and template lookups. */
@@ -1552,7 +1553,7 @@ function baseResolveDirective<T>(
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);
 
-  if (def.hostBindings) queueHostBindingForCheck(tView, def);
+  queueHostBindingForCheck(tView, def);
 }
 
 function addComponentLogic<T>(
