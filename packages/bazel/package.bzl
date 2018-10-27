@@ -87,16 +87,11 @@ def rules_angular_dev_dependencies():
         url = "https://github.com/bazelbuild/bazel/archive/0.18.0.zip",
     )
 
-    # This commit matches the version of buildifier in angular/ngcontainer
-    # If you change this, also check if it matches the version in the angular/ngcontainer
-    # version in /.circleci/config.yml
-    BAZEL_BUILDTOOLS_VERSION = "49a6c199e3fbf5d94534b2771868677d3f9c6de9"
-
     http_archive(
         name = "com_github_bazelbuild_buildtools",
-        sha256 = "edf39af5fc257521e4af4c40829fffe8fba6d0ebff9f4dd69a6f8f1223ae047b",
-        strip_prefix = "buildtools-%s" % BAZEL_BUILDTOOLS_VERSION,
-        url = "https://github.com/bazelbuild/buildtools/archive/%s.zip" % BAZEL_BUILDTOOLS_VERSION,
+        sha256 = "a82d4b353942b10c1535528b02bff261d020827c9c57e112569eddcb1c93d7f6",
+        strip_prefix = "buildtools-0.17.2",
+        url = "https://github.com/bazelbuild/buildtools/archive/0.17.2.zip",
     )
 
     #############################################
