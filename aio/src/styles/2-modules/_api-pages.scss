@@ -18,6 +18,8 @@
           vertical-align: middle;
       }
 
+      // This is overriding a style here:
+      // https://github.com/angular/angular/blob/95993e1/aio/src/styles/2-modules/_table.scss#L58-L62
       tbody > tr > td tr td:first-child {
         @media screen and (max-width: 480px) {
           background-color: inherit;
@@ -62,6 +64,7 @@
           td:first-child {
             font-weight: 600;
             padding-left: 16px;
+            width: 20%;
           }
         }
 
@@ -69,10 +72,6 @@
           padding: 8px 8px 8px 0;
           border: 0;
           vertical-align: top;
-        }
-
-        td:nth-child(1) {
-          width: 20%;
         }
       }
   }
@@ -132,16 +131,6 @@
     &:hover {
       background-color: $mist;
     }
-  }
-}
-
-.api-header {
-  display: flex;
-  align-items: center;
-
-  @media screen and (max-width: 600px) {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 
@@ -230,19 +219,12 @@
     }
 
     summary {
-      padding: 8px 12px;
+      height: inherit;
+      padding: 0;
+
       h4 {
         margin: 0;
         clear: left;
-      }
-    }
-
-    summary {
-      height: inherit;
-      padding: 0 0 8px;
-
-      h4 {
-        margin: 0;
       }
 
       .show-all {

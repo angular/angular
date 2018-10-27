@@ -12,7 +12,7 @@
  *
  */
 
- summary {
+summary {
   cursor: pointer;
   font-size: 16px;
   position: relative;
@@ -24,6 +24,8 @@
   &::-webkit-details-marker {
     display: none; // Remove the built in details marker in webkit
   }
+
+  overflow: hidden;
 }
 
 details {
