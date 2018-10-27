@@ -1010,8 +1010,10 @@ describe('di', () => {
         }).toThrowError(/NodeInjector: NOT_FOUND \[DirB\]/);
       });
 
-      it('should not pass component boundary with @Host', () => {
-        let dirA: DirA;
+      describe('@Host', () => {
+        let dirA: DirA|null = null;
+
+        beforeEach(() => dirA = null);
 
         class DirA {
           constructor(@Host() public dirB: DirB) {}
@@ -1023,28 +1025,106 @@ describe('di', () => {
           });
         }
 
-        /** <div dirA></div> */
-        const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            element(0, 'div', ['dirA', '']);
+        it('should not find providers across component boundaries', () => {
+          /** <div dirA></div> */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirA', '']);
+            }
+          }, 1, 0, [DirA, DirB]);
+
+          /* <comp dirB></comp> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'comp', ['dirB', '']);
+            }
+          }, 1, 0, [Comp, DirB]);
+
+          expect(() => {
+            new ComponentFixture(App);
+          }).toThrowError(/NodeInjector: NOT_FOUND \[DirB\]/);
+        });
+
+        it('should not find providers across component boundaries if in inline view', () => {
+          let comp !: any;
+
+          /**
+           * % if (showing) {
+           *   <div dirA></div>
+           * % }
+           */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              container(0);
+            }
+            if (rf & RenderFlags.Update) {
+              containerRefreshStart(0);
+              {
+                if (ctx.showing) {
+                  let rf1 = embeddedViewStart(0, 1, 0);
+                  if (rf1 & RenderFlags.Create) {
+                    element(0, 'div', ['dirA', '']);
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            }
+          }, 1, 0, [DirA, DirB]);
+
+          /* <comp dirB></comp> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'comp', ['dirB', '']);
+            }
+            if (rf & RenderFlags.Update) {
+              comp = getDirectiveOnNode(0);
+            }
+          }, 1, 0, [Comp, DirB]);
+
+          const fixture = new ComponentFixture(App);
+          expect(() => {
+            comp.showing = true;
+            fixture.update();
+          }).toThrowError(/NodeInjector: NOT_FOUND \[DirB\]/);
+        });
+
+        it('should find providers across embedded views if not passing component boundary', () => {
+          let dirB !: DirB;
+
+          function IfTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirA', '']);
+            }
           }
-        }, 1, 0, [DirA, DirB]);
 
-        /* <comp dirB></comp> */
-        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            element(0, 'comp', ['dirB', '']);
-          }
-        }, 1, 0, [Comp, DirB]);
+          /**
+           * <div dirB>
+           *   <div *ngIf="showing" dirA></div>
+           * </div>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['dirB', '']);
+              { template(1, IfTemplate, 1, 0, '', ['ngIf', '']); }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(1, 'ngIf', bind(ctx.showing));
 
-        expect(() => {
-          new ComponentFixture(App);
-        }).toThrowError(/NodeInjector: NOT_FOUND \[DirB\]/);
+              // testing only
+              dirB = getDirectiveOnNode(0);
+            }
+          }, 2, 1, [NgIf, DirA, DirB]);
 
+          const fixture = new ComponentFixture(App);
+          fixture.component.showing = true;
+          fixture.update();
+
+          expect(dirA !.dirB).toEqual(dirB);
+        });
       });
-
     });
-
   });
 
   describe('Special tokens', () => {
