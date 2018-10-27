@@ -18,7 +18,7 @@ Angular 애플리케이션의 구성 요소 중 가장 중요한 것은 *컴포�
 <!--
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data. 
 -->
-* 컴포넌트는 *뷰*를 정의하는데, 화면에 어떤 엘리먼트가 어떤 데이터를 가지고 표시할지 지정합니.
+* 컴포넌트는 *뷰*를 정의하는데, 화면에 어떤 엘리먼트가 어떤 데이터를 표시할지 지정합니다.
 
 <!--
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
@@ -113,18 +113,34 @@ Angular 컴포넌트는 컴포넌트 클래스에 `@Component()` 데코레이터
 -->
 ### 템플릿, 디렉티브, 데이터 바인딩
 
+<!--
 A template combines HTML with Angular markup that can modify HTML elements before they are displayed.
 Template *directives* provide program logic, and *binding markup* connects your application data and the DOM.
 There are two types of data binding:
+-->
+템플릿은 HTML 문법과 Angular 마크업 문법을 조합해서 구성합니다. Angular 마크업 문법은 HTML 엘리먼트를 확장하는 역할을 합니다.
+템플릿에 *디렉티브*를 사용하면 원하는 동작을 하도록 확장할 수 있고, *바인딩 마크업* 문법을 사용하면 애플리케이션 데이터를 DOM과 연결할 수 있습니다.
+데이터 바인딩에는 두 종류가 있습니다:
 
+<!--
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.
+-->
+* *이벤트 바인딩*을 사용하면 사용자의 동작에 따라 애플리케이션 데이터를 갱신할 수 있습니다.
+* *프로퍼티 바인딩*을 사용하면 애플리케이션 데이터를 HTML 문서에 표시할 수 있습니다.
 
+<!--
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.
+-->
+Angular는 뷰가 화면에 표시되기 전에 템플릿에 사용된 디렉티브와 바인딩 문법을 모두 체크해서 HTML 엘리먼트와 DOM을 변형합니다. 이 때 애플리케이션 데이터나 로직이 템플릿에 반영됩니다. Angular는 *양방향 데이터 바인딩*도 지원합니다. 이 바인딩 방식을 사용하면 애플리케이션 데이터를 템플릿에 반영할 뿐만 아니라 사용자의 행동에 의해 DOM이 변경되었을 때 애플리케이션 데이터를 다시 갱신할 수도 있습니다.
 
+<!--
 Your templates can use *pipes* to improve the user experience by transforming values for display. 
 For example, use pipes to display dates and currency values that are appropriate for a user's locale.
 Angular provides predefined pipes for common transformations, and you can also define your own pipes.
+-->
+화면에 표시되는 데이터를 사용자가 알아보기 쉽게 하려면 *파이프*를 사용할 수도 있습니다. 예를 들면 날짜나 화폐를 사용자의 언어 환경에 맞게 표시하는 용도로 사용할 수 있습니다.
+일반적인 기능은 Angular 프레임워크에서도 제공합니다. 그리고 이 중에 원하는 기능이 없다면 커스텀 파이프를 만들어서 활용할 수도 있습니다.
 
 <div class="alert is-helpful">
 
@@ -266,9 +282,9 @@ Each of these subjects is introduced in more detail in the following pages.
 
 * [Introduction to services and dependency injection](guide/architecture-services)
 -->
-* [Introduction to Modules](guide/architecture-modules)
+* [모듈](guide/architecture-modules)
 
-* [Introduction to Components](guide/architecture-components)
+* [컴포넌트](guide/architecture-components)
 
   * [템플릿과 뷰](guide/architecture-components#템플릿과-뷰)
 
@@ -280,7 +296,7 @@ Each of these subjects is introduced in more detail in the following pages.
 
   * [파이프](guide/architecture-components#파이프)
 
-* [Introduction to services and dependency injection](guide/architecture-services)
+* [서비스와 의존성 주입](guide/architecture-services)
 
 <div class="alert is-helpful">
 <!--

@@ -286,13 +286,13 @@ You can chain pipes, sending the output of one pipe function to be transformed b
 
 <!--
 ```
-  <!-- Default format: output 'Jun 15, 2015'-->
+  &lt;!-- Default format: output 'Jun 15, 2015'--&gt;
   <p>Today is {{today | date}}</p>
 
- <!-- fullDate format: output 'Monday, June 15, 2015'-->
+ &lt;!-- fullDate format: output 'Monday, June 15, 2015'--&gt;
  <p>The date is {{today | date:'fullDate'}}</p>
 
-  <!-- shortTime format: output '9:43 AM'-->
+  &lt;!-- shortTime format: output '9:43 AM'--&gt;
   <p>The time is {{today | date:'shortTime'}}</p>
 ```
 -->
