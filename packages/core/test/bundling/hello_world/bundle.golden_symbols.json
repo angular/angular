@@ -363,6 +363,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "noop"
+  },
+  {
     "name": "postProcessBaseDirective"
   },
   {
