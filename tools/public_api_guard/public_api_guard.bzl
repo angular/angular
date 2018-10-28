@@ -26,4 +26,8 @@ def generate_targets(golden_files):
                 "//packages/%s:%s" % (package_name + target_suffix, directory_name),
             ],
             golden = "tools/public_api_guard/%s" % golden_file,
+            tags = [
+                "fixme-ivy-aot",  # ivy no longer emits generated index file
+                "no-ivy-jit",  # we will not ship JIT compiled packages to npm
+            ],
         )
