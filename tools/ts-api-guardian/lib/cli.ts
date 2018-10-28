@@ -24,10 +24,27 @@ export function startCli() {
   const options: SerializationOptions = {
     stripExportPattern: [].concat(argv['stripExportPattern']),
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
-    exportTags: {required: ['publicApi'], banned: ['experimental'], toCopy: ['deprecated']},
-    memberTags: {required: [], banned: ['experimental', 'publicApi'], toCopy: ['deprecated']},
-    paramTags: {required: [], banned: ['experimental', 'publicApi'], toCopy: ['deprecated']}
   };
+
+  // Since the API guardian can be also used by other projects, we should not set up the default
+  // Angular project tag rules unless specified explicitly through a given option.
+  if (argv['useAngularTagRules']) {
+    options.exportTags = {
+      required: ['publicApi'],
+      banned: ['experimental'],
+      toCopy: ['deprecated']
+    };
+    options.memberTags = {
+      required: [],
+      banned: ['experimental', 'publicApi'],
+      toCopy: ['deprecated']
+    };
+    options.paramTags = {
+      required: [],
+      banned: ['experimental', 'publicApi'],
+      toCopy: ['deprecated']
+    };
+  }
 
   for (const error of errors) {
     console.warn(error);
@@ -85,7 +102,7 @@ export function parseArguments(input: string[]):
       'allowModuleIdentifiers'
     ],
     boolean: [
-      'help',
+      'help', 'useAngularTagRules',
       // Options used by chalk automagically
       'color', 'no-color'
     ],
@@ -156,6 +173,7 @@ Options:
 
         --rootDir <dir>                 Specify the root directory of input files
 
+        --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.                                        
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
                                         Whitelist identifier for "* as foo" imports`);
