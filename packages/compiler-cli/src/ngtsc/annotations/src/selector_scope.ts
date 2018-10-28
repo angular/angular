@@ -198,8 +198,10 @@ export class SelectorScopeRegistry {
       SelectorScopes {
     const result = this.lookupScopes(node, ngModuleImportedFrom);
     if (result === null) {
-      throw new Error(`Module not found: ${reflectIdentifierOfDeclaration(node)}`);
+      const module = reflectIdentifierOfDeclaration(node);
+      throw new Error(`Module not found: ${module && module.text || null}`);
     }
+
     return result;
   }
 
