@@ -308,8 +308,10 @@
           ]
        },
        {
-          "title": "Observables & RxJS",
-          "tooltip": "Observables & RxJS",
+          "!title": "Observables & RxJS",
+          "title": "옵저버블 & RxJS",
+          "!tooltip": "Observables & RxJS",
+          "tooltip": "옵저버블 & RxJS",
           "children": [
             {
               "url": "guide/observables",
