@@ -298,7 +298,7 @@ export function reflectNameOfDeclaration(decl: ts.Declaration): string|null {
 
 export function reflectIdentifierOfDeclaration(decl: ts.Declaration): ts.Identifier|null {
   if (ts.isClassDeclaration(decl) || ts.isFunctionDeclaration(decl)) {
-    return decl.name || null;
+    return decl.name.text || null;
   } else if (ts.isVariableDeclaration(decl)) {
     if (ts.isIdentifier(decl.name)) {
       return decl.name;
