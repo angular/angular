@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AngularJs</title>
+    <meta charset="UTF-8">
+    <link href="stylesheet1.css"
+    type="text/css"
+    rel="stylesheet">
+
+<head>
+
+    <body style="background-color: rgb(83, 79, 79);">
+
+        <div class="grid1">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+            <h1 id="naslov">AngularJs</h1>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+        </div>
+
+       <div class="grid2">
+
+            <div class="grid2_1">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+            </div>
+
+            <div class="grid2_2">
+                <p>AngularJS (also written as Angular.js) is a JavaScript-based open-source front-end web application framework mainly maintained by Google and by a community of individuals and corporations to address many of the challenges encountered in developing single-page applications. The JavaScript components complement Apache Cordova, a framework used for developing cross-platform mobile apps. It aims to simplify both the development and the testing of such applications by providing a framework for client-side model–view–controller (MVC) and model–view–viewmodel (MVVM) architectures, along with components commonly used in rich Internet applications. (This flexibility has led to the acronym MVW, which stands for "model-view-whatever" and may also encompass model–view–presenter and model–view–adapter.) In 2014, the original AngularJS team began working on the Angular application platform. The AngularJS framework works by first reading the HTML page, which has additional custom tag attributes embedded into it. Angular interprets those attributes as directives to bind input or output parts of the page to a model that is represented by standard JavaScript variables. The values of those JavaScript variables can be manually set within the code, or retrieved from static or dynamic JSON resources.
+
+                        According to JavaScript analytics service Libscore, AngularJS is used on the websites of Wolfram Alpha, NBC, Walgreens, Intel, Sprint, ABC News, and about 12,000 other sites out of 1 million tested in October 2016.[3] AngularJS is currently in the top 100 of the most starred projects on GitHub.[4]
+                        
+                        AngularJS is the frontend part of the MEAN stack, consisting of MongoDB database, Express.js web application server framework, Angular.js itself, and Node.js server runtime environment. </p>
+            </div>
+
+            <div class="grid2_3">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/AngularJS_logo.svg/375px-AngularJS_logo.svg.png" width="100px" height="80px">
+            </div>
+
+       </div>
+        
+       <div class="sadrzaj_div">
+            <h2 id="sadrzaj">Sadržaj:</h2>
+                <ul class="ul">
+                    <li>AngularJS</li>
+                    <li>Scope</li>
+                    <li>Bootstrap</li>
+                    <li>Performance</li>
+                </ul>
+                
+
+
+       </div>
+
+
+
+
+
+
+
+
+    </body>
+    </html>
