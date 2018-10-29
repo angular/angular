@@ -47,6 +47,15 @@ import {FormArray} from '@angular/forms/src/model';
       expect(c.value).toBe(null);
     });
 
+    describe('markAllAsTouched', () => {
+      it('should mark only the control itself as touched', () => {
+        const control = new FormControl('');
+        expect(control.touched).toBe(false);
+        control.markAllAsTouched();
+        expect(control.touched).toBe(true);
+      });
+    });
+
     describe('boxed values', () => {
       it('should support valid boxed values on creation', () => {
         const c = new FormControl({value: 'some val', disabled: true}, null !, null !);

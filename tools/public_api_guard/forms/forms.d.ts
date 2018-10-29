@@ -32,6 +32,7 @@ export declare abstract class AbstractControl {
     get(path: Array<string | number> | string): AbstractControl | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
+    markAllAsTouched(): void;
     markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
