@@ -37,7 +37,7 @@ export const formDirectiveProvider: any = {
  *
  * ### Register Form Group
  *
- * The following example registers a form group with first name and last name controls,
+ * The following example registers a `FormGroup` with first name and last name controls,
  * and listens for the *ngSubmit* event when the button is clicked.
  *
  * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
@@ -88,9 +88,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   /**
    * @description
-   * A lifecycle method called when the directive's inputs change. It
-   * registers the directives validators with its parent, updates its DOM
-   * value, and registers listeners.
+   * A lifecycle method called when the directive's inputs change. For internal use only.
    *
    * @param changes A object of key/value pairs for the set of changed inputs.
    */
@@ -117,8 +115,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   /**
    * @description
-   * Returns an array that represents the path from the top-level form to this control.
-   * Each index is the string name of the control on that level.
+   * Returns an array representing the path to this group. Because this directive
+   * always lives at the top level of a form, its always an empty array
    */
   get path(): string[] { return []; }
 
@@ -238,7 +236,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   /**
    * @description
-   * Resets the form to an initial value and reset its submitted status.
+   * Resets the form to an initial value and resets its submitted status.
    *
    * @param value The new value for the form.
    */

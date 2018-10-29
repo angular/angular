@@ -38,7 +38,7 @@ export const controlNameBinding: any = {
  *
  * @usageNotes
  * 
- * ### Register form control within a group
+ * ### Register `FormControl` within a group
  *
  * The following example shows how to register multiple form controls within a form group
  * and set their value.
@@ -136,24 +136,24 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Tracks the form control instance bound to the directive.
+   * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
   readonly control !: FormControl;
 
   /**
    * @description
-   * Tracks the form control name bound to the directive. The name corresponds
-   * to a key in the parent form model.
+   * Tracks the name of the `FormControl` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
   @Input('formControlName') name !: string;
 
   /**
    * @description
-   * Tracks the disabled property on the element. When set to true, it triggers a warning
-   * logged to the console that the provided form control should be disabled when the form
-   * control instance is created.
+   * Captures the disabled property to trigger a warning that this input should not be
+   * used with reactive forms. The warning is logged to the console that the provided
+   * form control should be disabled when the form control instance is created.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
@@ -201,11 +201,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * A lifecycle method called when the directive's inputs change. It sets up the
-   * control if needed, updates its internal view model, and its parent model.
-   *
-   * It emits a warning if the `formControlName` directive is used along
-   * with an `NgModel` directive on the same element.
+   * A lifecycle method called when the directive's inputs change. For internal use only.
    *
    * @param changes A object of key/value pairs for the set of changed inputs.
    */
@@ -220,8 +216,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Lifecycle method called before the directive's instance is destroyed. Removes
-   * the directive from its parent form.
+   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
    *
    * @param changes A object of key/value pairs for the set of changed inputs.
    */
@@ -257,7 +252,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * The synchronous validator registered with this directive.
+   * Async validator function composed of all the async validators registered with this directive.
    */
   get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 

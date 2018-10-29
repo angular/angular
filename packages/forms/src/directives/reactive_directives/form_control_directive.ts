@@ -38,7 +38,7 @@ export const formControlBinding: any = {
  *
  * @usageNotes
  *
- * ### Regisering a single form control
+ * ### Registering a single form control
  * 
  * The following examples shows how to register a standalone control and set its value.
  *
@@ -125,16 +125,16 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
   /**
    * @description
-   * Tracks the form control instance bound to the directive.
+   * Tracks the `FormControl` instance bound to the directive.
    */
   // TODO(issue/24571): remove '!'.
   @Input('formControl') form !: FormControl;
 
   /**
    * @description
-   * Tracks the disabled property on the element. When set to true, it triggers a warning
-   * logged to the console that the provided form control should be disabled when the form
-   * control instance is created.
+   * Captures the disabled property to trigger a warning that this input should not be
+   * used with reactive forms. The warning is logged to the console that the provided
+   * form control should be disabled when the form control instance is created.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
@@ -178,7 +178,8 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               /**
                * @description
-               * A lifecycle method called when the directive's inputs change.
+               * A lifecycle method called when the directive's inputs change. For internal use
+               * only.
                *
                * @param changes A object of key/value pairs for the set of changed inputs.
                */
@@ -207,13 +208,15 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
               /**
                * @description
-               * The synchronous validator registered with this directive.
+               * Synchronous validator function composed of all the synchronous validators
+               * registered with this directive.
                */
               get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
               /**
                * @description
-               * The async validator registered with this directive.
+               * Async validator function composed of all the async validators registered with this
+               * directive.
                */
               get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);

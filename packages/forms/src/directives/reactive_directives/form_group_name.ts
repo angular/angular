@@ -54,16 +54,16 @@ export const formGroupNameProvider: any = {
  * ### Access individual controls the group
  * 
  * The following example uses the {@link AbstractControl#get get} method to access 
- * individual controls within the group using dot syntax
+ * individual controls within the group using dot syntax.
  *
  * ```ts
  *   this.form.get('name.first');
  * ```
  *
- * ### Register a nested form group.
+ * ### Register a nested `FormGroup`.
  * 
- * The following example registers a nested *name* form group within an existing form group,
- * and provides methods to retrieve the nested form group and individual controls.
+ * The following example registers a nested *name* form group within an existing `FormGroup`,
+ * and provides methods to retrieve the nested `FormGroup` and individual controls.
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
  *
@@ -74,8 +74,8 @@ export const formGroupNameProvider: any = {
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
   /**
    * @description
-   * Tracks the form group name bound to the directive. The name corresponds
-   * to a key in the parent form model.
+   * Tracks the name of the `FormGroup` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
   @Input('formGroupName') name !: string;
@@ -140,8 +140,8 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   /**
    * @description
-   * Tracks the form array name bound to the directive. The name corresponds
-   * to a key in the parent form model.
+   * Tracks the name of the `FormArray` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
    */
   // TODO(issue/24571): remove '!'.
   @Input('formArrayName') name !: string;
@@ -158,9 +158,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   /**
    * @description
-   * A lifecycle method called when the directive's inputs are initialized. It
-   * checks whether the parent form is a valid instance .It adds the
-   * directive to its parent form.
+   * A lifecycle method called when the directive's inputs are initialized. For internal use only.
    *
    * @throws If the directive does not have a valid parent.
    */
@@ -171,8 +169,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   /**
    * @description
-   * A lifecycle method called before the directive's instance is destroyed. It removes the
-   * directive from its parent form.
+   * A lifecycle method called before the directive's instance is destroyed. For internal use only.
    */
   ngOnDestroy(): void {
     if (this.formDirective) {
@@ -203,13 +200,14 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 
   /**
    * @description
-   * The synchronous validator registered with this directive.
+   * Synchronous validator function composed of all the synchronous validators registered with this
+   * directive.
    */
   get validator(): ValidatorFn|null { return composeValidators(this._validators); }
 
   /**
    * @description
-   * The async validator registered with this directive.
+   * Async validator function composed of all the async validators registered with this directive.
    */
   get asyncValidator(): AsyncValidatorFn|null {
     return composeAsyncValidators(this._asyncValidators);
