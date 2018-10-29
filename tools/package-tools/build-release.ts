@@ -48,15 +48,17 @@ export function composeRelease(buildPackage: BuildPackage) {
   copyFiles(packagesDir, 'README.md', releasePath);
   copyFiles(sourceDir, 'package.json', releasePath);
 
+  // This must happen before replacing the version placeholders because the schematics
+  // could use the version placeholders for setting up specific dependencies within `ng-add`.
+  if (buildPackage.hasSchematics) {
+    copyFiles(join(packageOut, 'schematics'), '**/*', join(releasePath, 'schematics'));
+  }
+
   replaceVersionPlaceholders(releasePath);
   insertPackageJsonVersionStamp(join(releasePath, 'package.json'));
 
   createTypingsReexportFile(releasePath, './typings/index', name);
   createMetadataReexportFile(releasePath, './typings/index', name, importAsName);
-
-  if (buildPackage.hasSchematics) {
-    copyFiles(join(packageOut, 'schematics'), '**/*', join(releasePath, 'schematics'));
-  }
 
   if (buildPackage.secondaryEntryPoints.length) {
     createFilesForSecondaryEntryPoint(buildPackage, releasePath);
