@@ -38,7 +38,7 @@ import {
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {_inheritCtorParametersMetadata, ErrorStateMatcher} from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {takeUntil, distinctUntilChanged} from 'rxjs/operators';
 
@@ -124,7 +124,7 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
 }
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatStepper as any)['ctorParameters'] = () => (CdkStepper as any)['ctorParameters'];
+_inheritCtorParametersMetadata(MatStepper, CdkStepper);
 
 @Component({
   moduleId: module.id,

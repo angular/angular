@@ -4,7 +4,6 @@
 
 ### Bug Fixes
 
-* **build:** material not working with ES2015 ([#13709](https://github.com/angular/material2/issues/13709)) ([e9103a6](https://github.com/angular/material2/commit/e9103a6)), closes [#12760](https://github.com/angular/material2/issues/12760) [#13695](https://github.com/angular/material2/issues/13695)
 * **button-toggle:** webkit tap highlight conflicting with ripples ([#13721](https://github.com/angular/material2/issues/13721)) ([abd0278](https://github.com/angular/material2/commit/abd0278))
 * **cdk-platform:** pass `{}` to `@NgModule` since passing nothing breaks ([#13792](https://github.com/angular/material2/issues/13792)) ([5abb644](https://github.com/angular/material2/commit/5abb644))
 * **checkbox:** disabled property not being coerced ([#13755](https://github.com/angular/material2/issues/13755)) ([cee8c65](https://github.com/angular/material2/commit/cee8c65)), closes [#13739](https://github.com/angular/material2/issues/13739)

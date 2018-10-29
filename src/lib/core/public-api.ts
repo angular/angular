@@ -20,3 +20,4 @@ export * from './selection/index';
 
 // TODO: don't have this
 export * from './testing/month-constants';
+export * from './constructor-metadata-inherit';

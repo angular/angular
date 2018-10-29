@@ -19,6 +19,7 @@ import {
   CdkRow,
   CdkRowDef,
 } from '@angular/cdk/table';
+import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /**
  * Header row definition for the mat-table.
@@ -55,9 +56,9 @@ export class MatFooterRowDef extends CdkFooterRowDef {}
 export class MatRowDef<T> extends CdkRowDef<T> {}
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatHeaderRowDef as any)['ctorParameters'] = () => (CdkHeaderRowDef as any)['ctorParameters'];
-(MatFooterRowDef as any)['ctorParameters'] = () => (CdkFooterRowDef as any)['ctorParameters'];
-(MatRowDef as any)['ctorParameters'] = () => (CdkRowDef as any)['ctorParameters'];
+_inheritCtorParametersMetadata(MatHeaderRowDef, CdkHeaderRowDef);
+_inheritCtorParametersMetadata(MatFooterRowDef, CdkFooterRowDef);
+_inheritCtorParametersMetadata(MatRowDef, CdkRowDef);
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
