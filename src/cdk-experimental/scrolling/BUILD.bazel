@@ -1,45 +1,30 @@
 package(default_visibility=["//visibility:public"])
-load("@angular//:index.bzl", "ng_module")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 ng_module(
   name = "scrolling",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk-experimental/scrolling",
   deps = [
+    "@angular//packages/core",
+    "@rxjs",
     "//src/cdk/coercion",
     "//src/cdk/collections",
     "//src/cdk/scrolling",
-    "@rxjs",
   ],
-  tsconfig = "//src/cdk-experimental:tsconfig-build.json",
 )
 
-ts_library(
+ng_test_library(
   name = "scrolling_test_sources",
-  testonly = 1,
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    ":scrolling",
     "//src/cdk/scrolling",
-    "//src/cdk/testing",
-    "@rxjs",
+    ":scrolling",
   ],
-  tsconfig = "//src/cdk-experimental:tsconfig-build.json",
 )
 
-ts_web_test(
+ng_web_test_suite(
   name = "unit_tests",
-  bootstrap = [
-    "//:web_test_bootstrap_scripts",
-  ],
-  # Do not sort
-  deps = [
-    "//:tslib_bundle",
-    "//:angular_bundles",
-    "//:angular_test_bundles",
-    "//test:angular_test_init",
-    ":scrolling_test_sources",
-  ],
+  deps = [":scrolling_test_sources"]
 )
