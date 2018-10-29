@@ -300,7 +300,7 @@ mat-action-list {
 @media (hover: none) {
   .mat-list-option,
   .mat-nav-list .mat-list-item {
-    &:hover {
+    &:not(.mat-list-item-disabled):hover {
       background: none;
     }
   }
