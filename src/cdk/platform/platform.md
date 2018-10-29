@@ -1,3 +1,6 @@
 ### Platform
 
-A service for determing the current platform.
+A set of utilities that gather information about the current
+platform and the different features it supports.
+
+<!-- example(cdk-platform-overview) -->
