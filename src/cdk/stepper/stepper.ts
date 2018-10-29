@@ -442,19 +442,24 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   }
 
   _onKeydown(event: KeyboardEvent) {
+    // TODO(crisbeto): move into a CDK utility once
+    // the similar PRs for other components are merged in.
+    const hasModifier = event.altKey || event.shiftKey || event.ctrlKey || event.metaKey;
     const keyCode = event.keyCode;
+    const manager = this._keyManager;
 
-    if (this._keyManager.activeItemIndex != null && (keyCode === SPACE || keyCode === ENTER)) {
-      this.selectedIndex = this._keyManager.activeItemIndex;
+    if (manager.activeItemIndex != null && !hasModifier &&
+        (keyCode === SPACE || keyCode === ENTER)) {
+      this.selectedIndex = manager.activeItemIndex;
       event.preventDefault();
     } else if (keyCode === HOME) {
-      this._keyManager.setFirstItemActive();
+      manager.setFirstItemActive();
       event.preventDefault();
     } else if (keyCode === END) {
-      this._keyManager.setLastItemActive();
+      manager.setLastItemActive();
       event.preventDefault();
     } else {
-      this._keyManager.onKeydown(event);
+      manager.onKeydown(event);
     }
   }
 

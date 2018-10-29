@@ -10,7 +10,7 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {StepperOrientation, MAT_STEPPER_GLOBAL_OPTIONS, STEP_STATE} from '@angular/cdk/stepper';
-import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {Component, DebugElement, EventEmitter, OnInit, Type, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {
@@ -344,6 +344,16 @@ describe('MatStepper', () => {
       }).not.toThrow();
 
       expect(stepperComponent.selectedIndex).toBe(1);
+    });
+
+    it('should not do anything when pressing the ENTER key with a modifier', () => {
+      const stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
+      assertSelectKeyWithModifierInteraction(fixture, stepHeaders, 'vertical', ENTER);
+    });
+
+    it('should not do anything when pressing the SPACE key with a modifier', () => {
+      const stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
+      assertSelectKeyWithModifierInteraction(fixture, stepHeaders, 'vertical', SPACE);
     });
   });
 
@@ -1061,6 +1071,38 @@ function assertArrowKeyInteractionInRtl(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent._getFocusIndex()).toBe(0);
+}
+
+/** Asserts that keyboard interaction works correctly when the user is pressing a modifier key. */
+function assertSelectKeyWithModifierInteraction(fixture: ComponentFixture<any>,
+                                                stepHeaders: DebugElement[],
+                                                orientation: StepperOrientation,
+                                                selectionKey: number) {
+  const stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  const modifiers = ['altKey', 'shiftKey', 'ctrlKey', 'metaKey'];
+
+  expect(stepperComponent._getFocusIndex()).toBe(0);
+  expect(stepperComponent.selectedIndex).toBe(0);
+
+  dispatchKeyboardEvent(stepHeaders[0].nativeElement, 'keydown',
+      orientation === 'vertical' ? DOWN_ARROW : RIGHT_ARROW);
+  fixture.detectChanges();
+
+  expect(stepperComponent._getFocusIndex())
+      .toBe(1, 'Expected index of focused step to increase by 1 after pressing the next key.');
+  expect(stepperComponent.selectedIndex)
+      .toBe(0, 'Expected index of selected step to remain unchanged after pressing the next key.');
+
+  modifiers.forEach(modifier => {
+    const event: KeyboardEvent = createKeyboardEvent('keydown', selectionKey);
+    Object.defineProperty(event, modifier, {get: () => true});
+    dispatchEvent(stepHeaders[1].nativeElement, event);
+    fixture.detectChanges();
+
+    expect(stepperComponent.selectedIndex).toBe(0, `Expected selected index to remain unchanged ` +
+        `when pressing the selection key with ${modifier} modifier.`);
+    expect(event.defaultPrevented).toBe(false);
+  });
 }
 
 function asyncValidator(minLength: number, validationTrigger: Subject<void>): AsyncValidatorFn {
