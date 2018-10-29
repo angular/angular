@@ -53,7 +53,7 @@ export function startCli() {
   if (mode === 'help') {
     printUsageAndExit(!!errors.length);
   } else {
-    const targets = generateFileNamePairs(argv, mode);
+    const targets = resolveFileNamePairs(argv, mode);
 
     if (mode === 'out') {
       for (const {entrypoint, goldenFile} of targets) {
@@ -180,19 +180,38 @@ Options:
   process.exit(error ? 1 : 0);
 }
 
-export function generateFileNamePairs(
+/**
+ * Resolves a given path to the associated relative path if the current process runs within
+ * Bazel. We need to use the wrapped NodeJS resolve logic in order to properly handle the given
+ * runfiles files which are only part of the runfile manifest on Windows.
+ */
+function resolveBazelFilePath(fileName: string): string {
+  // If the CLI has been launched through the NodeJS Bazel rules, we need to resolve the
+  // actual file paths because otherwise this script won't work on Windows where runfiles
+  // are not available in the working directory. In order to resolve the real path for the
+  // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
+  if (process.env['BAZEL_TARGET']) {
+    return path.posix.relative(process.cwd(), require.resolve(fileName));
+  }
+
+  return fileName;
+}
+
+function resolveFileNamePairs(
     argv: minimist.ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
-    return [{entrypoint: argv._[0], goldenFile: argv[mode]}];
-
+    return [{
+      entrypoint: resolveBazelFilePath(argv._[0]),
+      goldenFile: resolveBazelFilePath(argv[mode]),
+    }];
   } else {  // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 
     return argv._.map((fileName: string) => {
       return {
-        entrypoint: fileName,
-        goldenFile: path.join(goldenDir, path.relative(rootDir, fileName))
+        entrypoint: resolveBazelFilePath(fileName),
+        goldenFile: resolveBazelFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
       };
     });
   }
