@@ -365,6 +365,16 @@ export abstract class AbstractControl {
   }
 
   /**
+   * Marks the control and all its descendant controls as `touched`.
+   * @see `markAsTouched()`
+   */
+  markAllAsTouched(): void {
+    this.markAsTouched({onlySelf: true});
+
+    this._forEachChild((control: AbstractControl) => control.markAllAsTouched());
+  }
+
+  /**
    * Marks the control as `untouched`.
    *
    * If the control has any children, also marks all children as `untouched`
