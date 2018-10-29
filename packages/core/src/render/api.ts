@@ -13,7 +13,7 @@ import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_
 import {noop} from '../util/noop';
 
 
-/**** TESTING!!!!!!! */
+/**** TESTING!!!!!!!!!! */
 
 /**
  * @deprecated Use `RendererType2` (and `Renderer2`) instead.
