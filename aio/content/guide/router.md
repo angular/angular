@@ -1945,7 +1945,7 @@ It's much simpler to write and read:
 
 **Remember:** you only get the _initial_ value of the parameter map with this technique.
 Stick with the observable `paramMap` approach if there's even a chance that the router
-could re-use the component.
+could not re-use the component.
 This sample stays with the observable `paramMap` strategy just in case.
 
 
