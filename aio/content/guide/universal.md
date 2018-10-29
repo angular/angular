@@ -144,9 +144,9 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 
-```
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
-```
+<code-example format="." language="bash" linenums="false">
+npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
+</code-example>
 
 ## Step 2: Prepare your app
 
@@ -247,15 +247,22 @@ Copy `tsconfig.app.json` to `tsconfig.server.json` and modify it as follows:
 
 ## Step 3: Create a new build target and build the bundle
 
-Open the Angular configuration file, `angular.json`, for your project, and add a new target in the `"architect"` section for the server build. The following example names the new target `"server"`.
+Open the Angular configuration file, `angular.json`, for your project, and add a new target in the `"architect"` section for the server build. Also, consider to update `"outputPath"` of `"build"` target to differentiate the output location between two builds easily. The following example names the new target `"server"`.
 
 <code-example format="." language="none" linenums="false">
 "architect": {
-  "build": { ... }
+  "build": {
+    ...
+    "options": {
+      "outputPath": "dist/browser",
+      ...
+    }
+    ...
+  },
   "server": {
     "builder": "@angular-devkit/build-angular:server",
     "options": {
-      "outputPath": "dist/my-project-server",
+      "outputPath": "dist/server",
       "main": "src/main.server.ts",
       "tsConfig": "src/tsconfig.server.json"
     }
@@ -267,7 +274,7 @@ To build a server bundle for your application, use the `ng run` command, with th
 
 <code-example format="." language="none" linenums="false">
 # This builds your project using the server target, and places the output
-# in dist/my-project-server/
+# in dist/server/
 $ ng run my-project:server
 
 Date: 2017-07-24T22:42:09.739Z
@@ -343,7 +350,7 @@ const DIST_FOLDER = join(process.cwd(), 'dist');
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
@@ -385,7 +392,6 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
 <code-example format="." language="typescript" linenums="false">
-@NgModule({
 const path = require('path');
 const webpack = require('webpack');
 
@@ -421,7 +427,7 @@ module.exports = {
 }
 </code-example>
 
-The  project's `dist/` folder now contains both browser and server folders.
+The project's `dist/` folder now contains both browser and server folders.
 
 <code-example format="." language="none" linenums="false">
 dist/
@@ -438,26 +444,21 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+You can add these in the `scripts` section of `package.json`.
 
 <code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
+"scripts": {
+  // Common scripts
+  "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+  "serve:ssr": "node dist/server.js",
 
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
-   ...
+  // Helpers for the scripts
+  "build:client-and-server-bundles": "ng build --prod && ng run my-project:server",
+  "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+}
 </code-example>
 
-To run a production build of your app with Universal on your local system, use the following command.
+To run a production build of your app with Universal on your local system, use the following command:
 
 <code-example format="." language="bash" linenums="false">
 npm run build:ssr && npm run serve:ssr
@@ -512,7 +513,7 @@ src/
   tsconfig.server.json       <i>* TypeScript server configuration</i>
   tsconfig.spec.json         <i>TypeScript spec configuration</i>
   style.css                  <i>styles for the app</i>
-  app/ ...                   <i>application code</i>
+  app/                       <i>application code</i>
     app.server.module.ts     <i>* server-side application module</i>
 server.ts                    <i>* express web server</i>
 tsconfig.json                <i>TypeScript client configuration</i>
@@ -564,7 +565,7 @@ You'll call that function within a _template engine_ that's appropriate for your
 * The first parameter is `AppServerModule`.
 It's the bridge between the Universal server-side renderer and your application.
 
-* The second parameter, `extraProviders`, is optional. It lets you specify dependency providers that apply only when running on this server.
+* The second parameter, `providers`, is optional. It lets you specify dependency providers that apply only when running on this server.
 You can do this when your app needs information that can only be determined by the currently running server instance. 
 The required information in this case is the running server's *origin*, provided under the `APP_BASE_HREF` token, so that the app can [calculate absolute HTTP URLs](#http-urls).
 
