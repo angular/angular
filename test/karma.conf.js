@@ -101,7 +101,9 @@ module.exports = (config) => {
   });
 
   if (process.env['CIRCLECI']) {
-    const tunnelIdentifier = process.env['CIRCLE_BUILD_NUM'];
+    const instanceIndex = Number(process.env['CIRCLE_NODE_INDEX']);
+    const maxParallelInstances = Number(process.env['CIRCLE_NODE_TOTAL']);
+    const tunnelIdentifier = `${process.env['CIRCLE_BUILD_NUM']}-${instanceIndex}`;
     const buildIdentifier = `angular-material-${tunnelIdentifier}`;
     const testPlatform = process.env['TEST_PLATFORM'];
 
@@ -110,8 +112,13 @@ module.exports = (config) => {
       config.browserStack.tunnelIdentifier = tunnelIdentifier;
     }
 
-    // Configure Karma launch the browsers that belong to the given test platform.
-    config.browsers = platformMap[testPlatform];
+    const platformBrowsers = platformMap[testPlatform];
+    const browserInstanceChunks = splitBrowsersIntoInstances(
+        platformBrowsers, maxParallelInstances);
+
+    // Configure Karma to launch the browsers that belong to the given test platform
+    // and instance.
+    config.browsers = browserInstanceChunks[instanceIndex];
   }
 
   if (process.env['TRAVIS']) {
@@ -150,3 +157,21 @@ module.exports = (config) => {
     config.browsers = platformMap[platform];
   }
 };
+
+/**
+ * Splits the specified browsers into a maximum amount of chunks. The chunk of browsers
+ * are being created deterministically and therefore we get reproducible tests when executing
+ * the same CircleCI instance multiple times.
+ */
+function splitBrowsersIntoInstances(browsers, maxInstances) {
+  let chunks = [];
+  let assignedBrowsers = 0;
+
+  for (let i = 0; i < maxInstances; i++) {
+    const chunkSize = Math.floor((browsers.length - assignedBrowsers) / (maxInstances - i));
+    chunks[i] = browsers.slice(assignedBrowsers, assignedBrowsers + chunkSize);
+    assignedBrowsers += chunkSize;
+  }
+
+  return chunks;
+}

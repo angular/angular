@@ -14,6 +14,8 @@
     "outDir": "../../dist/packages/demo-app",
     "rootDirs": [
       ".",
+      // Include the package output here because otherwise NGC won't be able to load
+      // the SCSS files.
       "../../dist/packages/demo-app"
     ],
     "paths": {
@@ -26,7 +28,7 @@
       "@angular/cdk-experimental/*": ["../../dist/releases/cdk-experimental/*"],
       "@angular/cdk-experimental": ["../../dist/releases/cdk-experimental"],
       "@angular/material-moment-adapter": ["../../dist/releases/material-moment-adapter"],
-      "@angular/material-examples": ["../../dist/packages/material-examples"]
+      "@angular/material-examples": ["../../dist/releases/material-examples"]
     }
   },
   "files": [

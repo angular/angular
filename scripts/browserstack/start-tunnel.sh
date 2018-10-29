@@ -31,7 +31,7 @@ rm ${tunnelFileName}
 ARGS=""
 
 if [ ! -z "${CIRCLE_BUILD_NUM}" ]; then
-  ARGS="${ARGS} --local-identifier ${CIRCLE_BUILD_NUM}"
+  ARGS="${ARGS} --local-identifier ${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
 fi
 
 echo "Starting Browserstack Local in the background, logging into: ${tunnelLogFile}"
