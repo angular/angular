@@ -8,12 +8,6 @@ load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library",
 DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
 
-# By default, the Angular bazel rules assume that the `@angular/bazel` package has been
-# installed through NPM. Therefore it expects ngc-wrapped binaries to be available in the "@npm"
-# workspace. Since we build from source, the Bazel rules are not part of the NPM workspace.
-_SOURCE_NG_MODULE_COMPILER = "@angular//packages/bazel/src/ngc-wrapped"
-_SOURCE_NG_MODULE_XI18N = "@angular//packages/bazel/src/ngc-wrapped:xi18n"
-
 def _getDefaultTsConfig(testonly):
   if testonly:
     return DEFAULT_TSCONFIG_TEST
@@ -48,8 +42,6 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
     deps = local_deps,
     tsconfig = tsconfig,
     testonly = testonly,
-    compiler = _SOURCE_NG_MODULE_COMPILER,
-    ng_xi18n = _SOURCE_NG_MODULE_XI18N,
     **kwargs
   )
 

@@ -28,6 +28,16 @@
   dependencies:
     tslib "^1.9.0"
 
+"@angular/bazel@7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.0.1.tgz#42e1a114a20643ea53cff1bb8091e1ba08637885"
+  integrity sha512-DEv1QiccMglqPyXqxtl3Onm4j1aIJzvWx/4Tyy6gEK/r7wOqwffkPrmQGGJC3QAhsXxXMRK0mQ3jkKoAXLbunA==
+  dependencies:
+    "@bazel/typescript" "^0.20.3"
+    "@types/node" "6.0.84"
+    shelljs "0.8.2"
+    tsickle "0.32.1"
+
 "@angular/common@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@angular/common/-/common-7.0.0.tgz#29206614d2b8dc79e5207b7dc6f9fc559e9a24f2"
@@ -261,7 +271,7 @@
     requirejs "2.3.5"
     tmp "0.0.33"
 
-"@bazel/typescript@0.20.3":
+"@bazel/typescript@0.20.3", "@bazel/typescript@^0.20.3":
   version "0.20.3"
   resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.3.tgz#51dcc369c2af0d7f2311d6e692d07776492060f4"
   integrity sha512-BZmfzaNkgS++53CGEUk5p9FXOG+k8FNWCDbxzYljoIGP60aIkw4UgRQ24ReBwhCMg6M6KW609yje7AvDZkA6bg==
@@ -766,6 +776,11 @@
   version "10.11.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.4.tgz#e8bd933c3f78795d580ae41d86590bfc1f4f389d"
   integrity sha512-ojnbBiKkZFYRfQpmtnnWTMw+rzGp/JiystjluW9jgN3VzRwilXddJ6aGQ9V/7iuDG06SBgn7ozW9k3zcAnYjYQ==
+
+"@types/node@6.0.84":
+  version "6.0.84"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.84.tgz#193ffe5a9f42864d425ffd9739d95b753c6a1eab"
+  integrity sha512-1SvEazClhUBRNroJM3oB3xf3u2r6xGmHDGbdigqNPHvNKLl8/BtATgO9eC04ZLuovpSh0B20BF1QJxdi+qmTlg==
 
 "@types/node@^6.0.46":
   version "6.0.118"
@@ -10295,19 +10310,19 @@ shebang-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
   integrity sha1-2kL0l0DAtC2yypcoVxyxkMmO/qM=
 
-shelljs@^0.7.0:
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
-  integrity sha1-3svPh0sNHl+3LhSxZKloMEjprLM=
+shelljs@0.8.2, shelljs@^0.8.1:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.2.tgz#345b7df7763f4c2340d584abb532c5f752ca9e35"
+  integrity sha512-pRXeNrCA2Wd9itwhvLp5LZQvPJ0wU6bcjaTMywHHGX5XWhVN2nzSu7WV0q+oUY7mGK3mgSkDDzP3MgjqdyIgbQ==
   dependencies:
     glob "^7.0.0"
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-shelljs@^0.8.1:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.2.tgz#345b7df7763f4c2340d584abb532c5f752ca9e35"
-  integrity sha512-pRXeNrCA2Wd9itwhvLp5LZQvPJ0wU6bcjaTMywHHGX5XWhVN2nzSu7WV0q+oUY7mGK3mgSkDDzP3MgjqdyIgbQ==
+shelljs@^0.7.0:
+  version "0.7.8"
+  resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.7.8.tgz#decbcf874b0d1e5fb72e14b164a9683048e9acb3"
+  integrity sha1-3svPh0sNHl+3LhSxZKloMEjprLM=
   dependencies:
     glob "^7.0.0"
     interpret "^1.0.0"
@@ -11459,7 +11474,7 @@ tsickle@0.28.0:
     source-map "^0.6.0"
     source-map-support "^0.5.0"
 
-tsickle@^0.32.0:
+tsickle@0.32.1, tsickle@^0.32.0:
   version "0.32.1"
   resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.32.1.tgz#f16e94ba80b32fc9ebe320dc94fbc2ca7f3521a5"
   integrity sha512-JW9j+W0SaMSZGejIFZBk0AiPfnhljK3oLx5SaqxrJhjlvzFyPml5zqG1/PuScUj6yTe1muEqwk5CnDK0cOZmKw==

@@ -7,8 +7,8 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-var_1: &docker_image angular/ngcontainer:0.6.0
-var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.6.0
+var_1: &docker_image angular/ngcontainer:0.7.0
+var_2: &cache_key v2-ng-mat-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.7.0
 
 # Settings common to each job
 var_3: &job_defaults
