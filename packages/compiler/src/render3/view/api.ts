@@ -217,8 +217,8 @@ export interface R3QueryMetadata {
   descendants: boolean;
 
   /**
-   * An expression representing a type to read from each matched node, or null if the node itself
-   * is to be returned.
+   * An expression representing a type to read from each matched node, or null if the default value
+   * for a given node is to be returned.
    */
   read: o.Expression|null;
 }

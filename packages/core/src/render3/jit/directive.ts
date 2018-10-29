@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseHostBindings, parseTemplate} from '@angular/compiler';
+import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseHostBindings, parseTemplate} from '@angular/compiler';
 
+import {Query} from '../../metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
@@ -69,14 +70,13 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
             metadata.animations !== null ? new WrappedNodeExpr(metadata.animations) : null;
 
         // Compile the component metadata, including template, into an expression.
-        // TODO(alxhub): implement inputs, outputs, queries, etc.
         const res = compileR3Component(
             {
               ...directiveMetadata(type, metadata),
               template,
               directives: new Map(),
               pipes: new Map(),
-              viewQueries: [],
+              viewQueries: extractQueriesMetadata(getReflect().propMetadata(type), isViewQuery),
               wrapDirectivesAndPipesInClosure: false,
               styles: metadata.styles || [],
               encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated, animations,
@@ -176,7 +176,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     deps: reflectDependencies(type), host,
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
-    queries: [],
+    queries: extractQueriesMetadata(propMetadata, isContentQuery),
     lifecycle: {
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
     },
@@ -215,6 +215,38 @@ function extractHostBindings(metadata: Directive, propMetadata: {[key: string]: 
   return {attributes, listeners, properties};
 }
 
+function convertToR3QueryPredicate(selector: any): Expression|string[] {
+  return typeof selector === 'string' ? splitByComma(selector) : new WrappedNodeExpr(selector);
+}
+
+export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadata {
+  return {
+    propertyName: propertyName,
+    predicate: convertToR3QueryPredicate(ann.selector),
+    descendants: ann.descendants,
+    first: ann.first,
+    read: ann.read ? new WrappedNodeExpr(ann.read) : null
+  };
+}
+
+function extractQueriesMetadata(
+    propMetadata: {[key: string]: any[]},
+    isQueryAnn: (ann: any) => ann is Query): R3QueryMetadata[] {
+  const queriesMeta: R3QueryMetadata[] = [];
+
+  for (const field in propMetadata) {
+    if (propMetadata.hasOwnProperty(field)) {
+      propMetadata[field].forEach(ann => {
+        if (isQueryAnn(ann)) {
+          queriesMeta.push(convertToR3QueryMetadata(field, ann));
+        }
+      });
+    }
+  }
+
+  return queriesMeta;
+}
+
 function isInput(value: any): value is Input {
   return value.ngMetadataName === 'Input';
 }
@@ -231,10 +263,24 @@ function isHostListener(value: any): value is HostListener {
   return value.ngMetadataName === 'HostListener';
 }
 
+function isContentQuery(value: any): value is Query {
+  const name = value.ngMetadataName;
+  return name === 'ContentChild' || name === 'ContentChildren';
+}
+
+function isViewQuery(value: any): value is Query {
+  const name = value.ngMetadataName;
+  return name === 'ViewChild' || name === 'ViewChildren';
+}
+
+function splitByComma(value: string): string[] {
+  return value.split(',').map(piece => piece.trim());
+}
+
 function parseInputOutputs(values: string[]): StringMap {
   return values.reduce(
       (map, value) => {
-        const [field, property] = value.split(',').map(piece => piece.trim());
+        const [field, property] = splitByComma(value);
         map[field] = property || field;
         return map;
       },
