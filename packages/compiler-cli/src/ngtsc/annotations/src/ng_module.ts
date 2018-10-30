@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, LiteralArrayExpr, R3DirectiveMetadata, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, Expression, LiteralArrayExpr, R3DirectiveMetadata, R3InjectorMetadata, R3NgModuleMetadata, Statement, WrappedNodeExpr, compileInjector, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -14,12 +14,14 @@ import {Decorator, ReflectionHost} from '../../host';
 import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
 import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
   ngInjectorDef: R3InjectorMetadata;
+  metadataStmt: Statement|null;
 }
 
 /**
@@ -130,7 +132,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return {
       analysis: {
-          ngModuleDef, ngInjectorDef,
+        ngModuleDef,
+        ngInjectorDef,
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
       },
       factorySymbolName: node.name !== undefined ? node.name.text : undefined,
     };
@@ -139,17 +143,21 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   compile(node: ts.ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
     const ngInjectorDef = compileInjector(analysis.ngInjectorDef);
     const ngModuleDef = compileNgModule(analysis.ngModuleDef);
+    const ngModuleStatements = ngModuleDef.additionalStatements;
+    if (analysis.metadataStmt !== null) {
+      ngModuleStatements.push(analysis.metadataStmt);
+    }
     return [
       {
         name: 'ngModuleDef',
         initializer: ngModuleDef.expression,
-        statements: [],
+        statements: ngModuleStatements,
         type: ngModuleDef.type,
       },
       {
         name: 'ngInjectorDef',
         initializer: ngInjectorDef.expression,
-        statements: [],
+        statements: ngInjectorDef.statements,
         type: ngInjectorDef.type,
       },
     ];
