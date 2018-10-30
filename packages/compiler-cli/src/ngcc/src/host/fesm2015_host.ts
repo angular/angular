@@ -572,6 +572,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
       const decoratorIdentifier = decoratorExpression;
       return {
         name: decoratorIdentifier.text,
+        identifier: decoratorIdentifier,
         import: this.getImportOfIdentifier(decoratorIdentifier),
         node: call,
         args: Array.from(call.arguments)
@@ -634,6 +635,7 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
           if (typeIdentifier && ts.isIdentifier(typeIdentifier)) {
             decorators.push({
               name: typeIdentifier.text,
+              identifier: typeIdentifier,
               import: this.getImportOfIdentifier(typeIdentifier), node,
               args: getDecoratorArgs(node),
             });
