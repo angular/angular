@@ -37,8 +37,15 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
  *   info.
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
- *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
- *    will also run when query params change. And when set to `always`, they will run every time.
+ *    when the matrix parameters of the route change. Options include:
+ *    - `paramsChange` (default) - Run guards and resolvers when path or matrix params change. This
+ *      mode ignores query param changes.
+ *    - `paramsOrQueryParamsChange` - Guards and resolvers will run when any parameters change. This
+ *      includes path, matrix, and query params.
+ *    - `pathParamsChange` Run guards and resolvers path or any path params change. This mode is
+ *      useful if you want to ignore changes to all optional parameters such as query *and* matrix
+ *      params.
+ *    - `always` - Run guards and resolvers on every navigation.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
@@ -359,7 +366,8 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * See `Routes` for more details.
  * @publicApi
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers =
+    'pathParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
  * See `Routes` for more details.
