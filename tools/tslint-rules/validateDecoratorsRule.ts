@@ -5,15 +5,16 @@ import * as minimatch from 'minimatch';
 
 /**
  * Rule that enforces certain decorator properties to be defined and to match a pattern.
- * Properties can be forbidden by prefixing their name with a `!`.
- * Supports whitelisting files via the third argument. E.g.
+ * Properties can be forbidden by prefixing their name with a `!`. Supports whitelisting
+ * files via the third argument, as well as validating all the arguments by passing in a regex. E.g.
  *
  * ```
  * "validate-decorators": [true, {
  *   "Component": {
  *     "encapsulation": "\\.None$",
  *     "!styles": ".*"
- *   }
+ *   },
+ *   "NgModule": "^(?!\\s*$).+"
  * }, "src/lib"]
  * ```
  */
@@ -31,7 +32,7 @@ type DecoratorRuleSet = {
 
 /** Represents a map between decorator names and rule sets. */
 type DecoratorRules = {
-  [key: string]: DecoratorRuleSet
+  [decorator: string]: DecoratorRuleSet | RegExp
 };
 
 class Walker extends Lint.RuleWalker {
@@ -57,13 +58,7 @@ class Walker extends Lint.RuleWalker {
 
   visitClassDeclaration(node: ts.ClassDeclaration) {
     if (this._enabled && node.decorators) {
-      node.decorators
-        .map(decorator => decorator.expression as ts.CallExpression)
-        .filter(expression => {
-          const args = expression.arguments;
-          return args && args.length && (args[0] as ts.ObjectLiteralExpression).properties;
-        })
-        .forEach(expression => this._validatedDecorator(expression));
+      node.decorators.forEach(decorator => this._validatedDecorator(decorator.expression));
     }
 
     super.visitClassDeclaration(node);
@@ -82,8 +77,30 @@ class Walker extends Lint.RuleWalker {
       return;
     }
 
+    // If the rule is a regex, extract the arguments as a string and run it against them.
+    if (rules instanceof RegExp) {
+      const decoratorText: string = decorator.getText();
+      const openParenthesisIndex = decoratorText.indexOf('(');
+      const closeParenthesisIndex = decoratorText.lastIndexOf(')');
+      const argumentsText = openParenthesisIndex > -1 ? decoratorText.substring(
+        openParenthesisIndex + 1,
+        closeParenthesisIndex > -1 ? closeParenthesisIndex : decoratorText.length) : '';
+
+      if (!rules.test(argumentsText)) {
+        this.addFailureAtNode(decorator.parent, `Expected decorator arguments to match "${rules}"`);
+      }
+
+      return;
+    }
+
+    const args = decorator.arguments;
+
+    if (!args || !args.length || !args[0].properties) {
+      return;
+    }
+
     // Extract the property names and values.
-    const props = decorator.arguments[0].properties
+    const props = args[0].properties
       .filter((node: ts.PropertyAssignment) => node.name && node.initializer)
       .map((node: ts.PropertyAssignment) => ({
         name: node.name.getText(),
@@ -125,26 +142,32 @@ class Walker extends Lint.RuleWalker {
    * @param config Config object passed in via the tslint.json.
    * @returns Sanitized rules.
    */
-  private _generateRules(config: {[key: string]: {[key: string]: string}}): DecoratorRules {
+  private _generateRules(config: {[key: string]: string|{[key: string]: string}}): DecoratorRules {
     const output: DecoratorRules = {};
 
     if (config) {
       Object.keys(config)
         .filter(decoratorName => Object.keys(config[decoratorName]).length > 0)
         .forEach(decoratorName => {
-          output[decoratorName] = Object.keys(config[decoratorName]).reduce((accumulator, prop) => {
-            const isForbidden = prop.startsWith('!');
-            const cleanName = isForbidden ? prop.slice(1) : prop;
-            const pattern = new RegExp(config[decoratorName][prop]);
+          const decoratorConfig = config[decoratorName];
 
-            if (isForbidden) {
-              accumulator.forbidden[cleanName] = pattern;
-            } else {
-              accumulator.required[cleanName] = pattern;
-            }
+          if (typeof decoratorConfig === 'string') {
+            output[decoratorName] = new RegExp(decoratorConfig);
+          } else {
+            output[decoratorName] = Object.keys(decoratorConfig).reduce((rules, prop) => {
+              const isForbidden = prop.startsWith('!');
+              const cleanName = isForbidden ? prop.slice(1) : prop;
+              const pattern = new RegExp(decoratorConfig[prop]);
 
-            return accumulator;
-          }, {required: {}, forbidden: {}} as DecoratorRuleSet);
+              if (isForbidden) {
+                rules.forbidden[cleanName] = pattern;
+              } else {
+                rules.required[cleanName] = pattern;
+              }
+
+              return rules;
+            }, {required: {}, forbidden: {}} as DecoratorRuleSet);
+          }
         });
     }
 

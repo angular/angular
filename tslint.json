@@ -118,7 +118,8 @@
       },
       "Directive": {
         "!host": "\\[class\\]"
-      }
+      },
+      "NgModule": "^(?!\\s*$).+"
     }, "src/+(lib|cdk|material-experimental|cdk-experimental)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
