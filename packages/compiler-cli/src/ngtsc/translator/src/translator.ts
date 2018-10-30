@@ -43,6 +43,7 @@ const CORE_SUPPORTED_SYMBOLS = new Set<string>([
   'defineInjector',
   'ɵdefineNgModule',
   'inject',
+  'ɵsetClassMetadata',
   'ɵInjectableDef',
   'ɵInjectorDef',
   'ɵNgModuleDefWithMeta',
