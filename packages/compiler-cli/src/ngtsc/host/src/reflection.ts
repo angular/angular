@@ -21,6 +21,11 @@ export interface Decorator {
   name: string;
 
   /**
+   * Identifier which refers to the decorator in source.
+   */
+  identifier: ts.Identifier;
+
+  /**
    * `Import` by which the decorator was brought into the module in which it was invoked, or `null`
    * if the decorator was declared in the same module and not imported.
    */
