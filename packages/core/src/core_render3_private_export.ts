@@ -122,7 +122,8 @@ export {
   i18nMapping as ɵi18nMapping,
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
-  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2
+  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2,
+  setClassMetadata as ɵsetClassMetadata,
 } from './render3/index';
 
 export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from './render3/debug';
