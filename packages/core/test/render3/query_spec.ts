@@ -13,7 +13,7 @@ import {EventEmitter} from '../..';
 
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 import {getNativeByIndex} from '../../src/render3/util';
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 import {getViewData} from '../../src/render3/state';
@@ -949,7 +949,7 @@ describe('query', () => {
         expect(qList.last).toBe(childInstance);
       });
 
-      it('should not add results to query if a requested token cant be read', () => {
+      it('should not add results to selector-based query if a requested token cant be read', () => {
         const Child = createDirective('child');
 
         /**
@@ -976,9 +976,224 @@ describe('query', () => {
               }
             });
 
-        const cmptInstance = renderComponent(Cmpt);
-        const qList = (cmptInstance.query as QueryList<any>);
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
         expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to directive-based query if requested token cant be read', () => {
+        const Child = createDirective('child');
+        const OtherChild = createDirective('otherchild');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(Child, {read: OtherChild}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child, OtherChild], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, Child, false, OtherChild);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to directive-based query if only read token matches', () => {
+        const Child = createDirective('child');
+        const OtherChild = createDirective('otherchild');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(OtherChild, {read: Child}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child, OtherChild], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, OtherChild, false, Child);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to TemplateRef-based query if only read token matches', () => {
+        /**
+         * <div></div>
+         * class Cmpt {
+         *  @ViewChildren(TemplateRef, {read: ElementRef}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div');
+              }
+            },
+            2, 0, [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false, ElementRef);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should match using string selector and directive as a read argument', () => {
+        const Child = createDirective('child');
+
+        /**
+         * <div child #foo></div>
+         * class Cmpt {
+         *  @ViewChildren('foo', {read: Child}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', ''], ['foo', '']);
+              }
+            },
+            3, 0, [Child], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, ['foo'], false, Child);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(1);
+        expect(qList.first instanceof Child).toBeTruthy();
+      });
+
+      it('should not add results to the query in case no match found (via TemplateRef)', () => {
+        const Child = createDirective('child');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(TemplateRef) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
+        function Cmpt_Template_1(rf: RenderFlags, ctx1: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div');
+            text(1, 'Test');
+            elementEnd();
+          }
+        }
+        /**
+         * <ng-template #foo><div>Test</div></ng-template>
+         * <ng-template #bar><div>Test</div></ng-template>
+         * <ng-template #baz><div>Test</div></ng-template>
+         * class Cmpt {
+         *   @ViewChildren(TemplateRef) tmplQuery;
+         *   @ViewChildren(TemplateRef, {read: ElementRef}) elemQuery;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                template(2, Cmpt_Template_1, 2, 0, null, null, ['foo', ''], templateRefExtractor);
+                template(3, Cmpt_Template_1, 2, 0, null, null, ['bar', ''], templateRefExtractor);
+                template(4, Cmpt_Template_1, 2, 0, null, null, ['baz', ''], templateRefExtractor);
+              }
+            },
+            5, 0, [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false);
+                query(1, TemplateRef as any, false, ElementRef);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) &&
+                    (ctx.tmplQuery = tmp as QueryList<any>);
+                queryRefresh(tmp = load<QueryList<any>>(1)) &&
+                    (ctx.elemQuery = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+
+        // check template-based query set
+        const tmplQList = component.tmplQuery;
+        expect(tmplQList.length).toBe(3);
+        expect(isTemplateRef(tmplQList.first)).toBeTruthy();
+
+        // check element-based query set
+        const elemQList = component.elemQuery;
+        expect(elemQList.length).toBe(3);
+        expect(isElementRef(elemQList.first)).toBeTruthy();
       });
 
     });
