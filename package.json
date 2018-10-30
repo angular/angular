@@ -45,9 +45,9 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular/bazel": "7.0.1",
     "@angular-devkit/core": "^7.0.1",
     "@angular-devkit/schematics": "^7.0.1",
+    "@angular/bazel": "7.0.1",
     "@angular/compiler-cli": "^7.0.0",
     "@angular/http": "^7.0.0",
     "@angular/platform-browser-dynamic": "^7.0.0",
@@ -80,7 +80,7 @@
     "chalk": "^1.1.3",
     "codelyzer": "^4.3.0",
     "dgeni": "^0.4.10",
-    "dgeni-packages": "^0.26.11",
+    "dgeni-packages": "^0.26.12",
     "firebase": "^5.5.2",
     "firebase-admin": "^5.0.0",
     "firebase-tools": "^4.1.0",
