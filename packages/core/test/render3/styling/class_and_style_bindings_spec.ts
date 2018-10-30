@@ -1519,7 +1519,7 @@ describe('style and class based bindings', () => {
 
       let classResult: any;
       const classFactory = bindPlayerFactory(
-          (element: HTMLElement, type: BindingType, firstRender: boolean, value: any) => {
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean) => {
             const player = new MockPlayer();
             classResult = {player, element, type, value};
             return player;
@@ -1528,7 +1528,7 @@ describe('style and class based bindings', () => {
 
       let styleResult: any;
       const styleFactory = bindPlayerFactory(
-          (element: HTMLElement, type: BindingType, firstRender: boolean, value: any) => {
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean) => {
             const player = new MockPlayer();
             styleResult = {player, element, type, value};
             return player;
@@ -1761,7 +1761,7 @@ describe('style and class based bindings', () => {
 
          const players: MockPlayer[] = [];
          const buildFn =
-             (element: HTMLElement, type: BindingType, firstRender: boolean, value: any,
+             (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
               oldPlayer: MockPlayer | null) => {
                const player = new MockPlayer(value);
                players.push(player);
@@ -2075,7 +2075,7 @@ describe('style and class based bindings', () => {
       let previousPlayer: MockPlayer|null = null;
       let currentPlayer: MockPlayer|null = null;
       const buildFn =
-          (element: HTMLElement, type: BindingType, firstRender: boolean, value: any,
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
            existingPlayer: MockPlayer) => {
             previousPlayer = existingPlayer;
             return currentPlayer = new MockPlayer(value);
@@ -2105,7 +2105,7 @@ describe('style and class based bindings', () => {
       let currentPlayer: MockPlayer|null = null;
       let previousPlayer: MockPlayer|null = null;
       const buildFn =
-          (element: HTMLElement, type: BindingType, firstRender: boolean, value: any,
+          (element: HTMLElement, type: BindingType, value: any, firstRender: boolean,
            existingPlayer: MockPlayer | null) => {
             previousPlayer = existingPlayer;
             return currentPlayer = new MockPlayer(value);
@@ -2146,7 +2146,7 @@ describe('style and class based bindings', () => {
 
       let values: {[key: string]: any}|null = null;
       const buildFn =
-          (element: HTMLElement, type: BindingType, isFirstRender: boolean, value: any) => {
+          (element: HTMLElement, type: BindingType, value: any, isFirstRender: boolean) => {
             values = value;
             return new MockPlayer();
           };
@@ -2296,7 +2296,7 @@ describe('style and class based bindings', () => {
       const firstRenderCaptures: any[] = [];
       const otherRenderCaptures: any[] = [];
       const buildFn =
-          (element: HTMLElement, type: BindingType, isFirstRender: boolean, value: any) => {
+          (element: HTMLElement, type: BindingType, value: any, isFirstRender: boolean) => {
             if (isFirstRender) {
               firstRenderCaptures.push({type, value});
             } else {

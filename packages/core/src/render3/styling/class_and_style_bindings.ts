@@ -940,7 +940,7 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
     // `setValue` which means no new player will be provided.
     if (this._dirty) {
       const player = this._factory.fn(
-          this._element, this._type, isFirstRender, this._values !, currentPlayer || null);
+          this._element, this._type, this._values !, isFirstRender, currentPlayer || null);
       this._values = {};
       this._dirty = false;
       return player;

@@ -1161,7 +1161,7 @@ export function elementStyling(
  */
 export function elementStylingApply(index: number): void {
   const viewData = getViewData();
-  const isFirstRender = viewData[FLAGS] & LViewFlags.CreationMode ? true : false;
+  const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
       getStylingContext(index, viewData), getRenderer(), viewData, isFirstRender);
   if (totalPlayersQueued > 0) {
