@@ -11,6 +11,7 @@ import {Injector} from '@angular/core';
 import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments} from '../router_state';
+import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
 import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
 
@@ -147,6 +148,9 @@ function shouldRunGuardsAndResolvers(
     curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
     mode: RunGuardsAndResolvers | undefined): boolean {
   switch (mode) {
+    case 'pathParamsChange':
+      return !equalPath(curr.url, future.url);
+
     case 'always':
       return true;
 
