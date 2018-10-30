@@ -16,12 +16,13 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {getConstructorDependencies, isAngularCore} from './util';
 
+export interface InjectableHandlerData { meta: R3InjectableMetadata; }
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements
-    DecoratorHandler<R3InjectableMetadata, Decorator> {
+    DecoratorHandler<InjectableHandlerData, Decorator> {
   constructor(private reflector: ReflectionHost, private isCore: boolean) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
@@ -32,14 +33,16 @@ export class InjectableDecoratorHandler implements
         decorator => decorator.name === 'Injectable' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3InjectableMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
     return {
-      analysis: extractInjectableMetadata(node, decorator, this.reflector, this.isCore),
+      analysis: {
+        meta: extractInjectableMetadata(node, decorator, this.reflector, this.isCore),
+      },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): CompileResult {
-    const res = compileIvyInjectable(analysis);
+  compile(node: ts.ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
+    const res = compileIvyInjectable(analysis.meta);
     return {
       name: 'ngInjectableDef',
       initializer: res.expression,
