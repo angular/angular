@@ -39,6 +39,9 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
  *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
  *    will also run when query params change. And when set to `always`, they will run every time.
+ *    When set to `pathParamsChange`, guards and resolvers will run when the path or any path params
+ *    change. This mode is useful if you want to ignore changes to all optional parameters such as
+ *    query *and* matrix params. This mode is the opposite of `always`.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
@@ -359,7 +362,8 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * See `Routes` for more details.
  * @publicApi
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers =
+    'pathParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
  * See `Routes` for more details.
