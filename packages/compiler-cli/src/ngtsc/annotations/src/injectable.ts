@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -14,9 +14,13 @@ import {Decorator, ReflectionHost} from '../../host';
 import {reflectObjectLiteral} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
 import {getConstructorDependencies, isAngularCore} from './util';
 
-export interface InjectableHandlerData { meta: R3InjectableMetadata; }
+export interface InjectableHandlerData {
+  meta: R3InjectableMetadata;
+  metadataStmt: Statement|null;
+}
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
@@ -37,16 +41,20 @@ export class InjectableDecoratorHandler implements
     return {
       analysis: {
         meta: extractInjectableMetadata(node, decorator, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
       },
     };
   }
 
   compile(node: ts.ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
     const res = compileIvyInjectable(analysis.meta);
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngInjectableDef',
-      initializer: res.expression,
-      statements: res.statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }

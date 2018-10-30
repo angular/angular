@@ -748,4 +748,25 @@ describe('ngtsc behavioral tests', () => {
        const jsContents = env.getContents('test.js');
        expect(jsContents).toContain('directives: function () { return [CmpB]; }');
      });
+
+  it('should emit setClassMetadata calls for all types', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
+
+      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
+      @Directive({selector: 'dir'}) class TestDirective {}
+      @Injectable() class TestInjectable {}
+      @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
+      @Pipe({name: 'pipe'}) class TestPipe {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestComponent, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestDirective, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestInjectable, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestNgModule, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
+  });
 });

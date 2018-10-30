@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
+import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -14,12 +14,16 @@ import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '.
 import {Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
 import {extractDirectiveGuards, getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
-export interface DirectiveHandlerData { meta: R3DirectiveMetadata; }
+export interface DirectiveHandlerData {
+  meta: R3DirectiveMetadata;
+  metadataStmt: Statement|null;
+}
 export class DirectiveDecoratorHandler implements
     DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
@@ -63,6 +67,7 @@ export class DirectiveDecoratorHandler implements
     return {
       analysis: {
         meta: analysis,
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
       }
     };
   }
@@ -70,10 +75,14 @@ export class DirectiveDecoratorHandler implements
   compile(node: ts.ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
       CompileResult {
     const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngDirectiveDef',
       initializer: res.expression,
-      statements: res.statements,
+      statements: statements,
       type: res.type,
     };
   }
