@@ -11,6 +11,8 @@ import {DebugContext, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
     context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
+  [oldValue, currValue] =
+      [oldValue, currValue].map(val => typeof val === 'object' ? JSON.stringify(val) : val);
   let msg =
       `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
   if (isFirstCheck) {
