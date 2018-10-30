@@ -114,6 +114,10 @@ export {
 } from './interfaces/node';
 
 export {
+  setClassMetadata,
+} from './metadata';
+
+export {
   pipe,
   pipeBind1,
   pipeBind2,
