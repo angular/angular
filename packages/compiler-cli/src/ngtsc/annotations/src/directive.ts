@@ -19,7 +19,9 @@ import {extractDirectiveGuards, getConstructorDependencies, isAngularCore, unwra
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
-export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata, Decorator> {
+export interface DirectiveHandlerData { meta: R3DirectiveMetadata; }
+export class DirectiveDecoratorHandler implements
+    DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
@@ -32,7 +34,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
         decorator => decorator.name === 'Directive' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3DirectiveMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
     const directiveResult =
         extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
@@ -54,12 +56,20 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
       });
     }
 
-    return {analysis};
+    if (analysis === undefined) {
+      return {};
+    }
+
+    return {
+      analysis: {
+        meta: analysis,
+      }
+    };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3DirectiveMetadata, pool: ConstantPool):
+  compile(node: ts.ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
       CompileResult {
-    const res = compileDirectiveFromMetadata(analysis, pool, makeBindingParser());
+    const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     return {
       name: 'ngDirectiveDef',
       initializer: res.expression,

@@ -17,7 +17,9 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {SelectorScopeRegistry} from './selector_scope';
 import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
-export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, Decorator> {
+export interface PipeHandlerData { meta: R3PipeMetadata; }
+
+export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
@@ -30,7 +32,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
         decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3PipeMetadata> {
+  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
     if (clazz.name === undefined) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, clazz, `@Pipes must have names`);
@@ -77,16 +79,18 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
 
     return {
       analysis: {
-        name,
-        type,
-        pipeName,
-        deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
-      }
+        meta: {
+          name,
+          type,
+          pipeName,
+          deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+        },
+      },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3PipeMetadata): CompileResult {
-    const res = compilePipeFromMetadata(analysis);
+  compile(node: ts.ClassDeclaration, analysis: PipeHandlerData): CompileResult {
+    const res = compilePipeFromMetadata(analysis.meta);
     return {
       name: 'ngPipeDef',
       initializer: res.expression,
