@@ -6,12 +6,12 @@
 <!--
 Handling user input with forms is the cornerstone of many common applications. Applications use forms to enable users to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
 -->
-대부분의 애플리케이션에는 사용자의 입력을 폼으로 처리하는 기능이 꼭 들어갑니다. 폼은 사용자가 로그인하거나 개인정보를 수정할 때, 서버에 저장할 정보를 입력하는 것과 같이 데이터를 처리하는 곳에 모두 적용할 수 있습니다.
+대부분의 애플리케이션에는 사용자의 입력을 폼으로 처리하는 기능이 들어갑니다. 폼은 사용자가 로그인하거나 개인정보를 수정할 때, 서버에 저장할 정보를 입력하는 것과 같이 데이터를 처리하는 곳에 모두 활용할 수 있습니다.
 
 <!--
 Angular provides two different approaches to handling user input through forms: reactive and template-driven. Both capture user input events from the view, validate the user input, create a form model and data model to update, and provide a way to track changes. 
 -->
-Angular는 사용자의 입력을 처리하는 폼을 두 종류로 제공합니다. 반응형 폼과 템플릿 기반 폼은 모두 화면에서 사용자의 입력을 받아 입력값을 검증하며, 폼 모델을 구성하고 이 모델로 데이터 모델을 갱신할 수 있습니다. 그리고 값이 변경되는 것을 감지해서 원하는 로직을 실행할 수도 있습니다.
+Angular는 사용자의 입력을 처리하는 폼을 두가지 방식으로 제공합니다. 반응형 폼과 템플릿 기반 폼은 모두 화면에서 사용자의 입력을 받아 입력값을 검증하며, 폼 모델을 구성하고 이 모델로 데이터 모델을 갱신할 수 있습니다. 그리고 값이 변경되는 것을 감지해서 원하는 로직을 실행할 수도 있습니다.
 
 <!--
 Reactive and template-driven forms process and manage form data differently. Each offers different advantages.
@@ -27,13 +27,13 @@ Reactive and template-driven forms process and manage form data differently. Eac
 * **Reactive forms** are more robust: they're more scalable, reusable, and testable. If forms are a key part of your application, or you're already using reactive patterns for building your application, use reactive forms.
 * **Template-driven forms** are useful for adding a simple form to an app, such as an email list signup form. They're easy to add to an app, but they don't scale as well as reactive forms. If you have very basic form requirements and logic that can be managed solely in the template, use template-driven forms.
 -->
-* **반응형 폼**은 좀 더 생생하게 동작합니다. 이 방식은 확장하기 편하며, 재사용할 수도 있고, 테스트도 쉽게 적용할 수 있습니다. 애플리케이션에서 폼의 역할이 중요하거나, 반응형 프로그래밍을 사용하고 있다면 반응형 폼을 사용하는 것이 좋습니다.
-* **템플릿 기반의 폼**은 회원가입과 같이 간단한 폼을 만들 때 유용합니다. 이 방식은 구현하기는 간단하지만 반응형 폼처럼 확장하기 편하지는 않습니다. 템플릿 기반 폼은 로직이 간단해서 템플릿 안에서 모두 처리할 수 있을 때만 사용하는 것이 좋습니다.
+* **반응형 폼**은 좀 더 역동적으로 동작합니다. 이 방식은 확장하기 편하며, 재사용하기 편하고, 테스트도 쉽게 적용할 수 있습니다. 애플리케이션에서 폼의 역할이 중요하거나, 반응형 프로그래밍을 사용하고 있다면 반응형 폼을 사용하는 것이 좋습니다.
+* **템플릿 기반의 폼**은 회원가입과 같이 간단한 폼을 만들 때 유용합니다. 이 방식은 구현하기 간단하지만 반응형 폼처럼 쉽게 확장할 수는 없습니다. 템플릿 기반 폼은 템플릿 안에서 모두 처리할 수 있을 정도로 로직이 간단할 때만 사용하는 것이 좋습니다.
 
 <!--
 This guide provides information to help you decide which type of form works best for your situation. It introduces the common building blocks used by both approaches. It also summarizes the key differences between the two approaches, and demonstrates those differences in the context of setup, data flow, and testing.
 -->
-이 가이드는 애플리케이션에 어떤 방식의 폼을 적용하는 것이 좋은지 선택할 수 있는 정보를 제공합니다. 그리고 각 방식의 구현 과정을 소개하면서 두 방식이 어떻게 다른지 알아봅니다. 두 방식은 폼 모델 구성, 데이터의 흐름, 테스트 과정이 모두 다릅니다.
+이 가이드에서는 애플리케이션에 어떤 방식의 폼을 적용하는 것이 좋은지 안내합니다. 그리고 각 방식의 구현 과정을 소개하면서 두 방식이 어떻게 다른지 알아봅니다. 두 방식은 폼 모델 구성, 데이터의 흐름, 테스트 과정이 모두 다릅니다.
 
 <div class="alert is-helpful">
 
@@ -71,10 +71,10 @@ The table below summarizes the key differences between reactive and template-dri
 -->
 ||반응형 폼|템플릿 기반 폼|
 |--- |--- |--- |
-|폼 모델 구성|명시적으로 컴포넌트 클래스에 선언|덜 명시적이며 디렉티브로 선언|
-|데이터 모델|구조를 갖춰 구성|구조가 없음|
+|폼 모델 구성|명시적으로 컴포넌트 클래스에 선언|템플릿에 디렉티브로 선언|
+|데이터 모델|구조를 갖춰 구성|개별 구성|
 |동작 방식|동기|비동기|
-|유효성 검증|함수|디렉티브|
+|유효성 검증 방법|함수|디렉티브|
 |불변성|이뮤터블|뮤터블|
 |확장성|API에 자유롭게 접근 가능|일부 API만 접근 가능|
 
@@ -109,7 +109,7 @@ Both reactive and template-driven forms share underlying building blocks.
 <!--
 See the [Form model setup](#setup-the-form-model) section below for an introduction to how these control instances are created and managed with reactive and template-driven forms. Further details are provided in the [data flow section](#data-flow-in-forms) of this guide.
 -->
-반응형 폼과 템플릿 기반 폼에서 이 컨트롤 인스턴스들이 어떻게 동작하는지 확인하려면 아래에서 설명하는 [폼 모델 구성](#setup-the-form-model) 부분을 참고하세요. 그리고나서는 [데이터 흐름 섹션](#data-flow-in-forms)을 확인하는 것도 좋습니다.
+반응형 폼과 템플릿 기반 폼에서 이 컨트롤 인스턴스들이 어떻게 동작하는지 확인하려면 아래에서 설명하는 [폼 모델 구성](#setup-the-form-model) 부분을 참고하세요. 그리고 나서는 [데이터 흐름](#data-flow-in-forms)섹션을 확인하는 것이 좋습니다.
 
 {@a setup-the-form-model}
 
@@ -139,7 +139,7 @@ Here's a component with an input field for a single control implemented using re
 <!--
 The source of truth provides the value and status of the form element at a given point in time. In reactive forms, the form model is the source of truth. In the example above, the form model is the `FormControl` instance.
 -->
-폼 컨트롤의 값과 유효성 검증 상태는 모두 원천 소스(source of truth)에서 전달됩니다. 그리고 반응형 폼에서 원천 소스는 폼 모델이며, 이 코드에서는 `FormControl` 인스턴스가 폼 모델입니다.
+폼 컨트롤의 값과 유효성 검증 상태는 모두 원천 소스(source of truth)에서 전달됩니다. 반응형 폼에서 원천 소스는 폼 모델이며, 이 코드에서는 `FormControl` 인스턴스가 폼 모델입니다.
 
 <figure>
   <!--
@@ -151,7 +151,7 @@ The source of truth provides the value and status of the form element at a given
 <!--
 With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing `FormControl` instance to a specific form element in the view using a value accessor (`ControlValueAccessor` instance). 
 -->
-반응형 폼 방식으로 구현하면 폼 모델은 컴포넌트 클래스에 명시적으로 정의합니다. 그리고 `FormControlDirective`와 같은 폼 디렉티브는 화면에 표시된 폼 엘리먼트와 컴포넌트의 `FormControl` 인스턴스를 연결하는데, 이 때 값 참조 인터페이스(`ControlValueAccessor` 인스턴스)를 사용합니다.
+반응형 폼 방식으로 구현할 때 폼 모델은 컴포넌트 클래스에 명시적으로 정의합니다. 그리고 `FormControlDirective`와 같은 폼 디렉티브는 화면에 표시된 폼 엘리먼트와 컴포넌트의 `FormControl` 인스턴스를 연결하는데, 이 때 값 참조 인터페이스(`ControlValueAccessor` 인스턴스)를 사용합니다.
 
 <!--
 ### Setup in template-driven forms
@@ -181,7 +181,7 @@ In template-driven forms, the source of truth is the template.
 <!--
 The abstraction of the form model promotes simplicity over structure. The template-driven form directive `NgModel` is responsible for creating and managing the `FormControl` instance for a given form element. It's less explicit, but you no longer have direct control over the form model. 
 -->
-템플릿 기반 폼에서 폼 모델은 더 추상화되기 때문에 구조가 단순합니다. 템플릿 기반 폼에서 사용되는 `NgModel` 디렉티브는 폼 엘리먼트와 연결되는 `FormControl` 인스턴스를 생성하고 관리합니다. 템플릿 기반 폼은 반응형 폼에 비해 간단하게 구성할 수 있지만, 반응형 폼과 다르게 폼 모델에 직접 접근할 수 없습니다.
+템플릿 기반 폼에서 폼 모델은 더 추상화되기 때문에 구조가 단순합니다. 그리고 템플릿 기반 폼에서 사용하는 `NgModel` 디렉티브는 폼 엘리먼트와 연결되는 `FormControl` 인스턴스를 직접 생성하고 관리합니다. 템플릿 기반 폼은 반응형 폼에 비해 간단하게 구성할 수 있지만, 반응형 폼과 다르게 폼 모델에 직접 접근할 수 없습니다.
 
 {@a data-flow-in-forms}
 
@@ -193,7 +193,7 @@ The abstraction of the form model promotes simplicity over structure. The templa
 <!--
 When building forms in Angular, it's important to understand how the framework handles data flowing from the user or from programmatic changes. Reactive and template-driven forms follow two different strategies when handling form input. The data flow examples below begin with the favorite color input field example from above, and then show how changes to favorite color are handled in reactive forms compared to template-driven forms.
 -->
-Angular의 방식으로 폼을 구성할 때는 사용자가 입력한 데이터를 프레임워크가 어떻게 처리하고 변경사항에 반응하는지 이해하는 것이 중요합니다. 그리고 이 때 반응형 폼과 템플릿 기반 폼은 서로 다른 정책으로 폼 입력을 처리합니다. 이번 섹션에서는 위에서 살펴본 예제를 좀 더 발전시켜서, 데이터를 처리하는 방식이 서로 어떻게 다른지 알아봅시다.
+Angular의 방식으로 폼을 구성할 때는 사용자가 입력한 데이터를 프레임워크가 어떻게 처리하고 변경사항에 반응하는지 이해하는 것이 중요합니다. 왜냐하면 반응형 폼과 템플릿 기반 폼은 서로 다른 정책으로 폼 입력을 처리하기 때문입니다. 이번 섹션에서는 위에서 살펴본 예제를 좀 더 발전시켜서, 데이터를 처리하는 방식이 서로 어떻게 다른지 알아봅시다.
 
 <!--
 ### Data flow in reactive forms
@@ -203,7 +203,7 @@ Angular의 방식으로 폼을 구성할 때는 사용자가 입력한 데이터
 <!--
 As described above, in reactive forms each form element in the view is directly linked to a form model (`FormControl` instance). Updates from the view to the model and from the model to the view are synchronous and aren't dependent on the UI rendered. The diagrams below use the same favorite color example to demonstrate how data flows when an input field's value is changed from the view and then from the model.
 -->
-위에서 설명한 것처럼 반응형 폼에서 화면에 존재하는 개별 폼 엘리먼트는 폼 모델(`FormControl` 인스턴스)과 직접 연결됩니다. 그래서 화면에서 변경된 값은 모델로 전달되며, 모델의 값이 변경되면 화면의 값도 즉시 갱신됩니다. 이 동작은 값이 변경되었을 때 따로 UI를 렌더링하지 않아도 즉시 발생합니다. 아래 그림은 화면의 입력 필드 값이 변경되었을 때 이 값이 모델로 어떻게 전달되는지 표현한 그림입니다.
+위에서 설명한 것처럼 반응형 폼에서 화면에 존재하는 개별 폼 엘리먼트는 폼 모델(`FormControl` 인스턴스)과 직접 연결됩니다. 그래서 화면에서 변경된 값은 모델로 전달되며, 모델의 값이 변경되면 화면의 값도 즉시 갱신됩니다. 이 동작은 값이 변경되었을 때 UI를 다시 렌더링하지 않아도 즉시 실행됩니다. 아래 그림은 화면의 입력 필드 값이 변경되었을 때 이 값이 모델로 어떻게 전달되는지 표현한 그림입니다.
 
 <figure>
   <!--
@@ -215,7 +215,7 @@ As described above, in reactive forms each form element in the view is directly 
 <!--
 The steps below outline the data flow from view to model.
 -->
-이 때 화면에서 모델로 데이터가 전달되는 흐름을 단계별로 살펴봅시다.
+화면에서 모델로 데이터가 전달되는 흐름을 단계별로 살펴봅시다.
 
 <!--
 1. The user types a value into the input element, in this case the favorite color *Blue*.
@@ -224,7 +224,7 @@ The steps below outline the data flow from view to model.
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 -->
-1. 사용자가 엘리먼트에 값을 입력합니다. 이 경우에는 *Blue*를 입력했습니다.
+1. 사용자가 엘리먼트에 값을 입력합니다. 이 예제에서는 *Blue*를 입력했습니다.
 1. 폼 입력 엘리먼트가 "input" 이벤트를 발생시키면서 마지막으로 입력된 값을 전달합니다.
 1. 이 이벤트는 컨트롤 값 접근자(control value accessor)가 감지하고 있는데, 새로운 이벤트가 전달되면 이 값을 `FormControl` 인스턴스로 전달합니다.
 1. `FormControl` 인스턴스는 새로운 값으로 `valueChanges` 옵저버블을 발행합니다.
@@ -250,7 +250,7 @@ The steps below outline the data flow from model to view.
 -->
 1. 사용자가 `favoriteColorControl.setValue()` 메소드를 실행하면 `FormControl`의 값이 변경됩니다.
 1. `FormControl` 인스턴스는 새로 지정된 값으로 `valueChanges` 옵저버블을 발행합니다.
-1. `valueChanges` 옵저버블을 구독하는 쪽에서는 새로 지정된 값을 받습니다.
+1. `valueChanges` 옵저버블을 구독하는 쪽에서 새로 지정된 값을 받습니다.
 1. 폼 입력 엘리먼트와 연결된 컨트롤 값 접근자가 새로 지정된 값으로 화면을 갱신합니다.
 
 <!--
@@ -286,10 +286,10 @@ The steps below outline the data flow from view to model when the input value ch
 is updated to the value emitted  by the `ngModelChange` event (*Blue*).
 -->
 1. 사용자가 입력 엘리먼트에 *Blue*를 입력합니다.
-1. 입력 엘리먼트에서 "input" 이벤트가 발생하며 이 이벤트에 *Blue* 값이 전달됩니다.
+1. 입력 엘리먼트에서 "input" 이벤트가 발생하며 이 이벤트로 *Blue* 라는 값이 전달됩니다.
 1. 엘리먼트에 연결된 컨트롤 값 접근자가 `FormControl` 인스턴스의 `setValue()` 메소드를 실행합니다.
 1. `FormControl` 인스턴스가 새로 변경된 값으로 `valueChanges` 옵저버블을 발행합니다.
-1. `valueChanges`를 구독하는 쪽에서는 새로 변경된 값을 받습니다.
+1. `valueChanges`를 구독하는 쪽에서 새로 변경된 값을 받습니다.
 1. 이와 동시에 컨트롤 값 접근자가 `NgModel.viewToModelUpdate()` 메소드를 실행하면서 `ngModelChange` 이벤트를 발생시킵니다.
 1. 컴포넌트 템플릿과 컴포넌트 클래스의 `favoriteColor` 프로퍼티는 양방향 데이터 바인딩으로 연결되어있기 때문에 `ngModelChange` 이벤트가 발생하면 컴포넌트 클래스의 `favoriteColor` 프로퍼티 값이 새로 입력한 값(*Blue*)으로 변경됩니다.
 
@@ -334,7 +334,7 @@ The steps below outline the data flow from model to view when the `favoriteColor
 <!--
 Validation is an integral part of managing any set of forms. Whether you're checking for required fields or querying an external API for an existing username, Angular provides a set of built-in validators as well as the ability to create custom validators.
 -->
-유효성 검증은 폼을 종합적으로 관리하는 과정입니다. 유효성 검증을 활용하면 필수 입력 필드에 값이 입력되었는지 확인할 수 있으며, 회원의 이름이 이미 존재하는지 외부 API를 사용해서 쿼리할 수도 있습니다. Angular 프레임워크는 유효성 검사기를 다양하게 제공하며 추가로 필요한 기능이 있다면 커스텀 유효성 검사기를 정의해서 활용할 수도 있습니다.
+유효성 검증은 폼을 종합적으로 관리하는 과정입니다. 유효성 검증을 활용하면 필수 입력 필드에 값이 입력되었는지 확인할 수 있으며, 회원의 이름이 이미 존재하는지 외부 API를 사용해서 쿼리할 수도 있습니다. Angular 프레임워크는 일반적인 경우에 사용할 수 있는 유효성 검사기를 다양하게 제공하며 추가로 필요한 기능이 있다면 커스텀 유효성 검사기를 정의해서 활용할 수도 있습니다.
 
 <!--
 * **Reactive forms** define custom validators as **functions** that receive a control to validate.
@@ -366,12 +366,12 @@ Testing plays a large part in complex applications and a simpler testing strateg
 <!--
 Reactive forms provide a relatively easy testing strategy because they provide synchronous access to the form and data models, and they can be tested without rendering the UI. In these tests, status and data are queried and manipulated through the control without interacting with the change detection cycle.
 -->
-반응형 폼은 폼과 데이터 모델에 동기 방식으로 접근할 수 있기 때문에 템플릿 기반 폼에 비해 테스트하기 쉬우며, 화면을 렌더링하지 않아도 로직을 테스트할 수 있습니다. 그리고 폼 컨트롤의 상태나 데이터를 쿼리하거나 조작하더라도 Angular의 변화 감지 동작을 배제할 수 있습니다.
+반응형 폼은 폼과 데이터 모델에 동기 방식으로 접근할 수 있기 때문에 템플릿 기반 폼에 비해 테스트하기 쉬우며, 화면을 렌더링하지 않아도 로직을 테스트할 수 있습니다. 그리고 폼 컨트롤의 상태나 데이터를 쿼리하거나 조작할 때 Angular의 변화 감지 동작을 배제할 수 있습니다.
 
 <!--
 The following tests use the favorite color components mentioned earlier to verify the data flows from view to model and model to view for a reactive form.
 -->
-위에서 살펴봤던 컴포넌트에서 데이터가 화면에서 모델로, 모델에서 화면으로 전달되는 것을 확인하는 테스트 코드를 작성해 봅시다.
+위에서 살펴봤던 컴포넌트 예제를 바탕으로 데이터가 화면에서 모델로, 모델에서 화면으로 전달되는 것을 확인하는 테스트 코드를 작성해 봅시다.
 
 <!--
 The following test verifies the data flow from view to model.
@@ -397,7 +397,7 @@ The following test verifies the data flow from model to view.
 
 1. 화면에서 폼 입력 엘리먼트를 쿼리하고 커스텀 "input" 이벤트를 생성합니다.
 1. 입력 엘리먼트에 새로운 값으로 *Red*를 지정하고, 커스텀 이벤트를 폼 입력 엘리먼트로 전달합니다.
-1. 컴포넌트의 `favoriteColorControl` 프로퍼티의 값이 제대로 바뀌었는지 확인합니다.
+1. 컴포넌트의 `favoriteColorControl` 프로퍼티 값이 제대로 바뀌었는지 확인합니다.
 
 그리고 데이터가 모델에서 화면으로 전달되는 것은 다음과 같이 테스트합니다.
 
@@ -429,14 +429,14 @@ Here are the steps performed in the model to view test.
 <!--
 Writing tests with template-driven forms requires a detailed knowledge of the change detection process and an understanding of how directives run on each cycle to ensure that elements are queried, tested, or changed at the correct time.
 -->
-템플릿 기반 폼에 테스트를 적용하려면 Angular의 변화 감지 로직이 어떻게 동작하는지, 디렉티브의 각 라이프싸이클이 어떻게 활용되는지 확실하게 알아야 합니다. 엘리먼트를 쿼리하거나 테스트하는 시점, 변경된 것을 확인하는 시점은 이 라이프싸이클을 정확하게 따라야 합니다.
+템플릿 기반 폼에 테스트를 적용하려면 Angular의 변화 감지 로직이 어떻게 동작하는지, 디렉티브의 각 라이프싸이클이 어떻게 동작하는지 확실하게 알아야 합니다. 엘리먼트를 쿼리하거나 테스트하는 시점, 변경된 것을 확인하는 시점은 이 라이프싸이클을 정확하게 따라야 합니다.
 
 <!--
 The following tests use the favorite color components mentioned earlier to verify the data flows from view to model and model to view for a template-driven form.
 
 The following test verifies the data flow from view to model.
 -->
-위에서 살펴봤던 컴포넌트에서 데이터가 화면에서 모델로, 모델에서 화면으로 전달되는 것을 확인하는 테스트 코드를 작성해 봅시다.
+위에서 살펴봤던 컴포넌트를 바탕으로 데이터가 화면에서 모델로, 모델에서 화면으로 전달되는 것을 확인하는 테스트 코드를 작성해 봅시다.
 
 데이터가 화면에서 모델로 전달되는 것은 다음과 같이 테스트합니다.
 
@@ -449,7 +449,7 @@ The following test verifies the data flow from view to model.
 <!--
 Here are the steps performed in the view to model test.
 -->
-테스트하는 과정은 다음과 같습니다.
+테스트 과정은 다음과 같습니다.
 
 <!--
 1. Query the view for the form input element, and create a custom "input" event for the test.
@@ -499,17 +499,17 @@ Here are the steps performed in the model to view test.
 <!--
 The change tracking method plays a role in the efficiency of your application.
 -->
-Angular가 제공하는 변화감지 로직은 애플리케이션의 효율성을 더 향상시킵니다.
+Angular가 제공하는 변화감지 로직은 애플리케이션의 효율성을 더 향상시키기 위해 도입되었습니다.
 
 <!--
 * **Reactive forms** keep the data model pure by providing it as an immutable data structure. Each time a change is triggered on the data model, the `FormControl` instance returns a new data model rather than updating the existing data model. This gives you the ability to track unique changes to the data model through the control's observable. This provides one way for change detection to be more efficient because it only needs to update on unique changes. It also follows reactive patterns that integrate with observable operators to transform data.
 -->
-* **반응형 폼**은 데이터를 이뮤터블 데이터 구조로 관리하기 때문에 데이터 모델을 순수하게 유지할 수 있습니다. 그리고 데이터 모델이 변경될 때마다 `FormControl` 인스턴스는 기존에 있던 데이터 모델을 갱신하는 대신 새로운 데이터 모델을 반환합니다. 그래서 이 데이터 모델을 참조하는 옵저버블은 항상 새로운 인스턴스를 받게 되며, 변화 감지 로직이 동작하는 흐름도 단방향으로 유지됩니다. 옵저버블로 받은 데이터를 옵저버블 연산자로 변환하는 경우에도 마찬가지입니다. 반응형 프로그래밍 패턴의 방식이 그대로 유지됩니다.
+* **반응형 폼**은 데이터를 이뮤터블 데이터 구조로 관리하기 때문에 데이터 모델을 순수하게 유지할 수 있습니다. 그리고 데이터 모델이 변경될 때마다 `FormControl` 인스턴스는 기존에 있던 데이터 모델을 갱신하는 대신 새로운 데이터 모델을 반환하기 때문에 이 데이터 모델을 참조하는 옵저버블은 항상 새로운 인스턴스를 받게 되며, 변화 감지 로직이 동작하는 흐름도 단방향으로 유지됩니다. 옵저버블로 받은 데이터를 옵저버블 연산자로 변환하는 경우에도 마찬가지입니다. 반응형 프로그래밍 패턴이 그대로 유지됩니다.
 
 <!--
 * **Template-driven** forms rely on mutability with two-way data binding to update the data model in the component as changes are made in the template. Because there are no unique changes to track on the data model when using two-way data binding, change detection is less efficient at determining when updates are required.
 -->
-* **템플릿 기반의 폼**에서 양방향 데이터 바인딩을 사용할 때 데이터 모델이 변경되거나 템플릿에서 값이 변경되는 것이 반영되는 과정에는 불변성이 보장되지 않습니다. 양방향 데이터 바인딩을 사용하면 양쪽에서 참조하는 인스턴스가 같기 때문에 인스턴스 안에 있는 필드를 추가로 검사해야 하며, 이 점 때문에 반응형 폼과 비교했을 때 효율성이 떨어진다고도 할 수 있습니다.
+* **템플릿 기반의 폼**에서 양방향 데이터 바인딩을 사용할 때 데이터 모델이나 템플릿에서 값이 변경된 것이 다른 쪽으로 반영되는 과정에는 불변성이 보장되지 않습니다. 양방향 데이터 바인딩을 사용하면 양쪽에서 참조하는 인스턴스가 같기 때문에 인스턴스 안에 있는 필드를 추가로 검사해야 하며, 이 점 때문에 반응형 폼과 비교했을 때 효율성이 떨어진다고도 할 수 있습니다.
 
 <!--
 The difference is demonstrated in the examples above using the **favorite color** input element. 
@@ -523,7 +523,7 @@ The difference is demonstrated in the examples above using the **favorite color*
 -->
 * 반응형 폼에서는 값이 변경될 때마다 **`FormControl` 인스턴스**가 항상 새로운 객체를 반환합니다.
 
-* 템플릿 기반 폼에서 값이 변경되더라도 인스턴스에서 **그 프로퍼티**만 변경됩니다.
+* 템플릿 기반 폼에서 값이 변경되면 인스턴스에서 **그 프로퍼티**만 변경됩니다.
 
 <!--
 ## Scalability
@@ -533,7 +533,7 @@ The difference is demonstrated in the examples above using the **favorite color*
 <!--
 If forms are a central part of your application, scalability is very important. Being able to reuse form models across components is critical.
 -->
-애플리케이션에 폼이 차지하는 비중이 크다면 확장성을 따져보는 것도 중요합니다. 이런 경우에는 폼 모델을 재사용할 수 있느냐가 중요합니다.
+애플리케이션에 폼이 차지하는 비중이 크다면 확장성을 따져보는 것도 중요합니다. 폼의 관점에서 확장성이란 여러 컴포넌트에 폼 모델을 재사용할 수 있느냐를 의미합니다.
 
 <!--
 * **Reactive forms** provide access to low-level APIs and synchronous access to the form model, making creating large-scale forms easier.
@@ -543,17 +543,17 @@ If forms are a central part of your application, scalability is very important. 
 <!--
 * **Template-driven** forms focus on simple scenarios, are not as reusable, abstract away the low-level APIs, and provide asynchronous access to the form model. The abstraction with template-driven forms also surfaces in testing, where testing reactive forms requires less setup and no dependence on the change detection cycle when updating and validating the form and data models during testing.
 -->
-* **템플릿 기반의 폼**은 단순한 시나리오를 처리하는 것이 목적이기 때문에 재사용하기 쉽지 않고 활용할 수 있는 API도 제한적입니다. 게다가 폼 모델에 비동기 방식으로 접근합니다. 그리고 템플릿 기반 폼은 본질적으로 템플릿을 기반으로 하기 때문에 반응형 폼에 비해 테스트 환경에 설정해야 할 것이 많습니다. 그리고 반응형 폼과 다르게 폼이나 데이터 모델을 변경하거나 유효성을 검사할 때 변화 감지 싸이클을 배제할 수 없습니다.
+* **템플릿 기반의 폼**은 단순한 시나리오를 처리하는 것이 목적이기 때문에 재사용하기 쉽지 않고 활용할 수 있는 API도 제한적입니다. 게다가 폼 모델에 비동기 방식으로 접근합니다. 그리고 템플릿 기반 폼은 본질적으로 템플릿을 기반으로 하기 때문에 반응형 폼에 비해 테스트 환경에 설정해야 할 것이 많습니다. 반응형 폼과 다르게 폼이나 데이터 모델을 변경하거나 유효성을 검사할 때 변화 감지 싸이클을 배제할 수 없습니다.
 
 <!--
 ## Final thoughts
 -->
-## 최종 판단
+## 정리
 
 <!--
 Choosing a strategy begins with understanding the strengths and weaknesses of the options presented. Low-level API and form model access, predictability, mutability, straightforward validation and testing strategies, and scalability are all important considerations in choosing the infrastructure you use to build your forms in Angular. Template-driven forms are similar to patterns in AngularJS, but they have limitations given the criteria of many modern, large-scale Angular apps. Reactive forms minimize these limitations. Reactive forms integrate with reactive patterns already present in other areas of the Angular architecture, and complement those requirements well. 
 -->
-반응형 폼과 템플릿 기반의 폼 중 어떤 것을 사용하는지 정할 때는 두 방식의 장단점을 모두 이해하는 것이 중요합니다. 폼 모델에 접근하는 API를 자유롭게 활용할 수 있는지, 동작 로직은 이해하기 편한지, 인스턴스의 불변성은 보장되는지, 유효성 검사 로직은 어떻게 동작하며 테스트하기는 편한지, 폼은 효율적으로 확장할 수 있는지도 모두 따져봐야 합니다. 템플릿 기반의 폼은 AngularJS의 패턴과 비슷하기 때문에 최신 기술을 활용하는 대규모 Angular 애플리케이션에 적용하기에는 제약이 있습니다. 반응형 폼에서는 이 제약에서 자유롭습니다. 반응형 폼은 Angular 프레임워크의 다른 영역에서도 사용하는 반응형 패턴을 기반으로 만들어 졌기 때문에 위에서 언급한 모든 장점을 그대로 활용할 수 있습니다.
+반응형 폼과 템플릿 기반의 폼 중 어떤 것을 사용하는지 정할 때는 두 방식의 장단점을 모두 이해하는 것이 중요합니다. 폼 모델에 접근하는 API를 자유롭게 활용할 수 있는지, 동작 로직은 이해하기 편한지, 인스턴스의 불변성은 보장되는지, 유효성 검사 로직은 어떻게 동작하며 테스트하기는 편한지, 폼은 효율적으로 확장할 수 있는지도 모두 따져봐야 합니다. 템플릿 기반의 폼은 AngularJS의 패턴과 비슷하기 때문에 최신 기술을 활용하는 대규모 Angular 애플리케이션에 적용하기에는 제약이 있습니다. 하지만 반응형 폼에서는 이 제약에서 자유롭습니다. 반응형 폼은 Angular 프레임워크 전반에 사용되는 반응형 패턴을 기반으로 만들어졌기 때문에 위에서 언급한 모든 장점을 그대로 활용할 수 있습니다.
 
 <!--
 ## Next steps
@@ -571,9 +571,9 @@ To learn more about reactive forms, see the following guides:
 * [Form Validation](guide/form-validation#reactive-form-validation)
 * [Dynamic Forms](guide/dynamic-form)
 -->
-* [Reactive Forms](guide/reactive-forms)
+* [반응형 폼](guide/reactive-forms)
 * [폼 유효성 검사](guide/form-validation#반응형-폼-유효성-검사)
-* [Dynamic Forms](guide/dynamic-form)
+* [동적 폼](guide/dynamic-form)
 
 <!--
 To learn more about template-driven forms, see the following guides:
