@@ -8,7 +8,6 @@
 
 import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /**
  * Wrapper for the CdkTable with Material design styles.
@@ -31,4 +30,4 @@ export class MatTable<T> extends CdkTable<T> {
 }
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-_inheritCtorParametersMetadata(MatTable, CdkTable);
+(MatTable as any)['ctorParameters'] = () => (CdkTable as any)['ctorParameters'];

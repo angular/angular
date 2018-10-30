@@ -14,7 +14,6 @@ import {
   CdkHeaderCell,
   CdkHeaderCellDef,
 } from '@angular/cdk/table';
-import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /**
  * Cell definition for the mat-table.
@@ -47,9 +46,10 @@ export class MatHeaderCellDef extends CdkHeaderCellDef {}
 export class MatFooterCellDef extends CdkFooterCellDef {}
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-_inheritCtorParametersMetadata(MatCellDef, CdkCellDef);
-_inheritCtorParametersMetadata(MatHeaderCellDef, CdkHeaderCellDef);
-_inheritCtorParametersMetadata(MatFooterCellDef, CdkFooterCellDef);
+(MatCellDef as any)['ctorParameters'] = () => (CdkCellDef as any)['ctorParameters'];
+(MatHeaderCellDef as any)['ctorParameters'] = () => (CdkHeaderCellDef as any)['ctorParameters'];
+(MatFooterCellDef as any)['ctorParameters'] = () => (MatFooterCellDef as any)['ctorParameters'];
+
 /**
  * Column definition for the mat-table.
  * Defines a set of cells available for a table column.

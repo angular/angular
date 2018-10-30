@@ -9,7 +9,6 @@
 import {CdkTree} from '@angular/cdk/tree';
 import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MatTreeNodeOutlet} from './outlet';
-import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /**
  * Wrapper for the CdkTable with Material design styles.
@@ -34,4 +33,4 @@ export class MatTree<T> extends CdkTree<T> {
 }
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-_inheritCtorParametersMetadata(MatTree, CdkTree);
+(MatTree as any)['ctorParameters'] = () => (CdkTree as any)['ctorParameters'];

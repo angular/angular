@@ -8,7 +8,6 @@
 
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {Directive, Input} from '@angular/core';
-import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /**
  * Directive to automatically resize a textarea to fit its content.
@@ -46,4 +45,5 @@ export class MatTextareaAutosize extends CdkTextareaAutosize {
 }
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-_inheritCtorParametersMetadata(MatTextareaAutosize, CdkTextareaAutosize);
+(MatTextareaAutosize as any)['ctorParameters'] = () =>
+    (CdkTextareaAutosize as any)['ctorParameters'];

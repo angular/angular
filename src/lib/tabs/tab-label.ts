@@ -8,7 +8,6 @@
 
 import {Directive} from '@angular/core';
 import {CdkPortal} from '@angular/cdk/portal';
-import {_inheritCtorParametersMetadata} from '@angular/material/core';
 
 /** Used to flag tab labels for use with the portal directive */
 @Directive({
@@ -17,4 +16,4 @@ import {_inheritCtorParametersMetadata} from '@angular/material/core';
 export class MatTabLabel extends CdkPortal {}
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-_inheritCtorParametersMetadata(MatTabLabel, CdkPortal);
+(MatTabLabel as any)['ctorParameters'] = () => (CdkPortal as any)['ctorParameters'];
