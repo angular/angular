@@ -7,7 +7,7 @@
  */
 
 import {Observable, OperatorFunction, combineLatest} from 'rxjs';
-import {filter, scan, startWith, switchMap, take} from 'rxjs/operators';
+import {filter, map, scan, startWith, switchMap, take} from 'rxjs/operators';
 
 import {UrlTree} from '../url_tree';
 import {isUrlTree} from '../utils/type_guards';
@@ -48,6 +48,8 @@ export function prioritizedGuardValue():
                   }, acc);
                 },
                 INITIAL_VALUE),
-            filter(item => item !== INITIAL_VALUE), take(1)) as Observable<boolean|UrlTree>;
+            filter(item => item !== INITIAL_VALUE),
+            map(item => isUrlTree(item) ? item : item === true),  //
+            take(1)) as Observable<boolean|UrlTree>;
   });
 }

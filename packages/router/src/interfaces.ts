@@ -17,6 +17,10 @@ import {UrlSegment, UrlTree} from './url_tree';
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a route can be activated.
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
  *
  * ```
  * class UserToken {}
@@ -33,7 +37,7 @@ import {UrlSegment, UrlTree} from './url_tree';
  *   canActivate(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -90,7 +94,11 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a child route can be activated.
- *
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
+ * 
  * ```
  * class UserToken {}
  * class Permissions {
@@ -106,7 +114,7 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  *   canActivateChild(
  *     route: ActivatedRouteSnapshot,
  *     state: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canActivate(this.currentUser, route.params.id);
  *   }
  * }
@@ -173,7 +181,11 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  * @description
  *
  * Interface that a class can implement to be a guard deciding if a route can be deactivated.
- *
+ * If all guards return `true`, navigation will continue. If any guard returns `false`,
+ * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
+ * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
+ * guard.
+ * 
  * ```
  * class UserToken {}
  * class Permissions {
@@ -191,7 +203,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  *     currentRoute: ActivatedRouteSnapshot,
  *     currentState: RouterStateSnapshot,
  *     nextState: RouterStateSnapshot
- *   ): Observable<boolean>|Promise<boolean>|boolean|UrlTree {
+ *   ): Observable<boolean|UrlTree>|Promise<boolean|UrlTree>|boolean|UrlTree {
  *     return this.permissions.canDeactivate(this.currentUser, route.params.id);
  *   }
  * }
