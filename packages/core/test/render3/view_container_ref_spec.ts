@@ -1771,6 +1771,28 @@ describe('ViewContainerRef', () => {
 
   describe('view engine compatibility', () => {
 
+    @Component({selector: 'app', template: ''})
+    class AppCmpt {
+      static ngComponentDef = defineComponent({
+        type: AppCmpt,
+        selectors: [['app']],
+        factory: () => new AppCmpt(
+                     directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+        consts: 0,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: AppCmpt) => {}
+      });
+
+      constructor(private _vcRef: ViewContainerRef, private _cfResolver: ComponentFactoryResolver) {
+      }
+
+      insert(comp: any) {
+        this._vcRef.createComponent(this._cfResolver.resolveComponentFactory(comp));
+      }
+
+      clear() { this._vcRef.clear(); }
+    }
+
     // https://stackblitz.com/edit/angular-xxpffd?file=src%2Findex.html
     it('should allow injecting VCRef into the root (bootstrapped) component', () => {
 
@@ -1781,32 +1803,11 @@ describe('ViewContainerRef', () => {
             }
           }, 1, 0);
 
-      @Component({selector: 'app', template: ''})
-      class AppCmpt {
-        static ngComponentDef = defineComponent({
-          type: AppCmpt,
-          selectors: [['app']],
-          factory: () => new AppCmpt(
-                       directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
-          consts: 0,
-          vars: 0,
-          template: (rf: RenderFlags, cmp: AppCmpt) => {}
-        });
-
-        constructor(
-            private _vcRef: ViewContainerRef, private _cfResolver: ComponentFactoryResolver) {}
-
-        insert() {
-          this._vcRef.createComponent(this._cfResolver.resolveComponentFactory(DynamicComponent));
-        }
-
-        clear() { this._vcRef.clear(); }
-      }
 
       const fixture = new ComponentFixture(AppCmpt);
       expect(fixture.outerHtml).toBe('<div host="mark"></div>');
 
-      fixture.component.insert();
+      fixture.component.insert(DynamicComponent);
       fixture.update();
       expect(fixture.outerHtml)
           .toBe('<div host="mark"></div><dynamic-cmpt>inserted dynamically</dynamic-cmpt>');
@@ -1815,5 +1816,45 @@ describe('ViewContainerRef', () => {
       fixture.update();
       expect(fixture.outerHtml).toBe('<div host="mark"></div>');
     });
+
+    it('should check bindings for components dynamically created by root component', () => {
+      class DynamicCompWithBindings {
+        checkCount = 0;
+
+        ngDoCheck() { this.checkCount++; }
+
+        /** check count: {{ checkCount }} */
+        static ngComponentDef = defineComponent({
+          type: DynamicCompWithBindings,
+          selectors: [['dynamic-cmpt-with-bindings']],
+          factory: () => new DynamicCompWithBindings(),
+          consts: 1,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: DynamicCompWithBindings) => {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, interpolation1('check count: ', ctx.checkCount, ''));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+      fixture.component.insert(DynamicCompWithBindings);
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 1</dynamic-cmpt-with-bindings>');
+
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 2</dynamic-cmpt-with-bindings>');
+    });
+
   });
 });

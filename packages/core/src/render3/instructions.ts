@@ -421,6 +421,7 @@ function renderComponentOrTemplate<T>(
       // Element was stored at 0 in data and directive was stored at 0 in directives
       // in renderComponent()
       setHostBindings(getTView(), hostView);
+      refreshDynamicEmbeddedViews(hostView);
       componentRefresh(HEADER_OFFSET, false);
     }
   } finally {
@@ -1828,7 +1829,7 @@ export function containerRefreshEnd(): void {
  * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes them
  * by executing an associated template function.
  */
-function refreshDynamicEmbeddedViews(lViewData: LViewData) {
+export function refreshDynamicEmbeddedViews(lViewData: LViewData) {
   for (let current = getLViewChild(lViewData); current !== null; current = current[NEXT]) {
     // Note: current can be an LViewData or an LContainer instance, but here we are only interested
     // in LContainer. We can tell it's an LContainer because its length is less than the LViewData
