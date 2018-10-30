@@ -245,6 +245,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
     return {
       name: decoratorExpr.text,
+      identifier: decoratorExpr,
       import: importDecl, node, args,
     };
   }
