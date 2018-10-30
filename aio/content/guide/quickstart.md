@@ -158,7 +158,7 @@ You can <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blan
 </div>
 
 
-For more information about Angular project files and the file structure, see [Workspace and project file struture](guide/file-structure).
+For more information about Angular project files and the file structure, see [Workspace and project file structure](guide/file-structure).
 
 
 
