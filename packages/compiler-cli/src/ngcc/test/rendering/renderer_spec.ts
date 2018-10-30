@@ -127,8 +127,11 @@ describe('Renderer', () => {
            decorators: [jasmine.objectContaining({name: 'Directive'})],
          }));
          expect(addDefinitionsSpy.calls.first().args[2])
-             .toEqual(
-                 `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });`);
+             .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+        type: Directive,
+        args: [{ selector: '[a]' }]
+    }], null, { foo: [] });
+A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });`);
        });
 
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -18,6 +18,7 @@ import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
+import {generateSetClassMetadataCall} from './metadata';
 import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
 import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
 
@@ -26,6 +27,7 @@ const EMPTY_MAP = new Map<string, Expression>();
 export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
   parsedTemplate: TmplAstNode[];
+  metadataStmt: Statement|null;
 }
 
 /**
@@ -208,6 +210,7 @@ export class ComponentDecoratorHandler implements
           animations,
           viewProviders
         },
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
         parsedTemplate: template.nodes,
       },
       typeCheck: true,
@@ -242,10 +245,14 @@ export class ComponentDecoratorHandler implements
     }
 
     const res = compileComponentFromMetadata(metadata, pool, makeBindingParser());
+
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngComponentDef',
-      initializer: res.expression,
-      statements: res.statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }
