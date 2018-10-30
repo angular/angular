@@ -185,9 +185,13 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): ts.CallExpression {
-    return ts.createCall(
+    const expr = ts.createCall(
         ast.fn.visitExpression(this, context), undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
+    if (ast.pure) {
+      ts.addSyntheticLeadingComment(expr, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', false);
+    }
+    return expr;
   }
 
   visitInstantiateExpr(ast: InstantiateExpr, context: Context): ts.NewExpression {
