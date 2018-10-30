@@ -292,6 +292,24 @@ function queryReadByTNodeType(tNode: TNode, currentView: LViewData): any {
   return null;
 }
 
+function read(
+    tNode: TNode, currentView: LViewData, predicate: QueryPredicate<any>,
+    matchingIdx: number): any {
+  let result: any = null;
+  if (predicate.read) {
+    result = queryRead(tNode, currentView, predicate.read);
+  } else {
+    if (matchingIdx > -1) {
+      result = currentView[matchingIdx];
+    } else {
+      // if read token and / or strategy is not specified,
+      // detect it using appropriate tNode type
+      result = queryReadByTNodeType(tNode, currentView);
+    }
+  }
+  return result;
+}
+
 function add(
     query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   const currentView = getViewData();
@@ -300,29 +318,19 @@ function add(
     const predicate = query.predicate;
     const type = predicate.type;
     if (type) {
-      // if read token and / or strategy is not specified, use type as read token
-      const result = queryRead(tNode, currentView, predicate.read || type);
-      if (result !== null) {
-        addMatch(query, result);
+      const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, type);
+      if (matchingIdx !== null) {
+        const result = read(tNode, currentView, predicate, matchingIdx);
+        if (result !== null) {
+          addMatch(query, result);
+        }
       }
     } else {
       const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
         const directiveIdx = getIdxOfMatchingSelector(tNode, selector[i]);
         if (directiveIdx !== null) {
-          let result: any = null;
-          if (predicate.read) {
-            result = queryRead(tNode, currentView, predicate.read);
-          } else {
-            if (directiveIdx > -1) {
-              result = currentView[directiveIdx];
-            } else {
-              // if read token and / or strategy is not specified,
-              // detect it using appropriate tNode type
-              result = queryReadByTNodeType(tNode, currentView);
-            }
-          }
-
+          const result = read(tNode, currentView, predicate, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
           }
