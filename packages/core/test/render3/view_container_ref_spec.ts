@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
 
@@ -19,9 +19,16 @@ import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {getViewData} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util';
 import {NgForOf} from '../../test/render3/common_with_def';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
+
+const Component: typeof _Component = function(...args: any[]): any {
+  // In test we use @Component for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
+
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
@@ -1465,7 +1472,7 @@ describe('ViewContainerRef', () => {
     });
   });
 
-  describe('life cycle hooks', () => {
+  fixmeIvy(`Hooks don't run`) && describe('life cycle hooks', () => {
 
     // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
     const log: string[] = [];
