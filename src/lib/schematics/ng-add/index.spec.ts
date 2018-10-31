@@ -257,7 +257,7 @@ describe('ng-add schematic', () => {
       expect(styles).not.toContain(defaultPrebuiltThemePath,
           'Expected the default prebuilt theme to be not configured.');
       expect(console.warn).toHaveBeenCalledWith(
-          jasmine.stringMatching(/Cannot add.*already a custom theme/));
+        jasmine.stringMatching(/Could not add the selected theme/));
     });
 
     it('should not add a theme file multiple times', () => {

@@ -19,7 +19,7 @@ import {getWorkspace} from '@schematics/angular/utility/config';
 import {join} from 'path';
 import {Schema} from '../schema';
 import {createCustomTheme} from './custom-theme';
-import {red, bold} from 'chalk';
+import {red, bold, yellow} from 'chalk';
 
 /** Path segment that can be found in paths that refer to a prebuilt theme. */
 const prebuiltThemePathSegment = '@angular/material/prebuilt-themes';
@@ -69,8 +69,8 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
     const customThemePath = normalize(join(project.sourceRoot, defaultCustomThemeFilename));
 
     if (host.exists(customThemePath)) {
-      console.warn(red(`Cannot create a custom Angular Material theme because
-          "${customThemePath}" already exists. Skipping custom theme generation.`));
+      console.warn(yellow(`Cannot create a custom Angular Material theme because
+          ${bold(customThemePath)} already exists. Skipping custom theme generation.`));
       return;
     }
 
@@ -119,9 +119,10 @@ function addThemeStyleToTarget(project: WorkspaceProject, targetName: string, ho
       // theme because these files can contain custom styles, while prebuilt themes are
       // always packaged and considered replaceable.
       if (stylePath.includes(defaultCustomThemeFilename)) {
-        console.warn(red(`Cannot add "${bold(assetPath)} to the CLI project configuration ` +
-            `because there is already a custom theme file referenced. Please manually add ` +
-            `the "${bold(assetPath)}" style file to your configuration.`));
+        console.warn(red(`Could not add the selected theme to the CLI project configuration ` +
+            `because there is already a custom theme file referenced.`));
+        console.warn(red(`Please manually add the following style file to your configuration:`));
+        console.warn(yellow(`    ${bold(assetPath)}`));
         return;
       } else if (stylePath.includes(prebuiltThemePathSegment)) {
         targetOptions.styles.splice(index, 1);

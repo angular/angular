@@ -14,7 +14,7 @@ import {
   getProjectStyleFile,
   hasNgModuleImport,
 } from '@angular/cdk/schematics';
-import {red, bold} from 'chalk';
+import {red, bold, italic} from 'chalk';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import {addFontsToIndex} from './fonts/material-fonts';
@@ -88,12 +88,20 @@ function addMaterialAppStyles(options: Schema) {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const styleFilePath = getProjectStyleFile(project);
-    const buffer = host.read(styleFilePath!);
 
-    if (!styleFilePath || !buffer) {
-      return console.warn(`Could not find styles file: "${styleFilePath}". Skipping styles ` +
-        `generation. Please consider manually adding the "Roboto" font and resetting the ` +
-        `body margin.`);
+    if (!styleFilePath) {
+      console.warn(red(`Could not find the default style file for this project.`));
+      console.warn(red(`Please consider manually setting up the Roboto font in your CSS.`));
+      return;
+    }
+
+    const buffer = host.read(styleFilePath);
+
+    if (!buffer) {
+      console.warn(red(`Could not read the default style file within the project ` +
+        `(${italic(styleFilePath)})`));
+      console.warn(red(`Please consider manually setting up the Robot font.`));
+      return;
     }
 
     const htmlContent = buffer.toString();
