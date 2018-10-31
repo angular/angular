@@ -320,6 +320,7 @@ export function compileComponentFromRender2(
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
     animations: null,
+    viewProviders: null,
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
@@ -362,6 +363,7 @@ function directiveMetadataFromGlobalMetadata(
     outputs: directive.outputs,
     usesInheritance: false,
     exportAs: null,
+    providers: null,
   };
 }
 
@@ -505,7 +507,7 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string}): o.Type {
+function stringMapAsType(map: {[key: string]: string | [string, string]}): o.Type {
   const mapValues = Object.keys(map).map(key => ({
                                            key,
                                            value: o.literal(map[key]),

@@ -448,6 +448,7 @@ function searchDirectivesOnInjector<T>(
  */
 export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>): number|Function|
     undefined {
+  ngDevMode && assertDefined(token, 'token must be defined');
   const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
   return typeof tokenId === 'number' ? tokenId & BLOOM_MASK : tokenId;
 }

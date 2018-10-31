@@ -177,6 +177,7 @@ export function extractDirectiveMetadata(
     type: new WrappedNodeExpr(clazz.name !),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: null !, usesInheritance, exportAs,
+    providers: null,
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -327,7 +328,7 @@ function parseFieldToPropertyMapping(
  */
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
-    checker: ts.TypeChecker): {[field: string]: string} {
+    checker: ts.TypeChecker) {
   return fields.reduce(
       (results, field) => {
         const fieldName = field.member.name;
@@ -351,6 +352,14 @@ function parseDecoratedFields(
         return results;
       },
       {} as{[field: string]: string});
+}
+
+function resolveInput(publicName: string, internalName: string): [string, string] {
+  return [publicName, internalName];
+}
+
+function resolveOutput(publicName: string, internalName: string) {
+  return publicName;
 }
 
 export function queriesFromFields(

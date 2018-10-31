@@ -54,6 +54,7 @@ ts_library(
     ],
     deps = [
         "//packages:types",
+        "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",

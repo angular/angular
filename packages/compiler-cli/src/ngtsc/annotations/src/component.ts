@@ -202,6 +202,7 @@ export class ComponentDecoratorHandler implements
           directives: EMPTY_MAP,
           wrapDirectivesInClosure: false,  //
           animations,
+          viewProviders: null,
         },
         parsedTemplate: template.nodes,
       },
