@@ -7,13 +7,18 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {Component} from '../../src/core';
+import {Component as _Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
 import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, projection, projectionDef, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
+
+const Component: typeof _Component = function(...args: any[]): any {
+  // In test we use @Component for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
 
 describe('Runtime i18n', () => {
   it('should support html elements', () => {

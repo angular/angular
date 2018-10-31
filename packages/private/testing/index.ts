@@ -7,3 +7,4 @@
  */
 
 export * from './src/render3';
+export * from './src/fixme';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component, NgModule} from '@angular/core';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {platformBrowser} from '@angular/platform-browser';
 
 @Component({selector: 'hello-world', template: 'Hello World!'})
 export class HelloWorldComponent {
@@ -16,4 +16,4 @@ export class HelloWorldComponent {
 export class HelloWorldModule {
 }
 
-platformBrowserDynamic().bootstrapModule(HelloWorldModule);
+platformBrowser().bootstrapModule(HelloWorldModule);
