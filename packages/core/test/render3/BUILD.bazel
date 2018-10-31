@@ -60,8 +60,6 @@ jasmine_node_test(
     bootstrap = [
         "angular/packages/core/test/render3/load_domino",
     ],
-    tags = [
-    ],
     deps = [
         ":render3_node_lib",
         "@ngdeps//zone.js",
@@ -70,8 +68,6 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "render3_web",
-    tags = [
-    ],
     deps = [
         ":render3_lib",
     ],
