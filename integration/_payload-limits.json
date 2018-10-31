@@ -15,29 +15,6 @@
         "bundle": 178101
       }
     }
-  },
-  "hello_world__render3__closure": {
-    "master": {
-      "uncompressed": {
-        "bundle": 8153
-      }
-    }
-  },
-  "hello_world__render3__rollup": {
-    "master": {
-      "uncompressed": {
-        "bundle": 10129
-      }
-    }
-  },
-  "hello_world__render3__cli": {
-    "master": {
-      "uncompressed": {
-        "inline": 1447,
-        "main": 40513,
-        "polyfills": 60105
-      }
-    }
   }
 }
 
