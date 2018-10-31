@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, InjectFlags, Injectable, InjectionToken, InjectorType, Provider, ViewEncapsulation, createInjector, defineInjectable, defineInjector, inject} from '../../src/core';
+import {Component as _Component, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, ViewEncapsulation, createInjector, defineInjectable, defineInjector, inject} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
 import {getRenderedText} from '../../src/render3/component';
 
@@ -17,6 +17,15 @@ import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition
 import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+
+const Component: typeof _Component = function(...args: any[]): any {
+  // In test we use @Component for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
+const Injectable: typeof _Injectable = function(...args: any[]): any {
+  // In test we use @Injectable for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
 
 describe('component', () => {
   class CounterComponent {
