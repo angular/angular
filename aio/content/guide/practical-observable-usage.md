@@ -41,11 +41,11 @@ Writing this in full JavaScript can be quite involved. With observables, you can
 -->
 <code-example path="practical-observable-usage/src/typeahead.ts" header="코드 자동완성"></code-example>
 
-## Exponential backoff
+## 지수 백오프(Exponential backoff)
 
 <!--
 Exponential backoff is a technique in which you retry an API after failure, making the time in between retries longer after each consecutive failure, with a maximum number of retries after which the request is considered to have failed. This can be quite complex to implement with promises and other methods of tracking AJAX calls. With observables, it is very easy:
 -->
-지수 백오프(Exponential backoff)는 API 요청을 실패했을 때 사용하는 테크닉입니다. 이 테크닉은 요청이 계속 실패할 때마다 점점 긴 시간 간격을 두고 재시도하며, 정해진 재시도 횟수를 넘어가면 최종 실패한 것으로 판단합니다. 이 기능은 AJAX 요청을 계속 추적해야 하기 때문에 Promise나 JavaScript로 구현하기는 조금 복잡합니다. 하지만 옵저버블을 사용하면 아주 간단합니다:
+지수 백오프는 API 요청을 실패했을 때 사용하는 테크닉입니다. 이 테크닉은 요청이 계속 실패할 때마다 점점 긴 시간 간격을 두고 재시도하며, 정해진 재시도 횟수를 넘어가면 최종 실패한 것으로 판단합니다. 이 기능은 AJAX 요청을 계속 추적해야 하기 때문에 Promise나 JavaScript로 구현하기는 조금 복잡합니다. 하지만 옵저버블을 사용하면 아주 간단합니다:
 
 <code-example path="practical-observable-usage/src/backoff.ts" header="Exponential backoff"></code-example>

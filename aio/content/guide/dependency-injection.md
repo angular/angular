@@ -1,22 +1,42 @@
+<!--
 # Dependency Injection in Angular 
+-->
+# Angular의 의존성 주입
 
+<!--
 Dependency injection (DI), is an important application design pattern.
 Angular has its own DI framework, which is typically 
 used in the design of Angular applications to increase their efficiency and modularity.
+-->
+의존성 주입(Dependency injection, DI)는 애플리케이션 디자인 패턴 중에서도 중요한 내용입니다.
+Angular는 독자적인 DI 기능을 제공하고 있으며, 이 기능을 활용하면 Angular 애플리케이션을 좀 더 효율적인 모듈 형태로 구성할 수 있습니다.
 
+<!--
 Dependencies are services or objects that a class needs to perform its function.
 DI is a coding pattern in which a class asks for dependencies from external sources rather than creating them itself. 
+-->
+의존성(dependencies)은 어떤 함수가 동작하기 위해 필요한 서비스나 객체를 의미합니다.
+그리고 의존성 주입 패턴은 이 의존성을 직접 생성하지 않고 외부 어딘가에서 받아오도록 요청하는 패턴입니다.
 
+<!--
 In Angular, the DI framework provides declared dependencies to a class when that class is instantiated. This guide explains how DI works in Angular, and how you use it to make your apps flexible, efficient, and robust, as well as testable and maintainable.
+-->
+Angular에서는 클래스의 인스턴스가 생성될 때 이 클래스에 필요한 의존성을 프레임워크가 생성해서 전달합니다. 이 문서는 Angular에서 의존성 주입이 어떻게 동작하는지, 의존성 주입을 활용하면 애플리케이션을 효율적이면서 유연한 구조로 작성할 수 있는지 안내합니다.  의존성 주입을 사용하면 애플리케이션을 테스트하기 편하고 유지보수하기도 좋습니다.
 
 <div class="alert is-helpful">
 
+ <!--
  You can run the <live-example></live-example> of the sample app that accompanies this guide.
+ -->
+ 이 문서에서 설명하는 예제는 <live-example></live-example>에서 직접 실행하거나 다운받아 확인할 수 있습니다.
 
 </div>
 
+<!--
 Start by reviewing this simplified version of the _heroes_ feature
 from the [The Tour of Heroes](tutorial/). This simple version doesn't use DI; we'll walk through converting it to do so.
+-->
+[히어로들의 여행](tutorial/)에서 살펴본 예제를 간단하게 만든 코드부터 시작해 봅시다. 이 예제에는 아직 의존성 주입이 사용되지 않았습니다. 이 코드에 의존성 주입을 구현해 봅시다.
 
 <code-tabs>
   <code-pane header="src/app/heroes/heroes.component.ts" path="dependency-injection/src/app/heroes/heroes.component.1.ts" region="v1">
@@ -33,20 +53,30 @@ from the [The Tour of Heroes](tutorial/). This simple version doesn't use DI; we
 
 </code-tabs>
 
+<!--
 `HeroesComponent` is the top-level heroes component.
 Its only purpose is to display `HeroListComponent`, which displays a list of hero names.
+-->
+최상위 컴포넌트는 `HeroesComponent`입니다.
+이 컴포넌트의 목적은 화면에 `HeroListComponent`를 표시해서 히어로의 목록을 출력하는 것입니다.
 
+<!--
 This version of the `HeroListComponent` gets heroes from the `HEROES` array, an in-memory collection
 defined in a separate `mock-heroes` file.
+-->
+지금 구현한 `HeroListComponent`는 `mock-heroes` 파일에 정의된 `HEROES` 배열을 메모리에 올려서 참조합니다.
 
 <code-example header="src/app/heroes/hero-list.component.ts (class)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts" region="class">
 </code-example>
 
+<!--
 This approach works for prototyping, but is not robust or maintainable.
 As soon as you try to test this component or get heroes from a remote server,
 you have to change the implementation of `HeroesListComponent` and
 replace every use of the `HEROES` mock data.
-
+-->
+이 방식은 프로토타이핑 할 때 적합한 방식이지만 실제 운영환경에서는 적합하지 않습니다.
+왜냐하면 이 컴포넌트에 테스트를 적용하거나 리모트 서버에서 데이터를 가져오도록 변경한다면 `HeroesListComponent`를 반드시 수정해야 하며 상황에 따라 매번 `HEROES` 목 데이터를 변경해야 할 수도 있습니다.
 
 ## Create and register an injectable service
 
