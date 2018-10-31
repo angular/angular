@@ -61,7 +61,6 @@ protractor_web_test(
         "ivy-only",
     ],
     deps = [
-        "//modules/benchmarks/src/tree:perf_lib",
         "@ngdeps//node-uuid",
         "@ngdeps//protractor",
         "@ngdeps//yargs",
