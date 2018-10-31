@@ -18,7 +18,6 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    tags = ["fixme-ivy-jit"],
     deps = [
         ":test_lib",
         "//tools/testing:node",
