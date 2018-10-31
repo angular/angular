@@ -17,7 +17,7 @@ import {getComponentViewByInstance} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, executeInitAndContentHooks, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, setHostBindings} from './instructions';
+import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
@@ -134,8 +134,7 @@ export function renderComponent<T>(
     component = createRootComponent(
         hostRNode, componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    executeInitAndContentHooks(rootView);
-    detectChangesInternal(componentView, component);
+    refreshDescendantViews(rootView, null);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -171,6 +170,7 @@ export function createRootComponentView(
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
     tNode.flags = TNodeFlags.isComponent;
     initNodeFlags(tNode, rootView.length, 1);
+    queueComponentIndexForCheck(tNode);
   }
 
   // Store component view at node index, with node as the HOST
@@ -196,7 +196,6 @@ export function createRootComponent<T>(
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
 
   if (tView.firstTemplatePass) prefillHostVars(tView, rootView, componentDef.hostVars);
-  setHostBindings(tView, rootView);
   return component;
 }
 

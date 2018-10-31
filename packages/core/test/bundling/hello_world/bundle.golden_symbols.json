@@ -201,9 +201,6 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitAndContentHooks"
-  },
-  {
     "name": "executeInitHooks"
   },
   {
@@ -370,6 +367,9 @@
   },
   {
     "name": "prefillHostVars"
+  },
+  {
+    "name": "queueComponentIndexForCheck"
   },
   {
     "name": "queueHostBindingForCheck"

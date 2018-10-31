@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OnDestroy, SimpleChanges} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {ComponentFactoryResolver, OnDestroy, SimpleChanges, ViewContainerRef} from '../../src/core';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -77,7 +77,7 @@ describe('lifecycles', () => {
           {type: Directive, selectors: [['', 'dir', '']], factory: () => new Directive()});
     }
 
-    const directives = [Comp, Parent, ProjectedComp, Directive];
+    const directives = [Comp, Parent, ProjectedComp, Directive, NgIf];
 
     it('should call onInit method after inputs are set in creation mode (and not in update mode)',
        () => {
@@ -182,6 +182,72 @@ describe('lifecycles', () => {
       fixture.component.skip = false;
       fixture.update();
       expect(events).toEqual(['comp', 'comp']);
+    });
+
+
+    it('should call onInit every time a new view is created (ngIf)', () => {
+
+      function IfTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'comp');
+        }
+      }
+
+      /** <comp *ngIf="showing"></comp> */
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          template(0, IfTemplate, 1, 0, '', ['ngIf', '']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'ngIf', bind(ctx.showing));
+        }
+      }, 1, 0, directives);
+
+      const fixture = new ComponentFixture(App);
+
+      fixture.component.showing = true;
+      fixture.update();
+      expect(events).toEqual(['comp']);
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(events).toEqual(['comp']);
+
+      fixture.component.showing = true;
+      fixture.update();
+      expect(events).toEqual(['comp', 'comp']);
+    });
+
+    it('should call onInit for children of dynamically created components', () => {
+      let viewContainerComp !: ViewContainerComp;
+
+      class ViewContainerComp {
+        constructor(public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
+
+        static ngComponentDef = defineComponent({
+          type: ViewContainerComp,
+          selectors: [['view-container-comp']],
+          factory: () => viewContainerComp = new ViewContainerComp(
+                       directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: ViewContainerComp) => {}
+        });
+      }
+
+      const DynamicComp = createComponent('dynamic-comp', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'comp');
+        }
+      }, 1, 0, [Comp]);
+
+      const fixture = new ComponentFixture(ViewContainerComp);
+      expect(events).toEqual([]);
+
+      viewContainerComp.vcr.createComponent(
+          viewContainerComp.cfr.resolveComponentFactory(DynamicComp));
+      fixture.update();
+      expect(events).toEqual(['comp']);
     });
 
     it('should call onInit in hosts before their content children', () => {
