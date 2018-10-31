@@ -10,7 +10,12 @@ export type Ng1Token = string;
 
 export type Ng1Expression = string | Function;
 
-export interface IAnnotatedFunction extends Function { $inject?: ReadonlyArray<Ng1Token>; }
+export interface IAnnotatedFunction extends Function {
+  // Older versions of `@types/angular` typings extend the global `Function` interface with
+  // `$inject?: string[]`, which is not compatible with `$inject?: ReadonlyArray<string>` (used in
+  // latest versions).
+  $inject?: Function extends{$inject?: string[]}? Ng1Token[]: ReadonlyArray<Ng1Token>;
+}
 
 export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
 
