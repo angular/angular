@@ -79,18 +79,16 @@ def _enable_ivy_value(ctx):
         fail("unreachable")
 
 def _include_ng_files(ctx):
-    """Determines whether Angular outputs will be produced by the current compilation strategy.
+    """Determines whether Angular outputs will be produced by the ng_module rule.
 
     Args:
       ctx: skylark rule execution context
 
     Returns:
-      true iff the current compilation strategy will produce View Engine compilation outputs (such as
-      factory files), false otherwise
+      false iff the target was tagged with "ivy-only" label, true otherwise
     """
 
-    strategy = compile_strategy(ctx)
-    return strategy == "legacy"
+    return "ivy-only" not in ctx.attr.tags
 
 def _basename_of(ctx, file):
     ext_len = len(".ts")
