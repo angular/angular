@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-oad("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
 load("//packages/bazel:index.bzl", "protractor_web_test")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
