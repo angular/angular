@@ -3195,9 +3195,6 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitAndContentHooks"
-  },
-  {
     "name": "executeInitHooks"
   },
   {
@@ -4144,6 +4141,9 @@
   },
   {
     "name": "queryDef"
+  },
+  {
+    "name": "queueComponentIndexForCheck"
   },
   {
     "name": "queueContentHooks"

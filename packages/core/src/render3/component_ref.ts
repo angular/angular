@@ -20,7 +20,7 @@ import {Type} from '../type';
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
-import {createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -177,9 +177,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
           hostRNode, componentView, this.componentDef, rootView, rootContext,
           [LifecycleHooksFeature]);
 
-      // Execute the template in creation mode only, and then turn off the CreationMode flag
-      renderEmbeddedTemplate(componentView, componentView[TVIEW], component, RenderFlags.Create);
-      componentView[FLAGS] &= ~LViewFlags.CreationMode;
+      refreshDescendantViews(rootView, RenderFlags.Create);
     } finally {
       enterView(oldView, null);
       if (rendererFactory.end) rendererFactory.end();
