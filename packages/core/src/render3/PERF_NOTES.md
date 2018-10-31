@@ -27,7 +27,6 @@ Great reads:
 Exporting top level variables should be avoided where possible where performance
 and code size matters:
 
-
 ```
 // Typescript
 export let exported = 0;
