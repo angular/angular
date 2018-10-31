@@ -133,7 +133,6 @@ jobs:
     environment:
       BROWSER_STACK_USERNAME: "angularteam1"
       BROWSER_STACK_ACCESS_KEY: "CaXMeMHD9pr5PHg8N7Jq"
-    parallelism: 2
     steps:
       - *checkout_code
       - *restore_cache
