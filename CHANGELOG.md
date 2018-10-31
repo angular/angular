@@ -1,9 +1,20 @@
+<a name="7.0.2"></a>
+## [7.0.2](https://github.com/angular/angular/compare/7.0.1...7.0.2) (2018-10-31)
+
+
+### Bug Fixes
+
+* **compiler:** generate relative paths only in summary file errors ([#26759](https://github.com/angular/angular/issues/26759)) ([c01f340](https://github.com/angular/angular/commit/c01f340))
+* **core:** Remove static dependency from [@angular](https://github.com/angular)/core to [@angular](https://github.com/angular)/compiler ([#26734](https://github.com/angular/angular/issues/26734)) ([#26879](https://github.com/angular/angular/issues/26879)) ([257ac83](https://github.com/angular/angular/commit/257ac83))
+* **core:** support computed base class in metadata inheritance ([#24014](https://github.com/angular/angular/issues/24014)) ([b3c6409](https://github.com/angular/angular/commit/b3c6409))
+
+
+
 <a name="7.1.0-beta.0"></a>
 # [7.1.0-beta.0](https://github.com/angular/angular/compare/7.0.0-rc.1...7.1.0-beta.0) (2018-10-24)
 
 
 ### Bug Fixes
-
 * **core:** allow null value for renderer setElement(…) ([#17065](https://github.com/angular/angular/issues/17065)) ([ff15043](https://github.com/angular/angular/commit/ff15043)), closes [#13686](https://github.com/angular/angular/issues/13686)
 * **router:** fix regression where navigateByUrl promise didn't resolve on CanLoad failure ([#26455](https://github.com/angular/angular/issues/26455)) ([1c9b065](https://github.com/angular/angular/commit/1c9b065)), closes [#26284](https://github.com/angular/angular/issues/26284)
 * **service-worker:** clean up caches from old SW versions ([#26319](https://github.com/angular/angular/issues/26319)) ([2326b9c](https://github.com/angular/angular/commit/2326b9c))
