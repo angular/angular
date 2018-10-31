@@ -15,7 +15,7 @@ if $CI; then
   # We don't install this by default because it contains some broken Bazel setup
   # and also it's a very big dependency that we never use except when publishing
   # payload sizes on CI.
-  yarn add --silent -D firebase-tools@3.12.0
+  yarn add --silent -D firebase-tools@5.1.1
   source ${basedir}/scripts/ci/payload-size.sh
 
   # NB: we don't run build-packages-dist.sh because we expect that it was done
@@ -47,20 +47,21 @@ for testDir in $(ls | grep -v node_modules) ; do
 
     yarn install --cache-folder ../$cache
     yarn test || exit 1
+
     # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
-    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]]; then
+    if $CI && ([[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]]); then
       if [[ $testDir == cli-hello-world ]]; then
         yarn build
       fi
-      #if $CI; then
-      #  trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
-      #fi
+
+      trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
     fi
+
     # remove the temporary node modules directory to keep the source folder clean.
     rm -rf node_modules
   )
 done
 
-#if $CI; then
-#  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
-#fi
+if $CI; then
+  trackPayloadSize "umd" "../dist/packages-dist/*/bundles/*.umd.min.js" false false
+fi
