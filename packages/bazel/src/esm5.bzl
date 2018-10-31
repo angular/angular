@@ -81,9 +81,11 @@ def _esm5_outputs_aspect(target, ctx):
     )
 
     replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
-    if replay_compiler == "tsc_wrapped":
+
+    # in windows replay_compiler path end with '.exe'
+    if replay_compiler.startswith("tsc_wrapped"):
         compiler = ctx.executable._tsc_wrapped
-    elif replay_compiler == "ngc-wrapped":
+    elif replay_compiler.startswith("ngc-wrapped"):
         compiler = ctx.executable._ngc_wrapped
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
