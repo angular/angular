@@ -10,10 +10,11 @@ To test Angular CLI applications, we use the integration test `cli-hello-world`.
 When a significant change is released in the CLI, the application should be updated with `ng update`:
 
 ```bash
-$ cd integration
-$ ng update
-# ng build
-# ng test
+$ cd integration/cli-hello-world
+$ yarn install
+$ yarn ng update @angular/cli @angular-devkit/build-angular
+# yarn build
+# yarn test
 # typescript version
 ```
 
@@ -36,7 +37,7 @@ The API for each test is:
 
 This means that the test should be started by test script, like
 ```
-'scripts' { 'test': 'runProgramA && assertResultIsGood' }
+"scripts": {"test": "runProgramA && assertResultIsGood"}
 ```
 
 Note that the `package.json` file uses a special `file://../../dist` scheme
