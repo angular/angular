@@ -27,6 +27,7 @@ Great reads:
 Exporting top level variables should be avoided where possible where performance
 and code size matters:
 
+
 ```
 // Typescript
 export let exported = 0;
@@ -67,6 +68,43 @@ for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
 
 ## Recursive functions
 Avoid recursive functions when possible because they cannot be inlined.
+
+## Function Inlining
+
+VMs gain a lot of speed by inlining functions which are small (such as getters).
+This is because the cost of the value retrieval (getter) is ofter way less than the cost of making a function call.
+VMs use the heuristic of size to determine wether a function should be inline. 
+Thinking is that large function probably will not benefit inlining because the overhead of function call is not significant to the overall function execution.
+
+Our goal should be that all of the instructions which are in template function should be inlinable. 
+Here is an example of code which breaks the inlining and a way to fix it.
+
+```
+export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
+  const tView = getTView();
+  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+    // LOTS OF CODE HERE WHICH PREVENTS INLINING.
+  }
+}
+```
+
+Notice that the above function almost never runs because `tView.firstTemplatePass` is usually false.
+The application would benefit inlining but the large code inside `if` prevents it.
+Simple refactoring will fix it.
+
+```
+export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
+  const tView = getTView();
+  if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
+    i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex
+  }
+}
+export function i18nStart(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
+  // LOTS OF CODE HERE WHICH PREVENTS INLINING.
+}
+```
+
+
 
 ## Loops
 Don't use foreach, it can cause megamorphic function calls (depending on the browser) and function allocations.
