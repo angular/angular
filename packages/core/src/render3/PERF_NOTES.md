@@ -98,7 +98,7 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
     i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex)
   }
 }
-export function i18nStart(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
+export function i18nStartFirstTemplatePass(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
   // LOTS OF CODE HERE WHICH PREVENTS INLINING.
 }
 ```
