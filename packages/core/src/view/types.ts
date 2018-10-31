@@ -355,6 +355,7 @@ export interface ViewData {
   // and call the right accessor (e.g. `elementData`) based on
   // the NodeType.
   nodes: {[key: number]: NodeData};
+  nodeInjectors: (Injector|undefined)[];
   state: ViewState;
   oldValues: any[];
   disposables: DisposableFn[]|null;

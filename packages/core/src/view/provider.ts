@@ -8,6 +8,7 @@
 
 import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
 import {INJECTOR, Injector, resolveForwardRef} from '../di';
+import {setCurrentInjector} from '../di/injector_compatibility';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -358,44 +359,51 @@ export function resolveDep(
   let searchView: ViewData|null = view;
   while (searchView) {
     if (elDef) {
-      switch (tokenKey) {
-        case RendererV1TokenKey: {
-          const compView = findCompView(searchView, elDef, allowPrivateServices);
-          return createRendererV1(compView);
-        }
-        case Renderer2TokenKey: {
-          const compView = findCompView(searchView, elDef, allowPrivateServices);
-          return compView.renderer;
-        }
-        case ElementRefTokenKey:
-          return new ElementRef(asElementData(searchView, elDef.nodeIndex).renderElement);
-        case ViewContainerRefTokenKey:
-          return asElementData(searchView, elDef.nodeIndex).viewContainer;
-        case TemplateRefTokenKey: {
-          if (elDef.element !.template) {
-            return asElementData(searchView, elDef.nodeIndex).template;
+      const injector = searchView.nodeInjectors[elDef.nodeIndex];
+      const former = setCurrentInjector(injector);
+
+      try {
+        switch (tokenKey) {
+          case RendererV1TokenKey: {
+            const compView = findCompView(searchView, elDef, allowPrivateServices);
+            return createRendererV1(compView);
           }
-          break;
-        }
-        case ChangeDetectorRefTokenKey: {
-          let cdView = findCompView(searchView, elDef, allowPrivateServices);
-          return createChangeDetectorRef(cdView);
-        }
-        case InjectorRefTokenKey:
-        case INJECTORRefTokenKey:
-          return createInjector(searchView, elDef);
-        default:
-          const providerDef =
-              (allowPrivateServices ? elDef.element !.allProviders :
-                                      elDef.element !.publicProviders) ![tokenKey];
-          if (providerDef) {
-            let providerData = asProviderData(searchView, providerDef.nodeIndex);
-            if (!providerData) {
-              providerData = {instance: _createProviderInstance(searchView, providerDef)};
-              searchView.nodes[providerDef.nodeIndex] = providerData as any;
+          case Renderer2TokenKey: {
+            const compView = findCompView(searchView, elDef, allowPrivateServices);
+            return compView.renderer;
+          }
+          case ElementRefTokenKey:
+            return new ElementRef(asElementData(searchView, elDef.nodeIndex).renderElement);
+          case ViewContainerRefTokenKey:
+            return asElementData(searchView, elDef.nodeIndex).viewContainer;
+          case TemplateRefTokenKey: {
+            if (elDef.element !.template) {
+              return asElementData(searchView, elDef.nodeIndex).template;
             }
-            return providerData.instance;
+            break;
           }
+          case ChangeDetectorRefTokenKey: {
+            let cdView = findCompView(searchView, elDef, allowPrivateServices);
+            return createChangeDetectorRef(cdView);
+          }
+          case InjectorRefTokenKey:
+          case INJECTORRefTokenKey:
+            return injector;
+          default:
+            const providerDef =
+                (allowPrivateServices ? elDef.element !.allProviders :
+                                        elDef.element !.publicProviders) ![tokenKey];
+            if (providerDef) {
+              let providerData = asProviderData(searchView, providerDef.nodeIndex);
+              if (!providerData) {
+                providerData = {instance: _createProviderInstance(searchView, providerDef)};
+                searchView.nodes[providerDef.nodeIndex] = providerData as any;
+              }
+              return providerData.instance;
+            }
+        }
+      } finally {
+        setCurrentInjector(former);
       }
     }
 

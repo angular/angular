@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injector} from '../di';
+import {setCurrentInjector} from '../di/injector_compatibility';
 import {Renderer2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement, listenToElementOutputs} from './element';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {appendNgContent} from './ng_content';
-import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAndUpdateDirectiveInline, createDirectiveInstance, createPipeInstance, createProviderInstance} from './provider';
+import {callLifecycleHooksChildrenFirst, checkAndUpdateDirectiveDynamic, checkAndUpdateDirectiveInline, createDirectiveInstance, createPipeInstance, createProviderInstance, resolveDep} from './provider';
 import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline, createPureExpression} from './pure_expression';
 import {checkAndUpdateQuery, createQuery} from './query';
-import {createTemplateData, createViewContainerData} from './refs';
+import {createInjector, createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
 import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData, shiftInitState} from './types';
 import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveDefinition, tokenKey} from './util';
@@ -228,13 +230,14 @@ function createView(
     root: RootData, renderer: Renderer2, parent: ViewData | null, parentNodeDef: NodeDef | null,
     def: ViewDefinition): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
+  const nodeInjectors: (Injector | undefined)[] = new Array(def.nodes.length);
   const disposables = def.outputCount ? new Array(def.outputCount) : null;
   const view: ViewData = {
     def,
     parent,
     viewContainerParent: null, parentNodeDef,
     context: null,
-    component: null, nodes,
+    component: null, nodes, nodeInjectors,
     state: ViewState.CatInit, root, renderer,
     oldValues: new Array(def.bindingCount), disposables,
     initIndex: -1
@@ -254,13 +257,17 @@ function createViewNodes(view: ViewData) {
     renderHost = asElementData(view.parent !, hostDef !.parent !.nodeIndex).renderElement;
   }
   const def = view.def;
+  const nodeInjectors = view.nodeInjectors;
   const nodes = view.nodes;
+  const former = setCurrentInjector(undefined);
   for (let i = 0; i < def.nodes.length; i++) {
     const nodeDef = def.nodes[i];
     Services.setCurrentNode(view, i);
     let nodeData: any;
     switch (nodeDef.flags & NodeFlags.Types) {
       case NodeFlags.TypeElement:
+        const injector = nodeInjectors[i] = createInjector(view, nodeDef);
+        setCurrentInjector(injector);
         const el = createElement(view, renderHost, nodeDef) as any;
         let componentView: ViewData = undefined !;
         if (nodeDef.flags & NodeFlags.ComponentView) {
@@ -326,6 +333,9 @@ function createViewNodes(view: ViewData) {
     }
     nodes[i] = nodeData;
   }
+
+  setCurrentInjector(former);
+
   // Create the ViewData.nodes of component views after we created everything else,
   // so that e.g. ng-content works
   execComponentViewsAction(view, ViewAction.CreateViewNodes);

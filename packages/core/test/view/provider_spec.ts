@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
+import {inject as _inject, AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, directiveDef, elementDef, providerDef, textDef} from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
@@ -52,6 +52,24 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
         expect(lazy).toBeUndefined();
         instance.dep.get(LazyService);
         expect(lazy instanceof LazyService).toBe(true);
+      });
+
+      it('should allow inject instruction with correct injector', () => {
+        let constructorInjector: Injector = undefined !;
+        let imperativeInjector: Injector = undefined !;
+        class InjectDir {
+          constructor(dep: any) {
+            constructorInjector = dep;
+            imperativeInjector = _inject(Injector as any);
+          }
+        }
+
+        createAndGetRootNodes(compViewDef([
+          elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+          directiveDef(1, NodeFlags.None, null, 0, InjectDir, [Injector])
+        ]));
+
+        expect(imperativeInjector).toBe(constructorInjector);
       });
 
       it('should create value providers', () => {
@@ -178,6 +196,26 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
           ]));
 
           expect(instance.dep instanceof Dep).toBeTruthy();
+        });
+
+        it('should allow inject instruction in deps with correct injector', () => {
+          let constructorInjector: Injector = undefined !;
+          let imperativeInjector: Injector = undefined !;
+          class InjectDep {
+            constructor(dep: any) {
+              constructorInjector = dep;
+              imperativeInjector = _inject(Injector as any);
+            }
+          }
+
+          createAndGetRootNodes(compViewDef([
+            elementDef(0, NodeFlags.None, null, null, 3, 'span'),
+            directiveDef(1, NodeFlags.None, null, 0, InjectDep, [Injector]),
+            elementDef(2, NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(3, NodeFlags.None, null, 0, SomeService, [InjectDep])
+          ]));
+
+          expect(imperativeInjector).toBe(constructorInjector);
         });
 
         it('should throw for missing dependencies', () => {
