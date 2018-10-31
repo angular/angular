@@ -56,6 +56,7 @@ export type Provider = any;
 export enum R3ResolvedDependencyType {
   Token = 0,
   Attribute = 1,
+  Injector = 2,
 }
 
 export interface R3DependencyMetadataFacade {
