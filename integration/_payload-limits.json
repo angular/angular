@@ -2,9 +2,9 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "runtime": 1110,
-        "main": 160134,
-        "polyfills": 59620
+        "runtime": 1497,
+        "main": 181839,
+        "polyfills": 59608
       }
     }
   },
