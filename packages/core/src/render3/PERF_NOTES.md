@@ -95,7 +95,7 @@ Simple refactoring will fix it.
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getTView();
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
-    i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex
+    i18nStartFirstTemplatePass(tView, index, message, subTemplateIndex)
   }
 }
 export function i18nStart(tView: TView, index: number, message: string, subTemplateIndex?: number): void {
