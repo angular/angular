@@ -72,7 +72,7 @@ Avoid recursive functions when possible because they cannot be inlined.
 
 VMs gain a lot of speed by inlining functions which are small (such as getters).
 This is because the cost of the value retrieval (getter) is often way less than the cost of making a function call.
-VMs use the heuristic of size to determine wether a function should be inline. 
+VMs use the heuristic of size to determine whether a function should be inline. 
 Thinking is that large function probably will not benefit inlining because the overhead of function call is not significant to the overall function execution.
 
 Our goal should be that all of the instructions which are in template function should be inlinable. 
