@@ -106,5 +106,5 @@ export function i18nStartFirstTemplatePass(tView: TView, index: number, message:
 
 
 ## Loops
-Don't use foreach, it can cause megamorphic function calls (depending on the browser) and function allocations.
+Don't use `forEach`, it can cause megamorphic function calls (depending on the browser) and function allocations.
 It is [a lot slower than regular `for` loops](https://jsperf.com/for-vs-foreach-misko)
