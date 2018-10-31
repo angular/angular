@@ -88,7 +88,7 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
 ```
 
 Notice that the above function almost never runs because `tView.firstTemplatePass` is usually false.
-The application would benefit inlining but the large code inside `if` prevents it.
+The application would benefit from inlining, but the large code inside `if` prevents it.
 Simple refactoring will fix it.
 
 ```
