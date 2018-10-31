@@ -3,8 +3,8 @@
     "master": {
       "uncompressed": {
         "runtime": 1110,
-        "main": 151765,
-        "polyfills": 59462
+        "main": 160134,
+        "polyfills": 59620
       }
     }
   },
@@ -12,9 +12,8 @@
     "master": {
       "uncompressed": {
         "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
-        "bundle": 178101
+        "bundle": 177585
       }
     }
   }
 }
-
