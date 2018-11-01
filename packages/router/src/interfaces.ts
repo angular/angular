@@ -98,7 +98,7 @@ export type CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSn
  * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
  * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
  * guard.
- * 
+ *
  * ```
  * class UserToken {}
  * class Permissions {
@@ -185,7 +185,7 @@ export type CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: Rou
  * navigation will be cancelled. If any guard returns a `UrlTree`, current navigation will
  * be cancelled and a new navigation will be kicked off to the `UrlTree` returned from the
  * guard.
- * 
+ *
  * ```
  * class UserToken {}
  * class Permissions {
