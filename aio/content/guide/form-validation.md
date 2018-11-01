@@ -240,7 +240,7 @@ const heroForm = new FormGroup({
   'name': new FormControl(),
   'alterEgo': new FormControl(),
   'power': new FormControl()
-}, { validators: identityRevealedValidator });
+}, { validator: identityRevealedValidator });
 ```
 
 The validator code is as follows:
