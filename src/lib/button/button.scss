@@ -42,20 +42,22 @@
 }
 
 .mat-stroked-button {
-  border: 1px solid currentColor;
+  border: $mat-stroked-button-border-width solid currentColor;
   padding: $mat-stroked-button-padding;
   line-height: $mat-stroked-button-line-height;
 
   // Since the stroked button has has an actual border that reduces the available space for
-  // child elements (such as the ripple container or focus overlay), an inherited border radius
-  // for absolute positioned child elements which expand to the parent element boundaries, will
-  // not align with the stroked button border because the child element cannot expand to the same
-  // boundaries as the parent element with a border.
-  // See: https://github.com/angular/material2/issues/13738
-  overflow: hidden;
-
+  // child elements such as the ripple container or focus overlay, an inherited border radius
+  // for the absolute-positioned child elements does not work properly. This is because the
+  // child element cannot expand to the same boundaries as the parent element with a border.
+  // In order to work around this issue by *not* hiding overflow, we adjust the child elements
+  // to fully cover the actual button element. This means that the border-radius would be correct
+  // then. See: https://github.com/angular/material2/issues/13738
   .mat-button-ripple.mat-ripple, .mat-button-focus-overlay {
-    border-radius: 0;
+    top: -$mat-stroked-button-border-width;
+    left: -$mat-stroked-button-border-width;
+    right: -$mat-stroked-button-border-width;
+    bottom: -$mat-stroked-button-border-width;
   }
 }
 
