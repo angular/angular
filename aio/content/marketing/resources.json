@@ -694,6 +694,12 @@
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
+          "webucator": {
+            "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "rev": true,
+            "title": "Webucator",
+            "url": "https://www.webucator.com/webdev-training/angular-training"
+          },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",
             "rev": true,
