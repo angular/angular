@@ -9,6 +9,7 @@
 import {existsSync, readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
+import {isStringLiteralLike} from '../typescript/literal';
 import {createComponentFile, ExternalResource} from './component-file';
 import {ExternalFailureWalker} from './external-failure-walker';
 
@@ -60,11 +61,11 @@ export class ComponentWalker extends ExternalFailureWalker {
     for (const property of directiveMetadata.properties as ts.NodeArray<ts.PropertyAssignment>) {
       const propertyName = property.name.getText();
 
-      if (propertyName === 'template' && ts.isStringLiteralLike(property.initializer)) {
+      if (propertyName === 'template' && isStringLiteralLike(property.initializer)) {
         this.visitInlineTemplate(property.initializer);
       }
 
-      if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
+      if (propertyName === 'templateUrl' && isStringLiteralLike(property.initializer)) {
         this._reportExternalTemplate(property.initializer);
       }
 
@@ -95,7 +96,7 @@ export class ComponentWalker extends ExternalFailureWalker {
 
   private _reportInlineStyles(expression: ts.ArrayLiteralExpression) {
     expression.elements.forEach(node => {
-      if (ts.isStringLiteralLike(node)) {
+      if (isStringLiteralLike(node)) {
         this.visitInlineStylesheet(node);
       }
     });
@@ -103,7 +104,7 @@ export class ComponentWalker extends ExternalFailureWalker {
 
   private _visitExternalStylesArrayLiteral(expression: ts.ArrayLiteralExpression) {
     expression.elements.forEach(node => {
-      if (ts.isStringLiteralLike(node)) {
+      if (isStringLiteralLike(node)) {
         const stylePath = resolve(dirname(this.getSourceFile().fileName), node.text);
 
         // Check if the external stylesheet file exists before proceeding.
