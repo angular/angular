@@ -202,6 +202,28 @@ jobs:
 
       - *save_cache
 
+  # ----------------------------------------
+  # Job that publishes the build snapshots
+  # ----------------------------------------
+  publish_snapshots:
+    <<: *job_defaults
+    steps:
+      # Since CircleCI currently does not have any way to easily restrict jobs to only run
+      # for push builds, we need to manually skip publishing if the jobs runs for a PR.
+      # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/11
+      - run:
+          name: Check whether this job should be skipped.
+          command: '[[ -n ${CIRCLE_PR_NUMBER} ]] && circleci step halt || true'
+
+      - *checkout_code
+      - *restore_cache
+      - *yarn_install
+      - *attach_release_output
+
+      - run: ./scripts/circleci/publish-snapshots.sh
+
+      - *save_cache
+
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
 # one job depends on another.
@@ -232,6 +254,9 @@ workflows:
     jobs:
       - build_release_packages
       - build_demoapp_aot:
+          requires:
+            - build_release_packages
+      - publish_snapshots:
           requires:
             - build_release_packages
 
