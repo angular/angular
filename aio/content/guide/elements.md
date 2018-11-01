@@ -107,7 +107,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Firefox</td>
-  <td> Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true. Planned to be enabled by default in version 63.</td>
+  <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
 </tr>
 <tr>
   <td>Edge</td>
