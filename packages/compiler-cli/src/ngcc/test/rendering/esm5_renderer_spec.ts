@@ -11,7 +11,7 @@ import {makeProgram} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {EsmRenderer} from '../../src/rendering/esm_renderer';
+import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
@@ -20,7 +20,7 @@ function setup(file: {name: string, contents: string}) {
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new EsmRenderer(host, false, null, '', '', false);
+  const renderer = new Esm5Renderer(host, false, null, '', '', false);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
@@ -35,6 +35,9 @@ var A = (function() {
     { type: Directive, args: [{ selector: '[a]' }] },
     { type: OtherA }
   ];
+  A.prototype.ngDoCheck = function() {
+    //
+  };
   return A;
 }());
 
@@ -179,18 +182,21 @@ var A = (function() {`);
   });
 
   describe('addDefinitions', () => {
-    it('should insert the definitions directly after the class declaration', () => {
-      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-      const output = new MagicString(PROGRAM.contents);
-      const compiledClass =
-          decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
-      renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
-      expect(output.toString()).toContain(`
-  function A() {}
+    it('should insert the definitions directly before the return statement of the class IIFE',
+       () => {
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+         const output = new MagicString(PROGRAM.contents);
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+         expect(output.toString()).toContain(`
+  A.prototype.ngDoCheck = function() {
+    //
+  };
 SOME DEFINITION TEXT
-  A.decorators = [
+  return A;
 `);
-    });
+       });
 
   });
 
