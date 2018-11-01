@@ -191,7 +191,7 @@ function resolveBazelFilePath(fileName: string): string {
   // are not available in the working directory. In order to resolve the real path for the
   // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
   if (process.env['BAZEL_TARGET']) {
-    return path.posix.relative(process.cwd(), require.resolve(fileName));
+    return path.relative(process.cwd(), require.resolve(fileName));
   }
 
   return fileName;
