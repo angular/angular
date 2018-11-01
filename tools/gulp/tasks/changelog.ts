@@ -1,6 +1,7 @@
 import {grey, red, yellow} from 'chalk';
 import {readFileSync} from 'fs';
 import {dest, src, task} from 'gulp';
+import {prompt} from 'inquirer';
 import {buildConfig} from 'material2-build-tools';
 import {join} from 'path';
 
@@ -26,8 +27,15 @@ task('changelog', async () => {
     return;
   }
 
+  const {releaseName} = await prompt<{releaseName: string}>({
+    type: 'text',
+    name: 'releaseName',
+    message: 'What should be the name of the release?'
+  });
+
   return src(changelogFile)
-    .pipe(gulpChangelog(changelogOptions, null, null, null, createDedupeWriterOptions()))
+    .pipe(gulpChangelog(changelogOptions, {title: releaseName}, null, null,
+        createDedupeWriterOptions()))
     .pipe(dest('./'));
 });
 
