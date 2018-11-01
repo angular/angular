@@ -78,12 +78,19 @@ replace every use of the `HEROES` mock data.
 이 방식은 프로토타이핑 할 때 적합한 방식이지만 실제 운영환경에서는 적합하지 않습니다.
 왜냐하면 이 컴포넌트에 테스트를 적용하거나 리모트 서버에서 데이터를 가져오도록 변경한다면 `HeroesListComponent`를 반드시 수정해야 하며 상황에 따라 매번 `HEROES` 목 데이터를 변경해야 할 수도 있습니다.
 
+<!--
 ## Create and register an injectable service
+-->
+## 의존성 주입 가능한 서비스 생성하고 등록하기
 
+<!--
 The DI framework lets you supply data to a component from an injectable _service_ class, defined in its own file. To demonstrate, we'll create an injectable service class that provides a list of heroes, and register that class as a provider of that service.
+-->
+목 데이터를 파일에 정의해 두었다면 이 데이터는 의존성으로 주입가능한 _서비스_ 클래스로 구현해서 컴포넌트에 주입할 수 있습니다. 이 내용을 확인해보기 위해 히어로의 목록을 제공하는 서비스 클래스를 정의하고 이 클래스를 의존성 주입할 수 있도록 등록해 봅시다.
 
 <div class="alert is-helpful">
 
+<!--
 Having multiple classes in the same file can be confusing. We generally recommend that you define components and services in separate files.
 
 If you do combine a component and service in the same file,
@@ -93,6 +100,16 @@ It is possible to define the component first with the help of the `forwardRef()`
 
 You can also use forward references to break circular dependencies.
 See an example in the [DI Cookbook](guide/dependency-injection-in-action#forwardref).
+-->
+한 파일에 클래스를 여러개 정의하면 이 파일을 접하는 많은 사람들에게 혼란을 줄 수 있습니다. 일반적으로 컴포넌트와 서비스는 파일 하나에 하나씩 정의하는 것을 권장합니다.
+
+그런데 만약 컴포넌트와 서비스를 한 파일에 정의하려고 한다면 서비스를 먼저 정의하고 컴포넌트를 나중에 정의하세요. 이 경우에 서비스보다 컴포넌트를 먼저 정의하면 런타임 null 참조 에러가 발생할 것입니다.
+
+[이 블로그](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html)에서 설명한 것처럼 `forwardRef()` 메소드를 사용하면 컴포넌트를 먼저 정의할 수도 있습니다.
+
+`forwardRef()` 메소드는 순환 참조를 방지할 때도 사용할 수 있습니다.
+[DI Cookbook](guide/dependency-injection-in-action#forwardref)에서 설명하는 예제를 참고하세요.
+
 
 </div>
 
