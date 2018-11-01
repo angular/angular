@@ -15,6 +15,7 @@ import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
@@ -128,10 +129,12 @@ export class Transformer {
       rewriteCoreImportsTo: ts.SourceFile|null, transformDts: boolean): Renderer {
     switch (format) {
       case 'esm2015':
-      case 'esm5':
       case 'fesm2015':
-      case 'fesm5':
         return new EsmRenderer(
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
+      case 'esm5':
+      case 'fesm5':
+        return new Esm5Renderer(
             host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
