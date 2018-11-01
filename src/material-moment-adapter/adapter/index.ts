@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter} from './moment-date-adapter';
 import {MAT_MOMENT_DATE_FORMATS} from './moment-date-formats';
 

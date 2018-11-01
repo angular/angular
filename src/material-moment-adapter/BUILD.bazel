@@ -9,8 +9,9 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material-moment-adapter",
   deps = [
+    "@angular//packages/core",
     "@npm//moment",
-    "//src/lib:material"
+    "//src/lib/core"
   ],
   # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this
   # tsconfig because in order to import Moment with TypeScript, we need some special options

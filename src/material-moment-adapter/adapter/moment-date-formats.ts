@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MatDateFormats} from '@angular/material';
+import {MatDateFormats} from '@angular/material/core';
 
 
 export const MAT_MOMENT_DATE_FORMATS: MatDateFormats = {
