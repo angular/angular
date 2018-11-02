@@ -9,7 +9,6 @@ ng_module(
     srcs = ["index.ts"],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     deps = [
         "//packages/core",
@@ -27,7 +26,6 @@ ng_rollup_bundle(
     entry_point = "packages/core/test/bundling/hello_world/index.js",
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     deps = [
         ":hello_world",
@@ -41,7 +39,6 @@ ts_library(
     srcs = glob(["*_spec.ts"]),
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     deps = [
         "//packages:types",
@@ -61,7 +58,6 @@ jasmine_node_test(
     ],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     deps = [":test_lib"],
 )
@@ -73,7 +69,6 @@ js_expected_symbol_test(
     tags = [
         "ivy-aot",
         "ivy-only",
-        "no-ivy-jit",
     ],
 )
 
@@ -86,6 +81,5 @@ http_server(
     ],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
 )

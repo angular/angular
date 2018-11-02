@@ -18,7 +18,6 @@ ts_library(
     srcs = ["aot_router_bootstrap.spec.ts"],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":aot_routing_module",
@@ -34,7 +33,6 @@ jasmine_node_test(
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":aot_test_lib",

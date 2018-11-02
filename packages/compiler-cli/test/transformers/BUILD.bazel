@@ -27,7 +27,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":test_lib",

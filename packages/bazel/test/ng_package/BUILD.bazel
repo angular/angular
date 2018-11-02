@@ -26,7 +26,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
 )
 

@@ -31,7 +31,6 @@ ts_web_test_suite(
     name = "test_web",
     tags = [
         "fixme-ivy-aot",
-        "fixme-ivy-jit",
     ],
     deps = [
         ":test_lib",

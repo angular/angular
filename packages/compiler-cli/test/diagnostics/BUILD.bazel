@@ -39,7 +39,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":check_types_lib",
@@ -73,7 +72,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":expression_diagnostics_lib",
