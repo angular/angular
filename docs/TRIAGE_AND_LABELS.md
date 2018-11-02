@@ -1,6 +1,6 @@
 # Triage Process and GitHub Labels for Angular
 
-This document describes how the Angular team uses labels and milestones to triage issues on github.
+This document describes how the Angular team uses labels and milestones to triage issues on GitHub.
 The basic idea of the process is that caretaker only assigns a component (`comp: *`) label.
 The owner of the component is then responsible for the secondary / component-level triage.
 
@@ -38,7 +38,7 @@ The components have a clear piece of source code associated with it within the `
 
 There are few components which are cross-cutting.
 They don't have a clear location in the source tree.
-We will treat them as a component even thought no specific source tree is associated with them.
+We will treat them as a component even though no specific source tree is associated with them.
 
 * `comp: build & ci` - build and CI infrastructure for the angular/angular repo
 * `comp: docs` - documentation, including API docs, guides, tutorial
@@ -81,7 +81,7 @@ The component owner is responsible for assigning one of the labels from each of 
 - `frequency: *`
 - `severity: *`
 
-We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system every issue is assigned frequency and severity based on which the total user pain score is calculated.
+We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system, every issue is assigned frequency and severity based on which the total user pain score is calculated.
 
 Following is the definition of various frequency and severity levels:
 
@@ -132,7 +132,7 @@ This decision is then honored when the PR is being merged by the caretaker.
 
 To communicate the target we use the following labels:
 
-* `PR target: master & patch`: the PR should me merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs and refactorings should use this target.
+* `PR target: master & patch`: the PR should be merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs, and refactorings should use this target.
 * `PR target: master-only`: the PR should be merged only into the `master` branch. All PRs with new features, API changes or high-risk changes should use this target.
 * `PR target: patch-only`: the PR should be merged only into the most recent patch branch (e.g. 5.0.x). This target is useful if a `master & patch` PR can't be cleanly cherry-picked into the stable branch and a new PR is needed.
 * `PR target: LTS-only`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from @IgorMinar.

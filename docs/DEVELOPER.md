@@ -103,7 +103,7 @@ $ ./test.sh browserNoRouter  # Optionally run all angular tests without router i
 $ ./test.sh router           # Optionally run only the router tests in browser
 ```
 
-You should execute the 3 test suites before submitting a PR to github.
+You should execute the 3 test suites before submitting a PR to GitHub.
 
 See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
 
@@ -115,7 +115,7 @@ All the tests are executed on our Continuous Integration infrastructure and a PR
 ## <a name="clang-format"></a> Formatting your source code
 
 Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
-is not properly formatted, the CI will fail and the PR can not be merged.
+is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
 

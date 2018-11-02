@@ -16,7 +16,7 @@ Chrome browser that is automatically opened, usually pointing to `http://localho
 The script will sit watching for code changes, recompiling the changed files and triggering
 further runs of the unit tests in the browser.
 
-In this browser there is a "DEBUG" link (in the top right corner). Clicking this link will
+In this browser, there is a "DEBUG" link (in the top right corner). Clicking this link will
 open up a new tab that will run the unit tests and will not timeout, giving you time to
 step through the code.
 
@@ -24,7 +24,7 @@ Open up this tab's developer console to access the source code viewer where you 
 breakpoints and interrogate the current stack and variables.
 
 It is useful to focus your debugging on one test at a time by changing that test to be
-defined using the `fit(...)` function, rather than `it(...)`. Moreover it can be helpful
+defined using the `fit(...)` function, rather than `it(...)`. Moreover, it can be helpful
 to place a `debugger` statement in this `fit` clause to cause the debugger to stop when
 it hits this test.
 
@@ -38,7 +38,7 @@ the command. For example:
 ```
 
 Once the initial building has completed, the script will watch for code changes, recompiling
-and running the unit tests via a tool call `cjs-jasmine`. Due to the `--debug` flag, each
+and running the unit tests via a tool called `cjs-jasmine`. Due to the `--debug` flag, each
 test run will create a debugging server listening on a port (such as 9229), which can be
 connected to by a debugger.
 
@@ -47,7 +47,7 @@ You can use Chrome as the debugger by navigating to `chrome://inspect` then clic
 automatically connect to the debugging server.
 
 It is useful to focus your debugging on one test at a time by changing that test to be
-defined using the `fit(...)` function, rather than `it(...)`. Moreover it can be helpful
+defined using the `fit(...)` function, rather than `it(...)`. Moreover, it can be helpful
 to place a `debugger` statement in this `fit` clause to cause the debugger to stop when
 it hits this test.
 
