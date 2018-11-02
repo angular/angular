@@ -98,6 +98,7 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
   refreshChildComponents(tView.components, parentFirstTemplatePass, rf);
 }
 
+function testFunc() {}
 
 /** Sets the host bindings for the current view. */
 export function setHostBindings(tView: TView, viewData: LViewData): void {
