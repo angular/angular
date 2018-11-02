@@ -9,7 +9,7 @@ ts_library(
   deps = [
     "@angular//packages/core/testing",
     "@angular//packages/platform-browser-dynamic/testing",
-    "@npm//@types/jasmine",
+    "@matdeps//@types/jasmine",
   ],
   # This file *must* end with "spec" in order for ts_web_test to load it.
   srcs = ["angular-test-init-spec.ts"],

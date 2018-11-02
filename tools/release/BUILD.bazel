@@ -1,16 +1,16 @@
 package(default_visibility=["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
   name = "release-sources",
   srcs = glob(["**/*.ts"]),
   deps = [
-    "@npm//@types/node",
-    "@npm//@types/inquirer",
-    "@npm//chalk",
-    "@npm//inquirer"
+    "@matdeps//@types/node",
+    "@matdeps//@types/inquirer",
+    "@matdeps//chalk",
+    "@matdeps//inquirer"
   ],
   tsconfig = ":tsconfig.json"
 )
@@ -18,7 +18,7 @@ ts_library(
 nodejs_binary(
   name = "stage-release",
   data = [
-    "@npm//source-map-support",
+    "@matdeps//source-map-support",
     ":release-sources",
   ],
   entry_point = "angular_material/tools/release/stage-release.js",

@@ -7,9 +7,7 @@ ng_module(
   name = "input",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/input",
-  assets = [
-    ":input.css",
-  ] + glob(["**/*.html"]),
+  assets = glob(["**/*.html"]),
   deps = [
     "@angular//packages/common",
     "@angular//packages/core",
@@ -27,12 +25,6 @@ ng_module(
 filegroup(
   name = "input_scss_partials",
   srcs = glob(["**/_*.scss"]),
-)
-
-sass_binary(
-  name = "input_scss",
-  src = "input.scss",
-  deps = ["//src/lib/core:core_scss_lib"],
 )
 
 sass_library(

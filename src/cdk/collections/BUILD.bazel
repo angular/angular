@@ -16,7 +16,7 @@ ts_library(
   name = "collections_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@npm//@types/jasmine",
+    "@matdeps//@types/jasmine",
     ":collections"
   ],
   testonly = 1,

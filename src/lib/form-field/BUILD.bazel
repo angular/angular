@@ -10,10 +10,10 @@ ng_module(
   assets = [
     ":form-field.css",
     ":form-field-fill.css",
+    ":form-field-input.css",
     ":form-field-legacy.css",
     ":form-field-outline.css",
     ":form-field-standard.css",
-    "//src/lib/input:input.css"
   ] + glob(["**/*.html"]),
   deps = [
     "@angular//packages/animations",
@@ -46,6 +46,12 @@ sass_binary(
 sass_binary(
   name = "form_field_fill_scss",
   src = "form-field-fill.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "form_field_input_scss",
+  src = "form-field-input.scss",
   deps = ["//src/lib/core:core_scss_lib"],
 )
 

@@ -99,16 +99,16 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
   selector: 'mat-form-field',
   exportAs: 'matFormField',
   templateUrl: 'form-field.html',
-  // MatInput is a directive and can't have styles, so we need to include its styles here.
-  // The MatInput styles are fairly minimal so it shouldn't be a big deal for people who
-  // aren't using MatInput.
+  // MatInput is a directive and can't have styles, so we need to include its styles here
+  // in form-field-input.css. The MatInput styles are fairly minimal so it shouldn't be a
+  // big deal for people who aren't using MatInput.
   styleUrls: [
     'form-field.css',
     'form-field-fill.css',
+    'form-field-input.css',
     'form-field-legacy.css',
     'form-field-outline.css',
     'form-field-standard.css',
-    '../input/input.css',
   ],
   animations: [matFormFieldAnimations.transitionMessages],
   host: {

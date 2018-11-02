@@ -17,13 +17,15 @@ http_archive(
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  url = "https://github.com/angular/angular/archive/7.0.1.zip",
-  strip_prefix = "angular-7.0.1",
+  url = "https://github.com/angular/angular/archive/7.0.2.zip",
+  strip_prefix = "angular-7.0.2",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.
 # Also we cannot refer to the RxJS version from the node modules because self-managed
 # node modules are not guaranteed to be installed.
+# TODO(gmagolan): remove this once rxjs ships with an named UMD bundle and we
+# are no longer building it from source.
 http_archive(
   name = "rxjs",
   url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
@@ -72,12 +74,14 @@ node_repositories(
   yarn_version = "1.9.4",
 )
 
-# Use Bazel managed node modules. See more below: 
-# https://github.com/bazelbuild/rules_nodejs#bazel-managed-vs-self-managed-dependencies
+# @npm is temporarily needed to build @rxjs from source since its ts_library
+# targets will depend on an @npm workspace by default.
+# TODO(gmagolan): remove this once rxjs ships with an named UMD bundle and we
+# are no longer building it from source.
 yarn_install(
   name = "npm",
-  package_json = "//:package.json",
-  yarn_lock = "//:yarn.lock",
+  package_json = "//tools:npm/package.json",
+  yarn_lock = "//tools:npm/yarn.lock",
 )
 
 # Setup TypeScript Bazel workspace
@@ -87,6 +91,9 @@ ts_setup_workspace()
 # Setup Angular workspace for building (Bazel managed node modules)
 load("@angular//:index.bzl", "ng_setup_workspace")
 ng_setup_workspace()
+
+load("@angular_material//:index.bzl", "angular_material_setup_workspace")
+angular_material_setup_workspace()
 
 # Setup Go toolchain (required for Bazel web testing rules)
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")

@@ -10,7 +10,7 @@ ng_module(
   module_name = "@angular/material-moment-adapter",
   deps = [
     "@angular//packages/core",
-    "@npm//moment",
+    "@matdeps//moment",
     "//src/lib/core"
   ],
   # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this

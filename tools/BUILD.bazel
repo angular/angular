@@ -1,5 +1,5 @@
 package(default_visibility=["//visibility:public"])
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 
@@ -7,8 +7,8 @@ ts_library(
   name = "sass_bundle_lib",
   srcs = ["sass_bundle.ts"],
   deps = [
-    "@npm//@types/node",
-    "@npm//scss-bundle",
+    "@matdeps//@types/node",
+    "@matdeps//scss-bundle",
   ],
   tsconfig = "bazel-tools-tsconfig.json",
 )
@@ -17,7 +17,7 @@ ts_library(
 nodejs_binary(
   name = "sass_bundle",
   data = [
-   "@npm//scss-bundle",
+   "@matdeps//scss-bundle",
     ":sass_bundle_lib",
   ],
   entry_point = "angular_material/tools/sass_bundle.js",
