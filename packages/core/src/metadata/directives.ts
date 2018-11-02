@@ -519,6 +519,8 @@ export interface Component extends Directive {
    * emulates the native behavior.
    * - `ViewEncapsulation.None`: Use global CSS without any
    * encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Use Shadow DOM to encapsulate styles.
+   * For the DOM this means using modern Shadow DOM and creating a ShadowRoot for Component's Host Element.
    *
    * If not supplied, the value is taken from `CompilerOptions`. The default compiler option is
    * `ViewEncapsulation.Emulated`.
