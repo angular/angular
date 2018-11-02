@@ -137,11 +137,14 @@ export class HammerGestureConfig {
    * @returns A HammerJS event-manager object.
    */
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer !(element, this.options);
+    let mc = (element as any)['__hammer__'];
 
-    mc.get('pinch').set({enable: true});
-    mc.get('rotate').set({enable: true});
-
+    if (!mc) {
+      mc = new Hammer !(element, this.options);
+      mc.get('pinch').set({enable: true});
+      mc.get('rotate').set({enable: true});
+      (element as any)['__hammer__'] = mc;
+    }
     for (const eventName in this.overrides) {
       mc.get(eventName).set(this.overrides[eventName]);
     }
