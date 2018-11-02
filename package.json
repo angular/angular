@@ -26,8 +26,6 @@
     "update-webdriver": "webdriver-manager update --gecko false $CHROMEDRIVER_VERSION_ARG",
     "check-env": "gulp check-env",
     "commitmsg": "node ./scripts/git/commit-msg.js",
-    "test-ivy-jit": "bazel test --define=compile=jit --build_tag_filters=-no-ivy-jit,-fixme-ivy-jit --test_tag_filters=-no-ivy-jit,-fixme-ivy-jit",
-    "test-fixme-ivy-jit": "bazel test --define=compile=jit --build_tag_filters=-no-ivy-jit --test_tag_filters=-no-ivy-jit",
     "test-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "bazel": "bazel"

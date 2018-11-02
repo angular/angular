@@ -12,7 +12,6 @@ ng_module(
     node_modules = "@ngdeps//typescript:typescript__typings",
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         "//packages/core",
@@ -36,6 +35,5 @@ jasmine_node_test(
     data = [":flat_module_index"],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
 )

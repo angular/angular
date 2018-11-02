@@ -9,7 +9,6 @@ ng_module(
     srcs = ["index.ts"],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     type_check = False,  # see #26462
     deps = [
@@ -30,7 +29,6 @@ ng_rollup_bundle(
     entry_point = "packages/core/test/bundling/animation_world/index.js",
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
     deps = [
         ":animation_world",
@@ -45,7 +43,6 @@ js_expected_symbol_test(
     tags = [
         "ivy-aot",
         "ivy-only",
-        "no-ivy-jit",
     ],
 )
 
@@ -60,6 +57,5 @@ http_server(
     ],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
 )

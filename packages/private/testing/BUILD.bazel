@@ -18,7 +18,7 @@ ng_module(
 
 ## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
 ##
-## This file generates `src/bazel_define_compile_value.ts` file which reexports 
+## This file generates `src/bazel_define_compile_value.ts` file which reexports
 ## `--define=compile` value as `bazelDefineCompileValue` symbols so that runtime can detect
 ## which mode it is running in.
 ##
