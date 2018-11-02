@@ -25,15 +25,20 @@ export class Esm5Renderer extends EsmRenderer {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string): void {
     const classSymbol = this.host.getClassSymbol(compiledClass.declaration);
     if (!classSymbol) {
-      throw new Error(`Compiled class does not have a valid symbol: ${compiledClass.name}`);
+      throw new Error(
+          `Compiled class does not have a valid symbol: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
     const parent = classSymbol.valueDeclaration && classSymbol.valueDeclaration.parent;
-    if (parent && ts.isBlock(parent)) {
-      const returnStatement = parent.statements.find(statement => ts.isReturnStatement(statement));
-      if (returnStatement) {
-        const insertionPoint = returnStatement.getFullStart();
-        output.appendLeft(insertionPoint, '\n' + definitions);
-      }
+    if (!parent || !ts.isBlock(parent)) {
+      throw new Error(
+          `Compiled class declaration is not inside an IIFE: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
     }
+    const returnStatement = parent.statements.find(statement => ts.isReturnStatement(statement));
+    if (!returnStatement) {
+      throw new Error(
+          `Compiled class wrapper IIFE does not have a return statement: ${compiledClass.name} in ${compiledClass.declaration.getSourceFile().fileName}`);
+    }
+    const insertionPoint = returnStatement.getFullStart();
+    output.appendLeft(insertionPoint, '\n' + definitions);
   }
 }
