@@ -215,15 +215,15 @@ jobs:
           name: Check whether this job should be skipped.
           command: '[[ -n ${CIRCLE_PR_NUMBER} ]] && circleci step halt || true'
 
-      # CircleCI has a config setting to enforce SSH for all github connections.
-      # This is not compatible with our mechanism of using a Personal Access Token
-      # to publish the build snapshots. In order to fix this, we unset the global option.
-      - run: git config --global --unset "url.ssh://git@github.com.insteadof"
-
       - *checkout_code
       - *restore_cache
       - *yarn_install
       - *attach_release_output
+
+      # CircleCI has a config setting to enforce SSH for all github connections.
+      # This is not compatible with our mechanism of using a Personal Access Token
+      # to publish the build snapshots. In order to fix this, we unset the global option.
+      - run: git config --global --unset "url.ssh://git@github.com.insteadof"
 
       - run: ./scripts/circleci/publish-snapshots.sh
 
