@@ -13,12 +13,12 @@
  *
  * @publicApi
  **/
-export interface HttpParameterCodec {
-  encodeKey(key: string): string;
-  encodeValue(value: string): string;
+export abstract class HttpParameterCodec {
+  abstract encodeKey(key: string): string;
+  abstract encodeValue(value: string): string;
 
-  decodeKey(key: string): string;
-  decodeValue(value: string): string;
+  abstract decodeKey(key: string): string;
+  abstract decodeValue(value: string): string;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface HttpParameterCodec {
  *
  * @publicApi
  */
-export class HttpUrlEncodingCodec implements HttpParameterCodec {
+export class HttpUrlEncodingCodec extends HttpParameterCodec {
   encodeKey(key: string): string { return standardEncoding(key); }
 
   encodeValue(value: string): string { return standardEncoding(value); }
