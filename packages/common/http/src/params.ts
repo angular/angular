@@ -28,7 +28,7 @@ export abstract class HttpParameterCodec {
  * @publicApi
  */
 export class HttpUrlEncodingCodec extends HttpParameterCodec {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
   encodeValue(value: string): string { return standardEncoding(value); }
 
