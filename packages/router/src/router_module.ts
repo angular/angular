@@ -16,7 +16,7 @@ import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
-import {RouterEvent} from './events';
+import {Event, RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -448,6 +448,22 @@ export interface ExtraOptions {
    * is `legacy`, and this option will be removed in v7 to default to the corrected behavior.
    */
   relativeLinkResolution?: 'legacy'|'corrected';
+
+  /**
+   * Allows a filter to be applied to all published routing events. This can be useful if
+   * your application should ignore all events of a certain type. For example:
+   *
+   * ```
+   * // Ignore (and do not publish) scroll events
+   * @NgModule({
+   *   import: [RouterModule.forRoot(ROUTES, {
+   *     filterEventsPredicate: e => !(e instanceof Scroll)
+   *   })]
+   * })
+   * export class MyAppModule {}
+   * ```
+   */
+  filterEventsPredicate?: (event: Event) => boolean;
 }
 
 export function setupRouter(
@@ -498,6 +514,10 @@ export function setupRouter(
 
   if (opts.relativeLinkResolution) {
     router.relativeLinkResolution = opts.relativeLinkResolution;
+  }
+
+  if (opts.filterEventsPredicate) {
+    router.filterEventsPredicate = opts.filterEventsPredicate;
   }
 
   return router;

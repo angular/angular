@@ -239,7 +239,7 @@ export class Router {
   private console: Console;
   private isNgZoneEnabled: boolean = false;
 
-  public readonly events: Observable<Event> = new Subject<Event>();
+  public readonly events: Observable<Event>;
   public readonly routerState: RouterState;
 
   /**
@@ -257,6 +257,11 @@ export class Router {
   malformedUriErrorHandler:
       (error: URIError, urlSerializer: UrlSerializer,
        url: string) => UrlTree = defaultMalformedUriErrorHandler;
+
+  /**
+   * Global filter for router events. See {@link ExtraOptions} for more information.
+   */
+  filterEventsPredicate: (event: Event) => boolean = () => true;
 
   /**
    * Indicates if at least one navigation happened.
@@ -338,6 +343,8 @@ export class Router {
 
     this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+
+    this.events = (new Subject<Event>()).pipe(filter((e: Event) => this.filterEventsPredicate(e)));
 
     this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,

@@ -76,6 +76,52 @@ describe('Integration', () => {
          ]);
        })));
 
+    it('should allow filtering of routing events', fakeAsync(inject([Router], (router: Router) => {
+         router.onSameUrlNavigation = 'reload';
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         const events: Event[] = [];
+         router.events.subscribe(e => events.push(e));
+
+         router.navigateByUrl('/simple');
+         tick();
+
+         // Verify that all events are published by default
+         expectEvents(events, [
+           [NavigationStart, '/simple'],
+           [RoutesRecognized, '/simple'],
+           [GuardsCheckStart, '/simple'],
+           [ChildActivationStart],
+           [ActivationStart],
+           [GuardsCheckEnd, '/simple'],
+           [ResolveStart, '/simple'],
+           [ResolveEnd, '/simple'],
+           [ActivationEnd],
+           [ChildActivationEnd],
+           [NavigationEnd, '/simple'],
+         ]);
+
+         events.length = 0;
+
+         // Turn on event filtering to only RouterEvent instances
+         router.filterEventsPredicate = e => e instanceof RouterEvent;
+         router.navigateByUrl('/simple');
+         tick();
+
+         // Verify events are filtered properly
+         expectEvents(events, [
+           [NavigationStart, '/simple'],
+           [RoutesRecognized, '/simple'],
+           [GuardsCheckStart, '/simple'],
+           [GuardsCheckEnd, '/simple'],
+           [NavigationEnd, '/simple'],
+         ]);
+       })));
+
     it('should set the restoredState to null when executing imperative navigations',
        fakeAsync(inject([Router], (router: Router) => {
          router.resetConfig([

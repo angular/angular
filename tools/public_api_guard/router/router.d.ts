@@ -109,6 +109,7 @@ export interface ExtraOptions {
     anchorScrolling?: 'disabled' | 'enabled';
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
+    filterEventsPredicate?: (event: Event) => boolean;
     initialNavigation?: InitialNavigation;
     malformedUriErrorHandler?: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     onSameUrlNavigation?: 'reload' | 'ignore';
@@ -303,6 +304,7 @@ export declare class Router {
     config: Routes;
     errorHandler: ErrorHandler;
     readonly events: Observable<Event>;
+    filterEventsPredicate: (event: Event) => boolean;
     malformedUriErrorHandler: (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
     navigated: boolean;
     onSameUrlNavigation: 'reload' | 'ignore';

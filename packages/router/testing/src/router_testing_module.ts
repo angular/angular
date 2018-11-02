@@ -130,6 +130,10 @@ export function setupTestingRouter(
       if (opts.paramsInheritanceStrategy) {
         router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
       }
+
+      if (opts.filterEventsPredicate) {
+        router.filterEventsPredicate = opts.filterEventsPredicate;
+      }
     }
   }
 
