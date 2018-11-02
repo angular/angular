@@ -37,7 +37,6 @@ ts_web_test_suite(
     ],
     tags = [
         "fixme-ivy-aot",
-        "fixme-ivy-jit",
     ],
     # do not sort
     deps = [

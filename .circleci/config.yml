@@ -116,21 +116,6 @@ jobs:
             - "~/bazel_repository_cache"
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
-  test_ivy_jit:
-    <<: *job_defaults
-    resource_class: xlarge
-    steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - *define_env_vars
-      - *setup_circleci_bazel_config
-      - *yarn_install
-      - *setup_bazel_remote_execution
-
-      - run: yarn test-ivy-jit //...
-
   test_ivy_aot:
     <<: *job_defaults
     resource_class: xlarge
@@ -416,7 +401,6 @@ workflows:
     jobs:
       - lint
       - test
-      - test_ivy_jit
       - test_ivy_aot
       - build-packages-dist
       - test_aio
@@ -454,7 +438,6 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            - test_ivy_jit
             - test_ivy_aot
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass

@@ -70,7 +70,6 @@ js_expected_symbol_test(
     golden = ":bundle.golden_symbols.json",
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
 )
 
@@ -83,6 +82,5 @@ http_server(
     ],
     tags = [
         "ivy-only",
-        "no-ivy-jit",
     ],
 )

@@ -13,7 +13,6 @@ ng_module(
     module_name = "app_built",
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         "//packages/compiler-cli/integrationtest/bazel/injectable_def/lib2",

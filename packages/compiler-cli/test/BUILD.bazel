@@ -44,7 +44,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":extract_i18n_lib",
@@ -82,7 +81,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":ngc_lib",
@@ -117,7 +115,6 @@ jasmine_node_test(
     ],
     tags = [
         "fixme-ivy-aot",
-        "no-ivy-jit",
     ],
     deps = [
         ":ngtools_api_lib",

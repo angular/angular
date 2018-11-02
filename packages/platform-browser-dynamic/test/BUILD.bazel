@@ -33,7 +33,6 @@ ts_web_test_suite(
     ],
     tags = [
         "fixme-ivy-aot",
-        "fixme-ivy-jit",
     ],
     deps = [
         ":test_lib",
