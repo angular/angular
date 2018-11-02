@@ -401,7 +401,6 @@ workflows:
     jobs:
       - lint
       - test
-      - test_ivy_jit
       - test_ivy_aot
       - build-packages-dist
       - test_aio
@@ -439,7 +438,6 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
-            - test_ivy_jit
             - test_ivy_aot
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
