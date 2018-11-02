@@ -136,6 +136,7 @@ export interface Directive {
    *   id: string;
    *
    * ```
+   *
    */
   inputs?: string[];
 
@@ -170,6 +171,7 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   outputs?: string[];
 
@@ -201,6 +203,7 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   exportAs?: string;
 
@@ -446,13 +449,17 @@ export interface ComponentDecorator {
    * By default, the AOT compiler removes whitespace characters as follows:
    * * Trims all whitespaces at the beginning and the end of a template.
    * * Removes whitespace-only text nodes. For example,
+   * 
    * ```
    * <button>Action 1</button>  <button>Action 2</button>
    * ```
+   *
    * becomes:
+   *
    * ```
    * <button>Action 1</button><button>Action 2</button>
    * ```
+   *
    * * Replaces a series of whitespace characters in text nodes with a single space.
    * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
    * * Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
@@ -743,6 +750,7 @@ export interface Input {
    *
    * class App {}
    * ```
+   *
    */
   bindingPropertyName?: string;
 }
@@ -862,6 +870,7 @@ export interface HostBindingDecorator {
    *   prop;
    * }
    * ```
+   *
    */
   (hostPropertyName?: string): any;
   new (hostPropertyName?: string): any;
