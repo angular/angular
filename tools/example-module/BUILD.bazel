@@ -7,8 +7,8 @@ ts_library(
   name = "example-module-lib",
   srcs = glob(["**/*.ts"]),
   deps = [
-    "@npm//@types/node",
-    "@npm//typescript",
+    "@matdeps//@types/node",
+    "@matdeps//typescript",
   ],
   tsconfig = ":tsconfig.json",
 )
@@ -17,8 +17,8 @@ nodejs_binary(
   name = "bazel-bin",
   entry_point = "angular_material/tools/example-module/bazel-bin.js",
   data = [
-    "@npm//typescript",
-    "@npm//source-map-support",
+    "@matdeps//typescript",
+    "@matdeps//source-map-support",
     ":example-module-lib",
     ":example-module.template",
   ],
