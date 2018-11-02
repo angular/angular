@@ -79,12 +79,28 @@ See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/to
 - `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This is done by generating the [`src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) file from [`ivy_switch_legacy.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_legacy.ts) (default), [`ivy_switch_jit.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_jit.ts), or [`ivy_switch_local.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_local.ts).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
     - `jit`: Compile in ivy JIT mode, e.g. `--define=compile=jit`
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+    - `aot`: Compile in ivy AOT move, e.g. `--define=compile=aot`
+- `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
+    - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--define=compile=aot`).
+    - `no-ivy-jit`: Useful for excluding build and test targets that are not meant to be executed in Ivy JIT mode (`--define=compile=jit`).
+    - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--define=compile=legacy`.
+    - `fixme-ivy-aot`: Useful for including/excluding build and test targets that are currently broken in Ivy AOT mode (`--define=compile=aot`).
+    - `fixme-ivy-jit`: Useful for including/excluding build and test targets that are currently broken in Ivy JIT mode (`--define=compile=jit`).
+=======
+>>>>>>> Stashed changes
     - `local`: Compile in ivy AOT move, e.g. `--define=compile=local`
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config
 of your rules in any given `BUILD.bazel`.
     - `ivy-jit`: This flag should be set for tests that should be executed with ivy JIT, e.g. `--test_tag_filters=ivy-jit`. For this, you may have to include `--define=compile=jit`.
     - `ivy-local`: Only run tests that have to do with ivy AOT. For this, you may have to include `--define=compile=local`, e.g. `--test_tag_filters=ivy-local`..
     - `ivy-only`: Only run ivy related tests, e.g. `--test_tag_filters=ivy-only`.
+<<<<<<< Updated upstream
+=======
+>>>>>>> a504ff579348ab7af965b00840b08f9e624a56aa
+>>>>>>> Stashed changes
 
 
 ### Debugging a Node Test
