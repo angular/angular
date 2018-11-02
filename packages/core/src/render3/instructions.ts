@@ -101,7 +101,8 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
 function testFunc() {
 
   // some more things to test
-  
+  // third commit
+
 }
 
 /** Sets the host bindings for the current view. */
