@@ -24,5 +24,10 @@
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
     "types": ["tslib"]
+  },
+  "bazelOptions": {
+    // Note: We can remove this once we fully switched away from Gulp. Currently we still set
+    // some options here just in favor of the standard tsconfig's which extending this one.
+    "suppressTsconfigOverrideWarnings": true
   }
 }

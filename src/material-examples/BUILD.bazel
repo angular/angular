@@ -1,0 +1,51 @@
+package(default_visibility=["//visibility:public"])
+
+load("@angular//:index.bzl", "ng_package")
+load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS", "ROLLUP_GLOBALS")
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+  name = "examples",
+  srcs = glob(["**/*.ts"]) + [":example-module"],
+  module_name = "@angular/material-examples",
+  assets = glob(["**/*.html", "**/*.css"]),
+  deps = [
+    "@angular//packages/common",
+    "@angular//packages/core",
+    "@angular//packages/forms",
+    "@npm//moment",
+    "//src/material-moment-adapter",
+  ] + CDK_TARGETS + MATERIAL_TARGETS,
+  # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig
+  # because in order to import Moment with TypeScript, some specific options need to be set.
+  tsconfig = ":tsconfig-build.json",
+)
+
+ng_package(
+  name = "npm_package",
+  srcs = ["package.json"],
+  entry_point = "src/material-examples/public_api.js",
+  globals = ROLLUP_GLOBALS,
+  deps = [":examples"],
+  # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
+  tags = ["manual"],
+)
+
+genrule(
+  name = "example-module",
+  srcs = glob(["**/*.ts"]),
+  outs = ["example-module.ts"],
+  cmd = """
+    # As a workaround for https://github.com/bazelbuild/rules_nodejs/issues/404, we pass the
+    # data to the Bazel entry-point through environment variables.
+    export _SOURCE_FILES="$(SRCS)"
+    export _OUTPUT_FILE="$@"
+    export _BASE_DIR="$$(dirname $(location //src/material-examples:index.ts))"
+
+    # Run the bazel entry-point for generating the example module.
+    ./$(location //tools/example-module:bazel-bin)
+  """,
+  tools = ["//tools/example-module:bazel-bin"],
+  output_to_bindir = True,
+)
+
