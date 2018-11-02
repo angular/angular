@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component, Directive, Input, SimpleChanges, TemplateRef, ViewContainerRef, inject} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
+
 
 
 /// See: `normative.md`
@@ -27,11 +28,13 @@ describe('template variables', () => {
 
   @Directive({selector: '[forOf]'})
   class ForOfDirective {
-    private previous: any[];
+    // TODO(issue/24571): remove '!'.
+    private previous !: any[];
 
     constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
 
-    @Input() forOf: any[];
+    // TODO(issue/24571): remove '!'.
+    @Input() forOf !: any[];
 
     ngOnChanges(simpleChanges: SimpleChanges) {
       if ('forOf' in simpleChanges) {
@@ -66,11 +69,13 @@ describe('template variables', () => {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: ForOfDirective,
       selectors: [['', 'forOf', '']],
-      factory: function ForOfDirective_Factory() {
-        return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+      factory: function ForOfDirective_Factory(t) {
+        return new (t || ForOfDirective)(
+            $r3$.ɵdirectiveInject(ViewContainerRef as any),
+            $r3$.ɵdirectiveInject(TemplateRef as any));
       },
       // TODO(chuckj): Enable when ngForOf enabling lands.
-      // features: [NgOnChangesFeature(NgForOf)],
+      // features: [NgOnChangesFeature],
       inputs: {forOf: 'forOf'}
     });
     // /NORMATIVE
@@ -81,6 +86,18 @@ describe('template variables', () => {
 
     interface Item {
       name: string;
+    }
+
+    function MyComponent_ForOfDirective_Template_1(rf: $RenderFlags$, ctx1: $any$) {
+      if (rf & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵtext(1);
+        $r3$.ɵelementEnd();
+      }
+      if (rf & 2) {
+        const $l0_item$ = ctx1.$implicit;
+        $r3$.ɵtextBinding(1, $r3$.ɵinterpolation1('', $l0_item$.name, ''));
+      }
     }
 
     @Component({
@@ -94,30 +111,17 @@ describe('template variables', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
+        consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'ul');
+            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 2, 1, '', ['forOf', '']);
+            $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-            $r3$.ɵcR(1);
-            $r3$.ɵcr();
-          }
-
-          function MyComponent_ForOfDirective_Template_1(rf: $RenderFlags$, ctx1: $any$) {
-            if (rf & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
-            }
-            let $l0_item$: any;
-            if (rf & 2) {
-              $l0_item$ = ctx1.$implicit;
-              $r3$.ɵt(1, $r3$.ɵi1('', $l0_item$.name, ''));
-            }
+            $r3$.ɵelementProperty(1, 'forOf', $r3$.ɵbind(ctx.items));
           }
         }
       });
@@ -125,7 +129,7 @@ describe('template variables', () => {
     }
 
     // NON-NORMATIVE
-    (MyComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (MyComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
         [ForOfDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
@@ -142,6 +146,39 @@ describe('template variables', () => {
     interface Item {
       name: string;
       infos: Info[];
+    }
+
+    function MyComponent_ForOfDirective_Template_1(rf: $RenderFlags$, ctx1: $any$) {
+      if (rf & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵelementStart(1, 'div');
+        $r3$.ɵtext(2);
+        $r3$.ɵelementEnd();
+        $r3$.ɵelementStart(3, 'ul');
+        $r3$.ɵtemplate(
+            4, MyComponent_ForOfDirective_ForOfDirective_Template_3, 2, 1, '', ['forOf', '']);
+        $r3$.ɵelementEnd();
+        $r3$.ɵelementEnd();
+      }
+      if (rf & 2) {
+        const $l0_item$ = ctx1.$implicit;
+        $r3$.ɵelementProperty(4, 'forOf', $r3$.ɵbind($l0_item$.infos));
+        $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1('', $l0_item$.name, ''));
+      }
+    }
+
+    function MyComponent_ForOfDirective_ForOfDirective_Template_3(rf: $number$, ctx2: $any$) {
+      if (rf & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵtext(1);
+        $r3$.ɵelementEnd();
+      }
+      if (rf & 2) {
+        const $l0_info$ = ctx2.$implicit;
+        const $l0_item$ = $r3$.ɵnextContext();
+        $r3$.ɵtextBinding(
+            1, $r3$.ɵinterpolation2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
+      }
     }
 
     @Component({
@@ -168,52 +205,17 @@ describe('template variables', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyComponent,
         selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
+        factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
+        consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'ul');
+            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 5, 2, '', ['forOf', '']);
+            $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-            $r3$.ɵcR(1);
-            $r3$.ɵcr();
-          }
-
-          function MyComponent_ForOfDirective_Template_1(rf1: $RenderFlags$, ctx1: $any$) {
-            if (rf & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵE(1, 'div');
-              $r3$.ɵT(2);
-              $r3$.ɵe();
-              $r3$.ɵE(3, 'ul');
-              $r3$.ɵC(4, MyComponent_ForOfDirective_ForOfDirective_Template_3, '', ['forOf', '']);
-              $r3$.ɵe();
-              $r3$.ɵe();
-            }
-            let $l0_item$: any;
-            if (rf & 2) {
-              $l0_item$ = ctx1.$implicit;
-              $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
-              $r3$.ɵt(2, $r3$.ɵi1('', $l0_item$.name, ''));
-              $r3$.ɵcR(4);
-              $r3$.ɵcr();
-            }
-
-            function MyComponent_ForOfDirective_ForOfDirective_Template_3(
-                rf2: $number$, ctx2: $any$) {
-              if (rf & 1) {
-                $r3$.ɵE(0, 'li');
-                $r3$.ɵT(1);
-                $r3$.ɵe();
-              }
-              let $l0_info$: any;
-              if (rf & 2) {
-                $l0_info$ = ctx2.$implicit;
-                $r3$.ɵt(1, $r3$.ɵi2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
-              }
-            }
+            $r3$.ɵelementProperty(1, 'forOf', $r3$.ɵbind(ctx.items));
           }
         }
       });

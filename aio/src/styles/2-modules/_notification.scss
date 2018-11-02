@@ -31,10 +31,13 @@ aio-notification {
   }
 
   .content {
-    display: flex;
     max-width: calc(100% - #{$notificationHeight});
     text-transform: none;
     padding: 0;
+
+    > * {
+      display: flex;
+    }
 
     .icon {
       margin-right: 10px;
@@ -46,10 +49,10 @@ aio-notification {
     .message {
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-right: 10px;
     }
 
     .action-button {
-      margin-left: 10px;
       background: $brightred;
       border-radius: 15px;
       text-transform: uppercase;

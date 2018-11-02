@@ -66,6 +66,7 @@ export class RadioControlRegistry {
  * value accessor will be active on any radio control that has a form directive. You do
  * **not** need to add a special selector to activate it.
  *
+ * @usageNotes
  * ### How to use radio buttons with form directives
  *
  * To use radio buttons in a template-driven form, you'll want to ensure that radio buttons
@@ -79,9 +80,9 @@ export class RadioControlRegistry {
  *
  * {@example forms/ts/reactiveRadioButtons/reactive_radio_button_example.ts region='Reactive'}
  *
- *  * **npm package**: `@angular/forms`
- *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -92,16 +93,21 @@ export class RadioControlRegistry {
 export class RadioControlValueAccessor implements ControlValueAccessor,
     OnDestroy, OnInit {
   /** @internal */
-  _state: boolean;
+  // TODO(issue/24571): remove '!'.
+  _state !: boolean;
   /** @internal */
-  _control: NgControl;
+  // TODO(issue/24571): remove '!'.
+  _control !: NgControl;
   /** @internal */
-  _fn: Function;
+  // TODO(issue/24571): remove '!'.
+  _fn !: Function;
   onChange = () => {};
   onTouched = () => {};
 
-  @Input() name: string;
-  @Input() formControlName: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() name !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() formControlName !: string;
   @Input() value: any;
 
   constructor(

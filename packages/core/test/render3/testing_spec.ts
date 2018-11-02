@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {withBody} from '@angular/core/testing';
+import {withBody} from '@angular/private/testing';
 
 describe('testing', () => {
   describe('withBody', () => {

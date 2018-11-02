@@ -23,7 +23,7 @@ const PROFILER_GLOBAL_NAME = 'profiler';
  * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
  *    then hit Enter.
  *
- * @experimental All debugging apis are currently experimental.
+ * @publicApi
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
   exportNgVar(PROFILER_GLOBAL_NAME, new AngularProfiler(ref));
@@ -33,7 +33,7 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
 /**
  * Disables Angular tools.
  *
- * @experimental All debugging apis are currently experimental.
+ * @publicApi
  */
 export function disableDebugTools(): void {
   exportNgVar(PROFILER_GLOBAL_NAME, null);

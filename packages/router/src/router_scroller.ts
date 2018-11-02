@@ -14,8 +14,10 @@ import {NavigationEnd, NavigationStart, Scroll} from './events';
 import {Router} from './router';
 
 export class RouterScroller implements OnDestroy {
-  private routerEventsSubscription: Unsubscribable;
-  private scrollEventsSubscription: Unsubscribable;
+  // TODO(issue/24571): remove '!'.
+  private routerEventsSubscription !: Unsubscribable;
+  // TODO(issue/24571): remove '!'.
+  private scrollEventsSubscription !: Unsubscribable;
 
   private lastId = 0;
   private lastSource: 'imperative'|'popstate'|'hashchange'|undefined = 'imperative';
@@ -27,7 +29,11 @@ export class RouterScroller implements OnDestroy {
       /** @docsNotRequired */ public readonly viewportScroller: ViewportScroller, private options: {
         scrollPositionRestoration?: 'disabled' | 'enabled' | 'top',
         anchorScrolling?: 'disabled'|'enabled'
-      } = {}) {}
+      } = {}) {
+    // Default both options to 'disabled'
+    options.scrollPositionRestoration = options.scrollPositionRestoration || 'disabled';
+    options.anchorScrolling = options.anchorScrolling || 'disabled';
+  }
 
   init(): void {
     // we want to disable the automatic scrolling because having two places

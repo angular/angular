@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
+import {isDevMode} from '../is_dev_mode';
+import {ivyEnabled} from '../ivy_switch';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
@@ -22,7 +24,7 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, DepDef, ElementData, NgModuleDefinition, NgModuleProviderDef, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NgModuleDefinition, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
 import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
 
@@ -169,8 +171,9 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  if (typeof override.token === 'function' && override.token.ngInjectableDef &&
-      typeof override.token.ngInjectableDef.providedIn === 'function') {
+  let injectableDef: InjectableDef<any>|null;
+  if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
+      typeof injectableDef.providedIn === 'function') {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
   }
 }
@@ -276,7 +279,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     });
     def.modules.forEach(module => {
       providerOverridesWithScope.forEach((override, token) => {
-        if (token.ngInjectableDef.providedIn === module) {
+        if (getInjectableDef(token) !.providedIn === module) {
           hasOverrides = true;
           hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
         }
@@ -304,7 +307,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     if (providerOverridesWithScope.size > 0) {
       let moduleSet = new Set<any>(def.modules);
       providerOverridesWithScope.forEach((override, token) => {
-        if (moduleSet.has(token.ngInjectableDef.providedIn)) {
+        if (moduleSet.has(getInjectableDef(token) !.providedIn)) {
           let provider = {
             token: token,
             flags:
@@ -509,6 +512,7 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
+
   constructor(public view: ViewData, public nodeIndex: number|null) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
@@ -528,13 +532,18 @@ class DebugContext_ implements DebugContext {
     this.elDef = elDef;
     this.elView = elView;
   }
+
   private get elOrCompView() {
     // Has to be done lazily as we use the DebugContext also during creation of elements...
     return asElementData(this.elView, this.elDef.nodeIndex).componentView || this.view;
   }
+
   get injector(): Injector { return createInjector(this.elView, this.elDef); }
+
   get component(): any { return this.elOrCompView.component; }
+
   get context(): any { return this.elOrCompView.context; }
+
   get providerTokens(): any[] {
     const tokens: any[] = [];
     if (this.elDef) {
@@ -549,6 +558,7 @@ class DebugContext_ implements DebugContext {
     }
     return tokens;
   }
+
   get references(): {[key: string]: any} {
     const references: {[key: string]: any} = {};
     if (this.elDef) {
@@ -565,14 +575,17 @@ class DebugContext_ implements DebugContext {
     }
     return references;
   }
+
   get componentRenderElement() {
     const elData = findHostElement(this.elOrCompView);
     return elData ? elData.renderElement : undefined;
   }
+
   get renderNode(): any {
     return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
                                                      renderNode(this.elView, this.elDef);
   }
+
   logError(console: Console, ...values: any[]) {
     let logViewDef: ViewDefinition;
     let logNodeIndex: number;
@@ -653,8 +666,7 @@ export function getCurrentDebugContext(): DebugContext|null {
   return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
-
-class DebugRendererFactory2 implements RendererFactory2 {
+export class DebugRendererFactory2 implements RendererFactory2 {
   constructor(private delegate: RendererFactory2) {}
 
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
@@ -680,9 +692,21 @@ class DebugRendererFactory2 implements RendererFactory2 {
   }
 }
 
-
-class DebugRenderer2 implements Renderer2 {
+export class DebugRenderer2 implements Renderer2 {
   readonly data: {[key: string]: any};
+
+  private createDebugContext(nativeElement: any) { return this.debugContextFactory(nativeElement); }
+
+  /**
+   * Factory function used to create a `DebugContext` when a node is created.
+   *
+   * The `DebugContext` allows to retrieve information about the nodes that are useful in tests.
+   *
+   * The factory is configurable so that the `DebugRenderer2` could instantiate either a View Engine
+   * or a Render context.
+   */
+  debugContextFactory: (nativeElement?: any) => DebugContext | null = getCurrentDebugContext;
+
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
   destroyNode(node: any) {
@@ -696,7 +720,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.createDebugContext(el);
     if (debugCtx) {
       const debugEl = new DebugElement(el, null, debugCtx);
       debugEl.name = name;
@@ -707,7 +731,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.createDebugContext(comment);
     if (debugCtx) {
       indexDebugNode(new DebugNode(comment, null, debugCtx));
     }
@@ -716,7 +740,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.createDebugContext(text);
     if (debugCtx) {
       indexDebugNode(new DebugNode(text, null, debugCtx));
     }
@@ -752,9 +776,9 @@ class DebugRenderer2 implements Renderer2 {
     this.delegate.removeChild(parent, oldChild);
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
-    const el = this.delegate.selectRootElement(selectorOrNode);
-    const debugCtx = getCurrentDebugContext();
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+    const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
+    const debugCtx = getCurrentDebugContext() || (ivyEnabled ? this.createDebugContext(el) : null);
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));
     }

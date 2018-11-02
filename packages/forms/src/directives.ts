@@ -12,6 +12,7 @@ import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 import {NgForm} from './directives/ng_form';
+import {NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 import {NgModel} from './directives/ng_model';
 import {NgModelGroup} from './directives/ng_model_group';
 import {NgNoValidate} from './directives/ng_no_validate_directive';
@@ -32,6 +33,7 @@ export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {NgControl} from './directives/ng_control';
 export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
+export {NG_FORM_SELECTOR_WARNING, NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
@@ -65,7 +67,8 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   EmailValidator,
 ];
 
-export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
+export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] =
+    [NgModel, NgModelGroup, NgForm, NgFormSelectorWarning];
 
 export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
     [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];

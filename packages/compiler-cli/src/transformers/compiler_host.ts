@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
-import {NgtscCompilerHost} from '../ngtsc/compiler_host';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
@@ -24,9 +23,6 @@ const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
         {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
-  if (options.enableIvy === 'ngtsc' || options.enableIvy === 'tsc') {
-    return new NgtscCompilerHost(tsHost);
-  }
   return tsHost;
 }
 
@@ -74,10 +70,16 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private emitter = new TypeScriptEmitter();
   private metadataReaderHost: MetadataReaderHost;
 
-  getCancellationToken: () => ts.CancellationToken;
-  getDefaultLibLocation: () => string;
-  trace: (s: string) => void;
-  getDirectories: (path: string) => string[];
+  // TODO(issue/24571): remove '!'.
+  getCancellationToken !: () => ts.CancellationToken;
+  // TODO(issue/24571): remove '!'.
+  getDefaultLibLocation !: () => string;
+  // TODO(issue/24571): remove '!'.
+  trace !: (s: string) => void;
+  // TODO(issue/24571): remove '!'.
+  getDirectories !: (path: string) => string[];
+  resolveTypeReferenceDirectives?:
+      (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
@@ -101,6 +103,16 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     if (context.getDefaultLibLocation) {
       this.getDefaultLibLocation = () => context.getDefaultLibLocation !();
+    }
+    if (context.resolveTypeReferenceDirectives) {
+      // Backward compatibility with TypeScript 2.9 and older since return
+      // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
+      // to ts.ResolvedTypeReferenceDirective[] in Typescript 3.0
+      type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          ts.ResolvedTypeReferenceDirective[];
+      this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
+              names, containingFile);
     }
     if (context.trace) {
       this.trace = s => context.trace !(s);
@@ -591,7 +603,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   getNewLine = () => this.context.getNewLine();
   // Make sure we do not `host.realpath()` from TS as we do not want to resolve symlinks.
   // https://github.com/Microsoft/TypeScript/issues/9552
-  realPath = (p: string) => p;
+  realpath = (p: string) => p;
   writeFile = this.context.writeFile.bind(this.context);
 }
 

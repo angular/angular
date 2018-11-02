@@ -1,0 +1,31 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "ngcc",
+    srcs = glob([
+        "*.ts",
+        "**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngcc",
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/host",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/transform",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "@ngdeps//@types/convert-source-map",
+        "@ngdeps//@types/node",
+        "@ngdeps//@types/shelljs",
+        "@ngdeps//@types/source-map",
+        "@ngdeps//@types/yargs",
+        "@ngdeps//canonical-path",
+        "@ngdeps//dependency-graph",
+        "@ngdeps//magic-string",
+        "@ngdeps//source-map",
+        "@ngdeps//typescript",
+    ],
+)

@@ -13,13 +13,19 @@ import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
+import {getComponentViewByInstance} from './context_discovery';
+import {getComponentDef} from './definition';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
-import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
-import {LElementNode} from './interfaces/node';
-import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
-import {stringify} from './util';
+import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {ComponentDef, ComponentType} from './interfaces/definition';
+import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {PlayerHandler} from './interfaces/player';
+import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {publishDefaultGlobalUtils} from './publish_global_util';
+import {enterView, leaveView, resetComponentState} from './state';
+import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -29,6 +35,9 @@ export interface CreateComponentOptions {
 
   /** A custom sanitizer instance */
   sanitizer?: Sanitizer;
+
+  /** A custom animation player handler */
+  playerHandler?: PlayerHandler;
 
   /**
    * Host element on which the component will be bootstrapped. If not specified,
@@ -52,7 +61,7 @@ export interface CreateComponentOptions {
    * features list because there's no way of knowing when the component will be used as
    * a root component.
    */
-  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T, string>) => void)[];
+  hostFeatures?: HostFeature[];
 
   /**
    * A function which is used to schedule change detection work in the future.
@@ -67,6 +76,9 @@ export interface CreateComponentOptions {
    */
   scheduler?: (work: () => void) => void;
 }
+
+/** See CreateComponentOptions.hostFeatures */
+type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
@@ -93,42 +105,36 @@ export function renderComponent<T>(
         Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
+  ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
-  const componentDef =
-      (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
+  const componentDef = getComponentDef<T>(componentType) !;
   if (componentDef.type != componentType) componentDef.type = componentType;
-  let component: T;
+
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
-  const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
-  const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
+  const hostRNode = locateHostElement(rendererFactory, opts.host || componentTag);
+  const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
+                                          LViewFlags.CheckAlways | LViewFlags.IsRoot;
+  const rootContext = createRootContext(
+      opts.scheduler || requestAnimationFrame.bind(window), opts.playerHandler || null);
 
+  const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LViewData = createLViewData(
-      rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(-1, null, null, null), rootContext,
-      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+      renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
   rootView[INJECTOR] = opts.injector || null;
 
-  const oldView = enterView(rootView, null !);
-  let elementNode: LElementNode;
+  const oldView = enterView(rootView, null);
+  let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
+    const componentView =
+        createRootComponentView(hostRNode, componentDef, rootView, renderer, sanitizer);
+    component = createRootComponent(
+        hostRNode, componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    // Create element node at index 0 in data array
-    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
-
-    // Create directive instance with factory() and store at index 0 in directives array
-    rootContext.components.push(
-        component = baseDirectiveCreate(0, componentDef.factory(), componentDef) as T);
-    initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
-
-    opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
-
-    executeInitAndContentHooks();
-    setHostBindings(ROOT_DIRECTIVE_INDICES);
-    detectChangesInternal(elementNode.data as LViewData, elementNode, component);
+    refreshDescendantViews(rootView, null);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -137,11 +143,71 @@ export function renderComponent<T>(
   return component;
 }
 
-export function createRootContext(scheduler: (workFn: () => void) => void): RootContext {
+/**
+ * Creates the root component view and the root component node.
+ *
+ * @param rNode Render host element.
+ * @param def ComponentDef
+ * @param rootView The parent view where the host node is stored
+ * @param renderer The current renderer
+ * @param sanitizer The sanitizer, if provided
+ *
+ * @returns Component view created
+ */
+export function createRootComponentView(
+    rNode: RElement | null, def: ComponentDef<any>, rootView: LViewData, renderer: Renderer3,
+    sanitizer?: Sanitizer | null): LViewData {
+  resetComponentState();
+  const tView = rootView[TVIEW];
+  const componentView = createLViewData(
+      renderer,
+      getOrCreateTView(
+          def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
+      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer);
+  const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
+
+  if (tView.firstTemplatePass) {
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
+    tNode.flags = TNodeFlags.isComponent;
+    initNodeFlags(tNode, rootView.length, 1);
+    queueComponentIndexForCheck(tNode);
+  }
+
+  // Store component view at node index, with node as the HOST
+  componentView[HOST] = rootView[HEADER_OFFSET];
+  componentView[HOST_NODE] = tNode as TElementNode;
+  return rootView[HEADER_OFFSET] = componentView;
+}
+
+/**
+ * Creates a root component and sets it up with features and host bindings. Shared by
+ * renderComponent() and ViewContainerRef.createComponent().
+ */
+export function createRootComponent<T>(
+    hostRNode: RNode | null, componentView: LViewData, componentDef: ComponentDef<T>,
+    rootView: LViewData, rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+  const tView = rootView[TVIEW];
+  // Create directive instance with factory() and store at next index in viewData
+  const component = instantiateRootComponent(tView, rootView, componentDef);
+
+  rootContext.components.push(component);
+  componentView[CONTEXT] = component;
+
+  hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
+
+  if (tView.firstTemplatePass) prefillHostVars(tView, rootView, componentDef.hostVars);
+  return component;
+}
+
+
+export function createRootContext(
+    scheduler: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
   return {
     components: [],
     scheduler: scheduler,
     clean: CLEAN_PROMISE,
+    playerHandler: playerHandler || null,
+    flags: RootContextFlags.Empty
   };
 }
 
@@ -158,13 +224,12 @@ export function createRootContext(scheduler: (workFn: () => void) => void): Root
  * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
  * ```
  */
-export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<any>): void {
-  const elementNode = _getComponentHostLElementNode(component);
+export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
+  const rootTView = readPatchedLViewData(component) ![TVIEW];
+  const dirIndex = rootTView.data.length - 1;
 
-  // Root component is always created at dir index 0
-  const tView = elementNode.view[TVIEW];
-  queueInitHooks(0, def.onInit, def.doCheck, tView);
-  queueLifecycleHooks(elementNode.tNode.flags, tView);
+  queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
+  queueLifecycleHooks(dirIndex << TNodeFlags.DirectiveStartingIndexShift | 1, rootTView);
 }
 
 /**
@@ -188,7 +253,7 @@ function getRootContext(component: any): RootContext {
  * @param component Component for which the host element should be retrieved.
  */
 export function getHostElement<T>(component: T): HTMLElement {
-  return _getComponentHostLElementNode(component).native as any;
+  return readElementValue(getComponentViewByInstance(component)) as HTMLElement;
 }
 
 /**

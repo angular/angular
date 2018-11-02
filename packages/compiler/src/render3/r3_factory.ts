@@ -17,10 +17,11 @@ import {OutputContext} from '../util';
 
 import {unsupported} from './view/util';
 
+
 /**
  * Metadata required by the factory generator to generate a `factory` function for a type.
  */
-export interface R3FactoryMetadata {
+export interface R3ConstructorFactoryMetadata {
   /**
    * String name of the type being generated (used to name the factory function).
    */
@@ -33,21 +34,15 @@ export interface R3FactoryMetadata {
    * This could be a reference to a constructor type, or to a user-defined factory function. The
    * `useNew` property determines whether it will be called as a constructor or not.
    */
-  fnOrClass: o.Expression;
+  type: o.Expression;
 
   /**
    * Regardless of whether `fnOrClass` is a constructor function or a user-defined factory, it
    * may have 0 or more parameters, which will be injected according to the `R3DependencyMetadata`
-   * for those parameters.
+   * for those parameters. If this is `null`, then the type's constructor is nonexistent and will
+   * be inherited from `fnOrClass` which is interpreted as the current type.
    */
-  deps: R3DependencyMetadata[];
-
-  /**
-   * Whether to interpret `fnOrClass` as a constructor function (`useNew: true`) or as a factory
-   * (`useNew: false`).
-   */
-  useNew: boolean;
-
+  deps: R3DependencyMetadata[]|null;
 
   /**
    * An expression for the function which will be used to inject dependencies. The API of this
@@ -56,28 +51,34 @@ export interface R3FactoryMetadata {
   injectFn: o.ExternalReference;
 
   /**
-   * Whether the `injectFn` given above accepts a 2nd parameter indicating the default value to
-   * be used to resolve missing @Optional dependencies.
-   *
-   * If the optional parameter is used, injectFn for an optional dependency will be invoked as:
-   * `injectFn(token, null, flags)`.
-   *
-   * If it's not used, injectFn for an optional dependency will be invoked as:
-   * `injectFn(token, flags)`. The Optional flag will indicate that injectFn should select a default
-   * value if it cannot satisfy the injection request for the token.
+   * Function that allows extra statements to be inserted into factory function.
    */
-  useOptionalParam: boolean;
-
-  /**
-   * If present, the return of the factory function will be an array with the injected value in the
-   * 0th position and the extra results included in subsequent positions.
-   *
-   * Occasionally APIs want to construct additional values when the factory function is called. The
-   * paradigm there is to have the factory function return an array, with the DI-created value as
-   * well as other values. Specifying `extraResults` enables this functionality.
-   */
-  extraResults?: o.Expression[];
+  extraStatementFn: ((instance: o.Expression) => o.Statement[])|null;
 }
+
+export enum R3FactoryDelegateType {
+  Class,
+  Function,
+  Factory,
+}
+
+export interface R3DelegatedFactoryMetadata extends R3ConstructorFactoryMetadata {
+  delegate: o.Expression;
+  delegateType: R3FactoryDelegateType.Factory;
+}
+
+export interface R3DelegatedFnOrClassMetadata extends R3ConstructorFactoryMetadata {
+  delegate: o.Expression;
+  delegateType: R3FactoryDelegateType.Class|R3FactoryDelegateType.Function;
+  delegateDeps: R3DependencyMetadata[];
+}
+
+export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadata {
+  expression: o.Expression;
+}
+
+export type R3FactoryMetadata = R3ConstructorFactoryMetadata | R3DelegatedFactoryMetadata |
+    R3DelegatedFnOrClassMetadata | R3ExpressionFactoryMetadata;
 
 /**
  * Resolved type of a dependency.
@@ -99,26 +100,6 @@ export enum R3ResolvedDependencyType {
    * The token expression is a string representing the attribute name.
    */
   Attribute = 1,
-
-  /**
-   * The dependency is for the `Injector` type itself.
-   */
-  Injector = 2,
-
-  /**
-   * The dependency is for `ElementRef`.
-   */
-  ElementRef = 3,
-
-  /**
-   * The dependency is for `TemplateRef`.
-   */
-  TemplateRef = 4,
-
-  /**
-   * The dependency is for `ViewContainerRef`.
-   */
-  ViewContainerRef = 5,
 }
 
 /**
@@ -160,41 +141,111 @@ export interface R3DependencyMetadata {
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(meta: R3FactoryMetadata): o.Expression {
-  // Each dependency becomes an invocation of an inject*() function.
-  const args =
-      meta.deps.map(dep => compileInjectDependency(dep, meta.injectFn, meta.useOptionalParam));
+export function compileFactoryFunction(meta: R3FactoryMetadata):
+    {factory: o.Expression, statements: o.Statement[]} {
+  const t = o.variable('t');
+  const statements: o.Statement[] = [];
 
-  // The overall result depends on whether this is construction or function invocation.
-  const expr = meta.useNew ? new o.InstantiateExpr(meta.fnOrClass, args) :
-                             new o.InvokeFunctionExpr(meta.fnOrClass, args);
+  // The type to instantiate via constructor invocation. If there is no delegated factory, meaning
+  // this type is always created by constructor invocation, then this is the type-to-create
+  // parameter provided by the user (t) if specified, or the current type if not. If there is a
+  // delegated factory (which is used to create the current type) then this is only the type-to-
+  // create parameter (t).
+  const typeForCtor =
+      !isDelegatedMetadata(meta) ? new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.type) : t;
 
-  // If `extraResults` is specified, then the result is an array consisting of the instantiated
-  // value plus any extra results.
-  const retExpr =
-      meta.extraResults === undefined ? expr : o.literalArr([expr, ...meta.extraResults]);
-  return o.fn(
-      [], [new o.ReturnStatement(retExpr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+  let ctorExpr: o.Expression|null = null;
+  if (meta.deps !== null) {
+    // There is a constructor (either explicitly or implicitly defined).
+    ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.injectFn));
+  } else {
+    const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
+    const getInheritedFactory = o.importExpr(R3.getInheritedFactory);
+    const baseFactoryStmt =
+        baseFactory.set(getInheritedFactory.callFn([meta.type])).toDeclStmt(o.INFERRED_TYPE, [
+          o.StmtModifier.Exported, o.StmtModifier.Final
+        ]);
+    statements.push(baseFactoryStmt);
+
+    // There is no constructor, use the base class' factory to construct typeForCtor.
+    ctorExpr = baseFactory.callFn([typeForCtor]);
+  }
+  const ctorExprFinal = ctorExpr;
+
+  const body: o.Statement[] = [];
+  let retExpr: o.Expression|null = null;
+
+  function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
+    const r = o.variable('r');
+    body.push(r.set(o.NULL_EXPR).toDeclStmt());
+    body.push(o.ifStmt(t, [r.set(ctorExprFinal).toStmt()], [r.set(nonCtorExpr).toStmt()]));
+    return r;
+  }
+
+  if (isDelegatedMetadata(meta) && meta.delegateType === R3FactoryDelegateType.Factory) {
+    const delegateFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
+    const getFactoryOf = o.importExpr(R3.getFactoryOf);
+    if (meta.delegate.isEquivalent(meta.type)) {
+      throw new Error(`Illegal state: compiling factory that delegates to itself`);
+    }
+    const delegateFactoryStmt =
+        delegateFactory.set(getFactoryOf.callFn([meta.delegate])).toDeclStmt(o.INFERRED_TYPE, [
+          o.StmtModifier.Exported, o.StmtModifier.Final
+        ]);
+
+    statements.push(delegateFactoryStmt);
+    retExpr = makeConditionalFactory(delegateFactory.callFn([]));
+  } else if (isDelegatedMetadata(meta)) {
+    // This type is created with a delegated factory. If a type parameter is not specified, call
+    // the factory instead.
+    const delegateArgs = injectDependencies(meta.delegateDeps, meta.injectFn);
+    // Either call `new delegate(...)` or `delegate(...)` depending on meta.useNewForDelegate.
+    const factoryExpr = new (
+        meta.delegateType === R3FactoryDelegateType.Class ?
+            o.InstantiateExpr :
+            o.InvokeFunctionExpr)(meta.delegate, delegateArgs);
+    retExpr = makeConditionalFactory(factoryExpr);
+  } else if (isExpressionFactoryMetadata(meta)) {
+    // TODO(alxhub): decide whether to lower the value here or in the caller
+    retExpr = makeConditionalFactory(meta.expression);
+  } else if (meta.extraStatementFn) {
+    // if extraStatementsFn is specified and the 'makeConditionalFactory' function
+    // was not invoked, we need to create a reference to the instance, so we can
+    // pass it as an argument to the 'extraStatementFn' function while calling it
+    const variable = o.variable('f');
+    body.push(variable.set(ctorExpr).toDeclStmt());
+    retExpr = variable;
+  } else {
+    retExpr = ctorExpr;
+  }
+
+  if (meta.extraStatementFn) {
+    const extraStmts = meta.extraStatementFn(retExpr);
+    body.push(...extraStmts);
+  }
+
+  return {
+    factory: o.fn(
+        [new o.FnParam('t', o.DYNAMIC_TYPE)], [...body, new o.ReturnStatement(retExpr)],
+        o.INFERRED_TYPE, undefined, `${meta.name}_Factory`),
+    statements,
+  };
+}
+
+function injectDependencies(
+    deps: R3DependencyMetadata[], injectFn: o.ExternalReference): o.Expression[] {
+  return deps.map(dep => compileInjectDependency(dep, injectFn));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference,
-    useOptionalParam: boolean): o.Expression {
+    dep: R3DependencyMetadata, injectFn: o.ExternalReference): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
-    case R3ResolvedDependencyType.Token:
-    case R3ResolvedDependencyType.Injector: {
+    case R3ResolvedDependencyType.Token: {
       // Build up the injection flags according to the metadata.
       const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
           (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
           (dep.optional ? InjectFlags.Optional : 0);
-      // Determine the token used for injection. In almost all cases this is the given token, but
-      // if the dependency is resolved to the `Injector` then the special `INJECTOR` token is used
-      // instead.
-      let token: o.Expression = dep.token;
-      if (dep.resolved === R3ResolvedDependencyType.Injector) {
-        token = o.importExpr(Identifiers.INJECTOR);
-      }
 
       // Build up the arguments to the injectFn call.
       const injectArgs = [dep.token];
@@ -202,30 +253,13 @@ function compileInjectDependency(
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
       if (flags !== InjectFlags.Default || dep.optional) {
-        // Either the dependency is optional, or non-default flags are in use. Either of these cases
-        // necessitates adding an argument for the default value if such an argument is required
-        // by the inject function (useOptionalParam === true).
-        if (useOptionalParam) {
-          // The inject function requires a default value parameter.
-          injectArgs.push(dep.optional ? o.NULL_EXPR : o.literal(undefined));
-        }
-        // The last parameter is always the InjectFlags, which only need to be specified if they're
-        // non-default.
-        if (flags !== InjectFlags.Default) {
-          injectArgs.push(o.literal(flags));
-        }
+        injectArgs.push(o.literal(flags));
       }
       return o.importExpr(injectFn).callFn(injectArgs);
     }
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
       return o.importExpr(R3.injectAttribute).callFn([dep.token]);
-    case R3ResolvedDependencyType.ElementRef:
-      return o.importExpr(R3.injectElementRef).callFn([]);
-    case R3ResolvedDependencyType.TemplateRef:
-      return o.importExpr(R3.injectTemplateRef).callFn([]);
-    case R3ResolvedDependencyType.ViewContainerRef:
-      return o.importExpr(R3.injectViewContainerRef).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
@@ -242,9 +276,6 @@ export function dependenciesFromGlobalMetadata(
   // Use the `CompileReflector` to look up references to some well-known Angular types. These will
   // be compared with the token to statically determine whether the token has significance to
   // Angular, and set the correct `R3ResolvedDependencyType` as a result.
-  const elementRef = reflector.resolveExternalReference(Identifiers.ElementRef);
-  const templateRef = reflector.resolveExternalReference(Identifiers.TemplateRef);
-  const viewContainerRef = reflector.resolveExternalReference(Identifiers.ViewContainerRef);
   const injectorRef = reflector.resolveExternalReference(Identifiers.Injector);
 
   // Iterate through the type's DI dependencies and produce `R3DependencyMetadata` for each of them.
@@ -252,18 +283,9 @@ export function dependenciesFromGlobalMetadata(
   for (let dependency of type.diDeps) {
     if (dependency.token) {
       const tokenRef = tokenReference(dependency.token);
-      let resolved: R3ResolvedDependencyType = R3ResolvedDependencyType.Token;
-      if (tokenRef === elementRef) {
-        resolved = R3ResolvedDependencyType.ElementRef;
-      } else if (tokenRef === templateRef) {
-        resolved = R3ResolvedDependencyType.TemplateRef;
-      } else if (tokenRef === viewContainerRef) {
-        resolved = R3ResolvedDependencyType.ViewContainerRef;
-      } else if (tokenRef === injectorRef) {
-        resolved = R3ResolvedDependencyType.Injector;
-      } else if (dependency.isAttribute) {
-        resolved = R3ResolvedDependencyType.Attribute;
-      }
+      let resolved: R3ResolvedDependencyType = dependency.isAttribute ?
+          R3ResolvedDependencyType.Attribute :
+          R3ResolvedDependencyType.Token;
 
       // In the case of most dependencies, the token will be a reference to a type. Sometimes,
       // however, it can be a string, in the case of older Angular code or @Attribute injection.
@@ -285,4 +307,13 @@ export function dependenciesFromGlobalMetadata(
   }
 
   return deps;
+}
+
+function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFactoryMetadata|
+    R3DelegatedFnOrClassMetadata {
+  return (meta as any).delegateType !== undefined;
+}
+
+function isExpressionFactoryMetadata(meta: R3FactoryMetadata): meta is R3ExpressionFactoryMetadata {
+  return (meta as any).expression !== undefined;
 }

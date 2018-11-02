@@ -60,8 +60,6 @@ function formatNumber(
 }
 
 /**
- * @ngModule CommonModule
- *
  * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
@@ -78,11 +76,14 @@ function formatNumber(
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
  *
+ * @usageNotes
+ *
  * ### Example
  *
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @Pipe({name: 'number'})
 export class DeprecatedDecimalPipe implements PipeTransform {
@@ -106,11 +107,13 @@ export class DeprecatedDecimalPipe implements PipeTransform {
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
  *
+ * @usageNotes
+ *
  * ### Example
  *
  * {@example common/pipes/ts/percent_pipe.ts region='DeprecatedPercentPipe'}
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'percent'})
 export class DeprecatedPercentPipe implements PipeTransform {
@@ -140,11 +143,13 @@ export class DeprecatedPercentPipe implements PipeTransform {
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
  *
+ * @usageNotes
+ *
  * ### Example
  *
  * {@example common/pipes/ts/currency_pipe.ts region='DeprecatedCurrencyPipe'}
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'currency'})
 export class DeprecatedCurrencyPipe implements PipeTransform {

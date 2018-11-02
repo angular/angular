@@ -10,7 +10,9 @@ ng_module(
     module_name = "@angular/platform-browser/testing",
     deps = [
         "//packages/core",
+        "//packages/core/testing",
         "//packages/platform-browser",
+        "@ngdeps//@types/jasmine",
         "@rxjs",
     ],
 )

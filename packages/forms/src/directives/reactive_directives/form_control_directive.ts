@@ -38,6 +38,7 @@ export const formControlBinding: any = {
  * any values written to the DOM element through user input will be reflected in the
  * `FormControl` instance (view -> model).
  *
+ * @usageNotes
  * Use this directive if you'd like to create and manage a `FormControl` instance directly.
  * Simply create a `FormControl`, save it to your component class, and pass it into the
  * `FormControlDirective`.
@@ -64,16 +65,13 @@ export const formControlBinding: any = {
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
  * ### Use with ngModel
  *
  * Support for using the `ngModel` input property and `ngModelChange` event with reactive
  * form directives has been deprecated in Angular v6 and will be removed in Angular v7.
  *
  * Now deprecated:
+ *
  * ```html
  * <input [formControl]="control" [(ngModel)]="value">
  * ```
@@ -134,14 +132,16 @@ export const formControlBinding: any = {
  * pattern with a config value of `"always"`. This may help to track down where in the code
  * the pattern is being used as the code is being updated.
  *
- *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 
 export class FormControlDirective extends NgControl implements OnChanges {
   viewModel: any;
 
-  @Input('formControl') form: FormControl;
+  // TODO(issue/24571): remove '!'.
+  @Input('formControl') form !: FormControl;
 
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }

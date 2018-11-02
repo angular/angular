@@ -21,6 +21,7 @@ import {Headers} from './headers';
  * usually instantiated by end-users, it is the primary object interacted with when it comes time to
  * add data to a view.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -33,6 +34,7 @@ import {Headers} from './headers';
  * most significant.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Response extends Body {
   /**
@@ -70,13 +72,15 @@ export class Response extends Body {
    * Denotes how many of the response body's bytes have been loaded, for example if the response is
    * the result of a progress event.
    */
-  bytesLoaded: number;
+  // TODO(issue/24571): remove '!'.
+  bytesLoaded !: number;
   /**
    * Non-standard property
    *
    * Denotes how many bytes are expected in the final response body.
    */
-  totalBytes: number;
+  // TODO(issue/24571): remove '!'.
+  totalBytes !: number;
   /**
    * Headers object based on the `Headers` class in the [Fetch
    * Spec](https://fetch.spec.whatwg.org/#headers-class).

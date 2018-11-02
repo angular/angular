@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Import zero symbols from zone.js. This causes the zone ambient type to be
-// added to the type-checker, without emitting any runtime module load statement
-import {} from 'zone.js';
-
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope: any /** TODO #9100 */;
 // CommonJS / Node have global context exposed as "global" variable.
@@ -99,4 +95,17 @@ export function stringify(token: any): string {
 
   const newLineIndex = res.indexOf('\n');
   return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+}
+
+/**
+ * Convince closure compiler that the wrapped function has no side-effects.
+ *
+ * Closure compiler always assumes that `toString` has no side-effects. We use this quirk to
+ * allow us to execute a function but have closure compiler mark the call as no-side-effects.
+ * It is important that the return value for the `noSideEffects` function be assigned
+ * to something which is retained otherwise the call to `noSideEffects` will be removed by closure
+ * compiler.
+ */
+export function noSideEffects(fn: () => void): string {
+  return '' + {toString: fn};
 }

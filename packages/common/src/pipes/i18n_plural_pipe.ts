@@ -18,11 +18,13 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * Maps a value to a string that pluralizes the value according to locale rules.
  *
- *  ## Example
+ * @usageNotes
+ *
+ * ### Example
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
  *
- * @experimental
+ * @publicApi
  */
 @Pipe({name: 'i18nPlural', pure: true})
 export class I18nPluralPipe implements PipeTransform {

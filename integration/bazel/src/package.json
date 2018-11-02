@@ -1,0 +1,26 @@
+{
+  "name": "angular-bazel",
+  "description": "example and integration test for building Angular apps with Bazel",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "reflect-metadata": "0.1.12",
+    "rxjs": "6.3.3",
+    "tslib": "1.9.3",
+    "zone.js": "0.8.26"
+  },
+  "devDependencies": {
+    "@angular/bazel": "file:../angular/dist/packages-dist/bazel",
+    "@angular/compiler": "file:../angular/dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../angular/dist/packages-dist/compiler-cli",
+    "@bazel/karma": "0.20.3",
+    "@bazel/typescript": "0.20.3",
+    "@types/jasmine": "2.8.8",
+    "@types/source-map": "0.5.1",
+    "protractor": "5.1.2",
+    "typescript": "3.1.1"
+  },
+  "scripts": {
+    "//": "TODO(gregmagolan): figure out how to keep dependencies here up to date with the root package.json"
+  }
+}

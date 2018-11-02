@@ -5,6 +5,6 @@
 interface {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {{$ memberHelper.renderMembers(doc) $}
 }
 </code-example>
-{$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
-{$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
+{$ descendants.renderDescendants(doc, 'interface', 'Child interfaces') $}
+{$ descendants.renderDescendants(doc, 'class', 'Class implementations', true, r/class|directive|pipe|decorator/) $}
 </section>

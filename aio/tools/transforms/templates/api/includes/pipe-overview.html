@@ -10,6 +10,8 @@
       {%- if param.isOptional or param.defaultValue !== undefined %} ]{% endif %}
     {%- endfor %} }}</code-example>
 
+  {% include "includes/ngmodule.html" %}
+
   {% if doc.valueParam.type %}
   <h2>Input value</h2>
   {$ params.renderParameters([doc.valueParam], 'pipe-parameters', 'pipe-parameter', true) $}

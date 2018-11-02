@@ -1310,8 +1310,10 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            @Component({template: '<ng-template #vc>{{name}}</ng-template>'})
            class Comp {
              name = 'Tom';
-             @ViewChild('vc', {read: ViewContainerRef}) vc: ViewContainerRef;
-             @ViewChild(TemplateRef) template: TemplateRef<any>;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild('vc', {read: ViewContainerRef}) vc !: ViewContainerRef;
+             // TODO(issue/24571): remove '!'.
+             @ViewChild(TemplateRef) template !: TemplateRef<any>;
            }
 
            TestBed.configureTestingModule({declarations: [Comp]});
@@ -1351,8 +1353,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`
         })
         class OuterComp {
+          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          tpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`outer-${id}`); }
@@ -1364,11 +1367,13 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`
         })
         class InnerComp {
+          // TODO(issue/24571): remove '!'.
           @ContentChild(TemplateRef)
-          tpl: TemplateRef<any>;
+          tpl !: TemplateRef<any>;
 
+          // TODO(issue/24571): remove '!'.
           @Input()
-          outerTpl: TemplateRef<any>;
+          outerTpl !: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`inner-${id}`); }
@@ -1517,7 +1522,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           class MyChild {
             private thrown = LifetimeMethods.None;
 
-            @Input() inp: boolean;
+            // TODO(issue/24571): remove '!'.
+            @Input() inp !: boolean;
             @Output() outp = new EventEmitter<any>();
 
             constructor() {}
@@ -1793,13 +1799,16 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
     AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
-  changes: SimpleChanges;
+  // TODO(issue/24571): remove '!'.
+  changes !: SimpleChanges;
   event: any;
   eventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
-  @Input('testDirective') name: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('testDirective') name !: string;
 
-  @Input() throwOn: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() throwOn !: string;
 
   constructor(public log: DirectiveLog) {}
 
@@ -1875,7 +1884,8 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({selector: '[orderCheck0]'})
 class OrderCheckDirective0 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck0')
   set name(value: string) {
@@ -1888,7 +1898,8 @@ class OrderCheckDirective0 {
 
 @Directive({selector: '[orderCheck1]'})
 class OrderCheckDirective1 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck1')
   set name(value: string) {
@@ -1901,7 +1912,8 @@ class OrderCheckDirective1 {
 
 @Directive({selector: '[orderCheck2]'})
 class OrderCheckDirective2 {
-  private _name: string;
+  // TODO(issue/24571): remove '!'.
+  private _name !: string;
 
   @Input('orderCheck2')
   set name(value: string) {
@@ -1925,10 +1937,13 @@ class TestLocals {
 
 @Component({selector: 'root', template: 'empty'})
 class Person {
-  age: number;
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  age !: number;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   address: Address|null = null;
-  phones: number[];
+  // TODO(issue/24571): remove '!'.
+  phones !: number[];
 
   init(name: string, address: Address|null = null) {
     this.name = name;
@@ -1982,13 +1997,15 @@ class TestData {
 
 @Component({selector: 'root', template: 'empty'})
 class TestDataWithGetter {
-  public fn: Function;
+  // TODO(issue/24571): remove '!'.
+  public fn !: Function;
 
   get a() { return this.fn(); }
 }
 
 class Holder<T> {
-  value: T;
+  // TODO(issue/24571): remove '!'.
+  value !: T;
 }
 
 @Component({selector: 'root', template: 'empty'})

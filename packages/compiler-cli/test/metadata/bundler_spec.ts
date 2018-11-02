@@ -9,11 +9,187 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {MetadataBundler, MetadataBundlerHost} from '../../src/metadata/bundler';
+import {CompilerHostAdapter, MetadataBundler, MetadataBundlerHost} from '../../src/metadata/bundler';
 import {MetadataCollector} from '../../src/metadata/collector';
 import {ClassMetadata, MetadataGlobalReferenceExpression, ModuleMetadata} from '../../src/metadata/schema';
+import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
-import {Directory, open} from './typescript.mocks';
+describe('compiler host adapter', () => {
+
+  it('should retrieve metadata for an explicit index relative path reference', () => {
+    const context = new MockAotContext('.', SIMPLE_LIBRARY);
+    const host = new MockCompilerHost(context);
+    const options: ts.CompilerOptions = {
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    const adapter = new CompilerHostAdapter(host, null, options);
+    const metadata = adapter.getMetadataFor('./lib/src/two/index', '.');
+
+    expect(metadata).toBeDefined();
+    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+      'PrivateTwo',
+      'TWO_CLASSES',
+      'Two',
+      'TwoMore',
+    ]);
+  });
+
+  it('should retrieve metadata for an implied index relative path reference', () => {
+    const context = new MockAotContext('.', SIMPLE_LIBRARY_WITH_IMPLIED_INDEX);
+    const host = new MockCompilerHost(context);
+    const options: ts.CompilerOptions = {
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    const adapter = new CompilerHostAdapter(host, null, options);
+    const metadata = adapter.getMetadataFor('./lib/src/two', '.');
+
+    expect(metadata).toBeDefined();
+    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+      'PrivateTwo',
+      'TWO_CLASSES',
+      'Two',
+      'TwoMore',
+    ]);
+  });
+
+  it('should fail to retrieve metadata for an implied index with classic module resolution', () => {
+    const context = new MockAotContext('.', SIMPLE_LIBRARY_WITH_IMPLIED_INDEX);
+    const host = new MockCompilerHost(context);
+    const options: ts.CompilerOptions = {
+      moduleResolution: ts.ModuleResolutionKind.Classic,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    const adapter = new CompilerHostAdapter(host, null, options);
+    const metadata = adapter.getMetadataFor('./lib/src/two', '.');
+
+    expect(metadata).toBeUndefined();
+  });
+
+  it('should retrieve exports for an explicit index relative path reference', () => {
+    const context = new MockAotContext('.', SIMPLE_LIBRARY);
+    const host = new MockCompilerHost(context);
+    const options: ts.CompilerOptions = {
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    const adapter = new CompilerHostAdapter(host, null, options);
+    const metadata = adapter.getMetadataFor('./lib/src/index', '.');
+
+    expect(metadata).toBeDefined();
+    expect(metadata !.exports !.map(e => e.export !)
+               .reduce((prev, next) => prev.concat(next), [])
+               .sort())
+        .toEqual([
+          'ONE_CLASSES',
+          'One',
+          'OneMore',
+          'TWO_CLASSES',
+          'Two',
+          'TwoMore',
+        ]);
+  });
+
+  it('should look for .ts file when resolving metadata via a package.json "main" entry', () => {
+    const files = {
+      'lib': {
+        'one.ts': `
+          class One {}
+          class OneMore extends One {}
+          class PrivateOne {}
+          const ONE_CLASSES = [One, OneMore, PrivateOne];
+          export {One, OneMore, PrivateOne, ONE_CLASSES};
+        `,
+        'one.js': `
+          // This will throw an error if the metadata collector tries to load one.js
+        `,
+        'package.json': `
+        {
+          "main": "one"
+        }
+        `
+      }
+    };
+
+    const context = new MockAotContext('.', files);
+    const host = new MockCompilerHost(context);
+    const options: ts.CompilerOptions = {
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    const adapter = new CompilerHostAdapter(host, null, options);
+    const metadata = adapter.getMetadataFor('./lib', '.');
+
+    expect(metadata).toBeDefined();
+    expect(Object.keys(metadata !.metadata).sort()).toEqual([
+      'ONE_CLASSES',
+      'One',
+      'OneMore',
+      'PrivateOne',
+    ]);
+    expect(Array.isArray(metadata !.metadata !['ONE_CLASSES'])).toBeTruthy();
+  });
+
+  it('should look for non-declaration file when resolving metadata via a package.json "types" entry',
+     () => {
+       const files = {
+         'lib': {
+           'one.ts': `
+          class One {}
+          class OneMore extends One {}
+          class PrivateOne {}
+          const ONE_CLASSES = [One, OneMore, PrivateOne];
+          export {One, OneMore, PrivateOne, ONE_CLASSES};
+        `,
+           'one.d.ts': `
+          declare class One {
+          }
+          declare class OneMore extends One {
+          }
+          declare class PrivateOne {
+          }
+          declare const ONE_CLASSES: (typeof One)[];
+          export { One, OneMore, PrivateOne, ONE_CLASSES };
+        `,
+           'one.js': `
+          // This will throw an error if the metadata collector tries to load one.js
+        `,
+           'package.json': `
+        {
+          "main": "one",
+          "types": "one.d.ts"
+        }
+        `
+         }
+       };
+
+       const context = new MockAotContext('.', files);
+       const host = new MockCompilerHost(context);
+       const options: ts.CompilerOptions = {
+         moduleResolution: ts.ModuleResolutionKind.NodeJs,
+         module: ts.ModuleKind.CommonJS,
+         target: ts.ScriptTarget.ES5,
+       };
+       const adapter = new CompilerHostAdapter(host, null, options);
+       const metadata = adapter.getMetadataFor('./lib', '.');
+
+       expect(metadata).toBeDefined();
+       expect(Object.keys(metadata !.metadata).sort()).toEqual([
+         'ONE_CLASSES',
+         'One',
+         'OneMore',
+         'PrivateOne',
+       ]);
+       expect(Array.isArray(metadata !.metadata !['ONE_CLASSES'])).toBeTruthy();
+
+     });
+});
 
 describe('metadata bundler', () => {
 
@@ -231,25 +407,23 @@ describe('metadata bundler', () => {
 
 export class MockStringBundlerHost implements MetadataBundlerHost {
   collector = new MetadataCollector();
+  adapter: CompilerHostAdapter;
 
-  constructor(private dirName: string, private directory: Directory) {}
+  constructor(private dirName: string, directory: Directory) {
+    const context = new MockAotContext(dirName, directory);
+    const host = new MockCompilerHost(context);
+    const options = {
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES5,
+    };
+    this.adapter = new CompilerHostAdapter(host, null, options);
+  }
 
   getMetadataFor(moduleName: string): ModuleMetadata|undefined {
-    const fileName = path.join(this.dirName, moduleName) + '.ts';
-    const text = open(this.directory, fileName);
-    if (typeof text == 'string') {
-      const sourceFile = ts.createSourceFile(
-          fileName, text, ts.ScriptTarget.Latest, /* setParent */ true, ts.ScriptKind.TS);
-      const diagnostics: ts.Diagnostic[] = (sourceFile as any).parseDiagnostics;
-      if (diagnostics && diagnostics.length) {
-        throw Error('Unexpected syntax error in test');
-      }
-      const result = this.collector.getMetadata(sourceFile);
-      return result;
-    }
+    return this.adapter.getMetadataFor(moduleName, this.dirName);
   }
 }
-
 
 export const SIMPLE_LIBRARY = {
   'lib': {
@@ -260,6 +434,34 @@ export const SIMPLE_LIBRARY = {
       'index.ts': `
         export {One, OneMore, ONE_CLASSES} from './one';
         export {Two, TwoMore, TWO_CLASSES} from './two/index';
+      `,
+      'one.ts': `
+        export class One {}
+        export class OneMore extends One {}
+        export class PrivateOne {}
+        export const ONE_CLASSES = [One, OneMore, PrivateOne];
+      `,
+      'two': {
+        'index.ts': `
+          export class Two {}
+          export class TwoMore extends Two {}
+          export class PrivateTwo {}
+          export const TWO_CLASSES = [Two, TwoMore, PrivateTwo];
+        `
+      }
+    }
+  }
+};
+
+export const SIMPLE_LIBRARY_WITH_IMPLIED_INDEX = {
+  'lib': {
+    'index.ts': `
+      export * from './src';
+    `,
+    'src': {
+      'index.ts': `
+        export {One, OneMore, ONE_CLASSES} from './one';
+        export {Two, TwoMore, TWO_CLASSES} from './two';
       `,
       'one.ts': `
         export class One {}

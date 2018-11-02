@@ -13,19 +13,22 @@ import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 /**
  * A function that will be executed when an application is initialized.
- * @experimental
+ *
+ * @publicApi
  */
 export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Application Initializer');
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER}s.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class ApplicationInitStatus {
-  private resolve: Function;
-  private reject: Function;
+  // TODO(issue/24571): remove '!'.
+  private resolve !: Function;
+  // TODO(issue/24571): remove '!'.
+  private reject !: Function;
   private initialized = false;
   public readonly donePromise: Promise<any>;
   public readonly done = false;

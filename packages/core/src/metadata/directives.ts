@@ -8,48 +8,36 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE} from '../ivy_switch';
+import {NG_BASE_DEF} from '../render3/fields';
+import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
+import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {noop} from '../util/noop';
+import {fillProperties} from '../util/property';
+
 import {ViewEncapsulation} from './view';
+
 
 
 /**
  * Type of the Directive decorator / constructor function.
+ * @publicApi
  */
 export interface DirectiveDecorator {
   /**
-   * Marks a class as an Angular directive and collects directive configuration
-   * metadata.
-   *
-   * Directive decorator allows you to mark a class as an Angular directive and provide additional
-   * metadata that determines how the directive should be processed, instantiated and used at
+   * Marks a class as an Angular directive. You can define your own
+   * directives to attach custom behavior to elements in the DOM.
+   * The options provide configuration metadata that determines
+   * how the directive should be processed, instantiated and used at
    * runtime.
    *
-   * Directives allow you to attach behavior to elements in the DOM..
+   * Directive classes, like component classes, can implement
+   * [life-cycle hooks](guide/lifecycle-hooks) to influence their configuration and behavior.
    *
-   * A directive must belong to an NgModule in order for it to be usable
-   * by another directive, component, or application. To specify that a directive is a member of an
-   * NgModule,
-   * you should list it in the `declarations` field of that NgModule.
-   *
-   * In addition to the metadata configuration specified via the Directive decorator,
-   * directives can control their runtime behavior by implementing various Life-Cycle hooks.
-   *
-   * **Metadata Properties:**
-   *
-   * * **exportAs** - name under which the component instance is exported in a template. Can be
-   * given a single name or a comma-delimited list of names.
-   * * **host** - map of class property to host element bindings for events, properties and
-   * attributes
-   * * **inputs** - list of class property names to data-bind as component inputs
-   * * **outputs** - list of class property names that expose output events that others can
-   * subscribe to
-   * * **providers** - list of providers available to this component and its children
-   * * **queries** -  configure queries that can be injected into the component
-   * * **selector** - css selector that identifies this component in a template
    *
    * @usageNotes
+   * To define a directive, mark the class with the decorator and provide metadata.
    *
    * ```
    * import {Directive} from '@angular/core';
@@ -58,7 +46,25 @@ export interface DirectiveDecorator {
    *   selector: 'my-directive',
    * })
    * export class MyDirective {
+   * ...
    * }
+   * ```
+   *
+   * ### Declaring directives
+   *
+   * Directives are [declarables](guide/glossary#declarable).
+   * They must be declared by an NgModule
+   * in order to be usable in an app.
+   *
+   * A directive must belong to exactly one NgModule. Do not re-declare
+   * a directive imported from another module.
+   * List the directive class in the `declarations` field of an NgModule.
+   *
+   * ```
+   * declarations: [
+   *  AppComponent,
+   *  MyDirective
+   * ],
    * ```
    *
    * @Annotation
@@ -75,10 +81,7 @@ export interface Directive {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
-   * Angular only allows directives to trigger on CSS selectors that do not cross element
-   * boundaries.
-   *
-   * `selector` may be declared as one of the following:
+   * Declare as one of the following:
    *
    * - `element-name`: select by element name.
    * - `.class`: select by class name.
@@ -87,12 +90,10 @@ export interface Directive {
    * - `:not(sub_selector)`: select only if the element does not match the `sub_selector`.
    * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
    *
-   * @usageNotes
-   * ### Example
-   *
-   * Suppose we have a directive with an `input[type=text]` selector.
-   *
-   * And the following HTML:
+   * Angular only allows directives to trigger on CSS selectors that do not cross element
+   * boundaries. For example, consider a directive with an `input[type=text]` selector.
+   * For the following HTML, the directive is instantiated only on the
+   * `<input type="text">` element.
    *
    * ```html
    * <form>
@@ -101,8 +102,6 @@ export interface Directive {
    * <form>
    * ```
    *
-   * The directive would only be instantiated on the `<input type="text">` element.
-   *
    */
   selector?: string;
 
@@ -110,7 +109,6 @@ export interface Directive {
    * Enumerates the set of data-bound input properties for a directive
    *
    * Angular automatically updates input properties during change detection.
-   *
    * The `inputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
    *
@@ -118,8 +116,8 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
-   *
    * @usageNotes
+   *
    * ### Example
    *
    * The following example creates a component with two data-bound properties.
@@ -137,17 +135,6 @@ export interface Directive {
    *   bankName: string;
    *   id: string;
    *
-   *   // this property is not bound, and won't be automatically updated by Angular
-   *   normalizedBankName: string;
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `
-   *     <bank-account bankName="RBC" account-id="4747"></bank-account>
-   *   `
-   * })
-   * class App {}
    * ```
    */
   inputs?: string[];
@@ -156,7 +143,7 @@ export interface Directive {
    * Enumerates the set of event-bound output properties.
    *
    * When an output property emits an event, an event handler attached to that event
-   * the template is invoked.
+   * in the template is invoked.
    *
    * The `outputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
@@ -165,168 +152,30 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
    * @usageNotes
+   *
    * ### Example
    *
    * ```typescript
    * @Directive({
-   *   selector: 'interval-dir',
-   *   outputs: ['everySecond', 'five5Secs: everyFiveSeconds']
+   *   selector: 'child-dir',
+   *   exportAs: 'child'
    * })
-   * class IntervalDir {
-   *   everySecond = new EventEmitter();
-   *   five5Secs = new EventEmitter();
-   *
-   *   constructor() {
-   *     setInterval(() => this.everySecond.emit("event"), 1000);
-   *     setInterval(() => this.five5Secs.emit("event"), 5000);
-   *   }
+   * class ChildDir {
    * }
    *
    * @Component({
-   *   selector: 'app',
-   *   template: `
-   *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
-   *     </interval-dir>
-   *   `
+   *   selector: 'main',
+   *   template: `<child-dir #c="child"></child-dir>`
    * })
-   * class App {
-   *   everySecond() { console.log('second'); }
-   *   everyFiveSeconds() { console.log('five seconds'); }
+   * class MainComponent {
    * }
    * ```
    */
   outputs?: string[];
 
   /**
-   * Specify the events, actions, properties and attributes related to the host element.
-   *
-   * @usageNotes
-   * The key corresponds to the name of the event, property or attribute on the host to
-   * bind. The value is formatted differently depending upon the type of the binding.
-   *
-   * ### Host Listeners
-   *
-   * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
-   * key-value pairs:
-   *
-   * - `event`: the DOM event that the directive listens to.
-   * - `statement`: the statement to execute when the event occurs.
-   * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
-   * event.
-   *
-   * To listen to global events, a target must be added to the event name.
-   * The target can be `window`, `document` or `body`.
-   *
-   * When writing a directive event binding, you can also refer to the $event local variable.
-   *
-   * The following example declares a directive that attaches a click listener to the button and
-   * counts clicks.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: 'button[counting]',
-   *   host: {
-   *     '(click)': 'onClick($event.target)'
-   *   }
-   * })
-   * class CountClicks {
-   *   numberOfClicks = 0;
-   *
-   *   onClick(btn) {
-   *     console.log("button", btn, "number of clicks:", this.numberOfClicks++);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `<button counting>Increment</button>`
-   * })
-   * class App {}
-   * ```
-   *
-   * ### Host Property Bindings
-   *
-   * Specifies which DOM properties a directive updates.
-   *
-   * Angular automatically checks host property bindings during change detection.
-   * If a binding changes, it will update the host element of the directive.
-   *
-   * The following example creates a directive that sets the `valid` and `invalid` classes
-   * on the DOM element that has ngModel directive on it.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: '[ngModel]',
-   *   host: {
-   *     '[class.valid]': 'valid',
-   *     '[class.invalid]': 'invalid'
-   *   }
-   * })
-   * class NgModelStatus {
-   *   constructor(public control:NgModel) {}
-   *   get valid { return this.control.valid; }
-   *   get invalid { return this.control.invalid; }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `<input [(ngModel)]="prop">`
-   * })
-   * class App {
-   *   prop;
-   * }
-   * ```
-   *
-   * ### Attributes
-   *
-   * Specifies static attributes that should be propagated to a host element.
-   *
-   * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
-   * (here: `<div>` ) will ensure that this element will get the "button" role.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: '[my-button]',
-   *   host: {
-   *     'role': 'button'
-   *   }
-   * })
-   * class MyButton {
-   * }
-   * ```
-   */
-  host?: {[key: string]: string};
-
-  /**
-   * Defines the set of injectable objects that are visible to a Directive and its light DOM
-   * children.
-   *
-   * @usageNotes
-   * ### Simple Example
-   *
-   * Here is an example of a class that can be injected:
-   *
-   * ```
-   * class Greeter {
-   *    greet(name:string) {
-   *      return 'Hello ' + name + '!';
-   *    }
-   * }
-   *
-   * @Directive({
-   *   selector: 'greet',
-   *   providers: [
-   *     Greeter
-   *   ]
-   * })
-   * class HelloWorld {
-   *   greeter:Greeter;
-   *
-   *   constructor(greeter:Greeter) {
-   *     this.greeter = greeter;
-   *   }
-   * }
-   * ```
+   * A set of injection tokens that allow the DI system to
+   * provide a dependency to this directive or component.
    */
   providers?: Provider[];
 
@@ -334,6 +183,7 @@ export interface Directive {
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
    * @usageNotes
+   *
    * ### Simple Example
    *
    * ```
@@ -350,7 +200,6 @@ export interface Directive {
    * })
    * class MainComponent {
    * }
-   *
    * ```
    */
   exportAs?: string;
@@ -362,7 +211,11 @@ export interface Directive {
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
    * @usageNotes
+   *
    * ### Example
+   *
+   * The following example shows how queries are defined
+   * and when their results are available in lifecycle hooks:
    *
    * ```
    * @Component({
@@ -386,6 +239,8 @@ export interface Directive {
    *   }
    * }
    * ```
+   *
+   * @Annotation
    */
   queries?: {[key: string]: any};
 
@@ -403,94 +258,153 @@ export interface Directive {
  *
  * @Annotation
  */
-export const Directive: DirectiveDecorator = makeDecorator(
-    'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => (R3_COMPILE_DIRECTIVE || (() => {}))(type, meta));
+export interface Directive {
+  /**
+   * The CSS selector that identifies this directive in a template
+   * and triggers instantiation of the directive.
+   *
+   * Declare as one of the following:
+   *
+   * - `element-name`: Select by element name.
+   * - `.class`: Select by class name.
+   * - `[attribute]`: Select by attribute name.
+   * - `[attribute=value]`: Select by attribute name and value.
+   * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
+   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
+   *
+   * Angular only allows directives to apply on CSS selectors that do not cross
+   * element boundaries.
+   *
+   * For the following template HTML, a directive with an `input[type=text]` selector,
+   * would be instantiated only on the `<input type="text">` element.
+   *
+   * ```html
+   * <form>
+   *   <input type="text">
+   *   <input type="radio">
+   * <form>
+   * ```
+   *
+   */
+  selector?: string;
 
-/**
- * Type of the Component decorator / constructor function.
- */
-export interface ComponentDecorator {
   /**
-   * Marks a class as an Angular component and collects component configuration
-   * metadata.
+   * The set of event-bound output properties.
+   * When an output property emits an event, an event handler attached
+   * to that event in the template is invoked.
    *
-   * Component decorator allows you to mark a class as an Angular component and provide additional
-   * metadata that determines how the component should be processed, instantiated and used at
-   * runtime.
+   * Each output property maps a `directiveProperty` to a `bindingProperty`:
+   * - `directiveProperty` specifies the component property that emits events.
+   * - `bindingProperty` specifies the HTML attribute the event handler is attached to.
    *
-   * Components are the most basic building block of an UI in an Angular application.
-   * An Angular application is a tree of Angular components.
-   * Angular components are a subset of directives. Unlike directives, components always have
-   * a template and only one component can be instantiated per an element in a template.
-   *
-   * A component must belong to an NgModule in order for it to be usable
-   * by another component or application. To specify that a component is a member of an NgModule,
-   * you should list it in the `declarations` field of that NgModule.
-   *
-   * In addition to the metadata configuration specified via the Component decorator,
-   * components can control their runtime behavior by implementing various Life-Cycle hooks.
-   *
-   * **Metadata Properties:**
-   *
-   * * **animations** - list of animations of this component
-   * * **changeDetection** - change detection strategy used by this component
-   * * **encapsulation** - style encapsulation strategy used by this component
-   * * **entryComponents** - list of components that are dynamically inserted into the view of this
-   *   component
-   * * **exportAs** - name under which the component instance is exported in a template
-   * * **host** - map of class property to host element bindings for events, properties and
-   *   attributes
-   * * **inputs** - list of class property names to data-bind as component inputs
-   * * **interpolation** - custom interpolation markers used in this component's template
-   * * **moduleId** - ES/CommonJS module id of the file in which this component is defined
-   * * **outputs** - list of class property names that expose output events that others can
-   *   subscribe to
-   * * **providers** - list of providers available to this component and its children
-   * * **queries** -  configure queries that can be injected into the component
-   * * **selector** - css selector that identifies this component in a template
-   * * **styleUrls** - list of urls to stylesheets to be applied to this component's view
-   * * **styles** - inline-defined styles to be applied to this component's view
-   * * **template** - inline-defined template for the view
-   * * **templateUrl** - url to an external file containing a template for the view
-   * * **viewProviders** - list of providers available to this component and its view children
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * {@example core/ts/metadata/metadata.ts region='component'}
-   *
-   * @Annotation
    */
-  (obj: Component): TypeDecorator;
+  outputs?: string[];
+
   /**
-   * See the `Component` decorator.
+   * Maps class properties to host element bindings for properties,
+   * attributes, and events, using a set of key-value pairs.
+   *
+   * Angular automatically checks host property bindings during change detection.
+   * If a binding changes, Angular updates the directive's host element.
+   *
+   * When the key is a property of the host element, the property value is
+   * the propagated to the specified DOM property.
+   *
+   * When the key is a static attribute in the DOM, the attribute value
+   * is propagated to the specified property in the host element.
+   *
+   * For event handling:
+   * - The key is the DOM event that the directive listens to.
+   * To listen to global events, add the target to the event name.
+   * The target can be `window`, `document` or `body`.
+   * - The value is the statement to execute when the event occurs. If the
+   * statement evalueates to `false`, then `preventDefault` is applied on the DOM
+   * event. A handler method can refer to the `$event` local variable.
+   *
    */
-  new (obj: Component): Component;
+  host?: {[key: string]: string};
+
+  /**
+   * Configures the [injector](guide/glossary#injector) of this
+   * directive or component with a [token](guide/glossary#di-token)
+   * that maps to a [provider](guide/glossary#provider) of a dependency.
+   */
+  providers?: Provider[];
+
+  /**
+   * The name or names that can be used in the template to assign this directive to a variable.
+   * For multiple names, use a comma-separated string.
+   *
+   */
+  exportAs?: string;
+
+  /**
+   * Configures the queries that will be injected into the directive.
+   *
+   * Content queries are set before the `ngAfterContentInit` callback is called.
+   * View queries are set before the `ngAfterViewInit` callback is called.
+   *
+   */
+  queries?: {[key: string]: any};
 }
 
 /**
- * Type of the Component metadata.
+ * Type of the Directive metadata.
+ *
+ * @publicApi
  */
-export interface Component extends Directive {
-  /**
-   * Defines the used change detection strategy.
-   *
-   * When a component is instantiated, Angular creates a change detector, which is responsible for
-   * propagating the component's bindings.
-   *
-   * The `changeDetection` property defines, whether the change detection will be checked every time
-   * or only when the component tells it to do so.
-   */
-  changeDetection?: ChangeDetectionStrategy;
+export const Directive: DirectiveDecorator = makeDecorator(
+    'Directive', (dir: Directive = {}) => dir, undefined, undefined,
+    (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta));
 
+/**
+ * Component decorator interface
+ *
+ * @publicApi
+ */
+export interface ComponentDecorator {
   /**
-   * Defines the set of injectable objects that are visible to its view DOM children.
+   * Decorator that marks a class as an Angular component and provides configuration
+   * metadata that determines how the component should be processed,
+   * instantiated, and used at runtime.
+   *
+   * Components are the most basic UI building block of an Angular app.
+   * An Angular app contains a tree of Angular components.
+   *
+   * Angular components are a subset of directives, always associated with a template.
+   * Unlike other directives, only one component can be instantiated per an element in a template.
+   *
+   * A component must belong to an NgModule in order for it to be available
+   * to another component or application. To make it a member of an NgModule,
+   * list it in the `declarations` field of the `@NgModule` metadata.
+   *
+   * Note that, in addition to these options for configuring a directive,
+   * you can control a component's runtime behavior by implementing
+   * life-cycle hooks. For more information, see the
+   * [Lifecycle Hooks](guide/lifecycle-hooks) guide.
    *
    * @usageNotes
-   * ### Simple Example
    *
-   * Here is an example of a class that can be injected:
+   * ### Setting component inputs
+   *
+   * The following example creates a component with two data-bound properties,
+   * specified by the `inputs` value.
+   *
+   * <code-example path="core/ts/metadata/directives.ts" region="component-input">
+   * </code-example>
+   *
+   *
+   * ### Setting component outputs
+   *
+   * The following example shows two event emitters that emit on an interval. One
+   * emits an output every second, while the other emits every five seconds.
+   *
+   * {@example core/ts/metadata/directives.ts region='component-output-interval'}
+   *
+   * ### Injecting a class with a view provider
+   *
+   * The following simple example injects a class into a component
+   * using the view provider specified in component metadata:
    *
    * ```
    * class Greeter {
@@ -521,224 +435,117 @@ export interface Component extends Directive {
    * }
    *
    * ```
+   *
+   *
+   * @Annotation
+   */
+  (obj: Component): TypeDecorator;
+  /**
+   * See the `@Component` decorator.
+   */
+  new (obj: Component): Component;
+}
+
+/**
+ * Supplies configuration metadata for an Angular component.
+ */
+export interface Component extends Directive {
+  /**
+   * The change-detection strategy to use for this component.
+   *
+   * When a component is instantiated, Angular creates a change detector,
+   * which is responsible for propagating the component's bindings.
+   * The strategy is one of:
+   * - `ChangeDetectionStrategy#OnPush` sets the strategy to `CheckOnce` (on demand).
+   * - `ChangeDetectionStrategy#Default` sets the strategy to `CheckAlways`.
+   */
+  changeDetection?: ChangeDetectionStrategy;
+
+  /**
+   * Defines the set of injectable objects that are visible to its view DOM children.
+   * See [example](#injecting-a-class-with-a-view-provider).
+   *
    */
   viewProviders?: Provider[];
 
   /**
-   * The module id of the module that contains the component.
-   * Needed to be able to resolve relative urls for templates and styles.
-   * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
-   * variable within each module.
+   * The module ID of the module that contains the component.
+   * The component must be able to resolve relative URLs for templates and styles.
+   * SystemJS exposes the `__moduleName` variable within each module.
+   * In CommonJS, this can  be set to `module.id`.
    *
-   * @usageNotes
-   * ### Simple Example
-   *
-   * ```
-   * @Directive({
-   *   selector: 'someDir',
-   *   moduleId: module.id
-   * })
-   * class SomeDir {
-   * }
-   *
-   * ```
    */
   moduleId?: string;
 
   /**
-   * Specifies a template URL for an Angular component.
+   * The URL of a template file for an Angular component. If provided,
+   * do not supply an inline template using `template`.
    *
-   * Only one of `templateUrl` or `template` can be defined per View.
    */
   templateUrl?: string;
 
   /**
-   * Specifies an inline template for an Angular component.
+   * An inline template for an Angular component. If provided,
+   * do not supply a template file using `templateUrl`.
    *
-   * Only one of `templateUrl` or `template` can be defined per Component.
    */
   template?: string;
 
   /**
-   * Specifies stylesheet URLs for an Angular component.
+   * One or more URLs for files containing CSS stylesheets to use
+   * in this component.
    */
   styleUrls?: string[];
 
   /**
-   * Specifies inline stylesheets for an Angular component.
+   * One or more inline CSS stylesheets to use
+   * in this component.
    */
   styles?: string[];
 
   /**
-   * Animations are defined on components via an animation-like DSL. This DSL approach to describing
-   * animations allows for a flexibility that both benefits developers and the framework.
+   * One or more animation `trigger()` calls, containing
+   * `state()` and `transition()` definitions.
+   * See the [Animations guide](/guide/animations) and animations API documentation.
    *
-   * Animations work by listening on state changes that occur on an element within
-   * the template. When a state change occurs, Angular can then take advantage and animate the
-   * arc in between. This works similar to how CSS transitions work, however, by having a
-   * programmatic DSL, animations are not limited to environments that are DOM-specific.
-   * (Angular can also perform optimizations behind the scenes to make animations more performant.)
-   *
-   * For animations to be available for use, animation state changes are placed within
-   * {@link trigger animation triggers} which are housed inside of the `animations` annotation
-   * metadata. Within a trigger both `state` and `transition` entries
-   * can be placed.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * ```typescript
-   * @Component({
-   *   selector: 'animation-cmp',
-   *   templateUrl: 'animation-cmp.html',
-   *   animations: [
-   *     // this here is our animation trigger that
-   *     // will contain our state change animations.
-   *     trigger('myTriggerName', [
-   *       // the styles defined for the `on` and `off`
-   *       // states declared below are persisted on the
-   *       // element once the animation completes.
-   *       state('on', style({ opacity: 1 }),
-   *       state('off', style({ opacity: 0 }),
-   *
-   *       // this here is our animation that kicks off when
-   *       // this state change jump is true
-   *       transition('on => off', [
-   *         animate("1s")
-   *       ])
-   *     ])
-   *   ]
-   * })
-   * ```
-   *
-   * As depicted in the code above, a group of related animation states are all contained within
-   * an animation `trigger` (the code example above called the trigger `myTriggerName`).
-   * When a trigger is created then it can be bound onto an element within the component's
-   * template via a property prefixed by an `@` symbol followed by trigger name and an expression
-   * that
-   * is used to determine the state value for that trigger.
-   *
-   * ```html
-   * <!-- animation-cmp.html -->
-   * <div @myTriggerName="expression">...</div>
-   * ```
-   *
-   * For state changes to be executed, the `expression` value must change value from its existing
-   * value
-   * to something that we have set an animation to animate on (in the example above we are listening
-   * to a change of state between `on` and `off`). The `expression` value attached to the trigger
-   * must be something that can be evaluated with the template/component context.
-   *
-   * ### DSL Animation Functions
-   *
-   * Please visit each of the animation DSL functions listed below to gain a better understanding
-   * of how and why they are used for crafting animations in Angular:
-   *
-   * - `trigger()`
-   * - `state()`
-   * - `transition()`
-   * - `group()`
-   * - `sequence()`
-   * - `style()`
-   * - `animate()`
-   * - `keyframes()`
    */
   animations?: any[];
 
   /**
-   * Specifies how the template and the styles should be encapsulated:
-   * - `ViewEncapsulation.Native` to use shadow roots - only works if natively available on the
-   *   platform,
-   * - `ViewEncapsulation.Emulated` to use shimmed CSS that emulates the native behavior,
-   * - `ViewEncapsulation.None` to use global CSS without any encapsulation.
+   * An encapsulation policy for the template and CSS styles. One of:
+   * - `ViewEncapsulation.Native`: Use shadow roots. This works
+   * only if natively available on the platform.
+   * - `ViewEncapsulation.Emulated`: Use shimmed CSS that
+   * emulates the native behavior.
+   * - `ViewEncapsulation.None`: Use global CSS without any
+   * encapsulation.
    *
-   * When no `encapsulation` is defined for the component, the default value from the
-   * `CompilerOptions` is used. The default is `ViewEncapsulation.Emulated`. Provide a new
-   * `CompilerOptions` to override this value.
+   * If not supplied, the value is taken from `CompilerOptions`. The default compiler option is
+   * `ViewEncapsulation.Emulated`.
    *
-   * If the encapsulation is set to `ViewEncapsulation.Emulated` and the component has no `styles`
-   * nor `styleUrls` the encapsulation will automatically be switched to `ViewEncapsulation.None`.
+   * If the policy is set to `ViewEncapsulation.Emulated` and the component has no `styles`
+   * or `styleUrls` specified, the policy is automatically switched to `ViewEncapsulation.None`.
    */
   encapsulation?: ViewEncapsulation;
 
   /**
-   * Overrides the default encapsulation start and end delimiters (respectively `{{` and `}}`)
+   * Overrides the default encapsulation start and end delimiters (`{{` and `}}`)
    */
   interpolation?: [string, string];
 
   /**
-   * Defines the components that should be compiled as well when
-   * this component is defined. For each components listed here,
-   * Angular will create a `ComponentFactory` and store it in the
-   * `ComponentFactoryResolver`.
+   * A set of components that should be compiled along with
+   * this component. For each component listed here,
+   * Angular creates a {@link ComponentFactory} and stores it in the
+   * {@link ComponentFactoryResolver}.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
   /**
-   * If `Component.preserveWhitespaces` is set to `false`
-   * potentially superfluous whitespace characters (ones matching the `\s` character class in
-   * JavaScript regular expressions) will be removed from a compiled template. This can greatly
-   * reduce AOT-generated code size as well as speed up view creation.
-   *
-   * Current implementation works according to the following rules:
-   * - all whitespaces at the beginning and the end of a template are removed (trimmed);
-   * - text nodes consisting of whitespaces only are removed (ex.:
-   *   `<button>Action 1</button>  <button>Action 2</button>` will be converted to
-   *   `<button>Action 1</button><button>Action 2</button>` (no whitespaces between buttons);
-   * - series of whitespaces in text nodes are replaced with one space (ex.:
-   *   `<span>\n some text\n</span>` will be converted to `<span> some text </span>`);
-   * - text nodes are left as-is inside HTML tags where whitespaces are significant (ex. `<pre>`,
-   *   `<textarea>`).
-   *
-   * Described transformations may (potentially) influence DOM nodes layout. However, the impact
-   * should so be minimal. That's why starting from Angular 6, the
-   * `preserveWhitespaces` option is `false` by default (whitespace removal).
-   * If you want to change the default setting for all components in your application you can use
-   * the `preserveWhitespaces` option of the AOT compiler.
-   *
-   * Even with the default behavior of whitespace removal, there are ways of preserving whitespaces
-   * in certain fragments of a template. You can either exclude entire DOM sub-tree by using the
-   * `ngPreserveWhitespaces` attribute, ex.:
-   *
-   * ```html
-   * <div ngPreserveWhitespaces>
-   *     whitespaces are preserved here
-   *     <span>    and here </span>
-   * </div>
-   * ```
-   *
-   * Alternatively you can force a space to be preserved in a text node by using the `&ngsp;`
-   * pseudo-entity. `&ngsp;` will be replaced with a space character by Angular's template
-   * compiler, ex.:
-   *
-   * ```html
-   * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
-   * ```
-   *
-   * will be compiled to the equivalent of:
-   *
-   * ```html
-   * <a>Spaces</a> <a>between</a> <a>links.</a>
-   * ```
-   *
-   * Please note that sequences of `&ngsp;` are still collapsed to just one space character when
-   * the `preserveWhitespaces` option is set to `false`. Ex.:
-   *
-   * ```html
-   * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
-   * ```
-   *
-   * would be equivalent to:
-   *
-   * ```html
-   * <a>before</a> <a>after</a>
-   * ```
-   *
-   * The `&ngsp;` pseudo-entity is useful for forcing presence of
-   * one space (a text node having `&ngsp;` pseudo-entities will never be removed), but it is not
-   * meant to mark sequences of whitespace characters. The previously described
-   * `ngPreserveWhitespaces` attribute is more useful for preserving sequences of whitespace
-   * characters.
+   * True to preserve or false to remove potentially superfluous whitespace characters
+   * from the compiled template. Whitespace characters are those matching the `\s`
+   * character class in JavaScript regular expressions. Default is false, unless
+   * overridden in compiler options.
    */
   preserveWhitespaces?: boolean;
 }
@@ -746,23 +553,106 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
+ * @usageNotes
+ *
+ * ### Using animations
+ *
+ * The following snippet shows an animation trigger in a component's
+ * metadata. The trigger is attached to an element in the component's
+ * template, using "@_trigger_name_", and a state expression that is evaluated
+ * at run time to determine whether the animation should start.
+ *
+ * ```typescript
+ * @Component({
+ *   selector: 'animation-cmp',
+ *   templateUrl: 'animation-cmp.html',
+ *   animations: [
+ *     trigger('myTriggerName', [
+ *       state('on', style({ opacity: 1 }),
+ *       state('off', style({ opacity: 0 }),
+ *       transition('on => off', [
+ *         animate("1s")
+ *       ])
+ *     ])
+ *   ]
+ * })
+ * ```
+ *
+ * ```html
+ * <!-- animation-cmp.html -->
+ * <div @myTriggerName="expression">...</div>
+ * ```
+ *
+ * ### Preserving whitespace
+ *
+ * Removing whitespace can greatly reduce AOT-generated code size, and speed up view creation.
+ * As of Angular 6, default for `preserveWhitespaces` is false (whitespace is removed).
+ * To change the default setting for all components in your application, set
+ * the `preserveWhitespaces` option of the AOT compiler.
+ *
+ * Current implementation removes whitespace characters as follows:
+ * - Trims all whitespaces at the beginning and the end of a template.
+ * - Removes whitespace-only text nodes. For example,
+ * `<button>Action 1</button>  <button>Action 2</button>` becomes
+ * `<button>Action 1</button><button>Action 2</button>`.
+ * - Replaces a series of whitespace characters in text nodes with a single space.
+ * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
+ * - Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
+ * where whitespace characters are significant.
+ *
+ * Note that these transformations can influence DOM nodes layout, although impact
+ * should be minimal.
+ *
+ * You can override the default behavior to preserve whitespace characters
+ * in certain fragments of a template. For example, you can exclude an entire
+ * DOM sub-tree by using the `ngPreserveWhitespaces` attribute:
+ *
+ * ```html
+ * <div ngPreserveWhitespaces>
+ *     whitespaces are preserved here
+ *     <span>    and here </span>
+ * </div>
+ * ```
+ *
+ * You can force a single space to be preserved in a text node by using `&ngsp;`,
+ * which is replaced with a space character by Angular's template
+ * compiler:
+ *
+ * ```html
+ * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+ * <!-->compiled to be equivalent to:</>
+ *  <a>Spaces</a> <a>between</a> <a>links.</a>
+ * ```
+ *
+ * Note that sequences of `&ngsp;` are still collapsed to just one space character when
+ * the `preserveWhitespaces` option is set to `false`.
+ *
+ * ```html
+ * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+ * <!-->compiled to be equivalent to:</>
+ *  <a>Spaces</a> <a>between</a> <a>links.</a>
+ * ```
+ *
+ * To preserve sequences of whitespace characters, use the
+ * `ngPreserveWhitespaces` attribute.
+ *
  * @Annotation
+ * @publicApi
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
     Directive, undefined,
-    (type: Type<any>, meta: Component) => (R3_COMPILE_COMPONENT || (() => {}))(type, meta));
+    (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface PipeDecorator {
   /**
-   * Declare reusable pipe function.
+   * Declares a reusable pipe function, and supplies configuration metadata.
    *
-   * A "pure" pipe is only re-evaluated when either the input or any of the arguments change.
-   *
-   * When not specified, pipes default to being pure.
    */
   (obj: Pipe): TypeDecorator;
 
@@ -777,58 +667,79 @@ export interface PipeDecorator {
  */
 export interface Pipe {
   /**
-   * Name of the pipe.
+   * The pipe name to use in template bindings.
    *
-   * The pipe name is used in template bindings. For example if a pipe is named
-   * `myPipe` then it would be used in the template binding expression like
-   * so:  `{{ exp | myPipe }}`.
    */
   name: string;
 
   /**
-   * If Pipe is pure (its output depends only on its input.)
+   * When true, the pipe is pure, meaning that the
+   * `transform()` method is invoked only when its input arguments
+   * change. Pipes are pure by default.
    *
-   * Normally pipe's `transform` method is only invoked when the inputs to pipe`s
-   * `transform` method change. If the pipe has internal state (it's result are
-   * dependent on state other than its arguments) than set `pure` to `false` so
-   * that the pipe is invoked on each change-detection even if the arguments to the
-   * pipe do not change.
+   * If the pipe has internal state (that is, the result
+   * depends on state other than its arguments), set `pure` to false.
+   * In this case, the pipe is invoked on each change-detection cycle,
+   * even if the arguments have not changed.
    */
   pure?: boolean;
 }
 
 /**
- * Pipe decorator and metadata.
- *
- * Use the `@Pipe` annotation to declare that a given class is a pipe. A pipe
- * class must also implement `PipeTransform` interface.
- *
- * To use the pipe include a reference to the pipe class in
- * `NgModule.declarations`.
- *
  * @Annotation
+ * @publicApi
  */
-export const Pipe: PipeDecorator = makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
+export const Pipe: PipeDecorator = makeDecorator(
+    'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
+    (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta));
 
 
 /**
- * Type of the Input decorator / constructor function.
- *
- *
+ * @publicApi
  */
 export interface InputDecorator {
   /**
-   * Declares a data-bound input property.
+   * Decorator that marks a class as pipe and supplies configuration metadata.
    *
-   * Angular automatically updates data-bound properties during change detection.
+   * A pipe class must implement the `PipeTransform` interface.
+   * For example, if the name is "myPipe", use a template binding expression
+   * such as the following:
    *
-   * `Input` takes an optional parameter that specifies the name
-   * used when instantiating a component in the template. When not provided,
-   * the name of the decorated property is used.
+   * ```
+   * {{ exp | myPipe }}
+   * ```
    *
-   * ### Example
+   * The result of the expression is passed to the pipe's `transform()` method.
    *
-   * The following example creates a component with two input properties.
+   * A pipe must belong to an NgModule in order for it to be available
+   * to a template. To make it a member of an NgModule,
+   * list it in the `declarations` field of the `@NgModule` metadata.
+   *
+   */
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
+ * Type of metadata for an `Input` property.
+ *
+ *
+ */
+export interface Input {
+  /**
+   * Decorator that marks a class field as an input property and supplies configuration metadata.
+   * Declares a data-bound input property, which Angular automatically updates
+   * during change detection.
+   *
+   * @usageNotes
+   *
+   * You can supply an optional name to use in templates when the
+   * component is instantiated, that maps to the
+   * name of the bound property. By default, the original
+   * name of the bound property is used for input binding.
+   *
+   * The following example creates a component with two input properties,
+   * one of which is given a special binding name.
    *
    * ```typescript
    * @Component({
@@ -839,10 +750,13 @@ export interface InputDecorator {
    *   `
    * })
    * class BankAccount {
+   *   // This property is bound using its original name.
    *   @Input() bankName: string;
+   *   // this property value is bound to a different property name
+   *   // when this component is instantiated in a template.
    *   @Input('account-id') id: string;
    *
-   *   // this property is not bound, and won't be automatically updated by Angular
+   *   // this property is not bound, and is not automatically updated by Angular
    *   normalizedBankName: string;
    * }
    *
@@ -856,73 +770,72 @@ export interface InputDecorator {
    * class App {}
    * ```
    */
-  (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
-}
-
-/**
- * Type of the Input metadata.
- */
-export interface Input {
-  /**
-   * Name used when instantiating a component in the template.
-   */
   bindingPropertyName?: string;
 }
 
+const initializeBaseDef = (target: any): void => {
+  const constructor = target.constructor;
+  const inheritedBaseDef = constructor.ngBaseDef;
+
+  const baseDef = constructor.ngBaseDef = {
+    inputs: {},
+    outputs: {},
+    declaredInputs: {},
+  };
+
+  if (inheritedBaseDef) {
+    fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
+    fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
+    fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
+  }
+};
+
 /**
- * Input decorator and metadata.
- *
- * @Annotation
+ * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
+ * @param key "inputs" or "outputs"
  */
-export const Input: InputDecorator =
-    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
+const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
+    (target: any, name: string, ...args: any[]) => {
+      const constructor = target.constructor;
+
+      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
+        initializeBaseDef(target);
+      }
+
+      const baseDef = constructor.ngBaseDef;
+      const defProp = getProp(baseDef);
+      defProp[name] = args[0];
+    };
+
+/**
+ * @Annotation
+ * @publicApi
+ */
+export const Input: InputDecorator = makePropDecorator(
+    'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
 
 /**
  * Type of the Output decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface OutputDecorator {
   /**
-   * Declares an event-bound output property.
-   *
-   * When an output property emits an event, an event handler attached to that event
-   * the template is invoked.
-   *
-   * `Output` takes an optional parameter that specifies the name
-   * used when instantiating a component in the template. When not provided,
-   * the name of the decorated property is used.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: 'interval-dir',
-   * })
-   * class IntervalDir {
-   *   @Output() everySecond = new EventEmitter();
-   *   @Output('everyFiveSeconds') five5Secs = new EventEmitter();
-   *
-   *   constructor() {
-   *     setInterval(() => this.everySecond.emit("event"), 1000);
-   *     setInterval(() => this.five5Secs.emit("event"), 5000);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `
-   *     <interval-dir (everySecond)="everySecond()" (everyFiveSeconds)="everyFiveSeconds()">
-   *     </interval-dir>
-   *   `
-   * })
-   * class App {
-   *   everySecond() { console.log('second'); }
-   *   everyFiveSeconds() { console.log('five seconds'); }
-   * }
-   * ```
-   *
-   */
+  * Decorator that marks a class field as an output property and supplies configuration metadata.
+  * Declares a data-bound output property, which Angular automatically updates
+  * during change detection.
+  *
+  * @usageNotes
+  *
+  * You can supply an optional name to use in templates when the
+  * component is instantiated, that maps to the
+  * name of the bound property. By default, the original
+  * name of the bound property is used for output binding.
+  *
+  * See `@Input` decorator for an example of providing a binding name.
+  *
+  */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
 }
@@ -933,38 +846,36 @@ export interface OutputDecorator {
 export interface Output { bindingPropertyName?: string; }
 
 /**
- * Output decorator and metadata.
- *
  * @Annotation
+ * @publicApi
  */
-export const Output: OutputDecorator =
-    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Output: OutputDecorator = makePropDecorator(
+    'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
+
 
 
 /**
  * Type of the HostBinding decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostBindingDecorator {
   /**
-   * Declares a host property binding.
-   *
-   * Angular automatically checks host property bindings during change detection.
-   * If a binding changes, it will update the host element of the directive.
-   *
-   * `HostBinding` takes an optional parameter that specifies the property
-   * name of the host element that will be updated. When not provided,
-   * the class property name is used.
+   * Decorator that marks a DOM property as a host-binding property and supplies configuration
+   * metadata.
+   * Angular automatically checks host property bindings during change detection, and
+   * if a binding changes it updates the host element of the directive.
    *
    * @usageNotes
-   * ### Example
    *
-   * The following example creates a directive that sets the `valid` and `invalid` classes
-   * on the DOM element that has ngModel directive on it.
+   * The following example creates a directive that sets the `valid` and `invalid`
+   * properties on the DOM element that has an `ngModel` directive on it.
    *
    * ```typescript
    * @Directive({selector: '[ngModel]'})
    * class NgModelStatus {
-   *   constructor(public control:NgModel) {}
+   *   constructor(public control: NgModel) {}
    *   @HostBinding('class.valid') get valid() { return this.control.valid; }
    *   @HostBinding('class.invalid') get invalid() { return this.control.invalid; }
    * }
@@ -984,13 +895,13 @@ export interface HostBindingDecorator {
 
 /**
  * Type of the HostBinding metadata.
+ *
  */
 export interface HostBinding { hostPropertyName?: string; }
 
 /**
- * HostBinding decorator and metadata.
- *
  * @Annotation
+ * @publicApi
  */
 export const HostBinding: HostBindingDecorator =
     makePropDecorator('HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
@@ -998,41 +909,10 @@ export const HostBinding: HostBindingDecorator =
 
 /**
  * Type of the HostListener decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostListenerDecorator {
-  /**
-   * Declares a host listener.
-   *
-   * Angular will invoke the decorated method when the host element emits the specified event.
-   *
-   * If the decorated method returns `false`, then `preventDefault` is applied on the DOM event.
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * The following example declares a directive that attaches a click listener to the button and
-   * counts clicks.
-   *
-   * ```typescript
-   * @Directive({selector: 'button[counting]'})
-   * class CountClicks {
-   *   numberOfClicks = 0;
-   *
-   *   @HostListener('click', ['$event.target'])
-   *   onClick(btn) {
-   *     console.log('button', btn, 'number of clicks:', this.numberOfClicks++);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: '<button counting>Increment</button>',
-   * })
-   * class App {}
-   * ```
-   *
-   * @Annotation
-   */
   (eventName: string, args?: string[]): any;
   new (eventName: string, args?: string[]): any;
 }
@@ -1041,14 +921,61 @@ export interface HostListenerDecorator {
  * Type of the HostListener metadata.
  */
 export interface HostListener {
+  /**
+   * The CSS event to listen for.
+   */
   eventName?: string;
+  /**
+   * A set of arguments to pass to the handler method when the event occurs.
+   */
   args?: string[];
 }
 
 /**
- * HostListener decorator and metadata.
+ * Binds a CSS event to a host listener and supplies configuration metadata.
+ * Angular invokes the supplied handler method when the host element emits the specified event,
+ * and updates the bound element with the result.
+ * If the handler method returns false, applies `preventDefault` on the bound element.
+ *
+ * @usageNotes
+ *
+ * The following example declares a directive
+ * that attaches a click listener to a button and counts clicks.
+ *
+ * ```
+ * @Directive({selector: 'button[counting]'})
+ * class CountClicks {
+ *   numberOfClicks = 0;
+ *
+ *   @HostListener('click', ['$event.target'])
+ *   onClick(btn) {
+ *     console.log('button', btn, 'number of clicks:', this.numberOfClicks++);
+ *  }
+ * }
+ *
+ * @Component({
+ *   selector: 'app',
+ *   template: '<button counting>Increment</button>',
+ * })
+ * class App {}
+ * ```
  *
  * @Annotation
+ * @publicApi
  */
 export const HostListener: HostListenerDecorator =
     makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
+
+
+
+export const SWITCH_COMPILE_COMPONENT__POST_R3__ = render3CompileComponent;
+export const SWITCH_COMPILE_DIRECTIVE__POST_R3__ = render3CompileDirective;
+export const SWITCH_COMPILE_PIPE__POST_R3__ = render3CompilePipe;
+
+const SWITCH_COMPILE_COMPONENT__PRE_R3__ = noop;
+const SWITCH_COMPILE_DIRECTIVE__PRE_R3__ = noop;
+const SWITCH_COMPILE_PIPE__PRE_R3__ = noop;
+
+const SWITCH_COMPILE_COMPONENT: typeof render3CompileComponent = SWITCH_COMPILE_COMPONENT__PRE_R3__;
+const SWITCH_COMPILE_DIRECTIVE: typeof render3CompileDirective = SWITCH_COMPILE_DIRECTIVE__PRE_R3__;
+const SWITCH_COMPILE_PIPE: typeof render3CompilePipe = SWITCH_COMPILE_PIPE__PRE_R3__;

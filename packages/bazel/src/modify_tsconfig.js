@@ -23,9 +23,6 @@ function main(args) {
   const data = JSON.parse(fs.readFileSync(input, {encoding: 'utf-8'}));
   data['compilerOptions']['target'] = 'es5';
   data['bazelOptions']['es5Mode'] = true;
-  // Enable tsickle for decorator downleveling only
-  data['bazelOptions']['tsickle'] = true;
-  data['bazelOptions']['tsickleExternsPath'] = '';
   data['compilerOptions']['outDir'] = path.join(data['compilerOptions']['outDir'], newRoot);
   if (data['angularCompilerOptions']) {
     // Don't enable tsickle's closure conversions

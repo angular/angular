@@ -1,0 +1,32 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/cdk": "^7.0.0-rc.1",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/http": "file:../../dist/packages-dist/http",
+    "@angular/material": "7.0.0-rc.1",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "@types/node": "^9.4.0",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.41",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor"
+  },
+  "scripts": {
+    "test": "./test.sh"
+  }
+}

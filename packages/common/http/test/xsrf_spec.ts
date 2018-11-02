@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpHandler} from '../src/backend';
 import {HttpHeaders} from '../src/headers';
 import {HttpRequest} from '../src/request';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor} from '../src/xsrf';
+import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor} from '../src/xsrf';
 
 import {HttpClientTestingBackend} from '../testing/src/backend';
 
-class SampleTokenExtractor {
-  constructor(private token: string|null) {}
+class SampleTokenExtractor extends HttpXsrfTokenExtractor {
+  constructor(private token: string|null) { super(); }
 
   getToken(): string|null { return this.token; }
 }
@@ -76,13 +75,17 @@ class SampleTokenExtractor {
     it('does not re-parse if document.cookie has not changed', () => {
       expect(extractor.getToken()).toEqual('test');
       expect(extractor.getToken()).toEqual('test');
-      expect(extractor.parseCount).toEqual(1);
+      expect(getParseCount(extractor)).toEqual(1);
     });
     it('re-parses if document.cookie changes', () => {
       expect(extractor.getToken()).toEqual('test');
       document['cookie'] = 'XSRF-TOKEN=blah';
       expect(extractor.getToken()).toEqual('blah');
-      expect(extractor.parseCount).toEqual(2);
+      expect(getParseCount(extractor)).toEqual(2);
     });
   });
+}
+
+function getParseCount(extractor: HttpXsrfCookieExtractor): number {
+  return (extractor as any).parseCount;
 }

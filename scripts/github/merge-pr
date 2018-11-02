@@ -44,16 +44,16 @@ if [ -z ${TOKEN:-''} ]; then
     echo "WARNING: you should set the TOKEN variable to a github token"
     echo "############################################################"
     echo "############################################################"
-    GHCURL="curl"
+    GH_AUTH=""
 else
-    GHCURL="curl -H \"Authorization: token $TOKEN\""
+    GH_AUTH="Authorization: token $TOKEN"
 fi
 
-PULL_JSON=`$GHCURL -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
+PULL_JSON=`curl -H "$GH_AUTH" -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
 PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
 STATUS_JSON_URL=`node $BASEDIR/utils/json_extract.js _links.statuses.href <<< """$PULL_JSON"""`
-STATUS=`$GHCURL -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
-PR_LABELS=`$GHCURL -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
+STATUS=`curl -H "$GH_AUTH" -s $STATUS_JSON_URL | node $BASEDIR/utils/json_extract.js description | cut -d '|' -f1`
+PR_LABELS=`curl -H "$GH_AUTH" -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
 PR_ACTION=`echo "$PR_LABELS" | node $BASEDIR/utils/json_extract.js "name=^PR action:"`
 PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR target:"`
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`

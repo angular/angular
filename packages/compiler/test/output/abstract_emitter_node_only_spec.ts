@@ -116,9 +116,10 @@ function expectMap(
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON() !;
   const genPosition = {line: genLine + 1, column: genCol};
   const origPosition = originalPositionFor(sm, genPosition);
-  expect(origPosition.source).toEqual(source);
-  expect(origPosition.line).toEqual(srcLine === null ? null : srcLine + 1);
-  expect(origPosition.column).toEqual(srcCol);
+  // TODO: Review use of `any` here (#19904)
+  expect(origPosition.source as any).toEqual(source);
+  expect(origPosition.line as any).toEqual(srcLine === null ? null : srcLine + 1);
+  expect(origPosition.column as any).toEqual(srcCol);
 }
 
 // returns the number of segments per line

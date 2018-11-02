@@ -60,6 +60,8 @@ dist/
 !rollup-config.js
 aot-compiler/**/*.d.ts
 aot-compiler/**/*.factory.d.ts
+upgrade-phonecat-2-hybrid/aot/**/*
+!upgrade-phonecat-2-hybrid/aot/index.html
 
 # i18n
 !i18n/src/systemjs-text-plugin.js

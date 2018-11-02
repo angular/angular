@@ -2,7 +2,9 @@
 import { Injectable } from '@angular/core';
 import { Hero }       from './hero';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class HeroService {
 
   // TODO: move to database

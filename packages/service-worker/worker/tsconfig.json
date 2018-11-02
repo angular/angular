@@ -6,6 +6,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "../../../dist/all/@angular/service-worker/worker-es2017",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -13,7 +14,8 @@
     "inlineSourceMap": true,
     "lib": ["es2015", "dom"],
     "target": "es2017",
-    "typeRoots": []
+    "typeRoots": [],
+    "types": []
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

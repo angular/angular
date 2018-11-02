@@ -25,7 +25,7 @@ The zipper will use this information for creating new zips.
 
 ## Three kinds of examples
 
-The majority of examples in AIO use `System.js` but there are also `CLI` and `Webpack` projects. This
+The majority of examples in AIO use `CLI`, with some additionally using `Webpack` and upgrade usiing `SystemJS`. This
 tool is able to differentiate between them.
 
 The boilerplate uses a `package.json` that contains packages and scripts to run any kind of example.
@@ -44,7 +44,6 @@ Here you find a:
 
 * **base.json** - All the common scripts and packages
 * **cli.json** - Extra scripts and packages for the CLI
-* **webpack.json** - Extra scripts and packages for Webpack
 * **universal.json** - Extra scripts and packages for universal
 * **i18n.json** - Extra scripts and packages for i18n
 * **systemjs.json** - All the System.js related packages but it also contains the remainder scripts
@@ -68,11 +67,11 @@ In both `stackblitz.json` and `zipper.json` you can use two extra properties for
 {
   ...
   "removeSystemJsConfig": true,
-  "type": "webpack"
+  "type": "testing"
 }
 ```
 
-This would generate a zip for a webpack application and it will also remove everything related with
+This would generate a zip for a testing application and it will also remove everything related with
 SystemJS.
 
 ## Executing the zip generation

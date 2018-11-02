@@ -1,3 +1,0 @@
-[1030/162525.401:ERROR:process_reader_win.cc(123)] NtOpenThread: {Acceso denegado} Un proceso ha solicitado acceso a un objeto, pero no se le han concedido esos derechos de acceso.  (0xc0000022)
-[1030/162525.402:ERROR:exception_snapshot_win.cc(87)] thread ID 26896 not found in process
-[1030/162525.402:WARNING:crash_report_exception_handler.cc(62)] ProcessSnapshotWin::Initialize failed

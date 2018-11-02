@@ -25,7 +25,7 @@ describe('plugin', () => {
 
   it('should not report errors on tour of heroes', () => {
     expectNoDiagnostics(service.getCompilerOptionsDiagnostics());
-    for (let source of program.getSourceFiles()) {
+    for (let source of program !.getSourceFiles()) {
       expectNoDiagnostics(service.getSyntacticDiagnostics(source.fileName));
       expectNoDiagnostics(service.getSemanticDiagnostics(source.fileName));
     }
@@ -36,7 +36,7 @@ describe('plugin', () => {
       {ts: ts, languageService: service, project: mockProject, languageServiceHost: mockHost});
 
   it('should not report template errors on tour of heroes', () => {
-    for (let source of program.getSourceFiles()) {
+    for (let source of program !.getSourceFiles()) {
       // Ignore all 'cases.ts' files as they intentionally contain errors.
       if (!source.fileName.endsWith('cases.ts')) {
         expectNoDiagnostics(plugin.getSemanticDiagnostics(source.fileName));
@@ -204,12 +204,12 @@ describe('plugin', () => {
   function contains(fileName: string, locationMarker: string, ...names: string[]) {
     const location = getMarkerLocation(fileName, locationMarker);
     expectEntries(
-        locationMarker, plugin.getCompletionsAtPosition(fileName, location, undefined), ...names);
+        locationMarker, plugin.getCompletionsAtPosition(fileName, location, undefined) !, ...names);
   }
 
   function expectEmpty(fileName: string, locationMarker: string) {
     const location = getMarkerLocation(fileName, locationMarker);
-    expect(plugin.getCompletionsAtPosition(fileName, location, undefined).entries || []).toEqual([
+    expect(plugin.getCompletionsAtPosition(fileName, location, undefined) !.entries || []).toEqual([
     ]);
   }
 

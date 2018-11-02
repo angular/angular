@@ -9,8 +9,8 @@
   ],
   "dependencies": [],
   "devDependencies": [
-    "@angular/cli",
     "@angular-devkit/build-angular",
+    "@angular/cli",
     "@types/jasminewd2",
     "jasmine-spec-reporter",
     "karma-coverage-istanbul-reporter",

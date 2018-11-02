@@ -8,7 +8,7 @@ module.exports = function computeSearchTitleProcessor() {
         case 'function':
           doc.searchTitle = `${doc.name}()`;
           break;
-        case 'module':
+        case 'package':
           doc.searchTitle = `${doc.id} package`;
           break;
         }

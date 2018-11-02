@@ -6,16 +6,16 @@
 """
 
 def _extract_flat_module_index(ctx):
-  files = []
-  for dep in ctx.attr.deps:
-    if hasattr(dep, "angular"):
-      metadata = dep.angular.flat_module_metadata
-      files.extend([metadata.metadata_file, metadata.typings_file])
-  return [DefaultInfo(files = depset(files))]
+    files = []
+    for dep in ctx.attr.deps:
+        if hasattr(dep, "angular"):
+            metadata = dep.angular.flat_module_metadata
+            files.extend([metadata.metadata_file, metadata.typings_file])
+    return [DefaultInfo(files = depset(files))]
 
 extract_flat_module_index = rule(
     implementation = _extract_flat_module_index,
     attrs = {
-      "deps": attr.label_list(),
+        "deps": attr.label_list(),
     },
 )

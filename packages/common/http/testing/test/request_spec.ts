@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
+import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
 
 import {HttpClient} from '../../src/client';
 import {HttpClientTestingBackend} from '../src/backend';

@@ -11,6 +11,7 @@ import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
+import {getBodyNode} from '../../src/render/shared';
 import {TransitionAnimationEngine} from '../../src/render/transition_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
@@ -34,8 +35,8 @@ const DEFAULT_NAMESPACE_ID = 'id';
     afterEach(() => { document.body.removeChild(element); });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
-      const engine =
-          new TransitionAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      const engine = new TransitionAnimationEngine(
+          getBodyNode(), driver, normalizer || new NoopAnimationStyleNormalizer());
       engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
       return engine;
     }

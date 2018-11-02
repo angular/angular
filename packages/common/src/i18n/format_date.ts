@@ -29,7 +29,7 @@ enum DateType {
   Hours,
   Minutes,
   Seconds,
-  Milliseconds,
+  FractionalSeconds,
   Day
 }
 
@@ -58,7 +58,7 @@ enum TranslationType {
  *
  * See {@link DatePipe} for more details.
  *
- *
+ * @publicApi
  */
 export function formatDate(
     value: string | number | Date, format: string, locale: string, timezone?: string): string {
@@ -195,6 +195,11 @@ function padNumber(
   return neg + strNum;
 }
 
+function formatFractionalSeconds(milliseconds: number, digits: number): string {
+  const strMs = padNumber(milliseconds, 3);
+  return strMs.substr(0, digits);
+}
+
 /**
  * Returns a date formatter that transforms a date into its locale digit representation
  */
@@ -202,20 +207,26 @@ function dateGetter(
     name: DateType, size: number, offset: number = 0, trim = false,
     negWrap = false): DateFormatter {
   return function(date: Date, locale: string): string {
-    let part = getDatePart(name, date, size);
+    let part = getDatePart(name, date);
     if (offset > 0 || part > -offset) {
       part += offset;
     }
-    if (name === DateType.Hours && part === 0 && offset === -12) {
-      part = 12;
+
+    if (name === DateType.Hours) {
+      if (part === 0 && offset === -12) {
+        part = 12;
+      }
+    } else if (name === DateType.FractionalSeconds) {
+      return formatFractionalSeconds(part, size);
     }
-    return padNumber(
-        part, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim, negWrap);
+
+    const localeMinus = getLocaleNumberSymbol(locale, NumberSymbol.MinusSign);
+    return padNumber(part, size, localeMinus, trim, negWrap);
   };
 }
 
-function getDatePart(name: DateType, date: Date, size: number): number {
-  switch (name) {
+function getDatePart(part: DateType, date: Date): number {
+  switch (part) {
     case DateType.FullYear:
       return date.getFullYear();
     case DateType.Month:
@@ -228,13 +239,12 @@ function getDatePart(name: DateType, date: Date, size: number): number {
       return date.getMinutes();
     case DateType.Seconds:
       return date.getSeconds();
-    case DateType.Milliseconds:
-      const div = size === 1 ? 100 : (size === 2 ? 10 : 1);
-      return Math.round(date.getMilliseconds() / div);
+    case DateType.FractionalSeconds:
+      return date.getMilliseconds();
     case DateType.Day:
       return date.getDay();
     default:
-      throw new Error(`Unknown DateType value "${name}".`);
+      throw new Error(`Unknown DateType value "${part}".`);
   }
 }
 
@@ -561,16 +571,15 @@ function getDateFormatter(format: string): DateFormatter|null {
       formatter = dateGetter(DateType.Seconds, 2);
       break;
 
-    // Fractional second padded (0-9)
+    // Fractional second
     case 'S':
-      formatter = dateGetter(DateType.Milliseconds, 1);
+      formatter = dateGetter(DateType.FractionalSeconds, 1);
       break;
     case 'SS':
-      formatter = dateGetter(DateType.Milliseconds, 2);
+      formatter = dateGetter(DateType.FractionalSeconds, 2);
       break;
-    // = millisecond
     case 'SSS':
-      formatter = dateGetter(DateType.Milliseconds, 3);
+      formatter = dateGetter(DateType.FractionalSeconds, 3);
       break;
 
 

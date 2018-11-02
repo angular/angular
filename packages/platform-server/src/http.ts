@@ -114,7 +114,8 @@ export abstract class ZoneMacroTaskWrapper<S, R> {
 export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Response> implements
     Connection {
   response: Observable<Response>;
-  lastConnection: Connection;
+  // TODO(issue/24571): remove '!'.
+  lastConnection !: Connection;
 
   constructor(public request: Request, private backend: XHRBackend) {
     super();

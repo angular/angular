@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET, ParamMap, convertToParamMap} from './shared';
+import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
@@ -23,8 +23,8 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
       containsSegmentGroup(container.root, containee.root);
 }
 
-function equalQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+function equalQueryParams(container: Params, containee: Params): boolean {
+  // TODO: This does not handle array params correctly.
   return shallowEqual(container, containee);
 }
 
@@ -38,8 +38,8 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
   return true;
 }
 
-function containsQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+function containsQueryParams(container: Params, containee: Params): boolean {
+  // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => containee[key] === container[key]);
 }
@@ -82,6 +82,7 @@ function containsSegmentGroupHelper(
  * serialized tree.
  * UrlTree is a data structure that provides a lot of affordances in dealing with URLs
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -100,18 +101,19 @@ function containsSegmentGroupHelper(
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class UrlTree {
   /** @internal */
-  _queryParamMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _queryParamMap !: ParamMap;
 
   /** @internal */
   constructor(
       /** The root segment group of the URL tree */
       public root: UrlSegmentGroup,
       /** The query params of the URL */
-      public queryParams: {[key: string]: string},
+      public queryParams: Params,
       /** The fragment of the URL */
       public fragment: string|null) {}
 
@@ -133,13 +135,15 @@ export class UrlTree {
  *
  * See `UrlTree` for more information.
  *
- *
+ * @publicApi
  */
 export class UrlSegmentGroup {
   /** @internal */
-  _sourceSegment: UrlSegmentGroup;
+  // TODO(issue/24571): remove '!'.
+  _sourceSegment !: UrlSegmentGroup;
   /** @internal */
-  _segmentIndexShift: number;
+  // TODO(issue/24571): remove '!'.
+  _segmentIndexShift !: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
@@ -170,7 +174,8 @@ export class UrlSegmentGroup {
  * A UrlSegment is a part of a URL between the two slashes. It contains a path and the matrix
  * parameters associated with the segment.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * ```
  * @Component({templateUrl:'template.html'})
@@ -185,11 +190,12 @@ export class UrlSegmentGroup {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class UrlSegment {
   /** @internal */
-  _parameterMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _parameterMap !: ParamMap;
 
   constructor(
       /** The path part of a URL segment */
@@ -245,7 +251,7 @@ export function mapChildrenIntoArray<T>(
  *
  * See `DefaultUrlSerializer` for an example of a URL serializer.
  *
- *
+ * @publicApi
  */
 export abstract class UrlSerializer {
   /** Parse a url into a `UrlTree` */
@@ -271,7 +277,7 @@ export abstract class UrlSerializer {
  * colon syntax to specify the outlet, and the ';parameter=value' syntax (e.g., open=true) to
  * specify route specific parameters.
  *
- *
+ * @publicApi
  */
 export class DefaultUrlSerializer implements UrlSerializer {
   /** Parses a url into a `UrlTree` */
@@ -442,8 +448,8 @@ class UrlParser {
     return new UrlSegmentGroup([], this.parseChildren());
   }
 
-  parseQueryParams(): {[key: string]: any} {
-    const params: {[key: string]: any} = {};
+  parseQueryParams(): Params {
+    const params: Params = {};
     if (this.consumeOptional('?')) {
       do {
         this.parseQueryParam(params);
@@ -530,7 +536,7 @@ class UrlParser {
   }
 
   // Parse a single query parameter `name[=value]`
-  private parseQueryParam(params: {[key: string]: any}): void {
+  private parseQueryParam(params: Params): void {
     const key = matchQueryParams(this.remaining);
     if (!key) {
       return;

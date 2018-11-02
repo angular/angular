@@ -166,12 +166,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          fixture.componentInstance.currentComponent = Module2InjectedComponent;
          fixture.detectChanges();
 
-         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
          spyOn(moduleRef, 'destroy').and.callThrough();
 
-         expect(moduleRef !.destroy).not.toHaveBeenCalled();
+         expect(moduleRef.destroy).not.toHaveBeenCalled();
          fixture.destroy();
-         expect(moduleRef !.destroy).toHaveBeenCalled();
+         expect(moduleRef.destroy).toHaveBeenCalled();
        }));
 
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {
@@ -224,16 +224,22 @@ const TEST_CMP_TEMPLATE =
     `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
-  currentComponent: Type<any>|null;
-  injector: Injector;
-  projectables: any[][];
-  module: NgModuleFactory<any>;
+  // TODO(issue/24571): remove '!'.
+  currentComponent !: Type<any>| null;
+  // TODO(issue/24571): remove '!'.
+  injector !: Injector;
+  // TODO(issue/24571): remove '!'.
+  projectables !: any[][];
+  // TODO(issue/24571): remove '!'.
+  module !: NgModuleFactory<any>;
 
   get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
   set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
 
-  @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
-  @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;
+  // TODO(issue/24571): remove '!'.
+  @ViewChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
+  // TODO(issue/24571): remove '!'.
+  @ViewChild(NgComponentOutlet) ngComponentOutlet !: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }

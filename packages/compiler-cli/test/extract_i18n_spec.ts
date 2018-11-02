@@ -43,8 +43,18 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/module.ts:1</source>translate me</msg>
-  <msg id="3492007542396725315"><source>src/module.ts:2</source>Welcome</msg>
+  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source><source>src/comp2.ts:1</source><source>src/basic.html:1</source>translate me</msg>
+  <msg id="9038505069473852515"><source>src/basic.html:3,4</source><source>src/comp2.ts:3,4</source><source>src/comp2.ts:2,3</source><source>src/basic.html:3,4</source>
+    Welcome</msg>
+  <msg id="5611534349548281834" desc="with ICU"><source>src/icu.html:1,3</source><source>src/icu.html:5</source>{VAR_PLURAL, plural, =1 {book} other {books} }</msg>
+  <msg id="5811701742971715242" desc="with ICU and other things"><source>src/icu.html:4,6</source>
+     foo <ph name="ICU"><ex>{ count, plural, =1 {...} other {...}}</ex>{ count, plural, =1 {...} other {...}}</ph>
+    </msg>
+  <msg id="7254052530614200029" desc="with placeholders"><source>src/placeholders.html:1</source>Name: <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph><ph name="NAME"><ex>{{
+      name // i18n(ph=&quot;name&quot;)
+    }}</ex>{{
+      name // i18n(ph=&quot;name&quot;)
+    }}</ph><ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph></msg>
 </messagebundle>
 `;
 
@@ -55,18 +65,74 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/basic.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">desc</note>
         <note priority="1" from="meaning">meaning</note>
       </trans-unit>
-      <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
-        <source>Welcome</source>
+      <trans-unit id="085a5ecc40cc87451d216725b2befd50866de18a" datatype="html">
+        <source>
+    Welcome</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
           <context context-type="linenumber">2</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="83937c05b1216e7f4c02a85454260e28fd72d1e3" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {book} other {books} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/icu.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">with ICU</note>
+      </trans-unit>
+      <trans-unit id="540c5f481129419ef21017f396b6c2d0869ca4d2" datatype="html">
+        <source>
+     foo <x id="ICU" equiv-text="{ count, plural, =1 {...} other {...}}"/>
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/icu.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+        <note priority="1" from="description">with ICU and other things</note>
+      </trans-unit>
+      <trans-unit id="ca7678090fddd04441d63b1218177af65f23342d" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {book} other {books} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/icu.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9311399c1ca7c75f771d77acb129e50581c6ec1f" datatype="html">
+        <source>Name: <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/><x id="NAME" equiv-text="{{
+      name // i18n(ph=&quot;name&quot;)
+    }}"/><x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/placeholders.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <note priority="1" from="description">with placeholders</note>
       </trans-unit>
     </body>
   </file>
@@ -80,18 +146,56 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
       <notes>
         <note category="description">desc</note>
         <note category="meaning">meaning</note>
-        <note category="location">src/module.ts:1</note>
+        <note category="location">src/basic.html:1</note>
+        <note category="location">src/comp2.ts:1</note>
+        <note category="location">src/basic.html:1</note>
       </notes>
       <segment>
         <source>translate me</source>
       </segment>
     </unit>
-    <unit id="3492007542396725315">
+    <unit id="9038505069473852515">
       <notes>
-        <note category="location">src/module.ts:2</note>
+        <note category="location">src/basic.html:3,4</note>
+        <note category="location">src/comp2.ts:3,4</note>
+        <note category="location">src/comp2.ts:2,3</note>
+        <note category="location">src/basic.html:3,4</note>
       </notes>
       <segment>
-        <source>Welcome</source>
+        <source>
+    Welcome</source>
+      </segment>
+    </unit>
+    <unit id="5611534349548281834">
+      <notes>
+        <note category="description">with ICU</note>
+        <note category="location">src/icu.html:1,3</note>
+        <note category="location">src/icu.html:5</note>
+      </notes>
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {book} other {books} }</source>
+      </segment>
+    </unit>
+    <unit id="5811701742971715242">
+      <notes>
+        <note category="description">with ICU and other things</note>
+        <note category="location">src/icu.html:4,6</note>
+      </notes>
+      <segment>
+        <source>
+     foo <ph id="0" equiv="ICU" disp="{ count, plural, =1 {...} other {...}}"/>
+    </source>
+      </segment>
+    </unit>
+    <unit id="7254052530614200029">
+      <notes>
+        <note category="description">with placeholders</note>
+        <note category="location">src/placeholders.html:1</note>
+      </notes>
+      <segment>
+        <source>Name: <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;"><ph id="1" equiv="NAME" disp="{{
+      name // i18n(ph=&quot;name&quot;)
+    }}"/></pc></source>
       </segment>
     </unit>
   </file>
@@ -104,7 +208,7 @@ describe('extract_i18n command line', () => {
   let write: (fileName: string, content: string) => void;
   let errorSpy: jasmine.Spy&((s: string) => void);
 
-  function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
+  function writeConfig(tsconfig = '{"extends": "./tsconfig-base.json"}') {
     write('tsconfig.json', tsconfig);
   }
 
@@ -119,7 +223,7 @@ describe('extract_i18n command line', () => {
       basePath = makeTempDir();
       write = (fileName: string, content: string) => {
         const dir = path.dirname(fileName);
-        if (dir != '.') {
+        if (dir !== '.') {
           const newDir = path.join(basePath, dir);
           if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
         }
@@ -155,21 +259,94 @@ describe('extract_i18n command line', () => {
   });
 
   function writeSources() {
-    write('src/basic.html', [
-      `<div title="translate me" i18n-title="meaning|desc"></div>`,
-      `<p id="welcomeMessage"><!--i18n-->Welcome<!--/i18n--></p>`,
-    ].join('\n'));
-    write('src/module.ts', `
-    import {Component, NgModule} from '@angular/core';
+    const welcomeMessage = `
+    <!--i18n-->
+    Welcome<!--/i18n-->
+    `;
+    write('src/basic.html', `<div title="translate me" i18n-title="meaning|desc"></div>
+         <p id="welcomeMessage">${welcomeMessage}</p>`);
+
+    write('src/comp1.ts', `
+    import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
     })
-    export class BasicCmp {}
+    export class BasicCmp1 {}`);
+
+    write('src/comp2.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'basic2',
+      template: \`<div title="translate me" i18n-title="meaning|desc"></div>
+      <p id="welcomeMessage">${welcomeMessage}</p>\`,
+    })
+    export class BasicCmp2 {}
+    @Component({
+      selector: 'basic4',
+      template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
+    })
+    export class BasicCmp4 {}`);
+
+    write('src/comp3.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'basic3',
+      templateUrl: './basic.html',
+    })
+    export class BasicCmp3 {}`);
+
+    write('src/placeholders.html', `<div i18n="with placeholders">Name: <b>{{
+      name // i18n(ph="name")
+    }}</b></div>`);
+
+    write('src/placeholder_cmp.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'placeholders',
+      templateUrl: './placeholders.html',
+    })
+    export class PlaceholderCmp { name = 'whatever'; }`);
+
+    write('src/icu.html', `<div i18n="with ICU">{
+      count, plural, =1 {book} other {books}
+    }</div>
+    <div i18n="with ICU and other things">
+     foo { count, plural, =1 {book} other {books} }
+    </div>`);
+
+    write('src/icu_cmp.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'icu',
+      templateUrl: './icu.html',
+    })
+    export class IcuCmp { count = 3; }`);
+
+    write('src/module.ts', `
+    import {NgModule} from '@angular/core';
+    import {CommonModule} from '@angular/common';
+    import {BasicCmp1} from './comp1';
+    import {BasicCmp2, BasicCmp4} from './comp2';
+    import {BasicCmp3} from './comp3';
+    import {PlaceholderCmp} from './placeholder_cmp';
+    import {IcuCmp} from './icu_cmp';
 
     @NgModule({
-      declarations: [BasicCmp]
+      declarations: [
+        BasicCmp1,
+        BasicCmp2,
+        BasicCmp3,
+        BasicCmp4,
+        PlaceholderCmp,
+        IcuCmp,
+      ],
+      imports: [CommonModule],
     })
     export class I18nModule {}
     `);

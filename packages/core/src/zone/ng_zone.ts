@@ -6,9 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Import zero symbols from zone.js. This causes the zone ambient type to be
-// added to the type-checker, without emitting any runtime module load statement
-import {} from 'zone.js';
 import {EventEmitter} from '../event_emitter';
 
 /**
@@ -83,7 +80,7 @@ import {EventEmitter} from '../event_emitter';
  * }
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export class NgZone {
   readonly hasPendingMicrotasks: boolean = false;

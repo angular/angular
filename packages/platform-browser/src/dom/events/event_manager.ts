@@ -12,6 +12,8 @@ import {getDOM} from '../dom_adapter';
 
 /**
  * The injection token for the event-manager plug-in service.
+ *
+ * @publicApi
  */
 export const EVENT_MANAGER_PLUGINS =
     new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
@@ -19,6 +21,8 @@ export const EVENT_MANAGER_PLUGINS =
 /**
  * An injectable service that provides event management for Angular
  * through a browser plug-in.
+ *
+ * @publicApi
  */
 @Injectable()
 export class EventManager {
@@ -88,7 +92,8 @@ export class EventManager {
 export abstract class EventManagerPlugin {
   constructor(private _doc: any) {}
 
-  manager: EventManager;
+  // TODO(issue/24571): remove '!'.
+  manager !: EventManager;
 
   abstract supports(eventName: string): boolean;
 

@@ -15,22 +15,24 @@ import {EMPTY_ARRAY} from '../view/util';
 
 /**
  * Type of the Inject decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface InjectDecorator {
   /**
-   * A parameter decorator that specifies a dependency.
+   * A constructor parameter decorator that specifies a
+   * custom provider of a dependency.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * @usageNotes
-   * ### Example
+   * The following example shows a class constructor that specifies a
+   * custom provider of a dependency using the parameter decorator.
    *
    * {@example core/di/ts/metadata_spec.ts region='Inject'}
    *
-   * When `@Inject()` is not present, `Injector` will use the type annotation of the
-   * parameter.
-   *
-   * ### Example
+   * When `@Inject()` is not present, the `Injector` uses the type annotation of the
+   * parameter as the provider.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
    */
@@ -40,31 +42,40 @@ export interface InjectDecorator {
 
 /**
  * Type of the Inject metadata.
+ *
+ * @publicApi
  */
-export interface Inject { token: any; }
+export interface Inject {
+  /**
+   * Injector token that maps to the dependency to be injected.
+   */
+  token: any;
+}
 
 /**
  * Inject decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
 
 
 /**
  * Type of the Optional decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface OptionalDecorator {
   /**
-   * A parameter metadata that marks a dependency as optional.
-   * `Injector` provides `null` if the dependency is not found.
+   * A constructor parameter decorator that marks a dependency as optional.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
-   *
-   * @usageNotes
-   * ### Example
+   * The DI framework provides null if the dependency is not found.
+   * For example, the following code allows the possibility of a null result:
    *
    * {@example core/di/ts/metadata_spec.ts region='Optional'}
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    */
   (): any;
   new (): Optional;
@@ -72,6 +83,8 @@ export interface OptionalDecorator {
 
 /**
  * Type of the Optional metadata.
+ *
+ * @publicApi
  */
 export interface Optional {}
 
@@ -79,22 +92,29 @@ export interface Optional {}
  * Optional decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 
 /**
  * Type of the Self decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface SelfDecorator {
   /**
-   * Specifies that an `Injector` should retrieve a dependency only from itself.
+   * A constructor parameter decorator that tells the DI framework
+   * to retrieve a dependency only from the local injector.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
-   *
-   * @usageNotes
-   * ### Example
+   * In the following example, the dependency can be resolved
+   * by the local injector when instantiating the class itself, but not
+   * when instantiating a child.
    *
    * {@example core/di/ts/metadata_spec.ts region='Self'}
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
+   *
+   *
    */
   (): any;
   new (): Self;
@@ -102,6 +122,8 @@ export interface SelfDecorator {
 
 /**
  * Type of the Self metadata.
+ *
+ * @publicApi
  */
 export interface Self {}
 
@@ -109,23 +131,29 @@ export interface Self {}
  * Self decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const Self: SelfDecorator = makeParamDecorator('Self');
 
 
 /**
  * Type of the SkipSelf decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface SkipSelfDecorator {
   /**
-   * Specifies that the dependency resolution should start from the parent injector.
+   * A constructor parameter decorator that tells the DI framework
+   * that dependency resolution should start from the parent injector.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
-   *
-   * @usageNotes
-   * ### Example
+   * In the following example, the dependency can be resolved when
+   * instantiating a child, but not when instantiating the class itself.
    *
    * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
+   *
+   *
    */
   (): any;
   new (): SkipSelf;
@@ -134,7 +162,7 @@ export interface SkipSelfDecorator {
 /**
  * Type of the SkipSelf metadata.
  *
- *
+ * @publicApi
  */
 export interface SkipSelf {}
 
@@ -142,21 +170,24 @@ export interface SkipSelf {}
  * SkipSelf decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
 
 /**
  * Type of the Host decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostDecorator {
   /**
-   * Specifies that an injector should retrieve a dependency from any injector until
+   * A constructor parameter decorator that tells the DI framework
+   * to retrieve a dependency from any injector until
    * reaching the host element of the current component.
    *
-   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * @usageNotes
-   * ### Example
    *
    * {@example core/di/ts/metadata_spec.ts region='Host'}
    */
@@ -166,6 +197,8 @@ export interface HostDecorator {
 
 /**
  * Type of the Host metadata.
+ *
+ * @publicApi
  */
 export interface Host {}
 
@@ -173,5 +206,6 @@ export interface Host {}
  * Host decorator and metadata.
  *
  * @Annotation
+ * @publicApi
  */
 export const Host: HostDecorator = makeParamDecorator('Host');

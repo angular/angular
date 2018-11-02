@@ -73,3 +73,26 @@
     text-align: center;
   }
 }
+
+.card-section {
+  @include card(auto, 90%);
+  padding: 16px 32px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  // Removes on-hover effect from card mixin
+  &:hover {
+    box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 8px 0;
+  }
+
+  a, .button, button {
+    text-align: center;
+  }
+
+}

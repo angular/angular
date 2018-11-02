@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "diagnostics",
+    srcs = glob([
+        "index.ts",
+        "src/**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/diagnostics",
+    deps = [
+        "//packages/compiler",
+        "@ngdeps//typescript",
+    ],
+)

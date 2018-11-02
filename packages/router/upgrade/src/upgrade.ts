@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Location} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
-
-
 
 /**
  * @description
@@ -33,7 +32,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
  * }
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
@@ -57,7 +56,7 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
  * History.pushState does not fire onPopState, so the Angular location
  * doesn't detect it. The workaround is to attach a location change listener
  *
- * @experimental
+ * @publicApi
  */
 export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   if (!ngUpgrade.$injector) {
@@ -68,11 +67,47 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   }
 
   const router: Router = ngUpgrade.injector.get(Router);
-  const url = document.createElement('a');
+  const location: Location = ngUpgrade.injector.get(Location);
 
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
-        url.href = next;
-        router.navigateByUrl(url.pathname + url.search + url.hash);
+        const url = resolveUrl(next);
+        const path = location.normalize(url.pathname);
+        router.navigateByUrl(path + url.search + url.hash);
       });
+}
+
+/**
+ * Normalize and parse a URL.
+ *
+ * - Normalizing means that a relative URL will be resolved into an absolute URL in the context of
+ *   the application document.
+ * - Parsing means that the anchor's `protocol`, `hostname`, `port`, `pathname` and related
+ *   properties are all populated to reflect the normalized URL.
+ *
+ * While this approach has wide compatibility, it doesn't work as expected on IE. On IE, normalizing
+ * happens similar to other browsers, but the parsed components will not be set. (E.g. if you assign
+ * `a.href = 'foo'`, then `a.protocol`, `a.host`, etc. will not be correctly updated.)
+ * We work around that by performing the parsing in a 2nd step by taking a previously normalized URL
+ * and assigning it again. This correctly populates all properties.
+ *
+ * See
+ * https://github.com/angular/angular.js/blob/2c7400e7d07b0f6cec1817dab40b9250ce8ebce6/src/ng/urlUtils.js#L26-L33
+ * for more info.
+ */
+let anchor: HTMLAnchorElement|undefined;
+function resolveUrl(url: string): {pathname: string, search: string, hash: string} {
+  if (!anchor) {
+    anchor = document.createElement('a');
+  }
+
+  anchor.setAttribute('href', url);
+  anchor.setAttribute('href', anchor.href);
+
+  return {
+    // IE does not start `pathname` with `/` like other browsers.
+    pathname: `/${anchor.pathname.replace(/^\//, '')}`,
+    search: anchor.search,
+    hash: anchor.hash
+  };
 }

@@ -9,7 +9,7 @@ A basic understanding of the following:
 
 The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular
 service worker should cache and how it should update the cached files and data. The
-CLI processes the configuration file during `ng build --prod`. Manually, you can process
+[Angular CLI](cli) processes the configuration file during `ng build --prod`. Manually, you can process
 it with the `ngsw-config` tool:
 
 ```sh
@@ -23,6 +23,7 @@ Unless otherwise noted, patterns use a limited glob format:
 
 * `**` matches 0 or more path segments.
 * `*` matches 0 or more characters excluding `/`.
+* `?` matches exactly one character excluding `/`.
 * The `!` prefix marks the pattern as being negative, meaning that only files that don't match the pattern will be included.
 
 Example patterns:
@@ -106,7 +107,7 @@ This section describes the resources to cache, broken up into three groups.
 * `versionedFiles` has been deprecated. As of v6 `versionedFiles` and `files` options have the same behavior. Use `files` instead.
 
 * `urls` includes both URLs and URL patterns that will be matched at runtime. These resources are not fetched directly and do not have content hashes, but they will be cached according to their HTTP headers. This is most useful for CDNs such as the Google Fonts service.<br>
-  _(Negative glob patterns are not supported.)_
+  _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
 
 ## `dataGroups`
 
@@ -133,7 +134,7 @@ Similar to `assetGroups`, every data group has a `name` which uniquely identifie
 
 ### `urls`
 A list of URL patterns. URLs that match these patterns will be cached according to this data group's policy.<br>
-  _(Negative glob patterns are not supported.)_
+  _(Negative glob patterns are not supported and `?` will be matched literally; i.e. it will not match any character other than `?`.)_
 
 ### `version`
 Occasionally APIs change formats in a way that is not backward-compatible. A new version of the app may not be compatible with the old API format and thus may not be compatible with existing cached resources from that API.
@@ -160,7 +161,15 @@ This section defines the policy by which matching requests will be cached.
 For example, the string `3d12h` will cache content for up to three and a half days.
 
 #### `timeout`
-This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so.
+This duration string specifies the network timeout. The network timeout is how long the Angular service worker will wait for the network to respond before using a cached response, if configured to do so. `timeout` is a duration string, using the following unit suffixes:
+
+* `d`: days
+* `h`: hours
+* `m`: minutes
+* `s`: seconds
+* `u`: milliseconds
+
+For example, the string `5s30u` will translate to five seconds and 30 milliseconds of network timeout.
 
 #### `strategy`
 

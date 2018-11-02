@@ -14,21 +14,16 @@ export class EventListener {
 }
 
 /**
- * @experimental All debugging apis are currently experimental.
+ * @publicApi
  */
 export class DebugNode {
-  nativeNode: any;
-  listeners: EventListener[];
-  parent: DebugElement|null;
+  listeners: EventListener[] = [];
+  parent: DebugElement|null = null;
 
-  constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
-    this.nativeNode = nativeNode;
+  constructor(public nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     if (parent && parent instanceof DebugElement) {
       parent.addChild(this);
-    } else {
-      this.parent = null;
     }
-    this.listeners = [];
   }
 
   get injector(): Injector { return this._debugContext.injector; }
@@ -43,24 +38,19 @@ export class DebugNode {
 }
 
 /**
- * @experimental All debugging apis are currently experimental.
+ * @publicApi
  */
 export class DebugElement extends DebugNode {
-  name: string;
-  properties: {[key: string]: any};
-  attributes: {[key: string]: string | null};
-  classes: {[key: string]: boolean};
-  styles: {[key: string]: string | null};
-  childNodes: DebugNode[];
+  name !: string;
+  properties: {[key: string]: any} = {};
+  attributes: {[key: string]: string | null} = {};
+  classes: {[key: string]: boolean} = {};
+  styles: {[key: string]: string | null} = {};
+  childNodes: DebugNode[] = [];
   nativeElement: any;
 
   constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
     super(nativeNode, parent, _debugContext);
-    this.properties = {};
-    this.attributes = {};
-    this.classes = {};
-    this.styles = {};
-    this.childNodes = [];
     this.nativeElement = nativeNode;
   }
 
@@ -136,7 +126,7 @@ export class DebugElement extends DebugNode {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export function asNativeElements(debugEls: DebugElement[]): any {
   return debugEls.map((el) => el.nativeElement);
@@ -172,7 +162,7 @@ function _queryNodeChildren(
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
 /**
- * @experimental
+ * @publicApi
  */
 export function getDebugNode(nativeNode: any): DebugNode|null {
   return _nativeNodeToDebugNode.get(nativeNode) || null;
@@ -194,6 +184,6 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  * A boolean-valued function over a value, possibly including context information
  * regarding that value's position in an array.
  *
- * @experimental All debugging apis are currently experimental.
+ * @publicApi
  */
 export interface Predicate<T> { (value: T): boolean; }

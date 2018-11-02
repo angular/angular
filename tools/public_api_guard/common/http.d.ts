@@ -1482,11 +1482,11 @@ export declare class HttpClientModule {
 }
 
 export declare class HttpClientXsrfModule {
-    static disable(): ModuleWithProviders;
+    static disable(): ModuleWithProviders<HttpClientXsrfModule>;
     static withOptions(options?: {
         cookieName?: string;
         headerName?: string;
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<HttpClientXsrfModule>;
 }
 
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
@@ -1497,8 +1497,8 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
 export declare class HttpErrorResponse extends HttpResponseBase implements Error {
     readonly error: any | null;
     readonly message: string;
-    readonly name: string;
-    readonly ok: boolean;
+    readonly name = "HttpErrorResponse";
+    readonly ok = false;
     constructor(init: {
         error?: any;
         headers?: HttpHeaders;
@@ -1516,7 +1516,7 @@ export declare enum HttpEventType {
     ResponseHeader = 2,
     DownloadProgress = 3,
     Response = 4,
-    User = 5,
+    User = 5
 }
 
 export declare abstract class HttpHandler {
@@ -1695,10 +1695,10 @@ export interface HttpSentEvent {
 }
 
 export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
-    decodeKey(k: string): string;
-    decodeValue(v: string): string;
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
+    decodeKey(key: string): string;
+    decodeValue(value: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
 }
 
 export interface HttpUserEvent<T> {

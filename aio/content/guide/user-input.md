@@ -20,7 +20,7 @@ To bind to a DOM event, surround the DOM event name in parentheses and assign a 
 
 The following example shows an event binding that implements a click handler:
 
-<code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" title="src/app/click-me.component.ts" linenums="false">
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-button" header="src/app/click-me.component.ts" linenums="false">
 
 </code-example>
 
@@ -37,7 +37,7 @@ usually the Angular component controlling the template.
 The example above shows a single line of HTML, but that HTML belongs to a larger component:
 
 
-<code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" title="src/app/click-me.component.ts" linenums="false">
+<code-example path="user-input/src/app/click-me.component.ts" region="click-me-component" header="src/app/click-me.component.ts" linenums="false">
 
 </code-example>
 
@@ -53,7 +53,7 @@ This section shows how to bind to the `keyup` event of an input box to get the u
 
 The following code listens to the `keyup` event and passes the entire event payload (`$event`) to the component event handler.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-template" title="src/app/keyup.components.ts (template v.1)" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-template" header="src/app/keyup.components.ts (template v.1)" linenums="false">
 
 </code-example>
 
@@ -62,14 +62,14 @@ The following code listens to the `keyup` event and passes the entire event payl
 When a user presses and releases a key, the `keyup` event occurs, and Angular provides a corresponding
 DOM event object in the `$event` variable which this code passes as a parameter to the component's `onKey()` method.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class-no-type" title="src/app/keyup.components.ts (class v.1)" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class-no-type" header="src/app/keyup.components.ts (class v.1)" linenums="false">
 
 </code-example>
 
 
 
 The properties of an `$event` object vary depending on the type of DOM event. For example,
-a mouse event includes different information than a input box editing event.
+a mouse event includes different information than an input box editing event.
 
 All [standard DOM event objects](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 have a `target` property, a reference to the element that raised the event.
@@ -96,7 +96,7 @@ Here's what the UI displays:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -126,7 +126,7 @@ that could reveal properties of the event object and prevent silly mistakes.
 
 The following example rewrites the method with types:
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" title="src/app/keyup.components.ts (class v.1 - typed )" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-1-class" header="src/app/keyup.components.ts (class v.1 - typed )" linenums="false">
 
 </code-example>
 
@@ -156,7 +156,7 @@ To declare a template reference variable, precede an identifier with a hash (or 
 The following example uses a template reference variable
 to implement a keystroke loopback in a simple template.
 
-<code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" title="src/app/loop-back.component.ts" linenums="false">
+<code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" header="src/app/loop-back.component.ts" linenums="false">
 
 </code-example>
 
@@ -179,7 +179,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -200,7 +200,7 @@ It's easier to get to the input box with the template reference
 variable than to go through the `$event` object. Here's a rewrite of the previous
 `keyup` example that uses a template reference variable to get the user's input.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" title="src/app/keyup.components.ts (v2)" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" header="src/app/keyup.components.ts (v2)" linenums="false">
 
 </code-example>
 
@@ -219,7 +219,7 @@ One way to reduce the noise would be to examine every `$event.keyCode` and take 
 There's an easier way: bind to Angular's `keyup.enter` pseudo-event.
 Then Angular calls the event handler only when the user presses _Enter_.
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" title="src/app/keyup.components.ts (v3)" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-3" header="src/app/keyup.components.ts (v3)" linenums="false">
 
 </code-example>
 
@@ -244,7 +244,7 @@ The component's `value` property is updated only when the user presses _Enter_.
 To fix this issue, listen to both the _Enter_ key and the _blur_ event.
 
 
-<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" title="src/app/keyup.components.ts (v4)" linenums="false">
+<code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-4" header="src/app/keyup.components.ts (v4)" linenums="false">
 
 </code-example>
 
@@ -270,7 +270,7 @@ clicking **Add**.
 Below is the "Little Tour of Heroes"  component.
 
 
-<code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" title="src/app/little-tour.component.ts" linenums="false">
+<code-example path="user-input/src/app/little-tour.component.ts" region="little-tour" header="src/app/little-tour.component.ts" linenums="false">
 
 </code-example>
 
@@ -299,19 +299,19 @@ Following is all the code discussed in this page.
 
 <code-tabs>
 
-  <code-pane title="click-me.component.ts" path="user-input/src/app/click-me.component.ts">
+  <code-pane header="click-me.component.ts" path="user-input/src/app/click-me.component.ts">
 
   </code-pane>
 
-  <code-pane title="keyup.components.ts" path="user-input/src/app/keyup.components.ts">
+  <code-pane header="keyup.components.ts" path="user-input/src/app/keyup.components.ts">
 
   </code-pane>
 
-  <code-pane title="loop-back.component.ts" path="user-input/src/app/loop-back.component.ts">
+  <code-pane header="loop-back.component.ts" path="user-input/src/app/loop-back.component.ts">
 
   </code-pane>
 
-  <code-pane title="little-tour.component.ts" path="user-input/src/app/little-tour.component.ts">
+  <code-pane header="little-tour.component.ts" path="user-input/src/app/little-tour.component.ts">
 
   </code-pane>
 

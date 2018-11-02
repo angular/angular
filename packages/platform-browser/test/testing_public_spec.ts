@@ -86,8 +86,9 @@ class TestViewProvidersComp {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
+  // TODO(issue/24571): remove '!'.
   @Input()
-  someDir: string;
+  someDir !: string;
 }
 
 @Pipe({name: 'somePipe'})
@@ -306,11 +307,12 @@ class CompWithUrlTemplate {
           TestBed.compileComponents();
         }));
 
-        it('should allow to createSync components with templateUrl after explicit async compilation',
-           () => {
-             const fixture = TestBed.createComponent(CompWithUrlTemplate);
-             expect(fixture.nativeElement).toHaveText('from external template');
-           });
+        isBrowser &&
+            it('should allow to createSync components with templateUrl after explicit async compilation',
+               () => {
+                 const fixture = TestBed.createComponent(CompWithUrlTemplate);
+                 expect(fixture.nativeElement).toHaveText('from external template');
+               });
       });
 
       describe('overwriting metadata', () => {
@@ -728,8 +730,9 @@ class CompWithUrlTemplate {
           class TestDir {
             constructor() { testDir = this; }
 
+            // TODO(issue/24571): remove '!'.
             @Input('test')
-            test: string;
+            test !: string;
           }
 
           TestBed.overrideTemplateUsingTestingModule(
@@ -807,7 +810,7 @@ class CompWithUrlTemplate {
 
     describe('errors', () => {
       let originalJasmineIt: (description: string, func: () => void) => jasmine.Spec;
-      let originalJasmineBeforeEach: (beforeEachFunction: () => void) => void;
+      let originalJasmineBeforeEach: (beforeEachFunction: (done: DoneFn) => void) => void;
 
       const patchJasmineIt = () => {
         let resolve: (result: any) => void;

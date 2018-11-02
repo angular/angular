@@ -25,7 +25,7 @@ import {NoPreloading, PreloadAllModules, PreloadingStrategy, RouterPreloader} fr
 import {RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
 import {UrlHandlingStrategy} from './url_handling_strategy';
-import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
+import {DefaultUrlSerializer, UrlSerializer, UrlTree} from './url_tree';
 import {flatten} from './utils/collection';
 
 
@@ -45,7 +45,7 @@ const ROUTER_DIRECTIVES =
  *
  * Is used in DI to configure the router.
  *
- *
+ * @publicApi
  */
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
 
@@ -128,7 +128,7 @@ export function routerNgProbeToken() {
  * [Read this developer guide](https://angular.io/docs/ts/latest/guide/router.html) to get an
  * overview of how the router should be used.
  *
- *
+ * @publicApi
  */
 @NgModule({
   declarations: ROUTER_DIRECTIVES,
@@ -152,8 +152,10 @@ export class RouterModule {
    * * `preloadingStrategy` configures a preloading strategy (see `PreloadAllModules`).
    * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
    * `ExtraOptions` for more details.
+   * * `paramsInheritanceStrategy` defines how the router merges params, data and resolved data
+   * from parent to child routes.
    */
-  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
       providers: [
@@ -191,7 +193,7 @@ export class RouterModule {
   /**
    * Creates a module with all the router directives and a provider registering routes.
    */
-  static forChild(routes: Routes): ModuleWithProviders {
+  static forChild(routes: Routes): ModuleWithProviders<RouterModule> {
     return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
   }
 }
@@ -223,6 +225,7 @@ export function provideForRootGuard(router: Router): any {
  *
  * Registers routes.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -233,7 +236,7 @@ export function provideForRootGuard(router: Router): any {
  * class MyNgModule {}
  * ```
  *
- *
+ * @publicApi
  */
 export function provideRoutes(routes: Routes): any {
   return [
@@ -265,7 +268,7 @@ export function provideRoutes(routes: Routes): any {
  *
  * The 'legacy_enabled' and 'legacy_disabled' should not be used for new applications.
  *
- * @experimental
+ * @publicApi
  */
 export type InitialNavigation =
     true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
@@ -275,7 +278,7 @@ export type InitialNavigation =
  *
  * Represents options to configure the router.
  *
- *
+ * @publicApi
  */
 export interface ExtraOptions {
   /**
@@ -319,9 +322,9 @@ export interface ExtraOptions {
    * * 'enabled'--set the scroll position to the stored position. This option will be the default in
    * the future.
    *
-   * When enabled, the router store store scroll positions when navigating forward, and will
-   * restore the stored positions whe navigating back (popstate). When navigating forward,
-   * the scroll position will be set to [0, 0], or to the anchor if one is provided.
+   * When enabled, the router stores and restores scroll positions during navigation.
+   * When navigating forward, the scroll position will be set to [0, 0], or to the anchor
+   * if one is provided.
    *
    * You can implement custom scroll restoration behavior as follows.
    * ```typescript
@@ -391,6 +394,60 @@ export interface ExtraOptions {
    * - `'always'`, enables unconditional inheritance of parent params.
    */
   paramsInheritanceStrategy?: 'emptyOnly'|'always';
+
+  /**
+   * A custom malformed uri error handler function. This handler is invoked when encodedURI contains
+   * invalid character sequences. The default implementation is to redirect to the root url dropping
+   * any path or param info. This function passes three parameters:
+   *
+   * - `'URIError'` - Error thrown when parsing a bad URL
+   * - `'UrlSerializer'` - UrlSerializer that’s configured with the router.
+   * - `'url'` -  The malformed URL that caused the URIError
+   * */
+  malformedUriErrorHandler?:
+      (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
+
+  /**
+   * Defines when the router updates the browser URL. The default behavior is to update after
+   * successful navigation. However, some applications may prefer a mode where the URL gets
+   * updated at the beginning of navigation. The most common use case would be updating the
+   * URL early so if navigation fails, you can show an error message with the URL that failed.
+   * Available options are:
+   *
+   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
+   * - `'eager'`, updates browser URL at the beginning of navigation.
+   */
+  urlUpdateStrategy?: 'deferred'|'eager';
+
+  /**
+   * Enables a bug fix that corrects relative link resolution in components with empty paths.
+   * Example:
+   *
+   * ```
+   * const routes = [
+   *   {
+   *     path: '',
+   *     component: ContainerComponent,
+   *     children: [
+   *       { path: 'a', component: AComponent },
+   *       { path: 'b', component: BComponent },
+   *     ]
+   *   }
+   * ];
+   * ```
+   *
+   * From the `ContainerComponent`, this will not work:
+   *
+   * `<a [routerLink]="['./a']">Link to A</a>`
+   *
+   * However, this will work:
+   *
+   * `<a [routerLink]="['../a']">Link to A</a>`
+   *
+   * In other words, you're required to use `../` rather than `./`. The current default in v6
+   * is `legacy`, and this option will be removed in v7 to default to the corrected behavior.
+   */
+  relativeLinkResolution?: 'legacy'|'corrected';
 }
 
 export function setupRouter(
@@ -413,6 +470,10 @@ export function setupRouter(
     router.errorHandler = opts.errorHandler;
   }
 
+  if (opts.malformedUriErrorHandler) {
+    router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
+  }
+
   if (opts.enableTracing) {
     const dom = getDOM();
     router.events.subscribe((e: RouterEvent) => {
@@ -429,6 +490,14 @@ export function setupRouter(
 
   if (opts.paramsInheritanceStrategy) {
     router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+  }
+
+  if (opts.urlUpdateStrategy) {
+    router.urlUpdateStrategy = opts.urlUpdateStrategy;
+  }
+
+  if (opts.relativeLinkResolution) {
+    router.relativeLinkResolution = opts.relativeLinkResolution;
   }
 
   return router;
@@ -539,7 +608,7 @@ export function getBootstrapListener(r: RouterInitializer) {
 /**
  * A token for the router initializer that will be called after the app is bootstrapped.
  *
- * @experimental
+ * @publicApi
  */
 export const ROUTER_INITIALIZER =
     new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');

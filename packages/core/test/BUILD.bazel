@@ -1,17 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [
             "**/*_node_only_spec.ts",
-            "render3/**/*.ts",
-            "ivy_local_empty_spec.ts",
         ],
     ),
     deps = [
@@ -27,25 +24,18 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
+        "@ngdeps//zone.js",
         "@rxjs",
         "@rxjs//operators",
     ],
 )
 
 ts_library(
-    name = "ivy_local_empty_lib",
-    testonly = 1,
-    srcs = ["ivy_local_empty_spec.ts"],
-    deps = [
-        "//packages:types",
-    ],
-)
-
-ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*_node_only_spec.ts"]),
     deps = [
         ":test_lib",
@@ -61,30 +51,28 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    tags = [
+        "fixme-ivy-aot",
+        "fixme-ivy-jit",
+    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
-    ],
-)
-
-jasmine_node_test(
-    name = "ivy_local_empty_test",
-    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
-    tags = [
-        "ivy-local",
-        "ivy-only",
-    ],
-    deps = [
-        ":ivy_local_empty_lib",
-        "//tools/testing:node_no_angular",
+        "@ngdeps//base64-js",
+        "@ngdeps//source-map",
+        "@ngdeps//zone.js",
     ],
 )
 
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        "fixme-ivy-aot",
+        "fixme-ivy-jit",
+    ],
     deps = [
         ":test_lib",
     ],

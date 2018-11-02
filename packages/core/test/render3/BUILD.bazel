@@ -1,11 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "render3_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -27,25 +26,28 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
 ts_library(
     name = "domino",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "domino.d.ts",
         "load_domino.ts",
     ],
     deps = [
+        "//packages/compiler",
         "//packages/platform-browser",
         "//packages/platform-server",
+        "@ngdeps//zone.js",
     ],
 )
 
 ts_library(
     name = "render3_node_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [],
     deps = [
         ":domino",
@@ -58,13 +60,22 @@ jasmine_node_test(
     bootstrap = [
         "angular/packages/core/test/render3/load_domino",
     ],
+    tags = [
+        "fixme-ivy-aot",
+        "fixme-ivy-jit",
+    ],
     deps = [
         ":render3_node_lib",
+        "@ngdeps//zone.js",
     ],
 )
 
 ts_web_test_suite(
     name = "render3_web",
+    tags = [
+        "fixme-ivy-aot",
+        "fixme-ivy-jit",
+    ],
     deps = [
         ":render3_lib",
     ],

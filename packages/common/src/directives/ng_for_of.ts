@@ -8,6 +8,9 @@
 
 import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
+/**
+ * @publicApi
+ */
 export class NgForOfContext<T> {
   constructor(
       public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
@@ -26,6 +29,8 @@ export class NgForOfContext<T> {
  * The `NgForOf` directive instantiates a template once per item from an iterable. The context
  * for each instantiated template inherits from the outer context with the given loop variable
  * set to the current item from the iterable.
+ *
+ * @usageNotes
  *
  * ### Local Variables
  *
@@ -90,7 +95,8 @@ export class NgForOfContext<T> {
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  *
- *
+ * @ngModule CommonModule
+ * @publicApi
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck {
@@ -114,10 +120,12 @@ export class NgForOf<T> implements DoCheck {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  private _ngForOf: NgIterable<T>;
+  // TODO(issue/24571): remove '!'.
+  private _ngForOf !: NgIterable<T>;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
-  private _trackByFn: TrackByFunction<T>;
+  // TODO(issue/24571): remove '!'.
+  private _trackByFn !: TrackByFunction<T>;
 
   constructor(
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
@@ -180,6 +188,7 @@ export class NgForOf<T> implements DoCheck {
       const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
+      viewRef.context.ngForOf = this._ngForOf;
     }
 
     changes.forEachIdentityChange((record: any) => {
@@ -192,6 +201,16 @@ export class NgForOf<T> implements DoCheck {
   private _perViewChange(
       view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
+  }
+
+  /**
+   * Assert the correct type of the context for the template that `NgForOf` will render.
+   *
+   * The presence of this method is a signal to the Ivy template type check compiler that the
+   * `NgForOf` structural directive renders its template with a specific context type.
+   */
+  static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T> {
+    return true;
   }
 }
 

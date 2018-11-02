@@ -8,12 +8,14 @@
 
 import {NgModuleRef} from '@angular/core';
 import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
-import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
+import {INJECTOR, Injector} from '@angular/core/src/di/injector';
+import {InjectFlags, inject} from '@angular/core/src/di/injector_compatibility';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef, moduleProvideDef, resolveNgModuleDep} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';
 import {tokenKey} from '@angular/core/src/view/util';
+import {APP_ROOT} from '../../src/di/scope';
 
 class Foo {}
 
@@ -228,5 +230,30 @@ describe('NgModuleRef_ injector', () => {
     expect(Service.destroyed).toBe(0);
     ref.destroy();
     expect(Service.destroyed).toBe(1);
+  });
+
+  describe('moduleDef', () => {
+    function createProvider(token: any, value: any) {
+      return {
+        index: 0,
+        flags: NodeFlags.TypeValueProvider | NodeFlags.LazyProvider,
+        deps: [], token, value
+      };
+    }
+
+    it('sets isRoot to `true` when APP_ROOT is `true`', () => {
+      const def = moduleDef([createProvider(APP_ROOT, true)]);
+      expect(def.isRoot).toBe(true);
+    });
+
+    it('sets isRoot to `false` when APP_ROOT is absent', () => {
+      const def = moduleDef([]);
+      expect(def.isRoot).toBe(false);
+    });
+
+    it('sets isRoot to `false` when APP_ROOT is `false`', () => {
+      const def = moduleDef([createProvider(APP_ROOT, false)]);
+      expect(def.isRoot).toBe(false);
+    });
   });
 });

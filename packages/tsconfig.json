@@ -7,6 +7,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -22,17 +23,18 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angularjs"]
+    "types": ["angular"]
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   },
   "exclude": [
     "bazel",
-    "compiler-cli/integrationtest",
-    "platform-server/integrationtest",
     "common/locales",
-    "elements/schematics"
+    "compiler-cli/integrationtest",
+    "elements/schematics",
+    "examples/**/e2e_test/*",
+    "platform-server/integrationtest",
+    "router/test/aot_ngsummary_test",
   ]
-
 }

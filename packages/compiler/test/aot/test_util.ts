@@ -602,12 +602,16 @@ export function isInBazel(): boolean {
   return process.env.TEST_SRCDIR != null;
 }
 
-export function setup(
-    options: {compileAngular: boolean, compileAnimations: boolean, compileCommon?: boolean} = {
-      compileAngular: true,
-      compileAnimations: true,
-      compileCommon: false,
-    }) {
+export function setup(options: {
+  compileAngular: boolean,
+  compileFakeCore?: boolean,
+  compileAnimations: boolean, compileCommon?: boolean
+} = {
+  compileAngular: true,
+  compileAnimations: true,
+  compileCommon: false,
+  compileFakeCore: false,
+}) {
   let angularFiles = new Map<string, string>();
 
   beforeAll(() => {
@@ -625,6 +629,11 @@ export function setup(
         readBazelWrittenFilesFrom(
             path.join(sources, 'angular/packages/core/npm_package'), 'core', angularFiles,
             skipDirs);
+      }
+      if (options.compileFakeCore) {
+        readBazelWrittenFilesFrom(
+            path.join(sources, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package'),
+            'core', angularFiles, skipDirs);
       }
       if (options.compileAnimations) {
         // If this fails please add //packages/animations:npm_package as a test data dependency.

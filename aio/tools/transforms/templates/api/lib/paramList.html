@@ -17,13 +17,14 @@
   <tbody>
   {% for parameter in parameters %}
     <tr class="{$ parameterClass $}">
-      <td class="param-name"><a id="{$ parameter.anchor $}"></a>{$ parameter.name $}</td>
-      {% if showType %}<td class="param-type"><code>{$ parameter.type $}</code></td>{% endif %}
+      <td class="param-name">
+        <a id="{$ parameter.anchor $}"></a>
+        <code>{$ parameter.name $}</code>
+      </td>
+      {% if showType %}<td class="param-type"><code>{% if r/^\{/.test(parameter.type) and r/\}$/.test(parameter.type) and parameter.type.length > 20 %}object{% else %}{$ parameter.type $}{% endif %}</code></td>{% endif %}
       <td class="param-description">
       {% marked %}
-      {% if parameter.description | trim %}{$ parameter.description $}
-
-      {% elseif not showType and parameter.type %}<p>Type: <code>{$ parameter.type $}</code>.</p>
+      {% if (parameter.shortDescription | trim) or (parameter.description | trim) %}{$ parameter.shortDescription + '\n\n' + parameter.description $}
       {% endif %}
 
       {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}

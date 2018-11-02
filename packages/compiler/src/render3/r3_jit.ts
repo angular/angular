@@ -60,12 +60,12 @@ class R3JitReflector implements CompileReflector {
  */
 export function jitExpression(
     def: o.Expression, context: {[key: string]: any}, sourceUrl: string,
-    constantPool?: ConstantPool): any {
+    preStatements: o.Statement[]): any {
   // The ConstantPool may contain Statements which declare variables used in the final expression.
   // Therefore, its statements need to precede the actual JIT operation. The final statement is a
   // declaration of $def which is set to the expression being compiled.
   const statements: o.Statement[] = [
-    ...(constantPool !== undefined ? constantPool.statements : []),
+    ...preStatements,
     new o.DeclareVarStmt('$def', def, undefined, [o.StmtModifier.Exported]),
   ];
 

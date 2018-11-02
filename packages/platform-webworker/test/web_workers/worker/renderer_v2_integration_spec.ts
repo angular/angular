@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, RootRenderer} from '@angular/core';
+import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -36,6 +36,9 @@ let lastCreatedRenderer: Renderer2;
 
     let uiRenderStore: RenderStore;
     let wwRenderStore: RenderStore;
+
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
 
     beforeEach(() => {
       // UI side
@@ -98,7 +101,7 @@ let lastCreatedRenderer: Renderer2;
                  .createComponent(MyComp2);
 
          const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
-           expect(lastCreatedRenderer).not.toEqual(null);
+           expect(lastCreatedRenderer).not.toBeNull();
 
            const el = getRenderElement(workerEl);
            lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);
@@ -213,4 +216,9 @@ class RenderFactory extends WebWorkerRendererFactory2 {
     lastCreatedRenderer = super.createRenderer(element, type);
     return lastCreatedRenderer;
   }
+}
+
+function isOldIE() {
+  // note that this only applies to older IEs (not edge)
+  return (window as any).document['documentMode'] ? true : false;
 }

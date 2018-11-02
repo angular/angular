@@ -25,7 +25,9 @@ export class TimelineAnimationEngine {
   private _playersById: {[id: string]: AnimationPlayer} = {};
   public players: AnimationPlayer[] = [];
 
-  constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      public bodyNode: any, private _driver: AnimationDriver,
+      private _normalizer: AnimationStyleNormalizer) {}
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];

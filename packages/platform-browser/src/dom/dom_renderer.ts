@@ -83,6 +83,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
         return renderer;
       }
       case ViewEncapsulation.Native:
+      case ViewEncapsulation.ShadowDom:
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
@@ -134,13 +135,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     if (!el) {
       throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
     }
-    el.textContent = '';
+    if (!preserveContent) {
+      el.textContent = '';
+    }
     return el;
   }
 
@@ -256,7 +259,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
       private hostEl: any, private component: RendererType2) {
     super(eventManager);
-    this.shadowRoot = (hostEl as any).createShadowRoot();
+    if (component.encapsulation === ViewEncapsulation.ShadowDom) {
+      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    } else {
+      this.shadowRoot = (hostEl as any).createShadowRoot();
+    }
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {

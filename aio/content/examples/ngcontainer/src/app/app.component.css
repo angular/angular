@@ -4,7 +4,8 @@ button {
   font-size: 100%;
 }
 
-code, .code {
+code,
+.code {
   background-color: #eee;
   color: black;
   font-family: Courier, sans-serif;
@@ -21,14 +22,18 @@ div.code {
 }
 
 hr {
-  margin: 40px 0
+  margin: 40px 0;
 }
 
-td, th {
+td,
+th {
   text-align: left;
   vertical-align: top;
 }
 
 /* #docregion p-span */
-p span { color: red; font-size: 70%; }
+p span {
+  color: red;
+  font-size: 70%;
+}
 /* #enddocregion p-span */

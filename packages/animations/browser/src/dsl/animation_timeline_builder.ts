@@ -586,7 +586,8 @@ export class AnimationTimelineContext {
 
 export class TimelineBuilder {
   public duration: number = 0;
-  public easing: string|null;
+  // TODO(issue/24571): remove '!'.
+  public easing !: string | null;
   private _previousKeyframe: ɵStyleData = {};
   private _currentKeyframe: ɵStyleData = {};
   private _keyframes = new Map<number, ɵStyleData>();

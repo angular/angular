@@ -1636,7 +1636,8 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-          public exp: string|null;
+          // TODO(issue/24571): remove '!'.
+          public exp !: string | null;
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2023,7 +2024,8 @@ const DEFAULT_COMPONENT_ID = '1';
            })
            class Cmp {
              public exp: any;
-             public color: string|null;
+             // TODO(issue/24571): remove '!'.
+             public color !: string | null;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2456,7 +2458,8 @@ const DEFAULT_COMPONENT_ID = '1';
            })
            class Cmp {
              exp: any = false;
-             event: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event !: AnimationEvent;
 
              callback = (event: any) => { this.event = event; };
            }
@@ -2491,7 +2494,8 @@ const DEFAULT_COMPONENT_ID = '1';
            })
            class Cmp {
              exp: any = false;
-             event: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event !: AnimationEvent;
 
              callback = (event: any) => { this.event = event; };
            }
@@ -2546,8 +2550,10 @@ const DEFAULT_COMPONENT_ID = '1';
            class Cmp {
              exp1: any = false;
              exp2: any = false;
-             event1: AnimationEvent;
-             event2: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event1 !: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event2 !: AnimationEvent;
              // tslint:disable:semicolon
              callback1 = (event: any) => { this.event1 = event; };
              // tslint:disable:semicolon
@@ -2608,8 +2614,10 @@ const DEFAULT_COMPONENT_ID = '1';
            class Cmp {
              exp1: any = false;
              exp2: any = false;
-             event1: AnimationEvent;
-             event2: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event1 !: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event2 !: AnimationEvent;
              callback1 = (event: any) => { this.event1 = event; };
              callback2 = (event: any) => { this.event2 = event; };
            }
@@ -2713,7 +2721,8 @@ const DEFAULT_COMPONENT_ID = '1';
                      [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
            })
            class Cmp {
-             event: AnimationEvent;
+             // TODO(issue/24571): remove '!'.
+             event !: AnimationEvent;
 
              @HostBinding('@myAnimation2')
              exp: any = false;
@@ -2747,7 +2756,8 @@ const DEFAULT_COMPONENT_ID = '1';
              animations: [trigger('myAnimation', [])]
            })
            class Cmp {
-             exp: string;
+             // TODO(issue/24571): remove '!'.
+             exp !: string;
              log: any[] = [];
              callback = (event: any) => this.log.push(`${event.phaseName} => ${event.toState}`);
            }
@@ -2858,8 +2868,10 @@ const DEFAULT_COMPONENT_ID = '1';
            })
            class Cmp {
              log: string[] = [];
-             exp1: string;
-             exp2: string;
+             // TODO(issue/24571): remove '!'.
+             exp1 !: string;
+             // TODO(issue/24571): remove '!'.
+             exp2 !: string;
 
              cb(name: string, event: AnimationEvent) { this.log.push(name); }
            }
@@ -2936,7 +2948,8 @@ const DEFAULT_COMPONENT_ID = '1';
         class Cmp {
                  log: string[] = [];
                  events: {[name: string]: any} = {};
-                 exp: string;
+                 // TODO(issue/24571): remove '!'.
+                 exp !: string;
                  items: any = [0, 1, 2, 3];
 
                  cb(name: string, phase: string, event: AnimationEvent) {
@@ -3263,8 +3276,10 @@ const DEFAULT_COMPONENT_ID = '1';
              class Cmp {
                disableExp = false;
                exp = '';
-               startEvent: AnimationEvent;
-               doneEvent: AnimationEvent;
+               // TODO(issue/24571): remove '!'.
+               startEvent !: AnimationEvent;
+               // TODO(issue/24571): remove '!'.
+               doneEvent !: AnimationEvent;
              }
 
              TestBed.configureTestingModule({declarations: [Cmp]});

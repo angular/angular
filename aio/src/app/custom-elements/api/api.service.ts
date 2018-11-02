@@ -14,14 +14,14 @@ export interface ApiItem {
   docType: string;
   stability: string;
   securityRisk: boolean;
-
-  show?: boolean;
 }
 
 export interface ApiSection {
+  path: string;
   name: string;
   title: string;
-  items: ApiItem[];
+  deprecated: boolean;
+  items: ApiItem[]|null;
 }
 
 @Injectable()
@@ -48,7 +48,12 @@ export class ApiService implements OnDestroy {
       this._sections.subscribe(sections => this.logger.log('ApiService got API sections') );
     }
 
-    return this._sections;
+    return this._sections.pipe(tap(sections => {
+      sections.forEach(section => {
+        section.deprecated = !!section.items &&
+            section.items.every(item => item.stability === 'deprecated');
+      });
+    }));
   };
 
   constructor(private http: HttpClient, private logger: Logger) { }

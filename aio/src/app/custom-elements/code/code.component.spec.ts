@@ -200,10 +200,10 @@ describe('CodeComponent', () => {
       expect(getButton().getAttribute('aria-label')).toBe('');
     });
 
-    it('should have aria-label explaining what is being copied when title passed in', () => {
-      hostComponent.title = 'a/b/c/foo.ts';
+    it('should have aria-label explaining what is being copied when header passed in', () => {
+      hostComponent.header = 'a/b/c/foo.ts';
       fixture.detectChanges();
-      expect(getButton().getAttribute('aria-label')).toContain(hostComponent.title);
+      expect(getButton().getAttribute('aria-label')).toContain(hostComponent.header);
     });
 
     it('should call copier service when clicked', () => {
@@ -273,7 +273,7 @@ describe('CodeComponent', () => {
   template: `
     <aio-code [language]="language"
     [linenums]="linenums" [path]="path" [region]="region"
-    [hideCopy]="hideCopy" [title]="title"></aio-code>
+    [hideCopy]="hideCopy" [header]="header"></aio-code>
   `
 })
 class HostComponent implements AfterViewInit {
@@ -282,7 +282,7 @@ class HostComponent implements AfterViewInit {
   linenums: boolean | number | string;
   path: string;
   region: string;
-  title: string;
+  header: string;
 
   @ViewChild(CodeComponent) codeComponent: CodeComponent;
 

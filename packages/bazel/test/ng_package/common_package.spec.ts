@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-shx.cd(path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'common', 'npm_package'));
+shx.cd(path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'common', 'npm_package'));
 
 describe('@angular/common ng_package', () => {
   describe('should have the locales files', () => {

@@ -113,7 +113,6 @@ class ExampleZipper {
       '!**/package.json',
       '!**/example-config.json',
       '!**/wallaby.js',
-      '!**/package.webpack.json',
       // AoT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'

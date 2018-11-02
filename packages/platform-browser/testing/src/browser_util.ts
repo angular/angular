@@ -68,6 +68,22 @@ export class BrowserDetection {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
         this._ua.indexOf('Edge') == -1;
   }
+
+  get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
+
+  get supportsDeprecatedCustomCustomElementsV0() {
+    return (typeof(document as any).registerElement !== 'undefined');
+  }
+
+  get supportsShadowDom() {
+    const testEl = document.createElement('div');
+    return (typeof testEl.attachShadow !== 'undefined');
+  }
+
+  get supportsDeprecatedShadowDomV0() {
+    const testEl = document.createElement('div') as any;
+    return (typeof testEl.createShadowRoot !== 'undefined');
+  }
 }
 
 BrowserDetection.setup();
@@ -100,14 +116,19 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     const attributeMap = getDOM().attributeMap(el);
-    const keys: string[] = Array.from(attributeMap.keys()).sort();
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const attValue = attributeMap.get(key);
+    const sortedKeys = Array.from(attributeMap.keys()).sort();
+    for (const key of sortedKeys) {
       const lowerCaseKey = key.toLowerCase();
+      let attValue = attributeMap.get(key);
+
       if (typeof attValue !== 'string') {
         result += ` ${lowerCaseKey}`;
       } else {
+        // Browsers order style rules differently. Order them alphabetically for consistency.
+        if (lowerCaseKey === 'style') {
+          attValue = attValue.split(/; ?/).filter(s => !!s).sort().map(s => `${s};`).join(' ');
+        }
+
         result += ` ${lowerCaseKey}="${attValue}"`;
       }
     }

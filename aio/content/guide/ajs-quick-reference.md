@@ -202,10 +202,10 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### Bootstrapping
 
-      <code-example hideCopy path="ajs-quick-reference/src/main.ts" title="main.ts" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/main.ts" header="main.ts" linenums="false"></code-example>
       <br>
 
-      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" title="app.module.ts" linenums="false"></code-example>
+      <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" header="app.module.ts" linenums="false"></code-example>
 
 
       Angular doesn't have a bootstrap directive.
@@ -895,7 +895,7 @@ For more information on pipes, see [Pipes](guide/pipes).
       ### lowercase
 
       <code-example hideCopy>
-        &lt;div>{{movie.title | lowercase}}&lt;/div>
+        &lt;td>{{movie.title | lowercase}}&lt;/td>
       </code-example>
 
 

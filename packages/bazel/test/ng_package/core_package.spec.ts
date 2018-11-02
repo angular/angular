@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as shx from 'shelljs';
 
 const corePackagePath =
-    path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'core', 'npm_package');
+    path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'core', 'npm_package');
 shx.cd(corePackagePath);
 
 /**
@@ -126,8 +126,8 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('@fileoverview added by tsickle');
       });
 
-      it('should have annotations rather than decorators',
-         () => { expect(shx.cat('fesm5/core.js')).not.toContain('__decorate'); });
+      it('should have decorators',
+         () => { expect(shx.cat('fesm5/core.js')).toContain('__decorate'); });
 
       it('should load tslib from external bundle', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('function __extends');
@@ -229,13 +229,7 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('testing.metadata.json'))
             .toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
       });
-
-      it('should have an \'actual\' metadata.json file', () => {
-        expect(shx.cat('testing/testing.metadata.json'))
-            .toContain(`"metadata":{"async":{"__symbolic":"function"},`);
-      });
     });
-
 
     describe('fesm2015', () => {
       it('should have a fesm15 file in the /fesm2015 directory',

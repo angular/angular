@@ -13,6 +13,7 @@
 
   "files": [
     "public_api.ts",
+    "../../../node_modules/@types/node/index.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],

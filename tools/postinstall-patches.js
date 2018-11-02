@@ -6,6 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+try {
+  require.resolve('shelljs');
+} catch (e) {
+  // We are in an bazel managed external node_modules repository
+  // and the resolve has failed because node did not preserve the symlink
+  // when loading the script.
+  // This can be fixed using the --preserve-symlinks-main flag which
+  // is introduced in node 10.2.0
+  console.warn(
+      'Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0');
+  process.exit(0);
+}
+
 const {set, cd, sed, rm} = require('shelljs');
 const path = require('path');
 const log = console.log;

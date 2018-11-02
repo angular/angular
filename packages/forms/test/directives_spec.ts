@@ -92,14 +92,14 @@ function asyncValidator(expected: any, timeout = 0) {
         });
 
         it('should return custom accessor when provided', () => {
-          const customAccessor = new SpyValueAccessor();
+          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
           const checkboxAccessor = new CheckboxControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
               .toEqual(customAccessor);
         });
 
         it('should return custom accessor when provided with select multiple', () => {
-          const customAccessor = new SpyValueAccessor();
+          const customAccessor: ControlValueAccessor = new SpyValueAccessor() as any;
           const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null !, null !);
           expect(selectValueAccessor(
                      dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))

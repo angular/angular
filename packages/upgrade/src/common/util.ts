@@ -43,8 +43,10 @@ export function isFunction(value: any): value is Function {
 
 export class Deferred<R> {
   promise: Promise<R>;
-  resolve: (value?: R|PromiseLike<R>) => void;
-  reject: (error?: any) => void;
+  // TODO(issue/24571): remove '!'.
+  resolve !: (value?: R | PromiseLike<R>) => void;
+  // TODO(issue/24571): remove '!'.
+  reject !: (error?: any) => void;
 
   constructor() {
     this.promise = new Promise((res, rej) => {

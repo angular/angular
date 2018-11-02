@@ -18,7 +18,7 @@ registerLocaleData(localeFr);
 @Component({
   selector: 'currency-pipe',
   template: `<div>
-    <!--output '$0.259'-->
+    <!--output '$0.26'-->
     <p>A: {{a | currency}}</p>
 
     <!--output 'CA$0.26'-->
@@ -35,6 +35,9 @@ registerLocaleData(localeFr);
 
     <!--output '0 001,35 CA$'-->
     <p>B: {{b | currency:'CAD':'symbol':'4.2-2':'fr'}}</p>
+
+    <!--output 'CLP1' because CLP has no cents-->
+    <p>B: {{b | currency:'CLP'}}</p>
   </div>`
 })
 export class CurrencyPipeComponent {

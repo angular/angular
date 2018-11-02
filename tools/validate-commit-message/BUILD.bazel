@@ -1,6 +1,10 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "validate-commit-message",
     srcs = glob(["*.js"]),
+    data = [
+        "commit-message.json",
+        "spec/support/jasmine.json",
+    ],
 )

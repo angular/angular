@@ -23,14 +23,14 @@ export const proxy: ClassDecorator = (t: any) => t;
 const _global = <any>(typeof window === 'undefined' ? global : window);
 
 export const afterEach: Function = _global.afterEach;
-export const expect: (actual: any) => jasmine.Matchers = _global.expect;
+export const expect: <T>(actual: T) => jasmine.Matchers<T> = _global.expect;
 
 const jsmBeforeEach = _global.beforeEach;
 const jsmDescribe = _global.describe;
 const jsmDDescribe = _global.fdescribe;
 const jsmXDescribe = _global.xdescribe;
 const jsmIt = _global.it;
-const jsmIIt = _global.fit;
+const jsmFIt = _global.fit;
 const jsmXIt = _global.xit;
 
 const runnerStack: BeforeEachRunner[] = [];
@@ -112,16 +112,18 @@ export function beforeEachProviders(fn: Function): void {
 }
 
 
-function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
+function _it(
+    jsmFn: Function, testName: string, testFn: (done?: DoneFn) => any, testTimeout = 0): void {
   if (runnerStack.length == 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
+    // tslint:disable-next-line
     debugger;
     throw new Error('Empty Stack!');
   }
   const runner = runnerStack[runnerStack.length - 1];
-  const timeOut = Math.max(globalTimeOut, testTimeOut);
+  const timeout = Math.max(globalTimeOut, testTimeout);
 
-  jsmFn(name, (done: any) => {
+  jsmFn(testName, (done: DoneFn) => {
     const completerProvider = {
       provide: AsyncTestCompleter,
       useFactory: () => {
@@ -132,11 +134,11 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
     testBed.configureTestingModule({providers: [completerProvider]});
     runner.run();
 
-    if (testFn.length == 0) {
+    if (testFn.length === 0) {
       const retVal = testFn();
       if (isPromise(retVal)) {
         // Asynchronous test function that returns a Promise - wait for completion.
-        (<Promise<any>>retVal).then(done, done.fail);
+        retVal.then(done, done.fail);
       } else {
         // Synchronous test function - complete immediately.
         done();
@@ -145,19 +147,19 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
       // Asynchronous test function that takes in 'done' parameter.
       testFn(done);
     }
-  }, timeOut);
+  }, timeout);
 }
 
-export function it(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmIt, name, fn, timeOut);
+export function it(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+  return _it(jsmIt, expectation, assertion, timeout);
 }
 
-export function xit(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmXIt, name, fn, timeOut);
+export function fit(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+  return _it(jsmFIt, expectation, assertion, timeout);
 }
 
-export function iit(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmIIt, name, fn, timeOut);
+export function xit(expectation: string, assertion: (done: DoneFn) => any, timeout?: number): void {
+  return _it(jsmXIt, expectation, assertion, timeout);
 }
 
 export class SpyObject {

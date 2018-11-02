@@ -21,7 +21,7 @@
 
 import * as ts from 'typescript';
 
-import {CompilerHost, CompilerOptions, LazyRoute} from './transformers/api';
+import {CompilerOptions} from './transformers/api';
 import {getOriginalReferences} from './transformers/compiler_host';
 import {createProgram} from './transformers/entry_points';
 

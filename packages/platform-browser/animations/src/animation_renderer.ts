@@ -74,7 +74,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this.promise.then(() => { this._microtaskId++; });
   }
 
-  /* @internal */
+  /** @internal */
   scheduleListenerCallback(count: number, fn: (e: any) => any, data: any) {
     if (count >= 0 && count < this._microtaskId) {
       this._zone.run(() => fn(data));
@@ -152,7 +152,9 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
   }
 
-  selectRootElement(selectorOrNode: any) { return this.delegate.selectRootElement(selectorOrNode); }
+  selectRootElement(selectorOrNode: any, preserveContent?: boolean) {
+    return this.delegate.selectRootElement(selectorOrNode, preserveContent);
+  }
 
   parentNode(node: any) { return this.delegate.parentNode(node); }
 

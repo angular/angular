@@ -449,14 +449,28 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   visitPropertyWrite(ast: cdAst.PropertyWrite, mode: _Mode): any {
     const receiver: o.Expression = this._visit(ast.receiver, _Mode.Expression);
+
+    let varExpr: o.ReadPropExpr|null = null;
     if (receiver === this._implicitReceiver) {
-      const varExpr = this._getLocal(ast.name);
-      if (varExpr) {
-        throw new Error('Cannot assign to a reference or variable!');
+      const localExpr = this._getLocal(ast.name);
+      if (localExpr) {
+        if (localExpr instanceof o.ReadPropExpr) {
+          // If the local variable is a property read expression, it's a reference
+          // to a 'context.property' value and will be used as the target of the
+          // write expression.
+          varExpr = localExpr;
+        } else {
+          // Otherwise it's an error.
+          throw new Error('Cannot assign to a reference or variable!');
+        }
       }
     }
-    return convertToStatementIfNeeded(
-        mode, receiver.prop(ast.name).set(this._visit(ast.value, _Mode.Expression)));
+    // If no local expression could be produced, use the original receiver's
+    // property as the target.
+    if (varExpr === null) {
+      varExpr = receiver.prop(ast.name);
+    }
+    return convertToStatementIfNeeded(mode, varExpr.set(this._visit(ast.value, _Mode.Expression)));
   }
 
   visitSafePropertyRead(ast: cdAst.SafePropertyRead, mode: _Mode): any {

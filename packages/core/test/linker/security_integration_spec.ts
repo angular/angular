@@ -168,8 +168,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should escape unsafe properties if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
+          // TODO(issue/24571): remove '!'.
           @HostBinding('href') @Input()
-          dirHref: string;
+          dirHref !: string;
         }
 
         const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -183,8 +184,9 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should escape unsafe attributes if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
+          // TODO(issue/24571): remove '!'.
           @HostBinding('attr.href') @Input()
-          dirHref: string;
+          dirHref !: string;
         }
 
         const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -237,7 +239,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha evil()');
+        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();

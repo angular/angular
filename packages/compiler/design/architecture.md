@@ -87,12 +87,12 @@ GreetComponent.ngComponentDef = i0.ɵdefineComponent({
     factory: () => new GreetComponent(),
     template: function (rf, ctx) {
         if (rf & RenderFlags.Create) {
-            i0.ɵE(0, 'div');
-            i0.ɵT(1);
-            i0.ɵe();
+            i0.ɵelementStart(0, 'div');
+            i0.ɵtext(1);
+            i0.ɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵt(1, i0.ɵi1('Hello ', ctx.name, '!'));
+            i0.ɵtextBinding(1, i0.ɵinterpolation1('Hello ', ctx.name, '!'));
         }
     }
 });

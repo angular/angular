@@ -28,7 +28,7 @@ import {InjectionToken} from '../di/injection_token';
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
@@ -54,7 +54,7 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const TRANSLATIONS = new InjectionToken<string>('Translations');
 
@@ -77,7 +77,7 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
 
@@ -102,7 +102,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export enum MissingTranslationStrategy {
   Error = 0,

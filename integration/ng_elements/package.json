@@ -1,0 +1,34 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "google-closure-compiler": "20180319.0.0",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.41",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor"
+  },
+  "scripts": {
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
+    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js"
+  },
+  "private": true
+}

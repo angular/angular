@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="search" type="application/opensearchdescription+xml" href="assets/opensearch.xml">
   <link rel="icon" type="image/x-icon" href="assets/images/favicons/favicon.ico">
   <link rel="icon" type="image/png" href="assets/images/favicons/favicon-32x32.png"
         sizes="32x32">
@@ -20,7 +20,7 @@
   <link rel="apple-touch-icon" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
 
-  <!-- NOTE: These need to be kept in sync with `ngsw-manifest.json`. -->
+  <!-- NOTE: These need to be kept in sync with `ngsw-config.json`. -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet">
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -84,28 +84,6 @@
 
   <script nomodule src="generated/ie-polyfills.min.js"></script>
 
-  <script>
-    //load CE polyfill
-    //HACK: webpack's html plugin mangles the document.write calls if we don't trick it.
-
-    //load the ES5 shim for browsers with native CE support
-    function loadCustomElementsShim(){
-      document.write('<scri' + 'pt src="assets/js/native-shim.js"><' + '/script>');
-    }
-
-    //load the full custom elements polyfill for browsers without support
-    function loadCustomElementsPolyfill(){
-      document.write('<scri' + 'pt src="assets/js/custom-elements.min.js"><' + '/script>');
-    }
-    //detect if we have native CE support
-    if(!window.customElements){
-      loadCustomElementsPolyfill();
-    }
-    else {
-      loadCustomElementsShim();
-    }
-  </script>
-
 </head>
 <body>
 
@@ -113,7 +91,7 @@
 
   <noscript>
     <div class="background-sky hero"></div>
-    <section id="intro">
+    <section id="intro" style="text-shadow: 1px 1px #1976d2;">
       <div class="hero-logo">
         <img src="assets/images/logos/angular/angular.svg" width="250" height="250">
       </div>
@@ -121,7 +99,7 @@
         <div class="hero-headline">One framework.<br>Mobile &amp; desktop.</div>
       </div>
     </section>
-    <h2 style="color: red; text-align: center; margin-top: -50px;">
+    <h2 style="color: red; margin-top: 40px; position: relative; text-align: center; text-shadow: 1px 1px #fafafa;">
       <b><i>This website requires JavaScript.</i></b>
     </h2>
   </noscript>

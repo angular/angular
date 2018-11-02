@@ -15,7 +15,8 @@ import {RenderStore} from '../shared/render_store';
 import {Serializer, SerializerTypes} from '../shared/serializer';
 
 export class NamedEventEmitter {
-  private _listeners: Map<string, Function[]>;
+  // TODO(issue/24571): remove '!'.
+  private _listeners !: Map<string, Function[]>;
 
   listen(eventName: string, callback: Function) { this._getListeners(eventName).push(callback); }
 

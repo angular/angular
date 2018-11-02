@@ -12,8 +12,8 @@ A basic understanding of the following concepts:
 
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
-decorator. The metadata falls
-into three categories:
+decorator.
+The metadata falls into three categories:
 
 * **Static:** Compiler configuration which tells the compiler about directive selectors and where in templates the directives should be applied through selector matching. This is configured via the `declarations` array.
 * **Runtime:** Injector configuration via the `providers` array.
@@ -75,9 +75,8 @@ The following table summarizes the `@NgModule` metadata properties.
       </ol>
 
       Components, directives, and pipes must belong to _exactly_ one module.
-      The compiler emits an error if you try to declare the same class in more than one module.
-
-      Don't re-declare a class imported from another module.
+      The compiler emits an error if you try to declare the same class in more than one module. Be careful not to re-declare a class that is imported
+      directly or indirectly from another module.
 
     </td>
 
@@ -108,7 +107,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       Components in external modules continue to receive the instance provided by their injectors.
 
-      For more information on injector hierarchy and scoping, see [Providers](guide/providers).
+      For more information on injector hierarchy and scoping, see [Providers](guide/providers) and the [DI Guide](guide/dependency-injection).
 
     </td>
 

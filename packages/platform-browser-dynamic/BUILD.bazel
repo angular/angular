@@ -28,7 +28,6 @@ ng_package(
     ],
     entry_point = "packages/platform-browser-dynamic/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
     deps = [

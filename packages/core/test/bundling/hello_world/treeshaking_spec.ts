@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {withBody} from '@angular/core/testing';
+import '@angular/compiler';
+import {withBody} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 

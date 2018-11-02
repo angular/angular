@@ -9,6 +9,14 @@
 import {scheduleMicroTask} from '../util';
 import {AnimationPlayer} from './animation_player';
 
+/**
+ * A programmatic controller for a group of reusable animations.
+ * Used internally to control animations.
+ *
+ * @see `AnimationPlayer`
+ * @see `{@link animations/group group()}`
+ *
+ */
 export class AnimationGroupPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
@@ -140,7 +148,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     });
   }
 
-  /* @internal */
+  /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
     methods.forEach(fn => fn());

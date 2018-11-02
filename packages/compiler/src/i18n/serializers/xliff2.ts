@@ -112,7 +112,8 @@ export class Xliff2 extends Serializer {
 }
 
 class _WriteVisitor implements i18n.Visitor {
-  private _nextPlaceholderId: number;
+  // TODO(issue/24571): remove '!'.
+  private _nextPlaceholderId !: number;
 
   visitText(text: i18n.Text, context?: any): xml.Node[] { return [new xml.Text(text.value)]; }
 
@@ -190,9 +191,12 @@ class _WriteVisitor implements i18n.Visitor {
 
 // Extract messages as xml nodes from the xliff file
 class Xliff2Parser implements ml.Visitor {
-  private _unitMlString: string|null;
-  private _errors: I18nError[];
-  private _msgIdToHtml: {[msgId: string]: string};
+  // TODO(issue/24571): remove '!'.
+  private _unitMlString !: string | null;
+  // TODO(issue/24571): remove '!'.
+  private _errors !: I18nError[];
+  // TODO(issue/24571): remove '!'.
+  private _msgIdToHtml !: {[msgId: string]: string};
   private _locale: string|null = null;
 
   parse(xliff: string, url: string) {
@@ -285,7 +289,8 @@ class Xliff2Parser implements ml.Visitor {
 
 // Convert ml nodes (xliff syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
-  private _errors: I18nError[];
+  // TODO(issue/24571): remove '!'.
+  private _errors !: I18nError[];
 
   convert(message: string, url: string) {
     const xmlIcu = new XmlParser().parse(message, url, true);

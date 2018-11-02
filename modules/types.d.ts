@@ -8,10 +8,10 @@
 
 // This file contains all ambient imports needed to compile the modules/ source code
 
-/// <reference path="../node_modules/zone.js/dist/zone.js.d.ts" />
-/// <reference path="../node_modules/@types/hammerjs/index.d.ts" />
-/// <reference path="../node_modules/@types/jasmine/index.d.ts" />
-/// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/@types/selenium-webdriver/index.d.ts" />
+/// <reference types="hammerjs" />
+/// <reference types="jasmine" />
+/// <reference types="jasminewd2" />
+/// <reference types="node" />
+/// <reference types="zone.js" />
 /// <reference path="./es6-subset.d.ts" />
 /// <reference path="./system.d.ts" />

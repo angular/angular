@@ -1,26 +1,21 @@
 // #docregion
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import {
-  FlyingHeroesComponent,
-  FlyingHeroesImpureComponent
-} from './flying-heroes.component';
+import { ExponentialStrengthPipe } from './exponential-strength.pipe';
+import { FetchJsonPipe } from './fetch-json.pipe';
+import { FlyingHeroesComponent, FlyingHeroesImpureComponent } from './flying-heroes.component';
+import { FlyingHeroesImpurePipe, FlyingHeroesPipe } from './flying-heroes.pipe';
 import { HeroAsyncMessageComponent } from './hero-async-message.component';
 import { HeroBirthdayComponent } from './hero-birthday1.component';
 import { HeroBirthday2Component } from './hero-birthday2.component';
 import { HeroListComponent } from './hero-list.component';
-import { PowerBoosterComponent } from './power-booster.component';
 import { PowerBoostCalculatorComponent } from './power-boost-calculator.component';
-import {
-  FlyingHeroesPipe,
-  FlyingHeroesImpurePipe
-} from './flying-heroes.pipe';
-import { FetchJsonPipe } from './fetch-json.pipe';
-import { ExponentialStrengthPipe } from './exponential-strength.pipe';
+import { PowerBoosterComponent } from './power-booster.component';
+
 
 @NgModule({
   imports: [
@@ -43,6 +38,6 @@ import { ExponentialStrengthPipe } from './exponential-strength.pipe';
     FetchJsonPipe,
     ExponentialStrengthPipe
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

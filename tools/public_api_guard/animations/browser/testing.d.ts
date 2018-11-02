@@ -1,4 +1,3 @@
-/** @experimental */
 export declare class MockAnimationDriver implements AnimationDriver {
     animate(element: any, keyframes: {
         [key: string]: string | number;
@@ -11,7 +10,6 @@ export declare class MockAnimationDriver implements AnimationDriver {
     static log: AnimationPlayer[];
 }
 
-/** @experimental */
 export declare class MockAnimationPlayer extends NoopAnimationPlayer {
     currentSnapshot: ɵStyleData;
     delay: number;

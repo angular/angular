@@ -51,6 +51,7 @@ const UNDEFINED = new Object();
  * resolve all of the object's dependencies automatically.
  *
  * @deprecated from v5 - slow and brings in a lot of code, Use `Injector.create` instead.
+ * @publicApi
  */
 export abstract class ReflectiveInjector implements Injector {
   /**
@@ -140,7 +141,6 @@ export abstract class ReflectiveInjector implements Injector {
    * var injector = ReflectiveInjector.fromResolvedProviders(providers);
    * expect(injector.get(Car) instanceof Car).toBe(true);
    * ```
-   * @experimental
    */
   static fromResolvedProviders(providers: ResolvedReflectiveProvider[], parent?: Injector):
       ReflectiveInjector {
@@ -153,15 +153,6 @@ export abstract class ReflectiveInjector implements Injector {
    *
    * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
    * -->
-   *
-   * @usageNotes
-   * ### Example
-   *
-   * ```typescript
-   * var parent = ReflectiveInjector.resolveAndCreate([]);
-   * var child = parent.resolveAndCreateChild([]);
-   * expect(child.parent).toBe(parent);
-   * ```
    */
   abstract get parent(): Injector|null;
 

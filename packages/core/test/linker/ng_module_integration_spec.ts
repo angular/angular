@@ -8,10 +8,13 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
 import {Console} from '@angular/core/src/console';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {NgModuleData} from '@angular/core/src/view/types';
+import {tokenKey} from '@angular/core/src/view/util';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {InternalNgModuleRef} from '../../src/linker/ng_module_factory';
+import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
 import {stringify} from '../../src/util';
 
@@ -33,36 +36,27 @@ class TurboEngine extends Engine {}
 const CARS = new InjectionToken<Car[]>('Cars');
 @Injectable()
 class Car {
-  engine: Engine;
-  constructor(engine: Engine) { this.engine = engine; }
+  constructor(public engine: Engine) {}
 }
 
 @Injectable()
 class CarWithOptionalEngine {
-  engine: Engine;
-  constructor(@Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() public engine: Engine) {}
 }
 
 @Injectable()
 class CarWithDashboard {
-  engine: Engine;
-  dashboard: Dashboard;
-  constructor(engine: Engine, dashboard: Dashboard) {
-    this.engine = engine;
-    this.dashboard = dashboard;
-  }
+  constructor(public engine: Engine, public dashboard: Dashboard) {}
 }
 
 @Injectable()
 class SportsCar extends Car {
-  engine: Engine;
   constructor(engine: Engine) { super(engine); }
 }
 
 @Injectable()
 class CarWithInject {
-  engine: Engine;
-  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) public engine: Engine) {}
 }
 
 @Injectable()
@@ -82,8 +76,9 @@ class SomeComp {
 
 @Directive({selector: '[someDir]'})
 class SomeDirective {
+  // TODO(issue/24571): remove '!'.
   @HostBinding('title') @Input()
-  someDir: string;
+  someDir !: string;
 }
 
 @Pipe({name: 'somePipe'})
@@ -125,9 +120,13 @@ function declareTests({useJit}: {useJit: boolean}) {
       injector = _injector;
     }));
 
+    function createModuleFactory<T>(moduleType: Type<T>): NgModuleFactory<T> {
+      return compiler.compileModuleSync(moduleType);
+    }
+
     function createModule<T>(
         moduleType: Type<T>, parentInjector?: Injector | null): NgModuleRef<T> {
-      return compiler.compileModuleSync(moduleType).create(parentInjector || null);
+      return createModuleFactory(moduleType).create(parentInjector || null);
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
@@ -745,7 +744,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const injector = createInjector([CarWithOptionalEngine]);
 
         const car = injector.get(CarWithOptionalEngine);
-        expect(car.engine).toEqual(null);
+        expect(car.engine).toBeNull();
       });
 
       it('should flatten passed-in providers', () => {
@@ -1296,6 +1295,37 @@ function declareTests({useJit}: {useJit: boolean}) {
           expect(() => createModule(SomeModule).injector)
               .toThrowError(
                   `Invalid provider for the NgModule 'ImportedModule1' - only instances of Provider and Type are allowed, got: [?broken?]`);
+        });
+      });
+
+      describe('tree shakable providers', () => {
+        it('definition should not persist across NgModuleRef instances', () => {
+          @NgModule()
+          class SomeModule {
+          }
+
+          class Bar {
+            static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
+              factory: () => new Bar(),
+              providedIn: SomeModule,
+            });
+          }
+
+          const factory = createModuleFactory(SomeModule);
+          const ngModuleRef1 = factory.create(null);
+
+          // Inject a tree shakeable provider token.
+          ngModuleRef1.injector.get(Bar);
+
+          // Tree Shakeable provider definition should get added to the NgModule data.
+          const providerDef1 = (ngModuleRef1 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
+          expect(providerDef1).not.toBeUndefined();
+
+          // Instantiate the same module. The tree shakeable provider
+          // definition should not already be present.
+          const ngModuleRef2 = factory.create(null);
+          const providerDef2 = (ngModuleRef2 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
+          expect(providerDef2).toBeUndefined();
         });
       });
     });

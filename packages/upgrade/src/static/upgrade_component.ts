@@ -32,22 +32,23 @@ class Bindings {
  * A helper class that allows an AngularJS component to be used from Angular.
  *
  * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
- * library for hybrid upgrade apps that support AoT compilation*
+ * library for hybrid upgrade apps that support AoT compilation.*
  *
  * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
  *
+ * @usageNotes
  * ### Examples
  *
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
  * to be made available in Angular templates.
  *
- * {@example upgrade/static/ts/module.ts region="ng1-hero"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-hero"}
  *
  * We must create a `Directive` that will make this AngularJS component
  * available inside Angular templates.
  *
- * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-hero-wrapper"}
  *
  * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
@@ -62,7 +63,7 @@ class Bindings {
  *   * the AngularJS name of the component (`ng1Hero`)
  *   * the `ElementRef` and `Injector` for the component wrapper
  *
- * @experimental
+ * @publicApi
  */
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private helper: UpgradeHelper;
@@ -76,30 +77,30 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private directive: angular.IDirective;
   private bindings: Bindings;
 
-  private controllerInstance: IControllerInstance;
-  private bindingDestination: IBindingDestination;
+  // TODO(issue/24571): remove '!'.
+  private controllerInstance !: IControllerInstance;
+  // TODO(issue/24571): remove '!'.
+  private bindingDestination !: IBindingDestination;
 
-  // We will be instantiating the controller in the `ngOnInit` hook, when the first `ngOnChanges`
-  // will have been already triggered. We store the `SimpleChanges` and "play them back" later.
-  private pendingChanges: SimpleChanges|null;
+  // We will be instantiating the controller in the `ngOnInit` hook, when the
+  // first `ngOnChanges` will have been already triggered. We store the
+  // `SimpleChanges` and "play them back" later.
+  // TODO(issue/24571): remove '!'.
+  private pendingChanges !: SimpleChanges | null;
 
-  private unregisterDoCheckWatcher: Function;
+  // TODO(issue/24571): remove '!'.
+  private unregisterDoCheckWatcher !: Function;
 
   /**
    * Create a new `UpgradeComponent` instance. You should not normally need to do this.
    * Instead you should derive a new class from this one and call the super constructor
    * from the base class.
    *
-   * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper" }
+   * {@example upgrade/static/ts/full/module.ts region="ng1-hero-wrapper" }
    *
    * * The `name` parameter should be the name of the AngularJS directive.
    * * The `elementRef` and `injector` parameters should be acquired from Angular by dependency
    *   injection into the base class constructor.
-   *
-   * Note that we must manually implement lifecycle hooks that call through to the super class.
-   * This is because, at the moment, the AoT compiler is not able to tell that the
-   * `UpgradeComponent`
-   * already implements them and so does not wire up calls to them at runtime.
    */
   constructor(private name: string, private elementRef: ElementRef, private injector: Injector) {
     this.helper = new UpgradeHelper(injector, name, elementRef);
@@ -217,10 +218,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (isFunction(this.unregisterDoCheckWatcher)) {
       this.unregisterDoCheckWatcher();
     }
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
-      this.controllerInstance.$onDestroy();
-    }
-    this.$componentScope.$destroy();
+    this.helper.onDestroy(this.$componentScope, this.controllerInstance);
   }
 
   private initializeBindings(directive: angular.IDirective) {

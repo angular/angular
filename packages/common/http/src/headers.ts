@@ -15,12 +15,14 @@ interface Update {
 /**
  * Immutable set of Http headers, with lazy parsing.
  *
+ * @publicApi
  */
 export class HttpHeaders {
   /**
    * Internal map of lowercase header names to values.
    */
-  private headers: Map<string, string[]>;
+  // TODO(issue/24571): remove '!'.
+  private headers !: Map<string, string[]>;
 
 
   /**
@@ -32,7 +34,8 @@ export class HttpHeaders {
   /**
    * Complete the lazy initialization of this object (needed before reading).
    */
-  private lazyInit: HttpHeaders|Function|null;
+  // TODO(issue/24571): remove '!'.
+  private lazyInit !: HttpHeaders | Function | null;
 
   /**
    * Queued updates to be materialized the next initialization.

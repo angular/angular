@@ -48,7 +48,7 @@ Follow these steps to get patch branch up to date.
 
 1. Check out the most recent patch branch: `git checkout 4.3.x`
 2. Get a list of PRs merged into master: `git log master --oneline -n10`
-3. For each PR number in the commit message run: `././scripts/github/merge-pr 1234`
+3. For each PR number in the commit message run: `./scripts/github/merge-pr 1234`
    - The PR will only merge if the `PR target:` matches the branch.
 
 Once all of the PRs are in patch branch, push the all branches and tags to github using `push-upstream` script.

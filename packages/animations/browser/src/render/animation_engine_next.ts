@@ -25,9 +25,11 @@ export class AnimationEngine {
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
-  constructor(private _driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(_driver, normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(_driver, normalizer);
+  constructor(
+      private bodyNode: any, private _driver: AnimationDriver,
+      normalizer: AnimationStyleNormalizer) {
+    this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
         this.onRemovalComplete(element, context);

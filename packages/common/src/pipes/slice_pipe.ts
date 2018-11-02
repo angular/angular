@@ -15,6 +15,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Creates a new `Array` or `String` containing a subset (slice) of the elements.
  *
+ * @usageNotes
+ *
  * All behavior is based on the expected behavior of the JavaScript API `Array.prototype.slice()`
  * and `String.prototype.slice()`.
  *
@@ -31,16 +33,17 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * produces the following:
  *
- *     <li>b</li>
- *     <li>c</li>
+ * ```html
+ * <li>b</li>
+ * <li>c</li>
+ * ```
  *
- * ## String Examples
+ * ### String Examples
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
  *
- *
+ * @publicApi
  */
-
 @Pipe({name: 'slice', pure: false})
 export class SlicePipe implements PipeTransform {
   /**

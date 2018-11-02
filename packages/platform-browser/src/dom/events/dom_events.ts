@@ -10,10 +10,6 @@ import {isPlatformServer} from '@angular/common';
 import {Inject, Injectable, NgZone, Optional, PLATFORM_ID} from '@angular/core';
 
 
-// Import zero symbols from zone.js. This causes the zone ambient type to be
-// added to the type-checker, without emitting any runtime module load statement
-import {} from 'zone.js';
-
 import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';

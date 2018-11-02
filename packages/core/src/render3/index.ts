@@ -5,134 +5,180 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
-import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
-import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {InheritDefinitionFeature} from './features/inherit_definition_feature';
+import {NgOnChangesFeature} from './features/ng_onchanges_feature';
+import {ProvidersFeature} from './features/providers_feature';
+import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
-export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2, injectComponentFactoryResolver} from './component_ref';
+export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
-
-
-// Naming scheme:
-// - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),
-// C(Container), L(Listener)
-// - lower case letters are for binding: b(bind)
-// - lower case letters are for binding target: p(property), a(attribute), k(class), s(style),
-// i(input)
-// - lower case letters for guarding life cycle hooks: l(lifeCycle)
-// - lower case for closing: c(containerEnd), e(elementEnd), v(viewEnd)
 // clang-format off
 export {
+  bind,
+  interpolation1,
+  interpolation2,
+  interpolation3,
+  interpolation4,
+  interpolation5,
+  interpolation6,
+  interpolation7,
+  interpolation8,
+  interpolationV,
 
-  NO_CHANGE as NC,
+  container,
+  containerRefreshStart,
+  containerRefreshEnd,
 
-  bind as b,
-  interpolation1 as i1,
-  interpolation2 as i2,
-  interpolation3 as i3,
-  interpolation4 as i4,
-  interpolation5 as i5,
-  interpolation6 as i6,
-  interpolation7 as i7,
-  interpolation8 as i8,
-  interpolationV as iV,
+  nextContext,
 
-  container as C,
-  containerRefreshStart as cR,
-  containerRefreshEnd as cr,
+  element,
+  elementAttribute,
+  elementClassProp,
+  elementEnd,
+  elementProperty,
+  elementStart,
 
-  element as Ee,
-  elementAttribute as a,
-  elementClass as k,
-  elementClassNamed as kn,
-  elementEnd as e,
-  elementProperty as p,
-  elementStart as E,
-  elementStyle as s,
-  elementStyleNamed as sn,
+  elementContainerStart,
+  elementContainerEnd,
 
-  listener as L,
-  store as st,
-  load as ld,
-  loadDirective as d,
+  elementStyling,
+  elementStylingMap,
+  elementStyleProp,
+  elementStylingApply,
 
-  namespaceHTML as NH,
-  namespaceMathML as NM,
-  namespaceSVG as NS,
+  listener,
+  store,
+  load,
 
-  projection as P,
-  projectionDef as pD,
+  namespaceHTML,
+  namespaceMathML,
+  namespaceSVG,
 
-  text as T,
-  textBinding as t,
+  projection,
+  projectionDef,
 
-  reserveSlots as rS,
+  text,
+  textBinding,
+  template,
 
-  embeddedViewStart as V,
-  embeddedViewEnd as v,
+  reference,
+
+  embeddedViewStart,
+  embeddedViewEnd,
   detectChanges,
   markDirty,
   tick,
+
+  directiveInject,
+  injectAttribute,
 } from './instructions';
 
-export {NgModuleDef, NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+export {
+  getCurrentView,
+  restoreView,
+
+  enableBindings,
+  disableBindings,
+} from './state';
+
+export {
+  i18nAttribute,
+  i18nExp,
+  i18nStart,
+  i18nEnd,
+  i18nApply,
+  i18nMapping,
+  i18nInterpolation1,
+  i18nInterpolation2,
+  i18nInterpolation3,
+  i18nInterpolation4,
+  i18nInterpolation5,
+  i18nInterpolation6,
+  i18nInterpolation7,
+  i18nInterpolation8,
+  i18nInterpolationV,
+  i18nExpMapping,
+  I18nInstruction,
+  I18nExpInstruction
+} from './i18n';
+
+export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
     AttributeMarker
 } from './interfaces/node';
 
 export {
-  pipe as Pp,
-  pipeBind1 as pb1,
-  pipeBind2 as pb2,
-  pipeBind3 as pb3,
-  pipeBind4 as pb4,
-  pipeBindV as pbV,
+  setClassMetadata,
+} from './metadata';
+
+export {
+  pipe,
+  pipeBind1,
+  pipeBind2,
+  pipeBind3,
+  pipeBind4,
+  pipeBindV,
 } from './pipe';
 
 export {
   QueryList,
-
-  query as Q,
-  queryRefresh as qR,
+  query,
+  queryRefresh,
 } from './query';
+export  {
+  registerContentQuery,
+  loadQueryList,
+} from './instructions';
+
 export {
-  pureFunction0 as f0,
-  pureFunction1 as f1,
-  pureFunction2 as f2,
-  pureFunction3 as f3,
-  pureFunction4 as f4,
-  pureFunction5 as f5,
-  pureFunction6 as f6,
-  pureFunction7 as f7,
-  pureFunction8 as f8,
-  pureFunctionV as fV,
+  pureFunction0,
+  pureFunction1,
+  pureFunction2,
+  pureFunction3,
+  pureFunction4,
+  pureFunction5,
+  pureFunction6,
+  pureFunction7,
+  pureFunction8,
+  pureFunctionV,
 } from './pure_function';
+
+export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
 
 // clang-format on
 
 export {
-  ComponentDefInternal,
+  BaseDef,
+  ComponentDef,
+  ComponentDefWithMeta,
   ComponentTemplate,
   ComponentType,
-  DirectiveDefInternal,
+  DirectiveDef,
   DirectiveDefFlags,
+  DirectiveDefWithMeta,
   DirectiveType,
   NgOnChangesFeature,
-  PublicFeature,
+  InheritDefinitionFeature,
+  ProvidersFeature,
   PipeDef,
+  PipeDefWithMeta,
   LifecycleHooksFeature,
   defineComponent,
   defineDirective,
   defineNgModule,
+  defineBase,
   definePipe,
   getHostElement,
   getRenderedText,
   renderComponent,
   whenRendered,
 };
+
+export {NO_CHANGE} from './tokens';

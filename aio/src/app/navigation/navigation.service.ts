@@ -11,7 +11,7 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 import { CurrentNodes, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 export { CurrentNodes, CurrentNode, NavigationNode, NavigationResponse, NavigationViews, VersionInfo } from './navigation.model';
 
-const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
+export const navigationPath = CONTENT_URL_PREFIX + 'navigation.json';
 
 @Injectable()
 export class NavigationService {
@@ -95,8 +95,11 @@ export class NavigationService {
       this.location.currentPath,
 
       (navMap, url) => {
-        const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
+        const matchSpecialUrls = /^api/.exec(url);
+        if (matchSpecialUrls) {
+          url = matchSpecialUrls[0];
+        }
+        return navMap.get(url) || { '' : { view: '', url: url, nodes: [] }};
       })
       .pipe(publishReplay(1));
     (currentNodes as ConnectableObservable<CurrentNodes>).connect();

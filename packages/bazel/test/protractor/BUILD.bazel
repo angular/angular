@@ -1,0 +1,34 @@
+load("//packages/bazel:index.bzl", "protractor_web_test_suite")
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "ts_spec",
+    testonly = True,
+    srcs = ["test.spec.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "@ngdeps//@types/selenium-webdriver",
+        "@ngdeps//protractor",
+    ],
+)
+
+ts_library(
+    name = "ts_conf",
+    testonly = True,
+    srcs = ["conf.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/bazel/src/protractor/utils",
+        "@ngdeps//protractor",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "test",
+    configuration = ":ts_conf",
+    data = ["//packages/bazel/src/protractor/utils"],
+    deps = [
+        ":ts_spec",
+        "@ngdeps//protractor",
+    ],
+)

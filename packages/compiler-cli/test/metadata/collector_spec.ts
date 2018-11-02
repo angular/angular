@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
-import {ClassMetadata, ConstructorMetadata, METADATA_VERSION, MetadataEntry, ModuleMetadata, isClassMetadata, isMetadataGlobalReferenceExpression} from '../../src/metadata/schema';
+import {ClassMetadata, ConstructorMetadata, METADATA_VERSION, MetadataEntry, MetadataMap, MetadataSymbolicExpression, ModuleMetadata, isClassMetadata, isMetadataGlobalReferenceExpression} from '../../src/metadata/schema';
 
 import {Directory, Host, expectValidSources} from './typescript.mocks';
 
@@ -40,7 +40,7 @@ describe('Collector', () => {
       'interface-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
-    program = service.getProgram();
+    program = service.getProgram() !;
     collector = new MetadataCollector({quotedNames: true});
   });
 
@@ -269,9 +269,11 @@ describe('Collector', () => {
   it('should provide any reference for an any ctor parameter type', () => {
     const casesAny = <ClassMetadata>casesMetadata.metadata['CaseAny'];
     expect(casesAny).toBeTruthy();
-    const ctorData = casesAny.members !['__ctor__'];
-    expect(ctorData).toEqual(
-        [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}]);
+    const ctorData = casesAny.members !['__ctor__'] as ConstructorMetadata[];
+    expect(ctorData).toEqual([{
+      __symbolic: 'constructor',
+      parameters: [{__symbolic: 'reference', name: 'any'} as MetadataSymbolicExpression]
+    }]);
   });
 
   it('should record annotations on set and get declarations', () => {
@@ -285,7 +287,8 @@ describe('Collector', () => {
           arguments: ['firstName']
         }]
       }]
-    });
+    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
+
     const caseGetProp = <ClassMetadata>casesMetadata.metadata['GetProp'];
     expect(caseGetProp.members).toEqual(propertyData(11));
     const caseSetProp = <ClassMetadata>casesMetadata.metadata['SetProp'];
@@ -297,8 +300,7 @@ describe('Collector', () => {
   it('should record references to parameterized types', () => {
     const casesForIn = <ClassMetadata>casesMetadata.metadata['NgFor'];
     expect(casesForIn).toEqual({
-      __symbolic: 'class',
-      decorators: [{
+      __symbolic: 'class', decorators: [{
         __symbolic: 'call',
         expression: {
           __symbolic: 'reference',
@@ -308,17 +310,17 @@ describe('Collector', () => {
           character: 7
         }
       }],
-      members: {
-        __ctor__: [{
-          __symbolic: 'constructor',
-          parameters: [{
-            __symbolic: 'reference',
-            name: 'ClassReference',
-            arguments: [{__symbolic: 'reference', name: 'NgForRow'}]
-          }]
-        }]
-      }
-    });
+          members: {
+            __ctor__: [{
+              __symbolic: 'constructor',
+              parameters: [{
+                __symbolic: 'reference',
+                name: 'ClassReference',
+                arguments: [{__symbolic: 'reference', name: 'NgForRow'}]
+              }]
+            }]
+          }
+    } as any as ClassMetadata);  // TODO: Review use of `any` here (#19904)
   });
 
   it('should report errors for destructured imports', () => {
@@ -358,9 +360,9 @@ describe('Collector', () => {
     const someClass = <ClassMetadata>metadata.metadata['SomeClass'];
     const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
-    expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29}
-    ]);
+    expect(parameters).toEqual([{
+      __symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29
+    } as MetadataSymbolicExpression]);
   });
 
   it('should record all exported classes', () => {
@@ -443,9 +445,9 @@ describe('Collector', () => {
     const someClass = <ClassMetadata>metadata.metadata['SomeClass'];
     const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
-    expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29}
-    ]);
+    expect(parameters).toEqual([{
+      __symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29
+    } as MetadataSymbolicExpression]);
   });
 
   it('should be able to collect the value of an enum', () => {
@@ -533,7 +535,7 @@ describe('Collector', () => {
           arguments: ['a']
         }
       }]
-    }]);
+    }] as any as MetadataSymbolicExpression[]);  // TODO: Review use of `any` here (#19904)
   });
 
   it('should be able to collect a static field', () => {
@@ -576,7 +578,7 @@ describe('Collector', () => {
           }
         }]
       }]
-    }]);
+    }] as any as MetadataSymbolicExpression[]);  // TODO: Review use of `any` here (#19904)
   });
 
   it('should be able to collect a method with a conditional expression', () => {
@@ -764,7 +766,7 @@ describe('Collector', () => {
         }]],
         parameters: [{__symbolic: 'reference', name: 'any'}]
       }]
-    });
+    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
   });
 
   describe('with interpolations', () => {
@@ -868,7 +870,7 @@ describe('Collector', () => {
           {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24}
         ]
       }]
-    });
+    } as any as MetadataMap);  // TODO: Review use of `any` here (#19904)
   });
 
   it('should treat exported class expressions as a class', () => {
@@ -974,7 +976,7 @@ describe('Collector', () => {
     });
   });
 
-  describe('regerssion', () => {
+  describe('regression', () => {
     it('should be able to collect a short-hand property value', () => {
       const metadata = collectSource(`
         const children = { f1: 1 };
@@ -1040,37 +1042,6 @@ describe('Collector', () => {
           .not.toBeUndefined('typeGuard was not collected');
     });
 
-    it('should be able to collect an invalid access expression', () => {
-      const source = createSource(`
-        import {Component} from '@angular/core';
-
-        const value = [];
-        @Component({
-          provider: [{provide: 'some token', useValue: value[]}]
-        })
-        export class MyComponent {}
-      `);
-      const metadata = collector.getMetadata(source) !;
-      expect(metadata.metadata.MyComponent).toEqual({
-        __symbolic: 'class',
-        decorators: [{
-          __symbolic: 'call',
-          expression: {
-            __symbolic: 'reference',
-            module: '@angular/core',
-            name: 'Component',
-            line: 4,
-            character: 9
-          },
-          arguments: [{
-            __symbolic: 'error',
-            message: 'Expression form not supported',
-            line: 5,
-            character: 55
-          }]
-        }]
-      });
-    });
   });
 
   describe('references', () => {
@@ -1157,7 +1128,7 @@ describe('Collector', () => {
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
-    program = service.getProgram();
+    program = service.getProgram() !;
   }
 
   function collectSource(content: string): ModuleMetadata {

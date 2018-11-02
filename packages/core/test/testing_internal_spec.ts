@@ -21,6 +21,18 @@ class SpyTestObj extends SpyObject {
 
 {
   describe('testing', () => {
+    describe('should respect custom equality tester', () => {
+      beforeEach(() => {
+        const equalIfMarried =
+            (first: any, second: any) => { return first === 'kevin' && second === 'patricia'; };
+        jasmine.addCustomEqualityTester(equalIfMarried);
+      });
+
+      it('for positive test', () => { expect('kevin').toEqual('patricia'); });
+
+      it('for negative test', () => { expect('kevin').not.toEqual('kevin'); });
+    });
+
     describe('equality', () => {
       it('should structurally compare objects', () => {
         const expected = new TestObj(new TestObj({'one': [1, 2]}));

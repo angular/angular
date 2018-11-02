@@ -34,7 +34,7 @@ The command generates skeleton `HeroService` class in `src/app/hero.service.ts`
 The `HeroService` class should look like the following example.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
- title="src/app/hero.service.ts (new service)" linenums="false">
+ header="src/app/hero.service.ts (new service)" linenums="false">
 </code-example>
 
 ### _@Injectable()_ services
@@ -87,17 +87,10 @@ If you look at the `@Injectable()` statement right before the `HeroService` clas
 When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it. 
 Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-If you need to, you can register providers at different levels: 
-in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`. 
-For instance, you could have told the CLI to provide the service at the module level automatically by appending `--module=app`.
-
-<code-example language="sh" class="code-shell">
-  ng generate service hero --module=app
-</code-example>
-
-To learn more about providers and injectors, see the [Dependency Injection guide](guide/dependency-injection).
+To learn more about providers, see the [Providers section](guide/providers).
+To learn more about injectors, see the [Dependency Injection guide](guide/dependency-injection).
 
 </div>
 
@@ -105,7 +98,7 @@ The `HeroService` is now ready to plug into the `HeroesComponent`.
 
 <div class="alert is-important">
 
-This is a interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
+This is an interim code sample that will allow you to provide and use the `HeroService`.  At this point, the code will differ from the `HeroService` in the ["final code review"](#final-code-review).
 
 </div>
 
@@ -117,7 +110,7 @@ Open the `HeroesComponent` class file.
 Delete the `HEROES` import, because you won't need that anymore.
 Import the `HeroService` instead.
 
-<code-example path="toh-pt4/src/app/heroes/heroes.component.ts" title="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
+<code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
 Replace the definition of the `heroes` property with a simple declaration.
@@ -204,7 +197,7 @@ In this tutorial, you'll simulate getting data from the server with the RxJS `of
 Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
 
 <code-example path="toh-pt4/src/app/hero.service.ts" 
-title="src/app/hero.service.ts (Observable imports)" region="import-observable">
+header="src/app/hero.service.ts (Observable imports)" region="import-observable">
 </code-example>
 
 Replace the `getHeroes` method with this one.
@@ -213,7 +206,7 @@ Replace the `getHeroes` method with this one.
 
 `of(HEROES)` returns an `Observable<Hero[]>` that emits  _a single value_, the array of mock heroes.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 In the [HTTP tutorial](tutorial/toh-pt6), you'll call `HttpClient.get<Hero[]>()` which also returns an `Observable<Hero[]>` that emits  _a single value_, an array of heroes from the body of the HTTP response.
 
@@ -231,11 +224,11 @@ Find the `getHeroes` method and replace it with the following code
 
 <code-tabs>
 
-  <code-pane title="heroes.component.ts (Observable)" 
+  <code-pane header="heroes.component.ts (Observable)" 
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-  <code-pane title="heroes.component.ts (Original)" 
+  <code-pane header="heroes.component.ts (Original)" 
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
 
@@ -279,7 +272,7 @@ The CLI creates the component files in the `src/app/messages` folder and declare
 Modify the `AppComponent` template to display the generated `MessagesComponent`
 
 <code-example
-  title = "/src/app/app.component.html"
+  header = "/src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
 </code-example>
 
@@ -296,7 +289,7 @@ Use the CLI to create the `MessageService` in `src/app`.
 Open `MessageService` and replace its contents with the following.
 
 <code-example
-  title = "/src/app/message.service.ts"
+  header = "/src/app/message.service.ts"
   path="toh-pt4/src/app/message.service.ts">
 </code-example>
 
@@ -308,7 +301,7 @@ The service exposes its cache of `messages` and two methods: one to `add()` a me
 Re-open the `HeroService` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/hero.service.ts (import MessageService)"
+  header = "/src/app/hero.service.ts (import MessageService)"
   path="toh-pt4/src/app/hero.service.ts" region="import-message-service">
 </code-example>
 
@@ -320,7 +313,7 @@ when it creates the `HeroService`.
   path="toh-pt4/src/app/hero.service.ts" region="ctor">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 This is a typical "*service-in-service*" scenario:
 you inject the `MessageService` into the `HeroService` which is injected into the `HeroesComponent`.
@@ -342,7 +335,7 @@ including the message sent by the `HeroService` when it fetches heroes.
 Open `MessagesComponent` and import the `MessageService`.
 
 <code-example
-  title = "/src/app/messages/messages.component.ts (import MessageService)"
+  header = "/src/app/messages/messages.component.ts (import MessageService)"
   path="toh-pt4/src/app/messages/messages.component.ts" region="import-message-service">
 </code-example>
 
@@ -367,7 +360,7 @@ Angular only binds to _public_ component properties.
 Replace the CLI-generated `MessagesComponent` template with the following.
 
 <code-example
-  title = "src/app/messages/messages.component.html"
+  header = "src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
 </code-example>
 
@@ -397,35 +390,35 @@ Here are the code files discussed on this page and your app should look like thi
 
 <code-tabs>
 
-  <code-pane title="src/app/hero.service.ts" 
+  <code-pane header="src/app/hero.service.ts" 
   path="toh-pt4/src/app/hero.service.ts">
   </code-pane>
 
-  <code-pane title="src/app/message.service.ts" 
+  <code-pane header="src/app/message.service.ts" 
   path="toh-pt4/src/app/message.service.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.ts"
+  <code-pane header="src/app/heroes/heroes.component.ts"
   path="toh-pt4/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.ts"
+  <code-pane header="src/app/messages/messages.component.ts"
   path="toh-pt4/src/app/messages/messages.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.html"
+  <code-pane header="src/app/messages/messages.component.html"
   path="toh-pt4/src/app/messages/messages.component.html">
   </code-pane>
 
-  <code-pane title="src/app/messages/messages.component.css"
+  <code-pane header="src/app/messages/messages.component.css"
   path="toh-pt4/src/app/messages/messages.component.css">
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts"
+  <code-pane header="src/app/app.module.ts"
   path="toh-pt4/src/app/app.module.ts">
   </code-pane>
 
-  <code-pane title="src/app/app.component.html"
+  <code-pane header="src/app/app.component.html"
   path="toh-pt4/src/app/app.component.html">
   </code-pane>
 

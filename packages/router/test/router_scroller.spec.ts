@@ -15,6 +15,24 @@ import {Scroll} from '../src/events';
 import {RouterScroller} from '../src/router_scroller';
 
 describe('RouterScroller', () => {
+  it('defaults to disabled', () => {
+    const events = new Subject<RouterEvent>();
+    const router = <any>{
+      events,
+      parseUrl: (url: any) => new DefaultUrlSerializer().parse(url),
+      triggerEvent: (e: any) => events.next(e)
+    };
+
+    const viewportScroller = jasmine.createSpyObj(
+        'viewportScroller',
+        ['getScrollPosition', 'scrollToPosition', 'scrollToAnchor', 'setHistoryScrollRestoration']);
+    setScroll(viewportScroller, 0, 0);
+    const scroller = new RouterScroller(router, router);
+
+    expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
+    expect((scroller as any).options.anchorScrolling).toBe('disabled');
+  });
+
   describe('scroll to top', () => {
     it('should scroll to the top', () => {
       const {events, viewportScroller} =

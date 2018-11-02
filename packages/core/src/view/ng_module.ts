@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableDef} from '../di/defs';
+import {InjectableDef, getInjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
-import {INJECTOR, InjectFlags, Injector, setCurrentInjector} from '../di/injector';
+import {INJECTOR, Injector} from '../di/injector';
+import {setCurrentInjector} from '../di/injector_compatibility';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util';
@@ -43,7 +44,7 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
   let isRoot: boolean = false;
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
-    if (provider.token === APP_ROOT) {
+    if (provider.token === APP_ROOT && provider.value === true) {
       isRoot = true;
     }
     if (provider.flags & NodeFlags.TypeNgModule) {
@@ -97,6 +98,7 @@ export function resolveNgModuleDep(
         return data;
     }
     const providerDef = data._def.providersByKey[tokenKey];
+    let injectableDef: InjectableDef<any>|null;
     if (providerDef) {
       let providerInstance = data._providers[providerDef.index];
       if (providerInstance === undefined) {
@@ -104,9 +106,8 @@ export function resolveNgModuleDep(
             _createProviderInstance(data, providerDef);
       }
       return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
-    } else if (depDef.token.ngInjectableDef && targetsModule(data, depDef.token.ngInjectableDef)) {
-      const injectableDef = depDef.token.ngInjectableDef as InjectableDef<any>;
-      const key = tokenKey;
+    } else if (
+        (injectableDef = getInjectableDef(depDef.token)) && targetsModule(data, injectableDef)) {
       const index = data._providers.length;
       data._def.providersByKey[depDef.tokenKey] = {
         flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,

@@ -1,11 +1,10 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 # Uses separate test rules to allow the tests to run in parallel
 
 ts_library(
     name = "test_utils",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "mocks.ts",
         "test_support.ts",
@@ -18,13 +17,14 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
 # extract_18n_spec
 ts_library(
     name = "extract_i18n_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "extract_i18n_spec.ts",
     ],
@@ -32,6 +32,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -41,17 +42,23 @@ jasmine_node_test(
     data = [
         "//packages/core:npm_package",
     ],
+    tags = [
+        "fixme-ivy-aot",
+        "no-ivy-jit",
+    ],
     deps = [
         ":extract_i18n_lib",
+        "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
     ],
 )
 
 # ngc_spec
 ts_library(
     name = "ngc_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "ngc_spec.ts",
     ],
@@ -59,11 +66,13 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
 jasmine_node_test(
     name = "ngc",
+    timeout = "long",  # 900 seconds
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
@@ -71,17 +80,23 @@ jasmine_node_test(
         "//packages/platform-browser:npm_package",
         "//packages/router:npm_package",
     ],
+    tags = [
+        "fixme-ivy-aot",
+        "no-ivy-jit",
+    ],
     deps = [
         ":ngc_lib",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//minimist",
+        "@ngdeps//tsickle",
     ],
 )
 
 # ngctools_api_spec
 ts_library(
     name = "ngtools_api_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "ngtools_api_spec.ts",
     ],
@@ -89,6 +104,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -98,6 +114,10 @@ jasmine_node_test(
     data = [
         "//packages/core:npm_package",
         "//packages/router:npm_package",
+    ],
+    tags = [
+        "fixme-ivy-aot",
+        "no-ivy-jit",
     ],
     deps = [
         ":ngtools_api_lib",
@@ -109,7 +129,7 @@ jasmine_node_test(
 # perform_watch_spec
 ts_library(
     name = "perform_watch_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "perform_watch_spec.ts",
     ],
@@ -117,6 +137,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -128,6 +149,33 @@ jasmine_node_test(
     ],
     deps = [
         ":perform_watch_lib",
+        "//packages/core",
+        "//tools/testing:node",
+    ],
+)
+
+# perform_compile_spec
+ts_library(
+    name = "perform_compile_lib",
+    testonly = True,
+    srcs = [
+        "perform_compile_spec.ts",
+    ],
+    deps = [
+        ":test_utils",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "perform_compile",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+        "//packages/core:npm_package",
+    ],
+    deps = [
+        ":perform_compile_lib",
         "//packages/core",
         "//tools/testing:node",
     ],

@@ -10,6 +10,7 @@
   <aio-select (change)="setStatus($event.option)"
               [options]="statuses"
               [selected]="status"
+              [disabled]="type.value === 'package'"
               label="Status:">
   </aio-select>
 
@@ -21,11 +22,14 @@
 
 <article class="api-list-container l-content-small docs-content">
   <div *ngFor="let section of filteredSections | async" >
-    <h2>{{section.title}}</h2>
-    <ul class="api-list">
+    <h2 *ngIf="section.items"><a [href]="section.path" [class.deprecated-api-item]="section.deprecated">{{section.title}}</a></h2>
+    <ul class="api-list" *ngIf="section.items?.length">
       <ng-container *ngFor="let item of section.items">
-        <li *ngIf="item.show" class="api-item">
-          <a [href]="item.path"><span class="symbol {{item.docType}}"></span> {{item.title}}</a>
+        <li class="api-item">
+          <a [href]="item.path" [class.deprecated-api-item]="item.stability === 'deprecated'">
+            <span class="symbol {{item.docType}}"></span>
+            {{item.title}}
+          </a>
         </li>
       </ng-container>
     </ul>

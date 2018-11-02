@@ -1,0 +1,6 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "protractor.conf.js",
+    "protractor_web_test.bzl",
+])

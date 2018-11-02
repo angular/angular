@@ -46,7 +46,8 @@ class App {
   template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
-  @ContentChildren(forwardRef(() => Lock)) locks: QueryList<Lock>;
+  // TODO(issue/24571): remove '!'.
+  @ContentChildren(forwardRef(() => Lock)) locks !: QueryList<Lock>;
   frame: Frame;
 
   constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }

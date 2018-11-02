@@ -26,6 +26,7 @@ import {Tree, TreeNode} from './utils/tree';
  * RouterState is a tree of activated routes. Every node in this tree knows about the "consumed" URL
  * segments, the extracted parameters, and the resolved data.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -43,7 +44,7 @@ import {Tree, TreeNode} from './utils/tree';
  *
  * See `ActivatedRoute` for more information.
  *
- *
+ * @publicApi
  */
 export class RouterState extends Tree<ActivatedRoute> {
   /** @internal */
@@ -102,19 +103,23 @@ export function createEmptyStateSnapshot(
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class ActivatedRoute {
   /** The current snapshot of this route */
-  snapshot: ActivatedRouteSnapshot;
+  // TODO(issue/24571): remove '!'.
+  snapshot !: ActivatedRouteSnapshot;
   /** @internal */
   _futureSnapshot: ActivatedRouteSnapshot;
   /** @internal */
-  _routerState: RouterState;
+  // TODO(issue/24571): remove '!'.
+  _routerState !: RouterState;
   /** @internal */
-  _paramMap: Observable<ParamMap>;
+  // TODO(issue/24571): remove '!'.
+  _paramMap !: Observable<ParamMap>;
   /** @internal */
-  _queryParamMap: Observable<ParamMap>;
+  // TODO(issue/24571): remove '!'.
+  _queryParamMap !: Observable<ParamMap>;
 
   /** @internal */
   constructor(
@@ -245,7 +250,7 @@ function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class ActivatedRouteSnapshot {
   /** The configuration used to match this route **/
@@ -257,13 +262,17 @@ export class ActivatedRouteSnapshot {
   /** @internal */
   _resolve: ResolveData;
   /** @internal */
-  _resolvedData: Data;
+  // TODO(issue/24571): remove '!'.
+  _resolvedData !: Data;
   /** @internal */
-  _routerState: RouterStateSnapshot;
+  // TODO(issue/24571): remove '!'.
+  _routerState !: RouterStateSnapshot;
   /** @internal */
-  _paramMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _paramMap !: ParamMap;
   /** @internal */
-  _queryParamMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _queryParamMap !: ParamMap;
 
   /** @internal */
   constructor(
@@ -332,6 +341,7 @@ export class ActivatedRouteSnapshot {
  * This is a tree of activated route snapshots. Every node in this tree knows about
  * the "consumed" URL segments, the extracted parameters, and the resolved data.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -348,7 +358,7 @@ export class ActivatedRouteSnapshot {
  * }
  * ```
  *
- *
+ * @publicApi
  */
 export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   /** @internal */

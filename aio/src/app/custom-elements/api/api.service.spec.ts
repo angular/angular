@@ -50,7 +50,10 @@ describe('ApiService', () => {
   describe('#sections', () => {
 
     it('first subscriber should fetch sections', done => {
-      const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
+      const data = [
+        {name: 'a', title: 'A', path: '', items: [], deprecated: false},
+        {name: 'b', title: 'B', path: '', items: [], deprecated: false},
+      ];
 
       service.sections.subscribe(sections => {
         expect(sections).toEqual(data);
@@ -61,7 +64,10 @@ describe('ApiService', () => {
     });
 
     it('second subscriber should get previous sections and NOT trigger refetch', done => {
-      const data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
+      const data = [
+        {name: 'a', title: 'A', path: '', items: [], deprecated: false},
+        {name: 'b', title: 'B', path: '', items: [], deprecated: false},
+      ];
       let subscriptions = 0;
 
       service.sections.subscribe(sections => {
@@ -91,7 +97,10 @@ describe('ApiService', () => {
 
       let call = 0;
 
-      let data = [{name: 'a', title: 'A', items: []}, {name: 'b', title: 'B', items: []}];
+      let data = [
+        {name: 'a', title: 'A', path: '', items: [], deprecated: false},
+        {name: 'b', title: 'B', path: '', items: [], deprecated: false},
+      ];
 
       service.sections.subscribe(sections => {
         // called twice during this test
@@ -103,7 +112,7 @@ describe('ApiService', () => {
       httpMock.expectOne({}).flush(data);
 
       // refresh/refetch
-      data = [{name: 'c', title: 'C', items: []}];
+      data = [{name: 'c', title: 'C', path: '', items: [], deprecated: false}];
       service.fetchSections();
       httpMock.expectOne({}).flush(data);
 

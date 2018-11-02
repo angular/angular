@@ -40,7 +40,7 @@ describe('largetable benchmark perf', () => {
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for ng2', (done) => {
+      it('should run for ng2', done => {
         runTableBenchmark({
           id: `largeTable.ng2.${worker.id}`,
           url: 'all/benchmarks/src/largetable/ng2/index.html',
@@ -48,7 +48,7 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 with ngSwitch', (done) => {
+      it('should run for ng2 with ngSwitch', done => {
         runTableBenchmark({
           id: `largeTable.ng2_switch.${worker.id}`,
           url: 'all/benchmarks/src/largetable/ng2_switch/index.html',
@@ -56,16 +56,7 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for render3', (done) => {
-        runTableBenchmark({
-          id: `largeTable.render3.${worker.id}`,
-          url: 'all/benchmarks/src/largetable/render3/index.html',
-          ignoreBrowserSynchronization: true,
-          worker: worker
-        }).then(done, done.fail);
-      });
-
-      it('should run for iv', (done) => {
+      it('should run for iv', done => {
         runTableBenchmark({
           id: `largeTable.iv.${worker.id}`,
           url: 'all/benchmarks/src/largetable/iv/index.html',
@@ -74,7 +65,7 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for the baseline', (done) => {
+      it('should run for the baseline', done => {
         runTableBenchmark({
           id: `largeTable.baseline.${worker.id}`,
           url: 'all/benchmarks/src/largetable/baseline/index.html',
@@ -83,7 +74,7 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for incremental-dom', (done) => {
+      it('should run for incremental-dom', done => {
         runTableBenchmark({
           id: `largeTable.incremental_dom.${worker.id}`,
           url: 'all/benchmarks/src/largetable/incremental_dom/index.html',

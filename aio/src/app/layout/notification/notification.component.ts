@@ -22,10 +22,7 @@ const LOCAL_STORAGE_NAMESPACE = 'aio-notification/';
 export class NotificationComponent implements OnInit {
   private get localStorage() { return this.window.localStorage; }
 
-  @Input() icon: string;
-  @Input() iconLabel: string;
-  @Input() buttonText: string;
-  @Input() actionUrl: string;
+  @Input() dismissOnContentClick: boolean;
   @Input() notificationId: string;
   @Input() expirationDate: string;
   @Output() dismissed = new EventEmitter();
@@ -42,6 +39,12 @@ export class NotificationComponent implements OnInit {
     const previouslyHidden = this.localStorage.getItem(LOCAL_STORAGE_NAMESPACE + this.notificationId) === 'hide';
     const expired = this.currentDate > new Date(this.expirationDate);
     this.showNotification = previouslyHidden || expired ? 'hide' : 'show';
+  }
+
+  contentClick() {
+    if (this.dismissOnContentClick) {
+      this.dismiss();
+    }
   }
 
   dismiss() {

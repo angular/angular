@@ -117,12 +117,14 @@ const summaryResolver = new AotSummaryResolver(
 
 export class DiagnosticContext {
   // tslint:disable
-  _analyzedModules: NgAnalyzedModules;
+  // TODO(issue/24571): remove '!'.
+  _analyzedModules !: NgAnalyzedModules;
   _staticSymbolResolver: StaticSymbolResolver|undefined;
   _reflector: StaticReflector|undefined;
   _errors: {e: any, path?: string}[] = [];
   _resolver: CompileMetadataResolver|undefined;
-  _refletor: StaticReflector;
+  // TODO(issue/24571): remove '!'.
+  _refletor !: StaticReflector;
   // tslint:enable
 
   constructor(

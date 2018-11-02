@@ -26,6 +26,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * This class may be used in tests to build {@link Response Responses} for
  * mock responses (see {@link MockBackend}).
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -40,6 +41,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class ResponseOptions {
   // TODO: FormData | Blob
@@ -84,6 +86,7 @@ export class ResponseOptions {
    * This may be useful when sharing a base `ResponseOptions` object inside tests,
    * where certain properties may change from test to test.
    *
+   * @usageNotes
    * ### Example
    *
    * ```typescript
@@ -123,6 +126,7 @@ export class ResponseOptions {
  * when configuring an {@link Injector}, in order to override the default options
  * used by {@link Http} to create {@link Response Responses}.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -157,6 +161,7 @@ export class ResponseOptions {
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {

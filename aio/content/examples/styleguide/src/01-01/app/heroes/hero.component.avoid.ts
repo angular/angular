@@ -1,9 +1,8 @@
 // #docregion
 /* avoid */
-
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { Component, NgModule, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, Component, OnInit } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 class Hero {
   id: number;
@@ -24,24 +23,24 @@ class AppComponent implements OnInit {
   heroes: Hero[] = [];
 
   ngOnInit() {
-    getHeroes().then(heroes => this.heroes = heroes);
+    getHeroes().then(heroes => (this.heroes = heroes));
   }
 }
 
 @NgModule({
-  imports: [ BrowserModule ],
-  declarations: [ AppComponent ],
-  exports: [ AppComponent ],
-  bootstrap: [ AppComponent ]
+  imports: [BrowserModule],
+  declarations: [AppComponent],
+  exports: [AppComponent],
+  bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
 
 platformBrowserDynamic().bootstrapModule(AppModule);
 
 const HEROES: Hero[] = [
-  {id: 1, name: 'Bombasto'},
-  {id: 2, name: 'Tornado'},
-  {id: 3, name: 'Magneta'},
+  { id: 1, name: 'Bombasto' },
+  { id: 2, name: 'Tornado' },
+  { id: 3, name: 'Magneta' }
 ];
 
 function getHeroes(): Promise<Hero[]> {

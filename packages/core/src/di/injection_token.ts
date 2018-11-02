@@ -8,7 +8,7 @@
 
 import {Type} from '../type';
 
-import {InjectableDef, defineInjectable} from './defs';
+import {defineInjectable} from './defs';
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -39,12 +39,16 @@ import {InjectableDef, defineInjectable} from './defs';
  * @usageNotes
  * ### Basic Example
  *
+ * ### Plain InjectionToken
+ *
  * {@example core/di/ts/injector_spec.ts region='InjectionToken'}
  *
- * ### Tree-shakeable Example
+ * ### Tree-shakable InjectionToken
  *
- * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
  *
+ *
+ * @publicApi
  */
 export class InjectionToken<T> {
   /** @internal */

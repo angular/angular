@@ -51,8 +51,9 @@ const _observableStrategy = new ObservableStrategy();
  * changes. When the component gets destroyed, the `async` pipe unsubscribes automatically to avoid
  * potential memory leaks.
  *
+ * @usageNotes
  *
- * ## Examples
+ * ### Examples
  *
  * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
  * promise.
@@ -64,7 +65,7 @@ const _observableStrategy = new ObservableStrategy();
  *
  * {@example common/pipes/ts/async_pipe.ts region='AsyncPipeObservable'}
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'async', pure: false})
 export class AsyncPipe implements OnDestroy, PipeTransform {

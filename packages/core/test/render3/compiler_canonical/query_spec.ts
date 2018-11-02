@@ -8,8 +8,8 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
-import {renderComponent, toHtml} from '../render_util';
+import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {getDirectiveOnNode, renderComponent, toHtml} from '../render_util';
 
 
 /// See: `normative.md`
@@ -25,8 +25,7 @@ describe('queries', () => {
     static ngDirectiveDef = $r3$.ɵdefineDirective({
       type: SomeDirective,
       selectors: [['', 'someDir', '']],
-      factory: function SomeDirective_Factory() { return someDir = new SomeDirective(); },
-      features: [$r3$.ɵPublicFeature]
+      factory: function SomeDirective_Factory(t) { return someDir = new (t || SomeDirective)(); }
     });
   }
 
@@ -44,25 +43,34 @@ describe('queries', () => {
     `
     })
     class ViewQueryComponent {
-      @ViewChild(SomeDirective) someDir: SomeDirective;
-      @ViewChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ViewChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ViewChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ViewQueryComponent,
         selectors: [['view-query-component']],
-        factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
+        factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
+        consts: 3,
+        vars: 0,
         template: function ViewQueryComponent_Template(
             rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
-          let $tmp$: any;
           if (rf & 1) {
-            $r3$.ɵQ(0, SomeDirective, false);
-            $r3$.ɵQ(1, SomeDirective, false);
-            $r3$.ɵEe(2, 'div', $e1_attrs$);
+            $r3$.ɵelement(2, 'div', $e1_attrs$);
+          }
+        },
+        viewQuery: function ViewQueryComponent_Query(rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
+          if (rf & 1) {
+            $r3$.ɵquery(0, SomeDirective, false);
+            $r3$.ɵquery(1, SomeDirective, false);
           }
           if (rf & 2) {
-            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
-            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
+            let $tmp$: any;
+            $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵload<QueryList<any>>(0)) &&
+                (ctx.someDir = $tmp$.first);
+            $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵload<QueryList<any>>(1)) &&
                 (ctx.someDirList = $tmp$ as QueryList<any>);
           }
         }
@@ -71,7 +79,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (ViewQueryComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (ViewQueryComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
         [SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
@@ -93,33 +101,40 @@ describe('queries', () => {
       `
     })
     class ContentQueryComponent {
-      @ContentChild(SomeDirective) someDir: SomeDirective;
-      @ContentChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ContentChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: ContentQueryComponent,
         selectors: [['content-query-component']],
-        factory: function ContentQueryComponent_Factory() {
-          return [
-            new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, false),
-            $r3$.ɵQ(null, SomeDirective, false)
-          ];
+        factory: function ContentQueryComponent_Factory(t) {
+          return new (t || ContentQueryComponent)();
         },
-        hostBindings: function ContentQueryComponent_HostBindings(
-            dirIndex: $number$, elIndex: $number$) {
+        consts: 2,
+        vars: 0,
+        contentQueries: function ContentQueryComponent_ContentQueries(dirIndex: $number$) {
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
+        },
+        contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(
+            dirIndex: $number$, queryStartIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵd<any[]>(dirIndex)[0];
-          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[1]) && ($instance$.someDir = $tmp$.first);
-          $r3$.ɵqR($tmp$ = $r3$.ɵd<any[]>(dirIndex)[2]) && ($instance$.someDirList = $tmp$);
+          const $instance$ = $r3$.ɵload<ContentQueryComponent>(dirIndex);
+          $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex)) &&
+              ($instance$.someDir = $tmp$.first);
+          $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex + 1)) &&
+              ($instance$.someDirList = $tmp$);
         },
         template: function ContentQueryComponent_Template(
             rf: $number$, ctx: $ContentQueryComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD(0);
-            $r3$.ɵE(1, 'div');
-            $r3$.ɵP(2, 0);
-            $r3$.ɵe();
+            $r3$.ɵprojectionDef();
+            $r3$.ɵelementStart(0, 'div');
+            $r3$.ɵprojection(1);
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -141,13 +156,15 @@ describe('queries', () => {
       static ngComponentDef = $r3$.ɵdefineComponent({
         type: MyApp,
         selectors: [['my-app']],
-        factory: function MyApp_Factory() { return new MyApp(); },
+        factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
+        consts: 2,
+        vars: 0,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'content-query-component');
-            contentQueryComp = $r3$.ɵd<any[]>(0)[0];
-            $r3$.ɵEe(1, 'div', $e2_attrs$);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'content-query-component');
+            contentQueryComp = getDirectiveOnNode(0);
+            $r3$.ɵelement(1, 'div', $e2_attrs$);
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -155,7 +172,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
         [ContentQueryComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 

@@ -71,11 +71,12 @@ export class SwitchView {
  * When no matching expression is found on a `ngSwitchCase` view, the `ngSwitchDefault` view is
  * stamped out.
  *
- *
+ * @publicApi
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
-  private _defaultViews: SwitchView[];
+  // TODO(issue/24571): remove '!'.
+  private _defaultViews !: SwitchView[];
   private _defaultUsed = false;
   private _caseCount = 0;
   private _lastCaseCheckIndex = 0;
@@ -147,7 +148,7 @@ export class NgSwitch {
  *
  * See {@link NgSwitch} for more details and example.
  *
- *
+ * @publicApi
  */
 @Directive({selector: '[ngSwitchCase]'})
 export class NgSwitchCase implements DoCheck {
@@ -186,7 +187,7 @@ export class NgSwitchCase implements DoCheck {
  *
  * See {@link NgSwitch} for more details and example.
  *
- *
+ * @publicApi
  */
 @Directive({selector: '[ngSwitchDefault]'})
 export class NgSwitchDefault {

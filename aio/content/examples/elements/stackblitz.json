@@ -1,0 +1,9 @@
+{
+  "description": "Angular Elements",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "tags":["cookbook"]
+}

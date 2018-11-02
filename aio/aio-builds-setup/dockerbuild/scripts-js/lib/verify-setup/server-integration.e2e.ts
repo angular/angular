@@ -1,101 +1,80 @@
 // Imports
-import * as path from 'path';
-import * as c from './constants';
-import {helper as h} from './helper';
+import {AIO_NGINX_HOSTNAME} from '../common/env-variables';
+import {computeShortSha} from '../common/utils';
+import {ALT_SHA, BuildNums, PrNums, SHA} from './constants';
+import {helper as h, makeCurl, payload} from './helper';
+import {customMatchers} from './jasmine-custom-matchers';
 
 // Tests
 h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme.toUpperCase()})`, () => {
-  const hostname = h.nginxHostname;
+  const hostname = AIO_NGINX_HOSTNAME;
   const host = `${hostname}:${port}`;
-  const pr9 = '9';
-  const sha9 = '9'.repeat(40);
-  const sha0 = '0'.repeat(40);
-  const archivePath = path.join(h.buildsDir, 'snapshot.tar.gz');
+  const curlPrUpdated = makeCurl(`${scheme}://${host}/pr-updated`);
 
-  const getFile = (pr: string, sha: string, file: string) =>
-    h.runCmd(`curl -iL ${scheme}://pr${pr}-${h.getShordSha(sha)}.${host}/${file}`);
-  const uploadBuild = (pr: string, sha: string, archive: string, authHeader = 'Token FOO') => {
-    const curlPost = `curl -iLX POST --header "Authorization: ${authHeader}"`;
-    return h.runCmd(`${curlPost} --data-binary "@${archive}" ${scheme}://${host}/create-build/${pr}/${sha}`);
-  };
-  const prUpdated = (pr: number, action?: string) => {
-    const url = `${scheme}://${host}/pr-updated`;
-    const payloadStr = JSON.stringify({number: pr, action});
-    return h.runCmd(`curl -iLX POST --header "Content-Type: application/json" --data '${payloadStr}' ${url}`);
-  };
+  const getFile = (pr: number, sha: string, file: string) =>
+    h.runCmd(`curl -iL ${scheme}://pr${pr}-${computeShortSha(sha)}.${host}/${file}`);
+  const prUpdated = (prNum: number, action?: string) => curlPrUpdated({ data: { number: prNum, action } });
+  const circleBuild = makeCurl(`${scheme}://${host}/circle-build`);
 
-  beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000);
-  afterEach(() => {
-    h.deletePrDir(pr9);
-    h.deletePrDir(pr9, false);
-    h.cleanUp();
+  beforeEach(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+    jasmine.addMatchers(customMatchers);
   });
+  afterEach(() => h.cleanUp());
 
 
   describe('for a new/non-existing PR', () => {
 
-    it('should be able to upload and serve a public build', done => {
-      const regexPrefix9 = `^PR: uploaded\\/${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+    it('should be able to create and serve a public preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
-      h.createDummyArchive(pr9, sha9, archivePath);
+      const regexPrefix = `^BUILD: ${BUILD} \\| PR: ${PR} \\| SHA: ${SHA} \\| File:`;
+      const idxContentRegex = new RegExp(`${regexPrefix} \\/index\\.html$`);
+      const barContentRegex = new RegExp(`${regexPrefix} \\/foo\\/bar\\.js$`);
 
-      uploadBuild(pr9, sha9, archivePath).
-        then(() => Promise.all([
-          getFile(pr9, sha9, 'index.html').then(h.verifyResponse(200, idxContentRegex9)),
-          getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex9)),
-        ])).
-        then(done);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(201));
+      await Promise.all([
+        getFile(PR, SHA, 'index.html').then(h.verifyResponse(200, idxContentRegex)),
+        getFile(PR, SHA, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex)),
+      ]);
+
+      expect({ prNum: PR }).toExistAsABuild();
+      expect({ prNum: PR, isPublic: false }).not.toExistAsABuild();
     });
 
 
-    it('should be able to upload but not serve a hidden build', done => {
-      const regexPrefix9 = `^PR: uploaded\\/${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+    it('should be able to create but not serve a hidden preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
+      const PR = PrNums.TRUST_CHECK_UNTRUSTED;
 
-      h.createDummyArchive(pr9, sha9, archivePath);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(202));
+      await Promise.all([
+        getFile(PR, SHA, 'index.html').then(h.verifyResponse(404)),
+        getFile(PR, SHA, 'foo/bar.js').then(h.verifyResponse(404)),
+      ]);
 
-      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
-        then(() => Promise.all([
-          getFile(pr9, sha9, 'index.html').then(h.verifyResponse(404)),
-          getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(404)),
-        ])).
-        then(() => {
-          expect(h.buildExists(pr9, sha9)).toBe(false);
-          expect(h.buildExists(pr9, sha9, false)).toBe(true);
-          expect(h.readBuildFile(pr9, sha9, 'index.html', false)).toMatch(idxContentRegex9);
-          expect(h.readBuildFile(pr9, sha9, 'foo/bar.js', false)).toMatch(barContentRegex9);
-        }).
-        then(done);
+      expect({ prNum: PR }).not.toExistAsABuild();
+      expect({ prNum: PR, isPublic: false }).toExistAsABuild();
     });
 
 
-    it('should reject an upload if verification fails', done => {
-      const errorRegex9 = new RegExp(`Error while verifying upload for PR ${pr9}: Test`);
+    it('should reject if verification fails', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_ERROR;
+      const PR = PrNums.TRUST_CHECK_ERROR;
 
-      h.createDummyArchive(pr9, sha9, archivePath);
-
-      uploadBuild(pr9, sha9, archivePath, c.BV_verify_error).
-        then(h.verifyResponse(403, errorRegex9)).
-        then(() => {
-          expect(h.buildExists(pr9)).toBe(false);
-          expect(h.buildExists(pr9, '', false)).toBe(false);
-        }).
-        then(done);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(500));
+      expect({ prNum: PR }).toExistAsAnArtifact();
+      expect({ prNum: PR }).not.toExistAsABuild();
+      expect({ prNum: PR, isPublic: false }).not.toExistAsABuild();
     });
 
 
-    it('should be able to notify that a PR has been updated (and do nothing)', done => {
-      prUpdated(+pr9).
-        then(h.verifyResponse(200)).
-        then(() => {
-          // The PR should still not exist.
-          expect(h.buildExists(pr9, '', false)).toBe(false);
-          expect(h.buildExists(pr9, '', true)).toBe(false);
-        }).
-        then(done);
+    it('should be able to notify that a PR has been updated (and do nothing)', async () => {
+      await prUpdated(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER).then(h.verifyResponse(200));
+      // The PR should still not exist.
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: false }).not.toExistAsABuild();
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: true }).not.toExistAsABuild();
     });
 
   });
@@ -103,215 +82,186 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
   describe('for an existing PR', () => {
 
-    it('should be able to upload and serve a public build', done => {
-      const regexPrefix0 = `^PR: ${pr9} \\| SHA: ${sha0} \\| File:`;
-      const idxContentRegex0 = new RegExp(`${regexPrefix0} \\/index\\.html$`);
-      const barContentRegex0 = new RegExp(`${regexPrefix0} \\/foo\\/bar\\.js$`);
+    it('should be able to create and serve a public preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
-      const regexPrefix9 = `^PR: uploaded\\/${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+      const regexPrefix1 = `^PR: ${PR} \\| SHA: ${ALT_SHA} \\| File:`;
+      const idxContentRegex1 = new RegExp(`${regexPrefix1} \\/index\\.html$`);
+      const barContentRegex1 = new RegExp(`${regexPrefix1} \\/foo\\/bar\\.js$`);
 
-      h.createDummyBuild(pr9, sha0);
-      h.createDummyArchive(pr9, sha9, archivePath);
+      const regexPrefix2 = `^BUILD: ${BUILD} \\| PR: ${PR} \\| SHA: ${SHA} \\| File:`;
+      const idxContentRegex2 = new RegExp(`${regexPrefix2} \\/index\\.html$`);
+      const barContentRegex2 = new RegExp(`${regexPrefix2} \\/foo\\/bar\\.js$`);
 
-      uploadBuild(pr9, sha9, archivePath).
-        then(() => Promise.all([
-          getFile(pr9, sha0, 'index.html').then(h.verifyResponse(200, idxContentRegex0)),
-          getFile(pr9, sha0, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex0)),
-          getFile(pr9, sha9, 'index.html').then(h.verifyResponse(200, idxContentRegex9)),
-          getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex9)),
-        ])).
-        then(done);
+      h.createDummyBuild(PR, ALT_SHA);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(201));
+      await Promise.all([
+        getFile(PR, ALT_SHA, 'index.html').then(h.verifyResponse(200, idxContentRegex1)),
+        getFile(PR, ALT_SHA, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex1)),
+        getFile(PR, SHA, 'index.html').then(h.verifyResponse(200, idxContentRegex2)),
+        getFile(PR, SHA, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex2)),
+      ]);
+
+      expect({ prNum: PR, sha: SHA }).toExistAsABuild();
+      expect({ prNum: PR, sha: ALT_SHA }).toExistAsABuild();
     });
 
 
-    it('should be able to upload but not serve a hidden build', done => {
-      const regexPrefix0 = `^PR: ${pr9} \\| SHA: ${sha0} \\| File:`;
-      const idxContentRegex0 = new RegExp(`${regexPrefix0} \\/index\\.html$`);
-      const barContentRegex0 = new RegExp(`${regexPrefix0} \\/foo\\/bar\\.js$`);
+    it('should be able to create but not serve a hidden preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
+      const PR = PrNums.TRUST_CHECK_UNTRUSTED;
 
-      const regexPrefix9 = `^PR: uploaded\\/${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+      h.createDummyBuild(PR, ALT_SHA, false);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(202));
 
-      h.createDummyBuild(pr9, sha0, false);
-      h.createDummyArchive(pr9, sha9, archivePath);
+      await Promise.all([
+        getFile(PR, ALT_SHA, 'index.html').then(h.verifyResponse(404)),
+        getFile(PR, ALT_SHA, 'foo/bar.js').then(h.verifyResponse(404)),
+        getFile(PR, SHA, 'index.html').then(h.verifyResponse(404)),
+        getFile(PR, SHA, 'foo/bar.js').then(h.verifyResponse(404)),
+      ]);
 
-      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
-        then(() => Promise.all([
-          getFile(pr9, sha0, 'index.html').then(h.verifyResponse(404)),
-          getFile(pr9, sha0, 'foo/bar.js').then(h.verifyResponse(404)),
-          getFile(pr9, sha9, 'index.html').then(h.verifyResponse(404)),
-          getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(404)),
-        ])).
-        then(() => {
-          expect(h.buildExists(pr9, sha9)).toBe(false);
-          expect(h.buildExists(pr9, sha9, false)).toBe(true);
-          expect(h.readBuildFile(pr9, sha0, 'index.html', false)).toMatch(idxContentRegex0);
-          expect(h.readBuildFile(pr9, sha0, 'foo/bar.js', false)).toMatch(barContentRegex0);
-          expect(h.readBuildFile(pr9, sha9, 'index.html', false)).toMatch(idxContentRegex9);
-          expect(h.readBuildFile(pr9, sha9, 'foo/bar.js', false)).toMatch(barContentRegex9);
-        }).
-        then(done);
+      expect({ prNum: PR, sha: SHA }).not.toExistAsABuild();
+      expect({ prNum: PR, sha: SHA, isPublic: false }).toExistAsABuild();
+      expect({ prNum: PR, sha: ALT_SHA }).not.toExistAsABuild();
+      expect({ prNum: PR, sha: ALT_SHA, isPublic: false }).toExistAsABuild();
     });
 
 
-    it('should reject an upload if verification fails', done => {
-      const errorRegex9 = new RegExp(`Error while verifying upload for PR ${pr9}: Test`);
+    it('should reject if verification fails', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_ERROR;
+      const PR = PrNums.TRUST_CHECK_ERROR;
 
-      h.createDummyBuild(pr9, sha0);
-      h.createDummyArchive(pr9, sha9, archivePath);
+      h.createDummyBuild(PR, ALT_SHA, false);
 
-      uploadBuild(pr9, sha9, archivePath, c.BV_verify_error).
-        then(h.verifyResponse(403, errorRegex9)).
-        then(() => {
-          expect(h.buildExists(pr9)).toBe(true);
-          expect(h.buildExists(pr9, sha0)).toBe(true);
-          expect(h.buildExists(pr9, sha9)).toBe(false);
-        }).
-        then(done);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(500));
 
+      expect({ prNum: PR }).toExistAsAnArtifact();
+      expect({ prNum: PR }).not.toExistAsABuild();
+      expect({ prNum: PR, isPublic: false }).not.toExistAsABuild();
+      expect({ prNum: PR, sha: ALT_SHA, isPublic: false }).toExistAsABuild();
     });
 
 
-    it('should not be able to overwrite an existing public build', done => {
-      const regexPrefix9 = `^PR: ${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+    it('should not be able to overwrite an existing public preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
-      h.createDummyBuild(pr9, sha9);
-      h.createDummyArchive(pr9, sha9, archivePath);
+      const regexPrefix = `^PR: ${PR} \\| SHA: ${SHA} \\| File:`;
+      const idxContentRegex = new RegExp(`${regexPrefix} \\/index\\.html$`);
+      const barContentRegex = new RegExp(`${regexPrefix} \\/foo\\/bar\\.js$`);
 
-      uploadBuild(pr9, sha9, archivePath).
-        then(h.verifyResponse(409)).
-        then(() => Promise.all([
-          getFile(pr9, sha9, 'index.html').then(h.verifyResponse(200, idxContentRegex9)),
-          getFile(pr9, sha9, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex9)),
-        ])).
-        then(done);
+      h.createDummyBuild(PR, SHA);
+
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(409));
+      await Promise.all([
+        getFile(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, SHA, 'index.html').then(h.verifyResponse(200, idxContentRegex)),
+        getFile(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, SHA, 'foo/bar.js').then(h.verifyResponse(200, barContentRegex)),
+      ]);
+
+      expect({ prNum: PR }).toExistAsAnArtifact();
+      expect({ prNum: PR }).toExistAsABuild();
     });
 
 
-    it('should not be able to overwrite an existing hidden build', done => {
-      const regexPrefix9 = `^PR: ${pr9} \\| SHA: ${sha9} \\| File:`;
-      const idxContentRegex9 = new RegExp(`${regexPrefix9} \\/index\\.html$`);
-      const barContentRegex9 = new RegExp(`${regexPrefix9} \\/foo\\/bar\\.js$`);
+    it('should not be able to overwrite an existing hidden preview', async () => {
+      const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
+      const PR = PrNums.TRUST_CHECK_UNTRUSTED;
+      h.createDummyBuild(PR, SHA, false);
 
-      h.createDummyBuild(pr9, sha9, false);
-      h.createDummyArchive(pr9, sha9, archivePath);
+      await circleBuild(payload(BUILD)).then(h.verifyResponse(409));
 
-      uploadBuild(pr9, sha9, archivePath, c.BV_verify_verifiedNotTrusted).
-        then(h.verifyResponse(409)).
-        then(() => {
-          expect(h.readBuildFile(pr9, sha9, 'index.html', false)).toMatch(idxContentRegex9);
-          expect(h.readBuildFile(pr9, sha9, 'foo/bar.js', false)).toMatch(barContentRegex9);
-        }).
-        then(done);
+      expect({ prNum: PR }).toExistAsAnArtifact();
+      expect({ prNum: PR, isPublic: false }).toExistAsABuild();
     });
 
 
-    it('should be able to request re-checking visibility (if outdated)', done => {
-      const publicPr = pr9;
-      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+    it('should be able to request re-checking visibility (if outdated)', async () => {
+      const publicPr = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const hiddenPr = PrNums.TRUST_CHECK_UNTRUSTED;
 
-      h.createDummyBuild(publicPr, sha9, false);
-      h.createDummyBuild(hiddenPr, sha9, true);
+      h.createDummyBuild(publicPr, SHA, false);
+      h.createDummyBuild(hiddenPr, SHA, true);
 
       // PR visibilities are outdated (i.e. the opposte of what the should).
-      expect(h.buildExists(publicPr, '', false)).toBe(true);
-      expect(h.buildExists(publicPr, '', true)).toBe(false);
-      expect(h.buildExists(hiddenPr, '', false)).toBe(false);
-      expect(h.buildExists(hiddenPr, '', true)).toBe(true);
+      expect({ prNum: publicPr, sha: SHA, isPublic: false }).toExistAsABuild(false);
+      expect({ prNum: publicPr, sha: SHA, isPublic: true }).not.toExistAsABuild(false);
+      expect({ prNum: hiddenPr, sha: SHA, isPublic: false }).not.toExistAsABuild(false);
+      expect({ prNum: hiddenPr, sha: SHA, isPublic: true }).toExistAsABuild(false);
 
-      Promise.
-        all([
-          prUpdated(+publicPr).then(h.verifyResponse(200)),
-          prUpdated(+hiddenPr).then(h.verifyResponse(200)),
-        ]).
-        then(() => {
-          // PR visibilities should have been updated.
-          expect(h.buildExists(publicPr, '', false)).toBe(false);
-          expect(h.buildExists(publicPr, '', true)).toBe(true);
-          expect(h.buildExists(hiddenPr, '', false)).toBe(true);
-          expect(h.buildExists(hiddenPr, '', true)).toBe(false);
-        }).
-        then(() => {
-          h.deletePrDir(publicPr, true);
-          h.deletePrDir(hiddenPr, false);
-        }).
-        then(done);
+      await Promise.all([
+        prUpdated(publicPr).then(h.verifyResponse(200)),
+        prUpdated(hiddenPr).then(h.verifyResponse(200)),
+      ]);
+
+      // PR visibilities should have been updated.
+      expect({ prNum: publicPr, isPublic: false }).not.toExistAsABuild();
+      expect({ prNum: publicPr, isPublic: true }).toExistAsABuild();
+      expect({ prNum: hiddenPr, isPublic: false }).toExistAsABuild();
+      expect({ prNum: hiddenPr, isPublic: true }).not.toExistAsABuild();
     });
 
 
-    it('should be able to request re-checking visibility (if up-to-date)', done => {
-      const publicPr = pr9;
-      const hiddenPr = String(c.BV_getPrIsTrusted_notTrusted);
+    it('should be able to request re-checking visibility (if up-to-date)', async () => {
+      const publicPr = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
+      const hiddenPr = PrNums.TRUST_CHECK_UNTRUSTED;
 
-      h.createDummyBuild(publicPr, sha9, true);
-      h.createDummyBuild(hiddenPr, sha9, false);
+      h.createDummyBuild(publicPr, SHA, true);
+      h.createDummyBuild(hiddenPr, SHA, false);
 
       // PR visibilities are already up-to-date.
-      expect(h.buildExists(publicPr, '', false)).toBe(false);
-      expect(h.buildExists(publicPr, '', true)).toBe(true);
-      expect(h.buildExists(hiddenPr, '', false)).toBe(true);
-      expect(h.buildExists(hiddenPr, '', true)).toBe(false);
+      expect({ prNum: publicPr, sha: SHA, isPublic: false }).not.toExistAsABuild(false);
+      expect({ prNum: publicPr, sha: SHA, isPublic: true }).toExistAsABuild(false);
+      expect({ prNum: hiddenPr, sha: SHA, isPublic: false }).toExistAsABuild(false);
+      expect({ prNum: hiddenPr, sha: SHA, isPublic: true }).not.toExistAsABuild(false);
 
-      Promise.
-        all([
-          prUpdated(+publicPr).then(h.verifyResponse(200)),
-          prUpdated(+hiddenPr).then(h.verifyResponse(200)),
-        ]).
-        then(() => {
-          // PR visibilities are still up-to-date.
-          expect(h.buildExists(publicPr, '', false)).toBe(false);
-          expect(h.buildExists(publicPr, '', true)).toBe(true);
-          expect(h.buildExists(hiddenPr, '', false)).toBe(true);
-          expect(h.buildExists(hiddenPr, '', true)).toBe(false);
-        }).
-        then(done);
+      await Promise.all([
+        prUpdated(publicPr).then(h.verifyResponse(200)),
+        prUpdated(hiddenPr).then(h.verifyResponse(200)),
+      ]);
+
+      // PR visibilities are still up-to-date.
+      expect({ prNum: publicPr, isPublic: true }).toExistAsABuild();
+      expect({ prNum: publicPr, isPublic: false }).not.toExistAsABuild();
+      expect({ prNum: hiddenPr, isPublic: true }).not.toExistAsABuild();
+      expect({ prNum: hiddenPr, isPublic: false }).toExistAsABuild();
     });
 
 
-    it('should reject a request if re-checking visibility fails', done => {
-      const errorPr = String(c.BV_getPrIsTrusted_error);
+    it('should reject a request if re-checking visibility fails', async () => {
+      const errorPr = PrNums.TRUST_CHECK_ERROR;
 
-      h.createDummyBuild(errorPr, sha9, true);
+      h.createDummyBuild(errorPr, SHA, true);
 
-      expect(h.buildExists(errorPr, '', false)).toBe(false);
-      expect(h.buildExists(errorPr, '', true)).toBe(true);
+      expect({ prNum: errorPr, isPublic: false }).not.toExistAsABuild(false);
+      expect({ prNum: errorPr, isPublic: true }).toExistAsABuild(false);
 
-      prUpdated(+errorPr).
-        then(h.verifyResponse(500, /Test/)).
-        then(() => {
-          // PR visibility should not have been updated.
-          expect(h.buildExists(errorPr, '', false)).toBe(false);
-          expect(h.buildExists(errorPr, '', true)).toBe(true);
-        }).
-        then(done);
+      await prUpdated(errorPr).then(h.verifyResponse(500, /TRUST_CHECK_ERROR/));
+
+      // PR visibility should not have been updated.
+      expect({ prNum: errorPr, isPublic: false }).not.toExistAsABuild();
+      expect({ prNum: errorPr, isPublic: true }).toExistAsABuild();
     });
 
 
-    it('should reject a request if updating visibility fails', done => {
+    it('should reject a request if updating visibility fails', async () => {
       // One way to cause an error is to have both a public and a hidden directory for the same PR.
-      h.createDummyBuild(pr9, sha9, false);
-      h.createDummyBuild(pr9, sha9, true);
+      h.createDummyBuild(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, SHA, false);
+      h.createDummyBuild(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, SHA, true);
 
-      const hiddenPrDir = h.getPrDir(pr9, false);
-      const publicPrDir = h.getPrDir(pr9, true);
+      const hiddenPrDir = h.getPrDir(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, false);
+      const publicPrDir = h.getPrDir(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, true);
       const bodyRegex = new RegExp(`Request to move '${hiddenPrDir}' to existing directory '${publicPrDir}'`);
 
-      expect(h.buildExists(pr9, '', false)).toBe(true);
-      expect(h.buildExists(pr9, '', true)).toBe(true);
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: false }).toExistAsABuild(false);
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: true }).toExistAsABuild(false);
 
-      prUpdated(+pr9).
-        then(h.verifyResponse(409, bodyRegex)).
-        then(() => {
-          // PR visibility should not have been updated.
-          expect(h.buildExists(pr9, '', false)).toBe(true);
-          expect(h.buildExists(pr9, '', true)).toBe(true);
-        }).
-        then(done);
+      await prUpdated(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER).then(h.verifyResponse(409, bodyRegex));
+
+      // PR visibility should not have been updated.
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: false }).toExistAsABuild();
+      expect({ prNum: PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER, isPublic: true }).toExistAsABuild();
     });
 
   });
