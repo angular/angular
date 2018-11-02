@@ -9,7 +9,7 @@
     "ng": "ng",
     "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG && yarn ivy-ngcc",
     "start": "ng serve",
-    "test": "ng build"
+    "test": "ng build --progress false"
   },
   "private": true,
   "dependencies": {
