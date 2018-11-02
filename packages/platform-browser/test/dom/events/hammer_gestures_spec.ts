@@ -10,7 +10,7 @@ import {fakeAsync, inject, tick} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it,} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
-import {el} from '../../../testing/src/browser_util';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 {
   describe('HammerGesturesPlugin', () => {
@@ -152,21 +152,33 @@ import {el} from '../../../testing/src/browser_util';
          }));
     });
 
-    it('should create an instance of hammer for each element (buildHammer)', () => {
-      const config = new HammerGestureConfig();
-      const element = el('<div></div>');
-      const onceInstance = config.buildHammer(element);
-      let multiInstance = config.buildHammer(element);
+    describe('with FakeHammer class', () => {
+      let originalHammerGlobal: any;
+      beforeEach(() => {
+        originalHammerGlobal = (window as any).Hammer;
+        (window as any).Hammer = class FakeHammer {
+          get() { return this; }
+          set() { return this; }
+        };
+      });
+      afterEach(() => { (window as any).Hammer = originalHammerGlobal; });
 
-      expect(onceInstance).not.toBeUndefined();
-      expect(onceInstance).toEqual(multiInstance);
+      it('should create an instance of hammer for each element', () => {
+        const config = new HammerGestureConfig();
+        const element = el('<div></div>');
+        const onceInstance = config.buildHammer(element);
+        let multiInstance = config.buildHammer(element);
 
-      multiInstance = config.buildHammer(element);
-      expect(onceInstance).toEqual(multiInstance);
-      multiInstance = config.buildHammer(element);
-      expect(onceInstance).toEqual(multiInstance);
-      multiInstance = config.buildHammer(element);
-      expect(onceInstance).toEqual(multiInstance);
+        expect(onceInstance).not.toBeUndefined();
+        expect(onceInstance).toEqual(multiInstance);
+
+        multiInstance = config.buildHammer(element);
+        expect(onceInstance).toEqual(multiInstance);
+        multiInstance = config.buildHammer(element);
+        expect(onceInstance).toEqual(multiInstance);
+        multiInstance = config.buildHammer(element);
+        expect(onceInstance).toEqual(multiInstance);
+      });
     });
   });
 }

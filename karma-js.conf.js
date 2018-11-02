@@ -58,7 +58,6 @@ module.exports = function(config) {
       'node_modules/reflect-metadata/Reflect.js',
       'tools/build/file2modulename.js',
       'test-main.js',
-      'node_modules/hammerjs/hammer.js',
       {pattern: 'dist/all/@angular/empty.*', included: false, watched: false},
       {pattern: 'packages/platform-browser/test/static_assets/**', included: false, watched: false},
       {
