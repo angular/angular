@@ -35,7 +35,7 @@ Available pre-built themes:
 If you're using Angular CLI, this is as simple as including one line
 in your `styles.css`  file:
 ```css
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 ```
 
 Alternatively, you can just reference the file directly. This would look something like:
