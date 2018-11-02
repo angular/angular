@@ -16,7 +16,7 @@ import {SpyObject, beforeEach, describe, expect, it} from '@angular/core/testing
 import {scheduleMicroTask} from '../../src/util';
 
 // Schedules a microtasks (using a resolved promise .then())
-function microTask(fn: Function): void {
+function microTask(fn: () => void): void {
   scheduleMicroTask(() => {
     // We do double dispatch so that we  can wait for scheduleMicrotask in the Testability when
     // NgZone becomes stable.

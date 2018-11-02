@@ -21,7 +21,9 @@ const __global = typeof global !== 'undefined' && global;
 // should be __global in that case.
 const _global: {[name: string]: any} = __global || __window || __self;
 
-const promise: Promise<any> = Promise.resolve(0);
+/** Promise used to schedule a microtask. */
+const promise = Promise.resolve();
+
 /**
  * Attention: whenever providing a new value, be sure to add an
  * entry into the corresponding `....externs.js` file,
@@ -52,10 +54,10 @@ export function getSymbolIterator(): string|symbol {
   return _symbolIterator;
 }
 
-export function scheduleMicroTask(fn: Function) {
+export function scheduleMicroTask(fn: () => void) {
   if (typeof Zone === 'undefined') {
     // use promise to schedule microTask instead of use Zone
-    promise.then(() => { fn && fn.apply(null, null); });
+    promise.then(() => fn.apply(null));
   } else {
     Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
   }
