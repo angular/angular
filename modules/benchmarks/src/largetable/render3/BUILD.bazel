@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
-load("//packages/bazel:index.bzl", "protractor_web_test")
+load("//packages/bazel:index.bzl", "protractor_web_test_suite")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
 ts_library(
@@ -46,7 +46,7 @@ ts_devserver(
     ],
 )
 
-protractor_web_test(
+protractor_web_test_suite(
     name = "perf",
     configuration = "//:protractor-perf.conf.js",
     data = [
@@ -60,8 +60,6 @@ protractor_web_test(
     on_prepare = ":protractor.on-prepare.js",
     server = ":devserver",
     tags = [
-        "fixme-ivy-aot",
-        "fixme-ivy-jit",
         "ivy-only",
     ],
     deps = [
