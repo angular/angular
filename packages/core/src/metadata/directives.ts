@@ -449,7 +449,7 @@ export interface ComponentDecorator {
    * By default, the AOT compiler removes whitespace characters as follows:
    * * Trims all whitespaces at the beginning and the end of a template.
    * * Removes whitespace-only text nodes. For example,
-   * 
+   *
    * ```
    * <button>Action 1</button>  <button>Action 2</button>
    * ```
