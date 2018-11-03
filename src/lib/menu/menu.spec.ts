@@ -517,6 +517,39 @@ describe('MatMenu', () => {
     }).toThrowError(/must pass in an mat-menu instance/);
   });
 
+  it('should be able to swap out a menu after the first time it is opened', fakeAsync(() => {
+    const fixture = createComponent(DynamicPanelMenu);
+    fixture.detectChanges();
+    expect(overlayContainerElement.textContent).toBe('');
+
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toContain('One');
+    expect(overlayContainerElement.textContent).not.toContain('Two');
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toBe('');
+
+    fixture.componentInstance.trigger.menu = fixture.componentInstance.secondMenu;
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).not.toContain('One');
+    expect(overlayContainerElement.textContent).toContain('Two');
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.textContent).toBe('');
+  }));
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);
@@ -2048,3 +2081,22 @@ class LazyMenuWithContext {
   @ViewChild('triggerTwo') triggerTwo: MatMenuTrigger;
 }
 
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="one">Toggle menu</button>
+    <mat-menu #one="matMenu">
+      <button mat-menu-item>One</button>
+    </mat-menu>
+
+    <mat-menu #two="matMenu">
+      <button mat-menu-item>Two</button>
+    </mat-menu>
+  `
+})
+class DynamicPanelMenu {
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild('one') firstMenu: MatMenu;
+  @ViewChild('two') secondMenu: MatMenu;
+}
