@@ -29,62 +29,62 @@ describe('MatList', () => {
   }));
 
   it('should not apply any additional class to a list without lines', () => {
-    let fixture = TestBed.createComponent(ListWithOneItem);
-    let listItem = fixture.debugElement.query(By.css('mat-list-item'));
+    const fixture = TestBed.createComponent(ListWithOneItem);
+    const listItem = fixture.debugElement.query(By.css('mat-list-item'));
     fixture.detectChanges();
     expect(listItem.nativeElement.className).toBe('mat-list-item');
   });
 
   it('should apply mat-2-line class to lists with two lines', () => {
-    let fixture = TestBed.createComponent(ListWithTwoLineItem);
+    const fixture = TestBed.createComponent(ListWithTwoLineItem);
     fixture.detectChanges();
 
-    let listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.className).toContain('mat-2-line');
     expect(listItems[1].nativeElement.className).toContain('mat-2-line');
   });
 
   it('should apply mat-3-line class to lists with three lines', () => {
-    let fixture = TestBed.createComponent(ListWithThreeLineItem);
+    const fixture = TestBed.createComponent(ListWithThreeLineItem);
     fixture.detectChanges();
 
-    let listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.className).toContain('mat-3-line');
     expect(listItems[1].nativeElement.className).toContain('mat-3-line');
   });
 
   it('should apply mat-multi-line class to lists with more than 3 lines', () => {
-    let fixture = TestBed.createComponent(ListWithManyLines);
+    const fixture = TestBed.createComponent(ListWithManyLines);
     fixture.detectChanges();
 
-    let listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.className).toContain('mat-multi-line');
     expect(listItems[1].nativeElement.className).toContain('mat-multi-line');
   });
 
   it('should apply a class to list items with avatars', () => {
-    let fixture = TestBed.createComponent(ListWithAvatar);
+    const fixture = TestBed.createComponent(ListWithAvatar);
     fixture.detectChanges();
 
-    let listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.className).toContain('mat-list-item-with-avatar');
     expect(listItems[1].nativeElement.className).not.toContain('mat-list-item-with-avatar');
   });
 
   it('should not clear custom classes provided by user', () => {
-    let fixture = TestBed.createComponent(ListWithItemWithCssClass);
+    const fixture = TestBed.createComponent(ListWithItemWithCssClass);
     fixture.detectChanges();
 
-    let listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
+    const listItems = fixture.debugElement.children[0].queryAll(By.css('mat-list-item'));
     expect(listItems[0].nativeElement.classList.contains('test-class')).toBe(true);
   });
 
   it('should update classes if number of lines change', () => {
-    let fixture = TestBed.createComponent(ListWithDynamicNumberOfLines);
+    const fixture = TestBed.createComponent(ListWithDynamicNumberOfLines);
     fixture.debugElement.componentInstance.showThirdLine = false;
     fixture.detectChanges();
 
-    let listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
+    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
     expect(listItem.nativeElement.classList.length).toBe(2);
     expect(listItem.nativeElement.classList).toContain('mat-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-list-item');
@@ -95,17 +95,17 @@ describe('MatList', () => {
   });
 
   it('should add aria roles properly', () => {
-    let fixture = TestBed.createComponent(ListWithMultipleItems);
+    const fixture = TestBed.createComponent(ListWithMultipleItems);
     fixture.detectChanges();
 
-    let list = fixture.debugElement.children[0];
-    let listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
+    const list = fixture.debugElement.children[0];
+    const listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
     expect(list.nativeElement.getAttribute('role')).toBeNull('Expect mat-list no role');
     expect(listItem.nativeElement.getAttribute('role')).toBeNull('Expect mat-list-item no role');
   });
 
   it('should not show ripples for non-nav lists', () => {
-    let fixture = TestBed.createComponent(ListWithOneAnchorItem);
+    const fixture = TestBed.createComponent(ListWithOneAnchorItem);
     fixture.detectChanges();
 
     const items: QueryList<MatListItem> = fixture.debugElement.componentInstance.listItems;
@@ -114,7 +114,7 @@ describe('MatList', () => {
   });
 
   it('should allow disabling ripples for specific nav-list items', () => {
-    let fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+    const fixture = TestBed.createComponent(NavListWithOneAnchorItem);
     fixture.detectChanges();
 
     const items = fixture.componentInstance.listItems;
@@ -137,6 +137,29 @@ describe('MatList', () => {
     expect(items.length).toBeGreaterThan(0);
   });
 
+  it('should enable ripples for action lists by default', () => {
+    const fixture = TestBed.createComponent(ActionListWithoutType);
+    fixture.detectChanges();
+
+    const items = fixture.componentInstance.listItems;
+    expect(items.toArray().every(item => !item._isRippleDisabled())).toBe(true);
+  });
+
+  it('should allow disabling ripples for specific action list items', () => {
+    const fixture = TestBed.createComponent(ActionListWithoutType);
+    fixture.detectChanges();
+
+    const items = fixture.componentInstance.listItems.toArray();
+    expect(items.length).toBeGreaterThan(0);
+
+    expect(items.every(item => !item._isRippleDisabled())).toBe(true);
+
+    fixture.componentInstance.disableItemRipple = true;
+    fixture.detectChanges();
+
+    expect(items.every(item => item._isRippleDisabled())).toBe(true);
+  });
+
   it('should set default type attribute to button for action list', () => {
     const fixture = TestBed.createComponent(ActionListWithoutType);
     fixture.detectChanges();
@@ -154,7 +177,7 @@ describe('MatList', () => {
   });
 
   it('should allow disabling ripples for the whole nav-list', () => {
-    let fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+    const fixture = TestBed.createComponent(NavListWithOneAnchorItem);
     fixture.detectChanges();
 
     const items = fixture.componentInstance.listItems;
@@ -168,6 +191,22 @@ describe('MatList', () => {
 
     items.forEach(item => expect(item._isRippleDisabled()).toBe(true));
   });
+
+  it('should allow disabling ripples for the entire action list', () => {
+    const fixture = TestBed.createComponent(ActionListWithoutType);
+    fixture.detectChanges();
+
+    const items = fixture.componentInstance.listItems.toArray();
+    expect(items.length).toBeGreaterThan(0);
+
+    expect(items.every(item => !item._isRippleDisabled())).toBe(true);
+
+    fixture.componentInstance.disableListRipple = true;
+    fixture.detectChanges();
+
+    expect(items.every(item => item._isRippleDisabled())).toBe(true);
+  });
+
 });
 
 
@@ -205,13 +244,15 @@ class NavListWithOneAnchorItem extends BaseTestList {
 }
 
 @Component({template: `
-  <mat-action-list>
-    <button mat-list-item>
+  <mat-action-list [disableRipple]="disableListRipple">
+    <button mat-list-item [disableRipple]="disableItemRipple">
       Paprika
     </button>
   </mat-action-list>`})
 class ActionListWithoutType extends BaseTestList {
   @ViewChildren(MatListItem) listItems: QueryList<MatListItem>;
+  disableListRipple = false;
+  disableItemRipple = false;
 }
 
 @Component({template: `
