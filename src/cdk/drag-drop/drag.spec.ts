@@ -1068,6 +1068,92 @@ describe('CdkDrag', () => {
         flush();
       }));
 
+    it('should lay out the elements correctly, when swapping down with a taller element',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const {top, left} = items[0].getBoundingClientRect();
+
+        fixture.componentInstance.items[0].height = ITEM_HEIGHT * 2;
+        fixture.detectChanges();
+
+        startDraggingViaMouse(fixture, items[0], left, top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const target = items[1];
+        const targetRect = target.getBoundingClientRect();
+
+        // Add a few pixels to the top offset so we get some overlap.
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.top + 5);
+        fixture.detectChanges();
+
+        expect(placeholder.style.transform).toBe(`translate3d(0px, ${ITEM_HEIGHT}px, 0px)`);
+        expect(target.style.transform).toBe(`translate3d(0px, ${-ITEM_HEIGHT * 2}px, 0px)`);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out the elements correctly, when swapping up with a taller element',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const {top, left} = items[1].getBoundingClientRect();
+
+        fixture.componentInstance.items[1].height = ITEM_HEIGHT * 2;
+        fixture.detectChanges();
+
+        startDraggingViaMouse(fixture, items[1], left, top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const target = items[0];
+        const targetRect = target.getBoundingClientRect();
+
+        // Add a few pixels to the top offset so we get some overlap.
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.bottom - 5);
+        fixture.detectChanges();
+
+        expect(placeholder.style.transform).toBe(`translate3d(0px, ${-ITEM_HEIGHT}px, 0px)`);
+        expect(target.style.transform).toBe(`translate3d(0px, ${ITEM_HEIGHT * 2}px, 0px)`);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out elements correctly, when swapping an item with margin', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+      const {top, left} = items[0].getBoundingClientRect();
+
+      fixture.componentInstance.items[0].margin = 12;
+      fixture.detectChanges();
+
+      startDraggingViaMouse(fixture, items[0], left, top);
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+      const target = items[1];
+      const targetRect = target.getBoundingClientRect();
+
+      // Add a few pixels to the top offset so we get some overlap.
+      dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.top + 5);
+      fixture.detectChanges();
+
+      expect(placeholder.style.transform).toBe(`translate3d(0px, ${ITEM_HEIGHT + 12}px, 0px)`);
+      expect(target.style.transform).toBe(`translate3d(0px, ${-ITEM_HEIGHT - 12}px, 0px)`);
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+    }));
+
     it('should lay out the elements correctly, if an element skips multiple positions when ' +
       'sorting horizontally', fakeAsync(() => {
         const fixture = createComponent(DraggableInHorizontalDropZone);
@@ -1088,6 +1174,90 @@ describe('CdkDrag', () => {
 
         expect(getElementSibligsByPosition(placeholder, 'left').map(e => e.textContent!.trim()))
             .toEqual(['One', 'Two', 'Three', 'Zero']);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out the elements correctly, when swapping to the right with a wider element',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInHorizontalDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+
+        fixture.componentInstance.items[0].width = ITEM_WIDTH * 2;
+        fixture.detectChanges();
+
+        const {top, left} = items[0].getBoundingClientRect();
+        startDraggingViaMouse(fixture, items[0], left, top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const target = items[1];
+        const targetRect = target.getBoundingClientRect();
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.right - 5, targetRect.top);
+        fixture.detectChanges();
+
+        expect(placeholder.style.transform).toBe(`translate3d(${ITEM_WIDTH}px, 0px, 0px)`);
+        expect(target.style.transform).toBe(`translate3d(${-ITEM_WIDTH * 2}px, 0px, 0px)`);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out the elements correctly, when swapping left with a wider element',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInHorizontalDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const {top, left} = items[1].getBoundingClientRect();
+
+        fixture.componentInstance.items[1].width = ITEM_WIDTH * 2;
+        fixture.detectChanges();
+
+        startDraggingViaMouse(fixture, items[1], left, top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const target = items[0];
+        const targetRect = target.getBoundingClientRect();
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.right - 5, targetRect.top);
+        fixture.detectChanges();
+
+        expect(placeholder.style.transform).toBe(`translate3d(${-ITEM_WIDTH}px, 0px, 0px)`);
+        expect(target.style.transform).toBe(`translate3d(${ITEM_WIDTH * 2}px, 0px, 0px)`);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out elements correctly, when horizontally swapping an item with margin',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInHorizontalDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const {top, left} = items[0].getBoundingClientRect();
+
+        fixture.componentInstance.items[0].margin = 12;
+        fixture.detectChanges();
+
+        startDraggingViaMouse(fixture, items[0], left, top);
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const target = items[1];
+        const targetRect = target.getBoundingClientRect();
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.right - 5, targetRect.top);
+        fixture.detectChanges();
+
+        expect(placeholder.style.transform).toBe(`translate3d(${ITEM_WIDTH + 12}px, 0px, 0px)`);
+        expect(target.style.transform).toBe(`translate3d(${-ITEM_WIDTH - 12}px, 0px, 0px)`);
 
         dispatchMouseEvent(document, 'mouseup');
         fixture.detectChanges();
@@ -1819,14 +1989,21 @@ class StandaloneDraggableWithMultipleHandles {
         *ngFor="let item of items"
         cdkDrag
         [cdkDragData]="item"
-        style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">{{item}}</div>
+        [style.height.px]="item.height"
+        [style.margin-bottom.px]="item.margin"
+        style="width: 100%; background: red;">{{item.value}}</div>
     </div>
   `
 })
 class DraggableInDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
-  items = ['Zero', 'One', 'Two', 'Three'];
+  items = [
+    {value: 'Zero', height: ITEM_HEIGHT, margin: 0},
+    {value: 'One', height: ITEM_HEIGHT, margin: 0},
+    {value: 'Two', height: ITEM_HEIGHT, margin: 0},
+    {value: 'Three', height: ITEM_HEIGHT, margin: 0}
+  ];
   dropZoneId = 'items';
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
@@ -1841,13 +2018,12 @@ class DraggableInDropZone {
   `
     .cdk-drop-list {
       display: block;
-      width: 300px;
+      width: 500px;
       background: pink;
       font-size: 0;
     }
 
     .cdk-drag {
-      width: ${ITEM_WIDTH}px;
       height: ${ITEM_HEIGHT}px;
       background: red;
       display: inline-block;
@@ -1859,14 +2035,23 @@ class DraggableInDropZone {
       cdkDropListOrientation="horizontal"
       [cdkDropListData]="items"
       (cdkDropListDropped)="droppedSpy($event)">
-      <div *ngFor="let item of items" cdkDrag>{{item}}</div>
+      <div
+        *ngFor="let item of items"
+        [style.width.px]="item.width"
+        [style.margin-right.px]="item.margin"
+        cdkDrag>{{item.value}}</div>
     </div>
   `
 })
 class DraggableInHorizontalDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
-  items = ['Zero', 'One', 'Two', 'Three'];
+  items = [
+    {value: 'Zero', width: ITEM_WIDTH, margin: 0},
+    {value: 'One', width: ITEM_WIDTH, margin: 0},
+    {value: 'Two', width: ITEM_WIDTH, margin: 0},
+    {value: 'Three', width: ITEM_WIDTH, margin: 0}
+  ];
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
