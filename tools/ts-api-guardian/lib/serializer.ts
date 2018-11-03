@@ -381,7 +381,7 @@ const memberDeclarationOrder: {[key: number]: number} = {
 };
 
 function stripEmptyLines(text: string): string {
-  return text.split('\n').filter(x => !!x.length).join('\n');
+  return text.split(/\r?\n/).filter(x => !!x.length).join('\n');
 }
 
 /**
