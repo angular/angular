@@ -611,6 +611,24 @@ describe('CdkVirtualScrollViewport', () => {
       finishInit(fixture);
       expect(zoneTest).toHaveBeenCalledWith(true);
     }));
+
+    it('should not throw when disposing of a view that will not fit in the cache', fakeAsync(() => {
+      finishInit(fixture);
+      testComponent.items = new Array(200).fill(0);
+      testComponent.templateCacheSize = 1; // Reduce the cache size to something we can easily hit.
+      fixture.detectChanges();
+      flush();
+
+      expect(() => {
+        for (let i = 0; i < 50; i++) {
+          viewport.scrollToIndex(i);
+          triggerScroll(viewport);
+          fixture.detectChanges();
+          flush();
+        }
+      }).not.toThrow();
+    }));
+
   });
 
   describe('with RTL direction', () => {
