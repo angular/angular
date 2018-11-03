@@ -67,13 +67,31 @@ describe('MatSnackBar', () => {
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
 
-  it('should have the role of alert', () => {
-    snackBar.open(simpleMessage, simpleActionLabel);
+  it('should have the role of `alert` with an `assertive` politeness', () => {
+    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'assertive'});
+    viewContainerFixture.detectChanges();
 
-    let containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
     expect(containerElement.getAttribute('role'))
         .toBe('alert', 'Expected snack bar container to have role="alert"');
-   });
+  });
+
+  it('should have the role of `status` with a `polite` politeness', () => {
+    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'polite'});
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    expect(containerElement.getAttribute('role'))
+        .toBe('status', 'Expected snack bar container to have role="status"');
+  });
+
+  it('should remove the role if the politeness is turned off', () => {
+    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'off'});
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    expect(containerElement.getAttribute('role')).toBeFalsy('Expected role to be removed');
+  });
 
   it('should open and close a snackbar without a ViewContainerRef', fakeAsync(() => {
     let snackBarRef = snackBar.open('Snack time!', 'Chew');

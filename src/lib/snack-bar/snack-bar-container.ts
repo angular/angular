@@ -44,7 +44,7 @@ import {MatSnackBarConfig} from './snack-bar-config';
   encapsulation: ViewEncapsulation.None,
   animations: [matSnackBarAnimations.snackBarState],
   host: {
-    'role': 'alert',
+    '[attr.role]': '_role',
     'class': 'mat-snack-bar-container',
     '[@state]': '_animationState',
     '(@state.done)': 'onAnimationEnd($event)'
@@ -66,6 +66,9 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   /** The state of the snack bar animations. */
   _animationState = 'void';
 
+  /** ARIA role for the snack bar container. */
+  _role: 'alert' | 'status' | null;
+
   constructor(
     private _ngZone: NgZone,
     private _elementRef: ElementRef<HTMLElement>,
@@ -74,6 +77,16 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
     public snackBarConfig: MatSnackBarConfig) {
 
     super();
+
+    // Based on the ARIA spec, `alert` and `status` roles have an
+    // implicit `assertive` and `polite` politeness respectively.
+    if (snackBarConfig.politeness === 'assertive') {
+      this._role = 'alert';
+    } else if (snackBarConfig.politeness === 'polite') {
+      this._role = 'status';
+    } else {
+      this._role = null;
+    }
   }
 
   /** Attach a component portal as content to this snack bar container. */
