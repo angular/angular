@@ -18,6 +18,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   white-space: nowrap;
   overflow: hidden;
   border-radius: $mat-button-toggle-legacy-border-radius;
+  -webkit-tap-highlight-color: transparent;
 
   @include cdk-high-contrast {
     outline: solid 1px;
@@ -46,7 +47,6 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
 .mat-button-toggle {
   white-space: nowrap;
   position: relative;
-  -webkit-tap-highlight-color: transparent;
 
   &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
@@ -75,6 +75,16 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
 
     @include cdk-high-contrast {
       opacity: 0.5;
+    }
+  }
+
+  // On touch devices the hover state will linger on the element after the user has tapped.
+  // Disable it, because it can be confused with focus. We target the :hover state explicitly,
+  // because we still want to preserve the keyboard focus state for hybrid devices that have
+  // a keyboard and a touchscreen.
+  @media (hover: none) {
+    &:not(.mat-button-toggle-disabled):hover .mat-button-toggle-focus-overlay {
+      display: none;
     }
   }
 }
