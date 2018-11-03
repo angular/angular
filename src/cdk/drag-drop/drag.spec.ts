@@ -412,6 +412,20 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should stop propagation for the drag sequence start event', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      const event = createMouseEvent('mousedown');
+      spyOn(event, 'stopPropagation').and.callThrough();
+
+      dispatchEvent(dragElement, event);
+      fixture.detectChanges();
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+    }));
+
   });
 
   describe('draggable with a handle', () => {
