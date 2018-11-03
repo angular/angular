@@ -28,9 +28,9 @@ import {
 import {AnimationEvent} from '@angular/animations';
 import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
-import {Subscription} from 'rxjs';
+import {Subscription, Subject} from 'rxjs';
 import {matTabsAnimations} from './tabs-animations';
-import {startWith} from 'rxjs/operators';
+import {startWith, distinctUntilChanged} from 'rxjs/operators';
 
 /**
  * These position states are used internally as animation states for the tab body. Setting the
@@ -125,6 +125,9 @@ export class MatTabBody implements OnInit, OnDestroy {
   /** Tab body position state. Used by the animation trigger for the current state. */
   _position: MatTabBodyPositionState;
 
+  /** Emits when an animation on the tab is complete. */
+  _translateTabComplete = new Subject<AnimationEvent>();
+
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
   @Output() readonly _onCentering: EventEmitter<number> = new EventEmitter<number>();
 
@@ -171,6 +174,21 @@ export class MatTabBody implements OnInit, OnDestroy {
         changeDetectorRef.markForCheck();
       });
     }
+
+    // Ensure that we get unique animation events, because the `.done` callback can get
+    // invoked twice in some browsers. See https://github.com/angular/angular/issues/24084.
+    this._translateTabComplete.pipe(distinctUntilChanged((x, y) => {
+      return x.fromState === y.fromState && x.toState === y.toState;
+    })).subscribe(event => {
+      // If the transition to the center is complete, emit an event.
+      if (this._isCenterPosition(event.toState) && this._isCenterPosition(this._position)) {
+        this._onCentered.emit();
+      }
+
+      if (this._isCenterPosition(event.fromState) && !this._isCenterPosition(this._position)) {
+        this._afterLeavingCenter.emit();
+      }
+    });
   }
 
   /**
@@ -185,24 +203,14 @@ export class MatTabBody implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._dirChangeSubscription.unsubscribe();
+    this._translateTabComplete.complete();
   }
 
-  _onTranslateTabStarted(e: AnimationEvent): void {
-    const isCentering = this._isCenterPosition(e.toState);
+  _onTranslateTabStarted(event: AnimationEvent): void {
+    const isCentering = this._isCenterPosition(event.toState);
     this._beforeCentering.emit(isCentering);
     if (isCentering) {
       this._onCentering.emit(this._elementRef.nativeElement.clientHeight);
-    }
-  }
-
-  _onTranslateTabComplete(e: AnimationEvent): void {
-    // If the transition to the center is complete, emit an event.
-    if (this._isCenterPosition(e.toState) && this._isCenterPosition(this._position)) {
-      this._onCentered.emit();
-    }
-
-    if (this._isCenterPosition(e.fromState) && !this._isCenterPosition(this._position)) {
-      this._afterLeavingCenter.emit();
     }
   }
 

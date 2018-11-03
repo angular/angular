@@ -4,6 +4,6 @@
         params: {animationDuration: animationDuration}
      }"
      (@translateTab.start)="_onTranslateTabStarted($event)"
-     (@translateTab.done)="_onTranslateTabComplete($event)">
+     (@translateTab.done)="_translateTabComplete.next($event)">
   <ng-template matTabBodyHost></ng-template>
 </div>
