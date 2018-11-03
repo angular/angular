@@ -34,6 +34,7 @@ $mat-snack-bar-spacing-margin-handset: 8px !default;
   .mat-snack-bar-container {
     margin: $mat-snack-bar-spacing-margin-handset;
     max-width: 100%;
+    min-width: 0;
     width: 100%;
   }
 }
