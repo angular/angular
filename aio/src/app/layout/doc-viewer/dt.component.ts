@@ -4,17 +4,16 @@ import { DocumentContents } from 'app/documents/document.service';
 @Component({
   selector: 'aio-dt',
   template: `
-  <div *ngIf="on">
-    <hr>
-    <textarea #dt [value]="text" rows="10" cols="80"></textarea>
-    <br/>
-    <button (click)="dtextSet()">Show change</button>
-  </div>
+    <div>
+      <hr>
+      <textarea #dt [value]="text" rows="10" cols="80"></textarea>
+      <br/>
+      <button (click)="dtextSet()">Show change</button>
+    </div>
   `
 })
 export class DtComponent {
 
-  @Input() on = false;
   @Input() doc: DocumentContents;
   @Output() docChange = new EventEmitter<DocumentContents>();
 
