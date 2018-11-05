@@ -139,6 +139,7 @@ export interface IterableDifferFactory {
  * @publicApi
  */
 export class IterableDiffers {
+  /** @nocollapse */
   static ngInjectableDef = defineInjectable({
     providedIn: 'root',
     factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
