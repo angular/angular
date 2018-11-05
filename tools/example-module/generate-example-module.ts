@@ -27,20 +27,25 @@ function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
     return result.concat(data.component).concat(data.additionalComponents);
   }, [] as string[]).join(',');
 
-  const exampleComponents = parsedData.reduce((result, data) => {
-    result[data.id] = {
-      title: data.title,
-      component: data.component,
-      additionalFiles: data.additionalFiles,
-      selectorName: data.selectorName.join(', '),
-    };
+  const exampleComponents = parsedData.map((metaData) => {
+    const fields = [
+      `title: '${metaData.title.trim()}'`,
+      `component: ${metaData.component}`,
+    ];
 
-    return result;
+    if (metaData.additionalFiles.length) {
+      fields.push(`additionalFiles: ${JSON.stringify(metaData.additionalFiles)}`);
+    }
+     if (metaData.selectorName.length) {
+      fields.push(`selectorName: '${metaData.selectorName.join(', ')}'`);
+    }
+     const data = '\n' + fields.map(field => '    ' + field).join(',\n');
+     return `'${metaData.id}': {${data}\n  }`;
   }, {} as any);
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace('${exampleImports}', exampleImports)
-    .replace('${exampleComponents}', JSON.stringify(exampleComponents))
+    .replace('${exampleComponents}', `{\n  ${exampleComponents.join(',\n  ')}}`)
     .replace('${exampleList}', `[${exampleList}]`);
 }
 
