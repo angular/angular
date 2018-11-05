@@ -40,7 +40,7 @@ import {MatFormFieldControl} from '@angular/material/form-field';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent, MatChipSelectionChange} from './chip';
-import {MatChipInput} from './chip-input';
+import {MatChipTextControl} from './chip-text-control';
 
 
 // Boilerplate for applying mixins to MatChipList.
@@ -131,7 +131,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   private _chipRemoveSubscription: Subscription | null;
 
   /** The chip input to add more chips */
-  protected _chipInput: MatChipInput;
+  protected _chipInput: MatChipTextControl;
 
   /** Uid of the chip list */
   _uid: string = `mat-chip-list-${nextUniqueId++}`;
@@ -400,7 +400,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
 
   /** Associates an HTML input element with this chip list. */
-  registerInput(inputElement: MatChipInput): void {
+  registerInput(inputElement: MatChipTextControl): void {
     this._chipInput = inputElement;
   }
 
