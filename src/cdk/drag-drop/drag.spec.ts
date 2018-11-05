@@ -9,6 +9,7 @@ import {
   ViewChild,
   ViewChildren,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DragDropModule} from './drag-drop-module';
@@ -546,6 +547,27 @@ describe('CdkDrag', () => {
 
       expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-dragging');
     }));
+
+    it('should toggle a class when the user starts dragging an item with OnPush change detection',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInOnPushDropZone);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const dropZone = fixture.componentInstance.dropInstance;
+
+        expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-list-dragging');
+
+        startDraggingViaMouse(fixture, item);
+
+        expect(dropZone.element.nativeElement.classList).toContain('cdk-drop-list-dragging');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-dragging');
+      }));
 
     it('should not toggle dragging class if the element was not dragged more than the threshold',
       fakeAsync(() => {
@@ -1991,24 +2013,24 @@ class StandaloneDraggableWithMultipleHandles {
   @ViewChildren(CdkDragHandle) handles: QueryList<CdkDragHandle>;
 }
 
-@Component({
-  template: `
+const DROP_ZONE_FIXTURE_TEMPLATE = `
+  <div
+    cdkDropList
+    style="width: 100px; background: pink;"
+    [id]="dropZoneId"
+    [cdkDropListData]="items"
+    (cdkDropListDropped)="droppedSpy($event)">
     <div
-      cdkDropList
-      style="width: 100px; background: pink;"
-      [id]="dropZoneId"
-      [cdkDropListData]="items"
-      (cdkDropListDropped)="droppedSpy($event)">
-      <div
-        *ngFor="let item of items"
-        cdkDrag
-        [cdkDragData]="item"
-        [style.height.px]="item.height"
-        [style.margin-bottom.px]="item.margin"
-        style="width: 100%; background: red;">{{item.value}}</div>
-    </div>
-  `
-})
+      *ngFor="let item of items"
+      cdkDrag
+      [cdkDragData]="item"
+      [style.height.px]="item.height"
+      [style.margin-bottom.px]="item.margin"
+      style="width: 100%; background: red;">{{item.value}}</div>
+  </div>
+`;
+
+@Component({template: DROP_ZONE_FIXTURE_TEMPLATE})
 class DraggableInDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
@@ -2023,6 +2045,12 @@ class DraggableInDropZone {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
 }
+
+@Component({
+  template: DROP_ZONE_FIXTURE_TEMPLATE,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class DraggableInOnPushDropZone extends DraggableInDropZone {}
 
 
 @Component({

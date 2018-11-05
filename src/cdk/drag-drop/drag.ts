@@ -28,7 +28,7 @@ import {
   SkipSelf,
   ViewContainerRef,
 } from '@angular/core';
-import {supportsPassiveEventListeners} from '@angular/cdk/platform';
+import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {Observable, Subject, Subscription, Observer} from 'rxjs';
 import {take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
@@ -80,8 +80,7 @@ export function CDK_DRAG_CONFIG_FACTORY(): CdkDragConfig {
 }
 
 /** Options that can be used to bind a passive event listener. */
-const passiveEventListenerOptions = supportsPassiveEventListeners() ?
-    {passive: true} as EventListenerOptions : false;
+const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
 
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({

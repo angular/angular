@@ -19,6 +19,7 @@ import {
   QueryList,
   Optional,
   Directive,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
@@ -141,6 +142,7 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
   constructor(
     public element: ElementRef<HTMLElement>,
     private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>,
+    private _changeDetectorRef: ChangeDetectorRef,
     @Optional() private _dir?: Directionality) {}
 
   ngOnInit() {
@@ -175,6 +177,7 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
     this._dragging = true;
     this._activeDraggables = this._draggables.toArray();
     this._cachePositions();
+    this._changeDetectorRef.markForCheck();
   }
 
   /**
