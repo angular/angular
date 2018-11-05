@@ -15,7 +15,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/util",
         "@ngdeps//@types/node",
-        "@ngdeps//canonical-path",
         "@ngdeps//typescript",
     ],
 )
