@@ -8,12 +8,12 @@
 
 /// <reference types="node" />
 
-import * as path from 'canonical-path';
+import * as path from 'path';
 
 const TS_DTS_EXTENSION = /(\.d)?\.ts$/;
 
 export function relativePathBetween(from: string, to: string): string|null {
-  let relative = path.relative(path.dirname(from), to).replace(TS_DTS_EXTENSION, '');
+  let relative = path.posix.relative(path.dirname(from), to).replace(TS_DTS_EXTENSION, '');
 
   if (relative === '') {
     return null;

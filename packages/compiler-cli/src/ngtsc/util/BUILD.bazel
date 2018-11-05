@@ -5,13 +5,13 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "util",
     srcs = glob([
+        "index.ts",
         "src/**/*.ts",
     ]),
     module_name = "@angular/compiler-cli/src/ngtsc/util",
     deps = [
         "//packages:types",
         "@ngdeps//@types/node",
-        "@ngdeps//canonical-path",
         "@ngdeps//typescript",
     ],
 )

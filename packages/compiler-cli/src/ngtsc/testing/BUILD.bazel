@@ -10,7 +10,6 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
-        "@ngdeps//canonical-path",
         "@ngdeps//typescript",
     ],
 )
