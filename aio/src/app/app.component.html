@@ -61,7 +61,7 @@
         (docInserted)="onDocInserted()"
         (docRendered)="onDocRendered()">
     </aio-doc-viewer>
-    <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
+    <aio-dt *ngIf="dtOn" [(doc)]="currentDocument"></aio-dt>
   </main>
 
 </mat-sidenav-container>
