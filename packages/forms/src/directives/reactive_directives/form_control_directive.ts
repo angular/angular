@@ -132,9 +132,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
 
   /**
    * @description
-   * Captures the disabled property to trigger a warning that this input should not be
-   * used with reactive forms. The warning is logged to the console that the provided
-   * form control should be disabled when the form control instance is created.
+   * Triggers a warning that this input should not be used with reactive forms.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }

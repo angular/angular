@@ -51,7 +51,7 @@ export const formGroupNameProvider: any = {
  *   this.form.get('name');
  * ```
  * 
- * ### Access individual controls the group
+ * ### Access individual controls in the group
  * 
  * The following example uses the {@link AbstractControl#get get} method to access 
  * individual controls within the group using dot syntax.
@@ -62,7 +62,7 @@ export const formGroupNameProvider: any = {
  *
  * ### Register a nested `FormGroup`.
  * 
- * The following example registers a nested *name* form group within an existing `FormGroup`,
+ * The following example registers a nested *name* `FormGroup` within an existing `FormGroup`,
  * and provides methods to retrieve the nested `FormGroup` and individual controls.
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}

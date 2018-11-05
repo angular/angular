@@ -151,9 +151,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Captures the disabled property to trigger a warning that this input should not be
-   * used with reactive forms. The warning is logged to the console that the provided
-   * form control should be disabled when the form control instance is created.
+   * Triggers a warning that this input should not be used with reactive forms.
    */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
@@ -252,13 +250,15 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /**
    * @description
-   * Async validator function composed of all the async validators registered with this directive.
+   * Synchronous validator function composed of all the synchronous validators
+   * registered with this directive.
    */
   get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
   /**
    * @description
-   * The async validator registered with this directive.
+   * Async validator function composed of all the async validators registered with this
+   * directive.
    */
   get asyncValidator(): AsyncValidatorFn {
     return composeAsyncValidators(this._rawAsyncValidators) !;
