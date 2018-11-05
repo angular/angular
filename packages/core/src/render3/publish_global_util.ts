@@ -22,9 +22,9 @@ import {getComponent, getDirectives, getHostComponent, getInjector, getRootCompo
 
 /**
  * This value reflects the property on the window where the dev
- * tools are patched (window.ngDev).
+ * tools are patched (window.ng).
  * */
-export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ngDev';
+export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
 
 /*
  * Publishes a collection of default debug tools onto `window._ng_`.

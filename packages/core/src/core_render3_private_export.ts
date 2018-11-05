@@ -228,7 +228,8 @@ export {
 } from './render/api';
 
 export {
-  publishGlobalUtil as ɵpublishGlobalUtil
+  publishGlobalUtil as ɵpublishGlobalUtil,
+  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 } from './render3/publish_global_util';
 export {
   SWITCH_INJECTOR_FACTORY__POST_R3__ as ɵSWITCH_INJECTOR_FACTORY__POST_R3__,
