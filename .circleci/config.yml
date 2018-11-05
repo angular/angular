@@ -201,6 +201,19 @@ jobs:
         # Run e2e tests
       - run: yarn --cwd aio e2e
 
+  test_aio_local_ivy:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
+        # Build aio with Ivy (using local Angular packages)
+      - run: yarn --cwd aio build-with-ivy --progress=false
+
   test_aio_tools:
     <<: *job_defaults
     steps:
@@ -497,6 +510,9 @@ workflows:
       - test_aio_local:
           requires:
             - build-packages-dist
+      - test_aio_local_ivy:
+          requires:
+            - build-packages-dist
       - test_aio_tools:
           requires:
             - build-packages-dist
@@ -526,6 +542,7 @@ workflows:
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
+            - test_aio_local_ivy
             - test_docs_examples
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
