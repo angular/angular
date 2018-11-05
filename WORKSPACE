@@ -36,37 +36,36 @@ http_archive(
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
-  url = "https://github.com/bazelbuild/rules_sass/archive/1.14.1.zip",
-  strip_prefix = "rules_sass-1.14.1",
+  # Explicitly depend on SHA c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe because this one includes
+  # the major API overhaul and fix for the NodeJS source map warnings.
+  url = "https://github.com/bazelbuild/rules_sass/archive/c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe.zip",
+  strip_prefix = "rules_sass-c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe",
 )
 
-# Since we are explitly fetching @build_bazel_rules_typescript, we should explicly
-# ask for its transitive deps from the version we fetched since
-# rules_angular_dependencies() will load transitive deps for the version
-# it would fetch transitively
+# Since we are explitly fetching @build_bazel_rules_typescript, we should explicitly ask for
+# its transitive dependencies in case those haven't been fetched yet.
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
 
-# Since we are explitly fetching @build_bazel_rules_nodejs, we should explicly
-# ask for its transitive deps from the version we fetched since
-# rules_angular_dependencies() will load transitive deps for the version
-# it would fetch transitively
+# Since we are explitly fetching @build_bazel_rules_nodejs, we should explicitly ask for
+# its transitive dependencies in case those haven't been fetched yet.
 load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
 rules_nodejs_dependencies()
 
-# Fetch @angular repo transitive deps that are not already fetched above
+# Fetch transitive dependencies which are needed by the Angular build targets.
 load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
 rules_angular_dependencies()
 
-load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
-sass_repositories()
+# Fetch transitive dependencies which are needed to use the Sass rules.
+load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
+rules_sass_dependencies()
 
-# NOTE: this rule installs nodejs, npm, and yarn, but does NOT install
-# your npm dependencies. You must still run the package manager.
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
+    "yarn_install")
 
 # The minimum bazel version to use with this repo is 0.18.0
 check_bazel_version("0.18.0")
+
 node_repositories(
   # For deterministic builds, specify explicit NodeJS and Yarn versions. Keep the Yarn version
   # in sync with the version of Travis.
@@ -88,6 +87,10 @@ yarn_install(
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 ts_setup_workspace()
 
+# Setup the Sass rule repositories.
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
+sass_repositories()
+
 # Setup Angular workspace for building (Bazel managed node modules)
 load("@angular//:index.bzl", "ng_setup_workspace")
 ng_setup_workspace()
@@ -102,7 +105,8 @@ go_register_toolchains()
 
 # Setup web testing. We need to setup a browser because the web testing rules for TypeScript need
 # a reference to a registered browser (ideally that's a hermetic version of a browser)
-load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories",
+    "web_test_repositories")
 
 web_test_repositories()
 browser_repositories(

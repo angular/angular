@@ -7,10 +7,11 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
 
 def angular_material_setup_workspace():
-  """This repository rule should be called from your WORKSPACE file.
+  """
+    This repository rule should be called from your WORKSPACE file.
 
-  It creates some additional Bazel external repositories that are used internally
-  to build Angular Material
+    It creates some additional Bazel external repositories that are used internally
+    to build Angular Material
   """
   # Use Bazel managed node modules. See more below: 
   # https://github.com/bazelbuild/rules_nodejs#bazel-managed-vs-self-managed-dependencies

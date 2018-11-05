@@ -45,5 +45,10 @@
     // including all re-exports and therefore the build will fail. This issue will be fixed with
     // the new compiler CLI that no longer outputs metadata.
     "fullTemplateTypeCheck": false
+  },
+  "bazelOptions": {
+    // Needed because this tsconfig file is also being used by Bazel since we need
+    // special options enabled in favor of using Moment as an import.
+    "suppressTsconfigOverrideWarnings": true
   }
 }
