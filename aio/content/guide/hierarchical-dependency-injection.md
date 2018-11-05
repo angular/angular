@@ -8,43 +8,79 @@ The Angular dependency injection system is _hierarchical_.
 There is a tree of injectors that parallel an app's component tree.
 You can reconfigure the injectors at any level of that component tree.
 -->
-Angular의 인젝터는 _계층_ 체계를 갖추고 있습니다.
-쉽게 말하면, 인젝터는 트리로 구성되며 애플리케이션의 컴포넌트 트리 계층에서는 병렬로 존재하기도 합니다.
+Angular의 인젝터는 _계층_ 구조로 구성됩니다.
+쉽게 말해서 인젝터는 컴포넌트 구조에 따라 트리 형태로 구성되며 어떤 계층에서는 병렬로 존재하기도 합니다.
 컴포넌트 트리에 생성된 인젝터는 개발자가 원하는 대로 다시 설정할 수도 있습니다.
 
+<!--
 This guide explores this system and how to use it to your advantage.
 It uses examples based on this <live-example></live-example>.
+-->
+이 문서에서는 Angular의 의존성 주입 시스템을 어떻게 활용할 수 있는지 설명합니다.
+이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 실행하거나 다운받아 확인할 수 있습니다.
 
 {@a ngmodule-vs-comp}
 {@a where-to-register}
 
+<!--
 ## Where to configure providers
+-->
+## 프로바이더는 어디에 등록해야 할까
 
+<!--
 You can configure providers for different injectors in the injector hierarchy.
 An internal platform-level injector is shared by all running apps.
 The `AppModule` injector is the root of an app-wide injector hierarchy, and within
 an NgModule, directive-level injectors follow the structure of the component hierarchy.
+-->
+프로바이더는 인젝터 계층 중 어디에라도 자유롭게 등록할 수 있습니다.
+그리고 플랫폼 계층에 생성되는 인젝터는 애플리케이션 전체 범위에 인스턴스를 공유합니다.
+`AppModule` 인젝터는 애플리케이션에 생성되는 인젝터 중 최상위에 존재하는 인젝터이며, NgModule이나 컴포넌트 계층에 따라 자식 인젝터가 생성되기도 합니다.
 
+<!--
 The choices you make about where to configure providers lead to differences in the final bundle size, service _scope_, and service _lifetime_.
+-->
+이 때 어떤 인젝터에 프로바이더를 등록하느냐에 따라 최종 번들 결과물의 크기가 달라지며, 서비스의 _스코프_ 도 달라지고, 서비스 인스턴스가 존재하는 시점도 달라집니다.
 
+<!--
 When you specify providers in the `@Injectable()` decorator of the service itself (typically at the app root level), optimization tools such as those used by the CLI's production builds can perform *tree shaking*, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes. 
+-->
+서비스 클래스에 `@Injectable()` 데코레이터를 직접 사용하면 보통 애플리케이션 최상위 인젝터에 서비스 프로바이더를 등록하게 되는데, 이렇게 등록된 프로바이더는 Angular CLI와 같은 운영용 빌드 툴의 *트리 셰이킹(tree shaking)* 기능을 사용할 수 있습니다. 트리 셰이킹이 동작하면 실제로 사용되지 않는 서비스를 빌드하지 않기 때문에 번들링 결과물의 크기를 줄일 수 있습니다.
 
+<!--
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
+-->
+* 더 자세한 내용은 [트리셰이킹 대상이 되는 프로바이더](guide/dependency-injection-providers#tree-shakable-providers) 문서를 참고하세요.
 
+<!--
 You're likely to inject `UserService` in many places throughout the app and will want to inject the same service instance every time. Providing `UserService` through the `root` injector is a good choice, and is the default that the [Angular CLI](cli) uses when you generate a service for your app.
+-->
+`UserService`와 같은 서비스는 애플리케이션 전역에서 빈번하게 사용될 수 있으며, 이 인스턴스는 모두 같은 인스턴스로 주입되어야 할 수도 있습니다. 그렇다면 `UserService`는 `root` 인젝터에 등록하는 것이 좋습니다. [Angular CLI](cli)로 서비스를 생성하면 기본으로 `root` 인젝터에 등록됩니다.
 
 <div class="alert is-helpful">
+<!--
 <header>Platform injector</header>
+-->
+<header>플랫폼 인젝터 (Platform injector)</header>
 
+<!--
 When you use `providedIn:'root'`, you are configuring the root injector for the _app_, which is the injector for `AppModule`.
 The actual root of the entire injector hierarchy is a _platform injector_ that is the parent of app-root injectors. 
 This allows multiple apps to share a platform configuration. For example, a browser has only one URL bar, no matter how many apps you have running.
+-->
+서비스 프로바이더를 등록할 때 `providedIn:'root'`라고 지정하면 이 서비스를 _애플리케이션_ 의 최상위 인젝터인 `AppModule`의 인젝터에 등록한다는 것을 의미합니다.
+하지만 실제로 인젝터 계층의 최상위에 존재하는 것은 애플리케이션의 최상위 인젝터의 부모인 _플랫폼 인젝터_ 입니다.
 
+<!--
 The platform injector is used internally during bootstrap, to configure platform-specific dependencies. You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function. 
+-->
+플랫폼 인젝터는 부트스트랩되는 과정에 플랫폼과 관련된 의존성을 처리하는 용도로 사용됩니다. 플랫폼 계층에서 플랫픔과 관련된 프로바이더를 설정하려면 `platformBrowser()` 함수에 `extraProviders` 옵션을 사용하면 됩니다.
 
+<!--
 Learn more about dependency resolution through the injector hierarchy: 
 [What you always wanted to know about Angular Dependency Injection tree](https://blog.angularindepth.com/angular-dependency-injection-and-tree-shakeable-tokens-4588a8f70d5d)
-
+-->
+인젝터 계층에 대해서 자세하게 알아보려면 [What you always wanted to know about Angular Dependency Injection tree](https://blog.angularindepth.com/angular-dependency-injection-and-tree-shakeable-tokens-4588a8f70d5d) 문서를 참고하세요.
 
 </div>
 

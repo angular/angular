@@ -237,7 +237,7 @@ Learn more about [where to configure providers](guide/hierarchical-dependency-in
 -->
 컴포넌트도 디렉티브이기 때문에 `@Directive()`에서도 `providers` 옵션을 사용할 수 있으며, 이렇게 등록한 프로바이더도 상속된다고 볼 수 있습니다. 프로바이더는 컴포넌트 계층에 등록하는 것처럼 디렉티브나 파이프 계층에 등록할 수도 있습니다.
 
-자세한 내용은 [프로바이더를 어디에 등록할 것인가](guide/hierarchical-dependency-injection#where-to-register) 문서를 참고하세요.
+자세한 내용은 [프로바이더는 어디에 등록해야 할까](guide/hierarchical-dependency-injection#where-to-register) 문서를 참고하세요.
 
 </div>
 
