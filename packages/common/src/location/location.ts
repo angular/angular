@@ -145,6 +145,8 @@ export class Location {
   /**
    * Given a string of url parameters, prepend with '?' if needed, otherwise return parameters as
    * is.
+   * @param params this is the parameter.
+   * @returns some string.
    */
   public static normalizeQueryParams(params: string): string {
     return params && params[0] !== '?' ? '?' + params : params;
