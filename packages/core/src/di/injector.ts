@@ -103,6 +103,7 @@ export abstract class Injector {
     }
   }
 
+  /** @nocollapse */
   static ngInjectableDef = defineInjectable({
     providedIn: 'any' as any,
     factory: () => inject(INJECTOR),
