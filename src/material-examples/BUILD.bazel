@@ -33,7 +33,10 @@ ng_package(
 
 genrule(
   name = "example-module",
-  srcs = glob(["**/*.ts"]),
+  # In case the example-module.ts file is present as an actual source file (e.g. generated
+  # through Gulp), we need to exclude it because otherwise the genrule would fail.
+  # TODO(devversion): remove this once gulp has been replaced with bazel.
+  srcs = glob(["**/*.ts"], exclude = ["example-module.ts"]),
   outs = ["example-module.ts"],
   cmd = """
     # As a workaround for https://github.com/bazelbuild/rules_nodejs/issues/404, we pass the
