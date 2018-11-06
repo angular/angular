@@ -7,6 +7,7 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
+import {global} from '../util';
 
 import {assertDefined, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
@@ -245,13 +246,7 @@ export function getParentInjectorTNode(
   return parentTNode;
 }
 
-declare const global: any;
 export const defaultScheduler =
     (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
      setTimeout                                                                // everything else
-     )
-        .bind(
-            typeof window !== 'undefined' && window ||  // Browser main thread
-            typeof global !== 'undefined' && global ||  // NodeJS
-            this                                        // WebWorker
-            );
+     ).bind(global);

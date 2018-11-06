@@ -120,6 +120,15 @@
     "name": "ViewEncapsulation"
   },
   {
+    "name": "__self"
+  },
+  {
+    "name": "__window"
+  },
+  {
+    "name": "_global"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
