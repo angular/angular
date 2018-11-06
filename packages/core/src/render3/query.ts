@@ -269,7 +269,7 @@ function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: T
 }
 
 // TODO: "read" should be an AbstractType (FW-486)
-function queryByReadToken(tNode: TNode, currentView: LViewData, read: any): any {
+function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any {
   const factoryFn = (read as any)[NG_ELEMENT_ID];
   if (typeof factoryFn === 'function') {
     return factoryFn();
@@ -293,11 +293,11 @@ function queryByTNodeType(tNode: TNode, currentView: LViewData): any {
 }
 
 function queryByTemplateRef(
-    tNode: TNode, currentView: LViewData, read: any, templateRef: any): any {
+    templateRef: any, tNode: TNode, currentView: LViewData, read: any): any {
   const factoryFn = templateRef[NG_ELEMENT_ID];
   if (read) {
     if (factoryFn()) {
-      return queryByReadToken(tNode, currentView, read);
+      return queryByReadToken(read, tNode, currentView);
     }
   } else {
     return factoryFn();
@@ -307,7 +307,7 @@ function queryByTemplateRef(
 
 function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx: number): any {
   if (read) {
-    return queryByReadToken(tNode, currentView, read);
+    return queryByReadToken(read, tNode, currentView);
   }
   if (matchingIdx > -1) {
     return currentView[matchingIdx];
@@ -327,7 +327,7 @@ function add(
     if (type) {
       let result = null;
       if (type === ViewEngine_TemplateRef) {
-        result = queryByTemplateRef(tNode, currentView, predicate.read, type);
+        result = queryByTemplateRef(type, tNode, currentView, predicate.read);
       } else {
         const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, type);
         if (matchingIdx !== null) {
