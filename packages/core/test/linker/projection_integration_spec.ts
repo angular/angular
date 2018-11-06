@@ -11,9 +11,10 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('projection', () => {
+  fixmeIvy('unknown') && describe('projection', () => {
     beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
 
     it('should support simple components', () => {

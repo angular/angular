@@ -10,11 +10,12 @@ import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angul
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('jit', () => { declareTests({useJit: true}); });
+  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 @Component({selector: 'my-comp', template: ''})

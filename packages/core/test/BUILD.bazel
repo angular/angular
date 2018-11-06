@@ -45,15 +45,13 @@ ts_library(
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
+        "//packages/private/testing",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    tags = [
-        "fixme-ivy-aot",
-    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
