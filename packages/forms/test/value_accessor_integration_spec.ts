@@ -11,6 +11,7 @@ import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/t
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
   describe('value accessors', () => {
@@ -1058,26 +1059,27 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
       });
 
       describe('in template-driven forms', () => {
-        it('should support standard writing to view and model', async(() => {
-             const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
-             fixture.componentInstance.name = 'Nancy';
-             fixture.detectChanges();
-             fixture.whenStable().then(() => {
-               fixture.detectChanges();
-               fixture.whenStable().then(() => {
-                 // model -> view
-                 const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
-                 expect(customInput.nativeElement.value).toEqual('Nancy');
-
-                 customInput.nativeElement.value = 'Carson';
-                 dispatchEvent(customInput.nativeElement, 'input');
+        fixmeIvy('whenStable not working') &&
+            it('should support standard writing to view and model', async(() => {
+                 const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+                 fixture.componentInstance.name = 'Nancy';
                  fixture.detectChanges();
+                 fixture.whenStable().then(() => {
+                   fixture.detectChanges();
+                   fixture.whenStable().then(() => {
+                     // model -> view
+                     const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+                     expect(customInput.nativeElement.value).toEqual('Nancy');
 
-                 // view -> model
-                 expect(fixture.componentInstance.name).toEqual('Carson');
-               });
-             });
-           }));
+                     customInput.nativeElement.value = 'Carson';
+                     dispatchEvent(customInput.nativeElement, 'input');
+                     fixture.detectChanges();
+
+                     // view -> model
+                     expect(fixture.componentInstance.name).toEqual('Carson');
+                   });
+                 });
+               }));
 
       });
 
