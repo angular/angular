@@ -292,7 +292,8 @@ function queryByTNodeType(tNode: TNode, currentView: LViewData): any {
   return null;
 }
 
-function queryByTemplateRef(tNode: TNode, currentView: LViewData, read: any, templateRef: any): any {
+function queryByTemplateRef(
+    tNode: TNode, currentView: LViewData, read: any, templateRef: any): any {
   const factoryFn = templateRef[NG_ELEMENT_ID];
   if (read) {
     if (factoryFn()) {
@@ -305,19 +306,15 @@ function queryByTemplateRef(tNode: TNode, currentView: LViewData, read: any, tem
 }
 
 function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx: number): any {
-  let result: any = null;
   if (read) {
-    result = queryByReadToken(tNode, currentView, read);
-  } else {
-    if (matchingIdx > -1) {
-      result = currentView[matchingIdx];
-    } else {
-      // if read token and / or strategy is not specified,
-      // detect it using appropriate tNode type
-      result = queryByTNodeType(tNode, currentView);
-    }
+    return queryByReadToken(tNode, currentView, read);
   }
-  return result;
+  if (matchingIdx > -1) {
+    return currentView[matchingIdx];
+  }
+  // if read token and / or strategy is not specified,
+  // detect it using appropriate tNode type
+  return queryByTNodeType(tNode, currentView);
 }
 
 function add(
