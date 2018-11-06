@@ -998,7 +998,7 @@ describe('query', () => {
                 element(1, 'div', ['child', '']);
               }
             },
-            3, 0, [Child, OtherChild], [],
+            2, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, Child, false, OtherChild);
@@ -1031,7 +1031,7 @@ describe('query', () => {
                 element(1, 'div', ['child', '']);
               }
             },
-            3, 0, [Child, OtherChild], [],
+            2, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, OtherChild, false, Child);
@@ -1047,7 +1047,7 @@ describe('query', () => {
         expect(qList.length).toBe(0);
       });
 
-      it('should not add results to the query in case no match found (via TemplateRef)', () => {
+      it('should match using string selector and directive as a read argument', () => {
         const Child = createDirective('child');
 
         /**
@@ -1063,7 +1063,7 @@ describe('query', () => {
                 element(1, 'div', ['child', ''], ['foo', '']);
               }
             },
-            2, 0, [Child], [],
+            3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, Child);
@@ -1096,7 +1096,7 @@ describe('query', () => {
                 element(1, 'div', ['child', '']);
               }
             },
-            3, 0, [Child], [],
+            2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, TemplateRef as any, false);
@@ -1115,8 +1115,8 @@ describe('query', () => {
       it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
         function Cmpt_Template_1(rf: RenderFlags, ctx1: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(1, 'div');
-            text(2, 'Test');
+            elementStart(0, 'div');
+            text(1, 'Test');
             elementEnd();
           }
         }
@@ -1138,7 +1138,7 @@ describe('query', () => {
                 template(4, Cmpt_Template_1, 2, 0, null, null, ['baz', ''], templateRefExtractor);
               }
             },
-            3, 0, [], [],
+            5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, TemplateRef as any, false);

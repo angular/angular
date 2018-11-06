@@ -316,22 +316,18 @@ function add(
     const predicate = query.predicate;
     const type = predicate.type as any;
     if (type) {
+      let result = null;
       if (type === ViewEngine_TemplateRef) {
-        const factoryFn = type[NG_ELEMENT_ID];
-        if (factoryFn()) {
-          const result = queryRead(tNode, currentView, predicate.read || type);
-          if (result !== null) {
-            addMatch(query, result);
-          }
-        }
+        result =
+            predicate.read ? queryRead(tNode, currentView, predicate.read) : type[NG_ELEMENT_ID]();
       } else {
         const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, type);
         if (matchingIdx !== null) {
-          const result = read(tNode, currentView, predicate.read, matchingIdx);
-          if (result !== null) {
-            addMatch(query, result);
-          }
+          result = read(tNode, currentView, predicate.read, matchingIdx);
         }
+      }
+      if (result !== null) {
+        addMatch(query, result);
       }
     } else {
       const selector = predicate.selector !;
