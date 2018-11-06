@@ -12,6 +12,7 @@ import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MO
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+import {fixmeIvy} from '@angular/private/testing';
 import {merge, timer} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -712,127 +713,133 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
     });
 
-    describe('setting status classes', () => {
-      it('should work with single fields', () => {
-        const fixture = initTest(FormControlComp);
-        const control = new FormControl('', Validators.required);
-        fixture.componentInstance.control = control;
-        fixture.detectChanges();
+    fixmeIvy('Host bindings to styles do not yet work') &&
+        describe('setting status classes', () => {
+          it('should work with single fields', () => {
+            const fixture = initTest(FormControlComp);
+            const control = new FormControl('', Validators.required);
+            fixture.componentInstance.control = control;
+            fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
-        fixture.detectChanges();
+            dispatchEvent(input, 'blur');
+            fixture.detectChanges();
 
-        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-        input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
-        fixture.detectChanges();
+            input.value = 'updatedValue';
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
 
-        expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-      });
+            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+          });
 
-      it('should work with single fields and async validators', fakeAsync(() => {
-           const fixture = initTest(FormControlComp);
-           const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
-           fixture.debugElement.componentInstance.control = control;
-           fixture.detectChanges();
+          it('should work with single fields and async validators', fakeAsync(() => {
+               const fixture = initTest(FormControlComp);
+               const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
+               fixture.debugElement.componentInstance.control = control;
+               fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
+               const input = fixture.debugElement.query(By.css('input')).nativeElement;
+               expect(sortedClassList(input)).toEqual([
+                 'ng-pending', 'ng-pristine', 'ng-untouched'
+               ]);
 
-           dispatchEvent(input, 'blur');
-           fixture.detectChanges();
-           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+               dispatchEvent(input, 'blur');
+               fixture.detectChanges();
+               expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
-           input.value = 'good';
-           dispatchEvent(input, 'input');
-           tick();
-           fixture.detectChanges();
+               input.value = 'good';
+               dispatchEvent(input, 'input');
+               tick();
+               fixture.detectChanges();
 
-           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-         }));
+               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+             }));
 
-      it('should work with single fields that combines async and sync validators', fakeAsync(() => {
-           const fixture = initTest(FormControlComp);
-           const control =
-               new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
-           fixture.debugElement.componentInstance.control = control;
-           fixture.detectChanges();
+          it('should work with single fields that combines async and sync validators',
+             fakeAsync(() => {
+               const fixture = initTest(FormControlComp);
+               const control =
+                   new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
+               fixture.debugElement.componentInstance.control = control;
+               fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
-           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+               const input = fixture.debugElement.query(By.css('input')).nativeElement;
+               expect(sortedClassList(input)).toEqual([
+                 'ng-invalid', 'ng-pristine', 'ng-untouched'
+               ]);
 
-           dispatchEvent(input, 'blur');
-           fixture.detectChanges();
-           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+               dispatchEvent(input, 'blur');
+               fixture.detectChanges();
+               expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-           input.value = 'bad';
-           dispatchEvent(input, 'input');
-           fixture.detectChanges();
+               input.value = 'bad';
+               dispatchEvent(input, 'input');
+               fixture.detectChanges();
 
-           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
 
-           tick();
-           fixture.detectChanges();
+               tick();
+               fixture.detectChanges();
 
-           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
+               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
 
-           input.value = 'good';
-           dispatchEvent(input, 'input');
-           tick();
-           fixture.detectChanges();
+               input.value = 'good';
+               dispatchEvent(input, 'input');
+               tick();
+               fixture.detectChanges();
 
-           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-         }));
+               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+             }));
 
-      it('should work with single fields in parent forms', () => {
-        const fixture = initTest(FormGroupComp);
-        const form = new FormGroup({'login': new FormControl('', Validators.required)});
-        fixture.componentInstance.form = form;
-        fixture.detectChanges();
+          it('should work with single fields in parent forms', () => {
+            const fixture = initTest(FormGroupComp);
+            const form = new FormGroup({'login': new FormControl('', Validators.required)});
+            fixture.componentInstance.form = form;
+            fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
-        fixture.detectChanges();
+            dispatchEvent(input, 'blur');
+            fixture.detectChanges();
 
-        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-        input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
-        fixture.detectChanges();
+            input.value = 'updatedValue';
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
 
-        expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-      });
+            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+          });
 
-      it('should work with formGroup', () => {
-        const fixture = initTest(FormGroupComp);
-        const form = new FormGroup({'login': new FormControl('', Validators.required)});
-        fixture.componentInstance.form = form;
-        fixture.detectChanges();
+          it('should work with formGroup', () => {
+            const fixture = initTest(FormGroupComp);
+            const form = new FormGroup({'login': new FormControl('', Validators.required)});
+            fixture.componentInstance.form = form;
+            fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
 
-        expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+            expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
-        fixture.detectChanges();
+            dispatchEvent(input, 'blur');
+            fixture.detectChanges();
 
-        expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+            expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-        input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
-        fixture.detectChanges();
+            input.value = 'updatedValue';
+            dispatchEvent(input, 'input');
+            fixture.detectChanges();
 
-        expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-      });
+            expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+          });
 
-    });
+        });
 
     describe('updateOn options', () => {
 
@@ -1911,80 +1918,81 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(form.valid).toEqual(true);
       });
 
-      it('changes on bound properties should change the validation state of the form', () => {
-        const fixture = initTest(ValidationBindingsForm);
-        const form = new FormGroup({
-          'login': new FormControl(''),
-          'min': new FormControl(''),
-          'max': new FormControl(''),
-          'pattern': new FormControl('')
-        });
-        fixture.componentInstance.form = form;
-        fixture.detectChanges();
+      fixmeIvy('host attribute instructions are not generated properly') &&
+          it('changes on bound properties should change the validation state of the form', () => {
+            const fixture = initTest(ValidationBindingsForm);
+            const form = new FormGroup({
+              'login': new FormControl(''),
+              'min': new FormControl(''),
+              'max': new FormControl(''),
+              'pattern': new FormControl('')
+            });
+            fixture.componentInstance.form = form;
+            fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[name=required]'));
-        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+            const required = fixture.debugElement.query(By.css('[name=required]'));
+            const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+            const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+            const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
 
-        required.nativeElement.value = '';
-        minLength.nativeElement.value = '1';
-        maxLength.nativeElement.value = '1234';
-        pattern.nativeElement.value = '12';
+            required.nativeElement.value = '';
+            minLength.nativeElement.value = '1';
+            maxLength.nativeElement.value = '1234';
+            pattern.nativeElement.value = '12';
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+            dispatchEvent(required.nativeElement, 'input');
+            dispatchEvent(minLength.nativeElement, 'input');
+            dispatchEvent(maxLength.nativeElement, 'input');
+            dispatchEvent(pattern.nativeElement, 'input');
 
-        expect(form.hasError('required', ['login'])).toEqual(false);
-        expect(form.hasError('minlength', ['min'])).toEqual(false);
-        expect(form.hasError('maxlength', ['max'])).toEqual(false);
-        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
-        expect(form.valid).toEqual(true);
+            expect(form.hasError('required', ['login'])).toEqual(false);
+            expect(form.hasError('minlength', ['min'])).toEqual(false);
+            expect(form.hasError('maxlength', ['max'])).toEqual(false);
+            expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+            expect(form.valid).toEqual(true);
 
-        fixture.componentInstance.required = true;
-        fixture.componentInstance.minLen = 3;
-        fixture.componentInstance.maxLen = 3;
-        fixture.componentInstance.pattern = '.{3,}';
-        fixture.detectChanges();
+            fixture.componentInstance.required = true;
+            fixture.componentInstance.minLen = 3;
+            fixture.componentInstance.maxLen = 3;
+            fixture.componentInstance.pattern = '.{3,}';
+            fixture.detectChanges();
 
-        dispatchEvent(required.nativeElement, 'input');
-        dispatchEvent(minLength.nativeElement, 'input');
-        dispatchEvent(maxLength.nativeElement, 'input');
-        dispatchEvent(pattern.nativeElement, 'input');
+            dispatchEvent(required.nativeElement, 'input');
+            dispatchEvent(minLength.nativeElement, 'input');
+            dispatchEvent(maxLength.nativeElement, 'input');
+            dispatchEvent(pattern.nativeElement, 'input');
 
-        expect(form.hasError('required', ['login'])).toEqual(true);
-        expect(form.hasError('minlength', ['min'])).toEqual(true);
-        expect(form.hasError('maxlength', ['max'])).toEqual(true);
-        expect(form.hasError('pattern', ['pattern'])).toEqual(true);
-        expect(form.valid).toEqual(false);
+            expect(form.hasError('required', ['login'])).toEqual(true);
+            expect(form.hasError('minlength', ['min'])).toEqual(true);
+            expect(form.hasError('maxlength', ['max'])).toEqual(true);
+            expect(form.hasError('pattern', ['pattern'])).toEqual(true);
+            expect(form.valid).toEqual(false);
 
-        expect(required.nativeElement.getAttribute('required')).toEqual('');
-        expect(fixture.componentInstance.minLen.toString())
-            .toEqual(minLength.nativeElement.getAttribute('minlength'));
-        expect(fixture.componentInstance.maxLen.toString())
-            .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
-        expect(fixture.componentInstance.pattern.toString())
-            .toEqual(pattern.nativeElement.getAttribute('pattern'));
+            expect(required.nativeElement.getAttribute('required')).toEqual('');
+            expect(fixture.componentInstance.minLen.toString())
+                .toEqual(minLength.nativeElement.getAttribute('minlength'));
+            expect(fixture.componentInstance.maxLen.toString())
+                .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
+            expect(fixture.componentInstance.pattern.toString())
+                .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
-        fixture.componentInstance.required = false;
-        fixture.componentInstance.minLen = null !;
-        fixture.componentInstance.maxLen = null !;
-        fixture.componentInstance.pattern = null !;
-        fixture.detectChanges();
+            fixture.componentInstance.required = false;
+            fixture.componentInstance.minLen = null !;
+            fixture.componentInstance.maxLen = null !;
+            fixture.componentInstance.pattern = null !;
+            fixture.detectChanges();
 
-        expect(form.hasError('required', ['login'])).toEqual(false);
-        expect(form.hasError('minlength', ['min'])).toEqual(false);
-        expect(form.hasError('maxlength', ['max'])).toEqual(false);
-        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
-        expect(form.valid).toEqual(true);
+            expect(form.hasError('required', ['login'])).toEqual(false);
+            expect(form.hasError('minlength', ['min'])).toEqual(false);
+            expect(form.hasError('maxlength', ['max'])).toEqual(false);
+            expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+            expect(form.valid).toEqual(true);
 
-        expect(required.nativeElement.getAttribute('required')).toEqual(null);
-        expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
-        expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
-        expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
-      });
+            expect(required.nativeElement.getAttribute('required')).toEqual(null);
+            expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
+            expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
+            expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+          });
 
       it('should support rebound controls with rebound validators', () => {
         const fixture = initTest(ValidationBindingsForm);
