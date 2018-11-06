@@ -49,7 +49,10 @@ function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3Depend
     }
     for (let j = 0; j < dep.length; j++) {
       const param = dep[j];
-      if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
+      if (param === undefined) {
+        // param may be undefined if type of dep is not set by ngtsc
+        continue;
+      } else if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
         meta.optional = true;
       } else if (param instanceof SkipSelf || param.__proto__.ngMetadataName === 'SkipSelf') {
         meta.skipSelf = true;
