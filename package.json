@@ -27,7 +27,7 @@
     "stage-release": "bash ./tools/release/stage-release-bin.sh",
     "preinstall": "node ./tools/npm/check-npm.js"
   },
-  "version": "7.0.2",
+  "version": "7.0.3",
   "requiredAngularVersion": ">=7.0.0",
   "dependencies": {
     "@angular/animations": "^7.0.3",
