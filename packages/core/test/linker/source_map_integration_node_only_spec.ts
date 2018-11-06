@@ -12,10 +12,11 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Attribute, Component, Directive, ErrorHandler, ɵglobal} from '@angular/core';
 import {getErrorLogger} from '@angular/core/src/errors';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('jit source mapping', () => {
+  fixmeIvy('unknown') && describe('jit source mapping', () => {
     let jitSpy: jasmine.Spy;
     let resourceLoader: MockResourceLoader;
 

@@ -13,6 +13,7 @@ import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
@@ -98,9 +99,9 @@ class DummyConsole implements Console {
 }
 
 {
-  describe('jit', () => { declareTests({useJit: true}); });
+  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {

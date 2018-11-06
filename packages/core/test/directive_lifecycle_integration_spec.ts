@@ -10,9 +10,10 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {Component, Directive} from '@angular/core/src/metadata';
 import {TestBed, inject} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('directive lifecycle integration spec', () => {
+  fixmeIvy('unknown') && describe('directive lifecycle integration spec', () => {
     let log: Log;
 
     beforeEach(() => {

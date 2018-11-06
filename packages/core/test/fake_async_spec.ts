@@ -9,6 +9,7 @@
 import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {Parser} from '../../compiler/src/expression_parser/parser';
 
@@ -17,7 +18,7 @@ const resolvedPromise = Promise.resolve(null);
 const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'];
 
 {
-  describe('fake async', () => {
+  fixmeIvy('unknown') && describe('fake async', () => {
     it('should run synchronous code', () => {
       let ran = false;
       fakeAsync(() => { ran = true; })();
