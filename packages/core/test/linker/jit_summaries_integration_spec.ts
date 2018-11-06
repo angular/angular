@@ -12,9 +12,10 @@ import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_
 import {Component, Directive, Injectable, NgModule, OnDestroy, Pipe, Type} from '@angular/core';
 import {TestBed, async, getTestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('Jit Summaries', () => {
+  fixmeIvy('unknown') && describe('Jit Summaries', () => {
     let instances: Map<any, Base>;
     let summaries: () => any[];
 

@@ -10,6 +10,7 @@ import {Component, Injectable, Input} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, async, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 @Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
 @Injectable()
@@ -83,7 +84,7 @@ class NestedAsyncTimeoutComp {
 }
 
 {
-  describe('ComponentFixture', () => {
+  fixmeIvy('unknown') && describe('ComponentFixture', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         declarations: [

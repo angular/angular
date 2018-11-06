@@ -10,6 +10,7 @@ import {Component, Inject, InjectionToken, NgModule, Optional} from '@angular/co
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -115,7 +116,7 @@ describe('TestBed', () => {
     expect(nameInjected).toEqual('World!');
   });
 
-  it('should give access to the node injector for root node', () => {
+  fixmeIvy('unknown') && it('should give access to the node injector for root node', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     const injector = hello.debugElement.injector;

@@ -9,13 +9,14 @@
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {Console} from '../../src/console';
 
 
 {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 class DummyConsole implements Console {

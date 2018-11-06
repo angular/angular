@@ -13,6 +13,7 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 @Injectable()
 class Logger {
@@ -168,7 +169,7 @@ class TestApp {
 }
 
 {
-  describe('debug element', () => {
+  fixmeIvy('unknown') && describe('debug element', () => {
     let fixture: ComponentFixture<any>;
 
     beforeEach(async(() => {

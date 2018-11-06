@@ -12,11 +12,12 @@ import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('jit', () => { declareTests({useJit: true}); });
+  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
 
-  describe('no jit', () => { declareTests({useJit: false}); });
+  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
 
   declareTestsUsingBootstrap();
 }
