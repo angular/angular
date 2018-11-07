@@ -12,9 +12,6 @@ import {
   transition,
   trigger,
   AnimationTriggerMetadata,
-  group,
-  query,
-  animateChild,
 } from '@angular/animations';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 
@@ -28,10 +25,7 @@ export const matBottomSheetAnimations: {
     state('visible', style({transform: 'translateY(0%)'})),
     transition('visible => void, visible => hidden',
         animate(`${AnimationDurations.COMPLEX} ${AnimationCurves.ACCELERATION_CURVE}`)),
-    transition('void => visible', group([
-      // `animateChild` allows for child component to animate at the same time. See #13870.
-      query('@*', animateChild(), {optional: true}),
-      animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`),
-    ]))
+    transition('void => visible',
+        animate(`${AnimationDurations.EXITING} ${AnimationCurves.DECELERATION_CURVE}`)),
   ])
 };

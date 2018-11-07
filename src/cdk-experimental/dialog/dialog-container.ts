@@ -6,17 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  animate,
-  AnimationEvent,
-  state,
-  style,
-  transition,
-  trigger,
-  group,
-  query,
-  animateChild,
-} from '@angular/animations';
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {FocusTrapFactory} from '@angular/cdk/a11y';
 import {
   BasePortalOutlet,
@@ -64,13 +54,9 @@ export function throwDialogContentAlreadyAttachedError() {
   changeDetection: ChangeDetectionStrategy.Default,
   animations: [
     trigger('dialog', [
-      state('enter', style({opacity: 1})),
-      state('exit, void', style({opacity: 0})),
-      transition('* => *', group([
-        // `animateChild` allows for child component to animate at the same time. See #13870.
-        query('@*', animateChild(), {optional: true}),
-        animate(225),
-      ])),
+      state('enter', style({ opacity: 1 })),
+      state('exit, void', style({ opacity: 0 })),
+      transition('* => *', animate(225)),
     ])
   ],
   host: {
