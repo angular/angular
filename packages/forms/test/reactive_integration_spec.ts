@@ -1918,81 +1918,80 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(form.valid).toEqual(true);
       });
 
-      fixmeIvy('host attribute instructions are not generated properly') &&
-          it('changes on bound properties should change the validation state of the form', () => {
-            const fixture = initTest(ValidationBindingsForm);
-            const form = new FormGroup({
-              'login': new FormControl(''),
-              'min': new FormControl(''),
-              'max': new FormControl(''),
-              'pattern': new FormControl('')
-            });
-            fixture.componentInstance.form = form;
-            fixture.detectChanges();
+      it('changes on bound properties should change the validation state of the form', () => {
+        const fixture = initTest(ValidationBindingsForm);
+        const form = new FormGroup({
+          'login': new FormControl(''),
+          'min': new FormControl(''),
+          'max': new FormControl(''),
+          'pattern': new FormControl('')
+        });
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
 
-            const required = fixture.debugElement.query(By.css('[name=required]'));
-            const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-            const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-            const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+        const required = fixture.debugElement.query(By.css('[name=required]'));
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
 
-            required.nativeElement.value = '';
-            minLength.nativeElement.value = '1';
-            maxLength.nativeElement.value = '1234';
-            pattern.nativeElement.value = '12';
+        required.nativeElement.value = '';
+        minLength.nativeElement.value = '1';
+        maxLength.nativeElement.value = '1234';
+        pattern.nativeElement.value = '12';
 
-            dispatchEvent(required.nativeElement, 'input');
-            dispatchEvent(minLength.nativeElement, 'input');
-            dispatchEvent(maxLength.nativeElement, 'input');
-            dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
 
-            expect(form.hasError('required', ['login'])).toEqual(false);
-            expect(form.hasError('minlength', ['min'])).toEqual(false);
-            expect(form.hasError('maxlength', ['max'])).toEqual(false);
-            expect(form.hasError('pattern', ['pattern'])).toEqual(false);
-            expect(form.valid).toEqual(true);
+        expect(form.hasError('required', ['login'])).toEqual(false);
+        expect(form.hasError('minlength', ['min'])).toEqual(false);
+        expect(form.hasError('maxlength', ['max'])).toEqual(false);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+        expect(form.valid).toEqual(true);
 
-            fixture.componentInstance.required = true;
-            fixture.componentInstance.minLen = 3;
-            fixture.componentInstance.maxLen = 3;
-            fixture.componentInstance.pattern = '.{3,}';
-            fixture.detectChanges();
+        fixture.componentInstance.required = true;
+        fixture.componentInstance.minLen = 3;
+        fixture.componentInstance.maxLen = 3;
+        fixture.componentInstance.pattern = '.{3,}';
+        fixture.detectChanges();
 
-            dispatchEvent(required.nativeElement, 'input');
-            dispatchEvent(minLength.nativeElement, 'input');
-            dispatchEvent(maxLength.nativeElement, 'input');
-            dispatchEvent(pattern.nativeElement, 'input');
+        dispatchEvent(required.nativeElement, 'input');
+        dispatchEvent(minLength.nativeElement, 'input');
+        dispatchEvent(maxLength.nativeElement, 'input');
+        dispatchEvent(pattern.nativeElement, 'input');
 
-            expect(form.hasError('required', ['login'])).toEqual(true);
-            expect(form.hasError('minlength', ['min'])).toEqual(true);
-            expect(form.hasError('maxlength', ['max'])).toEqual(true);
-            expect(form.hasError('pattern', ['pattern'])).toEqual(true);
-            expect(form.valid).toEqual(false);
+        expect(form.hasError('required', ['login'])).toEqual(true);
+        expect(form.hasError('minlength', ['min'])).toEqual(true);
+        expect(form.hasError('maxlength', ['max'])).toEqual(true);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(true);
+        expect(form.valid).toEqual(false);
 
-            expect(required.nativeElement.getAttribute('required')).toEqual('');
-            expect(fixture.componentInstance.minLen.toString())
-                .toEqual(minLength.nativeElement.getAttribute('minlength'));
-            expect(fixture.componentInstance.maxLen.toString())
-                .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
-            expect(fixture.componentInstance.pattern.toString())
-                .toEqual(pattern.nativeElement.getAttribute('pattern'));
+        expect(required.nativeElement.getAttribute('required')).toEqual('');
+        expect(fixture.componentInstance.minLen.toString())
+            .toEqual(minLength.nativeElement.getAttribute('minlength'));
+        expect(fixture.componentInstance.maxLen.toString())
+            .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
+        expect(fixture.componentInstance.pattern.toString())
+            .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
-            fixture.componentInstance.required = false;
-            fixture.componentInstance.minLen = null !;
-            fixture.componentInstance.maxLen = null !;
-            fixture.componentInstance.pattern = null !;
-            fixture.detectChanges();
+        fixture.componentInstance.required = false;
+        fixture.componentInstance.minLen = null !;
+        fixture.componentInstance.maxLen = null !;
+        fixture.componentInstance.pattern = null !;
+        fixture.detectChanges();
 
-            expect(form.hasError('required', ['login'])).toEqual(false);
-            expect(form.hasError('minlength', ['min'])).toEqual(false);
-            expect(form.hasError('maxlength', ['max'])).toEqual(false);
-            expect(form.hasError('pattern', ['pattern'])).toEqual(false);
-            expect(form.valid).toEqual(true);
+        expect(form.hasError('required', ['login'])).toEqual(false);
+        expect(form.hasError('minlength', ['min'])).toEqual(false);
+        expect(form.hasError('maxlength', ['max'])).toEqual(false);
+        expect(form.hasError('pattern', ['pattern'])).toEqual(false);
+        expect(form.valid).toEqual(true);
 
-            expect(required.nativeElement.getAttribute('required')).toEqual(null);
-            expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
-            expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
-            expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
-          });
+        expect(required.nativeElement.getAttribute('required')).toEqual(null);
+        expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
+        expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
+        expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+      });
 
       it('should support rebound controls with rebound validators', () => {
         const fixture = initTest(ValidationBindingsForm);

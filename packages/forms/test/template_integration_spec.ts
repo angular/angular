@@ -1420,77 +1420,76 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.control.hasError('minlength', ['tovalidate'])).toBeTruthy();
          }));
 
-      fixmeIvy('host attribute instructions are not generated properly') &&
-          it('changes on bound properties should change the validation state of the form',
-             fakeAsync(() => {
-               const fixture = initTest(NgModelValidationBindings);
-               fixture.detectChanges();
-               tick();
+      it('changes on bound properties should change the validation state of the form',
+         fakeAsync(() => {
+           const fixture = initTest(NgModelValidationBindings);
+           fixture.detectChanges();
+           tick();
 
-               const required = fixture.debugElement.query(By.css('[name=required]'));
-               const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-               const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-               const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+           const required = fixture.debugElement.query(By.css('[name=required]'));
+           const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
+           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
+           const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
 
-               required.nativeElement.value = '';
-               minLength.nativeElement.value = '1';
-               maxLength.nativeElement.value = '1234';
-               pattern.nativeElement.value = '12';
+           required.nativeElement.value = '';
+           minLength.nativeElement.value = '1';
+           maxLength.nativeElement.value = '1234';
+           pattern.nativeElement.value = '12';
 
-               dispatchEvent(required.nativeElement, 'input');
-               dispatchEvent(minLength.nativeElement, 'input');
-               dispatchEvent(maxLength.nativeElement, 'input');
-               dispatchEvent(pattern.nativeElement, 'input');
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
 
-               const form = fixture.debugElement.children[0].injector.get(NgForm);
-               expect(form.control.hasError('required', ['required'])).toEqual(false);
-               expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
-               expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
-               expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
-               expect(form.valid).toEqual(true);
+           const form = fixture.debugElement.children[0].injector.get(NgForm);
+           expect(form.control.hasError('required', ['required'])).toEqual(false);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
+           expect(form.valid).toEqual(true);
 
-               fixture.componentInstance.required = true;
-               fixture.componentInstance.minLen = 3;
-               fixture.componentInstance.maxLen = 3;
-               fixture.componentInstance.pattern = '.{3,}';
-               fixture.detectChanges();
+           fixture.componentInstance.required = true;
+           fixture.componentInstance.minLen = 3;
+           fixture.componentInstance.maxLen = 3;
+           fixture.componentInstance.pattern = '.{3,}';
+           fixture.detectChanges();
 
-               dispatchEvent(required.nativeElement, 'input');
-               dispatchEvent(minLength.nativeElement, 'input');
-               dispatchEvent(maxLength.nativeElement, 'input');
-               dispatchEvent(pattern.nativeElement, 'input');
+           dispatchEvent(required.nativeElement, 'input');
+           dispatchEvent(minLength.nativeElement, 'input');
+           dispatchEvent(maxLength.nativeElement, 'input');
+           dispatchEvent(pattern.nativeElement, 'input');
 
-               expect(form.control.hasError('required', ['required'])).toEqual(true);
-               expect(form.control.hasError('minlength', ['minlength'])).toEqual(true);
-               expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(true);
-               expect(form.control.hasError('pattern', ['pattern'])).toEqual(true);
-               expect(form.valid).toEqual(false);
+           expect(form.control.hasError('required', ['required'])).toEqual(true);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(true);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(true);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(true);
+           expect(form.valid).toEqual(false);
 
-               expect(required.nativeElement.getAttribute('required')).toEqual('');
-               expect(fixture.componentInstance.minLen.toString())
-                   .toEqual(minLength.nativeElement.getAttribute('minlength'));
-               expect(fixture.componentInstance.maxLen.toString())
-                   .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
-               expect(fixture.componentInstance.pattern.toString())
-                   .toEqual(pattern.nativeElement.getAttribute('pattern'));
+           expect(required.nativeElement.getAttribute('required')).toEqual('');
+           expect(fixture.componentInstance.minLen.toString())
+               .toEqual(minLength.nativeElement.getAttribute('minlength'));
+           expect(fixture.componentInstance.maxLen.toString())
+               .toEqual(maxLength.nativeElement.getAttribute('maxlength'));
+           expect(fixture.componentInstance.pattern.toString())
+               .toEqual(pattern.nativeElement.getAttribute('pattern'));
 
-               fixture.componentInstance.required = false;
-               fixture.componentInstance.minLen = null !;
-               fixture.componentInstance.maxLen = null !;
-               fixture.componentInstance.pattern = null !;
-               fixture.detectChanges();
+           fixture.componentInstance.required = false;
+           fixture.componentInstance.minLen = null !;
+           fixture.componentInstance.maxLen = null !;
+           fixture.componentInstance.pattern = null !;
+           fixture.detectChanges();
 
-               expect(form.control.hasError('required', ['required'])).toEqual(false);
-               expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
-               expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
-               expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
-               expect(form.valid).toEqual(true);
+           expect(form.control.hasError('required', ['required'])).toEqual(false);
+           expect(form.control.hasError('minlength', ['minlength'])).toEqual(false);
+           expect(form.control.hasError('maxlength', ['maxlength'])).toEqual(false);
+           expect(form.control.hasError('pattern', ['pattern'])).toEqual(false);
+           expect(form.valid).toEqual(true);
 
-               expect(required.nativeElement.getAttribute('required')).toEqual(null);
-               expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
-               expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
-               expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
-             }));
+           expect(required.nativeElement.getAttribute('required')).toEqual(null);
+           expect(required.nativeElement.getAttribute('minlength')).toEqual(null);
+           expect(required.nativeElement.getAttribute('maxlength')).toEqual(null);
+           expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
+         }));
 
       fixmeIvy('ngModelChange callback never called') &&
           it('should update control status', fakeAsync(() => {
