@@ -7,7 +7,8 @@
  */
 
 import {ApplicationRef, PLATFORM_ID} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {Subject} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 
 import {ServiceWorkerModule, SwRegistrationOptions} from '../src/module';
@@ -22,6 +23,11 @@ describe('ServiceWorkerModule', () => {
 
   let swRegisterSpy: jasmine.Spy;
 
+  const untilStable = () => {
+    const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+    return appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
+  };
+
   beforeEach(() => swRegisterSpy = spyOn(navigator.serviceWorker, 'register'));
 
   describe('register()', () => {
@@ -31,8 +37,7 @@ describe('ServiceWorkerModule', () => {
         providers: [{provide: PLATFORM_ID, useValue: 'browser'}],
       });
 
-      const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-      await appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
+      await untilStable();
     };
 
     it('sets the registration options', async() => {
@@ -58,6 +63,7 @@ describe('ServiceWorkerModule', () => {
 
     it('defaults to enabling the SW', async() => {
       await configTestBed({});
+
       expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
@@ -65,45 +71,161 @@ describe('ServiceWorkerModule', () => {
 
   describe('SwRegistrationOptions', () => {
     const configTestBed =
-        async(providerOpts: SwRegistrationOptions, staticOpts?: SwRegistrationOptions) => {
-      TestBed.configureTestingModule({
-        imports: [ServiceWorkerModule.register('sw.js', staticOpts || {scope: 'static'})],
-        providers: [
-          {provide: PLATFORM_ID, useValue: 'browser'},
-          {provide: SwRegistrationOptions, useFactory: () => providerOpts},
-        ],
-      });
-
-      const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-      await appRef.isStable.pipe(filter(Boolean), take(1)).toPromise();
-    };
+        (providerOpts: SwRegistrationOptions, staticOpts?: SwRegistrationOptions) => {
+          TestBed.configureTestingModule({
+            imports: [ServiceWorkerModule.register('sw.js', staticOpts || {scope: 'static'})],
+            providers: [
+              {provide: PLATFORM_ID, useValue: 'browser'},
+              {provide: SwRegistrationOptions, useFactory: () => providerOpts},
+            ],
+          });
+        };
 
     it('sets the registration options (and overwrites those set via `.register()`', async() => {
-      await configTestBed({enabled: true, scope: 'provider'});
+      configTestBed({enabled: true, scope: 'provider'});
+      await untilStable();
 
       expect(TestBed.get(SwRegistrationOptions)).toEqual({enabled: true, scope: 'provider'});
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'provider'});
     });
 
     it('can disable the SW', async() => {
-      await configTestBed({enabled: false}, {enabled: true});
+      configTestBed({enabled: false}, {enabled: true});
+      await untilStable();
 
       expect(TestBed.get(SwUpdate).isEnabled).toBe(false);
       expect(swRegisterSpy).not.toHaveBeenCalled();
     });
 
     it('can enable the SW', async() => {
-      await configTestBed({enabled: true}, {enabled: false});
+      configTestBed({enabled: true}, {enabled: false});
+      await untilStable();
 
       expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
     });
 
     it('defaults to enabling the SW', async() => {
-      await configTestBed({}, {enabled: false});
+      configTestBed({}, {enabled: false});
+      await untilStable();
 
       expect(TestBed.get(SwUpdate).isEnabled).toBe(true);
       expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+    });
+
+    describe('registrationStrategy', () => {
+      const configTestBedWithMockedStability =
+          (strategy?: SwRegistrationOptions['registrationStrategy']) => {
+            const isStableSub = new Subject<boolean>();
+
+            TestBed.configureTestingModule({
+              imports: [ServiceWorkerModule.register('sw.js')],
+              providers: [
+                {provide: ApplicationRef, useValue: {isStable: isStableSub.asObservable()}},
+                {provide: PLATFORM_ID, useValue: 'browser'},
+                {
+                  provide: SwRegistrationOptions,
+                  useFactory: () => ({registrationStrategy: strategy})
+                },
+              ],
+            });
+
+            // Dummy `get()` call to initialize the test "app".
+            TestBed.get(ApplicationRef);
+
+            return isStableSub;
+          };
+
+      it('defaults to registering the SW when the app stabilizes', fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability();
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW when the app stabilizes with `registerWhenStable`', fakeAsync(() => {
+           const isStableSub = configTestBedWithMockedStability('registerWhenStable');
+
+           isStableSub.next(false);
+           isStableSub.next(false);
+
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           isStableSub.next(true);
+
+           tick();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW immediatelly (synchronously) with `registerImmediately`', () => {
+        configTestBedWithMockedStability('registerImmediately');
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+      });
+
+      it('registers the SW after the specified delay with `registerWithDelay:<delay>`',
+         fakeAsync(() => {
+           configTestBedWithMockedStability('registerWithDelay:100000');
+
+           tick(99999);
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(1);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW asap (asynchronously) with `registerWithDelay:`', fakeAsync(() => {
+           configTestBedWithMockedStability('registerWithDelay:');
+
+           // Create a microtask.
+           Promise.resolve();
+
+           flushMicrotasks();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(0);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW asap (asynchronously) with `registerWithDelay`', fakeAsync(() => {
+           configTestBedWithMockedStability('registerWithDelay');
+
+           // Create a microtask.
+           Promise.resolve();
+
+           flushMicrotasks();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           tick(0);
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('registers the SW on first emitted value with observable factory function',
+         fakeAsync(() => {
+           const registerSub = new Subject<void>();
+           const isStableSub = configTestBedWithMockedStability(() => registerSub.asObservable());
+
+           isStableSub.next(true);
+           tick();
+           expect(swRegisterSpy).not.toHaveBeenCalled();
+
+           registerSub.next();
+           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: undefined});
+         }));
+
+      it('throws an error with unknown strategy', () => {
+        expect(() => configTestBedWithMockedStability('registerYesterday'))
+            .toThrowError('Unknown ServiceWorker registration strategy: registerYesterday');
+        expect(swRegisterSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });
