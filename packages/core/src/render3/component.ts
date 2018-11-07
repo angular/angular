@@ -16,6 +16,7 @@ import {assertComponentType, assertDefined} from './assert';
 import {getComponentViewByInstance} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
@@ -23,7 +24,6 @@ import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {publishDefaultGlobalUtils} from './publish_global_util';
 import {enterView, leaveView, resetComponentState} from './state';
 import {defaultScheduler, getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 

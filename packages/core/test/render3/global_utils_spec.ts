@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from '../../src/render3/discovery_utils';
-import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/publish_global_util';
+import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
 import {global} from '../../src/util';
+import {getPlayers} from '../../src/render3/players';
 
-describe('dev mode utils', () => {
-  describe('devModePublish', () => {
+describe('global utils', () => {
+  describe('publishGlobalUtil', () => {
     it('should publish a function to the window', () => {
       const w = global as any as GlobalDevModeContainer;
       expect(w[GLOBAL_PUBLISH_EXPANDO_KEY]['foo']).toBeFalsy();
@@ -34,6 +35,8 @@ describe('dev mode utils', () => {
        () => { assertPublished('getHostComponent', getHostComponent); });
 
     it('should publish getInjector', () => { assertPublished('getInjector', getInjector); });
+
+    it('should publish getPlayers', () => { assertPublished('getPlayers', getPlayers); });
   });
 });
 
