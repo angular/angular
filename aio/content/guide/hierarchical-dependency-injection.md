@@ -84,82 +84,156 @@ Learn more about dependency resolution through the injector hierarchy:
 
 </div>
 
+<!--
 *NgModule-level* providers can be specified with `@NgModule()` `providers` metadata option, or in the `@Injectable()` `providedIn` option (with some module other than the root `AppModule`).
+-->
+`@NgModule()` 데코레이터의 `providers` 메타데이터 옵션에 프로바이더를 등록하거나 `@Injectable()` 데코레이터의 `providedIn` 옵션에 `AppModule`이 아닌 다른 모듈을 지정하면 *NgModule 계층에* 프로바이더를 등록할 수 있습니다.
 
+<!--
 Use the `@NgModule()` `provides` option if a module is [lazy loaded](guide/lazy-loading-ngmodules). The module's own injector is configured with the provider when that module is loaded, and Angular can inject the corresponding services in any class it creates in that module. If you use the `@Injectable()` option `providedIn: MyLazyloadModule`, the provider could be shaken out at compile time, if it is not used anywhere else in the app. 
+-->
+[지연 로딩되는 모듈](guide/lazy-loading-ngmodules)에서는 `@NgModule()`의 `providers` 옵션만 사용할 수 있습니다. 그러면 모듈이 로드될 때 모듈에 인젝터가 생성되는데 지연로딩되는 모듈은 이 시점에 등록된 프로바이더만 사용할 수 있습니다. 만약 `@Injectable()` 데코레이터에서 `providedIn: MyLazyloadModule`과 같이 지정하면 이 프로바이더는 컴파일되면서 트리셰이킹으로 제거되고 애플리케이션이 정상적으로 동작하지 않습니다.
 
+<!--
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
+-->
+* 트리셰이킹 대상이 되는 프로바이더에 대해 더 알아보려면 [이 문서](guide/dependency-injection-providers#tree-shakable-providers)를 참고하세요.
 
+<!--
 For both root-level and module-level injectors, a service instance lives for the life of the app or module, and Angular injects this one service instance in every class that needs it.
+-->
+최상위 인젝터가 관리하는 서비스 인스턴스는 앱이 종료될 때까지 유지되며 모듈 계층의 인젝터에서 관리하는 서비스 인스턴스는 모듈이 종료될 때까지 유지됩니다. 
 
+<!--
 *Component-level* providers configure each component instance's own injector. 
 Angular can only inject the corresponding services in that component instance or one of its descendant component instances. 
 Angular can't inject the same service instance anywhere else. 
+-->
+*컴포넌트 계층에* 프로바이더를 등록하면 각 컴포넌트의 인스턴스마다 인젝터가 생성됩니다.
+그리고 Angular는 이 컴포넌트 인젝터에 등록된 서비스나 부모 인젝터에 등록된 서비스만 의존성으로 주입받을 수 있습니다.
+이 경우에는 컴포넌트마다 서로 다른 서비스 인스턴스를 주입받습니다.
 
+<!--
 A component-provided service may have a limited lifetime. 
 Each new instance of the component gets its own instance of the service. 
 When the component instance is destroyed, so is that service instance.
+-->
+컴포넌트에 등록한 서비스의 수명은 모듈에 등록된 서비스와 비교할 때 좀 더 짧습니다.
+이 경우에 서비스 인스턴스는 컴포넌트 인스턴스가 생성될 때 함께 생성되며, 컴포넌트 인스턴스가 종료되면 서비스 인스턴스도 함께 종료됩니다.
 
+<!--
 In our sample app, `HeroComponent` is created when the application starts 
 and is never destroyed,
 so the `HeroService` instance created for `HeroComponent` lives for the life of the app. 
 If you want to restrict `HeroService` access to `HeroComponent` and its nested 
 `HeroListComponent`, provide `HeroService` at the component level, in `HeroComponent` metadata.
+-->
+예제로 살펴본 애플리케이션에서 `HeroComponent`는 애플리케이션이 시작되면서 생성되고 따로 종료되지 않기 때문에, `HeroComponent`가 생성한 `HeroService`의 인스턴스도 애플리케이션이 실행하는 동안 계속 유지됩니다.
+만약 `HeroService`의 인스턴스를 `HeroComponent`와 이 컴포넌트의 자식 컴포넌트인 `HeroListComponent`에서만 접근할 수 있도록 제한하려면 `HeroComponent` 메타데이터에 `HeroService`의 프로바이더를 등록하면 됩니다.
 
+<!--
 * See more [examples of component-level injection](#component-injectors) below.
+-->
+* 자세한 내용은 아래에서 설명하는 [컴포넌트 계층의 의존성 주입 예제](#component-injectors)를 참고하세요.
 
 
 {@a register-providers-injectable}
 
+<!--
 ### @Injectable-level configuration 
+-->
+### @Injectable 설정
 
+<!--
 The `@Injectable()` decorator identifies every service class. The `providedIn` metadata option for a service class configures a specific injector (typically `root`)
 to use the decorated class as a provider of the service. 
 When an injectable class provides its own service to the `root` injector, the service is available anywhere the class is imported. 
+-->
+`@Injectable()` 데코레이터는 서비스 클래스가 직접 프로바이더를 등록할 때 사용합니다. 이 데코레이터의 `providedIn` 메타데이터 옵션을 사용하면 이 서비스 프로바이더가 어떤 인젝터에 등록될지 지정할 수 있는데, 일반적으로 `root`에 등록합니다.
+서비스를 `root` 인젝터에 등록하면 애플리케이션 전체 범위에서 이 서비스를 자유롭게 주입할 수 있습니다.
 
+<!--
 The following example configures a provider for `HeroService` using the `@Injectable()` decorator on the class.
+-->
+다음 예제는 `HeroService` 클래스에 `@Injectable()` 데코레이터를 사용해서 프로바이더로 등록하는 예제입니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  header="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
 
+<!--
 This configuration tells Angular that the app's root injector is responsible for creating an 
 instance of `HeroService` by invoking its constructor,
 and for making that instance available across the application. 
+-->
+이렇게 설정하면 애플리케이션 최상위 인젝터가 `HeroService`의 인스턴스를 생성하고 관리하며, 이 서비스를 의존성으로 주입할 때도 이 인스턴스를 사용합니다.
 
+<!--
 Providing a service with the app's root injector is a typical case,
 and the CLI sets up this kind of a provider automatically for you
 when generating a new service. 
 However, you might not always want to provide your service at the root level.
 You might, for instance, want users to explicitly opt-in to using the service.
+-->
+일반적으로 서비스 프로바이더는 애플리케이션의 최상위 인젝터에 등록하며, Angular CLI로 서비스를 생성해도 기본적으로 이렇게 등록하도록 코드가 생성됩니다.
+하지만 서비스를 언제나 최상위 계층에만 등록해야 하는 것은 아닙니다.
+어쩌면 특정 모듈에서만 서비스를 사용하도록 설정해야 할 수도 있습니다.
 
+<!--
 Instead of specifying the `root` injector, you can set `providedIn` to a specific NgModule. 
+-->
+서비스 프로바이더는 `root` 인젝터 뿐 아니라 특정 NgModule에 등록할 수도 있습니다.
 
+<!--
 For example, in the following excerpt, the `@Injectable()` decorator configures a provider
 that is available in any injector that includes the `HeroModule`.
+-->
+아래 코드는 `HeroModule`에서만 서비스를 사용하도록 `@Injectable()` 데코레이터를 설정하는 예제 코드입니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  header="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
 
+<!--
 This is generally no different from configuring the injector of the NgModule itself,
 except that the service is tree-shakable if the NgModule doesn't use it.
 It can be useful for a library that offers a particular service that some
 components *might* want to inject optionally,
 and leave it up to the app whether to provide the service.
+-->
+서비스 프로바이더를 이렇게 등록하면 `@NgModule()` 데코레이터에서 직접 등록하는 것과 거의 같지만, 이 경우에는 `providedIn`으로 지정한 NgModule이 실제로 사용되지 않으면 이 서비스도 트리셰이킹 대상이 됩니다.
+이 방식은 의존성 객체를 생략해도 되는 컴포넌트가 있는 경우에 사용됩니다.
 
+<!--
 * Learn more about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers).
+-->
+* [트리셰이킹 대상이 되는 프로바이더](guide/dependency-injection-providers#tree-shakable-providers) 문서도 확인해 보세요.
 
 
+<!--
 ### @NgModule-level injectors
+-->
+### @NgModule 계층의 인젝터
 
+<!--
 You can configure a provider at the module level using the `providedIn` metadata option for a non-root NgModule, in order to limit the scope of the provider to that module.
 This is the equivalent of specifying the non-root module in the `@Injectable()` metadata, except that the service provided this way is not tree-shakable.
+-->
+`@Injectable()` 데코레이터의 `providedIn` 메타데이터 옵션을 사용하면 애플리케이션 최상위 NgModule이 아닌 모듈에도 서비스 프로바이더를 등록할 수 있는데, 이렇게 설정하면 서비스 프로바이더를 해당 모듈에서만 접근할 수 있도록 제한할 수 있습니다.
+물론 `@NgModule()` 데코레이터의 `providers`에 서비스 프로바이더를 등록해도 같은 효과를 낼 수 있지만, 위에서 설명한 것처럼 `@NgModule()`에 등록한 서비스 프로바이더는 트리셰이킹의 대상이 되지 않습니다.
 
+<!--
 You generally don't need to specify `AppModule` with `providedIn`, because the app's `root` injector is the `AppModule` injector. 
 However, if you configure a app-wide provider in the`@NgModule()` metadata for `AppModule`,
 it overrides one configured for `root` in the `@Injectable()` metadata. 
 You can do this to configure a non-default provider of a service that is shared with multiple apps. 
+-->
+`providedIn`에 `AppModule`을 명시적으로 지정할 필요는 없습니다. 왜냐하면 애플리케이션의 `root` 인젝터가 `AppModule` 인젝터이기 때문입니다.
+하지만 `AppModule`의 `@NgModule()` 메타데이터에 서비스 프로바이더를 명시적으로 등록하면 이 서비스의 `@Injectable()` 메타데이터에 설정된 `root`를 오버라이드합니다.
+이 방식은 여러 애플리케이션이 공유하는 서비스를 다른 서비스로 대체할 때 사용됩니다.
 
+<!--
 Here is an example of the case where the component router configuration includes
 a non-default [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
+-->
+그래서 애플리케이션의 [로케이션 정책](guide/router#location-strategy)을 기본값에서 다른 값으로 변경하고 싶다면 `AppModule`의 `providers`에 프로바이더를 다음과 같이 등록할 수도 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)" linenums="false">
 
@@ -168,33 +242,56 @@ in the `providers` list of the `AppModule`.
 
 {@a register-providers-component}
 
+<!--
 ### @Component-level injectors
+-->
+### @Component 계층의 인젝터
 
+<!--
 Individual components within an NgModule have their own injectors.
 You can limit the scope of a provider to a component and its children
 by configuring the provider at the component level using the `@Component` metadata.
+-->
+NgModule 안에 있는 개별 컴포넌트에도 인젝터가 존재합니다.
+그리고 `@Component` 메타데이터의 옵션을 사용하면 컴포넌트 계층에 서비스 프로바이더를 등록할 수 있으며, 이렇게 등록하면 이 서비스는 해당 컴포넌트와 해당 컴포넌트의 자식 컴포넌트에서만 사용할 수 있습니다.
 
+<!--
 The following example is a revised `HeroesComponent` that specifies `HeroService` in its `providers` array. `HeroService` can provide heroes to instances of this component, or to any child component instances. 
+-->
+아래 예제는 `HeroesComponent`의 `providers` 배열에 `HeroService`를 등록하는 예제입니다. `HeroService`는 이 서비스가 등록된 컴포넌트와 그 자식 컴포넌트에만 주입될 수 있습니다.
 
 <code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" linenums="false">
 </code-example>
 
+<!--
 ### Element injectors
+-->
+### 엘리먼트 인젝터
 
+<!--
 An injector does not actually belong to a component, but rather to the component instance's anchor element in the DOM. A different component instance on a different DOM element uses a different injector.
+-->
+엄밀히 말하면 인젝터는 컴포넌트에 속하는 것이 아니라 DOM에 추가된 컴포넌트 인스턴스의 앵커 엘리먼트에 존재하는 것입니다. 그래서 서로 다른 DOM 엘리먼트에 각각의 컴포넌트 인스턴스가 있고, 이 컴포넌트 인스턴스와 연결된 인젝터가 존재한다고 할 수 있습니다.
 
+<!--
 Components are a special type of directive, and the `providers` property of
 `@Component()` is inherited from `@Directive()`. 
 Directives can also have dependencies, and you can configure providers
 in their `@Directive()` metadata. 
 When you configure a provider for a component or directive using the `providers` property, that provider belongs to the injector for the anchor DOM element. Components and directives on the same element share an injector.
+-->
+컴포넌트는 디렉티브의 한 종류이며 `@Component()` 데코레이터의 `providers` 프로퍼티도 `@Directive()`에 있던 것을 다시 한 번 가져온 것입니다.
+그리고 디렉티브에도 의존성 객체가 있을 수 있기 때문에 `@Directive()` 메타데이터에 프로바이더를 등록할 수 있습니다.
+컴포넌트나 디렉티브의 `providers`에 프로바이더를 등록하면 이 프로바이더도 앵커 DOM 엘리먼트의 인젝터가 관리합니다. 그리고 같은 엘리먼트에 존재하는 컴포넌트와 디렉티브는 인젝터를 함께 공유합니다.
 
 <!--- TBD with examples
 * For an example of how this works, see [Element-level providers](guide/dependency-injection-in-action#directive-level-providers).
 --->
 
+<!--
 * Learn more about [Element Injectors in Angular](https://blog.angularindepth.com/a-curios-case-of-the-host-decorator-and-element-injectors-in-angular-582562abcf0a).
-
+-->
+* 엘리먼트 인젝터에 대해 자세하게 알아보려면 [이 블로그](https://blog.angularindepth.com/a-curios-case-of-the-host-decorator-and-element-injectors-in-angular-582562abcf0a)를 참고하세요.
 
 
 ## Injector bubbling
