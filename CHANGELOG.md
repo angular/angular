@@ -1,3 +1,15 @@
+<a name="7.0.3"></a>
+## [7.0.3](https://github.com/angular/angular/compare/7.0.2...7.0.3) (2018-11-07)
+
+
+### Bug Fixes
+
+* **bazel:** unknown replay compiler error in windows ([#26711](https://github.com/angular/angular/issues/26711)) ([4d532df](https://github.com/angular/angular/commit/4d532df))
+* **router:** remove type bludgeoning of context and outlet when running CanDeactivate ([#26496](https://github.com/angular/angular/issues/26496)) ([dc05385](https://github.com/angular/angular/commit/dc05385)), closes [#18253](https://github.com/angular/angular/issues/18253)
+* **upgrade:** make typings compatible with older AngularJS typings ([#26880](https://github.com/angular/angular/issues/26880)) ([315d95c](https://github.com/angular/angular/commit/315d95c)), closes [#26420](https://github.com/angular/angular/issues/26420)
+
+
+
 <a name="7.1.0-beta.1"></a>
 # [7.1.0-beta.1](https://github.com/angular/angular/compare/7.1.0-beta.0...7.1.0-beta.1) (2018-10-31)
 
