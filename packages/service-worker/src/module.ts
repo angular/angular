@@ -8,8 +8,8 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
-import {Observable} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {Observable, of } from 'rxjs';
+import {delay, filter, take} from 'rxjs/operators';
 
 import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
@@ -43,7 +43,32 @@ export abstract class SwRegistrationOptions {
    */
   scope?: string;
 
-  registrationStrategy?: (() => Observable<any>)|string;
+  /**
+   * Defines the ServiceWorker registration strategy, which determines when it will be registered
+   * with the browser.
+   *
+   * The default behavior of registering once the application stabilizes (i.e. as soon as there are
+   * no pending micro- and macro-tasks), is designed register the ServiceWorker as soon as possible
+   * but without affecting the application's first time load.
+   *
+   * Still, there might be cases where you want more control over when the ServiceWorker is
+   * registered (e.g. there might be a long-running timeout or polling interval, preventing the app
+   * to stabilize). The available option are:
+   *
+   * - `registerWhenStable`: Register as soon as the application stabilizes (no pending
+   *      micro-/macro-tasks).
+   * - `registerImmediately`: Register immediately.
+   * - `registerWithDelay:<timeout>`: Register with a delay of `<timeout>` milliseconds. For
+   *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
+   *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
+   *     as possible but still asynchronously, once all pending micro-tasks are completed.
+   * - An [Observable](guide/observables) factory function: A function that returns an `Observable`.
+   *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
+   *     ServiceWorker will be registered as soon as the first value is emitted.
+   *
+   * Default: 'registerWhenStable'
+   */
+  registrationStrategy?: string|(() => Observable<unknown>);
 }
 
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
@@ -52,13 +77,10 @@ export function ngswAppInitializer(
     injector: Injector, script: string, options: SwRegistrationOptions,
     platformId: string): Function {
   const initializer = () => {
-    const app = injector.get<ApplicationRef>(ApplicationRef);
     if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
           options.enabled !== false)) {
       return;
     }
-    const whenStable =
-        app.isStable.pipe(filter((stable: boolean) => !!stable), take(1)).toPromise();
 
     // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
     // becomes active. This allows the SW to initialize itself even if there is no application
@@ -69,35 +91,34 @@ export function ngswAppInitializer(
       }
     });
 
-    // Don't return the Promise, as that will block the application until the SW is registered, and
-    // cause a crash if the SW registration fails.
+    let readyToRegister$: Observable<unknown>;
+
     if (typeof options.registrationStrategy === 'function') {
-      const observable = options.registrationStrategy();
-      const subscription = observable.subscribe(() => {
-        navigator.serviceWorker.register(script, {scope: options.scope});
-        subscription.unsubscribe();
-      });
+      readyToRegister$ = options.registrationStrategy();
     } else {
-      const registrationStrategy = typeof options.registrationStrategy === 'string' ?
-          options.registrationStrategy :
-          'registerWhenStable';
-      if (registrationStrategy === 'registerWhenStable') {
-        whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
-      } else if (registrationStrategy === 'registerImmediately') {
-        navigator.serviceWorker.register(script, {scope: options.scope});
-      } else if (registrationStrategy.indexOf('registerDelay') !== -1) {
-        const split = registrationStrategy.split(':');
-        const delayStr = split.length > 1 ? split[1] : undefined;
-        const delay = Number(delayStr);
-        setTimeout(
-            () => navigator.serviceWorker.register(script, {scope: options.scope}),
-            typeof delay === 'number' ? delay : 0);
-      } else {
-        // wrong strategy
-        throw new Error(
-            `Unknown service worker registration strategy: ${options.registrationStrategy}`);
+      const [strategy, ...args] = (options.registrationStrategy || 'registerWhenStable').split(':');
+      switch (strategy) {
+        case 'registerImmediately':
+          readyToRegister$ = of (null);
+          break;
+        case 'registerWithDelay':
+          readyToRegister$ = of (null).pipe(delay(+args[0] || 0));
+          break;
+        case 'registerWhenStable':
+          const appRef = injector.get<ApplicationRef>(ApplicationRef);
+          readyToRegister$ = appRef.isStable.pipe(filter(stable => stable));
+          break;
+        default:
+          // Unknown strategy.
+          throw new Error(
+              `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
       }
     }
+
+    // Don't return anything to avoid blocking the application until the SW is registered or
+    // causing a crash if the SW registration fails.
+    readyToRegister$.pipe(take(1)).subscribe(
+        () => navigator.serviceWorker.register(script, {scope: options.scope}));
   };
   return initializer;
 }
