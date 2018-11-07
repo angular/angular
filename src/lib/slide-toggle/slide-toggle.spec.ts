@@ -293,6 +293,15 @@ describe('MatSlideToggle without forms', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
+    it('should focus on underlying input element when the host is focused', () => {
+      expect(document.activeElement).not.toBe(inputElement);
+
+      slideToggleElement.focus();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(inputElement);
+    });
+
     it('should set a element class if labelPosition is set to before', () => {
       expect(slideToggleElement.classList).not.toContain('mat-slide-toggle-label-before');
 
@@ -355,7 +364,7 @@ describe('MatSlideToggle without forms', () => {
       fixture.detectChanges();
 
       const slideToggle = fixture.debugElement.query(By.directive(MatSlideToggle)).nativeElement;
-      expect(slideToggle.getAttribute('tabindex')).toBeFalsy();
+      expect(slideToggle.getAttribute('tabindex')).toBe('-1');
     }));
   });
 

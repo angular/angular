@@ -86,11 +86,12 @@ export const _MatSlideToggleMixinBase:
   host: {
     'class': 'mat-slide-toggle',
     '[id]': 'id',
-    '[attr.tabindex]': 'null',
+    '[attr.tabindex]': '-1', // Needs to be `-1` so it can still receive programmatic focus.
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+    '(focus)': '_inputElement.nativeElement.focus()',
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
