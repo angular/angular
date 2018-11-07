@@ -133,3 +133,12 @@ the element that is moved as the user is dragging. This is useful for cases like
 draggable.
 
 <!-- example(cdk-drag-drop-root-element) -->
+
+### Controlling which items can be moved into a container
+By default, all `cdkDrag` items from one container can be moved into another connected container.
+If you want more fine-grained control over which items can be dropped, you can use the
+`cdkDropListEnterPredicate` which will be called whenever an item is about to enter a
+new container. Depending on whether the predicate returns `true` or `false`, the item may or may not
+be allowed into the new container.
+
+<!-- example(cdk-drag-drop-enter-predicate) -->
