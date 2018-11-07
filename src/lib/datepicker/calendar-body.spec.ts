@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
-import {MatCalendarBody, MatCalendarCell} from './calendar-body';
+import {MatCalendarBody, MatCalendarCell, MatCalendarCellCssClasses} from './calendar-body';
 import {By} from '@angular/platform-browser';
 
 
@@ -98,6 +98,14 @@ describe('MatCalendarBody', () => {
       expect((cellEls[10] as HTMLElement).innerText.trim()).toBe('11');
       expect(cellEls[10].classList).toContain('mat-calendar-body-active');
     });
+
+    it('should set a class on even dates', () => {
+      expect((cellEls[0] as HTMLElement).innerText.trim()).toBe('1');
+      expect((cellEls[1] as HTMLElement).innerText.trim()).toBe('2');
+      expect(cellEls[0].classList).not.toContain('even');
+      expect(cellEls[1].classList).toContain('even');
+    });
+
   });
 
 });
@@ -117,7 +125,9 @@ describe('MatCalendarBody', () => {
 })
 class StandardCalendarBody {
   label = 'Jan 2017';
-  rows = [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14]].map(r => r.map(createCell));
+  rows = [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14]].map(row => {
+    return row.map(cell => createCell(cell, cell % 2 === 0 ? 'even' : undefined));
+  });
   todayValue = 3;
   selectedValue = 4;
   labelMinRequiredCells = 3;
@@ -128,6 +138,6 @@ class StandardCalendarBody {
   }
 }
 
-function createCell(value: number) {
-  return new MatCalendarCell(value, `${value}`, `${value}-label`, true);
+function createCell(value: number, cellClasses?: MatCalendarCellCssClasses) {
+  return new MatCalendarCell(value, `${value}`, `${value}-label`, true, cellClasses);
 }

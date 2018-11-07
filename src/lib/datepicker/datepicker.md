@@ -328,6 +328,14 @@ application root module.
 export class MyApp {}
 ```
 
+#### Highlighting specific dates
+If you want to apply one or more CSS classes to some dates in the calendar (e.g. to highlight a
+holiday), you can do so with the `dateClass` input. It accepts a function which will be called
+with each of the dates in the calendar and will apply any classes that are returned. The return
+value can be anything that is accepted by `ngClass`.
+
+<!-- example(datepicker-date-class) -->
+
 ### Accessibility
 
 The `MatDatepickerInput` and `MatDatepickerToggle` directives add the `aria-haspopup` attribute to

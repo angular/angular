@@ -30,6 +30,7 @@
   <td *ngFor="let item of row; let colIndex = index"
       role="gridcell"
       class="mat-calendar-body-cell"
+      [ngClass]="item.cssClasses"
       [tabindex]="_isActiveCell(rowIndex, colIndex) ? 0 : -1"
       [class.mat-calendar-body-disabled]="!item.enabled"
       [class.mat-calendar-body-active]="_isActiveCell(rowIndex, colIndex)"

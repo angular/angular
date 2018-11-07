@@ -19,6 +19,11 @@ import {
 import {take} from 'rxjs/operators';
 
 /**
+ * Extra CSS classes that can be associated with a calendar cell.
+ */
+export type MatCalendarCellCssClasses = string | string[] | Set<string> | {[key: string]: any};
+
+/**
  * An internal class that represents the data corresponding to a single calendar cell.
  * @docs-private
  */
@@ -26,7 +31,8 @@ export class MatCalendarCell {
   constructor(public value: number,
               public displayValue: string,
               public ariaLabel: string,
-              public enabled: boolean) {}
+              public enabled: boolean,
+              public cssClasses?: MatCalendarCellCssClasses) {}
 }
 
 
