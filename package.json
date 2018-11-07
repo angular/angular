@@ -24,7 +24,8 @@
     "api": "gulp api-docs",
     "breaking-changes": "gulp breaking-changes",
     "gulp": "gulp",
-    "stage-release": "bash ./tools/release/stage-release-bin.sh"
+    "stage-release": "bash ./tools/release/stage-release-bin.sh",
+    "preinstall": "node ./tools/npm/check-npm.js"
   },
   "version": "7.0.2",
   "requiredAngularVersion": ">=7.0.0",
