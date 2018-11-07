@@ -76,6 +76,41 @@ describe('Integration', () => {
          ]);
        })));
 
+    describe('relativeLinkResolution', () => {
+      beforeEach(inject([Router], (router: Router) => {
+        router.resetConfig([{
+          path: 'foo',
+          children: [{path: 'bar', children: [{path: '', component: RelativeLinkCmp}]}]
+        }]);
+      }));
+
+      it('should not ignore empty paths in legacy mode',
+         fakeAsync(inject([Router], (router: Router) => {
+           router.relativeLinkResolution = 'legacy';
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.navigateByUrl('/foo/bar');
+           advance(fixture);
+
+           const link = fixture.nativeElement.querySelector('a');
+           expect(link.getAttribute('href')).toEqual('/foo/bar/simple');
+         })));
+
+      it('should ignore empty paths in corrected mode',
+         fakeAsync(inject([Router], (router: Router) => {
+           router.relativeLinkResolution = 'corrected';
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.navigateByUrl('/foo/bar');
+           advance(fixture);
+
+           const link = fixture.nativeElement.querySelector('a');
+           expect(link.getAttribute('href')).toEqual('/foo/simple');
+         })));
+    });
+
     it('should set the restoredState to null when executing imperative navigations',
        fakeAsync(inject([Router], (router: Router) => {
          router.resetConfig([
@@ -4029,6 +4064,57 @@ describe('Integration', () => {
              [NavigationEnd, '/include/simple']
            ]);
          })));
+    });
+
+    describe('relativeLinkResolution', () => {
+      @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
+      class RelativeLinkCmp {
+      }
+
+      @NgModule({
+        declarations: [RelativeLinkCmp],
+        imports: [RouterModule.forChild([
+          {path: 'foo/bar', children: [{path: '', component: RelativeLinkCmp}]},
+        ])]
+      })
+      class LazyLoadedModule {
+      }
+
+      it('should not ignore empty path when in legacy mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'legacy';
+               loader.stubbedModules = {expected: LazyLoadedModule};
+
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
+
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
+             })));
+
+      it('should ignore empty path when in corrected mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'corrected';
+               loader.stubbedModules = {expected: LazyLoadedModule};
+
+               const fixture = createRoot(router, RootCmp);
+
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
+
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
+             })));
     });
   });
 
