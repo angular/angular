@@ -7,6 +7,7 @@
  */
 import {global} from '../util';
 import {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from './discovery_utils';
+import {getPlayers} from './players';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -41,6 +42,7 @@ export function publishDefaultGlobalUtils() {
     publishGlobalUtil('getInjector', getInjector);
     publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
+    publishGlobalUtil('getPlayers', getPlayers);
   }
 }
 
