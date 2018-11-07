@@ -61,7 +61,7 @@ by the directives:
 | `.cdk-drag`         | Corresponds to a `cdkDrag` instance.                                     |
 | `.cdk-drag-preview` | This is the element that will be rendered next to the user's cursor as they're dragging an item in a sortable list. By default the element looks exactly like the element that is being dragged. |
 | `.cdk-drag-placeholder` | This is element that will be shown instead of the real element as it's being dragged inside a `cdkDropList`. By default this will look exactly like the element that is being sorted. |
-| `.cdk-drop-dragging` | A class that is added to `cdkDropList` while the user is dragging an item.  |
+| `.cdk-drop-list-dragging` | A class that is added to `cdkDropList` while the user is dragging an item.  |
 
 ### Animations
 The drag-and-drop module supports animations both while sorting an element inside a list, as well as
@@ -79,7 +79,7 @@ Example animations:
 
 ```css
 /* Animate items as they're being sorted. */
-.cdk-drop-dragging .cdk-drag {
+.cdk-drop-list-dragging .cdk-drag {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
