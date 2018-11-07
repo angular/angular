@@ -11,7 +11,7 @@ describe('Directionality', () => {
 
     TestBed.configureTestingModule({
       imports: [BidiModule],
-      declarations: [ElementWithDir, InjectsDirectionality],
+      declarations: [ElementWithDir, ElementWithPredefinedAutoDir, InjectsDirectionality],
       providers: [{provide: DIR_DOCUMENT, useFactory: () => fakeDocument}],
     }).compileComponents();
   }));
@@ -123,6 +123,17 @@ describe('Directionality', () => {
       expect(fixture.componentInstance.dir.value).toBe('ltr');
     });
 
+    it('should preserve the consumer-provided `dir` attribute while ' +
+      'normalizing the directive value', () => {
+        const fixture = TestBed.createComponent(ElementWithPredefinedAutoDir);
+        fixture.detectChanges();
+
+        const element = fixture.nativeElement.querySelector('div');
+
+        expect(element.getAttribute('dir')).toBe('auto');
+        expect(fixture.componentInstance.dir.value).toBe('ltr');
+      });
+
   });
 });
 
@@ -138,6 +149,13 @@ class ElementWithDir {
   @ViewChild(Dir) dir: Dir;
   direction = 'rtl';
   changeCount = 0;
+}
+
+@Component({
+  template: '<div dir="auto"></div>'
+})
+class ElementWithPredefinedAutoDir {
+  @ViewChild(Dir) dir: Dir;
 }
 
 /** Test component with Dir directive. */
