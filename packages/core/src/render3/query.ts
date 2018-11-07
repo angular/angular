@@ -293,16 +293,13 @@ function queryByTNodeType(tNode: TNode, currentView: LViewData): any {
 }
 
 function queryByTemplateRef(
-    templateRef: any, tNode: TNode, currentView: LViewData, read: any): any {
-  const factoryFn = templateRef[NG_ELEMENT_ID];
+    templateRefToken: ViewEngine_TemplateRef<any>, tNode: TNode, currentView: LViewData,
+    read: any): any {
+  const templateRefResult = (templateRefToken as any)[NG_ELEMENT_ID]();
   if (read) {
-    if (factoryFn()) {
-      return queryByReadToken(read, tNode, currentView);
-    }
-  } else {
-    return factoryFn();
+    return templateRefResult ? queryByReadToken(read, tNode, currentView) : null;
   }
-  return null;
+  return templateRefResult;
 }
 
 function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx: number): any {
