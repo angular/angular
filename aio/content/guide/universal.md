@@ -111,7 +111,7 @@ Finally, the server returns the rendered page to the client.
 Before your app can be rendered on a server, you must make changes in the app itself, and also set up the server.
 
 1. Install dependencies.
-1. Prepare your app by modifying both the app code and its configuration.  
+1. Prepare your app by modifying both the app code and its configuration.
 1. Add a build target, and build a Universal bundle using the CLI with the `@nguniversal/express-engine` schematic.
 1. Set up a server to run Universal bundles.
 1. Pack and run the app on the server.
@@ -142,11 +142,11 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 
 ## Step 1: Install dependencies
 
-Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
+Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader`, `webpack-cli` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 
-```
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
-```
+<code-example language="sh" class="code-shell">
+$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader webpack-cli
+</code-example>
 
 ## Step 2: Prepare your app
 
@@ -325,6 +325,7 @@ import 'reflect-metadata';
 
 import { renderModuleFactory } from '@angular/platform-server';
 import { enableProdMode } from '@angular/core';
+import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
 
 import * as express from 'express';
 import { join } from 'path';
@@ -342,10 +343,8 @@ const DIST_FOLDER = join(process.cwd(), 'dist');
 // Our index.html we'll use as our template
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
-// * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./server/main');
 
-const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
 app.engine('html', (_, options, callback) => {
   renderModuleFactory(AppServerModuleNgFactory, {
@@ -437,23 +436,16 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+You can add these in the `"scripts"` section of the `package.json`.
 
 <code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
-
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
-   ...
+"scripts": {
+  "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+  "serve:ssr": "node dist/server.js",
+  "build:client-and-server-bundles": "ng build --prod && ng run my-project:server:production",
+  "webpack:server": "webpack --config webpack.server.config.js --progress --colors",
+  ...
+}
 </code-example>
 
 To run a production build of your app with Universal on your local system, use the following command.
