@@ -13,10 +13,6 @@ is_aot() {
   [[ "${MODE}" = aot ]]
 }
 
-is_payload() {
-  [[ "${MODE}" = payload ]]
-}
-
 is_unit() {
   [[ "${MODE}" =~ ^.*_(optional|required)$ ]]
 }

@@ -33,7 +33,6 @@ node_modules
 .DS_Store
 /.sass-cache
 /connect.lock
-/coverage/*
 /libpeerconnection.log
 npm-debug.log
 yarn-debug.log
@@ -42,7 +41,3 @@ testem.log
 /.chrome
 /.git
 /.firebase
-
-# schematics
-/src/lib/schematics/**/*.js
-/src/lib/schematics/**/*.map

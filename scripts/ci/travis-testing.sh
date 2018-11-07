@@ -39,17 +39,10 @@ elif is_e2e; then
   xvfb-run -a --server-args='-screen 0, 1024x768x16' $(npm bin)/gulp ci:e2e
 elif is_aot; then
   $(npm bin)/gulp ci:aot
-elif is_payload; then
-  $(npm bin)/gulp ci:payload
 elif is_unit; then
   $(npm bin)/gulp ci:test
 elif is_prerender; then
   $(npm bin)/gulp ci:prerender
-fi
-
-# Upload coverage results if those are present.
-if [ -f dist/coverage/coverage-summary.json ]; then
-  $(npm bin)/gulp ci:coverage
 fi
 
 teardown_tunnel

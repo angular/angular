@@ -13,7 +13,6 @@ module.exports = (config) => {
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
       require('karma-sourcemap-loader'),
-      require('karma-coverage'),
     ],
     files: [
       {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
@@ -51,12 +50,6 @@ module.exports = (config) => {
 
     reporters: ['dots'],
     autoWatch: false,
-
-    coverageReporter: {
-      type : 'json-summary',
-      dir : 'dist/coverage/',
-      subdir: '.'
-    },
 
     sauceLabs: {
       testName: 'Angular Material Unit Tests',
@@ -123,13 +116,6 @@ module.exports = (config) => {
 
   if (process.env['TRAVIS']) {
     const buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
-
-    if (process.env['TRAVIS_PULL_REQUEST'] === 'false' &&
-        process.env['MODE'] === "travis_required") {
-
-      config.preprocessors['dist/packages/**/!(*+(.|-)spec).js'] = ['coverage'];
-      config.reporters.push('coverage');
-    }
 
     // The MODE variable is the indicator of what row in the test matrix we're running.
     // It will look like <platform>_<target>, where platform is one of 'saucelabs', 'browserstack'
