@@ -67,8 +67,11 @@ describe('MatSnackBar', () => {
     testViewContainerRef = viewContainerFixture.componentInstance.childViewContainer;
   });
 
-  it('should have the role of `alert` with an `assertive` politeness', () => {
-    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'assertive'});
+  it('should have the role of `alert` with an `assertive` politeness if no announcement message ' +
+     'is provided', () => {
+    snackBar.openFromComponent(BurritosNotification,
+      {announcementMessage: '', politeness: 'assertive'});
+
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
@@ -76,8 +79,19 @@ describe('MatSnackBar', () => {
         .toBe('alert', 'Expected snack bar container to have role="alert"');
   });
 
+  it('should have the role of `status` with an `assertive` politeness if an announcement message ' +
+     'is provided', () => {
+      snackBar.openFromComponent(BurritosNotification,
+        {announcementMessage: 'Yay Burritos', politeness: 'assertive'});
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    expect(containerElement.getAttribute('role'))
+        .toBe('status', 'Expected snack bar container to have role="status"');
+  });
+
   it('should have the role of `status` with a `polite` politeness', () => {
-    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'polite'});
+    snackBar.openFromComponent(BurritosNotification, {politeness: 'polite'});
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
@@ -86,7 +100,7 @@ describe('MatSnackBar', () => {
   });
 
   it('should remove the role if the politeness is turned off', () => {
-    snackBar.open(simpleMessage, simpleActionLabel, {politeness: 'off'});
+    snackBar.openFromComponent(BurritosNotification, {politeness: 'off'});
     viewContainerFixture.detectChanges();
 
     const containerElement = overlayContainerElement.querySelector('snack-bar-container')!;

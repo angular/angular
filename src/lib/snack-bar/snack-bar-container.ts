@@ -80,12 +80,12 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
 
     // Based on the ARIA spec, `alert` and `status` roles have an
     // implicit `assertive` and `polite` politeness respectively.
-    if (snackBarConfig.politeness === 'assertive') {
+    if (snackBarConfig.politeness === 'assertive' && !snackBarConfig.announcementMessage) {
       this._role = 'alert';
-    } else if (snackBarConfig.politeness === 'polite') {
-      this._role = 'status';
-    } else {
+    } else if (snackBarConfig.politeness === 'off') {
       this._role = null;
+    } else {
+      this._role = 'status';
     }
   }
 
