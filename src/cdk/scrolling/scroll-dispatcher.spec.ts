@@ -112,6 +112,23 @@ describe('ScrollDispatcher', () => {
       subscription.unsubscribe();
     });
 
+    it('should not register the same scrollable twice', () => {
+      const scrollable = fixture.componentInstance.scrollable;
+      const scrollSpy = jasmine.createSpy('scroll spy');
+      const scrollSubscription = scroll.scrolled(0).subscribe(scrollSpy);
+
+      expect(scroll.scrollContainers.has(scrollable)).toBe(true);
+
+      scroll.register(scrollable);
+      scroll.deregister(scrollable);
+
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
+      fixture.detectChanges();
+
+      expect(scrollSpy).not.toHaveBeenCalled();
+      scrollSubscription.unsubscribe();
+    });
+
   });
 
   describe('Nested scrollables', () => {

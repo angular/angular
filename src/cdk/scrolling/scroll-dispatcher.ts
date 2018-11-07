@@ -52,10 +52,10 @@ export class ScrollDispatcher implements OnDestroy {
    * @param scrollable Scrollable instance to be registered.
    */
   register(scrollable: CdkScrollable): void {
-    const scrollSubscription = scrollable.elementScrolled()
-        .subscribe(() => this._scrolled.next(scrollable));
-
-    this.scrollContainers.set(scrollable, scrollSubscription);
+    if (!this.scrollContainers.has(scrollable)) {
+      this.scrollContainers.set(scrollable, scrollable.elementScrolled()
+          .subscribe(() => this._scrolled.next(scrollable)));
+    }
   }
 
   /**
