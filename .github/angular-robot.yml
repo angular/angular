@@ -2,7 +2,12 @@
 
 #options for the size plugin
 size:
-  disabled: true
+  disabled: false
+  # Name of the status that will be responsible for providing
+  # artifacts that will be measured by the robot.
+  circleCiStatusName: "ci/circleci: build_release_packages"
+  # Byte value of maximum allowed change in size
+  maxSizeIncrease: 1500
 
 # options for the merge plugin
 merge:
@@ -55,6 +60,8 @@ merge:
       - "ci/circleci: lint"
       - "ci/circleci: bazel_build_test"
       - "ci/circleci: tests_local_browsers"
+      - "ci/circleci: tests_browserstack"
+      - "ci/circleci: build_release_packages"
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
