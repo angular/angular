@@ -328,15 +328,16 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
   /** Removes the height of the tab body wrapper. */
   _removeTabBodyWrapperHeight(): void {
-    this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
-    this._tabBodyWrapper.nativeElement.style.height = '';
+    const wrapper = this._tabBodyWrapper.nativeElement;
+    this._tabBodyWrapperHeight = wrapper.clientHeight;
+    wrapper.style.height = '';
     this.animationDone.emit();
   }
 
   /** Handle click events, setting new selected index if appropriate. */
-  _handleClick(tab: MatTab, tabHeader: MatTabHeader, idx: number) {
+  _handleClick(tab: MatTab, tabHeader: MatTabHeader, index: number) {
     if (!tab.disabled) {
-      this.selectedIndex = tabHeader.focusIndex = idx;
+      this.selectedIndex = tabHeader.focusIndex = index;
     }
   }
 

@@ -225,7 +225,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       tick();
 
-      expect(fixture.componentInstance.animationDone).toHaveBeenCalled();
+      expect(fixture.componentInstance.animationDone).toHaveBeenCalledTimes(1);
     }));
 
     it('should add the proper `aria-setsize` and `aria-posinset`', () => {
