@@ -257,6 +257,19 @@ masterToggle() {
 }
 ```
 
+##### 4. Include overflow styling 
+
+Finally, adjust the styling for the select column so that its overflow is not hidden. This allows 
+the ripple effect to extend beyond the cell.
+
+```css
+.mat-column-select {
+  overflow: initial;
+}
+```
+
+<!--- example(table-selection) -->
+
 #### Footer row
 
 A footer row can be added to the table by adding a footer row definition to the table and adding
@@ -278,19 +291,6 @@ data rows.
 ```
 
 <!--- example(table-footer-row) -->
-
-##### 4. Include overflow styling 
-
-Finally, adjust the styling for the select column so that its overflow is not hidden. This allows 
-the ripple effect to extend beyond the cell.
-
-```css
-.mat-column-select {
-  overflow: initial;
-}
-```
-
-<!--- example(table-selection) -->
 
 #### Sticky Rows and Columns
 
