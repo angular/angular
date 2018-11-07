@@ -175,6 +175,9 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   /** Subscription to the event that is dispatched when the user lifts their pointer. */
   private _pointerUpSubscription = Subscription.EMPTY;
 
+  /** Subscription to the stream that initializes the root element. */
+  private _rootElementInitSubscription = Subscription.EMPTY;
+
   /** Elements that can be used to drag the draggable item. */
   @ContentChildren(CdkDragHandle, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
@@ -265,30 +268,36 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     // element to be in the proper place in the DOM. This is mostly relevant
     // for draggable elements inside portals since they get stamped out in
     // their original DOM position and then they get transferred to the portal.
-    this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
-      const rootElement = this._rootElement = this._getRootElement();
-      rootElement.addEventListener('mousedown', this._pointerDown, passiveEventListenerOptions);
-      rootElement.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
-      toggleNativeDragInteractions(rootElement , false);
-    });
+    this._rootElementInitSubscription = this._ngZone.onStable.asObservable()
+      .pipe(take(1))
+      .subscribe(() => {
+        const rootElement = this._rootElement = this._getRootElement();
+        rootElement.addEventListener('mousedown', this._pointerDown, passiveEventListenerOptions);
+        rootElement.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
+        toggleNativeDragInteractions(rootElement , false);
+      });
   }
 
   ngOnDestroy() {
-    this._rootElement.removeEventListener('mousedown', this._pointerDown,
-        passiveEventListenerOptions);
-    this._rootElement.removeEventListener('touchstart', this._pointerDown,
-        passiveEventListenerOptions);
-    this._destroyPreview();
-    this._destroyPlaceholder();
+    // The directive might have been destroyed before the root element is initialized.
+    if (this._rootElement) {
+      this._rootElement.removeEventListener('mousedown', this._pointerDown,
+          passiveEventListenerOptions);
+      this._rootElement.removeEventListener('touchstart', this._pointerDown,
+          passiveEventListenerOptions);
 
-    // Do this check before removing from the registry since it'll
-    // stop being considered as dragged once it is removed.
-    if (this._isDragging()) {
-      // Since we move out the element to the end of the body while it's being
-      // dragged, we have to make sure that it's removed if it gets destroyed.
-      this._removeElement(this._rootElement);
+      // Do this check before removing from the registry since it'll
+      // stop being considered as dragged once it is removed.
+      if (this._isDragging()) {
+        // Since we move out the element to the end of the body while it's being
+        // dragged, we have to make sure that it's removed if it gets destroyed.
+        this._removeElement(this._rootElement);
+      }
     }
 
+    this._rootElementInitSubscription.unsubscribe();
+    this._destroyPreview();
+    this._destroyPlaceholder();
     this._nextSibling = null;
     this._dragDropRegistry.removeDragItem(this);
     this._removeSubscriptions();

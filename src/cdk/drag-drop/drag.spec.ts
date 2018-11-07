@@ -427,6 +427,14 @@ describe('CdkDrag', () => {
       expect(event.stopPropagation).toHaveBeenCalled();
     }));
 
+    it('should not throw if destroyed before the first change detection run', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+
+      expect(() => {
+        fixture.destroy();
+      }).not.toThrow();
+    }));
+
   });
 
   describe('draggable with a handle', () => {
