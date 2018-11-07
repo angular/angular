@@ -413,7 +413,7 @@ export class Router {
                       // Recognize
                       recognize(
                           this.rootComponentType, this.config, (url) => this.serializeUrl(url),
-                          this.paramsInheritanceStrategy),
+                          this.paramsInheritanceStrategy, this.relativeLinkResolution),
 
                       // Fire RoutesRecognized
                       tap(t => {
