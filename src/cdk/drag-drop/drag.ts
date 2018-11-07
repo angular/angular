@@ -30,7 +30,7 @@ import {
 } from '@angular/core';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {Observable, Subject, Subscription, Observer} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {startWith, take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
 import {
   CdkDragDrop,
@@ -274,7 +274,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
         const rootElement = this._rootElement = this._getRootElement();
         rootElement.addEventListener('mousedown', this._pointerDown, passiveEventListenerOptions);
         rootElement.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
-        toggleNativeDragInteractions(rootElement , false);
+        this._handles.changes.pipe(startWith(null)).subscribe(() =>
+            toggleNativeDragInteractions(rootElement, this.getChildHandles().length > 0));
       });
   }
 
@@ -309,10 +310,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     return this._dragDropRegistry.isDragging(this);
   }
 
+  /** Gets only handles that are not inside descendant `CdkDrag` instances. */
+  private getChildHandles() {
+    return this._handles.filter(handle => handle._parentDrag === this);
+  }
+
   /** Handler for the `mousedown`/`touchstart` events. */
   _pointerDown = (event: MouseEvent | TouchEvent) => {
-    // Skip handles inside descendant `CdkDrag` instances.
-    const handles = this._handles.filter(handle => handle._parentDrag === this);
+    const handles = this.getChildHandles();
 
     // Delegate the event based on whether it started from a handle or the element itself.
     if (handles.length) {

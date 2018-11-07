@@ -435,6 +435,14 @@ describe('CdkDrag', () => {
       }).not.toThrow();
     }));
 
+    it('should not disable native drag interactions when there is a drag handle', () => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      expect(dragElement.style.touchAction)
+        .not.toEqual('none', 'should not disable touchAction on when there is a drag handle');
+    });
+
   });
 
   describe('draggable with a handle', () => {
