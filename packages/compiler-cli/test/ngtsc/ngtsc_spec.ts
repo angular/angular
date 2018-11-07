@@ -477,7 +477,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     expect(jsContents)
-        .toContain(`i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
+        .toContain(`i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
     expect(jsContents)
         .toContain(`i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵload(dirIndex).bar));`);
     expect(jsContents)
