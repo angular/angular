@@ -16,6 +16,7 @@ describe('FocusTrap', () => {
         FocusTrapWithSvg,
         FocusTrapWithoutFocusableElements,
         FocusTrapWithAutoCapture,
+        FocusTrapUnfocusableTarget,
       ],
     });
 
@@ -138,6 +139,18 @@ describe('FocusTrap', () => {
       focusTrapInstance.focusLastTabbableElement();
       expect(document.activeElement!.id).toBe('last');
     });
+
+    it('should warn if the initial focus target is not focusable', () => {
+      const alternateFixture = TestBed.createComponent(FocusTrapUnfocusableTarget);
+      alternateFixture.detectChanges();
+      focusTrapInstance = fixture.componentInstance.focusTrapDirective.focusTrap;
+
+      spyOn(console, 'warn');
+      focusTrapInstance.focusInitialElement();
+
+      expect(console.warn).toHaveBeenCalled();
+    });
+
   });
 
   describe('special cases', () => {
@@ -235,6 +248,16 @@ class FocusTrapTargets {
   @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
+@Component({
+  template: `
+    <div cdkTrapFocus>
+      <div cdkFocusInitial></div>
+    </div>
+    `
+})
+class FocusTrapUnfocusableTarget {
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+}
 
 @Component({
   template: `

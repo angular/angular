@@ -18,6 +18,7 @@ import {
   NgZone,
   OnDestroy,
   DoCheck,
+  isDevMode,
 } from '@angular/core';
 import {take} from 'rxjs/operators';
 import {InteractivityChecker} from '../interactivity-checker/interactivity-checker';
@@ -187,6 +188,12 @@ export class FocusTrap {
         console.warn(`Found use of deprecated attribute 'cdk-focus-initial', ` +
                     `use 'cdkFocusInitial' instead. The deprecated attribute ` +
                     `will be removed in 8.0.0`, redirectToElement);
+      }
+
+      // Warn the consumer if the element they've pointed to
+      // isn't focusable, when not in production mode.
+      if (isDevMode() && !this._checker.isFocusable(redirectToElement)) {
+        console.warn(`Element matching '[cdkFocusInitial]' is not focusable.`, redirectToElement);
       }
 
       redirectToElement.focus();
