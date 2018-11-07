@@ -75,7 +75,14 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
     **kwargs
   )
 
-def ng_web_test_suite(deps = [], srcs = [], static_css = [], bootstrap = [], **kwargs):
+def ts_web_test_suite(srcs = [], **kwargs):
+  _ts_web_test_suite(
+    # Required for running the compiled ng modules that use TypeScript import helpers.
+    srcs = ["@matdeps//node_modules/tslib:tslib.js"] + srcs,
+    **kwargs
+  )
+
+def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
   # Always include a prebuilt theme in the test suite because otherwise tests, which depend on CSS
   # that is needed for measuring, will unexpectedly fail. Also always adding a prebuilt theme
   # reduces the amount of setup that is needed to create a test suite Bazel target. Note that the
@@ -109,9 +116,7 @@ def ng_web_test_suite(deps = [], srcs = [], static_css = [], bootstrap = [], **k
       """ % css_label
     )
 
-  _ts_web_test_suite(
-    # Required for running the compiled ng modules that use TypeScript import helpers.
-    srcs = ["@matdeps//node_modules/tslib:tslib.js"] + srcs,
+  ts_web_test_suite(
     # Depend on our custom test initialization script. This needs to be the first dependency.
     deps = ["//test:angular_test_init"] + deps,
     bootstrap = [

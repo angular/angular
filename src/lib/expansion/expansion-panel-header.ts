@@ -7,7 +7,7 @@
  */
 
 import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
-import {ENTER, SPACE} from '@angular/cdk/keycodes';
+import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -140,7 +140,7 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       // Toggle for space and enter keys.
       case SPACE:
       case ENTER:
-        if (!event.altKey && !event.metaKey && !event.shiftKey && !event.ctrlKey) {
+        if (!hasModifierKey(event)) {
           event.preventDefault();
           this._toggle();
         }

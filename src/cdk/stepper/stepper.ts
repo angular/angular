@@ -9,7 +9,7 @@
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {END, ENTER, HOME, SPACE} from '@angular/cdk/keycodes';
+import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -442,9 +442,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   }
 
   _onKeydown(event: KeyboardEvent) {
-    // TODO(crisbeto): move into a CDK utility once
-    // the similar PRs for other components are merged in.
-    const hasModifier = event.altKey || event.shiftKey || event.ctrlKey || event.metaKey;
+    const hasModifier = hasModifierKey(event);
     const keyCode = event.keyCode;
     const manager = this._keyManager;
 

@@ -1,10 +1,26 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 
 ts_library(
   name = "keycodes",
-  module_name = "@angular/cdk/keycodes",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk/keycodes",
   deps = ["@matdeps//tslib"],
+)
+
+ts_library(
+  name = "keycodes_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [
+    "@matdeps//@types/jasmine",
+    "//src/cdk/testing",
+    ":keycodes"
+  ],
+  testonly = 1,
+)
+
+ts_web_test_suite(
+  name = "unit_tests",
+  deps = [":keycodes_test_sources"],
 )
