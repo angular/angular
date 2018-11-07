@@ -1,3 +1,31 @@
+<a name="7.1.0-beta.2"></a>
+# [7.1.0-beta.2](https://github.com/angular/angular/compare/7.1.0-beta.1...7.1.0-beta.2) (2018-11-07)
+
+
+### Bug Fixes
+
+* **bazel:** unknown replay compiler error in windows ([#26711](https://github.com/angular/angular/issues/26711)) ([aed95fd](https://github.com/angular/angular/commit/aed95fd))
+* **core:** ensure that `ɵdefineNgModule` is available in flat-file formats ([#26403](https://github.com/angular/angular/issues/26403)) ([a64859b](https://github.com/angular/angular/commit/a64859b))
+* **router:** remove type bludgeoning of context and outlet when running CanDeactivate ([#26496](https://github.com/angular/angular/issues/26496)) ([496372d](https://github.com/angular/angular/commit/496372d)), closes [#18253](https://github.com/angular/angular/issues/18253)
+* **service-worker:** add typing to public api guard and fix lint errors ([#25860](https://github.com/angular/angular/issues/25860)) ([1061875](https://github.com/angular/angular/commit/1061875))
+* **upgrade:** improve downgrading-related error messages ([#26217](https://github.com/angular/angular/issues/26217)) ([7dbc103](https://github.com/angular/angular/commit/7dbc103))
+* **upgrade:** make typings compatible with older AngularJS typings ([#26880](https://github.com/angular/angular/issues/26880)) ([64647af](https://github.com/angular/angular/commit/64647af)), closes [#26420](https://github.com/angular/angular/issues/26420)
+
+
+### Features
+
+* **compiler:** ability to mark an InvokeFunctionExpr as pure ([#26860](https://github.com/angular/angular/issues/26860)) ([4dfa71f](https://github.com/angular/angular/commit/4dfa71f))
+* **forms:** add updateOn option to FormBuilder ([#24599](https://github.com/angular/angular/issues/24599)) ([e9e804f](https://github.com/angular/angular/commit/e9e804f))
+* **router:** allow guards to return UrlTree as well as boolean ([#26521](https://github.com/angular/angular/issues/26521)) ([081f95c](https://github.com/angular/angular/commit/081f95c))
+* **router:** allow redirect from guards by returning UrlTree ([#26521](https://github.com/angular/angular/issues/26521)) ([152ca66](https://github.com/angular/angular/commit/152ca66))
+* **router:** guard returning UrlTree cancels current navigation and redirects ([#26521](https://github.com/angular/angular/issues/26521)) ([4e9f2e5](https://github.com/angular/angular/commit/4e9f2e5)), closes [#24618](https://github.com/angular/angular/issues/24618)
+* **service-worker:** add typing for messagesClicked in SwPush service ([#25860](https://github.com/angular/angular/issues/25860)) ([c78c221](https://github.com/angular/angular/commit/c78c221))
+* **service-worker:** close notifications and focus window on click ([#25860](https://github.com/angular/angular/issues/25860)) ([f5d5a3d](https://github.com/angular/angular/commit/f5d5a3d))
+* **service-worker:** handle 'notificationclick' events ([#25860](https://github.com/angular/angular/issues/25860)) ([cf6ea28](https://github.com/angular/angular/commit/cf6ea28)), closes [#20956](https://github.com/angular/angular/issues/20956) [#22311](https://github.com/angular/angular/issues/22311)
+* **upgrade:** support downgrading multiple modules ([#26217](https://github.com/angular/angular/issues/26217)) ([93837e9](https://github.com/angular/angular/commit/93837e9)), closes [#26062](https://github.com/angular/angular/issues/26062)
+
+
+
 <a name="7.0.3"></a>
 ## [7.0.3](https://github.com/angular/angular/compare/7.0.2...7.0.3) (2018-11-07)
 
