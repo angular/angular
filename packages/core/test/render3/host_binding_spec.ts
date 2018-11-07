@@ -622,4 +622,28 @@ describe('host bindings', () => {
     expect(hostElement.title).toBe('other title');
   });
 
+  it('should support host attributes', () => {
+    // host: {
+    //  'role': 'listbox'
+    // }
+    class HostAttributeDir {
+      static ngDirectiveDef = defineDirective({
+        selectors: [['', 'hostAttributeDir', '']],
+        type: HostAttributeDir,
+        factory: () => new HostAttributeDir(),
+        attributes: ['role', 'listbox']
+      });
+    }
+
+    // <div hostAttributeDir></div>
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['hostAttributeDir', '']);
+      }
+    }, 1, 0, [HostAttributeDir]);
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual(`<div hostattributedir="" role="listbox"></div>`);
+  });
+
 });

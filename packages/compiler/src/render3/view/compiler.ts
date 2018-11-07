@@ -32,6 +32,10 @@ import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, co
 
 const EMPTY_ARRAY: any[] = [];
 
+// This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
+// If there is a match, the first matching group will contain the attribute name to bind.
+const ATTR_REGEX = /attr\.([^\]]+)/;
+
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): {definitionMap: DefinitionMap, statements: o.Statement[]} {
@@ -625,11 +629,14 @@ function createHostBindingsFunction(
       const bindingExpr = convertPropertyBinding(
           null, bindingContext, value, 'b', BindingForm.TrySimple,
           () => error('Unexpected interpolation'));
+
+      const {bindingName, instruction} = getBindingNameAndInstruction(binding.name);
+
       statements.push(...bindingExpr.stmts);
-      statements.push(o.importExpr(R3.elementProperty)
+      statements.push(o.importExpr(instruction)
                           .callFn([
                             o.variable('elIndex'),
-                            o.literal(binding.name),
+                            o.literal(bindingName),
                             o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
                           ])
                           .toStmt());
@@ -647,6 +654,22 @@ function createHostBindingsFunction(
   }
 
   return null;
+}
+
+function getBindingNameAndInstruction(bindingName: string):
+    {bindingName: string, instruction: o.ExternalReference} {
+  let instruction !: o.ExternalReference;
+
+  // Check to see if this is an attr binding or a property binding
+  const attrMatches = bindingName.match(ATTR_REGEX);
+  if (attrMatches) {
+    bindingName = attrMatches[1];
+    instruction = R3.elementAttribute;
+  } else {
+    instruction = R3.elementProperty;
+  }
+
+  return {bindingName, instruction};
 }
 
 function createFactoryExtraStatementsFn(meta: R3DirectiveMetadata, bindingParser: BindingParser):
@@ -698,8 +721,8 @@ const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 
 // Represents the groups in the above regex.
 const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]"
-  Property = 1,
+  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]"
+  Binding = 1,
 
   // group 2: "event" from "(event)"
   Event = 2,
@@ -724,8 +747,8 @@ export function parseHostBindings(host: {[key: string]: string}): {
     const matches = key.match(HOST_REG_EXP);
     if (matches === null) {
       attributes[key] = value;
-    } else if (matches[HostBindingGroup.Property] != null) {
-      properties[matches[HostBindingGroup.Property]] = value;
+    } else if (matches[HostBindingGroup.Binding] != null) {
+      properties[matches[HostBindingGroup.Binding]] = value;
     } else if (matches[HostBindingGroup.Event] != null) {
       listeners[matches[HostBindingGroup.Event]] = value;
     } else if (matches[HostBindingGroup.Animation] != null) {
