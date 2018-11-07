@@ -66,6 +66,9 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        "fixme-ivy-aot",
+    ],
     deps = [
         ":test_lib",
     ],

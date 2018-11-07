@@ -7,11 +7,10 @@
  */
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
+import {Console} from '@angular/core/src/console';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
 import {fixmeIvy} from '@angular/private/testing';
-
-import {Console} from '../../src/console';
 
 
 {
