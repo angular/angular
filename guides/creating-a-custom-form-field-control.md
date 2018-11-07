@@ -159,15 +159,20 @@ private _placeholder: string;
 
 #### `ngControl`
 
-This property allows the form field control to specify the `@angular/forms` control that is bound to this component. Since we haven't set up our component to act as a `ControlValueAccessor`, we'll just set this to `null` in our component.
+This property allows the form field control to specify the `@angular/forms` control that is bound
+to this component. Since we haven't set up our component to act as a `ControlValueAccessor`, we'll
+just set this to `null` in our component.
 
 ```ts
 ngControl: NgControl = null;
 ```
 
-It is likely you will want to implement `ControlValueAccessor` so that your component can work with `formControl` and `ngModel`. If you do implement `ControlValueAccessor` you will need to get a reference to the `NgControl` associated with your control and make it publicly available.
+It is likely you will want to implement `ControlValueAccessor` so that your component can work with
+`formControl` and `ngModel`. If you do implement `ControlValueAccessor` you will need to get a
+reference to the `NgControl` associated with your control and make it publicly available.
 
-The easy way is to add it as a public property to your constructor and let dependency injection handle it:
+The easy way is to add it as a public property to your constructor and let dependency injection
+handle it:
 
 ```ts
 constructor(
@@ -177,19 +182,39 @@ constructor(
 ) { }
 ```
 
-Note that if your component implements `ControlValueAccessor`, it may already be set up to provide `NG_VALUE_ACCESSOR` (in the `providers` part of the component's decorator, or possibly in a module declaration). If so you may get a *cannot instantiate cyclic dependency* error.
+Note that if your component implements `ControlValueAccessor`, it may already be set up to provide
+`NG_VALUE_ACCESSOR` (in the `providers` part of the component's decorator, or possibly in a module
+declaration). If so you may get a *cannot instantiate cyclic dependency* error.
 
 To resolve this, remove the `NG_VALUE_ACCESSOR` provider and instead set the value accessor directly:
 
 ```ts
-constructor(
+@Component({
   ...,
-  @Optional() @Self() public ngControl: NgControl,
-  ...,
-) {
-  // Setting the value accessor directly (instead of using
-  // the providers) to avoid running into a circular import.
-  if (this.ngControl != null) { this.ngControl.valueAccessor = this; }
+  providers: [
+    ...,
+    // Remove this.
+    // {
+    //   provide: NG_VALUE_ACCESSOR,
+    //   useExisting: forwardRef(() => MatFormFieldControl),
+    //   multi: true,
+    // },
+  ],
+})
+class MyTelInput implements MatFormFieldControl<MyTel> {
+  constructor(
+    ...,
+    @Optional() @Self() public ngControl: NgControl,
+    ...,
+  ) {
+
+    // Replace the provider from above with this.
+    if (this.ngControl != null) {
+      // Setting the value accessor directly (instead of using
+      // the providers) to avoid running into a circular import.
+      this.ngControl.valueAccessor = this;
+    }
+  }
 }
 ```
 
