@@ -521,7 +521,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     // This handles the case where two containers are connected one way and the user tries to
     // undo dragging an item into a new container.
     if (!newContainer && this.dropContainer !== this._initialContainer &&
-        this._initialContainer._canReturnItem(this, x, y)) {
+        this._initialContainer._canReturnItem(x, y)) {
       newContainer = this._initialContainer;
     }
 

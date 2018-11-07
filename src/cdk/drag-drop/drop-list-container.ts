@@ -60,7 +60,7 @@ export interface CdkDropListContainer<T = any> {
   _draggables: QueryList<CdkDrag>;
   _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number):
       CdkDropListContainer | null;
-  _canReturnItem(item: CdkDrag, x: number, y: number): boolean;
+  _canReturnItem(x: number, y: number): boolean;
 }
 
 /**
