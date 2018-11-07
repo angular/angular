@@ -723,7 +723,21 @@ describe('MatButtonToggle without forms', () => {
 
       const host = fixture.nativeElement.querySelector('.mat-button-toggle');
 
-      expect(host.hasAttribute('tabindex')).toBe(false);
+      expect(host.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('should forward focus to the underlying button when the host is focused', () => {
+      const fixture = TestBed.createComponent(ButtonToggleWithTabindex);
+      fixture.detectChanges();
+
+      const host = fixture.nativeElement.querySelector('.mat-button-toggle');
+      const button = host.querySelector('button');
+
+      expect(document.activeElement).not.toBe(button);
+
+      host.focus();
+
+      expect(document.activeElement).toBe(button);
     });
   });
 
