@@ -8,7 +8,7 @@
 
 import {SimpleChange} from '../../change_detection/change_detection_util';
 import {OnChanges, SimpleChanges} from '../../metadata/lifecycle_hooks';
-import {DirectiveDef} from '../interfaces/definition';
+import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
@@ -105,6 +105,10 @@ export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
 
   definition.doCheck = onChangesWrapper(definition.doCheck);
 }
+
+// This option ensures that the ngOnChanges lifecycle hook will be inherited
+// from superclasses (in InheritDefinitionFeature).
+(NgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
 
 function onChangesWrapper(delegateHook: (() => void) | null) {
   return function(this: OnChangesExpando) {

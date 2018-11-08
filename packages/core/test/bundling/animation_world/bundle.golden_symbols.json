@@ -138,6 +138,9 @@
     "name": "NgModuleRef"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NodeInjector$1"
   },
   {
@@ -160,6 +163,9 @@
   },
   {
     "name": "PARENT_INJECTOR"
+  },
+  {
+    "name": "PRIVATE_PREFIX"
   },
   {
     "name": "QUERIES"
@@ -187,6 +193,9 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SimpleKeyframePlayer"
@@ -943,6 +952,9 @@
   },
   {
     "name": "noop"
+  },
+  {
+    "name": "onChangesWrapper"
   },
   {
     "name": "pointers"
