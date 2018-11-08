@@ -1231,42 +1231,41 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
     describe('validation directives', () => {
 
-      fixmeIvy('RequiredValidator provided instead of CheckboxRequiredValidator') &&
-          it('required validator should validate checkbox', fakeAsync(() => {
-               const fixture = initTest(NgModelCheckboxRequiredValidator);
-               fixture.detectChanges();
-               tick();
+      it('required validator should validate checkbox', fakeAsync(() => {
+           const fixture = initTest(NgModelCheckboxRequiredValidator);
+           fixture.detectChanges();
+           tick();
 
-               const control =
-                   fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox') !;
+           const control =
+               fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox') !;
 
-               const input = fixture.debugElement.query(By.css('input'));
-               expect(input.nativeElement.checked).toBe(false);
-               expect(control.hasError('required')).toBe(false);
+           const input = fixture.debugElement.query(By.css('input'));
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(false);
 
-               fixture.componentInstance.required = true;
-               fixture.detectChanges();
-               tick();
+           fixture.componentInstance.required = true;
+           fixture.detectChanges();
+           tick();
 
-               expect(input.nativeElement.checked).toBe(false);
-               expect(control.hasError('required')).toBe(true);
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(true);
 
-               input.nativeElement.checked = true;
-               dispatchEvent(input.nativeElement, 'change');
-               fixture.detectChanges();
-               tick();
+           input.nativeElement.checked = true;
+           dispatchEvent(input.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
 
-               expect(input.nativeElement.checked).toBe(true);
-               expect(control.hasError('required')).toBe(false);
+           expect(input.nativeElement.checked).toBe(true);
+           expect(control.hasError('required')).toBe(false);
 
-               input.nativeElement.checked = false;
-               dispatchEvent(input.nativeElement, 'change');
-               fixture.detectChanges();
-               tick();
+           input.nativeElement.checked = false;
+           dispatchEvent(input.nativeElement, 'change');
+           fixture.detectChanges();
+           tick();
 
-               expect(input.nativeElement.checked).toBe(false);
-               expect(control.hasError('required')).toBe(true);
-             }));
+           expect(input.nativeElement.checked).toBe(false);
+           expect(control.hasError('required')).toBe(true);
+         }));
 
       it('should validate email', fakeAsync(() => {
            const fixture = initTest(NgModelEmailValidator);
