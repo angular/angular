@@ -36,7 +36,9 @@ describe('HttpClient TestRequest', () => {
       fail();
     } catch (error) {
       expect(error.message)
-          .toBe('Expected one matching request for criteria "Match URL: /some-url", found none.');
+          .toBe(
+              'Expected one matching request for criteria "Match URL: /some-url", found none.' +
+              ' Requests received are: GET /some-other-url.');
     }
   });
 
@@ -55,7 +57,8 @@ describe('HttpClient TestRequest', () => {
     } catch (error) {
       expect(error.message)
           .toBe(
-              'Expected one matching request for criteria "Match URL: /some-url?query=world", found none.');
+              'Expected one matching request for criteria "Match URL: /some-url?query=world", found none.' +
+              ' Requests received are: GET /some-url?query=hello.');
     }
   });
 });
