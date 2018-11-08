@@ -50,6 +50,8 @@ export function addPlayer(
  * This function will only return players that have been added to the ref instance using
  * `addPlayer` or any players that are active through any template styling bindings
  * (`[style]`, `[style.prop]`, `[class]` and `[class.name]`).
+ *
+ * @publicApi
  */
 export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElement): Player[] {
   const context = getContext(ref);

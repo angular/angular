@@ -7,8 +7,8 @@
  */
 import {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from '../../src/render3/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
-import {global} from '../../src/util';
 import {getPlayers} from '../../src/render3/players';
+import {global} from '../../src/util';
 
 describe('global utils', () => {
   describe('publishGlobalUtil', () => {
