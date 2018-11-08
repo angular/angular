@@ -41,7 +41,7 @@ When the workspace file structure is in place, you can use the `ng generate` com
 
 <div class="alert is-helpful">
 
-   Besides using the CLI on the command line, you can also use an interactive development environment like [Angular Console](https://angular.console.com), or manipulate files directly in the app's source folder and configuration files.
+   Besides using the CLI on the command line, you can also use an interactive development environment like [Angular Console](https://angularconsole.com/), or manipulate files directly in the app's source folder and configuration files.
 
 </div>
 
