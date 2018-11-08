@@ -4,7 +4,6 @@ ng_module(
     name = "aot_routing_module",
     testonly = True,
     srcs = ["aot_router_module.ts"],
-    tags = ["no-ivy-jit"],
     deps = [
         "//packages/core",
         "//packages/router",
