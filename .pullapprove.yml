@@ -108,8 +108,9 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/public_api_guard/*"
           - "aio/*"
+          - "packages/core/test/bundling/*"
+          - "tools/public_api_guard/*"
     users:
       - IgorMinar #primary
       - alexeagle
