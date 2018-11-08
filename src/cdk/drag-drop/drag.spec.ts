@@ -442,6 +442,32 @@ describe('CdkDrag', () => {
       expect(dragElement.style.touchAction)
         .not.toEqual('none', 'should not disable touchAction on when there is a drag handle');
     });
+    it('should be able to reset a freely-dragged item to its initial position', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+      fixture.componentInstance.dragInstance.reset();
+      expect(dragElement.style.transform).toBeFalsy();
+    }));
+
+    it('should start dragging an item from its initial position after a reset', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      fixture.componentInstance.dragInstance.reset();
+
+      dragElementViaMouse(fixture, dragElement, 25, 50);
+      expect(dragElement.style.transform).toBe('translate3d(25px, 50px, 0px)');
+    }));
 
   });
 

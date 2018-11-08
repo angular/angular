@@ -263,6 +263,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     return this._rootElement;
   }
 
+  /** Resets a standalone drag item to its initial position. */
+  reset(): void {
+    this._rootElement.style.transform = '';
+    this._activeTransform = {x: 0, y: 0};
+    this._passiveTransform = {x: 0, y: 0};
+  }
+
   ngAfterViewInit() {
     // We need to wait for the zone to stabilize, in order for the reference
     // element to be in the proper place in the DOM. This is mostly relevant
