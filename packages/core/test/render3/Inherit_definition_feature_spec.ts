@@ -7,7 +7,8 @@
  */
 
 import {Inject, InjectionToken} from '../../src/core';
-import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, defineBase, defineComponent, defineDirective, directiveInject, element} from '../../src/render3/index';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
+
 import {ComponentFixture, createComponent} from './render_util';
 
 describe('InheritDefinitionFeature', () => {
@@ -299,36 +300,61 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should compose hostBindings', () => {
-    const log: Array<[string, number, number]> = [];
+    let subDir !: SubDirective;
 
     class SuperDirective {
+      id = 'my-id';
+
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         hostBindings: (directiveIndex: number, elementIndex: number) => {
-          log.push(['super', directiveIndex, elementIndex]);
+          const instance = load(directiveIndex) as SuperDirective;
+          elementProperty(elementIndex, 'id', bind(instance.id));
         },
+        hostVars: 1,
         factory: () => new SuperDirective(),
       });
     }
 
     class SubDirective extends SuperDirective {
+      title = 'my-title';
+
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         hostBindings: (directiveIndex: number, elementIndex: number) => {
-          log.push(['sub', directiveIndex, elementIndex]);
+          const instance = load(directiveIndex) as SubDirective;
+          elementProperty(elementIndex, 'title', bind(instance.title));
         },
-        factory: () => new SubDirective(),
+        hostVars: 1,
+        factory: () => subDir = new SubDirective(),
         features: [InheritDefinitionFeature]
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
-    subDef.hostBindings !(1, 2);
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['subDir', '']);
+      }
+    }, 1, 0, [SubDirective]);
 
-    expect(log).toEqual([['super', 1, 2], ['sub', 1, 2]]);
+    const fixture = new ComponentFixture(App);
+    const divEl = fixture.hostElement.querySelector('div') as HTMLElement;
+
+    expect(divEl.id).toEqual('my-id');
+    expect(divEl.title).toEqual('my-title');
+
+    subDir.title = 'new-title';
+    fixture.update();
+    expect(divEl.id).toEqual('my-id');
+    expect(divEl.title).toEqual('new-title');
+
+    subDir.id = 'new-id';
+    fixture.update();
+    expect(divEl.id).toEqual('new-id');
+    expect(divEl.title).toEqual('new-title');
   });
 
   it('should compose viewQuery', () => {
