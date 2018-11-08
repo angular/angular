@@ -131,14 +131,21 @@ export class CdkAriaLive implements OnDestroy {
           .observe(this._elementRef)
           .subscribe(() => {
             // Note that we use textContent here, rather than innerText, in order to avoid a reflow.
-            const element = this._elementRef.nativeElement;
-            this._liveAnnouncer.announce(element.textContent, this._politeness);
+            const elementText = this._elementRef.nativeElement.textContent;
+
+            // The `MutationObserver` fires also for attribute
+            // changes which we don't want to announce.
+            if (elementText !== this._previousAnnouncedText) {
+              this._liveAnnouncer.announce(elementText, this._politeness);
+              this._previousAnnouncedText = elementText;
+            }
           });
       });
     }
   }
   private _politeness: AriaLivePoliteness = 'off';
 
+  private _previousAnnouncedText?: string;
   private _subscription: Subscription | null;
 
   constructor(private _elementRef: ElementRef, private _liveAnnouncer: LiveAnnouncer,
