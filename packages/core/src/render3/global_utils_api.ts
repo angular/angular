@@ -11,10 +11,9 @@
  * This file is the index file collecting all of the symbols published on the global.ng namespace.
  *
  * The reason why this file/module is separate global_utils.ts file is that we use this file
- * to generate a d.ts file containing all the published symbols that is then compared to the golden file
- * in the public_api_guard test.
+ * to generate a d.ts file containing all the published symbols that is then compared to the golden
+ * file in the public_api_guard test.
  */
 
 export {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from './discovery_utils';
 export {getPlayers} from './players';
-
