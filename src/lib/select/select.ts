@@ -864,7 +864,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options)
       .withTypeAhead()
       .withVerticalOrientation()
-      .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr');
+      .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr')
+      .withAllowedModifierKeys(['shiftKey']);
 
     this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => {
       // Restore focus to the trigger before closing. Ensures that the focus

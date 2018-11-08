@@ -345,7 +345,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       .withTypeAhead()
       // Allow disabled items to be focusable. For accessibility reasons, there must be a way for
       // screenreader users, that allows reading the different options of the list.
-      .skipPredicate(() => false);
+      .skipPredicate(() => false)
+      .withAllowedModifierKeys(['shiftKey']);
 
     if (this._tempValues) {
       this._setOptionsFromValues(this._tempValues);
