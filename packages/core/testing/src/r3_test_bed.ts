@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injector, NgModule, Pipe, PlatformRef, Provider, RendererFactory2, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3DebugRendererFactory2 as Render3DebugRendererFactory2, ɵRender3NgModuleRef as NgModuleRef, ɵWRAP_RENDERER_FACTORY2 as WRAP_RENDERER_FACTORY2, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+import {Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, RendererFactory2, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3DebugRendererFactory2 as Render3DebugRendererFactory2, ɵRender3NgModuleRef as NgModuleRef, ɵWRAP_RENDERER_FACTORY2 as WRAP_RENDERER_FACTORY2, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -361,7 +361,7 @@ export class TestBedRender3 implements Injector, TestBed {
     const componentRef =
         componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef);
     const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const fixture = new ComponentFixture<any>(componentRef, null, autoDetect);
+    const fixture = new ComponentFixture<any>(componentRef, this.get(NgZone), autoDetect);
     this._activeFixtures.push(fixture);
     return fixture;
   }
@@ -424,7 +424,9 @@ export class TestBedRender3 implements Injector, TestBed {
     class RootScopeModule {
     }
 
-    const providers = [...this._providers, ...this._providerOverrides];
+    const ngZone = new NgZone({enableLongStackTrace: true});
+    const providers =
+        [{provide: NgZone, useValue: ngZone}, ...this._providers, ...this._providerOverrides];
 
     const declarations = this._declarations;
     const imports = [RootScopeModule, this.ngModule, this._imports];

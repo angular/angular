@@ -1059,28 +1059,26 @@ import {fixmeIvy} from '@angular/private/testing';
       });
 
       describe('in template-driven forms', () => {
-        fixmeIvy('whenStable not working') &&
-            it('should support standard writing to view and model', async(() => {
-                 const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
-                 fixture.componentInstance.name = 'Nancy';
+        it('should support standard writing to view and model', async(() => {
+             const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+             fixture.componentInstance.name = 'Nancy';
+             fixture.detectChanges();
+             fixture.whenStable().then(() => {
+               fixture.detectChanges();
+               fixture.whenStable().then(() => {
+                 // model -> view
+                 const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+                 expect(customInput.nativeElement.value).toEqual('Nancy');
+
+                 customInput.nativeElement.value = 'Carson';
+                 dispatchEvent(customInput.nativeElement, 'input');
                  fixture.detectChanges();
-                 fixture.whenStable().then(() => {
-                   fixture.detectChanges();
-                   fixture.whenStable().then(() => {
-                     // model -> view
-                     const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
-                     expect(customInput.nativeElement.value).toEqual('Nancy');
 
-                     customInput.nativeElement.value = 'Carson';
-                     dispatchEvent(customInput.nativeElement, 'input');
-                     fixture.detectChanges();
-
-                     // view -> model
-                     expect(fixture.componentInstance.name).toEqual('Carson');
-                   });
-                 });
-               }));
-
+                 // view -> model
+                 expect(fixture.componentInstance.name).toEqual('Carson');
+               });
+             });
+           }));
       });
 
     });
