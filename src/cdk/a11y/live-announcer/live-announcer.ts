@@ -29,8 +29,9 @@ export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
 @Injectable({providedIn: 'root'})
 export class LiveAnnouncer implements OnDestroy {
-  private readonly _liveElement: HTMLElement;
+  private _liveElement: HTMLElement;
   private _document: Document;
+  private _previousTimeout?: number;
 
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
@@ -63,7 +64,8 @@ export class LiveAnnouncer implements OnDestroy {
     // (using JAWS 17 at time of this writing).
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
-        setTimeout(() => {
+        clearTimeout(this._previousTimeout);
+        this._previousTimeout = setTimeout(() => {
           this._liveElement.textContent = message;
           resolve();
         }, 100);
@@ -72,8 +74,11 @@ export class LiveAnnouncer implements OnDestroy {
   }
 
   ngOnDestroy() {
+    clearTimeout(this._previousTimeout);
+
     if (this._liveElement && this._liveElement.parentNode) {
       this._liveElement.parentNode.removeChild(this._liveElement);
+      this._liveElement = null!;
     }
   }
 

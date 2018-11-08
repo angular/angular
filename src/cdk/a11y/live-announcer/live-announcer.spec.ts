@@ -108,6 +108,30 @@ describe('LiveAnnouncer', () => {
           .toBe(1, 'Expected only one live announcer element in the DOM.');
     }));
 
+    it('should clear any previous timers when a new one is started', fakeAsync(() => {
+      expect(ariaLiveElement.textContent).toBeFalsy();
+
+      announcer.announce('One');
+      tick(50);
+
+      announcer.announce('Two');
+      tick(75);
+
+      expect(ariaLiveElement.textContent).toBeFalsy();
+
+      tick(25);
+
+      expect(ariaLiveElement.textContent).toBe('Two');
+    }));
+
+    it('should clear pending timeouts on destroy', fakeAsync(() => {
+      announcer.announce('Hey Google');
+      announcer.ngOnDestroy();
+
+      // Since we're testing whether the timeouts were flushed, we don't need any
+      // assertions here. `fakeAsync` will fail the test if a timer was left over.
+    }));
+
   });
 
   describe('with a custom element', () => {
