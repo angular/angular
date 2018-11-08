@@ -149,7 +149,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.value).toEqual({});
          }));
 
-      fixmeIvy('whenStable not working') &&
+      fixmeIvy('host bindings do not yet work with classes or styles') &&
           it('should set status classes with ngModel', async(() => {
                const fixture = initTest(NgModelForm);
                fixture.componentInstance.name = 'aa';
@@ -176,7 +176,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                });
              }));
 
-      fixmeIvy('whenStable not working') &&
+      fixmeIvy('host bindings do not yet work with classes or styles') &&
           it('should set status classes with ngModel and async validators', fakeAsync(() => {
 
                const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
@@ -204,7 +204,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                });
              }));
 
-      fixmeIvy('whenStable not working') &&
+      fixmeIvy('host bindings do not yet work with classes or styles') &&
           it('should set status classes with ngModelGroup and ngForm', async(() => {
                const fixture = initTest(NgModelGroupForm);
                fixture.componentInstance.first = '';
@@ -1184,23 +1184,22 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(input.nativeElement.disabled).toBe(true);
          }));
 
-      fixmeIvy('whenStable not working') &&
-          it('should disable a custom control if disabled attr is added', async(() => {
-               const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
-               fixture.componentInstance.name = 'Nancy';
-               fixture.componentInstance.isDisabled = true;
-               fixture.detectChanges();
-               fixture.whenStable().then(() => {
-                 fixture.detectChanges();
-                 fixture.whenStable().then(() => {
-                   const form = fixture.debugElement.children[0].injector.get(NgForm);
-                   expect(form.control.get('name') !.disabled).toBe(true);
+      it('should disable a custom control if disabled attr is added', async(() => {
+           const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+           fixture.componentInstance.name = 'Nancy';
+           fixture.componentInstance.isDisabled = true;
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+             fixture.whenStable().then(() => {
+               const form = fixture.debugElement.children[0].injector.get(NgForm);
+               expect(form.control.get('name') !.disabled).toBe(true);
 
-                   const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
-                   expect(customInput.nativeElement.disabled).toEqual(true);
-                 });
-               });
-             }));
+               const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+               expect(customInput.nativeElement.disabled).toEqual(true);
+             });
+           });
+         }));
 
       it('should disable a control with unbound disabled attr', fakeAsync(() => {
            TestBed.overrideComponent(NgModelForm, {
