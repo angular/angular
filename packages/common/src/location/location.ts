@@ -24,12 +24,12 @@ export interface PopStateEvent {
  *
  * A service that applications can use to interact with a browser's URL.
  *
- * Depending on which {@link LocationStrategy} is used, `Location` will either persist
+ * Depending on the {@link LocationStrategy} used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
  * @usageNotes
  *
- * It's better to use {@link Router#navigate} service to trigger route changes. Use
+ * It's better to use the {@link Router#navigate} service to trigger route changes. Use
  * `Location` only if you need to interact with or create normalized URLs outside of
  * routing.
  *
@@ -71,6 +71,10 @@ export class Location {
 
   /**
    * Returns the normalized URL path.
+   *
+   * @param includeHash Whether path has an anchor fragment.
+   *
+   * @returns The normalized URL path.
    */
   // TODO: vsavkin. Remove the boolean flag and always include hash once the deprecated router is
   // removed.
@@ -80,14 +84,24 @@ export class Location {
 
   /**
    * Normalizes the given path and compares to the current normalized path.
+   *
+   * @param path The given URL path
+   * @param query Query parameters
+   *
+   * @returns `true` if the given URL path is equal to the current normalized path, `false`
+   * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
     return this.path() == this.normalize(path + Location.normalizeQueryParams(query));
   }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path without leading or
+   * Given a string representing a URL, returns the URL path after stripping the
    * trailing slashes.
+   *
+   * @param url String representing a URL.
+   *
+   * @returns Normalized URL string.
    */
   normalize(url: string): string {
     return Location.stripTrailingSlash(_stripBaseHref(this._baseHref, _stripIndexHtml(url)));
@@ -96,8 +110,13 @@ export class Location {
   /**
    * Given a string representing a URL, returns the platform-specific external URL path.
    * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
-   * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+   * before normalizing. This method also adds a hash if `HashLocationStrategy` is
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
+   *
+   *
+   * @param url String representing a URL.
+   *
+   * @returns  A normalized platform-specific URL.
    */
   prepareExternalUrl(url: string): string {
     if (url && url[0] !== '/') {
@@ -108,16 +127,25 @@ export class Location {
 
   // TODO: rename this method to pushState
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and pushes a
+   * Changes the browsers URL to a normalized version of the given URL, and pushes a
    * new item onto the platform's history.
+   *
+   * @param path  URL path to normalizze
+   * @param query Query parameters
+   * @param state Location history state
+   *
    */
   go(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.pushState(state, '', path, query);
   }
 
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and replaces
+   * Changes the browser's URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
+   *
+   * @param path  URL path to normalizze
+   * @param query Query parameters
+   * @param state Location history state
    */
   replaceState(path: string, query: string = '', state: any = null): void {
     this._platformStrategy.replaceState(state, '', path, query);
@@ -135,6 +163,11 @@ export class Location {
 
   /**
    * Subscribe to the platform's `popState` events.
+   *
+   * @param value Event that is triggered when the state history changes.
+   * @param exception The exception to throw.
+   *
+   * @returns Subscribed events.
    */
   subscribe(
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
@@ -143,15 +176,25 @@ export class Location {
   }
 
   /**
-   * Given a string of url parameters, prepend with '?' if needed, otherwise return parameters as
-   * is.
+   * Given a string of url parameters, prepend with `?` if needed, otherwise return the
+   * parameters as is.
+   *
+   *  @param  params String of URL parameters
+   *
+   *  @returns URL parameters prepended with `?` or the parameters as is.
    */
   public static normalizeQueryParams(params: string): string {
     return params && params[0] !== '?' ? '?' + params : params;
   }
 
   /**
-   * Given 2 parts of a url, join them with a slash if needed.
+   * Given 2 parts of a URL, join them with a slash if needed.
+   *
+   * @param start  URL string
+   * @param end    URL string
+   *
+   *
+   * @returns Given URL strings joined with a slash, if needed.
    */
   public static joinWithSlash(start: string, end: string): string {
     if (start.length == 0) {
@@ -177,9 +220,14 @@ export class Location {
   }
 
   /**
-   * If url has a trailing slash, remove it, otherwise return url as is. This
-   * method looks for the first occurrence of either #, ?, or the end of the
-   * line as `/` characters after any of these should not be replaced.
+   * If URL has a trailing slash, remove it, otherwise return the URL as is. The
+   * method looks for the first occurrence of either `#`, `?`, or the end of the
+   * line as `/` characters and removes the trailing slash if one exists.
+   *
+   * @param url URL string
+   *
+   * @returns Returns a URL string after removing the trailing slash if one exists, otherwise
+   * returns the string as is.
    */
   public static stripTrailingSlash(url: string): string {
     const match = url.match(/#|\?|$/);
