@@ -38,18 +38,12 @@ function _extractId(valueString: string): string {
  *
  * The following examples show how to use a select control in a reactive form.
  *
- * * Bind to the `value` property for simple strings.
- * * Bind to the `ngValue` property for objects.
- *
  * {@example forms/ts/reactiveSelectControl/reactive_select_control_example.ts region='Component'}
  *
  * ### Using select controls in a template-driven form
  *
  * To use a select in a template-driven form, simply add an `ngModel` and a `name`
  * attribute to the main `<select>` tag.
- *
- * * Bind to the `value` property for simple strings.
- * * Bind to the `ngValue` property for objects.
  *
  * {@example forms/ts/selectControl/select_control_example.ts region='Component'}
  *
@@ -222,8 +216,7 @@ export class NgSelectOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the ngValue bound to the option element and
-   * writes the value to its parent select element.
+   * Tracks the value of objects bound to the option element.
    */
   @Input('ngValue')
   set ngValue(value: any) {
@@ -235,8 +228,8 @@ export class NgSelectOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the value bound to the option element and
-   * writes the value to its parent select element.
+   * Tracks simple string values bound to the option element.
+   * For objects, use the `ngValue` input binding.
    */
   @Input('value')
   set value(value: any) {

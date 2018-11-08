@@ -24,10 +24,9 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
  *
  * @usageNotes
  *
- * ### Using the number value accessor with an input element
+ * ### Using a range input with a reactive form
  *
- * The following example show an input element that matches a selector for the range control value
- * accessor.
+ * The following example shows how to use a range input with a reactive form.
  *
  * ```ts
  * const ageControl = new FormControl();
@@ -53,7 +52,8 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
 export class RangeValueAccessor implements ControlValueAccessor {
   /**
    * @description
-   * The registered callback function called when a change event occurs on the input element.
+   * The registered callback function called when a change or input event occurs on the input
+   * element.
    */
   onChange = (_: any) => {};
 

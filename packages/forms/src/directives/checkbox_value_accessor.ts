@@ -20,14 +20,12 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
  * @description
  * A `ControlValueAccessor` for writing a value and listening to changes on a checkbox input
  * element.
- * The accessor is attached to any input element that matches one of its selectors.
  *
  * @usageNotes
  *
- * ### Using an accessor with a checkbox input
+ * ### Using a checkbox with a reactive form.
  *
- * The following example show an input element that matches a selector for the checkbox value
- * accessor.
+ * The following example shows how to use a checkbox with a reactive form.
  *
  * ```ts
  * const rememberLoginControl = new FormControl();

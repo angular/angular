@@ -34,16 +34,15 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
 /**
  * @description
  * The default `ControlValueAccessor` for writing a value and listening to changes on input
- * elements. The accessor is attached to any input element that matches one of its selectors. The
- * accessor
- * is used by the `FormControlDirective`, `FormControlName`, and `NgModel` directives.
+ * elements. The accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
  *
  * @usageNotes
  *
- * ### Using the default accessor with an input element
+ * ### Using the default value accessor
  *
- * The following example show an input element that matches a selector for the default value
- * accessor.
+ * The following example shows how to use an input element that activates the default value accessor
+ * (in this case, a text field).
  *
  * ```ts
  * const firstNameControl = new FormControl();
@@ -74,7 +73,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
 export class DefaultValueAccessor implements ControlValueAccessor {
   /**
    * @description
-   * The registered callback function called when a change event occurs on the input element.
+   * The registered callback function called when an input event occurs on the input element.
    */
   onChange = (_: any) => {};
 

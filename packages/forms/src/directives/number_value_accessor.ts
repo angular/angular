@@ -24,10 +24,9 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  *
  * @usageNotes
  *
- * ### Using the number value accessor with an input element
+ * ### Using a number input with a reactive form.
  *
- * The following example show an input element that matches a selector for the number control value
- * accessor.
+ * The following example shows how to use a number input with a reactive form.
  *
  * ```ts
  * const totalCountControl = new FormControl();
@@ -53,7 +52,8 @@ export const NUMBER_VALUE_ACCESSOR: any = {
 export class NumberValueAccessor implements ControlValueAccessor {
   /**
    * @description
-   * The registered callback function called when a change event occurs on the input element.
+   * The registered callback function called when a change or input event occurs on the input
+   * element.
    */
   onChange = (_: any) => {};
 

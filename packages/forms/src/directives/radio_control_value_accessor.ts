@@ -19,7 +19,7 @@ export const RADIO_VALUE_ACCESSOR: any = {
 
 /**
  * @description
- * Class used by Angular to uncheck radio buttons with the matching name. For internal use only.
+ * Class used by Angular to track radio buttons. For internal use only.
  */
 @Injectable()
 export class RadioControlRegistry {
@@ -48,7 +48,7 @@ export class RadioControlRegistry {
 
   /**
    * @description
-   * Calls the uncheck method on the radio control. For internal use only.
+   * Selects a radio button. For internal use only.
    */
   select(accessor: RadioControlValueAccessor) {
     this._accessors.forEach((c) => {
@@ -79,8 +79,7 @@ export class RadioControlRegistry {
  *
  * The follow example shows how to use radio buttons in a reactive form. When using radio buttons in
  * a reactive form, radio buttons in the same group should have the same `formControlName`.
- * Providing a `name`
- * attribute is optional.
+ * Providing a `name` attribute is optional.
  *
  * {@example forms/ts/reactiveRadioButtons/reactive_radio_button_example.ts region='Reactive'}
  *
@@ -145,7 +144,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
   /**
    * @description
-   * A lifecycle method called when the directive's inputs change. For internal use only.
+   * A lifecycle method called when the directive is initialized. For internal use only.
    *
    * @param changes A object of key/value pairs for the set of changed inputs.
    */

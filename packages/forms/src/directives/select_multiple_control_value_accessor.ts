@@ -55,14 +55,21 @@ abstract class HTMLCollection {
  * The follow example shows you how to use a multi-select control with a reactive form.
  * 
  * ```ts
- * const cityControl = new FormControl();
+ * const countryControl = new FormControl();
  * ```
  *
  * ```
- * <select multiple name="city" [formControl]="cityControl">
- *   <option *ngFor="let city of cities" [value]="city"></option>
+ * <select multiple name="countries" [formControl]="countryControl">
+ *   <option *ngFor="let country of countries" [ngValue]="country">
+ *     {{ country.name }}
+ *   </option>
  * </select>
  * ```
+ * 
+ * ### Customizing option selection
+ *  
+ * To customize the default option comparison algorithm, `<select>` supports `compareWith` input.
+ * See the `SelectControlValueAccessor` for usage.
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
@@ -112,7 +119,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   /**
    * @description
-   * Sets the "value" property on one or more the input elements.
+   * Sets the "value" property on one or of more
+   * of the select's options.
    *
    * @param value The value
    */
@@ -229,8 +237,7 @@ export class NgSelectMultipleOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the ngValue bound to the option element and
-   * writes the value to its parent select element.
+   * Tracks the value of objects bound to the option element.
    */
   @Input('ngValue')
   set ngValue(value: any) {
@@ -242,8 +249,8 @@ export class NgSelectMultipleOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the value bound to the option element and
-   * writes the value to its parent select element.
+   * Tracks simple string values bound to the option element.
+   * For objects, use the `ngValue` input binding.
    */
   @Input('value')
   set value(value: any) {
