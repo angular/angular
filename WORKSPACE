@@ -16,6 +16,12 @@ load(
 #    path = "../rules_typescript",
 #)
 
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    urls = ["https://github.com/gregmagolan/rules_nodejs/archive/2199078e49e5019767232163e7b6b922acbd93e9.zip"],
+    strip_prefix = "rules_nodejs-2199078e49e5019767232163e7b6b922acbd93e9",
+)
+
 # Angular Bazel users will call this function
 rules_angular_dependencies()
 # These are the dependencies only for us
