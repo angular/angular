@@ -307,8 +307,16 @@ export interface PipeDef<T> {
 
 export type PipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
-export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
-export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+export interface DirectiveDefFeature {
+  <T>(directiveDef: DirectiveDef<T>): void;
+  ngInherit?: true;
+}
+
+export interface ComponentDefFeature {
+  <T>(componentDef: ComponentDef<T>): void;
+  ngInherit?: true;
+}
+
 
 /**
  * Type used for directiveDefs on component definition.

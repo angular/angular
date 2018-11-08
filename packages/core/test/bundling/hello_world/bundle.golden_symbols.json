@@ -84,6 +84,9 @@
     "name": "NO_PARENT_INJECTOR"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NodeInjectorFactory"
   },
   {
@@ -96,6 +99,9 @@
     "name": "PARENT_INJECTOR"
   },
   {
+    "name": "PRIVATE_PREFIX"
+  },
+  {
     "name": "QUERIES"
   },
   {
@@ -106,6 +112,9 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "TVIEW"
@@ -382,6 +391,9 @@
   },
   {
     "name": "noop"
+  },
+  {
+    "name": "onChangesWrapper"
   },
   {
     "name": "postProcessBaseDirective"
