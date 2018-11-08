@@ -282,6 +282,9 @@
     "name": "NgModuleRef$1"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NgZone"
   },
   {
@@ -328,6 +331,9 @@
   },
   {
     "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "PRIVATE_PREFIX"
   },
   {
     "name": "PlatformLocation"
@@ -382,6 +388,9 @@
   },
   {
     "name": "Self"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -1141,6 +1150,9 @@
   },
   {
     "name": "observable"
+  },
+  {
+    "name": "onChangesWrapper"
   },
   {
     "name": "onEnter"

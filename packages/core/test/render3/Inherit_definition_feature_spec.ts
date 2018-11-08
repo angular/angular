@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Output} from '../../src/core';
-import {EMPTY} from '../../src/render3/definition';
-import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
-import {ComponentDef, DirectiveDef, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
+import {Inject, InjectionToken} from '../../src/core';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, defineBase, defineComponent, defineDirective, directiveInject, element} from '../../src/render3/index';
+import {ComponentFixture, createComponent} from './render_util';
 
 describe('InheritDefinitionFeature', () => {
   it('should inherit lifecycle hooks', () => {
@@ -457,50 +456,90 @@ describe('InheritDefinitionFeature', () => {
     }).toThrowError('Directives cannot inherit Components');
   });
 
-  it('should run inherited features', () => {
-    const log: any[] = [];
+  it('should inherit ngOnChanges', () => {
+    const log: string[] = [];
+    let subDir !: SubDirective;
 
+    class SuperDirective {
+      someInput = '';
+
+      ngOnChanges() { log.push('on changes!'); }
+
+      static ngDirectiveDef = defineDirective({
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        factory: () => new SuperDirective(),
+        features: [NgOnChangesFeature],
+        inputs: {someInput: 'someInput'}
+      });
+    }
+
+    class SubDirective extends SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        factory: () => subDir = new SubDirective(),
+        features: [InheritDefinitionFeature],
+      });
+    }
+
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['subDir', '']);
+      }
+    }, 1, 0, [SubDirective]);
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['on changes!']);
+  });
+
+  it('should NOT inherit providers', () => {
+    let otherDir !: OtherDirective;
+
+    const SOME_DIRS = new InjectionToken('someDirs');
+
+    // providers: [{ provide: SOME_DIRS, useClass: SuperDirective, multi: true }]
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         factory: () => new SuperDirective(),
-        features: [
-          (arg: any) => { log.push('super1', arg); },
-          (arg: any) => { log.push('super2', arg); },
-        ]
+        features: [ProvidersFeature([{provide: SOME_DIRS, useClass: SuperDirective, multi: true}])],
       });
     }
 
+    // providers: [{ provide: SOME_DIRS, useClass: SubDirective, multi: true }]
     class SubDirective extends SuperDirective {
-      @Output()
-      baz = new EventEmitter();
-
-      @Output()
-      qux = new EventEmitter();
-
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature, (arg: any) => { log.push('sub1', arg); }]
+        features: [
+          ProvidersFeature([{provide: SOME_DIRS, useClass: SubDirective, multi: true}]),
+          InheritDefinitionFeature
+        ],
       });
     }
 
-    const superDef = SuperDirective.ngDirectiveDef as DirectiveDef<any>;
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
+    class OtherDirective {
+      constructor(@Inject(SOME_DIRS) public dirs: any) {}
 
-    expect(log).toEqual([
-      'super1',
-      superDef,
-      'super2',
-      superDef,
-      'super1',
-      subDef,
-      'super2',
-      subDef,
-      'sub1',
-      subDef,
-    ]);
+      static ngDirectiveDef = defineDirective({
+        type: OtherDirective,
+        selectors: [['', 'otherDir', '']],
+        factory: () => otherDir = new OtherDirective(directiveInject(SOME_DIRS)),
+      });
+    }
+
+    /** <div otherDir subDir></div> */
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['otherDir', '', 'subDir', '']);
+      }
+    }, 1, 0, [OtherDirective, SubDirective, SuperDirective]);
+
+    const fixture = new ComponentFixture(App);
+    expect(otherDir.dirs.length).toEqual(1);
+    expect(otherDir.dirs[0] instanceof SubDirective).toBe(true);
   });
 });

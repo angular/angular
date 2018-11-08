@@ -106,6 +106,10 @@ export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
   definition.doCheck = onChangesWrapper(definition.doCheck);
 }
 
+// This option ensures that the ngOnChanges lifecycle hook will be inherited
+// from superclasses (in InheritDefinitionFeature).
+(NgOnChangesFeature as any).ngInherit = true;
+
 function onChangesWrapper(delegateHook: (() => void) | null) {
   return function(this: OnChangesExpando) {
     const simpleChanges = this[PRIVATE_PREFIX];
