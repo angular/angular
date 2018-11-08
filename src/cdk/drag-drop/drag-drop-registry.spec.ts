@@ -88,6 +88,19 @@ describe('DragDropRegistry', () => {
     subscription.unsubscribe();
   });
 
+  it('should dispatch pointer move events if event propagation is stopped', () => {
+    const spy = jasmine.createSpy('pointerMove spy');
+    const subscription = registry.pointerMove.subscribe(spy);
+
+    fixture.nativeElement.addEventListener('mousemove', (e: MouseEvent) => e.stopPropagation());
+    registry.startDragging(testComponent.dragItems.first, createMouseEvent('mousedown'));
+    dispatchMouseEvent(fixture.nativeElement.querySelector('div'), 'mousemove');
+
+    expect(spy).toHaveBeenCalled();
+
+    subscription.unsubscribe();
+  });
+
   it('should dispatch `mouseup` events after ending the drag via the mouse', () => {
     const spy = jasmine.createSpy('pointerUp spy');
     const subscription = registry.pointerUp.subscribe(spy);
@@ -107,6 +120,19 @@ describe('DragDropRegistry', () => {
     registry.startDragging(testComponent.dragItems.first,
         createTouchEvent('touchstart') as TouchEvent);
     dispatchTouchEvent(document, 'touchend');
+
+    expect(spy).toHaveBeenCalled();
+
+    subscription.unsubscribe();
+  });
+
+  it('should dispatch pointer up events if event propagation is stopped', () => {
+    const spy = jasmine.createSpy('pointerUp spy');
+    const subscription = registry.pointerUp.subscribe(spy);
+
+    fixture.nativeElement.addEventListener('mouseup', (e: MouseEvent) => e.stopPropagation());
+    registry.startDragging(testComponent.dragItems.first, createMouseEvent('mousedown'));
+    dispatchMouseEvent(fixture.nativeElement.querySelector('div'), 'mouseup');
 
     expect(spy).toHaveBeenCalled();
 
@@ -153,6 +179,17 @@ describe('DragDropRegistry', () => {
     registry.startDragging(testComponent.dragItems.first,
       createTouchEvent('touchstart') as TouchEvent);
     expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(true);
+  });
+
+  it('should prevent the default `touchmove` if event propagation is stopped', () => {
+    registry.startDragging(testComponent.dragItems.first,
+      createTouchEvent('touchstart') as TouchEvent);
+
+    fixture.nativeElement.addEventListener('touchmove', (e: TouchEvent) => e.stopPropagation());
+
+    const event = dispatchTouchEvent(fixture.nativeElement.querySelector('div'), 'touchmove');
+
+    expect(event.defaultPrevented).toBe(true);
   });
 
 });
