@@ -17,8 +17,8 @@ http_archive(
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  url = "https://github.com/angular/angular/archive/7.0.2.zip",
-  strip_prefix = "angular-7.0.2",
+  url = "https://github.com/angular/angular/archive/7.0.3.zip",
+  strip_prefix = "angular-7.0.3",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.
