@@ -318,7 +318,6 @@ jobs:
           root: dist
           paths:
             - packages-dist
-            - packages-dist-ivy-jit
             - packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
