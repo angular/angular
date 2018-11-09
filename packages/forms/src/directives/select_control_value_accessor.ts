@@ -216,7 +216,8 @@ export class NgSelectOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the value of objects bound to the option element.
+   * Tracks the value bound to the option element. Unlike the value binding, 
+   * ngValue supports binding to objects.
    */
   @Input('ngValue')
   set ngValue(value: any) {
