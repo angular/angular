@@ -19,11 +19,13 @@ export class DependencyHost {
    * @param from An absolute path to the file whose dependencies we want to get.
    * @param resolved A set that will have the absolute paths of resolved entry points added to it.
    * @param missing A set that will have the dependencies that could not be found added to it.
+   * @param deepImports A set that will have the dependencies that refer to deep imports added to
+   * it.
    * @param internal A set that is used to track internal dependencies to prevent getting stuck in a
    * circular dependency loop.
    */
   computeDependencies(
-      from: string, resolved: Set<string>, missing: Set<string>,
+      from: string, resolved: Set<string>, missing: Set<string>, deepImports: Set<string>,
       internal: Set<string> = new Set()): void {
     const fromContents = fs.readFileSync(from, 'utf8');
     if (!this.hasImportOrReeportStatements(fromContents)) {
@@ -46,16 +48,20 @@ export class DependencyHost {
             // Avoid circular dependencies
             if (!internal.has(internalDependency)) {
               internal.add(internalDependency);
-              this.computeDependencies(internalDependency, resolved, missing, internal);
+              this.computeDependencies(
+                  internalDependency, resolved, missing, deepImports, internal);
             }
           } else {
             const resolvedEntryPoint = this.tryResolveEntryPoint(from, importPath);
             if (resolvedEntryPoint !== null) {
               resolved.add(resolvedEntryPoint);
             } else {
-              // If the import cannot be resolved at all, register it as missing dependency.
-              const resolvedFile = this.tryResolve(from, importPath);
-              if (resolvedFile === null) {
+              // If the import could not be resolved as entry point, it either does not exist
+              // at all or is a deep import.
+              const deeplyImportedFile = this.tryResolve(from, importPath);
+              if (deeplyImportedFile !== null) {
+                deepImports.add(importPath);
+              } else {
                 missing.add(importPath);
               }
             }

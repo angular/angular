@@ -27,7 +27,7 @@ describe('DependencyHost', () => {
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
-         host.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set());
+         host.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set(), new Set());
          expect(ts.createSourceFile).not.toHaveBeenCalled();
        });
 
@@ -36,10 +36,11 @@ describe('DependencyHost', () => {
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/imports.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/imports.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     it('should resolve all the external re-exports of the source file', () => {
@@ -47,10 +48,11 @@ describe('DependencyHost', () => {
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/re-exports.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/re-exports.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     it('should capture missing external imports', () => {
@@ -61,11 +63,12 @@ describe('DependencyHost', () => {
       spyOn(host, 'tryResolve').and.callFake(() => null);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/imports-missing.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/imports-missing.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/x'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(missing.size).toBe(1);
-      expect(missing.has('missing'));
+      expect(missing.has('missing')).toBe(true);
     });
 
     it('should not register deep imports as missing', () => {
@@ -77,9 +80,12 @@ describe('DependencyHost', () => {
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/deep-import.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/deep-import.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(0);
       expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(1);
+      expect(deepImports.has('deep/import')).toBe(true);
     });
 
     it('should recurse into internal dependencies', () => {
@@ -91,12 +97,15 @@ describe('DependencyHost', () => {
       const getDependenciesSpy = spyOn(host, 'computeDependencies').and.callThrough();
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/internal/outer.js', resolved, missing);
-      expect(getDependenciesSpy).toHaveBeenCalledWith('/internal/outer.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/internal/outer.js', resolved, missing, deepImports);
       expect(getDependenciesSpy)
-          .toHaveBeenCalledWith('/internal/inner.js', resolved, missing, jasmine.any(Set));
+          .toHaveBeenCalledWith('/internal/outer.js', resolved, missing, deepImports);
+      expect(getDependenciesSpy)
+          .toHaveBeenCalledWith(
+              '/internal/inner.js', resolved, missing, deepImports, jasmine.any(Set));
       expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
 
@@ -108,10 +117,11 @@ describe('DependencyHost', () => {
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/internal/circular-a.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/internal/circular-a.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     function createMockFileSystem() {

@@ -87,7 +87,8 @@ export class DependencyResolver {
 
       const dependencies = new Set<string>();
       const missing = new Set<string>();
-      this.host.computeDependencies(entryPointPath, dependencies, missing);
+      const deepImports = new Set<string>();
+      this.host.computeDependencies(entryPointPath, dependencies, missing, deepImports);
 
       if (missing.size > 0) {
         // This entry point has dependencies that are missing
@@ -108,6 +109,13 @@ export class DependencyResolver {
             ignoredDependencies.push({entryPoint, dependencyPath});
           }
         });
+      }
+
+      if (deepImports.size) {
+        const imports = Array.from(deepImports).map(i => `'${i}'`).join(', ');
+        console.warn(
+            `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
+            `This may cause compilation errors if the package that is deeply imported also needs to be processed by ngcc.`);
       }
     });
 
