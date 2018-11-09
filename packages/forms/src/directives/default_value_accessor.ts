@@ -26,7 +26,9 @@ function _isAndroid(): boolean {
 }
 
 /**
- * Turn this mode on if you want form directives to buffer IME input until compositionend
+ * @description
+ * Provide this token to control if form directives buffer IME input until
+ * the "compositionend" event occurs.
  * @publicApi
  */
 export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionEventMode');
