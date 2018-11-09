@@ -126,13 +126,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/upgrade@^7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/upgrade/-/upgrade-7.0.3.tgz#8cb3784f19e4f63130ab3595f8b6076a9a8ce07b"
-  integrity sha512-XjFUh4Sr74eQFtGu6OASlbZ9ShZMvm94h1ur67ZW2pKvFFn1eXkEO8hTA9QWONwZ19TfisSeoEYlrDyzuA2eDA==
-  dependencies:
-    tslib "^1.9.0"
-
 "@babel/code-frame@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.0.0.tgz#06e2ab19bdb535385559aabb5ba59729482800f8"
