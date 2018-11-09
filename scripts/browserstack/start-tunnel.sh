@@ -11,7 +11,7 @@ tunnelReadyFile="${tunnelTmpDir}/readyfile"
 tunnelErrorFile="${tunnelTmpDir}/errorfile"
 
 # Cleanup and create the folder structure for the tunnel connector.
-rm -rf ${tunnelTmpDir} ${tunnelReadyFile} ${tunnelErrorFile}
+rm -rf ${tunnelTmpDir}
 mkdir -p ${tunnelTmpDir}
 touch ${tunnelLogFile}
 

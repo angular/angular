@@ -2,40 +2,39 @@
 
 set -e -o pipefail
 
-TUNNEL_FILE="sc-4.5.1-linux.tar.gz"
-TUNNEL_URL="https://saucelabs.com/downloads/${TUNNEL_FILE}"
-TUNNEL_DIR="/tmp/saucelabs-connect"
+tunnelFileName="sc-4.5.1-linux.tar.gz"
+tunnelUrl="https://saucelabs.com/downloads/${tunnelFileName}"
 
-TUNNEL_LOG="${LOGS_DIR}/saucelabs-tunnel.log"
-
-SAUCE_ACCESS_KEY=`echo ${SAUCE_ACCESS_KEY} | rev`
+tunnelTmpDir="/tmp/material-saucelabs"
+tunnelLogFile="${tunnelTmpDir}/saucelabs-connect.log"
+tunnelReadyFile="${tunnelTmpDir}/readyfile"
+tunnelPidFile="${tunnelTmpDir}/pidfile"
 
 # Cleanup and create the folder structure for the tunnel connector.
-rm -rf ${TUNNEL_DIR} ${BROWSER_PROVIDER_READY_FILE}
-mkdir -p ${TUNNEL_DIR}
+rm -rf ${tunnelTmpDir}
+mkdir -p ${tunnelTmpDir}
 
-cd ${TUNNEL_DIR}
+# Go into the temporary tunnel directory.
+cd ${tunnelTmpDir}
 
 # Download the saucelabs connect binaries.
-curl ${TUNNEL_URL} -o ${TUNNEL_FILE} 2> /dev/null 1> /dev/null
+curl ${tunnelUrl} -o ${tunnelFileName} 2> /dev/null 1> /dev/null
 
 # Extract the saucelabs connect binaries from the tarball.
 mkdir -p sauce-connect
-tar --extract --file=${TUNNEL_FILE} --strip-components=1 --directory=sauce-connect > /dev/null
+tar --extract --file=${tunnelFileName} --strip-components=1 --directory=sauce-connect > /dev/null
 
 # Cleanup the download directory.
-rm ${TUNNEL_FILE}
+rm ${tunnelFileName}
 
-ARGS=""
+# Command arguments that will be passed to sauce-connect.
+sauceArgs="--readyfile ${tunnelReadyFile} --pidfile ${tunnelPidFile}"
 
-# Set tunnel-id only on Travis, to make local testing easier.
-if [ ! -z "${TRAVIS_JOB_ID}" ]; then
-  ARGS="${ARGS} --tunnel-identifier ${TRAVIS_JOB_ID}"
-fi
-if [ ! -z "${BROWSER_PROVIDER_READY_FILE}" ]; then
-  ARGS="${ARGS} --readyfile ${BROWSER_PROVIDER_READY_FILE}"
+if [ ! -z "${CIRCLE_BUILD_NUM}" ]; then
+  sauceArgs="${sauceArgs} --tunnel-identifier ${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
 fi
 
-echo "Starting Sauce Connect in the background, logging into: ${TUNNEL_LOG}"
+echo "Starting Sauce Connect in the background, logging into: ${tunnelLogFile}"
 
-sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${ARGS} 2>&1 >> ${TUNNEL_LOG} &
+sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs} 2>&1 >> \
+  ${tunnelLogFile} &

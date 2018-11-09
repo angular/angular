@@ -1,5 +1,5 @@
 {
-  "ChromeHeadlessLocal": {
+  "ChromeHeadlesSAUCELABSocal": {
     "base": "ChromeHeadless",
     "flags": [
       "--window-size=1024,768"
@@ -18,176 +18,176 @@
       "-headless"
     ]
   },
-  "SL_CHROME": {
+  "SAUCELABS_CHROME": {
     "base": "SauceLabs",
     "browserName": "chrome",
     "version": "latest"
   },
-  "SL_CHROMEBETA": {
+  "SAUCELABS_CHROMEBETA": {
     "base": "SauceLabs",
     "browserName": "chrome",
     "version": "beta"
   },
-  "SL_CHROMEDEV": {
+  "SAUCELABS_CHROMEDEV": {
     "base": "SauceLabs",
     "browserName": "chrome",
     "version": "dev"
   },
-  "SL_FIREFOX": {
+  "SAUCELABS_FIREFOX": {
     "base": "SauceLabs",
     "browserName": "firefox",
     "version": "latest"
   },
-  "SL_FIREFOXBETA": {
+  "SAUCELABS_FIREFOXBETA": {
     "base": "SauceLabs",
     "browserName": "firefox",
     "version": "beta"
   },
-  "SL_FIREFOXDEV": {
+  "SAUCELABS_FIREFOXDEV": {
     "base": "SauceLabs",
     "browserName": "firefox",
     "version": "dev"
   },
-  "SL_SAFARI7": {
+  "SAUCELABS_SAFARI7": {
     "base": "SauceLabs",
     "browserName": "safari",
     "platform": "OS X 10.9",
     "version": "7"
   },
-  "SL_SAFARI8": {
+  "SAUCELABS_SAFARI8": {
     "base": "SauceLabs",
     "browserName": "safari",
     "platform": "OS X 10.10",
     "version": "8"
   },
-  "SL_SAFARI9": {
+  "SAUCELABS_SAFARI9": {
     "base": "SauceLabs",
     "browserName": "safari",
     "platform": "OS X 10.11",
     "version": "9.0"
   },
-  "SL_SAFARI10": {
+  "SAUCELABS_SAFARI10": {
     "base": "SauceLabs",
     "browserName": "safari",
     "platform": "OS X 10.12",
     "version": "10.0"
   },
-  "SL_IOS7": {
+  "SAUCELABS_IOS7": {
     "base": "SauceLabs",
     "browserName": "iphone",
     "platform": "OS X 10.10",
     "version": "7.1"
   },
-  "SL_IOS8": {
+  "SAUCELABS_IOS8": {
     "base": "SauceLabs",
     "browserName": "iphone",
     "platform": "OS X 10.10",
     "version": "8.4"
   },
-  "SL_IOS9": {
+  "SAUCELABS_IOS9": {
     "base": "SauceLabs",
     "browserName": "iphone",
     "platform": "OS X 10.10",
     "version": "9.1"
   },
-  "SL_IOS11": {
+  "SAUCELABS_IOS11": {
     "base": "SauceLabs",
     "browserName": "iphone",
     "platform": "Mac 10.12",
     "version": "11.2"
   },
-  "SL_IE9": {
+  "SAUCELABS_IE9": {
     "base": "SauceLabs",
     "browserName": "internet explorer",
     "platform": "Windows 2008",
     "version": "9"
   },
-  "SL_IE10": {
+  "SAUCELABS_IE10": {
     "base": "SauceLabs",
     "browserName": "internet explorer",
     "platform": "Windows 2012",
     "version": "10"
   },
-  "SL_IE11": {
+  "SAUCELABS_IE11": {
     "base": "SauceLabs",
     "browserName": "internet explorer",
     "platform": "Windows 8.1",
     "version": "11"
   },
-  "SL_EDGE": {
+  "SAUCELABS_EDGE": {
     "base": "SauceLabs",
     "browserName": "microsoftedge",
     "platform": "Windows 10",
     "version": "17"
   },
-  "SL_ANDROID4.1": {
+  "SAUCELABS_ANDROID4.1": {
     "base": "SauceLabs",
     "browserName": "android",
     "platform": "Linux",
     "version": "4.1"
   },
-  "SL_ANDROID4.2": {
+  "SAUCELABS_ANDROID4.2": {
     "base": "SauceLabs",
     "browserName": "android",
     "platform": "Linux",
     "version": "4.2"
   },
-  "SL_ANDROID4.3": {
+  "SAUCELABS_ANDROID4.3": {
     "base": "SauceLabs",
     "browserName": "android",
     "platform": "Linux",
     "version": "4.3"
   },
-  "SL_ANDROID4.4": {
+  "SAUCELABS_ANDROID4.4": {
     "base": "SauceLabs",
     "browserName": "android",
     "platform": "Linux",
     "version": "4.4"
   },
-  "SL_ANDROID5": {
+  "SAUCELABS_ANDROID5": {
     "base": "SauceLabs",
     "browserName": "android",
     "platform": "Linux",
     "version": "5.1"
   },
-  "BS_CHROME": {
+  "BROWSERSTACK_CHROME": {
     "base": "BrowserStack",
     "browser": "chrome",
     "os": "OS X",
     "os_version": "Yosemite"
   },
-  "BS_FIREFOX": {
+  "BROWSERSTACK_FIREFOX": {
     "base": "BrowserStack",
     "browser": "firefox",
     "os": "Windows",
     "os_version": "10"
   },
-  "BS_SAFARI7": {
+  "BROWSERSTACK_SAFARI7": {
     "base": "BrowserStack",
     "browser": "safari",
     "os": "OS X",
     "os_version": "Mavericks"
   },
-  "BS_SAFARI8": {
+  "BROWSERSTACK_SAFARI8": {
     "base": "BrowserStack",
     "browser": "safari",
     "os": "OS X",
     "os_version": "Yosemite"
   },
-  "BS_SAFARI9": {
+  "BROWSERSTACK_SAFARI9": {
     "base": "BrowserStack",
     "browser": "safari",
     "os": "OS X",
     "os_version": "El Capitan"
   },
-  "BS_SAFARI10": {
+  "BROWSERSTACK_SAFARI10": {
     "base": "BrowserStack",
     "browser": "safari",
     "browser_version": "10.1",
     "os": "OS X",
     "os_version": "Sierra"
   },
-  "BS_IOS7": {
+  "BROWSERSTACK_IOS7": {
     "base": "BrowserStack",
     "device": "iPhone 5S",
     "os": "ios",
@@ -195,7 +195,7 @@
     "real_mobile": true,
     "resolution": "1024x768"
   },
-  "BS_IOS8": {
+  "BROWSERSTACK_IOS8": {
     "base": "BrowserStack",
     "device": "iPhone 6",
     "os": "ios",
@@ -203,7 +203,7 @@
     "real_mobile": true,
     "resolution": "1024x768"
   },
-  "BS_IOS9": {
+  "BROWSERSTACK_IOS9": {
     "base": "BrowserStack",
     "device": "iPhone 6S",
     "os": "ios",
@@ -211,84 +211,84 @@
     "real_mobile": true,
     "resolution": "1024x768"
   },
-  "BS_IOS10": {
+  "BROWSERSTACK_IOS10": {
     "base": "BrowserStack",
     "device": "iPhone 7",
     "os": "ios",
     "real_mobile": true,
     "os_version": "10.0"
   },
-  "BS_IOS11": {
+  "BROWSERSTACK_IOS11": {
     "base": "BrowserStack",
     "device": "iPhone 8",
     "os": "ios",
     "os_version": "11.0",
     "real_mobile": true
   },
-  "BS_IE9": {
+  "BROWSERSTACK_IE9": {
     "base": "BrowserStack",
     "browser": "ie",
     "browser_version": "9.0",
     "os": "Windows",
     "os_version": "7"
   },
-  "BS_IE10": {
+  "BROWSERSTACK_IE10": {
     "base": "BrowserStack",
     "browser": "ie",
     "browser_version": "10.0",
     "os": "Windows",
     "os_version": "8"
   },
-  "BS_IE11": {
+  "BROWSERSTACK_IE11": {
     "base": "BrowserStack",
     "browser": "ie",
     "browser_version": "11.0",
     "os": "Windows",
     "os_version": "10"
   },
-  "BS_EDGE": {
+  "BROWSERSTACK_EDGE": {
     "base": "BrowserStack",
     "browser": "Edge",
     "browser_version": "17.0",
     "os": "Windows",
     "os_version": "10"
   },
-  "BS_WINDOWSPHONE": {
+  "BROWSERSTACK_WINDOWSPHONE": {
     "base": "BrowserStack",
     "device": "Nokia Lumia 930",
     "os": "winphone",
     "real_mobile": true,
     "os_version": "8.1"
   },
-  "BS_ANDROID5": {
+  "BROWSERSTACK_ANDROID5": {
     "base": "BrowserStack",
     "device": "Google Nexus 5",
     "os": "android",
     "real_mobile": true,
     "os_version": "5.0"
   },
-  "BS_ANDROID4.4": {
+  "BROWSERSTACK_ANDROID4.4": {
     "base": "BrowserStack",
     "device": "HTC One M8",
     "os": "android",
     "real_mobile": true,
     "os_version": "4.4"
   },
-  "BS_ANDROID4.3": {
+  "BROWSERSTACK_ANDROID4.3": {
     "base": "BrowserStack",
     "device": "Samsung Galaxy S4",
     "os": "android",
     "real_mobile": true,
     "os_version": "4.3"
   },
-  "BS_ANDROID4.2": {
+  "BROWSERSTACK_ANDROID4.2": {
     "base": "BrowserStack",
     "device": "Google Nexus 4",
     "os": "android",
     "real_mobile": true,
     "os_version": "4.2"
   },
-  "BS_ANDROID4.1": {
+  "BROWSERSTACK_ANDROID4.1": {
     "base": "BrowserStack",
     "device": "Google Nexus 7",
     "os": "android",

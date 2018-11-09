@@ -55,12 +55,11 @@ merge:
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      # TODO(josephperrott): reenable once CI flakiness is addressed
-      # - "continuous-integration/travis-ci/pr"
       - "ci/circleci: lint"
       - "ci/circleci: bazel_build_test"
       - "ci/circleci: tests_local_browsers"
       - "ci/circleci: tests_browserstack"
+      - "ci/circleci: tests_saucelabs"
       - "ci/circleci: build_release_packages"
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable

@@ -140,6 +140,23 @@ jobs:
 
       - run: ./scripts/circleci/run-browserstack-tests.sh
 
+  # ----------------------------------------------------------------------------
+  # Job that runs the unit tests on Saucelabs. The browsers that will be used
+  # to run the unit tests on Saucelabs are set in: test/browser-providers.js
+  # ----------------------------------------------------------------------------
+  tests_saucelabs:
+    <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      SAUCE_USERNAME: "angular-ci"
+      SAUCE_ACCESS_KEY: "9b988f434ff8-fbca-8aa4-4ae3-35442987"
+    steps:
+    - *checkout_code
+    - *restore_cache
+    - *yarn_install
+
+    - run: ./scripts/circleci/run-saucelabs-tests.sh
+
   # -----------------------------------------------------------------------------------------
   # Job that builds the demo-app with AOT. In order to speed up this job, the release output
   # from the workspace storage will be attached to this job.
@@ -268,6 +285,7 @@ workflows:
     jobs:
       - tests_local_browsers
       - tests_browserstack
+      - tests_saucelabs
 
   integration_tests:
     jobs:

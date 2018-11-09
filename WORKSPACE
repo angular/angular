@@ -67,8 +67,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.18.0")
 
 node_repositories(
-  # For deterministic builds, specify explicit NodeJS and Yarn versions. Keep the Yarn version
-  # in sync with the version of Travis.
+  # For deterministic builds, specify explicit NodeJS and Yarn versions.
   node_version = "10.10.0",
   yarn_version = "1.9.4",
 )

@@ -103,6 +103,9 @@ module.exports = (config) => {
     if (testPlatform === 'browserstack') {
       config.browserStack.build = buildIdentifier;
       config.browserStack.tunnelIdentifier = tunnelIdentifier;
+    } else if (testPlatform === 'saucelabs') {
+      config.sauceLabs.build = buildIdentifier;
+      config.sauceLabs.tunnelIdentifier = tunnelIdentifier;
     }
 
     const platformBrowsers = platformMap[testPlatform];
@@ -112,35 +115,6 @@ module.exports = (config) => {
     // Configure Karma to launch the browsers that belong to the given test platform
     // and instance.
     config.browsers = browserInstanceChunks[instanceIndex];
-  }
-
-  if (process.env['TRAVIS']) {
-    const buildId = `TRAVIS #${process.env.TRAVIS_BUILD_NUMBER} (${process.env.TRAVIS_BUILD_ID})`;
-
-    // The MODE variable is the indicator of what row in the test matrix we're running.
-    // It will look like <platform>_<target>, where platform is one of 'saucelabs', 'browserstack'
-    // or 'travis'. The target is a reference to different collections of browsers that can run
-    // in the previously specified platform.
-    // TODO(devversion): when moving Saucelabs and Browserstack to Circle, remove the target part.
-    const [platform] = process.env.MODE.split('_');
-
-    if (platform === 'saucelabs') {
-      config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_ID;
-    } else if (platform === 'browserstack') {
-      config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_ID;
-    } else if (platform !== 'travis') {
-      throw new Error(`Platform "${platform}" unknown, but Travis specified. Exiting.`);
-    }
-
-    if (platform !== 'travis') {
-      // To guarantee a better stability for tests running on external browsers, we disable
-      // concurrency. Stability is compared to speed more important.
-      config.concurrency = 1;
-    }
-
-    config.browsers = platformMap[platform];
   }
 };
 

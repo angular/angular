@@ -1,20 +1,23 @@
 #!/bin/bash
 
-TUNNEL_LOG="$LOGS_DIR/saucelabs-tunnel.log"
+tunnelTmpDir="/tmp/material-saucelabs"
+tunnelLogFile="${tunnelTmpDir}/saucelabs-connect.log"
+tunnelReadyFile="${tunnelTmpDir}/readyfile"
+
 WAIT_DELAY=30
 
 # Method that prints the logfile output of the saucelabs tunnel.
 printLog() {
-  echo "Logfile output of Saucelabs tunnel (${TUNNEL_LOG}):"
+  echo "Logfile output of Saucelabs tunnel (${tunnelLogFile}):"
   echo ""
-  cat ${TUNNEL_LOG}
+  cat ${tunnelLogFile}
 }
 
 # Wait for Saucelabs Connect to be ready before exiting
 # Time out if we wait for more than 2 minutes, so the process won't run forever.
 let "counter=0"
 
-while [ ! -f $BROWSER_PROVIDER_READY_FILE ]; do
+while [ ! -f ${tunnelReadyFile} ]; do
   let "counter++"
 
   # Counter needs to be multiplied by two because the while loop only sleeps a half second.
