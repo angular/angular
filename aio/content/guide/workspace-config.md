@@ -78,7 +78,7 @@ Each target object specifies the `builder` for that target, which is the npm pac
       }
 </code-example>
 
-* The `architect/build` section configures defaults for options of the `ng build` command. See [Build target]{#build-target} below for more information.
+* The `architect/build` section configures defaults for options of the `ng build` command. See [Build target](#build-target) below for more information.
 
 * The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command.  In addition to the options available for the `ng build` command, it adds options related to serving the app.
 
