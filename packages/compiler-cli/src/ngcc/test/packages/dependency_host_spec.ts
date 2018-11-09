@@ -58,6 +58,7 @@ describe('DependencyHost', () => {
           .and.callFake(
               (from: string, importPath: string) =>
                   importPath === 'missing' ? null : `RESOLVED/${importPath}`);
+      spyOn(host, 'tryResolve').and.callFake(() => null);
       const resolved = new Set();
       const missing = new Set();
       host.computeDependencies('/external/imports-missing.js', resolved, missing);
@@ -65,6 +66,20 @@ describe('DependencyHost', () => {
       expect(resolved.has('RESOLVED/path/to/x'));
       expect(missing.size).toBe(1);
       expect(missing.has('missing'));
+    });
+
+    it('should not register deep imports as missing', () => {
+      spyOn(host, 'tryResolveExternal')
+          .and.callFake(
+              (from: string, importPath: string) =>
+                  importPath === 'deep/import' ? null : `RESOLVED/${importPath}`);
+      spyOn(host, 'tryResolve')
+          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
+      const resolved = new Set();
+      const missing = new Set();
+      host.computeDependencies('/external/deep-import.js', resolved, missing);
+      expect(resolved.size).toBe(0);
+      expect(missing.size).toBe(0);
     });
 
     it('should recurse into internal dependencies', () => {
@@ -105,6 +120,7 @@ describe('DependencyHost', () => {
         '/external/imports.js': `import {X} from 'path/to/x';\nimport {Y} from 'path/to/y';`,
         '/external/re-exports.js': `export {X} from 'path/to/x';\nexport {Y} from 'path/to/y';`,
         '/external/imports-missing.js': `import {X} from 'path/to/x';\nimport {Y} from 'missing';`,
+        '/external/deep-import.js': `import {Y} from 'deep/import';`,
         '/internal/outer.js': `import {X} from './inner';`,
         '/internal/inner.js': `import {Y} from 'path/to/y';`,
         '/internal/circular-a.js': `import {B} from './circular-b'; import {X} from 'path/to/x';`,

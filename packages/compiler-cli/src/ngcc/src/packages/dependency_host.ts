@@ -55,7 +55,11 @@ export class DependencyHost {
             if (externalDependency !== null) {
               resolved.add(externalDependency);
             } else {
-              missing.add(importPath);
+              // If the import cannot be resolved at all, register it as missing dependency.
+              const resolvedFile = this.tryResolve(from, importPath);
+              if (resolvedFile === null) {
+                missing.add(importPath);
+              }
             }
           }
         });
