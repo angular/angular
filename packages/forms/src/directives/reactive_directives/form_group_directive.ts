@@ -254,9 +254,9 @@ export class FormGroupDirective extends ControlContainer implements Form,
         cleanUpControl(dir.control, dir);
         if (newCtrl && newCtrl instanceof FormControl) {
           setUpControl(newCtrl, dir);
-          dir.control = newCtrl;
+          (dir as{control: FormControl}).control = newCtrl;
         } else {
-          dir.control = null;
+          (dir as{control: FormControl}).control = null;
         }
       }
     });
