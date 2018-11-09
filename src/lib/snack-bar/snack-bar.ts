@@ -208,6 +208,10 @@ export class MatSnackBar implements OnDestroy {
       if (this._openedSnackBarRef == snackBarRef) {
         this._openedSnackBarRef = null;
       }
+
+      if (config.announcementMessage) {
+        this._live.clear();
+      }
     });
 
     if (this._openedSnackBarRef) {

@@ -60,6 +60,34 @@ describe('LiveAnnouncer', () => {
       expect(ariaLiveElement.getAttribute('aria-live')).toBe('polite');
     }));
 
+    it('should be able to clear out the aria-live element manually', fakeAsync(() => {
+      announcer.announce('Hey Google');
+      tick(100);
+      expect(ariaLiveElement.textContent).toBe('Hey Google');
+
+      announcer.clear();
+      expect(ariaLiveElement.textContent).toBeFalsy();
+    }));
+
+    it('should be able to clear out the aria-live element by setting a duration', fakeAsync(() => {
+      announcer.announce('Hey Google', 2000);
+      tick(100);
+      expect(ariaLiveElement.textContent).toBe('Hey Google');
+
+      tick(2000);
+      expect(ariaLiveElement.textContent).toBeFalsy();
+    }));
+
+    it('should clear the duration of previous messages when announcing a new one', fakeAsync(() => {
+      announcer.announce('Hey Google', 2000);
+      tick(100);
+      expect(ariaLiveElement.textContent).toBe('Hey Google');
+
+      announcer.announce('Hello there');
+      tick(2500);
+      expect(ariaLiveElement.textContent).toBe('Hello there');
+    }));
+
     it('should remove the aria-live element from the DOM on destroy', fakeAsync(() => {
       announcer.announce('Hey Google');
 

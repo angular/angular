@@ -47,15 +47,55 @@ export class LiveAnnouncer implements OnDestroy {
 
   /**
    * Announces a message to screenreaders.
-   * @param message Message to be announced to the screenreader
-   * @param politeness The politeness of the announcer element
+   * @param message Message to be announced to the screenreader.
    * @returns Promise that will be resolved when the message is added to the DOM.
    */
-  announce(message: string, politeness: AriaLivePoliteness = 'polite'): Promise<void> {
-    this._liveElement.textContent = '';
+  announce(message: string): Promise<void>;
+
+  /**
+   * Announces a message to screenreaders.
+   * @param message Message to be announced to the screenreader.
+   * @param politeness The politeness of the announcer element.
+   * @returns Promise that will be resolved when the message is added to the DOM.
+   */
+  announce(message: string, politeness?: AriaLivePoliteness): Promise<void>;
+
+  /**
+   * Announces a message to screenreaders.
+   * @param message Message to be announced to the screenreader.
+   * @param duration Time in milliseconds after which to clear out the announcer element. Note
+   *   that this takes effect after the message has been added to the DOM, which can be up to
+   *   100ms after `announce` has been called.
+   * @returns Promise that will be resolved when the message is added to the DOM.
+   */
+  announce(message: string, duration?: number): Promise<void>;
+
+  /**
+   * Announces a message to screenreaders.
+   * @param message Message to be announced to the screenreader.
+   * @param politeness The politeness of the announcer element.
+   * @param duration Time in milliseconds after which to clear out the announcer element. Note
+   *   that this takes effect after the message has been added to the DOM, which can be up to
+   *   100ms after `announce` has been called.
+   * @returns Promise that will be resolved when the message is added to the DOM.
+   */
+  announce(message: string, politeness?: AriaLivePoliteness, duration?: number): Promise<void>;
+
+  announce(message: string, ...args: any[]): Promise<void> {
+    let politeness: AriaLivePoliteness;
+    let duration: number;
+
+    if (args.length === 1 && typeof args[0] === 'number') {
+      duration = args[0];
+    } else {
+      [politeness, duration] = args;
+    }
+
+    this.clear();
+    clearTimeout(this._previousTimeout);
 
     // TODO: ensure changing the politeness works on all environments we support.
-    this._liveElement.setAttribute('aria-live', politeness);
+    this._liveElement.setAttribute('aria-live', politeness! || 'polite');
 
     // This 100ms timeout is necessary for some browser + screen-reader combinations:
     // - Both JAWS and NVDA over IE11 will not announce anything without a non-zero timeout.
@@ -68,9 +108,24 @@ export class LiveAnnouncer implements OnDestroy {
         this._previousTimeout = setTimeout(() => {
           this._liveElement.textContent = message;
           resolve();
+
+          if (typeof duration === 'number') {
+            this._previousTimeout = setTimeout(() => this.clear(), duration);
+          }
         }, 100);
       });
     });
+  }
+
+  /**
+   * Clears the current text from the announcer element. Can be used to prevent
+   * screen readers from reading the text out again while the user is going
+   * through the page landmarks.
+   */
+  clear() {
+    if (this._liveElement) {
+      this._liveElement.textContent = '';
+    }
   }
 
   ngOnDestroy() {
