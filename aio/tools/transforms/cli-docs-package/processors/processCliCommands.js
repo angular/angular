@@ -30,11 +30,6 @@ function processOptions(container, options) {
   container.namedOptions = [];
 
   options.forEach(option => {
-
-    if (option.type === 'boolean' && option.default === undefined) {
-      option.default = false;
-    }
-
     // Ignore any hidden options
     if (option.hidden) { return; }
 
