@@ -249,11 +249,15 @@ export class FormGroupDirective extends ControlContainer implements Form,
   /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
-      const newCtrl: any = this.form.get(dir.path);
+      const newCtrl = this.form.get(dir.path);
       if (dir.control !== newCtrl) {
         cleanUpControl(dir.control, dir);
-        if (newCtrl) setUpControl(newCtrl, dir);
-        (dir as{control: FormControl}).control = newCtrl;
+        if (newCtrl && newCtrl instanceof FormControl) {
+          setUpControl(newCtrl, dir);
+          dir.control = newCtrl;
+        } else {
+          dir.control = null;
+        }
       }
     });
 
