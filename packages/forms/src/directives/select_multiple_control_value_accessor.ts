@@ -82,7 +82,12 @@ abstract class HTMLCollection {
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
 export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+  /**
+   * @description
+   * The current value
+   */
   value: any;
+
   /** @internal */
   _optionMap: Map<string, NgSelectMultipleOption> = new Map<string, NgSelectMultipleOption>();
   /** @internal */
@@ -237,7 +242,7 @@ export class NgSelectMultipleOption implements OnDestroy {
 
   /**
    * @description
-   * Tracks the value bound to the option element. Unlike the value binding, 
+   * Tracks the value bound to the option element. Unlike the value binding,
    * ngValue supports binding to objects.
    */
   @Input('ngValue')
