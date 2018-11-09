@@ -3796,7 +3796,7 @@ The relevant *Crisis Center* code for this milestone follows.
 
   </code-pane>
 
-  <code-pane header="crisis-detail.component.html" path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.html">
+  <code-pane header="crisis-detail.component.ts" path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts">
 
   </code-pane>
 
