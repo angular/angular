@@ -209,7 +209,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const updateStatements = this._updateCodeFns.map((fn: () => o.Statement) => fn());
 
     //  Variable declaration must occur after binding resolution so we can generate context
-    //  instructions that build on each other. e.g. const b = x().$implicit(); const b = x();
+    //  instructions that build on each other.
+    // e.g. const b = nextContext().$implicit(); const b = nextContext();
     const creationVariables = this._bindingScope.viewSnapshotStatements();
     const updateVariables = this._bindingScope.variableDeclarations().concat(this._tempVariables);
 
@@ -1017,16 +1018,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const retrievalLevel = this.level;
       const lhs = o.variable(variableName);
       this._bindingScope.set(
-          retrievalLevel, reference.name, lhs, DeclarationPriority.DEFAULT,
-          (scope: BindingScope, relativeLevel: number) => {
-            // e.g. x(2);
+          retrievalLevel, reference.name, lhs,
+          DeclarationPriority.DEFAULT, (scope: BindingScope, relativeLevel: number) => {
+            // e.g. nextContext(2);
             const nextContextStmt =
                 relativeLevel > 0 ? [generateNextContextExpr(relativeLevel).toStmt()] : [];
 
-            // e.g. const $foo$ = r(1);
+            // e.g. const $foo$ = reference(1);
             const refExpr = lhs.set(o.importExpr(R3.reference).callFn([o.literal(slot)]));
             return nextContextStmt.concat(refExpr.toConstDecl());
-          });
+          }, true);
       return [reference.name, reference.value];
     }));
 
@@ -1201,13 +1202,14 @@ export type DeclareLocalVarCallback = (scope: BindingScope, relativeLevel: numbe
 const SHARED_CONTEXT_KEY = '$$shared_ctx$$';
 
 /**
- * This is used when one refers to variable such as: 'let abc = x(2).$implicit`.
+ * This is used when one refers to variable such as: 'let abc = nextContext(2).$implicit`.
  * - key to the map is the string literal `"abc"`.
  * - value `retrievalLevel` is the level from which this value can be retrieved, which is 2 levels
  * up in example.
  * - value `lhs` is the left hand side which is an AST representing `abc`.
  * - value `declareLocalCallback` is a callback that is invoked when declaring the local.
  * - value `declare` is true if this value needs to be declared.
+ * - value `localRef` is true if we are storing a local reference
  * - value `priority` dictates the sorting priority of this var declaration compared
  * to other var declarations on the same retrieval level. For example, if there is a
  * context variable and a local ref accessing the same parent view, the context var
@@ -1217,6 +1219,7 @@ type BindingData = {
   retrievalLevel: number; lhs: o.ReadVarExpr; declareLocalCallback?: DeclareLocalVarCallback;
   declare: boolean;
   priority: number;
+  localRef: boolean;
 };
 
 /**
@@ -1253,14 +1256,15 @@ export class BindingScope implements LocalResolver {
             lhs: value.lhs,
             declareLocalCallback: value.declareLocalCallback,
             declare: false,
-            priority: value.priority
+            priority: value.priority,
+            localRef: value.localRef
           };
 
           // Cache the value locally.
           this.map.set(name, value);
           // Possibly generate a shared context var
           this.maybeGenerateSharedContextVar(value);
-          this.maybeRestoreView(value.retrievalLevel);
+          this.maybeRestoreView(value.retrievalLevel, value.localRef);
         }
 
         if (value.declareLocalCallback && !value.declare) {
@@ -1286,10 +1290,11 @@ export class BindingScope implements LocalResolver {
    * @param lhs AST representing the left hand side of the `let lhs = rhs;`.
    * @param priority The sorting priority of this var
    * @param declareLocalCallback The callback to invoke when declaring this local var
+   * @param localRef Whether or not this is a local ref
    */
   set(retrievalLevel: number, name: string, lhs: o.ReadVarExpr,
       priority: number = DeclarationPriority.DEFAULT,
-      declareLocalCallback?: DeclareLocalVarCallback): BindingScope {
+      declareLocalCallback?: DeclareLocalVarCallback, localRef?: true): BindingScope {
     !this.map.has(name) ||
         error(`The name ${name} is already defined in scope to be ${this.map.get(name)}`);
     this.map.set(name, {
@@ -1297,7 +1302,8 @@ export class BindingScope implements LocalResolver {
       lhs: lhs,
       declare: false,
       declareLocalCallback: declareLocalCallback,
-      priority: priority
+      priority: priority,
+      localRef: localRef || false
     });
     return this;
   }
@@ -1332,25 +1338,31 @@ export class BindingScope implements LocalResolver {
       retrievalLevel: retrievalLevel,
       lhs: lhs,
       declareLocalCallback: (scope: BindingScope, relativeLevel: number) => {
-        // const ctx_r0 = x(2);
+        // const ctx_r0 = nextContext(2);
         return [lhs.set(generateNextContextExpr(relativeLevel)).toConstDecl()];
       },
       declare: false,
-      priority: DeclarationPriority.SHARED_CONTEXT
+      priority: DeclarationPriority.SHARED_CONTEXT,
+      localRef: false
     });
   }
 
   getComponentProperty(name: string): o.Expression {
     const componentValue = this.map.get(SHARED_CONTEXT_KEY + 0) !;
     componentValue.declare = true;
-    this.maybeRestoreView(0);
+    this.maybeRestoreView(0, false);
     return componentValue.lhs.prop(name);
   }
 
-  maybeRestoreView(retrievalLevel: number) {
-    if (this.isListenerScope() && retrievalLevel < this.bindingLevel) {
+  maybeRestoreView(retrievalLevel: number, localRefLookup: boolean) {
+    // We want to restore the current view in listener fns if:
+    // 1 - we are accessing a value in a parent view, which requires walking the view tree rather
+    // than using the ctx arg. In this case, the retrieval and binding level will be different.
+    // 2 - we are looking up a local ref, which requires restoring the view where the local
+    // ref is stored
+    if (this.isListenerScope() && (retrievalLevel < this.bindingLevel || localRefLookup)) {
       if (!this.parent !.restoreViewVariable) {
-        // parent saves variable to generate a shared `const $s$ = gV();` instruction
+        // parent saves variable to generate a shared `const $s$ = getCurrentView();` instruction
         this.parent !.restoreViewVariable = o.variable(this.parent !.freshReferenceName());
       }
       this.restoreViewVariable = this.parent !.restoreViewVariable;
@@ -1358,14 +1370,14 @@ export class BindingScope implements LocalResolver {
   }
 
   restoreViewStatement(): o.Statement[] {
-    // rV($state$);
+    // restoreView($state$);
     return this.restoreViewVariable ?
         [instruction(null, R3.restoreView, [this.restoreViewVariable]).toStmt()] :
         [];
   }
 
   viewSnapshotStatements(): o.Statement[] {
-    // const $state$ = gV();
+    // const $state$ = getCurrentView();
     const getCurrentViewInstruction = instruction(null, R3.getCurrentView, []);
     return this.restoreViewVariable ?
         [this.restoreViewVariable.set(getCurrentViewInstruction).toConstDecl()] :

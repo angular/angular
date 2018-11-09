@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind, defineComponent, defineDirective, markDirty, textBinding} from '../../src/render3/index';
+import {bind, defineComponent, defineDirective, markDirty, reference, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {getCurrentView, restoreView} from '../../src/render3/state';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, renderToHtml, requestAnimationFrame} from './render_util';
+import {ComponentFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, requestAnimationFrame} from './render_util';
 
 
 describe('event listeners', () => {
@@ -721,6 +722,56 @@ describe('event listeners', () => {
     expect(ctx.counter1).toEqual(1);
     expect(ctx.counter2).toEqual(1);
 
+  });
+
+  it('should support local refs in listeners', () => {
+    let compInstance: any;
+
+    const Comp = createComponent('comp', (rf: RenderFlags, ctx: any) => {});
+
+    /**
+     * <comp #comp></comp>
+     * <button (click)="onClick(comp)"></button>
+     */
+    class App {
+      comp: any = null;
+
+      onClick(comp: any) { this.comp = comp; }
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        consts: 3,
+        vars: 0,
+        template: (rf: RenderFlags, ctx: App) => {
+          if (rf & RenderFlags.Create) {
+            const state = getCurrentView();
+            element(0, 'comp', null, ['comp', '']);
+            elementStart(2, 'button');
+            {
+              listener('click', function() {
+                restoreView(state);
+                const comp = reference(1);
+                return ctx.onClick(comp);
+              });
+            }
+            elementEnd();
+          }
+
+          // testing only
+          compInstance = getDirectiveOnNode(0);
+        },
+        directives: [Comp]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.component.comp).toEqual(null);
+
+    const button = fixture.hostElement.querySelector('button') as HTMLButtonElement;
+    button.click();
+    expect(fixture.component.comp).toEqual(compInstance);
   });
 
 });
