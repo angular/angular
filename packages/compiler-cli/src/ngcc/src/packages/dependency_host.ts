@@ -17,12 +17,10 @@ export class DependencyHost {
   /**
    * Get a list of the resolved paths to all the dependencies of this entry point.
    * @param from An absolute path to the file whose dependencies we want to get.
-   * @param resolved A set that will have the resolved dependencies added to it.
+   * @param resolved A set that will have the absolute paths of resolved entry points added to it.
    * @param missing A set that will have the dependencies that could not be found added to it.
    * @param internal A set that is used to track internal dependencies to prevent getting stuck in a
    * circular dependency loop.
-   * @returns an object containing an array of absolute paths to `resolved` depenendencies and an
-   * array of import specifiers for dependencies that were `missing`.
    */
   computeDependencies(
       from: string, resolved: Set<string>, missing: Set<string>,
@@ -51,9 +49,9 @@ export class DependencyHost {
               this.computeDependencies(internalDependency, resolved, missing, internal);
             }
           } else {
-            const externalDependency = this.tryResolveExternal(from, importPath);
-            if (externalDependency !== null) {
-              resolved.add(externalDependency);
+            const resolvedEntryPoint = this.tryResolveEntryPoint(from, importPath);
+            if (resolvedEntryPoint !== null) {
+              resolved.add(resolvedEntryPoint);
             } else {
               // If the import cannot be resolved at all, register it as missing dependency.
               const resolvedFile = this.tryResolve(from, importPath);
@@ -95,9 +93,9 @@ export class DependencyHost {
    * @returns the resolved path to the entry point directory of the import or null
    * if it cannot be resolved.
    */
-  tryResolveExternal(from: string, to: string): string|null {
-    const externalDependency = this.tryResolve(from, `${to}/package.json`);
-    return externalDependency && path.dirname(externalDependency);
+  tryResolveEntryPoint(from: string, to: string): string|null {
+    const entryPoint = this.tryResolve(from, `${to}/package.json`);
+    return entryPoint && path.dirname(entryPoint);
   }
 
   /**

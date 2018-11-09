@@ -32,7 +32,7 @@ describe('DependencyHost', () => {
        });
 
     it('should resolve all the external imports of the source file', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
@@ -43,7 +43,7 @@ describe('DependencyHost', () => {
     });
 
     it('should resolve all the external re-exports of the source file', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
@@ -54,7 +54,7 @@ describe('DependencyHost', () => {
     });
 
     it('should capture missing external imports', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake(
               (from: string, importPath: string) =>
                   importPath === 'missing' ? null : `RESOLVED/${importPath}`);
@@ -69,7 +69,7 @@ describe('DependencyHost', () => {
     });
 
     it('should not register deep imports as missing', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake(
               (from: string, importPath: string) =>
                   importPath === 'deep/import' ? null : `RESOLVED/${importPath}`);
@@ -86,7 +86,7 @@ describe('DependencyHost', () => {
       spyOn(host, 'resolveInternal')
           .and.callFake(
               (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const getDependenciesSpy = spyOn(host, 'computeDependencies').and.callThrough();
       const resolved = new Set();
@@ -104,7 +104,7 @@ describe('DependencyHost', () => {
       spyOn(host, 'resolveInternal')
           .and.callFake(
               (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
@@ -147,18 +147,18 @@ describe('DependencyHost', () => {
   describe('tryResolveExternal', () => {
     it('should call `tryResolve`, appending `package.json` to the target path', () => {
       const tryResolveSpy = spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH');
+      host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH');
       expect(tryResolveSpy).toHaveBeenCalledWith('SOURCE_PATH', 'TARGET_PATH/package.json');
     });
 
     it('should return the directory containing the result from `tryResolve', () => {
       spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      expect(host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH')).toEqual('PATH/TO');
+      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual('PATH/TO');
     });
 
     it('should return null if `tryResolve` returns null', () => {
       spyOn(host, 'tryResolve').and.returnValue(null);
-      expect(host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH')).toEqual(null);
+      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual(null);
     });
   });
 
