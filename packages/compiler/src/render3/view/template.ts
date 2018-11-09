@@ -13,6 +13,7 @@ import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
+import * as i18n from '../../i18n/i18n_ast';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
@@ -32,9 +33,9 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling';
 import {I18nContext} from './i18n/context';
-import {I18nMeta, I18nMetaVisitor} from './i18n/meta';
+import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
-import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, isI18nRootNode, isSingleI18nIcu, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
+import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
@@ -155,7 +156,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], hasNgContent: boolean = false,
-      ngContentSelectors: string[] = [], i18n?: I18nMeta): o.FunctionExpr {
+      ngContentSelectors: string[] = [], i18n?: i18n.AST): o.FunctionExpr {
     if (this._namespace !== R3.namespaceHTML) {
       this.creationInstruction(null, this._namespace);
     }
@@ -184,9 +185,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // - or the template has i18n meta associated with it,
     //   but it's not initiated by the Element (e.g. <ng-template i18n>)
     const initI18nContext = this.i18nContext ||
-        (isI18nRootNode(i18n) &&
-         !(this.isSingleElementTemplate(nodes) && (nodes[0] as t.Element).i18n === i18n));
-    const selfClosingI18nInstruction = this.hasTextChildrenOnly(nodes);
+        (isI18nRootNode(i18n) && !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
+    const selfClosingI18nInstruction = hasTextChildrenOnly(nodes);
     if (initI18nContext) {
       this.i18nStart(null, i18n !, selfClosingI18nInstruction);
     }
@@ -253,19 +253,21 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   getLocal(name: string): o.Expression|null { return this._bindingScope.get(name); }
 
   i18nTranslate(
-      content: string, meta: I18nMeta, params: {[name: string]: o.Expression} = {},
-      ref?: o.ReadVarExpr, transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Expression {
+      message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
+      transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Expression {
     const _ref = ref || this.i18nAllocateRef();
     const _params: {[key: string]: any} = {};
     if (params && Object.keys(params).length) {
       Object.keys(params).forEach(key => _params[formatI18nPlaceholderName(key)] = params[key]);
     }
+    const meta = metaFromI18nMessage(message);
+    const content = getSerializedI18nContent(message);
     const statements = getTranslationDeclStmts(_ref, content, meta, _params, transformFn);
     this.constantPool.statements.push(...statements);
     return _ref;
   }
 
-  i18nAppendBindings(expressions: any[]) {
+  i18nAppendBindings(expressions: AST[]) {
     if (!this.i18n || !expressions.length) return;
     const implicit = o.variable(CONTEXT_NAME);
     expressions.forEach(expression => {
@@ -284,8 +286,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const value = prop.value.visit(this._valueConverter);
         if (value instanceof Interpolation) {
           const {strings, expressions} = value;
-          const label =
-              assembleI18nBoundString(strings, this.i18n !.getBindings().size, this.i18n !.getId());
+          const {id, bindings} = this.i18n !;
+          const label = assembleI18nBoundString(strings, bindings.size, id);
           this.i18nAppendBindings(expressions);
           bound[key] = o.literal(label);
         }
@@ -300,10 +302,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nUpdateRef(context: I18nContext): void {
-    if (context.isRoot() && context.isResolved() && !isSingleI18nIcu(context.getMeta())) {
-      const icus = context.getIcus();
-      const meta = context.getMeta();
-      const placeholders = context.getPlaceholders();
+    const {icus, meta, isRoot, isResolved} = context;
+    if (isRoot && isResolved && !isSingleI18nIcu(meta)) {
+      const placeholders = context.getSerializedPlaceholders();
       let icuMapping: {[name: string]: o.Expression} = {};
       let params: {[name: string]: o.Expression} =
           placeholders.size ? placeholdersToParams(placeholders) : {};
@@ -322,7 +323,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
         });
       }
-      const content = getSerializedI18nContent(meta);
 
       // translation requires post processing in 2 cases:
       // - if we have placeholders with multiple values (ex. `START_DIV`: [�#1�, �#2�, ...])
@@ -341,11 +341,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           return instruction(null, R3.i18nPostprocess, args);
         };
       }
-      this.i18nTranslate(content, meta, params, context.getRef(), transformFn);
+      this.i18nTranslate(meta as i18n.Message, params, context.ref, transformFn);
     }
   }
 
-  i18nStart(span: ParseSourceSpan|null = null, meta: I18nMeta, selfClosing?: boolean): void {
+  i18nStart(span: ParseSourceSpan|null = null, meta: i18n.AST, selfClosing?: boolean): void {
     const index = this.allocateDataSlot();
     if (this.i18nContext) {
       this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !, meta);
@@ -355,45 +355,38 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // generate i18nStart instruction
-    const params: o.Expression[] = [o.literal(index), this.i18n.getRef()];
-    if (this.i18n.getId() > 0) {
+    const {id, ref} = this.i18n;
+    const params: o.Expression[] = [o.literal(index), ref];
+    if (id > 0) {
       // do not push 3rd argument (sub-block id)
       // into i18nStart call for top level i18n context
-      params.push(o.literal(this.i18n.getId()));
+      params.push(o.literal(id));
     }
     this.creationInstruction(span, selfClosing ? R3.i18n : R3.i18nStart, params);
   }
 
   i18nEnd(span: ParseSourceSpan|null = null, selfClosing?: boolean): void {
+    if (!this.i18n) {
+      throw new Error('i18nEnd is executed with no i18n context present');
+    }
+
     if (this.i18nContext) {
-      this.i18nContext.reconcileChildContext(this.i18n !);
+      this.i18nContext.reconcileChildContext(this.i18n);
       this.i18nUpdateRef(this.i18nContext);
     } else {
-      this.i18nUpdateRef(this.i18n !);
+      this.i18nUpdateRef(this.i18n);
     }
 
     // setup accumulated bindings
-    const bindings = this.i18n !.getBindings();
+    const {index, bindings} = this.i18n;
     if (bindings.size) {
-      bindings.forEach(binding => { this.updateInstruction(span, R3.i18nExp, [binding]); });
-      const index: o.Expression = o.literal(this.i18n !.getIndex());
-      this.updateInstruction(span, R3.i18nApply, [index]);
+      bindings.forEach(binding => this.updateInstruction(span, R3.i18nExp, [binding]));
+      this.updateInstruction(span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {
       this.creationInstruction(span, R3.i18nEnd);
     }
     this.i18n = null;  // reset local i18n context
-  }
-
-  isSingleElementTemplate(children: t.Node[]): boolean {
-    return children.length === 1 && children[0] instanceof t.Element;
-  }
-
-  hasTextChildrenOnly(children: t.Node[]): boolean {
-    return !children.find(
-        child =>
-            !(child instanceof t.Text || child instanceof t.BoundText ||
-              child instanceof t.Expansion));
   }
 
   visitContent(ngContent: t.Content) {
@@ -520,14 +513,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const implicit = o.variable(CONTEXT_NAME);
 
     if (this.i18n) {
-      this.i18n.appendElement(element, elementIndex);
+      this.i18n.appendElement(element.i18n !, elementIndex);
     }
 
     const hasChildren = () => {
       if (!isI18nRootElement && this.i18n) {
         // we do not append text node instructions and ICUs inside i18n section,
         // so we exclude them while calculating whether current element has children
-        return !this.hasTextChildrenOnly(element.children);
+        return !hasTextChildrenOnly(element.children);
       }
       return element.children.length > 0;
     };
@@ -536,7 +529,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         !isNgContainer && element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
 
     const createSelfClosingI18nInstruction =
-        !createSelfClosingInstruction && this.hasTextChildrenOnly(element.children);
+        !createSelfClosingInstruction && hasTextChildrenOnly(element.children);
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
@@ -558,16 +551,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         let hasBindings: boolean = false;
         const i18nAttrArgs: o.Expression[] = [];
         i18nAttrs.forEach(attr => {
-          const meta = attr.i18n !;
+          const message = attr.i18n !as i18n.Message;
           if (attr instanceof t.TextAttribute) {
-            i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(attr.value, meta));
+            i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message));
           } else {
             const converted = attr.value.visit(this._valueConverter);
             if (converted instanceof Interpolation) {
-              const label = getSerializedI18nContent(meta);
-              const placeholders = assembleBoundTextPlaceholders(meta);
+              const placeholders = assembleBoundTextPlaceholders(message);
               const params = placeholdersToParams(placeholders);
-              i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(label, meta, params));
+              i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message, params));
               converted.expressions.forEach(expression => {
                 hasBindings = true;
                 const binding = this.convertExpressionBinding(implicit, expression);
@@ -641,7 +633,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     t.visitAll(this, element.children);
 
     if (!isI18nRootElement && this.i18n) {
-      this.i18n.appendElement(element, elementIndex, true);
+      this.i18n.appendElement(element.i18n !, elementIndex, true);
     }
 
     if (!createSelfClosingInstruction) {
@@ -661,13 +653,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateIndex = this.allocateDataSlot();
 
     if (this.i18n) {
-      this.i18n.appendTemplate(template, templateIndex);
+      this.i18n.appendTemplate(template.i18n !, templateIndex);
     }
 
     let elName = '';
-    if (this.isSingleElementTemplate(template.children)) {
+    if (isSingleElementTemplate(template.children)) {
       // When the template as a single child, derive the context name from the tag
-      elName = sanitizeIdentifier((template.children[0] as t.Element).name);
+      elName = sanitizeIdentifier(template.children[0].name);
     }
 
     const contextName = elName ? `${this.contextName}_${elName}` : '';
@@ -753,7 +745,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18n) {
       const value = text.value.visit(this._valueConverter);
       if (value instanceof Interpolation) {
-        this.i18n.appendBoundText(text);
+        this.i18n.appendBoundText(text.i18n !);
         this.i18nAppendBindings(value.expressions);
       }
       return;
@@ -780,25 +772,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  visitExpansion(expansion: t.Expansion) {
+  visitIcu(icu: t.Icu) {
     if (this.i18n) {
-      const vars = this.i18nBindProps(expansion.vars);
-      const placeholders = this.i18nBindProps(expansion.placeholders);
+      const vars = this.i18nBindProps(icu.vars);
+      const placeholders = this.i18nBindProps(icu.placeholders);
 
       // output ICU directly and keep ICU reference in context
-      const meta = expansion.i18n !;
-      const content = getSerializedI18nContent(meta);
+      const message = icu.i18n !as i18n.Message;
       const transformFn = (raw: o.ReadVarExpr) =>
           instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars)]);
 
       // in case the whole i18n message is a single ICU - we do not need to
       // create a separate top-level translation, we can use the root ref instead
       // and make this ICU a top-level translation
-      if (isSingleI18nIcu(this.i18n.getMeta())) {
-        this.i18nTranslate(content, meta, placeholders, this.i18n.getRef(), transformFn);
+      if (isSingleI18nIcu(this.i18n.meta)) {
+        this.i18nTranslate(message, placeholders, this.i18n.ref, transformFn);
       } else {
-        const ref = this.i18nTranslate(content, meta, placeholders, undefined, transformFn);
-        this.i18n.appendIcu(expansion, ref);
+        const ref = this.i18nTranslate(message, placeholders, undefined, transformFn);
+        this.i18n.appendIcu(icuFromI18nMessage(message).name, ref);
       }
     }
     return null;
@@ -1465,4 +1456,14 @@ function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityCo
 
 function prepareSyntheticAttributeName(name: string) {
   return '@' + name;
+}
+
+function isSingleElementTemplate(children: t.Node[]): children is[t.Element] {
+  return children.length === 1 && children[0] instanceof t.Element;
+}
+
+function hasTextChildrenOnly(children: t.Node[]): boolean {
+  return !children.find(
+      child =>
+          !(child instanceof t.Text || child instanceof t.BoundText || child instanceof t.Icu));
 }

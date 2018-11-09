@@ -77,7 +77,7 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
 
-  visitExpansion(expansion: t.Expansion) { return null; }
+  visitIcu(icu: t.Icu) { return null; }
 
   private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
 }

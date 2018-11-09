@@ -13,15 +13,11 @@ import * as html from '../../../ml_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../../../ml_parser/parser';
 
-import {I18N_ATTR, I18N_ATTR_PREFIX, hasI18nAttrs, parseI18nMeta} from './util';
+import {I18N_ATTR, I18N_ATTR_PREFIX, I18nMeta, hasI18nAttrs, icuFromI18nMessage, metaFromI18nMessage, parseI18nMeta} from './util';
 
-
-export type I18nMeta = {
-  id?: string,
-  description?: string,
-  meaning?: string,
-  ast?: any,
-};
+function setI18nRefs(html: html.Node & {i18n: i18n.AST}, i18n: i18n.Node) {
+  html.i18n = i18n;
+}
 
 /**
  * This visitor walks over HTML parse tree and converts information stored in
@@ -34,20 +30,18 @@ export class I18nMetaVisitor implements html.Visitor {
 
   constructor(private config: {keepI18nAttrs: boolean}) {}
 
-  private _setI18nRefs(html: any, i18n: i18n.Node) {
-    html.i18n = html.i18n || {};
-    html.i18n.ast = i18n;
-  }
-
-  private _generateI18nMeta(nodes: html.Node[], meta: string|I18nMeta = '', visitNodeFn?: any) {
-    const parsed = typeof meta !== 'string' ? meta : parseI18nMeta(meta);
-    parsed.ast = this._createI18nMessage(
-        nodes, parsed.meaning || '', parsed.description || '', '', visitNodeFn);
-    if (!parsed.id) {
+  private _generateI18nMessage(
+      nodes: html.Node[], meta: string|i18n.AST = '',
+      visitNodeFn?: (html: html.Node, i18n: i18n.Node) => void): i18n.Message {
+    const parsed: I18nMeta =
+        typeof meta === 'string' ? parseI18nMeta(meta) : metaFromI18nMessage(meta as i18n.Message);
+    const message = this._createI18nMessage(
+        nodes, parsed.meaning || '', parsed.description || '', parsed.id || '', visitNodeFn);
+    if (!message.id) {
       // generate (or restore) message id if not specified in template
-      parsed.id = typeof meta !== 'string' && meta.id || decimalDigest(parsed.ast);
+      message.id = typeof meta !== 'string' && (meta as i18n.Message).id || decimalDigest(message);
     }
-    return parsed;
+    return message;
   }
 
   visitElement(element: html.Element, context: any): any {
@@ -59,10 +53,10 @@ export class I18nMetaVisitor implements html.Visitor {
         if (attr.name === I18N_ATTR) {
           // root 'i18n' node attribute
           const i18n = element.i18n || attr.value;
-          const meta = this._generateI18nMeta(element.children, i18n, this._setI18nRefs);
+          const message = this._generateI18nMessage(element.children, i18n, setI18nRefs);
           // do not assign empty i18n meta
-          if (meta.ast.nodes.length) {
-            element.i18n = meta;
+          if (message.nodes.length) {
+            element.i18n = message;
           }
 
         } else if (attr.name.startsWith(I18N_ATTR_PREFIX)) {
@@ -80,8 +74,9 @@ export class I18nMetaVisitor implements html.Visitor {
       if (Object.keys(attrsMeta).length) {
         for (const attr of attrs) {
           const meta = attrsMeta[attr.name];
+          // do not create translation for empty attributes
           if (meta !== undefined && attr.value) {
-            attr.i18n = this._generateI18nMeta([attr], attr.i18n || meta);
+            attr.i18n = this._generateI18nMessage([attr], attr.i18n || meta);
           }
         }
       }
@@ -97,13 +92,26 @@ export class I18nMetaVisitor implements html.Visitor {
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    const i18n = expansion.i18n !;
-    const name = i18n.ast.name;
-    const meta = this._generateI18nMeta([expansion], i18n);
-    // restore ICU placeholder name (e.g. "ICU_1"),
-    // generated while processing root element contents
-    meta.ast.name = name;
-    expansion.i18n = meta;
+    const meta = expansion.i18n;
+    // do not generate i18n meta in case this Icu
+    // was defined outside of i18n block in a template
+    if (!meta) {
+      return null;
+    }
+    let message;
+    if (meta instanceof i18n.IcuPlaceholder) {
+      // set ICU placeholder name (e.g. "ICU_1"),
+      // generated while processing root element contents,
+      // so we can reference it when we output translation
+      const name = meta.name;
+      message = this._generateI18nMessage([expansion], meta);
+      const icu = icuFromI18nMessage(message);
+      icu.name = name;
+    } else {
+      // when ICU is a root level translation
+      message = this._generateI18nMessage([expansion], meta);
+    }
+    expansion.i18n = message;
     return expansion;
   }
 

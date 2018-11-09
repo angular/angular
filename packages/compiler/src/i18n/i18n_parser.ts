@@ -44,8 +44,7 @@ class _I18nVisitor implements html.Visitor {
   private _placeholderToContent !: {[phName: string]: string};
   // TODO(issue/24571): remove '!'.
   private _placeholderToMessage !: {[phName: string]: i18n.Message};
-  // TODO(issue/24571): remove '!'.
-  private _visitNodeFn !: VisitNodeFn | undefined;
+  private _visitNodeFn: VisitNodeFn|undefined;
 
   constructor(
       private _expressionParser: ExpressionParser,
@@ -114,8 +113,7 @@ class _I18nVisitor implements html.Visitor {
   visitExpansion(icu: html.Expansion, context: any): i18n.Node {
     this._icuDepth++;
     const i18nIcuCases: {[k: string]: i18n.Node} = {};
-    const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
-    const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan, phName);
+    const i18nIcu = new i18n.Icu(icu.switchValue, icu.type, i18nIcuCases, icu.sourceSpan);
     icu.cases.forEach((caze): void => {
       i18nIcuCases[caze.value] = new i18n.Container(
           caze.expression.map((node) => node.visit(this, {})), caze.expSourceSpan);
@@ -137,6 +135,7 @@ class _I18nVisitor implements html.Visitor {
     // translations. We need to create a new visitor (they are not re-entrant) to compute the
     // message id.
     // TODO(vicb): add a html.Node -> i18n.Message cache to avoid having to re-create the msg
+    const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
     const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
     this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '');
     const node = new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);

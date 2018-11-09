@@ -7,10 +7,9 @@
  */
 
 import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
-import {createI18nMessageFactory} from '../i18n/i18n_parser';
+import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import {isNgTemplate} from '../ml_parser/tags';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
@@ -19,7 +18,6 @@ import {PreparsedElementType, preparseElement} from '../template_parser/template
 import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
-import {I18nMeta} from './view/i18n/meta';
 import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
 const BIND_NAME_REGEXP =
@@ -87,8 +85,6 @@ class HtmlAstToIvyAst implements html.Visitor {
   ngContentSelectors: string[] = [];
   // Any `<ng-content>` in the template ?
   hasNgContent = false;
-  // i18n message generation factory
-  createI18nMessage = createI18nMessageFactory(DEFAULT_INTERPOLATION_CONFIG);
 
   constructor(private bindingParser: BindingParser) {}
 
@@ -117,7 +113,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
-    const i18nAttrsMeta: {[key: string]: I18nMeta} = {};
+    const i18nAttrsMeta: {[key: string]: i18n.AST} = {};
 
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
@@ -219,15 +215,20 @@ class HtmlAstToIvyAst implements html.Visitor {
     return this._visitTextWithInterpolation(text.value, text.sourceSpan, text.i18n);
   }
 
-  visitExpansion(expansion: html.Expansion): t.Expansion {
-    const i18n = expansion.i18n !;
+  visitExpansion(expansion: html.Expansion): t.Icu|null {
+    const meta = expansion.i18n as i18n.Message;
+    // do not generate Icu in case it was created
+    // outside of i18n block in a template
+    if (!meta) {
+      return null;
+    }
     const vars: {[name: string]: t.BoundText} = {};
     const placeholders: {[name: string]: t.Text | t.BoundText} = {};
     // extract VARs from ICUs - we process them separately while
     // assembling resulting message via goog.getMsg function, since
     // we need to pass them to top-level goog.getMsg call
-    Object.keys(i18n.ast.placeholders).forEach(key => {
-      const value = i18n.ast.placeholders[key];
+    Object.keys(meta.placeholders).forEach(key => {
+      const value = meta.placeholders[key];
       if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
         vars[key] =
             this._visitTextWithInterpolation(`{{${value}}}`, expansion.sourceSpan) as t.BoundText;
@@ -235,7 +236,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         placeholders[key] = this._visitTextWithInterpolation(value, expansion.sourceSpan);
       }
     });
-    return new t.Expansion(vars, placeholders, expansion.sourceSpan, i18n);
+    return new t.Icu(vars, placeholders, expansion.sourceSpan, meta);
   }
 
   visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
@@ -244,7 +245,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
-      elementName: string, properties: ParsedProperty[], i18nPropsMeta: {[key: string]: I18nMeta}):
+      elementName: string, properties: ParsedProperty[], i18nPropsMeta: {[key: string]: i18n.AST}):
       {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
     const bound: t.BoundAttribute[] = [];
     const literal: t.TextAttribute[] = [];
@@ -332,7 +333,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     return hasBinding;
   }
 
-  private _visitTextWithInterpolation(value: string, sourceSpan: ParseSourceSpan, i18n?: I18nMeta):
+  private _visitTextWithInterpolation(value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.AST):
       t.Text|t.BoundText {
     const valueNoNgsp = replaceNgsp(value);
     const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan);

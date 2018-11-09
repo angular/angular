@@ -7,8 +7,8 @@
  */
 
 import {AstPath} from '../ast_path';
+import {AST as I18nAST} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
-import {I18nMeta} from '../render3/view/i18n/meta';
 
 export interface Node {
   sourceSpan: ParseSourceSpan;
@@ -16,7 +16,7 @@ export interface Node {
 }
 
 export class Text implements Node {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
+  constructor(public value: string, public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitText(this, context); }
 }
 
@@ -24,7 +24,7 @@ export class Expansion implements Node {
   constructor(
       public switchValue: string, public type: string, public cases: ExpansionCase[],
       public sourceSpan: ParseSourceSpan, public switchValueSourceSpan: ParseSourceSpan,
-      public i18n?: I18nMeta) {}
+      public i18n?: I18nAST) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitExpansion(this, context); }
 }
 
@@ -39,7 +39,7 @@ export class ExpansionCase implements Node {
 export class Attribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
-      public valueSpan?: ParseSourceSpan, public i18n?: I18nMeta) {}
+      public valueSpan?: ParseSourceSpan, public i18n?: I18nAST) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitAttribute(this, context); }
 }
 
@@ -47,7 +47,7 @@ export class Element implements Node {
   constructor(
       public name: string, public attrs: Attribute[], public children: Node[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null = null,
-      public endSourceSpan: ParseSourceSpan|null = null, public i18n?: I18nMeta) {}
+      public endSourceSpan: ParseSourceSpan|null = null, public i18n?: I18nAST) {}
   visit(visitor: Visitor, context: any): any { return visitor.visitElement(this, context); }
 }
 

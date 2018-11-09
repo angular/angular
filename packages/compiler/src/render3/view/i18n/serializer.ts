@@ -8,7 +8,6 @@
 
 import * as i18n from '../../../i18n/i18n_ast';
 
-import {I18nMeta} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 const formatPh = (value: string): string => `{$${formatI18nPlaceholderName(value)}}`;
@@ -47,6 +46,6 @@ function serializeNodes(nodes: i18n.Node[]): string[] {
   return nodes.map(node => node.visit(serializerVisitor, null));
 }
 
-export function getSerializedI18nContent(meta?: I18nMeta): string {
-  return meta && meta.ast instanceof i18n.Message ? serializeNodes(meta.ast.nodes).join('') : '';
+export function getSerializedI18nContent(message: i18n.Message): string {
+  return serializeNodes(message.nodes).join('');
 }

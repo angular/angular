@@ -101,6 +101,7 @@ describe('i18n support in the view compiler', () => {
         <div i18n-title="meaningD|descD" title="Title D">Content D</div>
         <div i18n-title="meaningE@@idE" title="Title E">Content E</div>
         <div i18n-title="@@idF" title="Title F">Content F</div>
+        <div i18n-title="[BACKUP_MESSAGE_ID:idG]desc@@idF" title="Title G">Content G</div>
       `;
 
       const output = `
@@ -136,6 +137,11 @@ describe('i18n support in the view compiler', () => {
          */
         const $MSG_APP_SPEC_TS_9$ = goog.getMsg("Title F");
         const $_c10$ = ["title", $MSG_APP_SPEC_TS_9$];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:idG]desc
+         */
+        const $MSG_APP_SPEC_TS_11$ = goog.getMsg("Title G");
+        const $_c12$ = ["title", $MSG_APP_SPEC_TS_11$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -161,6 +167,10 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementStart(14, "div");
             $r3$.ɵi18nAttributes(15, $_c10$);
             $r3$.ɵtext(16, "Content F");
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(17, "div");
+            $r3$.ɵi18nAttributes(18, $_c12$);
+            $r3$.ɵtext(19, "Content G");
             $r3$.ɵelementEnd();
           }
         }
@@ -536,6 +546,33 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementStart(8, "div");
             $r3$.ɵi18n(9, $MSG_APP_SPEC_TS_2$);
             $r3$.ɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should support named interpolations', () => {
+      const input = `
+        <div i18n>Some value: {{ valueA // i18n(ph="PH_A") }}</div>
+      `;
+
+      const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:2817319788724342848]
+         */
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", { phA: "\uFFFD0\uFFFD" });
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
+            $r3$.ɵi18nApply(1);
           }
         }
       `;
@@ -1061,7 +1098,7 @@ describe('i18n support in the view compiler', () => {
         }
       `;
 
-      verify(input, output, {verbose: true});
+      verify(input, output);
     });
 
     it('should be generated within <ng-container> and <ng-template> blocks', () => {
@@ -1095,7 +1132,7 @@ describe('i18n support in the view compiler', () => {
         }
       `;
 
-      verify(input, output, {verbose: true});
+      verify(input, output);
     });
   });
 
@@ -1435,6 +1472,22 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
             $r3$.ɵi18nApply(1);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should ignore icus generated outside of i18n block', () => {
+      const input = `
+        <div>{gender, select, male {male} female {female} other {other}}</div>
+      `;
+
+      const output = String.raw `
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelement(0, "div");
           }
         }
       `;
@@ -1822,12 +1875,53 @@ describe('i18n support in the view compiler', () => {
 
       verify(input, output);
     });
+
+    it('should handle icus with named interpolations', () => {
+      const input = `
+        <div i18n>{
+          gender,
+          select,
+            male {male {{ weight // i18n(ph="PH_A") }}}
+            female {female {{ height // i18n(ph="PH_B") }}}
+            other {other {{ age // i18n(ph="PH_C") }}}
+        }</div>
+      `;
+
+      const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:4853189513362404940]
+         */
+        const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
+          phA: "\uFFFD1\uFFFD",
+          phB: "\uFFFD2\uFFFD",
+          phC: "\uFFFD3\uFFFD"
+        });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.weight));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.height));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
+            $r3$.ɵi18nApply(1);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
   });
 
   describe('errors', () => {
     it('should throw on nested i18n sections', () => {
       const files = getAppFilesWithTemplate(`
-        <div i18n><div i18n></div></div>
+        <div i18n><div i18n>Some content</div></div>
       `);
       expect(() => compile(files, angularFiles))
           .toThrowError(

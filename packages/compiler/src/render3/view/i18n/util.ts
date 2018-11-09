@@ -12,14 +12,18 @@ import * as html from '../../../ml_parser/ast';
 import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
 
-import {I18nMeta} from './meta';
-
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
 const TRANSLATION_PREFIX = 'MSG_';
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
 const GOOG_GET_MSG = 'goog.getMsg';
+
+/** String key that is used to provide backup id of translatable message in Closure */
+const BACKUP_MESSAGE_ID = 'BACKUP_MESSAGE_ID';
+
+/** Regexp to identify whether backup id already provided in description */
+const BACKUP_MESSAGE_ID_REGEXP = new RegExp(BACKUP_MESSAGE_ID);
 
 /** I18n separators for metadata **/
 const I18N_MEANING_SEPARATOR = '|';
@@ -38,6 +42,12 @@ export const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
 /** Placeholder wrapper for i18n expressions **/
 export const I18N_PLACEHOLDER_SYMBOL = '�';
 
+export type I18nMeta = {
+  id?: string,
+  description?: string,
+  meaning?: string
+};
+
 function i18nTranslationToDeclStmt(
     variable: o.ReadVarExpr, message: string,
     params?: {[name: string]: o.Expression}): o.DeclareVarStmt {
@@ -55,7 +65,9 @@ function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   const tags: o.JSDocTag[] = [];
   const {id, description, meaning} = meta;
   if (id || description) {
-    const text = id ? `[BACKUP_MESSAGE_ID:${id}] ${description || ''}` : description;
+    const hasBackupId = !!description && BACKUP_MESSAGE_ID_REGEXP.test(description);
+    const text =
+        id && !hasBackupId ? `[${BACKUP_MESSAGE_ID}:${id}] ${description || ''}` : description;
     tags.push({tagName: o.JSDocTagName.Desc, text: text !.trim()});
   }
   if (meaning) {
@@ -68,17 +80,28 @@ export function isI18nAttribute(name: string): boolean {
   return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
 }
 
-export function isI18nRootNode(meta?: I18nMeta): boolean {
-  return meta ? meta.ast instanceof i18n.Message : false;
+export function isI18nRootNode(meta?: i18n.AST): meta is i18n.Message {
+  return meta instanceof i18n.Message;
 }
 
-export function isSingleI18nIcu(meta?: I18nMeta): boolean {
-  return isI18nRootNode(meta) && meta !.ast.nodes.length === 1 &&
-      meta !.ast.nodes[0] instanceof i18n.Icu;
+export function isSingleI18nIcu(meta?: i18n.AST): boolean {
+  return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
 }
 
 export function hasI18nAttrs(element: html.Element): boolean {
   return element.attrs.some((attr: html.Attribute) => isI18nAttribute(attr.name));
+}
+
+export function metaFromI18nMessage(message: i18n.Message): I18nMeta {
+  return {
+    id: message.id || '',
+    meaning: message.meaning || '',
+    description: message.description || ''
+  };
+}
+
+export function icuFromI18nMessage(message: i18n.Message) {
+  return message.nodes[0] as i18n.IcuPlaceholder;
 }
 
 export function wrapI18nPlaceholder(content: string | number, contextId: number = 0): string {
@@ -119,12 +142,11 @@ export function updatePlaceholderMap(map: Map<string, any[]>, name: string, ...v
 }
 
 export function assembleBoundTextPlaceholders(
-    meta: I18nMeta, bindingStartIndex: number = 0, contextId: number = 0): Map<string, any[]> {
+    meta: i18n.AST, bindingStartIndex: number = 0, contextId: number = 0): Map<string, any[]> {
   const startIdx = bindingStartIndex;
   const placeholders = new Map<string, any>();
-  const node = meta.ast instanceof i18n.Message ?
-      meta.ast.nodes.find(node => node instanceof i18n.Container) :
-      meta.ast;
+  const node =
+      meta instanceof i18n.Message ? meta.nodes.find(node => node instanceof i18n.Container) : meta;
   if (node) {
     (node as i18n.Container)
         .children.filter((child: i18n.Node) => child instanceof i18n.Placeholder)
@@ -210,11 +232,9 @@ export function getTranslationDeclStmts(
     params: {[name: string]: o.Expression} = {},
     transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
   const statements: o.Statement[] = [];
-  if (meta) {
-    const docStmt = i18nMetaToDocStmt(meta);
-    if (docStmt) {
-      statements.push(docStmt);
-    }
+  const docStatements = i18nMetaToDocStmt(meta);
+  if (docStatements) {
+    statements.push(docStatements);
   }
   if (transformFn) {
     const raw = o.variable(`${variable.name}_RAW`);

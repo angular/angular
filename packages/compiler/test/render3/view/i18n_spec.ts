@@ -6,44 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../src/i18n/i18n_ast';
 import * as o from '../../../src/output/output_ast';
 import * as t from '../../../src/render3/r3_ast';
 import {I18nContext} from '../../../src/render3/view/i18n/context';
-import {I18nMeta} from '../../../src/render3/view/i18n/meta';
 import {getSerializedI18nContent} from '../../../src/render3/view/i18n/serializer';
-import {formatI18nPlaceholderName, parseI18nMeta} from '../../../src/render3/view/i18n/util';
+import {I18nMeta, formatI18nPlaceholderName, parseI18nMeta} from '../../../src/render3/view/i18n/util';
 
 import {parseR3 as parse} from './util';
+
+const i18nOf = (element: t.Node & {i18n?: i18n.AST}) => element.i18n !;
 
 describe('I18nContext', () => {
   it('should support i18n content collection', () => {
     const ref = o.variable('ref');
-    const ctx = new I18nContext(5, ref, 0, null, {});
+    const ast = new i18n.Message([], {}, {}, '', '', '');
+    const ctx = new I18nContext(5, ref, 0, null, ast);
 
     // basic checks
-    expect(ctx.isRoot()).toBe(true);
-    expect(ctx.isResolved()).toBe(true);
-    expect(ctx.getId()).toBe(0);
-    expect(ctx.getRef()).toBe(ref);
-    expect(ctx.getIndex()).toBe(5);
-    expect(ctx.getTemplateIndex()).toBe(null);
+    expect(ctx.isRoot).toBe(true);
+    expect(ctx.isResolved).toBe(true);
+    expect(ctx.id).toBe(0);
+    expect(ctx.ref).toBe(ref);
+    expect(ctx.index).toBe(5);
+    expect(ctx.templateIndex).toBe(null);
 
     const tree = parse('<div i18n>A {{ valueA }} <div> B </div><p *ngIf="visible"> C </p></div>');
     const [boundText, element, template] = (tree.nodes[0] as t.Element).children;
 
     // data collection checks
-    expect(ctx.getPlaceholders().size).toBe(0);
-    ctx.appendBoundText(boundText as t.BoundText);     // interpolation
-    ctx.appendElement(element as t.Element, 1);        // open tag
-    ctx.appendElement(element as t.Element, 1, true);  // close tag
-    ctx.appendTemplate(template as t.Template, 2);     // open + close tags
-    expect(ctx.getPlaceholders().size).toBe(5);
+    expect(ctx.placeholders.size).toBe(0);
+    ctx.appendBoundText(i18nOf(boundText));       // interpolation
+    ctx.appendElement(i18nOf(element), 1);        // open tag
+    ctx.appendElement(i18nOf(element), 1, true);  // close tag
+    ctx.appendTemplate(i18nOf(template), 2);      // open + close tags
+    expect(ctx.placeholders.size).toBe(5);
 
     // binding collection checks
-    expect(ctx.getBindings().size).toBe(0);
+    expect(ctx.bindings.size).toBe(0);
     ctx.appendBinding(o.literal(1));
     ctx.appendBinding(o.literal(2));
-    expect(ctx.getBindings().size).toBe(2);
+    expect(ctx.bindings.size).toBe(2);
   });
 
   it('should support nested contexts', () => {
@@ -68,37 +71,37 @@ describe('I18nContext', () => {
     const ctx = new I18nContext(1, o.variable('ctx'), 0, null, root.i18n !);
 
     // set data for root ctx
-    ctx.appendBoundText(boundTextA as t.BoundText);
+    ctx.appendBoundText(i18nOf(boundTextA));
     ctx.appendBinding(o.literal('valueA'));
-    ctx.appendElement(elementA as t.Element, 0);
-    ctx.appendTemplate(templateA as t.Template, 1);
-    ctx.appendElement(elementA as t.Element, 0, true);
-    expect(ctx.getBindings().size).toBe(1);
-    expect(ctx.getPlaceholders().size).toBe(5);
-    expect(ctx.isResolved()).toBe(false);
+    ctx.appendElement(i18nOf(elementA), 0);
+    ctx.appendTemplate(i18nOf(templateA), 1);
+    ctx.appendElement(i18nOf(elementA), 0, true);
+    expect(ctx.bindings.size).toBe(1);
+    expect(ctx.placeholders.size).toBe(5);
+    expect(ctx.isResolved).toBe(false);
 
     // create child context
     const childCtx = ctx.forkChildContext(2, 1, (templateA as t.Template).i18n !);
-    expect(childCtx.getBindings().size).toBe(0);
-    expect(childCtx.isRoot()).toBe(false);
+    expect(childCtx.bindings.size).toBe(0);
+    expect(childCtx.isRoot).toBe(false);
 
     // set data for child context
-    childCtx.appendElement(elementB as t.Element, 0);
-    childCtx.appendBoundText(boundTextB as t.BoundText);
+    childCtx.appendElement(i18nOf(elementB), 0);
+    childCtx.appendBoundText(i18nOf(boundTextB));
     childCtx.appendBinding(o.literal('valueB'));
-    childCtx.appendElement(elementC as t.Element, 1);
-    childCtx.appendElement(elementC as t.Element, 1, true);
-    childCtx.appendBoundText(boundTextC as t.BoundText);
+    childCtx.appendElement(i18nOf(elementC), 1);
+    childCtx.appendElement(i18nOf(elementC), 1, true);
+    childCtx.appendBoundText(i18nOf(boundTextC));
     childCtx.appendBinding(o.literal('valueC'));
-    childCtx.appendElement(elementB as t.Element, 0, true);
+    childCtx.appendElement(i18nOf(elementB), 0, true);
 
-    expect(childCtx.getBindings().size).toBe(2);
-    expect(childCtx.getPlaceholders().size).toBe(6);
+    expect(childCtx.bindings.size).toBe(2);
+    expect(childCtx.placeholders.size).toBe(6);
 
     // ctx bindings and placeholders are not shared,
     // so root bindings and placeholders do not change
-    expect(ctx.getBindings().size).toBe(1);
-    expect(ctx.getPlaceholders().size).toBe(5);
+    expect(ctx.bindings.size).toBe(1);
+    expect(ctx.placeholders.size).toBe(5);
 
     // reconcile
     ctx.reconcileChildContext(childCtx);
@@ -110,17 +113,17 @@ describe('I18nContext', () => {
       ['CLOSE_TAG_DIV', '�/#0�|�/#1:1�'], ['INTERPOLATION_1', '�0:1�'],
       ['INTERPOLATION_2', '�1:1�']
     ]);
-    const phs = ctx.getPlaceholders();
+    const phs = ctx.getSerializedPlaceholders();
     expected.forEach((value, key) => { expect(phs.get(key) !.join('|')).toEqual(value); });
 
     // placeholders are added into the root ctx
     expect(phs.size).toBe(expected.size);
 
     // root context is considered resolved now
-    expect(ctx.isResolved()).toBe(true);
+    expect(ctx.isResolved).toBe(true);
 
     // bindings are not merged into root ctx
-    expect(ctx.getBindings().size).toBe(1);
+    expect(ctx.bindings.size).toBe(1);
   });
 
   it('should support templates based on <ng-template>', () => {
@@ -146,18 +149,18 @@ describe('I18nContext', () => {
     const ctxLevelA = new I18nContext(0, o.variable('ctx'), 0, null, root.i18n !);
 
     // create Level A context
-    ctxLevelA.appendTemplate(templateA as t.Template, 1);
-    expect(ctxLevelA.getPlaceholders().size).toBe(2);
-    expect(ctxLevelA.isResolved()).toBe(false);
+    ctxLevelA.appendTemplate(i18nOf(templateA), 1);
+    expect(ctxLevelA.placeholders.size).toBe(2);
+    expect(ctxLevelA.isResolved).toBe(false);
 
     // create Level B context
     const ctxLevelB = ctxLevelA.forkChildContext(0, 1, (templateA as t.Template).i18n !);
-    ctxLevelB.appendTemplate(templateB as t.Template, 1);
-    expect(ctxLevelB.isRoot()).toBe(false);
+    ctxLevelB.appendTemplate(i18nOf(templateB), 1);
+    expect(ctxLevelB.isRoot).toBe(false);
 
     // create Level 2 context
     const ctxLevelC = ctxLevelB.forkChildContext(0, 1, (templateB as t.Template).i18n !);
-    expect(ctxLevelC.isRoot()).toBe(false);
+    expect(ctxLevelC.isRoot).toBe(false);
 
     // reconcile
     ctxLevelB.reconcileChildContext(ctxLevelC);
@@ -166,14 +169,14 @@ describe('I18nContext', () => {
     // verify placeholders
     const expected = new Map(
         [['START_TAG_NG-TEMPLATE', '�*1:1�|�*1:2�'], ['CLOSE_TAG_NG-TEMPLATE', '�/*1:2�|�/*1:1�']]);
-    const phs = ctxLevelA.getPlaceholders();
+    const phs = ctxLevelA.getSerializedPlaceholders();
     expected.forEach((value, key) => { expect(phs.get(key) !.join('|')).toEqual(value); });
 
     // placeholders are added into the root ctx
     expect(phs.size).toBe(expected.size);
 
     // root context is considered resolved now
-    expect(ctxLevelA.isResolved()).toBe(true);
+    expect(ctxLevelA.isResolved).toBe(true);
   });
 });
 
@@ -211,7 +214,7 @@ describe('Serializer', () => {
   const serialize = (input: string): string => {
     const tree = parse(`<div i18n>${input}</div>`);
     const root = tree.nodes[0] as t.Element;
-    return getSerializedI18nContent(root.i18n);
+    return getSerializedI18nContent(root.i18n as i18n.Message);
   };
   it('should produce output for i18n content', () => {
     const cases = [

@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
-import * as t from '../../r3_ast';
 
-import {I18nMeta} from './meta';
 import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
 
 enum TagType {
@@ -18,99 +17,115 @@ enum TagType {
 }
 
 /**
+ * Generates an object that is used as a shared state between parent and all child contexts.
+ */
+function setupRegistry() {
+  return {getUniqueId: getSeqNumberGenerator(), icus: new Map<string, any[]>()};
+}
+
+/**
  * I18nContext is a helper class which keeps track of all i18n-related aspects
- * (accumulates content, bindings, etc) between i18nStart and i18nEnd instructions.
+ * (accumulates placeholders, bindings, etc) between i18nStart and i18nEnd instructions.
  *
  * When we enter a nested template, the top-level context is being passed down
  * to the nested component, which uses this context to generate a child instance
  * of I18nContext class (to handle nested template) and at the end, reconciles it back
  * with the parent context.
+ *
+ * @param index Instruction index of i18nStart, which initiates this context
+ * @param ref Reference to a translation const that represents the content if thus context
+ * @param level Nestng level defined for child contexts
+ * @param templateIndex Instruction index of a template which this context belongs to
+ * @param meta Meta information (id, meaning, description, etc) associated with this context
  */
 export class I18nContext {
-  private id: number;
-  private bindings = new Set<o.Expression>();
-  private placeholders = new Map<string, any[]>();
-  private registry !: any;
-  private unresolvedCtxCount: number = 0;
+  public readonly id: number;
+  public bindings = new Set<o.Expression>();
+  public placeholders = new Map<string, any[]>();
+
+  private _registry !: any;
+  private _unresolvedCtxCount: number = 0;
 
   constructor(
-      private index: number, private ref: o.ReadVarExpr, private level: number = 0,
-      private templateIndex: number|null = null, private meta: I18nMeta,
-      private registryInstance?: any) {
-    this.registry = registryInstance || this.setupRegistry();
-    this.id = this.registry.getUniqueId();
+      readonly index: number, readonly ref: o.ReadVarExpr, readonly level: number = 0,
+      readonly templateIndex: number|null = null, readonly meta: i18n.AST, private registry?: any) {
+    this._registry = registry || setupRegistry();
+    this.id = this._registry.getUniqueId();
   }
 
-  private setupRegistry() {
-    return {getUniqueId: getSeqNumberGenerator(), icus: new Map<string, any[]>()};
-  }
-  private appendTag(type: TagType, element: any, index: number, closed?: boolean) {
-    const {ast} = element.i18n;
-    if (ast.isVoid && closed) {
+  private appendTag(type: TagType, node: i18n.TagPlaceholder, index: number, closed?: boolean) {
+    if (node.isVoid && closed) {
       return;  // ignore "close" for void tags
     }
-    const ph = ast.isVoid || !closed ? ast.startName : ast.closeName;
-    const content = {type, index, ctx: this.id, isVoid: ast.isVoid, closed};
+    const ph = node.isVoid || !closed ? node.startName : node.closeName;
+    const content = {type, index, ctx: this.id, isVoid: node.isVoid, closed};
     updatePlaceholderMap(this.placeholders, ph, content);
   }
 
-  getId() { return this.id; }
-  getRef() { return this.ref; }
-  getIndex() { return this.index; }
-  getMeta() { return this.meta; }
-  getIcus() { return this.registry.icus; }
-  getTemplateIndex() { return this.templateIndex; }
-  getBindings() { return this.bindings; }
-  getRawPlaceholders() { return this.placeholders; }
-  getPlaceholders() {
+  get icus() { return this._registry.icus; }
+  get isRoot() { return this.level === 0; }
+  get isResolved() { return this._unresolvedCtxCount === 0; }
+
+  getSerializedPlaceholders() {
     const result = new Map<string, any[]>();
     this.placeholders.forEach(
         (values, key) => result.set(key, values.map(serializePlaceholderValue)));
     return result;
   }
 
-  isRoot() { return this.level === 0; }
-  isResolved() { return this.unresolvedCtxCount === 0; }
-
+  // public API to accumulate i18n-related content
   appendBinding(binding: o.Expression) { this.bindings.add(binding); }
-  appendIcu(expansion: t.Expansion, ref: o.Expression) {
-    const {name} = expansion.i18n !.ast;
-    updatePlaceholderMap(this.registry.icus, name, ref);
+  appendIcu(name: string, ref: o.Expression) {
+    updatePlaceholderMap(this._registry.icus, name, ref);
   }
-  appendBoundText(element: t.BoundText) {
-    const phs = assembleBoundTextPlaceholders(element.i18n !, this.bindings.size, this.id);
+  appendBoundText(node: i18n.AST) {
+    const phs = assembleBoundTextPlaceholders(node, this.bindings.size, this.id);
     phs.forEach((values, key) => updatePlaceholderMap(this.placeholders, key, ...values));
   }
-  appendTemplate(element: t.Template, index: number) {
+  appendTemplate(node: i18n.AST, index: number) {
     // add open and close tags at the same time,
     // since we process nested templates separately
-    this.appendTag(TagType.TEMPLATE, element, index, false);
-    this.appendTag(TagType.TEMPLATE, element, index, true);
-    this.unresolvedCtxCount++;
+    this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, false);
+    this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, true);
+    this._unresolvedCtxCount++;
   }
-  appendElement(element: t.Element, index: number, closed?: boolean) {
-    this.appendTag(TagType.ELEMENT, element, index, closed);
+  appendElement(node: i18n.AST, index: number, closed?: boolean) {
+    this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
   }
 
-  forkChildContext(index: number, templateIndex: number, meta: I18nMeta) {
-    return new I18nContext(index, this.ref, this.level + 1, templateIndex, meta, this.registry);
+  /**
+   * Generates an instance of a child context based on the root one,
+   * when we enter a nested template within I18n section.
+   *
+   * @param index Instruction index of corresponding i18nStart, which initiates this context
+   * @param templateIndex Instruction index of a template which this context belongs to
+   * @param meta Meta information (id, meaning, description, etc) associated with this context
+   *
+   * @returns I18nContext instance
+   */
+  forkChildContext(index: number, templateIndex: number, meta: i18n.AST) {
+    return new I18nContext(index, this.ref, this.level + 1, templateIndex, meta, this._registry);
   }
+
+  /**
+   * Reconciles child context into parent one once the end of the i18n block is reached (i18nEnd).
+   *
+   * @param context Child I18nContext instance to be reconciled with parent context.
+   */
   reconcileChildContext(context: I18nContext) {
-    const meta = context.getMeta();
-
     // set the right context id for open and close
     // template tags, so we can use it as sub-block ids
     ['start', 'close'].forEach((op: string) => {
-      const key = meta.ast[`${op}Name`];
+      const key = (context.meta as any)[`${op}Name`];
       const phs = this.placeholders.get(key) || [];
-      const tag = phs.find(findTemplateFn(this.id, context.getTemplateIndex()));
+      const tag = phs.find(findTemplateFn(this.id, context.templateIndex));
       if (tag) {
-        tag.ctx = context.getId();
+        tag.ctx = context.id;
       }
     });
 
     // reconcile placeholders
-    const childPhs = context.getRawPlaceholders();
+    const childPhs = context.placeholders;
     childPhs.forEach((values: any[], key: string) => {
       const phs = this.placeholders.get(key);
       if (!phs) {
@@ -118,7 +133,7 @@ export class I18nContext {
         return;
       }
       // try to find matching template...
-      const tmplIdx = phs.findIndex(findTemplateFn(context.getId(), context.getTemplateIndex()));
+      const tmplIdx = phs.findIndex(findTemplateFn(context.id, context.templateIndex));
       if (tmplIdx >= 0) {
         // ... if found - replace it with nested template content
         const isCloseTag = key.startsWith('CLOSE');
@@ -138,7 +153,7 @@ export class I18nContext {
       }
       this.placeholders.set(key, phs);
     });
-    this.unresolvedCtxCount--;
+    this._unresolvedCtxCount--;
   }
 }
 
