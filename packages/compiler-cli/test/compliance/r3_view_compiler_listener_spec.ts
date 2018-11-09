@@ -206,8 +206,10 @@ describe('compiler compliance: listen()', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
+              const $s$ = $r3$.ɵgetCurrentView();
               $r3$.ɵelementStart(0, "button", $e0_attrs$);
                 $r3$.ɵlistener("click", function MyComponent_Template_button_click_listener($event) {
+                   $r3$.ɵrestoreView($s$);
                    const $user$ = $r3$.ɵreference(3);
                    return ctx.onClick($user$.value);
                 });
