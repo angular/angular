@@ -215,8 +215,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   /**
    * @description
    * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   *
-   * @param changes A object of key/value pairs for the set of changed inputs.
    */
   ngOnDestroy(): void {
     if (this.formDirective) {
