@@ -19,7 +19,7 @@ To set up your development environment, follow these instructions in [Getting St
 
 <div class="alert is-helpful">
 
-**Note:**: You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
+**Note:** You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
 </div>
 
 
