@@ -228,13 +228,17 @@ jobs:
 
       # Publish bundle artifacts which will be used to calculate the size change.
       # Note: Make sure that the size plugin from the Angular robot fetches the artifacts
-      # from this CircleCI job (see .github/angular-robot.yml)
+      # from this CircleCI job (see .github/angular-robot.yml). Additionally any artifacts need to
+      # be stored with the following path format: "{projectName}/{context}/{fileName}"
+      # This format is necessary because otherwise the bot is not able to pick up the
+      # artifacts from CircleCI. See:
+      # https://github.com/angular/github-robot/blob/master/functions/src/plugins/size.ts#L392-L394
       - store_artifacts:
           path: dist/releases/material/bundles/material.umd.js
-          destination: material.umd.js
+          destination: /angular_material/material_release_output/material.umd.js
       - store_artifacts:
           path: /tmp/cdk-umd-artifacts
-          destination: /
+          destination: /angular_material/cdk_release_output/
 
       - *save_cache
 
