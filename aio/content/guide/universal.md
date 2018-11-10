@@ -210,7 +210,7 @@ export class AppServerModule {}
 
 ### 2c. Create a main file to export AppServerModule
 
-Create a main file for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance. This example calls the file `main.server.ts`.
+Create a main file `main.server.ts` for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance.
 
 <code-example format="." language="typescript" linenums="false">
 export { AppServerModule } from './app/app.server.module';
