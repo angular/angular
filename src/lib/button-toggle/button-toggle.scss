@@ -48,6 +48,11 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   white-space: nowrap;
   position: relative;
 
+  // Fixes SVG icons that get thrown off because of the `vertical-align` on the parent.
+  .mat-icon svg {
+    vertical-align: top;
+  }
+
   &.cdk-keyboard-focused {
     .mat-button-toggle-focus-overlay {
       opacity: 1;
