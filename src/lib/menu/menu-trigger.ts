@@ -33,6 +33,7 @@ import {
   Self,
   ViewContainerRef,
 } from '@angular/core';
+import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {MatMenu} from './menu-directive';
@@ -60,6 +61,9 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 /** Default top padding of the menu panel. */
 export const MENU_PANEL_TOP_PADDING = 8;
 
+/** Options for binding a passive event listener. */
+const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
+
 // TODO(andrewseguin): Remove the kebab versions in favor of camelCased attribute selectors
 
 /**
@@ -72,7 +76,6 @@ export const MENU_PANEL_TOP_PADDING = 8;
     'aria-haspopup': 'true',
     '[attr.aria-expanded]': 'menuOpen || null',
     '(mousedown)': '_handleMousedown($event)',
-    '(touchstart)': '_openedBy = "touch"',
     '(keydown)': '_handleKeydown($event)',
     '(click)': '_handleClick($event)',
   },
@@ -86,6 +89,12 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _hoverSubscription = Subscription.EMPTY;
   private _menuCloseSubscription = Subscription.EMPTY;
   private _scrollStrategy: () => ScrollStrategy;
+
+  /**
+   * Handles touch start events on the trigger.
+   * Needs to be an arrow function so we can easily use addEventListener and removeEventListener.
+   */
+  private _handleTouchStart = () => this._openedBy = 'touch';
 
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
@@ -161,6 +170,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
               // @breaking-change 8.0.0
               private _focusMonitor?: FocusMonitor) {
 
+    _element.nativeElement.addEventListener('touchstart', this._handleTouchStart,
+        passiveEventListenerOptions);
+
     if (_menuItemInstance) {
       _menuItemInstance._triggersSubmenu = this.triggersSubmenu();
     }
@@ -178,6 +190,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       this._overlayRef.dispose();
       this._overlayRef = null;
     }
+
+    this._element.nativeElement.removeEventListener('touchstart', this._handleTouchStart,
+        passiveEventListenerOptions);
 
     this._cleanUpSubscriptions();
   }
