@@ -23,9 +23,6 @@ import {convertDependencies, reflectDependencies} from './util';
  * `ngInjectableDef` onto the injectable type.
  */
 export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
-  // Allow the compilation of a class with a `@Injectable()` decorator without parameters
-  const meta: Injectable = srcMeta || {providedIn: null};
-
   let def: any = null;
 
   // if NG_INJECTABLE_DEF is already defined on this class then don't overwrite it
@@ -34,6 +31,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
   Object.defineProperty(type, NG_INJECTABLE_DEF, {
     get: () => {
       if (def === null) {
+        // Allow the compilation of a class with a `@Injectable()` decorator without parameters
         const meta: Injectable = srcMeta || {providedIn: null};
         const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
             isUseValueProvider(meta) || isUseExistingProvider(meta);
@@ -42,6 +40,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
         const compilerMeta: R3InjectableMetadataFacade = {
           name: type.name,
           type: type,
+          typeArgumentCount: 0,
           providedIn: meta.providedIn,
           ctorDeps: reflectDependencies(type),
           userDeps: undefined

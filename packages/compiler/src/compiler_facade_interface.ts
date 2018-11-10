@@ -78,6 +78,7 @@ export interface R3PipeMetadataFacade {
 export interface R3InjectableMetadataFacade {
   name: string;
   type: any;
+  typeArgumentCount: number;
   ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
   useClass?: any;
