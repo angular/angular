@@ -113,7 +113,10 @@ restrict the user to only be able to do so using a handle element, you can do it
 ### Customizing the drag preview
 When a `cdkDrag` element is picked up, it will create a preview element visible while dragging.
 By default, this will be a clone of the original element positioned next to the user's cursor.
-This preview can be customized, though, by providing a custom template via `*cdkDragPreview`:
+This preview can be customized, though, by providing a custom template via `*cdkDragPreview`.
+Note that the cloned element will remove its `id` attribute in order to avoid having multiple
+elements with the same `id` on the page. This will cause any CSS that targets that `id` not
+to be applied.
 
 <!-- example(cdk-drag-drop-custom-preview) -->
 
