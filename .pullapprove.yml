@@ -366,7 +366,6 @@ groups:
       - >
         contains_any_globs(files, [
           'packages/common/http/**',
-          'packages/http/**',
           'packages/examples/http/**',
           'aio/content/guide/http.md',
           'aio/content/examples/http/**',

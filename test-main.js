@@ -49,8 +49,6 @@ System.config({
     '@angular/facade': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/router': {main: 'index.js', defaultExtension: 'js'},
-    '@angular/http/testing': {main: 'index.js', defaultExtension: 'js'},
-    '@angular/http': {main: 'index.js', defaultExtension: 'js'},
     '@angular/localize/src/utils': {main: 'index.js', defaultExtension: 'js'},
     '@angular/localize/src/localize': {main: 'index.js', defaultExtension: 'js'},
     '@angular/localize/init': {main: 'index.js', defaultExtension: 'js'},

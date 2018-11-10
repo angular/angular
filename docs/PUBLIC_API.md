@@ -7,7 +7,6 @@ Our semver, timed-release cycle and deprecation policy currently applies to thes
 - `@angular/common`
 - `@angular/elements`
 - `@angular/forms`
-- `@angular/http`
 - `@angular/platform-browser`
 - `@angular/platform-browser-dynamic`
 - `@angular/platform-server`
