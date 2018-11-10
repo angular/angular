@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {hyphenate, parseStyle, stripUnnecessaryQuotes} from '../../src/render3/view/styling';
+import {hyphenate, parse as parseStyle, stripUnnecessaryQuotes} from '../../src/render3/view/style_parser';
 
-describe('inline css style parsing', () => {
+describe('style parsing', () => {
   it('should parse empty or blank strings', () => {
     const result1 = parseStyle('');
     expect(result1).toEqual({});
