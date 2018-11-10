@@ -1,18 +1,16 @@
 // #docregion
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
-import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 import { Hero } from './hero.model';
 
 @Injectable()
 // #docregion example
 export class HeroService {
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
   getHeroes() {
-    return this.http.get('api/heroes').pipe(
-      map((response: Response) => <Hero[]>response.json()));
+    return this.http.get<Hero[]>('api/heroes');
   }
 }
 // #enddocregion example

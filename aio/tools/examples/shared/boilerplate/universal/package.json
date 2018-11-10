@@ -28,7 +28,7 @@
     "@nguniversal/common": "^7.0.0",
     "@nguniversal/express-engine": "^7.0.0",
     "@nguniversal/module-map-ngfactory-loader": "^7.0.0",
-    "angular-in-memory-web-api": "^0.6.0",
+    "angular-in-memory-web-api": "^0.8.0",
     "core-js": "^2.5.4",
     "rxjs": "^6.3.0",
     "web-animations-js": "^2.3.1",
