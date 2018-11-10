@@ -13,6 +13,3 @@ import {CdkStepLabel} from '@angular/cdk/stepper';
   selector: '[matStepLabel]',
 })
 export class MatStepLabel extends CdkStepLabel {}
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatStepLabel as any)['ctorParameters'] = () => (CdkStepLabel as any)['ctorParameters'];

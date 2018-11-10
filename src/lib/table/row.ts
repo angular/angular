@@ -54,11 +54,6 @@ export class MatFooterRowDef extends CdkFooterRowDef {}
 })
 export class MatRowDef<T> extends CdkRowDef<T> {}
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatHeaderRowDef as any)['ctorParameters'] = () => (CdkHeaderRowDef as any)['ctorParameters'];
-(MatFooterRowDef as any)['ctorParameters'] = () => (CdkFooterRowDef as any)['ctorParameters'];
-(MatRowDef as any)['ctorParameters'] = () => (CdkRowDef as any)['ctorParameters'];
-
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
   moduleId: module.id,

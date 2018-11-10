@@ -45,11 +45,6 @@ export class MatHeaderCellDef extends CdkHeaderCellDef {}
 })
 export class MatFooterCellDef extends CdkFooterCellDef {}
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatCellDef as any)['ctorParameters'] = () => (CdkCellDef as any)['ctorParameters'];
-(MatHeaderCellDef as any)['ctorParameters'] = () => (CdkHeaderCellDef as any)['ctorParameters'];
-(MatFooterCellDef as any)['ctorParameters'] = () => (MatFooterCellDef as any)['ctorParameters'];
-
 /**
  * Column definition for the mat-table.
  * Defines a set of cells available for a table column.

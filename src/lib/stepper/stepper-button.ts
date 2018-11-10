@@ -33,8 +33,3 @@ export class MatStepperNext extends CdkStepperNext {}
   providers: [{provide: CdkStepper, useExisting: MatStepper}]
 })
 export class MatStepperPrevious extends CdkStepperPrevious {}
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatStepperNext as any)['ctorParameters'] = () => (CdkStepperNext as any)['ctorParameters'];
-(MatStepperPrevious as any)['ctorParameters'] = () =>
-    (CdkStepperPrevious as any)['ctorParameters'];

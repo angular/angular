@@ -76,9 +76,6 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
   @Input('matTreeNode') data: T;
 }
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTreeNodeDef as any)['ctorParameters'] = () => (CdkTreeNodeDef as any)['ctorParameters'];
-
 /**
  * Wrapper for the CdkTree nested node with Material design styles.
  */

@@ -31,6 +31,3 @@ export class MatTree<T> extends CdkTree<T> {
   // Outlets within the tree's template where the dataNodes will be inserted.
   @ViewChild(MatTreeNodeOutlet) _nodeOutlet: MatTreeNodeOutlet;
 }
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTree as any)['ctorParameters'] = () => (CdkTree as any)['ctorParameters'];

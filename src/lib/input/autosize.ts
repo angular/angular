@@ -43,7 +43,3 @@ export class MatTextareaAutosize extends CdkTextareaAutosize {
   get matTextareaAutosize(): boolean { return this.enabled; }
   set matTextareaAutosize(value: boolean) { this.enabled = value; }
 }
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTextareaAutosize as any)['ctorParameters'] = () =>
-    (CdkTextareaAutosize as any)['ctorParameters'];

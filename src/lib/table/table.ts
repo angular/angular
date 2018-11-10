@@ -28,6 +28,3 @@ export class MatTable<T> extends CdkTable<T> {
   /** Overrides the sticky CSS class set by the `CdkTable`. */
   protected stickyCssClass = 'mat-table-sticky';
 }
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTable as any)['ctorParameters'] = () => (CdkTable as any)['ctorParameters'];

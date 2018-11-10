@@ -22,6 +22,3 @@ import {Directive, Input} from '@angular/core';
 export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {
   @Input('matTreeNodeToggleRecursive') recursive: boolean = false;
 }
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTreeNodeToggle as any)['ctorParameters'] = () => (CdkTreeNodeToggle as any)['ctorParameters'];

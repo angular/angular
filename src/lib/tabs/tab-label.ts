@@ -14,6 +14,3 @@ import {CdkPortal} from '@angular/cdk/portal';
   selector: '[mat-tab-label], [matTabLabel]',
 })
 export class MatTabLabel extends CdkPortal {}
-
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatTabLabel as any)['ctorParameters'] = () => (CdkPortal as any)['ctorParameters'];

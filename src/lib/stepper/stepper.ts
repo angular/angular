@@ -123,9 +123,6 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   }
 }
 
-// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
-(MatStepper as any)['ctorParameters'] = () => (CdkStepper as any)['ctorParameters'];
-
 @Component({
   moduleId: module.id,
   selector: 'mat-horizontal-stepper',
