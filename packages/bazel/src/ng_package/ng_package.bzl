@@ -110,8 +110,6 @@ WELL_KNOWN_GLOBALS = {p: _global_name(p) for p in [
     "@angular/common/http/testing",
     "@angular/common/http",
     "@angular/elements",
-    "@angular/http/testing",
-    "@angular/http",
     "@angular/platform-browser-dynamic/testing",
     "@angular/platform-browser-dynamic",
     "@angular/compiler/testing",

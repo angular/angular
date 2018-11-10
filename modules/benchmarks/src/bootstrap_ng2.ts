@@ -34,7 +34,6 @@ function benchmarksBootstrap() {
             '/packages-dist/platform-browser/bundles/platform-browser.umd.js',
         '@angular/platform-browser-dynamic':
             '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
-        '@angular/http': '/packages-dist/http/bundles/http.umd.js',
         '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
         '@angular/router': '/packages-dist/router/bundles/router.umd.js',
         'rxjs': '/all/benchmarks/vendor/rxjs',

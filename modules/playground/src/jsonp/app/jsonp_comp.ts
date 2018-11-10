@@ -15,7 +15,7 @@ import {Component} from '@angular/core';
     <h1>people</h1>
     <ul class="people">
       <li *ngFor="let person of people">
-        hello, {{person['name']}}
+        hello, {{person.name}}
       </li>
     </ul>
   `

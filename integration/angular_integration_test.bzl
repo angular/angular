@@ -44,7 +44,6 @@ GENERATED_NPM_PACKAGES = [
     "@angular/core",
     "@angular/elements",
     "@angular/forms",
-    "@angular/http",
     "@angular/language-service",
     "@angular/localize",
     "@angular/platform-browser",

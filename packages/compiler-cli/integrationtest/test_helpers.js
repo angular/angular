@@ -28,7 +28,6 @@ const requiredNodeModules = {
   '@angular/compiler-cli': resolveNpmTreeArtifact('angular/packages/compiler-cli/npm_package'),
   '@angular/core': resolveNpmTreeArtifact('angular/packages/core/npm_package'),
   '@angular/forms': resolveNpmTreeArtifact('angular/packages/forms/npm_package'),
-  '@angular/http': resolveNpmTreeArtifact('angular/packages/http/npm_package'),
   '@angular/platform-browser':
       resolveNpmTreeArtifact('angular/packages/platform-browser/npm_package'),
   '@angular/platform-browser-dynamic':

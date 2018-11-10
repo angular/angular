@@ -32,7 +32,6 @@
       "packages/core/src/",
       "packages/elements/src/",
       "packages/forms/src/",
-      "packages/http/src/",
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
