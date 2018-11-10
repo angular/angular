@@ -17,11 +17,15 @@
 
     .mat-step-label,
     .mat-step-optional {
-      color: mat-color($foreground, disabled-text);
+      // TODO(josephperrott): Update to using a corrected disabled-text contrast
+      // instead of secondary-text.
+      color: mat-color($foreground, secondary-text);
     }
 
     .mat-step-icon {
-      background-color: mat-color($foreground, disabled-text);
+      // TODO(josephperrott): Update to using a corrected disabled-text contrast
+      // instead of secondary-text.
+      background-color: mat-color($foreground, secondary-text);
       color: mat-color($primary, default-contrast);
     }
 
