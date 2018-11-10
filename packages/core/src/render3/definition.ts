@@ -291,6 +291,7 @@ export function defineComponent<T>(componentDefinition: {
         ViewEncapsulation.Emulated as any as typePositionOnly_ViewEncapsulation,
     id: 'c',
     styles: componentDefinition.styles || EMPTY_ARRAY,
+    tView: null,
     _: null as never,
   };
   def._ = noSideEffects(() => {

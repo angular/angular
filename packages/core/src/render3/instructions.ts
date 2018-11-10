@@ -300,7 +300,7 @@ export function renderTemplate<T>(
         null);
 
     const componentTView =
-        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
+        createTView(-1, templateFn, consts, vars, directives || null, pipes || null, null);
     hostView =
         createLViewData(renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer);
     hostView[CViewData.HOST_NODE] = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
@@ -640,27 +640,13 @@ function saveResolvedLocalsInData(
  * Gets TView from a template function or creates a new TView
  * if it doesn't already exist.
  *
- * @param templateFn The template from which to get static data
- * @param consts The number of nodes, local refs, and pipes in this view
- * @param vars The number of bindings and pure function bindings in this view
- * @param directives Directive defs that should be saved on TView
- * @param pipes Pipe defs that should be saved on TView
+ * @param def Component definition.
  * @returns TView
  */
-export function getOrCreateTView(
-    templateFn: ComponentTemplate<any>, consts: number, vars: number,
-    directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ComponentQuery<any>| null): TView {
-  // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
-  // 1. It is a megamorphic call on each invocation.
-  // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
-  //    outer template invocation, which means that no such property will exist
-  // Correct solution is to only put `ngPrivateData` on the Component template
-  // and not on embedded templates.
-
-  return templateFn.ngPrivateData ||
-      (templateFn.ngPrivateData =
-           createTView(-1, templateFn, consts, vars, directives, pipes, viewQuery) as never);
+export function getOrCreateTView(def: ComponentDef<any>): TView {
+  return def.tView ||
+      (def.tView = createTView(
+           -1, def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery));
 }
 
 /**
@@ -1563,8 +1549,7 @@ function addComponentLogic<T>(
     viewData: LViewData, previousOrParentTNode: TNode, def: ComponentDef<T>): void {
   const native = getNativeByTNode(previousOrParentTNode, viewData);
 
-  const tView = getOrCreateTView(
-      def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery);
+  const tView = getOrCreateTView(def);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.

@@ -249,8 +249,6 @@ export const enum LViewFlags {
 /**
  * The static data for an LView (shared between all templates of a
  * given type).
- *
- * Stored on the template function as ngPrivateData.
  */
 export interface TView {
   /**

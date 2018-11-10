@@ -1686,56 +1686,6 @@ describe('render3 integration test', () => {
     });
   });
 
-  describe('template data', () => {
-
-    it('should re-use template data and node data', () => {
-      /**
-       *  % if (condition) {
-       *    <div></div>
-       *  % }
-       */
-      function Template(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          container(0);
-        }
-        if (rf & RenderFlags.Update) {
-          containerRefreshStart(0);
-          {
-            if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1, 0);
-              if (rf1 & RenderFlags.Create) {
-                element(0, 'div');
-              }
-              embeddedViewEnd();
-            }
-          }
-          containerRefreshEnd();
-        }
-      }
-
-      expect((Template as any).ngPrivateData).toBeUndefined();
-
-      renderToHtml(Template, {condition: true}, 1);
-
-      const oldTemplateData = (Template as any).ngPrivateData;
-      const oldContainerData = (oldTemplateData as any).data[CViewData.HEADER_OFFSET];
-      const oldElementData = oldContainerData.tViews[0][CViewData.HEADER_OFFSET];
-      expect(oldContainerData).not.toBeNull();
-      expect(oldElementData).not.toBeNull();
-
-      renderToHtml(Template, {condition: false}, 1);
-      renderToHtml(Template, {condition: true}, 1);
-
-      const newTemplateData = (Template as any).ngPrivateData;
-      const newContainerData = (oldTemplateData as any).data[CViewData.HEADER_OFFSET];
-      const newElementData = oldContainerData.tViews[0][CViewData.HEADER_OFFSET];
-      expect(newTemplateData === oldTemplateData).toBe(true);
-      expect(newContainerData === oldContainerData).toBe(true);
-      expect(newElementData === oldElementData).toBe(true);
-    });
-
-  });
-
   describe('component styles', () => {
     it('should pass in the component styles directly into the underlying renderer', () => {
       class StyledComp {

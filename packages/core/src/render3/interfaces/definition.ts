@@ -9,6 +9,7 @@
 import {ViewEncapsulation as typePositionOnly_ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
+import {TView} from './view';
 
 // Copy from import {ChangeDetectionStrategy} from '../change_detection/constants'; but const.
 export const enum ChangeDetectionStrategy {
@@ -23,7 +24,7 @@ export const enum ViewEncapsulation {Emulated = 0, Native = 1, None = 2, ShadowD
  * Definition of what a template rendering function should look like for a component.
  */
 export type ComponentTemplate<T> = {
-  (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
+  (rf: RenderFlags, ctx: T): void;
 };
 
 /**
@@ -268,6 +269,11 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipeDefs: PipeDefListOrFactory|null;
+
+  /**
+   * `TView` data structure (or `null` if not initialized)
+   */
+  tView: TView|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure

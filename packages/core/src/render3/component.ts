@@ -28,6 +28,7 @@ import {enterView, leaveView, resetComponentState} from './state';
 import {defaultScheduler, getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
 
+
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
   /** Which renderer factory to use. */
@@ -159,10 +160,8 @@ export function createRootComponentView(
   resetComponentState();
   const tView = rootView[CViewData.TVIEW];
   const componentView = createLViewData(
-      renderer,
-      getOrCreateTView(
-          def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
-      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer);
+      renderer, getOrCreateTView(def), null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+      sanitizer);
   const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
 
   if (tView.firstTemplatePass) {
