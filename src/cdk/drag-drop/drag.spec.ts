@@ -18,6 +18,7 @@ import {
   dispatchEvent,
   dispatchMouseEvent,
   dispatchTouchEvent,
+  createTouchEvent,
 } from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag, CDK_DRAG_CONFIG, CdkDragConfig} from './drag';
@@ -169,6 +170,25 @@ describe('CdkDrag', () => {
         expect(dragElement.style.transform).toBe('translateY(-50%) translate3d(150px, 300px, 0px)');
       }));
 
+      it('should prevent the `mousedown` action for native draggable elements', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElement.draggable = true;
+
+        const mousedownEvent = createMouseEvent('mousedown', 50, 50);
+        Object.defineProperty(mousedownEvent, 'target', {get: () => dragElement});
+        spyOn(mousedownEvent, 'preventDefault').and.callThrough();
+        dispatchEvent(dragElement, mousedownEvent);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mousemove', 50, 50);
+        fixture.detectChanges();
+
+        expect(mousedownEvent.preventDefault).toHaveBeenCalled();
+      }));
+
     });
 
     describe('touch dragging', () => {
@@ -244,6 +264,25 @@ describe('CdkDrag', () => {
           dispatchTouchEvent(document, 'touchend');
           fixture.detectChanges();
         }));
+
+      it('should not prevent `touchstart` action for native draggable elements', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        dragElement.draggable = true;
+
+        const touchstartEvent = createTouchEvent('touchstart', 50, 50);
+        Object.defineProperty(touchstartEvent, 'target', {get: () => dragElement});
+        spyOn(touchstartEvent, 'preventDefault').and.callThrough();
+        dispatchEvent(dragElement, touchstartEvent);
+        fixture.detectChanges();
+
+        dispatchTouchEvent(document, 'touchmove');
+        fixture.detectChanges();
+
+        expect(touchstartEvent.preventDefault).not.toHaveBeenCalled();
+      }));
     });
 
     it('should dispatch an event when the user has started dragging', fakeAsync(() => {
