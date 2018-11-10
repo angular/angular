@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule }            from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 
-import { HttpModule }           from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 
 import { RouterModule } from '@angular/router';
@@ -44,7 +44,7 @@ import * as s0901 from '../09-01/app/app.module';
 @NgModule({
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     InMemoryWebApiModule.forRoot(HeroData),
 
     s0101.AppModule,

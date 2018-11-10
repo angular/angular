@@ -470,13 +470,6 @@ While the _code sample_ accompanying this guide demonstrates `HttpClientTestingM
 this page defers to the [Http guide](guide/http#testing-http-requests),
 which covers testing with the `HttpClientTestingModule` in detail.
 
-<div class="alert is-helpful">
-
-This guide's sample code also demonstrates testing of the _legacy_ `HttpModule`
-in `app/model/http-hero.service.spec.ts`.
-
-</div>
-
 
 ## Component Test Basics
 

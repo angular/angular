@@ -1324,11 +1324,11 @@ ngResource and you're using it for two things:
 You can replace this implementation with an Angular service class, while
 keeping the controllers in AngularJS land.
 
-In the new version, you import the Angular HTTP module and call its `Http` service instead of `ngResource`.
+In the new version, you import the Angular HTTP module and call its `HttpClient` service instead of `ngResource`.
 
-Re-open the `app.module.ts` file, import and add `HttpModule` to the `imports` array of the `AppModule`:
+Re-open the `app.module.ts` file, import and add `HttpClientModule` to the `imports` array of the `AppModule`:
 
-<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="httpmodule" header="app.module.ts">
+<code-example path="upgrade-phonecat-2-hybrid/app/app.module.ts" region="httpclientmodule" header="app.module.ts">
 </code-example>
 
 Now you're ready to upgrade the Phone service itself. Replace the ngResource-based
@@ -1343,7 +1343,7 @@ by the [Dependency Injection Guide](guide/dependency-injection),
 this is a marker decorator you need to use for classes that have no other
 Angular decorators but still need to have their dependencies injected.
 
-In its constructor the class expects to get the `Http` service. It will
+In its constructor the class expects to get the `HttpClient` service. It will
 be injected to it and it is stored as a private field. The service is then
 used in the two instance methods, one of which loads the list of all phones,
 and the other loads the details of a specified phone:
