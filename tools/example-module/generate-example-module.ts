@@ -23,30 +23,30 @@ function buildImportsTemplate(data: ExampleMetadata): string {
 /** Inlines the example module template with the specified parsed data. */
 function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
   const exampleImports = parsedData.map(m => buildImportsTemplate(m)).join('\n');
+  const quotePlaceholder = '◬';
   const exampleList = parsedData.reduce((result, data) => {
     return result.concat(data.component).concat(data.additionalComponents);
   }, [] as string[]).join(',');
 
-  const exampleComponents = parsedData.map((metaData) => {
-    const fields = [
-      `title: '${metaData.title.trim()}'`,
-      `component: ${metaData.component}`,
-    ];
+  const exampleComponents = parsedData.reduce((result, data) => {
+    result[data.id] = {
+      title: data.title,
+      // Since we use JSON.stringify to output the data below, the `component` will be wrapped
+      // in quotes, whereas we want a reference to the class. Add placeholder characters next to
+      // where the quotes will be so that we can strip them away afterwards.
+      component: `${quotePlaceholder}${data.component}${quotePlaceholder}`,
+      additionalFiles: data.additionalFiles,
+      selectorName: data.selectorName.join(', '),
+    };
 
-    if (metaData.additionalFiles.length) {
-      fields.push(`additionalFiles: ${JSON.stringify(metaData.additionalFiles)}`);
-    }
-     if (metaData.selectorName.length) {
-      fields.push(`selectorName: '${metaData.selectorName.join(', ')}'`);
-    }
-     const data = '\n' + fields.map(field => '    ' + field).join(',\n');
-     return `'${metaData.id}': {${data}\n  }`;
+    return result;
   }, {} as any);
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace('${exampleImports}', exampleImports)
-    .replace('${exampleComponents}', `{\n  ${exampleComponents.join(',\n  ')}}`)
-    .replace('${exampleList}', `[${exampleList}]`);
+    .replace('${exampleComponents}', JSON.stringify(exampleComponents))
+    .replace('${exampleList}', `[${exampleList}]`)
+    .replace(new RegExp(`"${quotePlaceholder}|${quotePlaceholder}"`, 'g'), '');
 }
 
 /** Converts a given camel-cased string to a dash-cased string. */
