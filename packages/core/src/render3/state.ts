@@ -9,7 +9,7 @@
 import {Sanitizer} from '../sanitization/security';
 
 import {assertDefined, assertEqual} from './assert';
-import {executeHooks} from './hooks';
+import {executeComponentHooks} from './hooks';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {Renderer3, RendererFactory3} from './interfaces/renderer';
@@ -402,7 +402,7 @@ export function resetComponentState() {
 export function leaveView(newView: LViewData, creationOnly?: boolean): void {
   if (!creationOnly) {
     if (!checkNoChangesMode) {
-      executeHooks(viewData, tView.viewHooks, tView.viewCheckHooks, creationMode);
+      executeComponentHooks(viewData, tView.viewHooks, tView.viewCheckHooks, creationMode);
     }
     // Views are clean and in update mode after being checked, so these bits are cleared
     viewData[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);

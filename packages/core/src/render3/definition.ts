@@ -8,16 +8,14 @@
 
 import './ng_dev_mode';
 
-import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../di/provider';
 import {NgModuleDef} from '../metadata/ng_module';
-import {ViewEncapsulation} from '../metadata/view';
+import {ViewEncapsulation as typePositionOnly_ViewEncapsulation} from '../metadata/view';
 import {Mutable, Type} from '../type';
 import {noSideEffects} from '../util';
 
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {BaseDef, ChangeDetectionStrategy, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory, ViewEncapsulation} from './interfaces/definition';
+import {CssSelectorList} from './interfaces/projection';
+import {NgModuleType} from './ng_module_ref';
 
 export const EMPTY: {} = {};
 export const EMPTY_ARRAY: any[] = [];
@@ -217,7 +215,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Defines template and style encapsulation options available for Component's {@link Component}.
    */
-  encapsulation?: ViewEncapsulation;
+  encapsulation?: typePositionOnly_ViewEncapsulation;
 
   /**
    * Defines arbitrary developer-defined data to be stored on a renderer instance.
@@ -289,7 +287,8 @@ export function defineComponent<T>(componentDefinition: {
     data: componentDefinition.data || {},
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
-    encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
+    encapsulation: componentDefinition.encapsulation ||
+        ViewEncapsulation.Emulated as any as typePositionOnly_ViewEncapsulation,
     id: 'c',
     styles: componentDefinition.styles || EMPTY_ARRAY,
     _: null as never,
@@ -657,17 +656,17 @@ export function definePipe<T>(pipeDef: {
  */
 
 export function getComponentDef<T>(type: any): ComponentDef<T>|null {
-  return (type as any)[NG_COMPONENT_DEF] || null;
+  return (type as ComponentType<any>).ngComponentDef || null;
 }
 
 export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
-  return (type as any)[NG_DIRECTIVE_DEF] || null;
+  return (type as DirectiveType<any>).ngDirectiveDef || null;
 }
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
-  return (type as any)[NG_PIPE_DEF] || null;
+  return (type as PipeType<any>).ngPipeDef || null;
 }
 
 export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null {
-  return (type as any)[NG_MODULE_DEF] || null;
+  return (type as NgModuleType<any>).ngModuleDef || null;
 }

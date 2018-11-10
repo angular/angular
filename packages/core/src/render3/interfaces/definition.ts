@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../../core';
+import {ViewEncapsulation as typePositionOnly_ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
+// Copy from import {ChangeDetectionStrategy} from '../change_detection/constants'; but const.
+export const enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1,
+}
+
+// Copy from import {ViewEncapsulation} from '../../core'; but const.
+export const enum ViewEncapsulation {Emulated = 0, Native = 1, None = 2, ShadowDom = 3}
 
 /**
  * Definition of what a template rendering function should look like for a component.
@@ -233,7 +241,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    *   create a ShadowRoot for component's host element.
    * - `None`: Do not provide any template or style encapsulation.
    */
-  readonly encapsulation: ViewEncapsulation;
+  readonly encapsulation: typePositionOnly_ViewEncapsulation;
 
   /**
    * Defines arbitrary developer-defined data to be stored on a renderer instance.

@@ -14,7 +14,6 @@ import {Type} from '../type';
 
 import {assertDefined, assertEqual} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
-import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
@@ -89,12 +88,12 @@ let nextNgElementId = 0;
 export function bloomAdd(
     injectorIndex: number, tView: TView, type: Type<any>| InjectionToken<any>): void {
   ngDevMode && assertEqual(tView.firstTemplatePass, true, 'expected firstTemplatePass to be true');
-  let id: number|undefined = (type as any)[NG_ELEMENT_ID];
+  let id: number|undefined = (type as any).__NG_ELEMENT_ID__;
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
   if (id == null) {
-    id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
+    id = (type as any).__NG_ELEMENT_ID__ = nextNgElementId++;
   }
 
   // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
@@ -481,7 +480,7 @@ export function getNodeInjectable(
 export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>): number|Function|
     undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
-  const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
+  const tokenId: number|undefined = (token as any).__NG_ELEMENT_ID__;
   return typeof tokenId === 'number' ? tokenId & BLOOM_MASK : tokenId;
 }
 

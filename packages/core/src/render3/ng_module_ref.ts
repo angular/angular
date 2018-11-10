@@ -18,7 +18,7 @@ import {assertDefined} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgModuleDef} from './definition';
 
-export interface NgModuleType { ngModuleDef: NgModuleDef<any>; }
+export interface NgModuleType<T> { ngModuleDef: NgModuleDef<T>; }
 
 export const COMPONENT_FACTORY_RESOLVER: StaticProvider = {
   provide: viewEngine_ComponentFactoryResolver,

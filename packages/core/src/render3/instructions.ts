@@ -20,7 +20,7 @@ import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './asse
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
+import {executeComponentHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -91,7 +91,7 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
     refreshContentQueries(tView);
 
     if (!checkNoChangesMode) {
-      executeHooks(viewData, tView.contentHooks, tView.contentCheckHooks, creationMode);
+      executeComponentHooks(viewData, tView.contentHooks, tView.contentCheckHooks, creationMode);
     }
   }
 
@@ -1371,8 +1371,7 @@ function instantiateAllDirectives(tView: TView, viewData: LViewData, previousOrP
 * Each expando block starts with the element index (turned negative so we can distinguish
 * it from the hostVar count) and the directive count. See more in VIEW_DATA.md.
 */
-export function generateExpandoInstructionBlock(
-    tView: TView, tNode: TNode, directiveCount: number): void {
+function generateExpandoInstructionBlock(tView: TView, tNode: TNode, directiveCount: number): void {
   ngDevMode && assertEqual(
                    tView.firstTemplatePass, true,
                    'Expando block should only be generated on first template pass.');

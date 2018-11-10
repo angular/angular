@@ -99,7 +99,7 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
 export function executeInitHooks(
     currentView: LViewData, tView: TView, creationMode: boolean): void {
   if (currentView[FLAGS] & LViewFlags.RunInit) {
-    executeHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
+    executeComponentHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
     currentView[FLAGS] &= ~LViewFlags.RunInit;
   }
 }
@@ -109,12 +109,12 @@ export function executeInitHooks(
  *
  * @param currentView The current view
  */
-export function executeHooks(
+export function executeComponentHooks(
     data: LViewData, allHooks: HookData | null, checkHooks: HookData | null,
     creationMode: boolean): void {
   const hooksToCall = creationMode ? allHooks : checkHooks;
   if (hooksToCall) {
-    callHooks(data, hooksToCall);
+    callComponentHooks(data, hooksToCall);
   }
 }
 
@@ -122,11 +122,11 @@ export function executeHooks(
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
  * creation mode.
  *
- * @param currentView The current view
- * @param arr The array in which the hooks are found
+ * @param viewData The current view
+ * @param hookData The array in which the hooks are found
  */
-export function callHooks(currentView: any[], arr: HookData): void {
-  for (let i = 0; i < arr.length; i += 2) {
-    (arr[i + 1] as() => void).call(currentView[arr[i] as number]);
+export function callComponentHooks(viewData: LViewData, hookData: HookData): void {
+  for (let i = 0; i < hookData.length; i += 2) {
+    (hookData[i + 1] as() => void).call(viewData[hookData[i] as number]);
   }
 }

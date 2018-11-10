@@ -8,7 +8,7 @@
 
 import {assertDefined} from './assert';
 import {attachPatchData} from './context_discovery';
-import {callHooks} from './hooks';
+import {callComponentHooks} from './hooks';
 import {LContainer, NATIVE, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
@@ -487,7 +487,7 @@ function executeOnDestroys(view: LViewData): void {
   const tView = view[TVIEW];
   let destroyHooks: HookData|null;
   if (tView != null && (destroyHooks = tView.destroyHooks) != null) {
-    callHooks(view, destroyHooks);
+    callComponentHooks(view, destroyHooks);
   }
 }
 
@@ -495,7 +495,7 @@ function executeOnDestroys(view: LViewData): void {
 function executePipeOnDestroys(viewData: LViewData): void {
   const pipeDestroyHooks = viewData[TVIEW] && viewData[TVIEW].pipeDestroyHooks;
   if (pipeDestroyHooks) {
-    callHooks(viewData !, pipeDestroyHooks);
+    callComponentHooks(viewData !, pipeDestroyHooks);
   }
 }
 

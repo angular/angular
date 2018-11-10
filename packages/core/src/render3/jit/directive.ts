@@ -9,11 +9,11 @@
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
-import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
 import {stringify} from '../../util';
 import {EMPTY_ARRAY} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
+import {ViewEncapsulation} from '../interfaces/definition';
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
