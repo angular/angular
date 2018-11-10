@@ -86,4 +86,10 @@ export class DialogConfig<D = any> {
 
   /** Whether the dialog should focus the first focusable element on open. */
   autoFocus?: boolean = true;
+
+  /** Duration of the enter animation. Has to be a valid CSS value (e.g. 100ms). */
+  enterAnimationDuration?: string = '225ms';
+
+  /** Duration of the exit animation. Has to be a valid CSS value (e.g. 50ms). */
+  exitAnimationDuration?: string = '225ms';
 }

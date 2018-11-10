@@ -54,13 +54,20 @@ export function throwDialogContentAlreadyAttachedError() {
   changeDetection: ChangeDetectionStrategy.Default,
   animations: [
     trigger('dialog', [
-      state('enter', style({ opacity: 1 })),
-      state('exit, void', style({ opacity: 0 })),
-      transition('* => *', animate(225)),
+      state('enter', style({opacity: 1})),
+      state('exit, void', style({opacity: 0})),
+      transition('* => enter', animate('{{enterAnimationDuration}}')),
+      transition('* => exit, * => void', animate('{{exitAnimationDuration}}')),
     ])
   ],
   host: {
-    '[@dialog]': '_state',
+    '[@dialog]': `{
+      value: _state,
+      params: {
+        enterAnimationDuration: _config.enterAnimationDuration,
+        exitAnimationDuration: _config.exitAnimationDuration
+      }
+    }`,
     '(@dialog.start)': '_onAnimationStart($event)',
     '(@dialog.done)': '_animationDone.next($event)',
   },
