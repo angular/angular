@@ -42,6 +42,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const {expression, statements} = compileInjectable({
       name: facade.name,
       type: new WrappedNodeExpr(facade.type),
+      typeArgumentCount: 0,
       providedIn: computeProvidedIn(facade.providedIn),
       useClass: wrapExpression(facade, USE_CLASS),
       useFactory: wrapExpression(facade, USE_FACTORY),
