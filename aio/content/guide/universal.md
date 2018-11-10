@@ -210,7 +210,7 @@ export class AppServerModule {}
 
 ### 2c. Create a main file to export AppServerModule
 
-Create a main file for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance. This example calls the file `main.server.ts`.
+Create a main file `main.server.ts` for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance.
 
 <code-example format="." language="typescript" linenums="false">
 export { AppServerModule } from './app/app.server.module';
@@ -255,7 +255,7 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
   "server": {
     "builder": "@angular-devkit/build-angular:server",
     "options": {
-      "outputPath": "dist/my-project-server",
+      "outputPath": "dist/server",
       "main": "src/main.server.ts",
       "tsConfig": "src/tsconfig.server.json"
     }
@@ -267,7 +267,7 @@ To build a server bundle for your application, use the `ng run` command, with th
 
 <code-example format="." language="none" linenums="false">
 # This builds your project using the server target, and places the output
-# in dist/my-project-server/
+# in dist/server/
 $ ng run my-project:server
 
 Date: 2017-07-24T22:42:09.739Z
@@ -384,8 +384,7 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
-<code-example format="." language="typescript" linenums="false">
-@NgModule({
+<code-example format="." language="javascript" linenums="false">
 const path = require('path');
 const webpack = require('webpack');
 
