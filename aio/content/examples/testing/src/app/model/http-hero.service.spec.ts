@@ -6,13 +6,12 @@ import {
 } from '@angular/core/testing';
 
 import {
-  MockBackend,
-  MockConnection
-} from '@angular/http/testing';
+  HttpClient
+} from '@angular/common/http';
 
 import {
-  HttpModule, Http, XHRBackend, Response, ResponseOptions
-} from '@angular/http';
+  HttpClientTestingModule, HttpTestingController
+} from '@angular/common/http/testing';
 
 import { of } from 'rxjs';
 
@@ -28,16 +27,13 @@ const makeHeroData = () => [
 
 ////////  Tests  /////////////
 describe('HttpHeroService (using old HttpModule)', () => {
-  let backend: MockBackend;
+  let backend: HttpTestingController;
   let service: HttpHeroService;
 
   beforeEach( () => {
     TestBed.configureTestingModule({
-      imports: [ HttpModule ],
-      providers: [
-        HttpHeroService,
-        { provide: XHRBackend, useClass: MockBackend }
-      ]
+      imports: [ HttpClientTestingModule ],
+      providers: [HttpHeroService]
     });
   });
 
@@ -47,36 +43,32 @@ describe('HttpHeroService (using old HttpModule)', () => {
   });
 
   it('can instantiate service with "new"', () => {
-    const http = TestBed.get(Http);
-    expect(http).not.toBeNull('http should be provided');
+    const http = TestBed.get(HttpClient);
+    expect(http).not.toBeNull('httpclient should be provided');
     let service = new HttpHeroService(http);
     expect(service instanceof HttpHeroService).toBe(true, 'new service should be ok');
   });
 
-  it('can provide the mockBackend as XHRBackend', () => {
-    const backend = TestBed.get(XHRBackend);
-    expect(backend).not.toBeNull('backend should be provided');
-  });
-
   describe('when getHeroes', () => {
     let fakeHeroes: Hero[];
-    let http: Http;
-    let response: Response;
+    let http: HttpClient;
+    let response: Object;
 
     beforeEach(() => {
 
-      backend = TestBed.get(XHRBackend);
-      http = TestBed.get(Http);
+      backend = TestBed.get(HttpTestingController);
+      http = TestBed.get(HttpClient);
 
       service = new HttpHeroService(http);
       fakeHeroes = makeHeroData();
-      let options = new ResponseOptions({status: 200, body: {data: fakeHeroes}});
-      response = new Response(options);
+      response = {status: 200, body: {data: fakeHeroes}};
+    });
+
+    afterEach(() => {
+      backend.verify();
     });
 
     it('should have expected fake heroes (then)', () => {
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(response));
-
       service.getHeroes().toPromise()
       // .then(() => Promise.reject('deliberate'))
         .then(heroes => {
@@ -84,11 +76,12 @@ describe('HttpHeroService (using old HttpModule)', () => {
             'should have expected no. of heroes');
         })
         .catch(fail);
+
+      const req = backend.expectOne(service._heroesUrl);
+      req.flush(response);
     });
 
     it('should have expected fake heroes (Observable tap)', () => {
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(response));
-
       service.getHeroes().subscribe(
         heroes => {
           expect(heroes.length).toBe(fakeHeroes.length,
@@ -96,31 +89,34 @@ describe('HttpHeroService (using old HttpModule)', () => {
         },
         fail
       );
+
+      const req = backend.expectOne(service._heroesUrl);
+      req.flush(response);
     });
 
 
     it('should be OK returning no heroes', () => {
-      let resp = new Response(new ResponseOptions({status: 200, body: {data: []}}));
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(resp));
-
       service.getHeroes().subscribe(
         heroes => {
           expect(heroes.length).toBe(0, 'should have no heroes');
         },
         fail
       );
+
+      const req = backend.expectOne(service._heroesUrl);
+      req.flush([]);
     });
 
     it('should treat 404 as an Observable error', () => {
-      let resp = new Response(new ResponseOptions({status: 404}));
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(resp));
-
       service.getHeroes().subscribe(
         heroes => fail('should not respond with heroes'),
         err => {
           expect(err).toMatch(/Bad response status/, 'should catch bad response status code');
           return of(null); // failure is the expected test result
         });
+
+      const req = backend.expectOne(service._heroesUrl);
+      req.flush([], {status: 404});
     });
   });
 });

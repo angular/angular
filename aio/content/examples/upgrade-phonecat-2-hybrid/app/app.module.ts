@@ -6,9 +6,9 @@ import { BrowserModule } from '@angular/platform-browser';
 // #docregion upgrademodule
 import { UpgradeModule } from '@angular/upgrade/static';
 // #enddocregion upgrademodule
-// #docregion httpmodule
-import { HttpModule } from '@angular/http';
-// #enddocregion httpmodule
+// #docregion httpclientmodule
+import { HttpClientModule } from '@angular/common/http';
+// #enddocregion httpclientmodule
 // #docregion phonelist
 import { FormsModule } from '@angular/forms';
 // #enddocregion phonelist
@@ -28,7 +28,7 @@ import { routeParamsProvider } from './ajs-upgraded-providers';
 import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
 // #enddocregion phonedetail
 
-// #docregion bare, upgrademodule, httpmodule, phone, phonelist, phonedetail, checkmarkpipe
+// #docregion bare, upgrademodule, httpclientmodule, phone, phonelist, phonedetail, checkmarkpipe
 
 @NgModule({
   imports: [
@@ -36,8 +36,8 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
     // #enddocregion bare
     UpgradeModule,
     // #enddocregion upgrademodule
-    HttpModule,
-    // #enddocregion httpmodule, phone
+    HttpClientModule,
+    // #enddocregion httpclientmodule, phone
     FormsModule,
   // #docregion bare, upgrademodule, httpmodule, phone
   ],

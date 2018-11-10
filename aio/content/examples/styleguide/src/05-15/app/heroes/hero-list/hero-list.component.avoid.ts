@@ -2,10 +2,10 @@
 /* avoid */
 
 import { OnInit } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { catchError, finalize, map } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 
 import { Hero } from '../shared/hero.model';
 
@@ -13,11 +13,10 @@ const heroesUrl = 'http://angular.io';
 
 export class HeroListComponent implements OnInit {
   heroes: Hero[];
-  constructor(private http: Http) {}
+  constructor(private http: HttpClient) {}
   getHeroes() {
     this.heroes = [];
     this.http.get(heroesUrl).pipe(
-      map((response: Response) => <Hero[]>response.json().data),
       catchError(this.catchBadResponse),
       finalize(() => this.hideSpinner())
     ).subscribe((heroes: Hero[]) => this.heroes = heroes);
