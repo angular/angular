@@ -90,25 +90,6 @@ jobs:
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
 
-      # CircleCI will allow us to go back and view/download these artifacts from past builds.
-      # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
-      # The destination keys need be format {projectName}/{context}/{fileName} so that the github-robot can process them for size calculations
-      # projectName should remain consistant to group files
-      # context and fileName can be almost anything (within usual URI rules)
-      # There should only be exactly 2 forward slashes in the path
-      # This is so they're backwards compatiable with the existing data we have on bundle sizes
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
-          destination: core/hello_world/bundle
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
-          destination: core/todo/bundle
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
-          destination: core/hello_world/bundle.br
-      - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
-          destination: core/todo/bundle.br
       - save_cache:
           key: *cache_key
           paths:
@@ -129,7 +110,29 @@ jobs:
       - *yarn_install
       - *setup_bazel_remote_execution
 
-      - run: yarn test-ivy-aot //...
+        # We need to explicitly specify the --symlink_prefix option because otherwise we would
+        # not be able to easily find the output bin directory when uploading artifacts for size
+        # measurements.
+      - run: yarn test-ivy-aot //... --symlink_prefix=dist/
+
+        # Publish bundle artifacts which will be used to calculate the size change. **Note**: Make
+        # sure that the size plugin from the Angular robot fetches the artifacts from this CircleCI
+        # job (see .github/angular-robot.yml). Additionally any artifacts need to be stored with the
+        # following path format: "{projectName}/{context}/{fileName}". This format is necessary
+        # because otherwise the bot is not able to pick up the artifacts from CircleCI. See:
+        # https://github.com/angular/github-robot/blob/master/functions/src/plugins/size.ts#L392-L394
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
+          destination: core/hello_world/bundle
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
+          destination: core/todo/bundle
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
+          destination: core/hello_world/bundle.br
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
+          destination: core/todo/bundle.br
 
   test_aio:
     <<: *job_defaults
