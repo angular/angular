@@ -1,4 +1,4 @@
-<div>
+<div cdkDropListGroup>
   <div class="demo-list">
 
     <h2>To do</h2>
@@ -7,11 +7,9 @@
     </mat-slide-toggle>
     <div
       cdkDropList
-      #one="cdkDropList"
       (cdkDropListDropped)="drop($event)"
       [cdkDropListLockAxis]="axisLock"
-      [cdkDropListData]="todo"
-      [cdkDropListConnectedTo]="[two]">
+      [cdkDropListData]="todo">
       <div *ngFor="let item of todo" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
@@ -23,11 +21,9 @@
     <h2>Done</h2>
     <div
       cdkDropList
-      #two="cdkDropList"
       (cdkDropListDropped)="drop($event)"
       [cdkDropListLockAxis]="axisLock"
-      [cdkDropListData]="done"
-      [cdkDropListConnectedTo]="[one]">
+      [cdkDropListData]="done">
       <div *ngFor="let item of done" cdkDrag>
         {{item}}
         <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>

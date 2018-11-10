@@ -1927,6 +1927,31 @@ describe('CdkDrag', () => {
       });
     }));
 
+    it('should be able to connect two drop zones using the drop list group', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZonesViaGroupDirective);
+      fixture.detectChanges();
+
+      const dropInstances = fixture.componentInstance.dropInstances.toArray();
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toBeTruthy();
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item: groups[0][1],
+        container: dropInstances[1],
+        previousContainer: dropInstances[0]
+      });
+    }));
+
     it('should be able to pass a single id to `connectedTo`', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
@@ -2310,6 +2335,42 @@ class ConnectedDropZones implements AfterViewInit {
     });
   }
 }
+
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .cdk-drop-list {
+      display: block;
+      width: 100px;
+      min-height: ${ITEM_HEIGHT}px;
+      background: hotpink;
+    }
+
+    .cdk-drag {
+      display: block;
+      height: ${ITEM_HEIGHT}px;
+      background: red;
+    }
+  `],
+  template: `
+    <div cdkDropListGroup>
+      <div
+        cdkDropList
+        [cdkDropListData]="todo"
+        (cdkDropListDropped)="droppedSpy($event)">
+        <div [cdkDragData]="item" *ngFor="let item of todo" cdkDrag>{{item}}</div>
+      </div>
+
+      <div
+        cdkDropList
+        [cdkDropListData]="done"
+        (cdkDropListDropped)="droppedSpy($event)">
+        <div [cdkDragData]="item" *ngFor="let item of done" cdkDrag>{{item}}</div>
+      </div>
+    </div>
+  `
+})
+class ConnectedDropZonesViaGroupDirective extends ConnectedDropZones {}
 
 
 @Component({

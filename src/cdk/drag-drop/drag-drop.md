@@ -22,12 +22,12 @@ update the data model once the user finishes dragging.
 ### Transferring items between lists
 The `cdkDropList` directive supports transferring dragged items between connected drop zones.
 You can connect one or more `cdkDropList` instances together by setting the `cdkDropListConnectedTo`
-property.
+property or by wrapping the elements in an element with the `cdkDropListGroup` attribute.
 
 <!-- example(cdk-drag-drop-connected-sorting) -->
 
-Note that `cdkDropListConnectedTo` works both with a direct reference to another `cdkDropList`, or by
-referencing the `id` of another drop container:
+Note that `cdkDropListConnectedTo` works both with a direct reference to another `cdkDropList`, or
+by referencing the `id` of another drop container:
 
 ```html
 <!-- This is valid -->
@@ -38,6 +38,19 @@ referencing the `id` of another drop container:
 <div cdkDropList id="list-one" [cdkDropListConnectedTo]="['list-two']"></div>
 <div cdkDropList id="list-two" [cdkDropListConnectedTo]="['list-one']"></div>
 ```
+
+If you have an unknown number of connected drop lists, you can use the `cdkDropListGroup` directive
+to set up the connection automatically. Note that any new `cdkDropList` that is added under a group
+will be connected to all other automatically.
+
+```html
+<div cdkDropListGroup>
+  <!-- All lists in here will be connected. -->
+  <div cdkDropList *ngFor="let list of lists"></div>
+</div>
+```
+
+<!-- example(cdk-drag-drop-connected-sorting-group) -->
 
 ### Attaching data
 You can associate some arbitrary data with both `cdkDrag` and `cdkDropList` by setting `cdkDragData`

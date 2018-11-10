@@ -27,6 +27,7 @@ import {DragDropRegistry} from './drag-drop-registry';
 import {CdkDragDrop, CdkDragEnter, CdkDragExit} from './drag-events';
 import {moveItemInArray} from './drag-utils';
 import {CDK_DROP_LIST_CONTAINER} from './drop-list-container';
+import {CdkDropListGroup} from './drop-list-group';
 
 
 /** Counter used to generate unique ids for drop zones. */
@@ -143,14 +144,23 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
     public element: ElementRef<HTMLElement>,
     private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() private _dir?: Directionality) {}
+    @Optional() private _dir?: Directionality,
+    @Optional() private _group?: CdkDropListGroup<CdkDropList>) {}
 
   ngOnInit() {
     this._dragDropRegistry.registerDropContainer(this);
+
+    if (this._group) {
+      this._group._items.add(this);
+    }
   }
 
   ngOnDestroy() {
     this._dragDropRegistry.removeDropContainer(this);
+
+    if (this._group) {
+      this._group._items.delete(this);
+    }
   }
 
   /** Whether an item in the container is being dragged. */
@@ -366,6 +376,8 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
   /** Refreshes the position cache of the items and sibling containers. */
   private _cachePositions() {
     const isHorizontal = this.orientation === 'horizontal';
+
+    this._positionCache.self = this.element.nativeElement.getBoundingClientRect();
     this._positionCache.items = this._activeDraggables
       .map(drag => {
         const elementToMeasure = this._dragDropRegistry.isDragging(drag) ?
@@ -397,12 +409,10 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
                               a.clientRect.top - b.clientRect.top;
       });
 
-    this._positionCache.siblings = coerceArray(this.connectedTo)
-      .map(drop => typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop)
-      .filter(drop => drop && drop !== this)
-      .map(drop => ({drop, clientRect: drop.element.nativeElement.getBoundingClientRect()}));
-
-    this._positionCache.self = this.element.nativeElement.getBoundingClientRect();
+    this._positionCache.siblings = this._getConnectedLists().map(drop => ({
+      drop,
+      clientRect: drop.element.nativeElement.getBoundingClientRect()
+    }));
   }
 
   /** Resets the container to its initial state. */
@@ -534,6 +544,23 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
     }
 
     return siblingOffset;
+  }
+
+  /** Gets an array of unique drop lists that the current list is connected to. */
+  private _getConnectedLists(): CdkDropList[] {
+    const siblings = coerceArray(this.connectedTo).map(drop => {
+      return typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop;
+    });
+
+    if (this._group) {
+      this._group._items.forEach(drop => {
+        if (siblings.indexOf(drop) === -1) {
+          siblings.push(drop);
+        }
+      });
+    }
+
+    return siblings.filter(drop => drop && drop !== this);
   }
 }
 
