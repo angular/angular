@@ -1043,8 +1043,23 @@ describe('MatDatepicker', () => {
 
         const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
 
-        expect(host.hasAttribute('tabindex')).toBe(false);
+        expect(host.getAttribute('tabindex')).toBe('-1');
       });
+
+      it('should forward focus to the underlying button when the host is focused', () => {
+        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
+        fixture.detectChanges();
+
+        const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
+        const button = host.querySelector('button');
+
+        expect(document.activeElement).not.toBe(button);
+
+        host.focus();
+
+        expect(document.activeElement).toBe(button);
+      });
+
     });
 
     describe('datepicker inside mat-form-field', () => {
