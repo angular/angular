@@ -121,7 +121,6 @@ describe('compiler compliance', () => {
 
 
       const result = compile(files, angularFiles);
-
       expectEmit(result.source, factory, 'Incorrect factory');
       expectEmit(result.source, template, 'Incorrect template');
     });
