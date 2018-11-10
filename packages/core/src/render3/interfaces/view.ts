@@ -21,29 +21,31 @@ import {RElement, Renderer3} from './renderer';
 import {StylingContext} from './styling';
 
 
-/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 17;
+export const enum CViewData {
+  /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
+  HEADER_OFFSET = 17,
 
-// Below are constants for LViewData indices to help us look up LViewData members
-// without having to remember the specific indices.
-// Uglify will inline these when minifying so there shouldn't be a cost.
-export const TVIEW = 0;
-export const FLAGS = 1;
-export const PARENT = 2;
-export const NEXT = 3;
-export const QUERIES = 4;
-export const HOST = 5;
-export const HOST_NODE = 6;
-export const BINDING_INDEX = 7;
-export const CLEANUP = 8;
-export const CONTEXT = 9;
-export const INJECTOR = 10;
-export const RENDERER = 11;
-export const SANITIZER = 12;
-export const TAIL = 13;
-export const CONTAINER_INDEX = 14;
-export const CONTENT_QUERIES = 15;
-export const DECLARATION_VIEW = 16;
+  // Below are constants for LViewData indices to help us look up LViewData members
+  // without having to remember the specific indices.
+  // Uglify will inline these when minifying so there shouldn't be a cost.
+  TVIEW = 0,
+  FLAGS = 1,
+  PARENT = 2,
+  NEXT = 3,
+  QUERIES = 4,
+  HOST = 5,
+  HOST_NODE = 6,
+  BINDING_INDEX = 7,
+  CLEANUP = 8,
+  CONTEXT = 9,
+  INJECTOR = 10,
+  RENDERER = 11,
+  SANITIZER = 12,
+  TAIL = 13,
+  CONTAINER_INDEX = 14,
+  CONTENT_QUERIES = 15,
+  DECLARATION_VIEW = 16,
+}
 
 // This interface replaces the real LViewData interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -69,10 +71,10 @@ export interface LViewData extends Array<any> {
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  [TVIEW]: TView;
+  [CViewData.TVIEW]: TView;
 
   /** Flags for this view. See LViewFlags for more info. */
-  [FLAGS]: LViewFlags;
+  [CViewData.FLAGS]: LViewFlags;
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
@@ -82,7 +84,7 @@ export interface LViewData extends Array<any> {
    * This is the "insertion" view for embedded views. This allows us to properly
    * destroy embedded views.
    */
-  [PARENT]: LViewData|null;
+  [CViewData.PARENT]: LViewData|null;
 
   /**
    *
@@ -93,17 +95,17 @@ export interface LViewData extends Array<any> {
    * views in the same container. We need a way to link component views and views
    * across containers as well.
    */
-  [NEXT]: LViewData|LContainer|null;
+  [CViewData.NEXT]: LViewData|LContainer|null;
 
   /** Queries active for this view - nodes from a view are reported to those queries. */
-  [QUERIES]: LQueries|null;
+  [CViewData.QUERIES]: LQueries|null;
 
   /**
    * The host node for this LViewData instance, if this is a component view.
    *
    * If this is an embedded view, HOST will be null.
    */
-  [HOST]: RElement|StylingContext|null;
+  [CViewData.HOST]: RElement|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
@@ -115,7 +117,7 @@ export interface LViewData extends Array<any> {
    *
    * If null, this is the root view of an application (root component is in this view).
    */
-  [HOST_NODE]: TViewNode|TElementNode|null;
+  [CViewData.HOST_NODE]: TViewNode|TElementNode|null;
 
   /**
    * The binding index we should access next.
@@ -124,7 +126,7 @@ export interface LViewData extends Array<any> {
    * if a view is left midway through processing bindings (e.g. if there is
    * a setter that creates an embedded view, like in ngIf).
    */
-  [BINDING_INDEX]: number;
+  [CViewData.BINDING_INDEX]: number;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -135,7 +137,7 @@ export interface LViewData extends Array<any> {
    * TView.cleanup saves an index to the necessary context in this array.
    */
   // TODO: flatten into LViewData[]
-  [CLEANUP]: any[]|null;
+  [CViewData.CLEANUP]: any[]|null;
 
   /**
    * - For dynamic views, this is the context with which to render the template (e.g.
@@ -144,16 +146,16 @@ export interface LViewData extends Array<any> {
    * - For non-root components, the context is the component instance,
    * - For inline views, the context is null.
    */
-  [CONTEXT]: {}|RootContext|null;
+  [CViewData.CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  [INJECTOR]: Injector|null;
+  [CViewData.INJECTOR]: Injector|null;
 
   /** Renderer to be used for this view. */
-  [RENDERER]: Renderer3;
+  [CViewData.RENDERER]: Renderer3;
 
   /** An optional custom sanitizer. */
-  [SANITIZER]: Sanitizer|null;
+  [CViewData.SANITIZER]: Sanitizer|null;
 
   /**
    * The last LViewData or LContainer beneath this LViewData in the hierarchy.
@@ -161,7 +163,7 @@ export interface LViewData extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  [TAIL]: LViewData|LContainer|null;
+  [CViewData.TAIL]: LViewData|LContainer|null;
 
   /**
    * The index of the parent container's host node. Applicable only to embedded views that
@@ -171,14 +173,14 @@ export interface LViewData extends Array<any> {
    * containers because their parent cannot be stored on the TViewNode (views may be inserted
    * in multiple containers, so the parent cannot be shared between view instances).
    */
-  [CONTAINER_INDEX]: number;
+  [CViewData.CONTAINER_INDEX]: number;
 
   /**
    * Stores QueryLists associated with content queries of a directive. This data structure is
    * filled-in as part of a directive creation process and is later used to retrieve a QueryList to
    * be refreshed.
    */
-  [CONTENT_QUERIES]: QueryList<any>[]|null;
+  [CViewData.CONTENT_QUERIES]: QueryList<any>[]|null;
 
   /**
    * View where this view's template was declared.
@@ -204,7 +206,7 @@ export interface LViewData extends Array<any> {
    * template function during change detection, we need the declaration view to get inherited
    * context.
    */
-  [DECLARATION_VIEW]: LViewData|null;
+  [CViewData.DECLARATION_VIEW]: LViewData|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */

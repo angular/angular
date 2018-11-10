@@ -12,9 +12,12 @@ import {Type} from '../../type';
 import {TElementNode} from './node';
 import {LViewData, TData} from './view';
 
-export const TNODE = 8;
-export const PARENT_INJECTOR = 8;
-export const INJECTOR_SIZE = 9;
+export const enum CInjector {
+  TNODE = 8,
+  PARENT_INJECTOR = 8,
+  INJECTOR_SIZE = 9,
+  NO_PARENT_INJECTOR = -1,
+}
 
 /**
  * Represents a relative location of parent injector.
@@ -30,8 +33,6 @@ export const enum RelativeInjectorLocationFlags {
   ViewOffsetShift = 16,
   NO_PARENT = -1,
 }
-
-export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
 
 /**
  * Each injector is saved in 9 contiguous slots in `LViewData` and 9 contiguous slots in
@@ -79,7 +80,7 @@ export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
  *
  *    // We need to store a reference to the injector's parent so DI can keep looking up
  *    // the injector tree until it finds the dependency it's looking for.
- *    [PARENT_INJECTOR]: number;
+ *    [CInjector.PARENT_INJECTOR]: number;
  * }
  *
  * export interface TInjector extends Array<any> {
@@ -109,7 +110,7 @@ export const NO_PARENT_INJECTOR: RelativeInjectorLocation = -1 as any;
  *    [7]: number;
  *
  *    // Necessary to find directive indices for a particular node.
- *    [TNODE]: TElementNode|TElementContainerNode|TContainerNode;
+ *    [CInjector.TNODE]: TElementNode|TElementContainerNode|TContainerNode;
  *  }
  */
 

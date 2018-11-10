@@ -28,7 +28,7 @@ import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LViewData} from '../../src/render3/interfaces/view';
+import {CViewData, LViewData} from '../../src/render3/interfaces/view';
 import {getViewData} from '../../src/render3/state';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
@@ -319,7 +319,7 @@ export function createDirective(
 
 /** Gets the directive on the given node at the given index */
 export function getDirectiveOnNode(nodeIndex: number, dirIndex: number = 0) {
-  const directives = discoverDirectives(nodeIndex + HEADER_OFFSET, getViewData(), true);
+  const directives = discoverDirectives(nodeIndex + CViewData.HEADER_OFFSET, getViewData(), true);
   if (directives == null) {
     throw new Error(`No directives exist on node in slot ${nodeIndex}`);
   }

@@ -16,7 +16,7 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} f
 import {directiveInject} from './instructions';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNodeFlags, TNodeProviderIndexes} from './interfaces/node';
-import {LViewData, TData, TVIEW, TView} from './interfaces/view';
+import {CViewData, LViewData, TData, TView} from './interfaces/view';
 import {getPreviousOrParentTNode, getViewData} from './state';
 import {isComponentDef} from './util';
 
@@ -43,7 +43,7 @@ import {isComponentDef} from './util';
 export function providersResolver<T>(
     def: DirectiveDef<T>, providers: Provider[], viewProviders: Provider[]): void {
   const viewData = getViewData();
-  const tView: TView = viewData[TVIEW];
+  const tView: TView = viewData[CViewData.TVIEW];
   if (tView.firstTemplatePass) {
     const isComponent = isComponentDef(def);
 

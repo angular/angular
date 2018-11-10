@@ -24,7 +24,7 @@ import {createLViewData, createNodeAtIndex, createTView, createViewNode, element
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {FLAGS, HEADER_OFFSET, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags, RootContext} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
@@ -122,7 +122,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
         renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-    rootView[INJECTOR] = ngModule && ngModule.injector || null;
+    rootView[CViewData.INJECTOR] = ngModule && ngModule.injector || null;
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
@@ -140,7 +140,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // projection instruction. This is needed to support the reprojection of these nodes.
       if (projectableNodes) {
         let index = 0;
-        const tView = rootView[TVIEW];
+        const tView = rootView[CViewData.TVIEW];
         const projection: TNode[] = tElementNode.projection = [];
         for (let i = 0; i < projectableNodes.length; i++) {
           const nodeList = projectableNodes[i];
@@ -153,9 +153,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
               // Also the logic here should be shared with `component.ts`'s `renderComponent`
               // method.
               tView.expandoStartIndex++;
-              tView.blueprint.splice(++index + HEADER_OFFSET, 0, null);
-              tView.data.splice(index + HEADER_OFFSET, 0, null);
-              rootView.splice(index + HEADER_OFFSET, 0, null);
+              tView.blueprint.splice(++index + CViewData.HEADER_OFFSET, 0, null);
+              tView.data.splice(index + CViewData.HEADER_OFFSET, 0, null);
+              rootView.splice(index + CViewData.HEADER_OFFSET, 0, null);
             }
             const tNode =
                 createNodeAtIndex(index, TNodeType.Element, nodeList[j] as RElement, null, null);

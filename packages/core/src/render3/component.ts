@@ -22,7 +22,7 @@ import {ComponentDef, ComponentType} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags, RootContext, RootContextFlags} from './interfaces/view';
 import {publishDefaultGlobalUtils} from './publish_global_util';
 import {enterView, leaveView, resetComponentState} from './state';
 import {defaultScheduler, getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
@@ -122,7 +122,7 @@ export function renderComponent<T>(
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LViewData = createLViewData(
       renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-  rootView[INJECTOR] = opts.injector || null;
+  rootView[CViewData.INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null);
   let component: T;
@@ -157,7 +157,7 @@ export function createRootComponentView(
     rNode: RElement | null, def: ComponentDef<any>, rootView: LViewData, renderer: Renderer3,
     sanitizer?: Sanitizer | null): LViewData {
   resetComponentState();
-  const tView = rootView[TVIEW];
+  const tView = rootView[CViewData.TVIEW];
   const componentView = createLViewData(
       renderer,
       getOrCreateTView(
@@ -172,10 +172,10 @@ export function createRootComponentView(
     queueComponentIndexForCheck(tNode);
   }
 
-  // Store component view at node index, with node as the HOST
-  componentView[HOST] = rootView[HEADER_OFFSET];
-  componentView[HOST_NODE] = tNode as TElementNode;
-  return rootView[HEADER_OFFSET] = componentView;
+  // Store component view at node index, with node as the LView.HOST
+  componentView[CViewData.HOST] = rootView[CViewData.HEADER_OFFSET];
+  componentView[CViewData.HOST_NODE] = tNode as TElementNode;
+  return rootView[CViewData.HEADER_OFFSET] = componentView;
 }
 
 /**
@@ -185,12 +185,12 @@ export function createRootComponentView(
 export function createRootComponent<T>(
     componentView: LViewData, componentDef: ComponentDef<T>, rootView: LViewData,
     rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
-  const tView = rootView[TVIEW];
+  const tView = rootView[CViewData.TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootView, componentDef);
 
   rootContext.components.push(component);
-  componentView[CONTEXT] = component;
+  componentView[CViewData.CONTEXT] = component;
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
 
@@ -224,7 +224,7 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLViewData(component) ![TVIEW];
+  const rootTView = readPatchedLViewData(component) ![CViewData.TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
   queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
@@ -238,7 +238,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
  * @param component any component
  */
 function getRootContext(component: any): RootContext {
-  const rootContext = getRootView(component)[CONTEXT] as RootContext;
+  const rootContext = getRootView(component)[CViewData.CONTEXT] as RootContext;
   ngDevMode && assertDefined(rootContext, 'rootContext');
   return rootContext;
 }

@@ -11,8 +11,9 @@ import {assertEqual} from './assert';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, LViewData, TVIEW} from './interfaces/view';
+import {CViewData, LViewData} from './interfaces/view';
 import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+
 
 
 /** Returns the matching `LContext` data for a given DOM node, directive or component instance.
@@ -152,7 +153,7 @@ export function getComponentViewByInstance(componentInstance: {}): LViewData {
   if (Array.isArray(lViewData)) {
     const nodeIndex = findViaComponent(lViewData, componentInstance);
     view = getComponentViewByIndex(nodeIndex, lViewData);
-    const context = createLContext(lViewData, nodeIndex, view[HOST] as RElement);
+    const context = createLContext(lViewData, nodeIndex, view[CViewData.HOST] as RElement);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
@@ -183,7 +184,7 @@ export function isDirectiveInstance(instance: any): boolean {
  * Locates the element within the given LViewData and returns the matching index
  */
 function findViaNativeElement(lViewData: LViewData, target: RElement): number {
-  let tNode = lViewData[TVIEW].firstChild;
+  let tNode = lViewData[CViewData.TVIEW].firstChild;
   while (tNode) {
     const native = getNativeByTNode(tNode, lViewData) !;
     if (native === target) {
@@ -213,22 +214,22 @@ function traverseNextElement(tNode: TNode): TNode|null {
  * Locates the component within the given LViewData and returns the matching index
  */
 function findViaComponent(lViewData: LViewData, componentInstance: {}): number {
-  const componentIndices = lViewData[TVIEW].components;
+  const componentIndices = lViewData[CViewData.TVIEW].components;
   if (componentIndices) {
     for (let i = 0; i < componentIndices.length; i++) {
       const elementComponentIndex = componentIndices[i];
       const componentView = getComponentViewByIndex(elementComponentIndex, lViewData);
-      if (componentView[CONTEXT] === componentInstance) {
+      if (componentView[CViewData.CONTEXT] === componentInstance) {
         return elementComponentIndex;
       }
     }
   } else {
-    const rootComponentView = getComponentViewByIndex(HEADER_OFFSET, lViewData);
-    const rootComponent = rootComponentView[CONTEXT];
+    const rootComponentView = getComponentViewByIndex(CViewData.HEADER_OFFSET, lViewData);
+    const rootComponent = rootComponentView[CViewData.CONTEXT];
     if (rootComponent === componentInstance) {
       // we are dealing with the root element here therefore we know that the
       // element is the very first element after the HEADER data in the lView
-      return HEADER_OFFSET;
+      return CViewData.HEADER_OFFSET;
     }
   }
   return -1;
@@ -243,7 +244,7 @@ function findViaDirective(lViewData: LViewData, directiveInstance: {}): number {
   // element bound to the directive being search lives somewhere
   // in the view data. We loop through the nodes and check their
   // list of directives for the instance.
-  let tNode = lViewData[TVIEW].firstChild;
+  let tNode = lViewData[CViewData.TVIEW].firstChild;
   while (tNode) {
     const directiveIndexStart = getDirectiveStartIndex(tNode);
     const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
@@ -271,7 +272,7 @@ function assertDomElement(element: any) {
  */
 export function discoverDirectives(
     nodeIndex: number, lViewData: LViewData, includeComponents: boolean): any[]|null {
-  const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
+  const tNode = lViewData[CViewData.TVIEW].data[nodeIndex] as TNode;
   let directiveStartIndex = getDirectiveStartIndex(tNode);
   const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
   if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
@@ -284,7 +285,7 @@ export function discoverDirectives(
  */
 export function discoverLocalRefs(lViewData: LViewData, nodeIndex: number): {[key: string]: any}|
     null {
-  const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
+  const tNode = lViewData[CViewData.TVIEW].data[nodeIndex] as TNode;
   if (tNode && tNode.localNames) {
     const result: {[key: string]: any} = {};
     for (let i = 0; i < tNode.localNames.length; i += 2) {

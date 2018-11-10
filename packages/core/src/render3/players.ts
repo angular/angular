@@ -11,7 +11,7 @@ import {getContext} from './context_discovery';
 import {getRootContext} from './discovery_utils';
 import {scheduleTick} from './instructions';
 import {ComponentInstance, DirectiveInstance, Player} from './interfaces/player';
-import {HEADER_OFFSET, RootContextFlags} from './interfaces/view';
+import {CViewData, RootContextFlags} from './interfaces/view';
 import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayersInternal, getStylingContext, throwInvalidRefError} from './styling/util';
 
 /**
@@ -58,7 +58,8 @@ export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElem
     return [];
   }
 
-  const stylingContext = getStylingContext(context.nodeIndex - HEADER_OFFSET, context.lViewData);
+  const stylingContext =
+      getStylingContext(context.nodeIndex - CViewData.HEADER_OFFSET, context.lViewData);
   const playerContext = stylingContext ? getPlayerContext(stylingContext) : null;
   return playerContext ? getPlayersInternal(playerContext) : [];
 }

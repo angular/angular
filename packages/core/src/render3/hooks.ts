@@ -9,7 +9,8 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
-import {FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
+import {HookData, CViewData, LViewData, LViewFlags, TView} from './interfaces/view';
+
 
 
 /**
@@ -98,9 +99,9 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  */
 export function executeInitHooks(
     currentView: LViewData, tView: TView, creationMode: boolean): void {
-  if (currentView[FLAGS] & LViewFlags.RunInit) {
+  if (currentView[CViewData.FLAGS] & LViewFlags.RunInit) {
     executeComponentHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
-    currentView[FLAGS] &= ~LViewFlags.RunInit;
+    currentView[CViewData.FLAGS] &= ~LViewFlags.RunInit;
   }
 }
 

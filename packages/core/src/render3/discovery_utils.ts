@@ -11,7 +11,7 @@ import {assertDefined} from './assert';
 import {discoverDirectives, discoverLocalRefs, getContext, isComponentInstance} from './context_discovery';
 import {LContext} from './interfaces/context';
 import {TElementNode, TNode, TNodeFlags} from './interfaces/node';
-import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags, RootContext} from './interfaces/view';
 import {getComponentViewByIndex, readPatchedLViewData} from './util';
 import {NodeInjector} from './view_engine_compatibility';
 
@@ -40,12 +40,12 @@ export function getComponent<T = {}>(target: {}): T|null {
   if (context.component === undefined) {
     let lViewData: LViewData|null = context.lViewData;
     while (lViewData) {
-      const ctx = lViewData ![CONTEXT] !as{};
+      const ctx = lViewData ![CViewData.CONTEXT] !as{};
       if (ctx && isComponentInstance(ctx)) {
         context.component = ctx;
         break;
       }
-      lViewData = lViewData[FLAGS] & LViewFlags.IsRoot ? null : lViewData ![PARENT] !;
+      lViewData = lViewData[CViewData.FLAGS] & LViewFlags.IsRoot ? null : lViewData ![CViewData.PARENT] !;
     }
     if (context.component === undefined) {
       context.component = null;
@@ -63,10 +63,10 @@ export function getComponent<T = {}>(target: {}): T|null {
  */
 export function getHostComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target);
-  const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TNode;
+  const tNode = context.lViewData[CViewData.TVIEW].data[context.nodeIndex] as TNode;
   if (tNode.flags & TNodeFlags.isComponent) {
     const componentView = getComponentViewByIndex(context.nodeIndex, context.lViewData);
-    return componentView[CONTEXT] as any as T;
+    return componentView[CViewData.CONTEXT] as any as T;
   }
   return null;
 }
@@ -78,7 +78,7 @@ export function getHostComponent<T = {}>(target: {}): T|null {
 export function getRootContext(target: LViewData | {}): RootContext {
   const lViewData = Array.isArray(target) ? target : loadContext(target) !.lViewData;
   const rootLViewData = getRootView(lViewData);
-  return rootLViewData[CONTEXT] as RootContext;
+  return rootLViewData[CViewData.CONTEXT] as RootContext;
 }
 
 /**
@@ -95,7 +95,7 @@ export function getRootComponents(target: {}): any[] {
  */
 export function getInjector(target: {}): Injector {
   const context = loadContext(target);
-  const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TElementNode;
+  const tNode = context.lViewData[CViewData.TVIEW].data[context.nodeIndex] as TElementNode;
 
   return new NodeInjector(tNode, context.lViewData);
 }
@@ -143,8 +143,8 @@ export function getRootView(componentOrView: LViewData | {}): LViewData {
     ngDevMode && assertDefined(componentOrView, 'component');
     lViewData = readPatchedLViewData(componentOrView) !;
   }
-  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
-    lViewData = lViewData[PARENT] !;
+  while (lViewData && !(lViewData[CViewData.FLAGS] & LViewFlags.IsRoot)) {
+    lViewData = lViewData[CViewData.PARENT] !;
   }
   return lViewData;
 }

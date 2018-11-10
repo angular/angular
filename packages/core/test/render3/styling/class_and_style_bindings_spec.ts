@@ -13,7 +13,7 @@ import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/
 import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
-import {CONTEXT, LViewData, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
+import {CViewData, LViewData, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
 import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
@@ -45,7 +45,7 @@ describe('style and class based bindings', () => {
   }
 
   function getRootContextInternal(lViewData: LViewData) {
-    return lViewData[CONTEXT] as RootContext;
+    return lViewData[CViewData.CONTEXT] as RootContext;
   }
 
   function renderStyles(

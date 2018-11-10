@@ -24,8 +24,8 @@ import {ViewRef} from '../../src/render3/view_ref';
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
-import {TNODE} from '../../src/render3/interfaces/injector';
-import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
+import {CInjector} from '../../src/render3/interfaces/injector';
+import {LContainer, CContainer} from '../../src/render3/interfaces/container';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -1303,7 +1303,7 @@ describe('di', () => {
 
            const fixture = new ComponentFixture(App);
            expect(dir.value).toContain('ElementRef');
-           expect(dir.elementRef.nativeElement).toEqual(lContainer[NATIVE]);
+           expect(dir.elementRef.nativeElement).toEqual(lContainer[CContainer.NATIVE]);
          });
     });
 
@@ -1872,7 +1872,7 @@ describe('di', () => {
         mockTView = {data: [0, 0, 0, 0, 0, 0, 0, 0, null], firstTemplatePass: true};
       });
 
-      function bloomState() { return mockTView.data.slice(0, TNODE).reverse(); }
+      function bloomState() { return mockTView.data.slice(0, CInjector.TNODE).reverse(); }
 
       class Dir0 {
         /** @internal */ static __NG_ELEMENT_ID__ = 0;

@@ -14,7 +14,7 @@ import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 import {getHostComponent, getInjector, getLocalRefs, loadContext} from './discovery_utils';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeFlags} from './interfaces/node';
-import {TVIEW} from './interfaces/view';
+import {CViewData} from './interfaces/view';
 
 /**
  * Adapts the DebugRendererFactory2 to create a DebugRenderer2 specific for IVY.
@@ -48,13 +48,13 @@ class Render3DebugContext implements DebugContext {
   get providerTokens(): any[] {
     const lDebugCtx = loadContext(this._nativeNode);
     const lViewData = lDebugCtx.lViewData;
-    const tNode = lViewData[TVIEW].data[lDebugCtx.nodeIndex] as TNode;
+    const tNode = lViewData[CViewData.TVIEW].data[lDebugCtx.nodeIndex] as TNode;
     const directivesCount = tNode.flags & TNodeFlags.DirectiveCountMask;
 
     if (directivesCount > 0) {
       const directiveIdxStart = tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
       const directiveIdxEnd = directiveIdxStart + directivesCount;
-      const viewDirectiveDefs = this.view[TVIEW].data;
+      const viewDirectiveDefs = this.view[CViewData.TVIEW].data;
       const directiveDefs =
           viewDirectiveDefs.slice(directiveIdxStart, directiveIdxEnd) as DirectiveDef<any>[];
 

@@ -14,7 +14,7 @@ import {bind, container, containerRefreshEnd, containerRefreshStart, element, el
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {NO_CHANGE} from '../../src/render3/tokens';
-import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
+import {CViewData} from '../../src/render3/interfaces/view';
 import {enableBindings, disableBindings} from '../../src/render3/state';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -1718,8 +1718,8 @@ describe('render3 integration test', () => {
       renderToHtml(Template, {condition: true}, 1);
 
       const oldTemplateData = (Template as any).ngPrivateData;
-      const oldContainerData = (oldTemplateData as any).data[HEADER_OFFSET];
-      const oldElementData = oldContainerData.tViews[0][HEADER_OFFSET];
+      const oldContainerData = (oldTemplateData as any).data[CViewData.HEADER_OFFSET];
+      const oldElementData = oldContainerData.tViews[0][CViewData.HEADER_OFFSET];
       expect(oldContainerData).not.toBeNull();
       expect(oldElementData).not.toBeNull();
 
@@ -1727,8 +1727,8 @@ describe('render3 integration test', () => {
       renderToHtml(Template, {condition: true}, 1);
 
       const newTemplateData = (Template as any).ngPrivateData;
-      const newContainerData = (oldTemplateData as any).data[HEADER_OFFSET];
-      const newElementData = oldContainerData.tViews[0][HEADER_OFFSET];
+      const newContainerData = (oldTemplateData as any).data[CViewData.HEADER_OFFSET];
+      const newElementData = oldContainerData.tViews[0][CViewData.HEADER_OFFSET];
       expect(newTemplateData === oldTemplateData).toBe(true);
       expect(newContainerData === oldContainerData).toBe(true);
       expect(newElementData === oldElementData).toBe(true);
@@ -2031,15 +2031,15 @@ describe('render3 integration test', () => {
       const section = fixture.hostElement.querySelector('section') !;
       const sectionContext = getContext(section) !;
       const sectionLView = sectionContext.lViewData !;
-      expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
-      expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
+      expect(sectionContext.nodeIndex).toEqual(CViewData.HEADER_OFFSET);
+      expect(sectionLView.length).toBeGreaterThan(CViewData.HEADER_OFFSET);
       expect(sectionContext.native).toBe(section);
 
       const div = fixture.hostElement.querySelector('div') !;
       const divContext = getContext(div) !;
       const divLView = divContext.lViewData !;
-      expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
-      expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
+      expect(divContext.nodeIndex).toEqual(CViewData.HEADER_OFFSET + 1);
+      expect(divLView.length).toBeGreaterThan(CViewData.HEADER_OFFSET);
       expect(divContext.native).toBe(div);
 
       expect(divLView).toBe(sectionLView);
@@ -2138,7 +2138,7 @@ describe('render3 integration test', () => {
          const result1 = section[MONKEY_PATCH_KEY_NAME];
          expect(Array.isArray(result1)).toBeTruthy();
 
-         const elementResult = result1[HEADER_OFFSET];  // first element
+         const elementResult = result1[CViewData.HEADER_OFFSET];  // first element
          expect(Array.isArray(elementResult)).toBeTruthy();
          expect(elementResult[StylingIndex.ElementPosition]).toBe(section);
 
@@ -2398,15 +2398,15 @@ describe('render3 integration test', () => {
          expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
          expect((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d3Context);
 
-         expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
+         expect(d1Context.nodeIndex).toEqual(CViewData.HEADER_OFFSET);
          expect(d1Context.native).toBe(div1);
          expect(d1Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-         expect(d2Context.nodeIndex).toEqual(HEADER_OFFSET);
+         expect(d2Context.nodeIndex).toEqual(CViewData.HEADER_OFFSET);
          expect(d2Context.native).toBe(div1);
          expect(d2Context.directives as any[]).toEqual([myDir1Instance, myDir2Instance]);
 
-         expect(d3Context.nodeIndex).toEqual(HEADER_OFFSET + 1);
+         expect(d3Context.nodeIndex).toEqual(CViewData.HEADER_OFFSET + 1);
          expect(d3Context.native).toBe(div2);
          expect(d3Context.directives as any[]).toEqual([myDir3Instance]);
        });
@@ -2557,7 +2557,7 @@ describe('render3 integration test', () => {
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
          const componentData = context.lViewData[context.nodeIndex];
-         const component = componentData[CONTEXT];
+         const component = componentData[CViewData.CONTEXT];
          expect(component instanceof ChildComp).toBeTruthy();
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lViewData);
 

@@ -10,14 +10,14 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 import {global} from '../util';
 
 import {assertDefined, assertLessThan} from './assert';
-import {ACTIVE_INDEX, LContainer} from './interfaces/container';
+import {CContainer, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
-import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
+import {CInjector, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags, RootContext, TData} from './interfaces/view';
 
 
 
@@ -69,8 +69,8 @@ export function flatten(list: any[]): any[] {
 
 /** Retrieves a value from any `LViewData` or `TData`. */
 export function loadInternal<T>(index: number, arr: LViewData | TData): T {
-  ngDevMode && assertDataInRangeInternal(index + HEADER_OFFSET, arr);
-  return arr[index + HEADER_OFFSET];
+  ngDevMode && assertDataInRangeInternal(index + CViewData.HEADER_OFFSET, arr);
+  return arr[index + CViewData.HEADER_OFFSET];
 }
 
 export function assertDataInRangeInternal(index: number, arr: any[]) {
@@ -91,7 +91,7 @@ export function assertDataInRangeInternal(index: number, arr: any[]) {
 export function readElementValue(value: RElement | StylingContext | LContainer | LViewData):
     RElement {
   while (Array.isArray(value)) {
-    value = value[HOST] as any;
+    value = value[CViewData.HOST] as any;
   }
   return value;
 }
@@ -101,7 +101,7 @@ export function readElementValue(value: RElement | StylingContext | LContainer |
  * from any containers, component views, or style contexts.
  */
 export function getNativeByIndex(index: number, arr: LViewData): RElement {
-  return readElementValue(arr[index + HEADER_OFFSET]);
+  return readElementValue(arr[index + CViewData.HEADER_OFFSET]);
 }
 
 export function getNativeByTNode(tNode: TNode, hostView: LViewData): RElement|RText|RComment {
@@ -109,13 +109,13 @@ export function getNativeByTNode(tNode: TNode, hostView: LViewData): RElement|RT
 }
 
 export function getTNode(index: number, view: LViewData): TNode {
-  return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
+  return view[CViewData.TVIEW].data[index + CViewData.HEADER_OFFSET] as TNode;
 }
 
 export function getComponentViewByIndex(nodeIndex: number, hostView: LViewData): LViewData {
   // Could be an LViewData or an LContainer. If LContainer, unwrap to find LViewData.
   const slotValue = hostView[nodeIndex];
-  return slotValue.length >= HEADER_OFFSET ? slotValue : slotValue[HOST];
+  return slotValue.length >= CViewData.HEADER_OFFSET ? slotValue : slotValue[CViewData.HOST];
 }
 
 export function isContentQueryHost(tNode: TNode): boolean {
@@ -132,11 +132,11 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 
 export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
-  return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
+  return Array.isArray(value) && typeof value[CContainer.ACTIVE_INDEX] === 'number';
 }
 
 export function isRootView(target: LViewData): boolean {
-  return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
+  return (target[CViewData.FLAGS] & LViewFlags.IsRoot) !== 0;
 }
 
 /**
@@ -148,8 +148,8 @@ export function isRootView(target: LViewData): boolean {
 export function getRootView(target: LViewData | {}): LViewData {
   ngDevMode && assertDefined(target, 'component');
   let lViewData = Array.isArray(target) ? (target as LViewData) : readPatchedLViewData(target) !;
-  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
-    lViewData = lViewData[PARENT] !;
+  while (lViewData && !(lViewData[CViewData.FLAGS] & LViewFlags.IsRoot)) {
+    lViewData = lViewData[CViewData.PARENT] !;
   }
   return lViewData;
 }
@@ -157,8 +157,9 @@ export function getRootView(target: LViewData | {}): LViewData {
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
   const rootView = getRootView(viewOrComponent);
   ngDevMode &&
-      assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
-  return rootView[CONTEXT] as RootContext;
+      assertDefined(
+          rootView[CViewData.CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
+  return rootView[CViewData.CONTEXT] as RootContext;
 }
 
 /**
@@ -178,7 +179,7 @@ export function readPatchedLViewData(target: any): LViewData|null {
 }
 
 export function hasParentInjector(parentLocation: RelativeInjectorLocation): boolean {
-  return parentLocation !== NO_PARENT_INJECTOR;
+  return parentLocation as any !== CInjector.NO_PARENT_INJECTOR;
 }
 
 export function getParentInjectorIndex(parentLocation: RelativeInjectorLocation): number {
@@ -207,7 +208,7 @@ export function getParentInjectorView(
   // <ng-template> tags or inline views, where the parent injector might live many views
   // above the child injector.
   while (viewOffset > 0) {
-    parentView = parentView[DECLARATION_VIEW] !;
+    parentView = parentView[CViewData.DECLARATION_VIEW] !;
     viewOffset--;
   }
   return parentView;
@@ -237,10 +238,10 @@ export function getParentInjectorTNode(
 
   let viewOffset = getParentInjectorViewOffset(location);
   let parentView = startView;
-  let parentTNode = startView[HOST_NODE] as TElementNode;
+  let parentTNode = startView[CViewData.HOST_NODE] as TElementNode;
   while (viewOffset > 0) {
-    parentView = parentView[DECLARATION_VIEW] !;
-    parentTNode = parentView[HOST_NODE] as TElementNode;
+    parentView = parentView[CViewData.DECLARATION_VIEW] !;
+    parentTNode = parentView[CViewData.HOST_NODE] as TElementNode;
     viewOffset--;
   }
   return parentTNode;

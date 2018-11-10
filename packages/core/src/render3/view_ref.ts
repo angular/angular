@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TViewNode} from './interfaces/node';
-import {FLAGS, LViewData, LViewFlags, PARENT} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 import {getRendererFactory} from './state';
 
@@ -48,7 +48,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   get context(): T { return this._context ? this._context : this._lookUpContext(); }
 
   get destroyed(): boolean {
-    return (this._view[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+    return (this._view[CViewData.FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
 
   destroy(): void {
@@ -150,7 +150,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  detach(): void { this._view[FLAGS] &= ~LViewFlags.Attached; }
+  detach(): void { this._view[CViewData.FLAGS] &= ~LViewFlags.Attached; }
 
   /**
    * Re-attaches a view to the change detection tree.
@@ -208,7 +208,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  reattach(): void { this._view[FLAGS] |= LViewFlags.Attached; }
+  reattach(): void { this._view[CViewData.FLAGS] |= LViewFlags.Attached; }
 
   /**
    * Checks the view and its children.
@@ -257,7 +257,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
 
   private _lookUpContext(): T {
-    return this._context = this._view[PARENT] ![this._componentIndex] as T;
+    return this._context = this._view[CViewData.PARENT] ![this._componentIndex] as T;
   }
 }
 

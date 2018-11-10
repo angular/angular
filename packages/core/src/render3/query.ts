@@ -24,7 +24,7 @@ import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfac
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {LViewData, TVIEW} from './interfaces/view';
+import {CViewData, LViewData} from './interfaces/view';
 import {assertPreviousIsParent, getOrCreateCurrentQueries, getViewData} from './state';
 import {flatten, isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
@@ -252,7 +252,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  */
 function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: Type<any>): number|
     null {
-  const defs = currentView[TVIEW].data;
+  const defs = currentView[CViewData.TVIEW].data;
   if (defs) {
     const flags = tNode.flags;
     const count = flags & TNodeFlags.DirectiveCountMask;

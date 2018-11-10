@@ -13,7 +13,7 @@ import {executeComponentHooks} from './hooks';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {Renderer3, RendererFactory3} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LViewData, LViewFlags, OpaqueViewState, QUERIES, RENDERER, SANITIZER, TVIEW, TView} from './interfaces/view';
+import {CViewData, LViewData, LViewFlags, OpaqueViewState, TView} from './interfaces/view';
 import {assertDataInRangeInternal, isContentQueryHost} from './util';
 
 /**
@@ -56,7 +56,7 @@ export function setRendererFactory(factory: RendererFactory3): void {
 }
 
 export function getCurrentSanitizer(): Sanitizer|null {
-  return viewData && viewData[SANITIZER];
+  return viewData && viewData[CViewData.SANITIZER];
 }
 
 /**
@@ -232,7 +232,7 @@ export function getOrCreateCurrentQueries(
     QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
   // if this is the first content query on a node, any existing LQueries needs to be cloned
   // in subsequent template passes, the cloning occurs before directive instantiation.
-  if (previousOrParentTNode && previousOrParentTNode !== viewData[HOST_NODE] &&
+  if (previousOrParentTNode && previousOrParentTNode !== viewData[CViewData.HOST_NODE] &&
       !isContentQueryHost(previousOrParentTNode)) {
     currentQueries && (currentQueries = currentQueries.clone());
     previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
@@ -284,11 +284,11 @@ export function getContextViewData(): LViewData {
 
 export function getCleanup(view: LViewData): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
+  return view[CViewData.CLEANUP] || (view[CViewData.CLEANUP] = []);
 }
 
 export function getTViewCleanup(view: LViewData): any[] {
-  return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
+  return view[CViewData.TVIEW].cleanup || (view[CViewData.TVIEW].cleanup = []);
 }
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
@@ -348,34 +348,35 @@ export function setBindingRoot(value: number) {
 export function enterView(
     newView: LViewData, hostTNode: TElementNode | TViewNode | null): LViewData {
   const oldView: LViewData = viewData;
-  tView = newView && newView[TVIEW];
+  tView = newView && newView[CViewData.TVIEW];
 
-  creationMode = newView && (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
+  creationMode =
+      newView && (newView[CViewData.FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && tView.firstTemplatePass;
   bindingRootIndex = newView && tView.bindingStartIndex;
-  renderer = newView && newView[RENDERER];
+  renderer = newView && newView[CViewData.RENDERER];
 
   previousOrParentTNode = hostTNode !;
   isParent = true;
 
   viewData = contextViewData = newView;
-  oldView && (oldView[QUERIES] = currentQueries);
-  currentQueries = newView && newView[QUERIES];
+  oldView && (oldView[CViewData.QUERIES] = currentQueries);
+  currentQueries = newView && newView[CViewData.QUERIES];
 
   return oldView;
 }
 
 export function nextContextImpl<T = any>(level: number = 1): T {
   contextViewData = walkUpViews(level, contextViewData !);
-  return contextViewData[CONTEXT] as T;
+  return contextViewData[CViewData.CONTEXT] as T;
 }
 
 function walkUpViews(nestingLevel: number, currentView: LViewData): LViewData {
   while (nestingLevel > 0) {
     ngDevMode && assertDefined(
-                     currentView[DECLARATION_VIEW],
+                     currentView[CViewData.DECLARATION_VIEW],
                      'Declaration view should be defined if nesting level is greater than 0.');
-    currentView = currentView[DECLARATION_VIEW] !;
+    currentView = currentView[CViewData.DECLARATION_VIEW] !;
     nestingLevel--;
   }
   return currentView;
@@ -405,10 +406,10 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
       executeComponentHooks(viewData, tView.viewHooks, tView.viewCheckHooks, creationMode);
     }
     // Views are clean and in update mode after being checked, so these bits are cleared
-    viewData[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
+    viewData[CViewData.FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
-  viewData[FLAGS] |= LViewFlags.RunInit;
-  viewData[BINDING_INDEX] = tView.bindingStartIndex;
+  viewData[CViewData.FLAGS] |= LViewFlags.RunInit;
+  viewData[CViewData.BINDING_INDEX] = tView.bindingStartIndex;
   enterView(newView, null);
 }
 
