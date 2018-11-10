@@ -16,10 +16,6 @@ test --test_tag_filters=-manual
 # (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
 build --announce_rc
 
-# Create dist/bin symlink to $(bazel info bazel-bin)
-# We use this when uploading artifacts after the build finishes
-build --symlink_prefix=dist/
-
 # Workaround https://github.com/bazelbuild/bazel/issues/3645
 # Bazel doesn't calculate the memory ceiling correctly when running under Docker.
 # Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
