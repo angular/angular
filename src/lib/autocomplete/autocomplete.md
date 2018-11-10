@@ -19,7 +19,7 @@ If you are unfamiliar with using reactive forms, you can read more about the sub
 ```
 
 Next, create the autocomplete panel and the options displayed inside it. Each option should be
-defined by an `mat-option` tag. Set each option's value property to whatever you'd like the value
+defined by a `mat-option` tag. Set each option's value property to whatever you'd like the value
 of the text input to be upon that option's selection.
 
 *my-comp.html*
