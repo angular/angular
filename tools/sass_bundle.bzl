@@ -1,3 +1,5 @@
+load("@io_bazel_rules_sass//sass:sass.bzl", "SassInfo")
+
 # Implementation of sass_bundle that performs an action
 def _sass_bundle(ctx):
   # Define arguments that will be passed to the underlying nodejs script.
@@ -24,11 +26,15 @@ def _sass_bundle(ctx):
     arguments = [args],
   )
 
-  # The return value describes what the rule is producing.
-  # In this case, we can use a `DefaultInfo`, since the rule only produces
-  # a single output file.
-  return [DefaultInfo(files = depset([ctx.outputs.output_name]))]
+  output_depset = depset([ctx.outputs.output_name])
 
+  # The return value describes what the rule is producing. In this case we need to specify
+  # the "DefaultInfo" and "SassInfo" provider so that the given rule target acts like a filegroup
+  # and can be also used as sass_library.
+  return [
+    DefaultInfo(files = output_depset),
+    SassInfo(transitive_sources = output_depset),
+  ]
 
 # Rule definition for sass_bundle that defines attributes and outputs.
 sass_bundle = rule(
