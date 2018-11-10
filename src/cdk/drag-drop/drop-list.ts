@@ -24,7 +24,7 @@ import {
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
 import {DragDropRegistry} from './drag-drop-registry';
-import {CdkDragDrop, CdkDragEnter, CdkDragExit} from './drag-events';
+import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDragSortEvent} from './drag-events';
 import {moveItemInArray} from './drag-utils';
 import {CDK_DROP_LIST_CONTAINER} from './drop-list-container';
 import {CdkDropListGroup} from './drop-list-group';
@@ -139,6 +139,10 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
    */
   @Output('cdkDropListExited')
   exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
+
+  /** Emits as the user is swapping items while actively dragging. */
+  @Output('cdkDropListSorted')
+  sorted: EventEmitter<CdkDragSortEvent<T>> = new EventEmitter<CdkDragSortEvent<T>>();
 
   constructor(
     public element: ElementRef<HTMLElement>,
@@ -320,6 +324,13 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
 
     // Shuffle the array in place.
     moveItemInArray(siblings, currentIndex, newIndex);
+
+    this.sorted.emit({
+      previousIndex: currentIndex,
+      currentIndex: newIndex,
+      container: this,
+      item
+    });
 
     siblings.forEach((sibling, index) => {
       // Don't do anything if the position hasn't changed.

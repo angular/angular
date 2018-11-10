@@ -71,3 +71,15 @@ export interface CdkDragMove<T = any> {
    */
   delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
 }
+
+/** Event emitted when the user swaps the position of two drag items. */
+export interface CdkDragSortEvent<T = any, I = T> {
+  /** Index from which the item was sorted previously. */
+  previousIndex: number;
+  /** Index that the item is currently in. */
+  currentIndex: number;
+  /** Container that the item belongs to. */
+  container: CdkDropListContainer<T>;
+  /** Item that is being sorted. */
+  item: CdkDrag<I>;
+}

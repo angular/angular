@@ -698,6 +698,36 @@ describe('CdkDrag', () => {
           .toEqual(['One', 'Two', 'Zero', 'Three']);
     }));
 
+    it('should dispatch the `sorted` event as an item is being sorted', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const items = fixture.componentInstance.dragItems.map(item => item.element.nativeElement);
+      const draggedItem = items[0];
+      const {top, left} = draggedItem.getBoundingClientRect();
+
+      startDraggingViaMouse(fixture, draggedItem, left, top);
+
+      // Drag over each item one-by-one going downwards.
+      for (let i = 1; i < items.length; i++) {
+        const elementRect = items[i].getBoundingClientRect();
+
+        dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.top + 5);
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.sortedSpy.calls.mostRecent().args[0]).toEqual({
+          previousIndex: i - 1,
+          currentIndex: i,
+          item: fixture.componentInstance.dragItems.first,
+          container: fixture.componentInstance.dropInstance
+        });
+      }
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+    }));
+
     it('should not move items in a vertical list if the pointer is too far away', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -2192,6 +2222,7 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
     style="width: 100px; background: pink;"
     [id]="dropZoneId"
     [cdkDropListData]="items"
+    (cdkDropListSorted)="sortedSpy($event)"
     (cdkDropListDropped)="droppedSpy($event)">
     <div
       *ngFor="let item of items"
@@ -2214,6 +2245,7 @@ class DraggableInDropZone {
     {value: 'Three', height: ITEM_HEIGHT, margin: 0}
   ];
   dropZoneId = 'items';
+  sortedSpy = jasmine.createSpy('sorted spy');
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
