@@ -245,12 +245,12 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵEC(0);
+              i0.ɵelementContainerStart(0);
               i0.ɵelementStart(1, "span");
               i0.ɵtext(2, "in a ");
               i0.ɵelementEnd();
               i0.ɵtext(3, "container");
-              i0.ɵeC();
+              i0.ɵelementContainerEnd();
             }
           }
         `;
@@ -282,8 +282,8 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵEC(0);
-              i0.ɵeC();
+              i0.ɵelementContainerStart(0);
+              i0.ɵelementContainerEnd();
             }
           }
         `;
