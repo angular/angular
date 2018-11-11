@@ -1,20 +1,36 @@
+<!--
 # Dependency Providers
+-->
+# 의존성 프로바이더 (Dependency Providers)
 
+<!--
 A dependency [provider](guide/glossary#provider) configures an injector
 with a [DI token](guide/glossary#di-token),
 which that injector uses to provide the concrete, runtime version of a dependency value.
 The injector relies on the provider configuration to create instances of the dependencies
 that it injects into components, directives, pipes, and other services.
+-->
+의존성 [프로바이더](guide/glossary#provider)와 [의존성 주입 토큰](guide/glossary#di-token)을 연결하면 인젝터에 의존성 객체를 등록할 수 있습니다.
+그러면 프로바이더에 지정된 방법대로 인젝터가 의존성 객체의 인스턴스를 생성하며, 이 인스턴스는 컴포넌트나 디렉티브, 파이프, 서비스와 같이 의존성 객체가 필요한 곳에 주입됩니다.
 
+<!--
 You must configure an injector with a provider, or it won't know how to create the dependency.  
 The most obvious way for an injector to create an instance of a service class is with the class itself. 
 If you specify the service class itself as the provider token, the default behavior is for the injector to instantiate that class with `new`. 
+-->
+그래서 의존성 객체를 주입하려면 인젝터에 프로바이더를 꼭 등록해야 합니다.
+서비스 클래스를 인스턴스로 등록하는 방법 중 가장 간단한 방법은 클래스에서 직접 프로바이더를 등록하는 것입니다.
+이렇게 등록하면 서비스 클래스 이름을 바로 프로바이더 토큰으로 사용할 수 있으며, 인젝터는 `new` 키워드를 사용해서 이 서비스 클래스의 인스턴스를 생성합니다.
 
+<!--
 In the following typical example, the `Logger` class itself provides a `Logger` instance. 
+-->
+이렇게 `Logger` 클래스를 직접 프로바이더에 등록하려면 다음과 같이 작성하면 됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
 
+<!--
 You can, however, configure an injector with an alternative provider, 
 in order to deliver some other object that provides the needed logging functionality.
 For instance:
@@ -23,14 +39,30 @@ For instance:
 * You can provide a logger-like object.
 
 * Your provider can call a logger factory function.
+-->
+이 외에도 프로바이더는 다양한 방법으로 등록할 수 있습니다. 필요하다면 다른 클래스로 `Logger` 클래스를 대체할 수도 있습니다.
+프로바이더는 이렇게 등록할 수도 있습니다:
+
+* 클래스 프로바이더로 다른 클래스를 지정할 수 있습니다.
+
+* `Logger`와 비슷한 객체를 프로바이더로 등록할 수 있습니다.
+
+* 팩토리 함수를 실행하고 받은 반환값을 프로바이더로 등록할 수 있습니다.
 
 {@a provide}
 
+<!--
 ## The `Provider` object literal
+-->
+## `Provider` 객체 리터럴
 
+<!--
 The class-provider syntax is a shorthand expression that expands
 into a provider configuration, defined by the [`Provider` interface](api/core/Provider).
 The following code snippets shows how a class that is given as the `providers` value is expanded into a full provider object.
+-->
+클래스를 바로 프로바이더 배열에 등록하는 문법은 [`Provider` 인터페이스](api/core/Provider)에 정의된 문법을 짧게 줄인 것입니다.
+그리고 이 문법은 짧게 줄이지 않고 모두 풀어서 등록할 수도 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
@@ -38,64 +70,108 @@ The following code snippets shows how a class that is given as the `providers` v
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-3" >
 </code-example>
 
+<!--
 The expanded provider configuration is an object literal with two properties.
+-->
+클래스 프로바이더를 등록하는 문법을 풀어쓰지 않으면 프로퍼티 2개로 구성된 객체 리터럴을 사용합니다.
 
+<!--
 * The `provide` property holds the [token](guide/dependency-injection#token)
 that serves as the key for both locating a dependency value and configuring the injector.
+-->
+* `provide` 프로퍼티에는 [토큰](guide/dependency-injection#token)을 지정합니다. 이 토큰은 의존성 객체의 타입을 지정하는 곳에도 사용되고 인젝터에서 이 객체를 찾을 때도 사용됩니다.
 
+<!--
 * The second property is a provider definition object, which tells the injector how to create the dependency value. 
 The provider-definition key can be `useClass`, as in the example.
 It can also be `useExisting`, `useValue`, or `useFactory`.
 Each of these keys provides a different type of dependency, as discussed below. 
-
+-->
+* 인젝터가 의존성 객체의 인스턴스를 생성하는 방법은 두번째 프로퍼티로 지정합니다.
+클래스를 직접 인젝터에 등록하는 경우에는 `useClass`를 사용하며, 이 외에도 `useExisting`, `useValue`, `useFactory`를 사용하는 경우도 있습니다.
+각각에 대해서는 이어지는 내용에서 자세하게 살펴봅시다.
 
 {@a class-provider}
 
+<!--
 ## Alternative class providers
+-->
+## 대체 클래스 프로바이더
 
+<!--
 Different classes can provide the same service.
 For example, the following code tells the injector
 to return a `BetterLogger` instance when the component asks for a logger
 using the `Logger` token.
+-->
+어떤 서비스의 이름으로 다른 클래스를 프로바이더로 등록할 수 있습니다.
+그래서 인젝터가 `Logger` 토큰으로 의존성 객체를 요청받았을 때 `BetterLogger` 인스턴스를 제공하도록 설정할 수도 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-4" >
 </code-example>
 
 {@a class-provider-dependencies}
 
+<!--
 ### Class providers with dependencies
+-->
+### 추가 의존성이 있는 클래스의 프로바이더
 
+<!--
 Another class, `EvenBetterLogger`, might display the user name in the log message.
 This logger gets the user from an injected `UserService` instance.
+-->
+`EvenBetterLogger`는 로그를 출력할 때 사용자의 이름도 함께 출력하는 클래스입니다.
+그리고 이 때 출력하는 사용자의 이름은 주입받은 `UserService`에서 참조합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"  linenums="false">
 </code-example>
 
+<!--
 The injector needs providers for both this new logging service and its dependent `UserService`. Configure this alternative logger with the `useClass` provider-definition key, like `BetterLogger`. The following array specifies both providers in the `providers` metadata option of the parent module or component.
+-->
+이제 인젝터에는 `EventBetterLogger`와 `UserService`의 프로바이더가 모두 등록되어야 합니다. 그리고 이 때 어떤 클래스의 프로바이더를 다른 클래스로 지정하려면 `useClass` 프로바이더-정의 키를 사용해서 지정할 수 있습니다. 이 내용은 다음과 같이 구현할 수 있습니다. 이 코드는 부모 모듈이나 컴포넌트의 `providers` 메타데이터 옵션에 사용됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"  linenums="false">
 </code-example>
 
 {@a aliased-class-providers}
 
+<!--
 ### Aliased class providers
+-->
+### 별칭(aliased) 클래스 프로바이더
 
+<!--
 Suppose an old component depends upon the `OldLogger` class.
 `OldLogger` has the same interface as `NewLogger`, but for some reason
 you can't update the old component to use it. 
+-->
+이전에 사용하던 컴포넌트에 `OldLogger` 클래스가 의존성으로 주입된다고 합시다.
+`OldLogger`의 인터페이스는 `NewLogger`와 같지만, 어떤 이유로 이 컴포넌트를 수정할 수가 없는 상황입니다.
 
+<!--
 When the old component logs a message with `OldLogger`,
 you want the singleton instance of `NewLogger` to handle it instead.
 In this case, the dependency injector should inject that singleton instance
 when a component asks for either the new or the old logger.
 `OldLogger` should be an *alias* for `NewLogger`.
+-->
+이 때 `OldLogger`를 주입받는 코드는 수정하지 않은 상태로 이 컴포넌트도 `NewLogger`를 사용하도록 하려고 합니다. 이 경우에 `NewLogger`와 `OldLogger`의 프로바이더를 모두 인젝터가 관리하면서 이전 로거와 새로운 로거를 모두 사용할 수 있도록 제공해야 합니다.
+그리고 `OldLogger`를 주입받도록 요청받았을 때 `NewLogger`를 대신 주입하려고 합니다. 결국 `OldLogger`는 `NewLogger`의 *또 다른 이름* 이라고 할 수 있습니다.
 
+<!--
 If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with two different `NewLogger` instances in your app. 
+-->
+이 때 프로바이더에 `useClass`를 사용하면 `OldLogger`를 `NewLogger`로 대체하는 것이 아니라 `NewLogger` 인스턴스를 두 개로 나누는 방식으로 등록됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a" linenums="false">
 </code-example>
 
+<!--
 To make sure there is only one instance of `NewLogger`, alias `OldLogger` with the `useExisting` option.
+-->
+그래서 `NewLogger`의 인스턴스를 하나로 유지하려면 `oldLogger` 토큰에 `useExisting` 옵션을 사용해야 합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b" linenums="false">
 </code-example>
