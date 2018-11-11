@@ -69,13 +69,16 @@ describe('DependencyHost', () => {
       expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(missing.size).toBe(1);
       expect(missing.has('missing')).toBe(true);
+      expect(deepImports.size).toBe(0);
     });
 
     it('should not register deep imports as missing', () => {
-      spyOn(host, 'tryResolveEntryPoint')
-          .and.callFake(
-              (from: string, importPath: string) =>
-                  importPath === 'deep/import' ? null : `RESOLVED/${importPath}`);
+      // This scenario verifies the behavior of the dependency analysis when an external import
+      // is found that does not map to an entry-point but still exists on disk, i.e. a deep import.
+      // Such deep imports are captured for diagnostics purposes.
+      const tryResolveEntryPoint = (from: string, importPath: string) =>
+          importPath === 'deep/import' ? null : `RESOLVED/${importPath}`;
+      spyOn(host, 'tryResolveEntryPoint').and.callFake(tryResolveEntryPoint);
       spyOn(host, 'tryResolve')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();

@@ -115,7 +115,7 @@ export class DependencyResolver {
         const imports = Array.from(deepImports).map(i => `'${i}'`).join(', ');
         console.warn(
             `Entry point '${entryPoint.name}' contains deep imports into ${imports}. ` +
-            `This may cause compilation errors if the package that is deeply imported also needs to be processed by ngcc.`);
+            `This is probably not a problem, but may cause the compilation of entry points to be out of order.`);
       }
     });
 

@@ -19,8 +19,8 @@ export class DependencyHost {
    * @param from An absolute path to the file whose dependencies we want to get.
    * @param resolved A set that will have the absolute paths of resolved entry points added to it.
    * @param missing A set that will have the dependencies that could not be found added to it.
-   * @param deepImports A set that will have the dependencies that refer to deep imports added to
-   * it.
+   * @param deepImports A set that will have the import paths that exist but cannot be mapped to
+   * entry-points, i.e. deep-imports.
    * @param internal A set that is used to track internal dependencies to prevent getting stuck in a
    * circular dependency loop.
    */
