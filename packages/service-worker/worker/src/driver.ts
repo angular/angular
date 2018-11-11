@@ -919,8 +919,9 @@ export class Driver implements Debuggable, UpdateSource {
    */
   async cleanupOldSwCaches(): Promise<void> {
     const cacheNames = await this.scope.caches.keys();
-    const regex = new RegExp(`^${this.adapter.ngsw}:(?:active|staged|manifest:.+)$`);
-    const oldSwCacheNames = cacheNames.filter(name => regex.test(name));
+    const regex = new RegExp(`^${this.adapter.ngsw}:(?:active|staged|manifest:.+)$`)
+    const oldSwCacheNames =
+        cacheNames.filter(name => regex.test(name));
 
     await Promise.all(oldSwCacheNames.map(name => this.scope.caches.delete(name)));
   }

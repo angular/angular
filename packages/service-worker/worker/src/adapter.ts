@@ -56,10 +56,10 @@ export class Adapter {
     return new Promise<void>(resolve => { setTimeout(() => resolve(), ms); });
   }
 
-  /**
-  * suffixing the baseHref with `ngsw` string to avoid clash of cache files
-  * in same domain with multiple apps
-  */
+   /**
+   * suffixing the baseHref with `ngsw` string to avoid clash of cache files
+   * in same domain with multiple apps
+   */
   setBaseHref(baseHref: string) {
     if (baseHref && ['/'].indexOf(baseHref) == -1) {
       const str = baseHref.replace(/^\//, '').replace(/\/$/, '').replace(/\//, ':');
