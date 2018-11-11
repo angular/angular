@@ -19,7 +19,7 @@ import {Renderer} from '../../src/rendering/renderer';
 class TestRenderer extends Renderer {
   constructor(
       host: Esm2015ReflectionHost, isCore: boolean, rewriteCoreImportsTo: ts.SourceFile|null) {
-    super(host, isCore, rewriteCoreImportsTo, '/src', '/dist', false);
+    super(host, isCore, rewriteCoreImportsTo, null, '/src', '/dist', false);
   }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');

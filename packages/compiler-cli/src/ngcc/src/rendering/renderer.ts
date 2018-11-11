@@ -56,7 +56,8 @@ interface DtsClassInfo {
 export abstract class Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
-      protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
+      protected rewriteCoreImportsTo: ts.SourceFile|null,
+      protected rewriteDtsCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
       protected targetPath: string, protected transformDts: boolean) {}
 
   renderProgram(
@@ -142,7 +143,7 @@ export abstract class Renderer {
     });
 
     this.addImports(
-        outputText, importManager.getAllImports(dtsFile.fileName, this.rewriteCoreImportsTo));
+        outputText, importManager.getAllImports(dtsFile.fileName, this.rewriteDtsCoreImportsTo));
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
   }

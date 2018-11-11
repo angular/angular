@@ -14,9 +14,12 @@ import {Renderer} from './renderer';
 export class EsmRenderer extends Renderer {
   constructor(
       protected host: NgccReflectionHost, protected isCore: boolean,
-      protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
+      protected rewriteCoreImportsTo: ts.SourceFile|null,
+      protected rewriteDtsCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
       protected targetPath: string, transformDts: boolean) {
-    super(host, isCore, rewriteCoreImportsTo, sourcePath, targetPath, transformDts);
+    super(
+        host, isCore, rewriteCoreImportsTo, rewriteDtsCoreImportsTo, sourcePath, targetPath,
+        transformDts);
   }
 
   /**

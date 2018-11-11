@@ -70,27 +70,36 @@ export class Transformer {
     const host = ts.createCompilerHost(options);
     const rootDirs = this.getRootDirs(host, options);
     const isCore = entryPoint.name === '@angular/core';
-    const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
+    const r3SymbolsPath =
+        isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath), 'r3_symbols.js') : null;
     const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
     const packageProgram = ts.createProgram(rootPaths, options, host);
-    console.time(entryPoint.name + '(dtsmappper creation)');
-    const dtsFilePath = entryPoint.typings;
-    const dtsProgram = transformDts ? ts.createProgram([entryPoint.typings], options, host) : null;
-    console.timeEnd(entryPoint.name + '(dtsmappper creation)');
-    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsFilePath, dtsProgram);
     const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
+
+    console.time(`${entryPoint.name} (dtsMapper creation)`);
+    const dtsFilePath = entryPoint.typings;
+    const r3SymbolsDtsPath =
+        isCore ? this.findR3SymbolsPath(dirname(dtsFilePath), 'r3_symbols.d.ts') : null;
+    const rootDtsPaths = r3SymbolsDtsPath ? [dtsFilePath, r3SymbolsDtsPath] : [dtsFilePath];
+    const dtsProgram = transformDts ? ts.createProgram(rootDtsPaths, options, host) : null;
+    const r3SymbolsDtsFile =
+        dtsProgram && r3SymbolsDtsPath && dtsProgram.getSourceFile(r3SymbolsDtsPath) || null;
+    console.timeEnd(`${entryPoint.name} (dtsMapper creation)`);
+
+    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsFilePath, dtsProgram);
 
     // Parse and analyze the files.
     const {decorationAnalyses, switchMarkerAnalyses} =
         this.analyzeProgram(packageProgram, reflectionHost, rootDirs, isCore);
 
-    console.time(entryPoint.name + '(rendering)');
+    console.time(`${entryPoint.name} (rendering)`);
     // Transform the source files and source maps.
     const renderer = this.getRenderer(
-        format, packageProgram, reflectionHost, isCore, r3SymbolsFile, transformDts);
+        format, packageProgram, reflectionHost, isCore, r3SymbolsFile, r3SymbolsDtsFile,
+        transformDts);
     const renderedFiles =
         renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
-    console.timeEnd(entryPoint.name + '(rendering)');
+    console.timeEnd(`${entryPoint.name} (rendering)`);
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
@@ -126,16 +135,19 @@ export class Transformer {
 
   getRenderer(
       format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null, transformDts: boolean): Renderer {
+      rewriteCoreImportsTo: ts.SourceFile|null, rewriteDtsCoreImportsTo: ts.SourceFile|null,
+      transformDts: boolean): Renderer {
     switch (format) {
       case 'esm2015':
       case 'fesm2015':
         return new EsmRenderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
+            host, isCore, rewriteCoreImportsTo, rewriteDtsCoreImportsTo, this.sourcePath,
+            this.targetPath, transformDts);
       case 'esm5':
       case 'fesm5':
         return new Esm5Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
+            host, isCore, rewriteCoreImportsTo, rewriteDtsCoreImportsTo, this.sourcePath,
+            this.targetPath, transformDts);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
@@ -162,8 +174,8 @@ export class Transformer {
     writeFileSync(file.path, file.contents, 'utf8');
   }
 
-  findR3SymbolsPath(directory: string): string|null {
-    const r3SymbolsFilePath = resolve(directory, 'r3_symbols.js');
+  findR3SymbolsPath(directory: string, fileName: string): string|null {
+    const r3SymbolsFilePath = resolve(directory, fileName);
     if (existsSync(r3SymbolsFilePath)) {
       return r3SymbolsFilePath;
     }
@@ -181,7 +193,7 @@ export class Transformer {
             });
 
     for (const subDirectory of subDirectories) {
-      const r3SymbolsFilePath = this.findR3SymbolsPath(resolve(directory, subDirectory));
+      const r3SymbolsFilePath = this.findR3SymbolsPath(resolve(directory, subDirectory), fileName);
       if (r3SymbolsFilePath) {
         return r3SymbolsFilePath;
       }
