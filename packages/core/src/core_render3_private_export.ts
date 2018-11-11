@@ -89,6 +89,8 @@ export {
   enableBindings as ɵenableBindings,
   disableBindings as ɵdisableBindings,
   elementAttribute as ɵelementAttribute,
+  elementContainerStart as ɵelementContainerStart,
+  elementContainerEnd as ɵelementContainerEnd,
   elementStyling as ɵelementStyling,
   elementStylingMap as ɵelementStylingMap,
   elementStyleProp as ɵelementStyleProp,

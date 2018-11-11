@@ -35,9 +35,11 @@ export class Identifiers {
 
   static elementClassProp: o.ExternalReference = {name: 'ɵelementClassProp', moduleName: CORE};
 
-  static elementContainerStart: o.ExternalReference = {name: 'ɵEC', moduleName: CORE};
+  static elementContainerStart:
+      o.ExternalReference = {name: 'ɵelementContainerStart', moduleName: CORE};
 
-  static elementContainerEnd: o.ExternalReference = {name: 'ɵeC', moduleName: CORE};
+  static elementContainerEnd:
+      o.ExternalReference = {name: 'ɵelementContainerEnd', moduleName: CORE};
 
   static elementStyling: o.ExternalReference = {name: 'ɵelementStyling', moduleName: CORE};
 
