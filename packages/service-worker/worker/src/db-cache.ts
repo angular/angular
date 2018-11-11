@@ -27,7 +27,8 @@ export class CacheDatabase implements Database {
   }
 
   list(): Promise<string[]> {
-    return this.scope.caches.keys().then(keys => keys.filter(key => key.startsWith(`${this.adapter.ngsw}:db:`)));
+    return this.scope.caches.keys().then(
+        keys => keys.filter(key => key.startsWith(`${this.adapter.ngsw}:db:`)));
   }
 
   open(name: string): Promise<Table> {
