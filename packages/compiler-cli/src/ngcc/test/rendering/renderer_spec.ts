@@ -13,13 +13,13 @@ import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {BundleInfo, createBundleInfo} from '../../src/packages/bundle';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
-  constructor(
-      host: Esm2015ReflectionHost, isCore: boolean, rewriteCoreImportsTo: ts.SourceFile|null) {
-    super(host, isCore, rewriteCoreImportsTo, '/src', '/dist', false);
+  constructor(host: Esm2015ReflectionHost, bundle: BundleInfo) {
+    super(host, bundle, '/src', '/dist', false);
   }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
@@ -42,14 +42,15 @@ function createTestRenderer(
     files: {name: string, contents: string}[],
     options: {isCore?: boolean, rewriteCoreImportsTo?: string} = {}) {
   const program = makeProgram(...files);
-  const host = new Esm2015ReflectionHost(options.isCore || false, program.getTypeChecker());
-  const decorationAnalyses =
-      new DecorationAnalyzer(program.getTypeChecker(), host, [''], options.isCore || false)
-          .analyzeProgram(program);
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
   const rewriteCoreImportsTo =
       options.rewriteCoreImportsTo ? program.getSourceFile(options.rewriteCoreImportsTo) ! : null;
-  const renderer = new TestRenderer(host, options.isCore || false, rewriteCoreImportsTo);
+  const bundle = createBundleInfo(options.isCore || false, rewriteCoreImportsTo, null);
+  const host = new Esm2015ReflectionHost(bundle.isCore, program.getTypeChecker());
+  const decorationAnalyses =
+      new DecorationAnalyzer(program.getTypeChecker(), host, [''], bundle.isCore)
+          .analyzeProgram(program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
+  const renderer = new TestRenderer(host, bundle);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
