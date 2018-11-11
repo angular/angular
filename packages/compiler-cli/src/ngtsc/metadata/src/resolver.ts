@@ -17,7 +17,7 @@ import * as ts from 'typescript';
 
 import {ClassMemberKind, ReflectionHost} from '../../host';
 
-const TS_DTS_JS_EXTENSION = /(\.d)?\.ts|\.js$/;
+const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
 /**
  * Represents a value which cannot be determined statically.
