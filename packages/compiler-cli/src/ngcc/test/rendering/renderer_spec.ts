@@ -17,7 +17,10 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
-  constructor(host: Esm2015ReflectionHost) { super(host, false, null, '/src', '/dist', false); }
+  constructor(
+      host: Esm2015ReflectionHost, isCore: boolean, rewriteCoreImportsTo: ts.SourceFile|null) {
+    super(host, isCore, rewriteCoreImportsTo, '/src', '/dist', false);
+  }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
@@ -35,13 +38,18 @@ class TestRenderer extends Renderer {
   }
 }
 
-function createTestRenderer(file: {name: string, contents: string}) {
-  const program = makeProgram(file);
-  const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+function createTestRenderer(
+    files: {name: string, contents: string}[],
+    options: {isCore?: boolean, rewriteCoreImportsTo?: string} = {}) {
+  const program = makeProgram(...files);
+  const host = new Esm2015ReflectionHost(options.isCore || false, program.getTypeChecker());
   const decorationAnalyses =
-      new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
+      new DecorationAnalyzer(program.getTypeChecker(), host, [''], options.isCore || false)
+          .analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new TestRenderer(host);
+  const rewriteCoreImportsTo =
+      options.rewriteCoreImportsTo ? program.getSourceFile(options.rewriteCoreImportsTo) ! : null;
+  const renderer = new TestRenderer(host, options.isCore || false, rewriteCoreImportsTo);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
@@ -94,7 +102,7 @@ describe('Renderer', () => {
     it('should render the modified contents; and a new map file, if the original provided no map file.',
        () => {
          const {renderer, program, decorationAnalyses, switchMarkerAnalyses} =
-             createTestRenderer(INPUT_PROGRAM);
+             createTestRenderer([INPUT_PROGRAM]);
          const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          expect(result[0].path).toEqual('/dist/file.js');
          expect(result[0].contents)
@@ -106,7 +114,7 @@ describe('Renderer', () => {
     it('should call addImports with the source code and info about the core Angular library.',
        () => {
          const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
-             createTestRenderer(INPUT_PROGRAM);
+             createTestRenderer([INPUT_PROGRAM]);
          renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          const addImportsSpy = renderer.addImports as jasmine.Spy;
          expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
@@ -118,7 +126,7 @@ describe('Renderer', () => {
     it('should call addDefinitions with the source code, the analyzed class and the renderered definitions.',
        () => {
          const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
-             createTestRenderer(INPUT_PROGRAM);
+             createTestRenderer([INPUT_PROGRAM]);
          renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
          expect(addDefinitionsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
@@ -137,7 +145,7 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
        () => {
          const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
-             createTestRenderer(INPUT_PROGRAM);
+             createTestRenderer([INPUT_PROGRAM]);
          renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          const removeDecoratorsSpy = renderer.removeDecorators as jasmine.Spy;
          expect(removeDecoratorsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
@@ -157,10 +165,10 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
 
     it('should merge any inline source map from the original file and write the output as an inline source map',
        () => {
-         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer({
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer([{
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n' + INPUT_PROGRAM_MAP.toComment()
-         });
+         }]);
          const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          expect(result[0].path).toEqual('/dist/file.js');
          expect(result[0].contents)
@@ -172,10 +180,10 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
        () => {
          // Mock out reading the map file from disk
          spyOn(fs, 'readFileSync').and.returnValue(INPUT_PROGRAM_MAP.toJSON());
-         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer({
+         const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer([{
            ...INPUT_PROGRAM,
            contents: INPUT_PROGRAM.contents + '\n//# sourceMappingURL=file.js.map'
-         });
+         }]);
          const result = renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
          expect(result[0].path).toEqual('/dist/file.js');
          expect(result[0].contents)
@@ -183,5 +191,48 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
          expect(result[1].path).toEqual('/dist/file.js.map');
          expect(result[1].contents).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toJSON());
        });
+
+    describe('@angular/core support', () => {
+
+      it('should render relative imports in ESM bundles', () => {
+        const R3_SYMBOLS_FILE = {
+          name: '/src/r3_symbols.js',
+          contents: `export const NgModule = () => null;`
+        };
+        const CORE_FILE = {
+          name: '/src/core.js',
+          contents:
+              `import { NgModule } from './ng_module';\nexport class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
+        };
+
+        const {decorationAnalyses, program, renderer, switchMarkerAnalyses} = createTestRenderer(
+            [R3_SYMBOLS_FILE, CORE_FILE],
+            {isCore: true, rewriteCoreImportsTo: R3_SYMBOLS_FILE.name});
+        renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+        const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
+        expect(addDefinitionsSpy.calls.first().args[2])
+            .toContain(`/*@__PURE__*/ ɵngcc0.setClassMetadata(`);
+        const addImportsSpy = renderer.addImports as jasmine.Spy;
+        expect(addImportsSpy.calls.first().args[1]).toEqual([{name: './r3_symbols', as: 'ɵngcc0'}]);
+      });
+
+      it('should render no imports in FESM bundles', () => {
+        const CORE_FILE = {
+          name: '/src/core.js',
+          contents: `export const NgModule = () => null;
+            export class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
+        };
+
+        const {decorationAnalyses, program, renderer, switchMarkerAnalyses} =
+            createTestRenderer([CORE_FILE], {isCore: true});
+        renderer.renderProgram(program, decorationAnalyses, switchMarkerAnalyses);
+        const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
+        expect(addDefinitionsSpy.calls.first().args[2])
+            .toContain(`/*@__PURE__*/ setClassMetadata(`);
+        const addImportsSpy = renderer.addImports as jasmine.Spy;
+        expect(addImportsSpy.calls.first().args[1]).toEqual([]);
+      });
+
+    });
   });
 });

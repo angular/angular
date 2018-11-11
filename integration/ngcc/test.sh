@@ -24,13 +24,13 @@ ivy-ngcc
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it compile @angular/core/ApplicationModule correctly?
-  grep "ApplicationModule.ngModuleDef = ɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
+  grep "ApplicationModule.ngModuleDef = defineNgModule" node_modules/@angular/core/fesm2015/core.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵdefineNgModule" node_modules/@angular/core/fesm5/core.js
+  grep "ApplicationModule.ngModuleDef = defineNgModule" node_modules/@angular/core/fesm5/core.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
+  grep "ApplicationModule.ngModuleDef = ɵngcc0.defineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "ApplicationModule.ngModuleDef = ɵngcc0.ɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
+  grep "ApplicationModule.ngModuleDef = ɵngcc0.defineNgModule" node_modules/@angular/core/esm5/src/application_module.js
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?
