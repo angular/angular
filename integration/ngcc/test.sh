@@ -33,6 +33,12 @@ ivy-ngcc
   grep "ApplicationModule.ngModuleDef = ɵngcc0.defineNgModule" node_modules/@angular/core/esm5/src/application_module.js
   if [[ $? != 0 ]]; then exit 1; fi
 
+# Did it transform @angular/core typing files correctly?
+  grep "import [*] as ɵngcc0 from './r3_symbols';" node_modules/@angular/core/src/application_module.d.ts
+  if [[ $? != 0 ]]; then exit 1; fi
+  grep "static ngInjectorDef: ɵngcc0.InjectorDef<ApplicationModule>;" node_modules/@angular/core/src/application_module.d.ts
+  if [[ $? != 0 ]]; then exit 1; fi
+
 # Can it be safely run again (as a noop)?
 ivy-ngcc
 

@@ -10,6 +10,7 @@ import MagicString from 'magic-string';
 import {makeProgram, getDeclaration} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {createBundleInfo} from '../../src/packages/bundle';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
@@ -20,7 +21,8 @@ function setup(file: {name: string, contents: string}) {
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new Esm5Renderer(host, false, null, '', '', false);
+  const bundle = createBundleInfo(false, null, null);
+  const renderer = new Esm5Renderer(host, bundle, '', '', false);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 

@@ -19,6 +19,7 @@ import {translateStatement, translateType} from '../../../ngtsc/translator';
 import {NgccImportManager} from './ngcc_import_manager';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
+import {BundleInfo} from '../packages/bundle';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
 
@@ -55,9 +56,9 @@ interface DtsClassInfo {
  */
 export abstract class Renderer {
   constructor(
-      protected host: NgccReflectionHost, protected isCore: boolean,
-      protected rewriteCoreImportsTo: ts.SourceFile|null, protected sourcePath: string,
-      protected targetPath: string, protected transformDts: boolean) {}
+      protected host: NgccReflectionHost, protected bundle: BundleInfo,
+      protected sourcePath: string, protected targetPath: string, protected transformDts: boolean) {
+  }
 
   renderProgram(
       program: ts.Program, decorationAnalyses: DecorationAnalyses,
@@ -101,7 +102,7 @@ export abstract class Renderer {
 
     if (compiledFile) {
       const importManager =
-          new NgccImportManager(!this.rewriteCoreImportsTo, this.isCore, IMPORT_PREFIX);
+          new NgccImportManager(this.bundle.isFlat, this.bundle.isCore, IMPORT_PREFIX);
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
 
       compiledFile.compiledClasses.forEach(clazz => {
@@ -116,8 +117,8 @@ export abstract class Renderer {
           compiledFile.sourceFile);
 
       this.addImports(
-          outputText,
-          importManager.getAllImports(compiledFile.sourceFile.fileName, this.rewriteCoreImportsTo));
+          outputText, importManager.getAllImports(
+                          compiledFile.sourceFile.fileName, this.bundle.rewriteCoreImportsTo));
 
       // TODO: remove contructor param metadata and property decorators (we need info from the
       // handlers to do this)
@@ -130,7 +131,7 @@ export abstract class Renderer {
   renderDtsFile(dtsFile: ts.SourceFile, dtsClasses: DtsClassInfo[]): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
-    const importManager = new NgccImportManager(false, this.isCore, IMPORT_PREFIX);
+    const importManager = new NgccImportManager(false, this.bundle.isCore, IMPORT_PREFIX);
 
     dtsClasses.forEach(dtsClass => {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
@@ -142,7 +143,8 @@ export abstract class Renderer {
     });
 
     this.addImports(
-        outputText, importManager.getAllImports(dtsFile.fileName, this.rewriteCoreImportsTo));
+        outputText,
+        importManager.getAllImports(dtsFile.fileName, this.bundle.rewriteCoreDtsImportsTo));
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
   }
