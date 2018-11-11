@@ -6,20 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {directiveInject} from '../../src/render3/di';
-import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load} from '../../src/render3/index';
+import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {RElement} from '../../src/render3/interfaces/renderer';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
+import {getViewData} from '../../src/render3/state';
+import {getNativeByIndex} from '../../src/render3/util';
 import {NgForOf} from '../../test/render3/common_with_def';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
+
+const Component: typeof _Component = function(...args: any[]): any {
+  // In test we use @Component for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
+
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
@@ -1463,7 +1472,7 @@ describe('ViewContainerRef', () => {
     });
   });
 
-  describe('life cycle hooks', () => {
+  fixmeIvy(`Hooks don't run`) && describe('life cycle hooks', () => {
 
     // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
     const log: string[] = [];
@@ -1760,12 +1769,177 @@ describe('ViewContainerRef', () => {
 
       const componentRef = directiveInstance !.vcref.createComponent(
           directiveInstance !.cfr.resolveComponentFactory(HostBindingCmpt));
+      fixture.update();
       expect(fixture.html).toBe('<host-bindings id="attribute" title="initial"></host-bindings>');
 
 
       componentRef.instance.title = 'changed';
       fixture.update();
       expect(fixture.html).toBe('<host-bindings id="attribute" title="changed"></host-bindings>');
+    });
+
+  });
+
+  describe('view engine compatibility', () => {
+
+    @Component({selector: 'app', template: ''})
+    class AppCmpt {
+      static ngComponentDef = defineComponent({
+        type: AppCmpt,
+        selectors: [['app']],
+        factory: () => new AppCmpt(
+                     directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+        consts: 0,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: AppCmpt) => {}
+      });
+
+      constructor(private _vcRef: ViewContainerRef, private _cfResolver: ComponentFactoryResolver) {
+      }
+
+      insert(comp: any) {
+        this._vcRef.createComponent(this._cfResolver.resolveComponentFactory(comp));
+      }
+
+      clear() { this._vcRef.clear(); }
+    }
+
+    // https://stackblitz.com/edit/angular-xxpffd?file=src%2Findex.html
+    it('should allow injecting VCRef into the root (bootstrapped) component', () => {
+
+      const DynamicComponent =
+          createComponent('dynamic-cmpt', function(rf: RenderFlags, parent: any) {
+            if (rf & RenderFlags.Create) {
+              text(0, 'inserted dynamically');
+            }
+          }, 1, 0);
+
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+      fixture.component.insert(DynamicComponent);
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe('<div host="mark"></div><dynamic-cmpt>inserted dynamically</dynamic-cmpt>');
+
+      fixture.component.clear();
+      fixture.update();
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+    });
+
+    it('should check bindings for components dynamically created by root component', () => {
+      class DynamicCompWithBindings {
+        checkCount = 0;
+
+        ngDoCheck() { this.checkCount++; }
+
+        /** check count: {{ checkCount }} */
+        static ngComponentDef = defineComponent({
+          type: DynamicCompWithBindings,
+          selectors: [['dynamic-cmpt-with-bindings']],
+          factory: () => new DynamicCompWithBindings(),
+          consts: 1,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: DynamicCompWithBindings) => {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, interpolation1('check count: ', ctx.checkCount, ''));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+      fixture.component.insert(DynamicCompWithBindings);
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 1</dynamic-cmpt-with-bindings>');
+
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-bindings>check count: 2</dynamic-cmpt-with-bindings>');
+    });
+
+    it('should create deep DOM tree immediately for dynamically created components', () => {
+      let name = 'text';
+      const Child = createComponent('child', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          { text(1); }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(1, bind(name));
+        }
+      }, 2, 1);
+
+      const DynamicCompWithChildren =
+          createComponent('dynamic-cmpt-with-children', (rf: RenderFlags, ctx: any) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'child');
+            }
+          }, 1, 0, [Child]);
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+      fixture.component.insert(DynamicCompWithChildren);
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-children><child><div></div></child></dynamic-cmpt-with-children>');
+
+      fixture.update();
+      expect(fixture.outerHtml)
+          .toBe(
+              '<div host="mark"></div><dynamic-cmpt-with-children><child><div>text</div></child></dynamic-cmpt-with-children>');
+    });
+
+    it('should support view queries for dynamically created components', () => {
+      let dynamicComp !: DynamicCompWithViewQueries;
+      let fooEl !: RElement;
+
+      class DynamicCompWithViewQueries {
+        // @ViewChildren('foo')
+        foo !: QueryList<any>;
+
+        static ngComponentDef = defineComponent({
+          type: DynamicCompWithViewQueries,
+          selectors: [['dynamic-cmpt-with-view-queries']],
+          factory: () => dynamicComp = new DynamicCompWithViewQueries(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
+            if (rf & RenderFlags.Create) {
+              element(1, 'div', ['bar', ''], ['foo', '']);
+            }
+            // testing only
+            fooEl = getNativeByIndex(1, getViewData());
+          },
+          viewQuery: function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              query(0, ['foo'], true);
+            }
+            if (rf & RenderFlags.Update) {
+              let tmp: any;
+              queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.foo = tmp as QueryList<any>);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+
+      fixture.component.insert(DynamicCompWithViewQueries);
+      fixture.update();
+
+      expect(dynamicComp.foo.first.nativeElement).toEqual(fooEl as any);
     });
 
   });

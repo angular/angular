@@ -21,7 +21,7 @@ import {NgModuleFactory} from './ng_module_factory';
 /**
  * Combination of NgModuleFactory and ComponentFactorys.
  *
- * @experimental
+ * @publicApi
  */
 export class ModuleWithComponentFactories<T> {
   constructor(
@@ -43,6 +43,7 @@ function _throwError() {
  * that will use the directives/pipes of the ng module for compilation
  * of components.
  *
+ * @publicApi
  */
 @Injectable()
 export class Compiler {
@@ -91,7 +92,7 @@ export class Compiler {
 /**
  * Options for creating a compiler
  *
- * @experimental
+ * @publicApi
  */
 export type CompilerOptions = {
   useJit?: boolean,
@@ -104,14 +105,14 @@ export type CompilerOptions = {
 /**
  * Token to provide CompilerOptions in the platform injector.
  *
- * @experimental
+ * @publicApi
  */
 export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerOptions');
 
 /**
  * A factory for creating a Compiler
  *
- * @experimental
+ * @publicApi
  */
 export abstract class CompilerFactory {
   abstract createCompiler(options?: CompilerOptions[]): Compiler;

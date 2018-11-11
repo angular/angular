@@ -49,7 +49,6 @@ ng_package(
     ],
     entry_point = "packages/service-worker/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
     deps = [

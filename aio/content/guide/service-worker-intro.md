@@ -31,7 +31,7 @@ Installing the Angular service worker is as simple as including an `NgModule`. I
 
 ## Prerequisites
 
-Your application must run in a web browser that supports service workers. Currently, the latest versions of Chrome and Firefox are supported. To learn about other browsers that are service worker ready, see the [Can I Use](http://caniuse.com/#feat=serviceworkers) page.
+Your application must run in a web browser that supports service workers. Currently, service workers are supported in the latest versions of Chrome, Firefox, Edge, Safari, Opera, UC Browser (Android version) and Samsung Internet. Browsers like IE and Opera Mini do not provide the support. To learn more about other browsers that are service worker ready, see the [Can I Use](https://caniuse.com/#feat=serviceworkers) page and [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
 
 ## Related resources
 

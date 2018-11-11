@@ -11,20 +11,20 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
-import {AnalyzedClass, DecorationAnalyzer, DecorationAnalyses} from '../../src/analysis/decoration_analyzer';
+import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Renderer} from '../../src/rendering/renderer';
 
 class TestRenderer extends Renderer {
-  constructor(host: Fesm2015ReflectionHost) { super(host, false, null, '/src', '/dist'); }
+  constructor(host: Esm2015ReflectionHost) { super(host, false, null, '/src', '/dist', false); }
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
     output.prepend('\n// ADD CONSTANTS\n');
   }
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string) {
+  addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
   removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>) {
@@ -37,7 +37,7 @@ class TestRenderer extends Renderer {
 
 function createTestRenderer(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Fesm2015ReflectionHost(false, program.getTypeChecker());
+  const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
@@ -127,8 +127,11 @@ describe('Renderer', () => {
            decorators: [jasmine.objectContaining({name: 'Directive'})],
          }));
          expect(addDefinitionsSpy.calls.first().args[2])
-             .toEqual(
-                 `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); }, features: [ɵngcc0.ɵPublicFeature] });`);
+             .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+        type: Directive,
+        args: [{ selector: '[a]' }]
+    }], null, { foo: [] });
+A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory(t) { return new (t || A)(); } });`);
        });
 
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',

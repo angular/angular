@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_ELEMENT_REF_FACTORY} from '../ivy_switch/runtime/index';
+import {injectElementRef as render3InjectElementRef} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
 
 /**
  * A wrapper around a native element inside of a View.
@@ -18,7 +19,7 @@ import {R3_ELEMENT_REF_FACTORY} from '../ivy_switch/runtime/index';
  * XSS attacks. Carefully review any use of `ElementRef` in your code. For more detail, see the
  * [Security Guide](http://g.co/ng/security).
  *
- *
+ * @publicApi
  */
 // Note: We don't expose things like `Injector`, `ViewContainer`, ... here,
 // i.e. users have to ask for what they need. With that, we can build better analysis tools
@@ -50,5 +51,10 @@ export class ElementRef<T = any> {
   constructor(nativeElement: T) { this.nativeElement = nativeElement; }
 
   /** @internal */
-  static __NG_ELEMENT_ID__: () => ElementRef = () => R3_ELEMENT_REF_FACTORY(ElementRef);
+  static __NG_ELEMENT_ID__: () => ElementRef = () => SWITCH_ELEMENT_REF_FACTORY(ElementRef);
 }
+
+export const SWITCH_ELEMENT_REF_FACTORY__POST_R3__ = render3InjectElementRef;
+const SWITCH_ELEMENT_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_ELEMENT_REF_FACTORY: typeof render3InjectElementRef =
+    SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;

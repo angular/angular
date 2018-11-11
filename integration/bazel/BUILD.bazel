@@ -11,26 +11,3 @@ alias(
     name = "tsconfig.json",
     actual = "//src:tsconfig.json",
 )
-
-filegroup(
-    name = "node_modules",
-    srcs = glob(
-        [
-            # Include only .js, .json & .d.ts files to reduce the number of
-            # files in the //:node_modules filegroup
-            "node_modules/**/*.js",
-            "node_modules/**/*.json",
-            "node_modules/**/*.d.ts",
-            # All the files in the http-server package are necesssary
-            "node_modules/http-server/**",
-            # All the files in the protractor package are necesssary
-            "node_modules/protractor/**",
-            # Also include all files in node_modules/.bin
-            "node_modules/.bin/*",
-        ],
-        exclude = [
-            # Exclude files with spaces which are illegal bazel labels
-            "node_modules/**/* *",
-        ],
-    ),
-)

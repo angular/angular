@@ -3066,11 +3066,13 @@ A guard's return value controls the router's behavior:
 
 * If it returns `true`, the navigation process continues.
 * If it returns `false`, the navigation process stops and the user stays put.
+* If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
 
 
 <div class="alert is-helpful">
 
-**Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
+**Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation. When
+doing so inside a guard, the guard should return `false`;
 
 </div>
 

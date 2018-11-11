@@ -101,7 +101,7 @@ function runPackageGoldTest(testPackage: TestPackage) {
           `    Diff:\n` +
           `    ${patch}\n\n` +
           `    To accept the new golden file, run:\n` +
-          `      bazel run ${process.env['BAZEL_TARGET']}.accept\n`;
+          `      yarn bazel run ${process.env['BAZEL_TARGET']}.accept\n`;
 
       fail(failureMessage);
     }

@@ -10,10 +10,10 @@ import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, N
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY} from '../common/constants';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {Deferred, LazyModuleRef, controllerKey, onError} from '../common/util';
+import {Deferred, LazyModuleRef, UpgradeAppType, controllerKey, onError} from '../common/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -99,6 +99,7 @@ let upgradeCount: number = 0;
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
  * [Ahead-of-Time compilation](guide/aot-compiler).
+ * @publicApi
  */
 export class UpgradeAdapter {
   private idPrefix: string = `NG2_UPGRADE_${upgradeCount++}_`;
@@ -505,7 +506,8 @@ export class UpgradeAdapter {
 
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
-    ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
+    ng1Module.constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Dynamic)
+        .factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
         .factory(
             LAZY_MODULE_REF,
             [
@@ -655,6 +657,7 @@ class ParentInjectorPromise {
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
  * [Ahead-of-Time compilation](guide/aot-compiler).
+ * @publicApi
  */
 export class UpgradeAdapterRef {
   /* @internal */

@@ -9,11 +9,12 @@ import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
 import {discoverDirectives, discoverLocalRefs, getContext, isComponentInstance} from './context_discovery';
-import {NodeInjector} from './di';
 import {LContext} from './interfaces/context';
 import {TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {CONTEXT, FLAGS, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 import {getComponentViewByIndex, readPatchedLViewData} from './util';
+import {NodeInjector} from './view_engine_compatibility';
+
 
 
 /**
@@ -32,19 +33,21 @@ import {getComponentViewByIndex, readPatchedLViewData} from './util';
  *    the component instance is exists in a template.
  * If a directive instance is used then it will return the
  *    component that contains that directive in it's template.
+ *
+ * @publicApi
  */
 export function getComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target) !;
 
   if (context.component === undefined) {
-    let lViewData = context.lViewData;
+    let lViewData: LViewData|null = context.lViewData;
     while (lViewData) {
       const ctx = lViewData ![CONTEXT] !as{};
       if (ctx && isComponentInstance(ctx)) {
         context.component = ctx;
         break;
       }
-      lViewData = lViewData ![PARENT] !;
+      lViewData = lViewData[FLAGS] & LViewFlags.IsRoot ? null : lViewData ![PARENT] !;
     }
     if (context.component === undefined) {
       context.component = null;
@@ -59,6 +62,8 @@ export function getComponent<T = {}>(target: {}): T|null {
  *
  * This will only return a component instance of the DOM node
  * contains an instance of a component on it.
+ *
+ * @publicApi
  */
 export function getHostComponent<T = {}>(target: {}): T|null {
   const context = loadContext(target);
@@ -73,6 +78,8 @@ export function getHostComponent<T = {}>(target: {}): T|null {
 /**
  * Returns the `RootContext` instance that is associated with
  * the application where the target is situated.
+ *
+ * @publicApi
  */
 export function getRootContext(target: LViewData | {}): RootContext {
   const lViewData = Array.isArray(target) ? target : loadContext(target) !.lViewData;
@@ -83,6 +90,8 @@ export function getRootContext(target: LViewData | {}): RootContext {
 /**
  * Returns a list of all the components in the application
  * that are have been bootstrapped.
+ *
+ * @publicApi
  */
 export function getRootComponents(target: {}): any[] {
   return [...getRootContext(target).components];
@@ -91,6 +100,8 @@ export function getRootComponents(target: {}): any[] {
 /**
  * Returns the injector instance that is associated with
  * the element, component or directive.
+ *
+ * @publicApi
  */
 export function getInjector(target: {}): Injector {
   const context = loadContext(target);
@@ -102,6 +113,8 @@ export function getInjector(target: {}): Injector {
 /**
  * Returns a list of all the directives that are associated
  * with the underlying target element.
+ *
+ * @publicApi
  */
 export function getDirectives(target: {}): Array<{}> {
   const context = loadContext(target) !;
@@ -116,6 +129,8 @@ export function getDirectives(target: {}): Array<{}> {
 /**
  * Returns LContext associated with a target passed as an argument.
  * Throws if a given target doesn't have associated LContext.
+ *
+ * @publicApi
  */
 export function loadContext(target: {}): LContext {
   const context = getContext(target);
@@ -132,6 +147,8 @@ export function loadContext(target: {}): LContext {
  * reaching the root `LViewData`.
  *
  * @param componentOrView any component or view
+ *
+ * @publicApi
  */
 export function getRootView(componentOrView: LViewData | {}): LViewData {
   let lViewData: LViewData;
@@ -150,6 +167,8 @@ export function getRootView(componentOrView: LViewData | {}): LViewData {
 
 /**
  *  Retrieve map of local references (local reference name => element or directive instance).
+ *
+ * @publicApi
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
   const context = loadContext(target) !;

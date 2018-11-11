@@ -30,38 +30,17 @@ export const formControlBinding: any = {
 
 /**
  * @description
- *
- * Syncs a standalone `FormControl` instance to a form control element.
- *
- * This directive ensures that any values written to the `FormControl`
- * instance programmatically will be written to the DOM element (model -> view). Conversely,
- * any values written to the DOM element through user input will be reflected in the
- * `FormControl` instance (view -> model).
+ * * Syncs a standalone `FormControl` instance to a form control element.
+ * 
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `FormControl`
+ * @see `AbstractControl`
  *
  * @usageNotes
- * Use this directive if you'd like to create and manage a `FormControl` instance directly.
- * Simply create a `FormControl`, save it to your component class, and pass it into the
- * `FormControlDirective`.
  *
- * This directive is designed to be used as a standalone control.  Unlike `FormControlName`,
- * it does not require that your `FormControl` instance be part of any parent
- * `FormGroup`, and it won't be registered to any `FormGroupDirective` that
- * exists above it.
- *
- * **Get the value**: the `value` property is always synced and available on the
- * `FormControl` instance. See a full list of available properties in
- * `AbstractControl`.
- *
- * **Set the value**: You can pass in an initial value when instantiating the `FormControl`,
- * or you can set it programmatically later using {@link AbstractControl#setValue setValue} or
- * {@link AbstractControl#patchValue patchValue}.
- *
- * **Listen to value**: If you want to listen to changes in the value of the control, you can
- * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
- * re-calculated.
- *
- * ### Example
+ * ### Registering a single form control
+ * 
+ * The following examples shows how to register a standalone control and set its value.
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
  *
@@ -133,15 +112,28 @@ export const formControlBinding: any = {
  * the pattern is being used as the code is being updated.
  *
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
 
 export class FormControlDirective extends NgControl implements OnChanges {
+  /**
+   * @description
+   * Internal reference to the view model value.
+   */
   viewModel: any;
 
+  /**
+   * @description
+   * Tracks the `FormControl` instance bound to the directive.
+   */
   // TODO(issue/24571): remove '!'.
   @Input('formControl') form !: FormControl;
 
+  /**
+   * @description
+   * Triggers a warning that this input should not be used with reactive forms.
+   */
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }
 
@@ -154,6 +146,7 @@ export class FormControlDirective extends NgControl implements OnChanges {
   @Output('ngModelChange') update = new EventEmitter();
 
   /**
+   * @description
    * Static property used to track whether any ngModel warnings have been sent across
    * all instances of FormControlDirective. Used to support warning config of "once".
    *
@@ -162,8 +155,9 @@ export class FormControlDirective extends NgControl implements OnChanges {
   static _ngModelWarningSentOnce = false;
 
   /**
+   * @description
    * Instance property used to track whether an ngModel warning has been sent out for this
-   * particular FormControlDirective instance. Used to support warning config of "always".
+   * particular `FormControlDirective` instance. Used to support warning config of "always".
    *
    * @internal
    */
@@ -180,6 +174,13 @@ export class FormControlDirective extends NgControl implements OnChanges {
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
+              /**
+               * @description
+               * A lifecycle method called when the directive's inputs change. For internal use
+               * only.
+               *
+               * @param changes A object of key/value pairs for the set of changed inputs.
+               */
               ngOnChanges(changes: SimpleChanges): void {
                 if (this._isControlChanged(changes)) {
                   setUpControl(this.form, this);
@@ -196,16 +197,41 @@ export class FormControlDirective extends NgControl implements OnChanges {
                 }
               }
 
+              /**
+               * @description
+               * Returns an array that represents the path from the top-level form to this control.
+               * Each index is the string name of the control on that level.
+               */
               get path(): string[] { return []; }
 
+              /**
+               * @description
+               * Synchronous validator function composed of all the synchronous validators
+               * registered with this directive.
+               */
               get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
+              /**
+               * @description
+               * Async validator function composed of all the async validators registered with this
+               * directive.
+               */
               get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 
+              /**
+               * @description
+               * The `FormControl` bound to this directive.
+               */
               get control(): FormControl { return this.form; }
 
+              /**
+               * @description
+               * Sets the new value for the view model and emits an `ngModelChange` event.
+               *
+               * @param newValue The new value for the view model.
+               */
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
                 this.update.emit(newValue);

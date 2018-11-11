@@ -101,6 +101,7 @@ function mergeOptions(
  * ```
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class Http {
@@ -189,6 +190,7 @@ export class Http {
 
 /**
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class Jsonp extends Http {

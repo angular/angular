@@ -40,7 +40,7 @@ export class HeroService {
   // #enddocregion getHeroes-1
       .pipe(
         // #enddocregion getHeroes-2
-        tap(heroes => this.log('fetched heroes')),
+        tap(_ => this.log('fetched heroes')),
         // #docregion getHeroes-2
         catchError(this.handleError('getHeroes', []))
       );

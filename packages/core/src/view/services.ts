@@ -12,7 +12,7 @@ import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {isDevMode} from '../is_dev_mode';
-import {ivyEnabled} from '../ivy_switch/compiler/index';
+import {ivyEnabled} from '../ivy_switch';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';

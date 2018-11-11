@@ -253,6 +253,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
+ * @publicApi
  */
 export type Routes = Route[];
 
@@ -262,7 +263,7 @@ export type Routes = Route[];
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -286,7 +287,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -298,6 +299,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type Data = {
   [name: string]: any
@@ -310,6 +312,7 @@ export type Data = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type ResolveData = {
   [name: string]: any
@@ -322,6 +325,7 @@ export type ResolveData = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -333,6 +337,7 @@ export type LoadChildrenCallback = () =>
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -352,13 +357,14 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * The type of `runGuardsAndResolvers`.
  *
  * See `Routes` for more details.
- * @experimental
+ * @publicApi
  */
 export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export interface Route {
   path?: string;

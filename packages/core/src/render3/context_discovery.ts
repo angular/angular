@@ -258,7 +258,9 @@ function findViaDirective(lViewData: LViewData, directiveInstance: {}): number {
 }
 
 function assertDomElement(element: any) {
-  assertEqual(element.nodeType, 1, 'The provided value must be an instance of an HTMLElement');
+  assertEqual(
+      element && (element.nodeType == Node.ELEMENT_NODE || element.nodeType == Node.TEXT_NODE),
+      true, 'The provided value must be an instance of an HTMLElement');
 }
 
 /**

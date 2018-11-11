@@ -19,7 +19,15 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
 
 COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
 
-def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern = ["^__", "^ɵ"], allow_module_identifiers = COMMON_MODULE_IDENTIFIERS, **kwargs):
+def ts_api_guardian_test(
+        name,
+        golden,
+        actual,
+        data = [],
+        strip_export_pattern = ["^__", "^ɵ"],
+        allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
+        use_angular_tag_rules = True,
+        **kwargs):
     """Runs ts_api_guardian
     """
     data += [
@@ -39,10 +47,13 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
 
+    if use_angular_tag_rules:
+        args += ["--useAngularTagRules"]
+
     nodejs_test(
         name = name,
         data = data,
-        node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+        node_modules = "@ts-api-guardian_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
         templated_args = args + ["--verify", golden, actual],
         **kwargs
@@ -52,7 +63,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
         name = name + ".accept",
         testonly = True,
         data = data,
-        node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+        node_modules = "@ts-api-guardian_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
         templated_args = args + ["--out", golden, actual],
         **kwargs

@@ -17,7 +17,10 @@
     "inlineSourceMap": true,
     "lib": ["es2015"],
     "target": "es5",
-    "typeRoots": []
+    "typeRoots": [],
+    "types": [
+      "node"
+    ]
   },
   "files": [
     "main.ts",

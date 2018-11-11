@@ -59,7 +59,9 @@ describe(browser.baseUrl, () => {
     it('should serve `index.html` for unknown pages', async () => {
       const aioShell = element(by.css('aio-shell'));
       const heading = aioShell.element(by.css('h1'));
+
       await page.goTo(unknownPagePath);
+      await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
       expect(aioShell.isPresent()).toBe(true);
       expect(heading.getText()).toMatch(/page not found/i);

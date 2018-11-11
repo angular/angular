@@ -7,12 +7,15 @@
  */
 
 // clang-format off
+// We need to have `ɵdefineNgModule` defined locally for flat-file ngcc compilation.
+// More details in the commit where this is added.
+import {defineNgModule} from './render3/index';
+export const ɵdefineNgModule = defineNgModule;
 export {
   defineBase as ɵdefineBase,
   defineComponent as ɵdefineComponent,
   defineDirective as ɵdefineDirective,
   definePipe as ɵdefinePipe,
-  defineNgModule as ɵdefineNgModule,
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
@@ -25,7 +28,7 @@ export {
   getFactoryOf as ɵgetFactoryOf,
   getInheritedFactory as ɵgetInheritedFactory,
   templateRefExtractor as ɵtemplateRefExtractor,
-  PublicFeature as ɵPublicFeature,
+  ProvidersFeature as ɵProvidersFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
   NgModuleType as ɵNgModuleType,
@@ -122,19 +125,25 @@ export {
   i18nMapping as ɵi18nMapping,
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
-  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2
+  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2,
+  setClassMetadata as ɵsetClassMetadata,
 } from './render3/index';
 
 export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from './render3/debug';
 
 
 export {
-  R3_COMPILE_NGMODULE_DEFS as ɵcompileNgModuleDefs,
-  R3_PATCH_COMPONENT_DEF_WTIH_SCOPE as ɵpatchComponentDefWithScope,
-  R3_COMPILE_COMPONENT as ɵcompileComponent,
-  R3_COMPILE_DIRECTIVE as ɵcompileDirective,
-  R3_COMPILE_PIPE as ɵcompilePipe,
-} from './ivy_switch/compiler/ivy_switch_on';
+  compileComponent as ɵcompileComponent,
+  compileDirective as ɵcompileDirective,
+} from './render3/jit/directive';
+export {
+  compileNgModule as ɵcompileNgModule,
+  compileNgModuleDefs as ɵcompileNgModuleDefs,
+  patchComponentDefWithScope as ɵpatchComponentDefWithScope,
+} from './render3/jit/module';
+export {
+  compilePipe as ɵcompilePipe,
+} from './render3/jit/pipe';
 
 export {
   NgModuleDef as ɵNgModuleDef,
@@ -186,24 +195,44 @@ export {
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
-  compileNgModuleFactory__POST_NGCC__ as ɵcompileNgModuleFactory__POST_NGCC__
+  compileNgModuleFactory__POST_R3__ as ɵcompileNgModuleFactory__POST_R3__
 } from './application_ref';
 export {
-  R3_COMPILE_COMPONENT__POST_NGCC__ as ɵR3_COMPILE_COMPONENT__POST_NGCC__,
-  R3_COMPILE_DIRECTIVE__POST_NGCC__ as ɵR3_COMPILE_DIRECTIVE__POST_NGCC__,
-  R3_COMPILE_INJECTABLE__POST_NGCC__ as ɵR3_COMPILE_INJECTABLE__POST_NGCC__,
-  R3_COMPILE_NGMODULE__POST_NGCC__ as ɵR3_COMPILE_NGMODULE__POST_NGCC__,
-  R3_COMPILE_PIPE__POST_NGCC__ as ɵR3_COMPILE_PIPE__POST_NGCC__,
-  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__,
-} from './ivy_switch/compiler/legacy';
+  SWITCH_COMPILE_COMPONENT__POST_R3__ as ɵSWITCH_COMPILE_COMPONENT__POST_R3__,
+  SWITCH_COMPILE_DIRECTIVE__POST_R3__ as ɵSWITCH_COMPILE_DIRECTIVE__POST_R3__,
+  SWITCH_COMPILE_PIPE__POST_R3__ as ɵSWITCH_COMPILE_PIPE__POST_R3__,
+} from './metadata/directives';
+export {
+  SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
+} from './metadata/ng_module';
+export {
+  SWITCH_COMPILE_INJECTABLE__POST_R3__ as ɵSWITCH_COMPILE_INJECTABLE__POST_R3__,
+} from './di/injectable';
+export {
+  SWITCH_IVY_ENABLED__POST_R3__ as ɵSWITCH_IVY_ENABLED__POST_R3__,
+} from './ivy_switch';
+export {
+  SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as ɵSWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__,
+} from './change_detection/change_detector_ref';
+export {
+  SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
+} from './linker/element_ref';
+export {
+  SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as ɵSWITCH_TEMPLATE_REF_FACTORY__POST_R3__,
+} from './linker/template_ref';
+export {
+  SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as ɵSWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__,
+} from './linker/view_container_ref';
+export {
+  SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
+} from './render/api';
 
 export {
-  R3_ELEMENT_REF_FACTORY__POST_NGCC__ as ɵR3_ELEMENT_REF_FACTORY__POST_NGCC__,
-  R3_TEMPLATE_REF_FACTORY__POST_NGCC__ as ɵR3_TEMPLATE_REF_FACTORY__POST_NGCC__,
-  R3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__ as ɵR3_CHANGE_DETECTOR_REF_FACTORY__POST_NGCC__,
-  R3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__ as ɵR3_VIEW_CONTAINER_REF_FACTORY__POST_NGCC__,
-  R3_RENDERER2_FACTORY__POST_NGCC__ as ɵR3_RENDERER2_FACTORY__POST_NGCC__,
-} from './ivy_switch/runtime/legacy';
-
+  publishGlobalUtil as ɵpublishGlobalUtil,
+  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
+} from './render3/global_utils';
+export {
+  SWITCH_INJECTOR_FACTORY__POST_R3__ as ɵSWITCH_INJECTOR_FACTORY__POST_R3__,
+} from './di/injector';
 
 // clang-format on

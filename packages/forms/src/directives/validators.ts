@@ -17,7 +17,7 @@ import {NG_VALIDATORS, Validators} from '../validators';
  * @description
  * Defines the map of errors returned from failed validation checks
  *
- * @experimental
+ * @publicApi
  */
 export type ValidationErrors = {
   [key: string]: any
@@ -45,6 +45,8 @@ export type ValidationErrors = {
  *   }
  * }
  * ```
+ *
+ * @publicApi
  */
 export interface Validator {
   /**
@@ -93,7 +95,7 @@ export interface Validator {
  * }
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export interface AsyncValidator extends Validator {
   /**
@@ -135,6 +137,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:
@@ -175,7 +178,7 @@ export class RequiredValidator implements Validator {
  * <input type="checkbox" name="active" ngModel required>
  * ```
  *
- * @experimental
+ * @publicApi
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
  */
@@ -213,7 +216,7 @@ export const EMAIL_VALIDATOR: any = {
  * <input type="email" name="email" ngModel [email]="true">
  * ```
  *
- * @experimental
+ * @publicApi
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
  */
@@ -240,8 +243,14 @@ export class EmailValidator implements Validator {
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
+/**
+ * @publicApi
+ */
 export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null; }
 
+/**
+ * @publicApi
+ */
 export interface AsyncValidatorFn {
   (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
@@ -266,6 +275,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -320,6 +330,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -377,6 +388,7 @@ export const PATTERN_VALIDATOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

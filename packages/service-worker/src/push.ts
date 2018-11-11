@@ -16,7 +16,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class SwPush {
@@ -24,6 +24,23 @@ export class SwPush {
    * Emits the payloads of the received push notification messages.
    */
   readonly messages: Observable<object>;
+
+  /**
+   * Emits the payloads of the received push notification messages as well as the action the user
+   * interacted with. If no action was used the action property will be an empty string `''`.
+   *
+   * Note that the `notification` property is **not** a [Notification][Mozilla Notification] object
+   * but rather a
+   * [NotificationOptions](https://notifications.spec.whatwg.org/#dictdef-notificationoptions)
+   * object that also includes the `title` of the [Notification][Mozilla Notification] object.
+   *
+   * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+   */
+  readonly notificationClicks: Observable < {
+    action: string;
+    notification: NotificationOptions&{ title: string }
+  }
+  > ;
 
   /**
    * Emits the currently active
@@ -45,11 +62,15 @@ export class SwPush {
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.messages = NEVER;
+      this.notificationClicks = NEVER;
       this.subscription = NEVER;
       return;
     }
 
     this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map(message => message.data));
+
+    this.notificationClicks =
+        this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
 

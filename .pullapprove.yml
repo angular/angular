@@ -87,10 +87,10 @@ groups:
       files:
         include:
           - "WORKSPACE"
+          - ".bazel*"
           - "*.bazel"
           - "*.bzl"
           - "packages/bazel/*"
-          - "tools/bazel.rc"
           - "/docs/BAZEL.md"
     users:
       - alexeagle #primary
@@ -108,9 +108,9 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/bazel.rc"
-          - "tools/public_api_guard/*"
           - "aio/*"
+          - "packages/core/test/bundling/*"
+          - "tools/public_api_guard/*"
     users:
       - IgorMinar #primary
       - alexeagle

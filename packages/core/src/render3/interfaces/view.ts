@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
+import {Type} from '../../type';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
@@ -336,24 +338,6 @@ export interface TView {
   firstChild: TNode|null;
 
   /**
-   * Selector matches for a node are temporarily cached on the TView so the
-   * DI system can eagerly instantiate directives on the same node if they are
-   * created out of order. They are overwritten after each node.
-   *
-   * <div dirA dirB></div>
-   *
-   * e.g. DirA injects DirB, but DirA is created first. DI should instantiate
-   * DirB when it finds that it's on the same node, but not yet created.
-   *
-   * Even indices: Directive defs
-   * Odd indices:
-   *   - Null if the associated directive hasn't been instantiated yet
-   *   - Directive index, if associated directive has been created
-   *   - String, temporary 'CIRCULAR' token set while dependencies are being resolved
-   */
-  currentMatches: CurrentMatchesList|null;
-
-  /**
    * Set of instructions used to process host bindings efficiently.
    *
    * See VIEW_DATA.md for more information.
@@ -549,10 +533,9 @@ export type HookData = (number | (() => void))[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData = (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | null)[];
-
-/** Type for TView.currentMatches */
-export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
+export type TData =
+    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
+     InjectionToken<any>| null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

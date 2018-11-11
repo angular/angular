@@ -8,12 +8,14 @@
 
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {R3_RENDERER2_FACTORY} from '../ivy_switch/runtime/index';
 import {ViewEncapsulation} from '../metadata/view';
+import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
 
 
 /**
  * @deprecated Use `RendererType2` (and `Renderer2`) instead.
+ * @publicApi
  */
 export class RenderComponentType {
   constructor(
@@ -47,6 +49,7 @@ export interface DirectRenderer {
 
 /**
  * @deprecated Use the `Renderer2` instead.
+ * @publicApi
  */
 export abstract class Renderer {
   abstract selectRootElement(selectorOrNode: string|any, debugInfo?: RenderDebugInfo): any;
@@ -110,6 +113,7 @@ export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2In
  * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  *
  * @deprecated Use `RendererFactory2` instead.
+ * @publicApi
  */
 export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
@@ -118,7 +122,7 @@ export abstract class RootRenderer {
 /**
  * Used by `RendererFactory2` to associate custom rendering data and styles
  * with a rendering implementation.
- *  @experimental
+ *  @publicApi
  */
 export interface RendererType2 {
   /**
@@ -151,7 +155,7 @@ export interface RendererType2 {
 /**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
  *
- * @experimental
+ * @publicApi
  */
 export abstract class RendererFactory2 {
   /**
@@ -178,7 +182,7 @@ export abstract class RendererFactory2 {
 
 /**
  * Flags for renderer-specific style modifiers.
- * @experimental
+ * @publicApi
  */
 export enum RendererStyleFlags2 {
   /**
@@ -204,7 +208,7 @@ export enum RendererStyleFlags2 {
  * not statically known, use the `setProperty()` or
  * `setAttribute()` method.
  *
- * @experimental
+ * @publicApi
  */
 export abstract class Renderer2 {
   /**
@@ -370,5 +374,10 @@ export abstract class Renderer2 {
       callback: (event: any) => boolean | void): () => void;
 
   /** @internal */
-  static __NG_ELEMENT_ID__: () => Renderer2 = () => R3_RENDERER2_FACTORY();
+  static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
+
+
+export const SWITCH_RENDERER2_FACTORY__POST_R3__ = render3InjectRenderer2;
+const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;
+const SWITCH_RENDERER2_FACTORY: typeof render3InjectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;

@@ -47,40 +47,6 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
       var ignoreWordsMap = convertToMap(wordsToIgnore);
 
-      // If the heading contains a name starting with ng, e.g. "ngController", then add the
-      // name without the ng to the text, e.g. "controller".
-      function tokenize(text) {
-        const rawTokens = text.split(/[\s\/]+/mg);
-        const tokens = [];
-        rawTokens.forEach(token => {
-          // Strip off unwanted trivial characters
-          token = token
-              .trim()
-              .replace(/^[_\-"'`({[<$*)}\]>.]+/, '')
-              .replace(/[_\-"'`({[<$*)}\]>.]+$/, '');
-          // Ignore tokens that contain weird characters
-          if (/^[\w.\-]+$/.test(token)) {
-            tokens.push(token.toLowerCase());
-            const ngTokenMatch = /^[nN]g([A-Z]\w*)/.exec(token);
-            if (ngTokenMatch) {
-              tokens.push(ngTokenMatch[1].toLowerCase());
-            }
-          }
-        });
-        return tokens;
-      }
-
-      function extractWords(text, words, keywordMap) {
-        var tokens = tokenize(text);
-        tokens.forEach(function(token) {
-          if (!keywordMap[token]) {
-            words.push(token);
-            keywordMap[token] = true;
-          }
-        });
-      }
-
-
       const filteredDocs = docs
           // We are not interested in some docTypes
           .filter(function(doc) { return !docTypesToIgnore[doc.docType]; })
@@ -104,13 +70,9 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
           if (isString(value) && !propertiesToIgnore[key]) {
             extractWords(value, words, keywordMap);
           }
-
-          // Special case properties that contain content relating to "members"
-          // of a doc that represents, say, a class or interface
-          if (key === 'members' || key === 'statics') {
-            value.forEach(function(member) { extractWords(member.name, members, membersMap); });
-          }
         });
+
+        extractMemberWords(doc, members, membersMap);
 
         // Extract all the keywords from the headings
         if (doc.vFile && doc.vFile.headings) {
@@ -166,4 +128,54 @@ function convertToMap(collection) {
   const obj = {};
   collection.forEach(key => { obj[key] = true; });
   return obj;
+}
+
+// If the heading contains a name starting with ng, e.g. "ngController", then add the
+// name without the ng to the text, e.g. "controller".
+function tokenize(text) {
+  const rawTokens = text.split(/[\s\/]+/mg);
+  const tokens = [];
+  rawTokens.forEach(token => {
+    // Strip off unwanted trivial characters
+    token = token
+        .trim()
+        .replace(/^[_\-"'`({[<$*)}\]>.]+/, '')
+        .replace(/[_\-"'`({[<$*)}\]>.]+$/, '');
+    // Ignore tokens that contain weird characters
+    if (/^[\w.\-]+$/.test(token)) {
+      tokens.push(token.toLowerCase());
+      const ngTokenMatch = /^[nN]g([A-Z]\w*)/.exec(token);
+      if (ngTokenMatch) {
+        tokens.push(ngTokenMatch[1].toLowerCase());
+      }
+    }
+  });
+  return tokens;
+}
+
+function extractWords(text, words, keywordMap) {
+  var tokens = tokenize(text);
+  tokens.forEach(function(token) {
+    if (!keywordMap[token]) {
+      words.push(token);
+      keywordMap[token] = true;
+    }
+  });
+}
+
+function extractMemberWords(doc, members, membersMap) {
+  if (!doc) return;
+
+  if (doc.members) {
+    doc.members.forEach(member => extractWords(member.name, members, membersMap));
+  }
+  if (doc.statics) {
+    doc.statics.forEach(member => extractWords(member.name, members, membersMap));
+  }
+  if (doc.extendsClauses) {
+    doc.extendsClauses.forEach(clause => extractMemberWords(clause.doc, members, membersMap));
+  }
+  if (doc.implementsClauses) {
+    doc.implementsClauses.forEach(clause => extractMemberWords(clause.doc, members, membersMap));
+  }
 }

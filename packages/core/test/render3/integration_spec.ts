@@ -7,14 +7,15 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, enableBindings, disableBindings, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
+import {NO_CHANGE} from '../../src/render3/tokens';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
+import {enableBindings, disableBindings} from '../../src/render3/state';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
@@ -23,7 +24,6 @@ import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from '
 import {getContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
-import {directiveInject} from '../../src/render3/di';
 
 describe('render3 integration test', () => {
 
@@ -943,6 +943,116 @@ describe('render3 integration test', () => {
       expect(directive !.elRef.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
 
+    it('should support ViewContainerRef when ng-container is at the root of a view', () => {
+
+      function ContentTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Content');
+        }
+      }
+
+      class Directive {
+        contentTpl: TemplateRef<{}>|null = null;
+
+        constructor(private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this.contentTpl as TemplateRef<{}>); }
+
+        clear() { this._vcRef.clear(); }
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => directive = new Directive(directiveInject(ViewContainerRef as any)),
+          inputs: {contentTpl: 'contentTpl'},
+        });
+      }
+
+      let directive: Directive;
+
+      /**
+       * <ng-container dir [contentTpl]="content">
+       *    <ng-template #content>Content</ng-template>
+       * </ng-container>
+       */
+      const App = createComponent('app', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0, [AttributeMarker.SelectOnly, 'dir']);
+          template(1, ContentTemplate, 1, 0, '', null, ['content', ''], templateRefExtractor);
+          elementContainerEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          const content = reference(2) as any;
+          elementProperty(0, 'contentTpl', bind(content));
+        }
+      }, 3, 1, [Directive]);
+
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('');
+
+      directive !.insertView();
+      fixture.update();
+      expect(fixture.html).toEqual('Content');
+
+      directive !.clear();
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
+    it('should support ViewContainerRef on <ng-template> inside <ng-container>', () => {
+      function ContentTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Content');
+        }
+      }
+
+      class Directive {
+        constructor(private _tplRef: TemplateRef<{}>, private _vcRef: ViewContainerRef) {}
+
+        insertView() { this._vcRef.createEmbeddedView(this._tplRef); }
+
+        clear() { this._vcRef.clear(); }
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory:
+              () => directive = new Directive(
+                  directiveInject(TemplateRef as any), directiveInject(ViewContainerRef as any)),
+        });
+      }
+
+      let directive: Directive;
+
+      /**
+       * <ng-container>
+       *    <ng-template dir>Content</ng-template>
+       * </ng-container>
+       */
+      const App = createComponent('app', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          template(
+              1, ContentTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'dir'], [],
+              templateRefExtractor);
+          elementContainerEnd();
+        }
+      }, 2, 0, [Directive]);
+
+
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('');
+
+      directive !.insertView();
+      fixture.update();
+      expect(fixture.html).toEqual('Content');
+
+      directive !.clear();
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
     it('should not set any attributes', () => {
       /**
        * <div><ng-container id="foo"></ng-container></div>
@@ -1517,6 +1627,62 @@ describe('render3 integration test', () => {
         expect(fixture.html)
             .toEqual('<structural-comp class="">Comp Content</structural-comp>Temp Content');
       });
+
+      let mockClassDirective: DirWithClassDirective;
+      class DirWithClassDirective {
+        static ngDirectiveDef = defineDirective({
+          type: DirWithClassDirective,
+          selectors: [['', 'DirWithClass', '']],
+          factory: () => mockClassDirective = new DirWithClassDirective(),
+          inputs: {'klass': 'class'}
+        });
+
+        public classesVal: string = '';
+        set klass(value: string) { this.classesVal = value; }
+      }
+
+      it('should delegate all initial classes to a [class] input binding if present on a directive on the same element',
+         () => {
+           /**
+            * <my-comp class="apple orange banana" DirWithClass></my-comp>
+            */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               elementStart(0, 'div', ['DirWithClass']);
+               elementStyling([
+                 InitialStylingFlags.VALUES_MODE, 'apple', true, 'orange', true, 'banana', true
+               ]);
+               elementEnd();
+             }
+             if (rf & RenderFlags.Update) {
+               elementStylingApply(0);
+             }
+           }, 1, 0, [DirWithClassDirective]);
+
+           const fixture = new ComponentFixture(App);
+           expect(mockClassDirective !.classesVal).toEqual('apple orange banana');
+         });
+
+      it('should update `[class]` and bindings in the provided directive if the input is matched',
+         () => {
+           /**
+            * <my-comp DirWithClass></my-comp>
+           */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               elementStart(0, 'div', ['DirWithClass']);
+               elementStyling();
+               elementEnd();
+             }
+             if (rf & RenderFlags.Update) {
+               elementStylingMap(0, 'cucumber grape');
+               elementStylingApply(0);
+             }
+           }, 1, 0, [DirWithClassDirective]);
+
+           const fixture = new ComponentFixture(App);
+           expect(mockClassDirective !.classesVal).toEqual('cucumber grape');
+         });
     });
   });
 
@@ -2511,6 +2677,8 @@ class MockRenderer implements ProceduralRenderer3 {
   selectRootElement(selectorOrNode: string|any): RElement {
     return ({} as any);
   }
+  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
+  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {}
   removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
   addClass(el: RElement, name: string): void {}

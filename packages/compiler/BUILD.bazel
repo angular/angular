@@ -22,8 +22,6 @@ ng_package(
     entry_point = "packages/compiler/compiler.js",
     include_devmode_srcs = True,
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
     ],
     deps = [

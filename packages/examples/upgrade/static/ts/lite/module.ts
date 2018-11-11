@@ -17,7 +17,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 /* tslint:disable: no-duplicate-imports */
 import {UpgradeComponent} from '@angular/upgrade/static';
 import {downgradeComponent} from '@angular/upgrade/static';
-import {downgradeInjectable} from '@angular/upgrade/static';
 // #docregion basic-how-to
 import {downgradeModule} from '@angular/upgrade/static';
 // #enddocregion

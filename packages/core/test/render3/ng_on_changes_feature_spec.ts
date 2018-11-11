@@ -36,7 +36,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory(null) as MyDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
     myDir.valB = 'second';
@@ -89,7 +89,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory(null) as SubDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
 
@@ -142,7 +142,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory(null) as SubDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
 
@@ -183,7 +183,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory(null) as SubDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
 
@@ -237,7 +237,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory() as SubDirective;
+        (SubDirective.ngDirectiveDef as DirectiveDef<SubDirective>).factory(null) as SubDirective;
     myDir.valA = 'first';
     expect(myDir.valA).toEqual('first');
 
@@ -279,7 +279,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory(null) as MyDirective;
     myDir.valA = 'first';
     myDir.valB = 'second';
     (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
@@ -315,7 +315,7 @@ describe('NgOnChangesFeature', () => {
     }
 
     const myDir =
-        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory() as MyDirective;
+        (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).factory(null) as MyDirective;
     myDir.onlySetter = 'someValue';
     expect(myDir.onlySetter).toBeUndefined();
     (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);

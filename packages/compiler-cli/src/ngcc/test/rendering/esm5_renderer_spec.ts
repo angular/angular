@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {makeProgram} from '../helpers/utils';
+import {makeProgram, getDeclaration} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
@@ -20,7 +20,7 @@ function setup(file: {name: string, contents: string}) {
   const decorationAnalyses =
       new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const renderer = new Esm5Renderer(host, false, null, '', '');
+  const renderer = new Esm5Renderer(host, false, null, '', '', false);
   return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
 }
 
@@ -35,6 +35,9 @@ var A = (function() {
     { type: Directive, args: [{ selector: '[a]' }] },
     { type: OtherA }
   ];
+  A.prototype.ngDoCheck = function() {
+    //
+  };
   return A;
 }());
 
@@ -55,20 +58,29 @@ var C = (function() {
   return C;
 }());
 
-var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
-var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
-function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+function NoIife() {}
+
+var BadIife = (function() {
+  function BadIife() {}
+  BadIife.decorators = [
+    { type: Directive, args: [{ selector: '[c]' }] },
+  ];
+}());
+
+var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;
+var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;
+function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {
   const compilerFactory = injector.get(CompilerFactory);
   const compiler = compilerFactory.createCompiler([options]);
   return compiler.compileModuleAsync(moduleType);
 }
 
-function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
   ngDevMode && assertNgModuleType(moduleType);
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
 // Some other content
-export {A, B, C};`
+export {A, B, C, NoIife, BadIife};`
 };
 
 const PROGRAM_DECORATE_HELPER = {
@@ -166,33 +178,65 @@ var A = (function() {`);
       renderer.rewriteSwitchableDeclarations(
           output, file, switchMarkerAnalyses.get(sourceFile) !.declarations);
       expect(output.toString())
-          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_R3__;`);
       expect(output.toString())
-          .toContain(`var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+          .toContain(`var badlyFormattedVariable = __PRE_R3__badlyFormattedVariable;`);
       expect(output.toString())
-          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_R3__;`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__PRE_R3__(injector, options, moduleType) {`);
       expect(output.toString())
-          .toContain(
-              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
+          .toContain(`function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {`);
     });
   });
 
   describe('addDefinitions', () => {
-    it('should insert the definitions directly after the class declaration', () => {
-      const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
-      const output = new MagicString(PROGRAM.contents);
-      const analyzedClass = decorationAnalyses.get(sourceFile) !.analyzedClasses[0];
-      renderer.addDefinitions(output, analyzedClass, 'SOME DEFINITION TEXT');
-      expect(output.toString()).toContain(`
-  function A() {}
+    it('should insert the definitions directly before the return statement of the class IIFE',
+       () => {
+         const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
+         const output = new MagicString(PROGRAM.contents);
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+         renderer.addDefinitions(output, compiledClass, 'SOME DEFINITION TEXT');
+         expect(output.toString()).toContain(`
+  A.prototype.ngDoCheck = function() {
+    //
+  };
 SOME DEFINITION TEXT
-  A.decorators = [
+  return A;
 `);
-    });
+       });
 
+    it('should error if the compiledClass is not valid', () => {
+      const {renderer, host, sourceFile, program} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+
+      const badSymbolDeclaration =
+          getDeclaration(program, sourceFile.fileName, 'A', ts.isVariableDeclaration);
+      const badSymbol: any = {name: 'BadSymbol', declaration: badSymbolDeclaration};
+      const hostSpy = spyOn(host, 'getClassSymbol').and.returnValue(null);
+      expect(() => renderer.addDefinitions(output, badSymbol, 'SOME DEFINITION TEXT'))
+          .toThrowError('Compiled class does not have a valid symbol: BadSymbol in /some/file.js');
+
+
+      const noIifeDeclaration =
+          getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
+      const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
+      hostSpy.and.returnValue({valueDeclaration: noIifeDeclaration});
+      expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
+          .toThrowError(
+              'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
+
+      const badIifeWrapper: any =
+          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
+      const badIifeDeclaration =
+          badIifeWrapper.initializer.expression.expression.body.statements[0];
+      const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
+      hostSpy.and.returnValue({valueDeclaration: badIifeDeclaration});
+      expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
+          .toThrowError(
+              'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
+    });
   });
 
 
@@ -201,9 +245,9 @@ SOME DEFINITION TEXT
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
       const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
-      const analyzedClass =
-          decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'A') !;
-      const decorator = analyzedClass.decorators[0];
+      const compiledClass =
+          decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+      const decorator = compiledClass.decorators[0];
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -219,9 +263,9 @@ SOME DEFINITION TEXT
        () => {
          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass =
-             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'B') !;
-         const decorator = analyzedClass.decorators[0];
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
+         const decorator = compiledClass.decorators[0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -238,9 +282,9 @@ SOME DEFINITION TEXT
        () => {
          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass =
-             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'C') !;
-         const decorator = analyzedClass.decorators[0];
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+         const decorator = compiledClass.decorators[0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -259,9 +303,9 @@ SOME DEFINITION TEXT
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
       const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
       const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-      const analyzedClass =
-          decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'A') !;
-      const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+      const compiledClass =
+          decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'A') !;
+      const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
       decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
@@ -276,9 +320,9 @@ SOME DEFINITION TEXT
        () => {
          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass =
-             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'B') !;
-         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'B') !;
+         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
@@ -294,9 +338,9 @@ SOME DEFINITION TEXT
        () => {
          const {renderer, decorationAnalyses, sourceFile} = setup(PROGRAM_DECORATE_HELPER);
          const output = new MagicString(PROGRAM_DECORATE_HELPER.contents);
-         const analyzedClass =
-             decorationAnalyses.get(sourceFile) !.analyzedClasses.find(c => c.name === 'C') !;
-         const decorator = analyzedClass.decorators.find(d => d.name === 'Directive') !;
+         const compiledClass =
+             decorationAnalyses.get(sourceFile) !.compiledClasses.find(c => c.name === 'C') !;
+         const decorator = compiledClass.decorators.find(d => d.name === 'Directive') !;
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
          decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);

@@ -15,6 +15,7 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  *
  * @see `OnChanges`
  *
+ * @publicApi
  */
 export interface SimpleChanges { [propName: string]: SimpleChange; }
 
@@ -33,6 +34,7 @@ export interface SimpleChanges { [propName: string]: SimpleChange; }
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnChanges'}
  *
+ * @publicApi
  */
 export interface OnChanges {
   /**
@@ -60,7 +62,7 @@ export interface OnChanges {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnInit'}
  *
- *
+ * @publicApi
  */
 export interface OnInit {
   /**
@@ -76,7 +78,7 @@ export interface OnInit {
 /**
  * A lifecycle hook that invokes a custom change-detection function for a directive,
  * in addition to the check performed by the default change-detector.
- * 
+ *
  * The default change-detection algorithm looks for differences by comparing
  * bound-property values by reference across change detection runs. You can use this
  * hook to check for and respond to changes by some other means.
@@ -84,17 +86,18 @@ export interface OnInit {
  * When the default change detector detects changes, it invokes `ngOnChanges()` if supplied,
  * regardless of whether you perform additional change detection.
  * Typically, you should not use both `DoCheck` and `OnChanges` to respond to
- * changes on the same input. 
- * 
+ * changes on the same input.
+ *
  * @see `OnChanges`
  * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
  *
  * @usageNotes
  * The following snippet shows how a component can implement this interface
- * to invoke it own change-detection cycle.  
+ * to invoke it own change-detection cycle.
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='DoCheck'}
  *
+ * @publicApi
  */
 export interface DoCheck {
   /**
@@ -116,9 +119,10 @@ export interface DoCheck {
  * @usageNotes
  * The following snippet shows how a component can implement this interface
  * to define its own custom clean-up method.
- *  
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnDestroy'}
  *
+ * @publicApi
  */
 export interface OnDestroy {
   /**
@@ -144,7 +148,7 @@ export interface OnDestroy {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentInit'}
  *
- *
+ * @publicApi
  */
 export interface AfterContentInit {
   /**
@@ -170,7 +174,7 @@ export interface AfterContentInit {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentChecked'}
  *
- *
+ * @publicApi
  */
 export interface AfterContentChecked {
   /**
@@ -197,7 +201,7 @@ export interface AfterContentChecked {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewInit'}
  *
- *
+ * @publicApi
  */
 export interface AfterViewInit {
   /**
@@ -223,6 +227,7 @@ export interface AfterViewInit {
  *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewChecked'}
  *
+ * @publicApi
  */
 export interface AfterViewChecked {
   /**

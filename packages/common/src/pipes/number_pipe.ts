@@ -44,6 +44,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
+ * @publicApi
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
@@ -96,7 +97,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
@@ -150,7 +151,7 @@ export class PercentPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {

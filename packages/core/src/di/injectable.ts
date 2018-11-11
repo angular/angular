@@ -6,23 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3_COMPILE_INJECTABLE} from '../ivy_switch/compiler/index';
+import {compileInjectable as render3CompileInjectable} from '../render3/jit/injectable';
 import {Type} from '../type';
 import {makeDecorator} from '../util/decorators';
 
-import {InjectableDef, InjectableType} from './defs';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+import {InjectableDef, InjectableType, defineInjectable, getInjectableDef} from './defs';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './provider';
+import {convertInjectableProviderToFactory} from './util';
+
 
 /**
  * Injectable providers used in `@Injectable` decorator.
  *
- * @experimental
+ * @publicApi
  */
 export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
     StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
 
 /**
  * Type of the Injectable decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface InjectableDecorator {
   /**
@@ -50,22 +54,42 @@ export interface InjectableDecorator {
 /**
  * Type of the Injectable metadata.
  *
- * @experimental
+ * @publicApi
  */
 export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
 /**
-* Injectable decorator and metadata.
-*
-* @Annotation
-*/
+ * Injectable decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (type: Type<any>, meta: Injectable) => R3_COMPILE_INJECTABLE(type, meta));
+    (type: Type<any>, meta: Injectable) => SWITCH_COMPILE_INJECTABLE(type as any, meta));
 
 /**
  * Type representing injectable service.
  *
- * @experimental
+ * @publicApi
  */
 export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }
+
+/**
+ * Supports @Injectable() in JIT mode for Render2.
+ */
+function render2CompileInjectable(
+    injectableType: InjectableType<any>,
+    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+  if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
+    injectableType.ngInjectableDef = defineInjectable({
+      providedIn: options.providedIn,
+      factory: convertInjectableProviderToFactory(injectableType, options),
+    });
+  }
+}
+
+export const SWITCH_COMPILE_INJECTABLE__POST_R3__ = render3CompileInjectable;
+const SWITCH_COMPILE_INJECTABLE__PRE_R3__ = render2CompileInjectable;
+const SWITCH_COMPILE_INJECTABLE: typeof render3CompileInjectable =
+    SWITCH_COMPILE_INJECTABLE__PRE_R3__;

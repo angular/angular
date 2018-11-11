@@ -12,14 +12,11 @@ import * as ts from 'typescript';
 
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
-import {DtsMapper} from '../host/dts_mapper';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
-import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
-import {Fesm2015Renderer} from '../rendering/fesm2015_renderer';
+import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
@@ -47,10 +44,20 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
 export class Transformer {
   constructor(private sourcePath: string, private targetPath: string) {}
 
-  transform(entryPoint: EntryPoint, format: EntryPointFormat): void {
+  transform(entryPoint: EntryPoint, format: EntryPointFormat, transformDts: boolean): void {
     if (checkMarkerFile(entryPoint, format)) {
+      console.warn(`Skipping ${entryPoint.name} : ${format} (already built).`);
       return;
     }
+
+    const entryPointFilePath = entryPoint[format];
+    if (!entryPointFilePath) {
+      console.warn(
+          `Skipping ${entryPoint.name} : ${format} (no entry point file for this format).`);
+      return;
+    }
+
+    console.warn(`Compiling ${entryPoint.name} - ${format}`);
 
     const options: ts.CompilerOptions = {
       allowJs: true,
@@ -62,28 +69,28 @@ export class Transformer {
     // TODO : create a custom compiler host that reads from .bak files if available.
     const host = ts.createCompilerHost(options);
     const rootDirs = this.getRootDirs(host, options);
-    const entryPointFilePath = entryPoint[format];
-    if (!entryPointFilePath) {
-      throw new Error(
-          `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
-    }
     const isCore = entryPoint.name === '@angular/core';
     const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
     const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
     const packageProgram = ts.createProgram(rootPaths, options, host);
-    const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
-    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsMapper);
+    console.time(entryPoint.name + '(dtsmappper creation)');
+    const dtsFilePath = entryPoint.typings;
+    const dtsProgram = transformDts ? ts.createProgram([entryPoint.typings], options, host) : null;
+    console.timeEnd(entryPoint.name + '(dtsmappper creation)');
+    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsFilePath, dtsProgram);
     const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
 
     // Parse and analyze the files.
     const {decorationAnalyses, switchMarkerAnalyses} =
         this.analyzeProgram(packageProgram, reflectionHost, rootDirs, isCore);
 
+    console.time(entryPoint.name + '(rendering)');
     // Transform the source files and source maps.
-    const renderer =
-        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile, dtsMapper);
+    const renderer = this.getRenderer(
+        format, packageProgram, reflectionHost, isCore, r3SymbolsFile, transformDts);
     const renderedFiles =
         renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
+    console.timeEnd(entryPoint.name + '(rendering)');
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
@@ -102,13 +109,13 @@ export class Transformer {
     }
   }
 
-  getHost(isCore: boolean, format: string, program: ts.Program, dtsMapper: DtsMapper):
-      NgccReflectionHost {
+  getHost(
+      isCore: boolean, format: string, program: ts.Program, dtsFilePath: string,
+      dtsProgram: ts.Program|null): NgccReflectionHost {
     switch (format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(isCore, program.getTypeChecker());
+        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsFilePath, dtsProgram);
       case 'esm5':
       case 'fesm5':
         return new Esm5ReflectionHost(isCore, program.getTypeChecker());
@@ -119,18 +126,16 @@ export class Transformer {
 
   getRenderer(
       format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null, dtsMapper: DtsMapper): Renderer {
+      rewriteCoreImportsTo: ts.SourceFile|null, transformDts: boolean): Renderer {
     switch (format) {
       case 'esm2015':
-        return new Esm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, dtsMapper);
       case 'fesm2015':
-        return new Fesm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+        return new EsmRenderer(
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
       case 'esm5':
       case 'fesm5':
         return new Esm5Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, transformDts);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }

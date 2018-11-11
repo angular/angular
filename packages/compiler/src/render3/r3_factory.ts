@@ -49,6 +49,11 @@ export interface R3ConstructorFactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
+
+  /**
+   * Function that allows extra statements to be inserted into factory function.
+   */
+  extraStatementFn: ((instance: o.Expression) => o.Statement[])|null;
 }
 
 export enum R3FactoryDelegateType {
@@ -95,11 +100,6 @@ export enum R3ResolvedDependencyType {
    * The token expression is a string representing the attribute name.
    */
   Attribute = 1,
-
-  /**
-   * The dependency is for the `Injector` type itself.
-   */
-  Injector = 2,
 }
 
 /**
@@ -194,8 +194,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
         ]);
 
     statements.push(delegateFactoryStmt);
-    const r = makeConditionalFactory(delegateFactory.callFn([]));
-    retExpr = r;
+    retExpr = makeConditionalFactory(delegateFactory.callFn([]));
   } else if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
@@ -209,8 +208,20 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   } else if (isExpressionFactoryMetadata(meta)) {
     // TODO(alxhub): decide whether to lower the value here or in the caller
     retExpr = makeConditionalFactory(meta.expression);
+  } else if (meta.extraStatementFn) {
+    // if extraStatementsFn is specified and the 'makeConditionalFactory' function
+    // was not invoked, we need to create a reference to the instance, so we can
+    // pass it as an argument to the 'extraStatementFn' function while calling it
+    const variable = o.variable('f');
+    body.push(variable.set(ctorExpr).toDeclStmt());
+    retExpr = variable;
   } else {
     retExpr = ctorExpr;
+  }
+
+  if (meta.extraStatementFn) {
+    const extraStmts = meta.extraStatementFn(retExpr);
+    body.push(...extraStmts);
   }
 
   return {
@@ -230,22 +241,14 @@ function compileInjectDependency(
     dep: R3DependencyMetadata, injectFn: o.ExternalReference): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
-    case R3ResolvedDependencyType.Token:
-    case R3ResolvedDependencyType.Injector: {
+    case R3ResolvedDependencyType.Token: {
       // Build up the injection flags according to the metadata.
       const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
           (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
           (dep.optional ? InjectFlags.Optional : 0);
-      // Determine the token used for injection. In almost all cases this is the given token, but
-      // if the dependency is resolved to the `Injector` then the special `INJECTOR` token is used
-      // instead.
-      let token: o.Expression = dep.token;
-      if (dep.resolved === R3ResolvedDependencyType.Injector) {
-        token = o.importExpr(Identifiers.INJECTOR);
-      }
 
       // Build up the arguments to the injectFn call.
-      const injectArgs = [token];
+      const injectArgs = [dep.token];
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
@@ -280,12 +283,9 @@ export function dependenciesFromGlobalMetadata(
   for (let dependency of type.diDeps) {
     if (dependency.token) {
       const tokenRef = tokenReference(dependency.token);
-      let resolved: R3ResolvedDependencyType = R3ResolvedDependencyType.Token;
-      if (tokenRef === injectorRef) {
-        resolved = R3ResolvedDependencyType.Injector;
-      } else if (dependency.isAttribute) {
-        resolved = R3ResolvedDependencyType.Attribute;
-      }
+      let resolved: R3ResolvedDependencyType = dependency.isAttribute ?
+          R3ResolvedDependencyType.Attribute :
+          R3ResolvedDependencyType.Token;
 
       // In the case of most dependencies, the token will be a reference to a type. Sometimes,
       // however, it can be a string, in the case of older Angular code or @Attribute injection.

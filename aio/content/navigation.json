@@ -513,12 +513,18 @@
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
-          "tooltip": "How your Angular workspace looks in your filesystem."
+          "tooltip": "How your Angular workspace looks on your filesystem."
         },
         {
+          "url": "guide/workspace-config",
+          "title": "Workspace Configuration",
+          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+        },
+
+        {
           "url": "guide/npm-packages",
-          "title": "Packages",
-          "tooltip": "Explanation of npm packages installed into a project by default."
+          "title": "npm Dependencies",
+          "tooltip": "Description of npm packages required at development time and at runtime."
         },
         {
           "url": "guide/typescript-configuration",
@@ -577,30 +583,14 @@
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
+          "url": "guide/updating",
+           "title": "Keeping Up-to-Date",
+           "tooltip": "Information about updating Angular applications and libraries to the latest version."
+       },
+        {
           "url": "guide/releases",
           "title": "Angular Releases",
           "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
-        },
-        {
-           "url": "guide/updating",
-            "title": "Keeping Up-to-Date",
-            "tooltip": "Information about updating Angular applications and libraries to the latest version."
-        },
-        {
-          "title": "Upgrading from AngularJS",
-          "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
-          "children": [
-            {
-              "url": "guide/upgrade",
-              "title": "Upgrading Instructions",
-              "tooltip": "Incrementally upgrade an AngularJS application to Angular."
-            },
-            {
-              "url": "guide/ajs-quick-reference",
-              "title": "AngularJS-Angular Concepts",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
-            }
-          ]
         }
       ]
     },

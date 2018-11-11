@@ -7,7 +7,7 @@
  */
 
 import {defineInjectable, defineInjector,} from '../../di/defs';
-import {inject} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
 import * as r3 from '../index';
 import * as sanitization from '../../sanitization/sanitization';
 
@@ -32,7 +32,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵinjectAttribute': r3.injectAttribute,
   'ɵtemplateRefExtractor': r3.templateRefExtractor,
   'ɵNgOnChangesFeature': r3.NgOnChangesFeature,
-  'ɵPublicFeature': r3.PublicFeature,
+  'ɵProvidersFeature': r3.ProvidersFeature,
   'ɵInheritDefinitionFeature': r3.InheritDefinitionFeature,
   'ɵelementAttribute': r3.elementAttribute,
   'ɵbind': r3.bind,

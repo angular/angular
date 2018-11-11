@@ -123,6 +123,7 @@ export class Identifiers {
     moduleName: CORE,
   };
   static createComponentFactory: o.ExternalReference = {name: 'ɵccf', moduleName: CORE};
+  static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
 }
 
 export function createTokenForReference(reference: any): CompileTokenMetadata {

@@ -12,6 +12,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
+import {ParsedEvent} from '../../expression_parser/ast';
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import * as o from '../../output/output_ast';
 import {typeSourceSpan} from '../../parse_util';
@@ -31,6 +32,10 @@ import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, co
 
 const EMPTY_ARRAY: any[] = [];
 
+// This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
+// If there is a match, the first matching group will contain the attribute name to bind.
+const ATTR_REGEX = /attr\.([^\]]+)/;
+
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): {definitionMap: DefinitionMap, statements: o.Statement[]} {
@@ -49,6 +54,7 @@ function baseDirectiveFields(
     type: meta.type,
     deps: meta.deps,
     injectFn: R3.directiveInject,
+    extraStatementFn: createFactoryExtraStatementsFn(meta, bindingParser)
   });
   definitionMap.set('factory', result.factory);
 
@@ -82,11 +88,30 @@ function baseDirectiveFields(
   // e.g 'outputs: {a: 'a'}`
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
 
+  if (meta.exportAs !== null) {
+    definitionMap.set('exportAs', o.literal(meta.exportAs));
+  }
+
+  return {definitionMap, statements: result.statements};
+}
+
+/**
+ * Add features to the definition map.
+ */
+function addFeatures(
+    definitionMap: DefinitionMap, meta: R3DirectiveMetadata | R3ComponentMetadata) {
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
-  // TODO: add `PublicFeature` so that directives get registered to the DI - make this configurable
-  features.push(o.importExpr(R3.PublicFeature));
+  const providers = meta.providers;
+  const viewProviders = (meta as R3ComponentMetadata).viewProviders;
+  if (providers || viewProviders) {
+    const args = [providers || new o.LiteralArrayExpr([])];
+    if (viewProviders) {
+      args.push(viewProviders);
+    }
+    features.push(o.importExpr(R3.ProvidersFeature).callFn(args));
+  }
 
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
@@ -97,11 +122,6 @@ function baseDirectiveFields(
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
-  if (meta.exportAs !== null) {
-    definitionMap.set('exportAs', o.literal(meta.exportAs));
-  }
-
-  return {definitionMap, statements: result.statements};
 }
 
 /**
@@ -111,6 +131,7 @@ export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
   const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
+  addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -164,6 +185,7 @@ export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
   const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
+  addFeatures(definitionMap, meta);
 
   const selector = meta.selector && CssSelector.parse(meta.selector);
   const firstSelector = selector && selector[0];
@@ -223,7 +245,7 @@ export function compileComponentFromMetadata(
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
     let directivesExpr: o.Expression = o.literalArr(Array.from(directivesUsed));
-    if (meta.wrapDirectivesInClosure) {
+    if (meta.wrapDirectivesAndPipesInClosure) {
       directivesExpr = o.fn([], [new o.ReturnStatement(directivesExpr)]);
     }
     definitionMap.set('directives', directivesExpr);
@@ -231,7 +253,11 @@ export function compileComponentFromMetadata(
 
   // e.g. `pipes: [MyPipe]`
   if (pipesUsed.size) {
-    definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
+    let pipesExpr: o.Expression = o.literalArr(Array.from(pipesUsed));
+    if (meta.wrapDirectivesAndPipesInClosure) {
+      pipesExpr = o.fn([], [new o.ReturnStatement(pipesExpr)]);
+    }
+    definitionMap.set('pipes', pipesExpr);
   }
 
   // e.g. `styles: [str1, str2]`
@@ -315,11 +341,13 @@ export function compileComponentFromRender2(
     directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
-    wrapDirectivesInClosure: false,
+    wrapDirectivesAndPipesInClosure: false,
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
     animations: null,
+    viewProviders:
+        component.viewProviders.length > 0 ? new o.WrappedNodeExpr(component.viewProviders) : null
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
@@ -362,6 +390,7 @@ function directiveMetadataFromGlobalMetadata(
     outputs: directive.outputs,
     usesInheritance: false,
     exportAs: null,
+    providers: directive.providers.length > 0 ? new o.WrappedNodeExpr(directive.providers) : null
   };
 }
 
@@ -451,11 +480,15 @@ function createContentQueriesFunction(
   if (meta.queries.length) {
     const statements: o.Statement[] = meta.queries.map((query: R3QueryMetadata) => {
       const queryDefinition = createQueryDefinition(query, constantPool, null);
-      return o.importExpr(R3.registerContentQuery).callFn([queryDefinition]).toStmt();
+      return o.importExpr(R3.registerContentQuery)
+          .callFn([queryDefinition, o.variable('dirIndex')])
+          .toStmt();
     });
     const typeName = meta.name;
+    const parameters = [new o.FnParam('dirIndex', o.NUMBER_TYPE)];
     return o.fn(
-        [], statements, o.INFERRED_TYPE, null, typeName ? `${typeName}_ContentQueries` : null);
+        parameters, statements, o.INFERRED_TYPE, null,
+        typeName ? `${typeName}_ContentQueries` : null);
   }
 
   return null;
@@ -505,12 +538,15 @@ function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
 
-function stringMapAsType(map: {[key: string]: string}): o.Type {
-  const mapValues = Object.keys(map).map(key => ({
-                                           key,
-                                           value: o.literal(map[key]),
-                                           quoted: true,
-                                         }));
+function stringMapAsType(map: {[key: string]: string | string[]}): o.Type {
+  const mapValues = Object.keys(map).map(key => {
+    const value = Array.isArray(map[key]) ? map[key][0] : map[key];
+    return {
+      key,
+      value: o.literal(value),
+      quoted: true,
+    };
+  });
   return o.expressionType(o.literalMap(mapValues));
 }
 
@@ -593,34 +629,17 @@ function createHostBindingsFunction(
       const bindingExpr = convertPropertyBinding(
           null, bindingContext, value, 'b', BindingForm.TrySimple,
           () => error('Unexpected interpolation'));
+
+      const {bindingName, instruction} = getBindingNameAndInstruction(binding.name);
+
       statements.push(...bindingExpr.stmts);
-      statements.push(o.importExpr(R3.elementProperty)
+      statements.push(o.importExpr(instruction)
                           .callFn([
                             o.variable('elIndex'),
-                            o.literal(binding.name),
+                            o.literal(bindingName),
                             o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
                           ])
                           .toStmt());
-    }
-  }
-
-  // Calculate host event bindings
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
-  if (eventBindings) {
-    for (const binding of eventBindings) {
-      const bindingExpr = convertActionBinding(
-          null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
-      const bindingName = binding.name && sanitizeIdentifier(binding.name);
-      const typeName = meta.name;
-      const functionName =
-          typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
-      const handler = o.fn(
-          [new o.FnParam('$event', o.DYNAMIC_TYPE)],
-          [...bindingExpr.stmts, new o.ReturnStatement(bindingExpr.allowDefault)], o.INFERRED_TYPE,
-          null, functionName);
-      statements.push(
-          o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt());
     }
   }
 
@@ -635,6 +654,48 @@ function createHostBindingsFunction(
   }
 
   return null;
+}
+
+function getBindingNameAndInstruction(bindingName: string):
+    {bindingName: string, instruction: o.ExternalReference} {
+  let instruction !: o.ExternalReference;
+
+  // Check to see if this is an attr binding or a property binding
+  const attrMatches = bindingName.match(ATTR_REGEX);
+  if (attrMatches) {
+    bindingName = attrMatches[1];
+    instruction = R3.elementAttribute;
+  } else {
+    instruction = R3.elementProperty;
+  }
+
+  return {bindingName, instruction};
+}
+
+function createFactoryExtraStatementsFn(meta: R3DirectiveMetadata, bindingParser: BindingParser):
+    ((instance: o.Expression) => o.Statement[])|null {
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
+  return eventBindings && eventBindings.length ?
+      (instance: o.Expression) => createHostListeners(instance, eventBindings, meta) :
+      null;
+}
+
+function createHostListeners(
+    bindingContext: o.Expression, eventBindings: ParsedEvent[],
+    meta: R3DirectiveMetadata): o.Statement[] {
+  return eventBindings.map(binding => {
+    const bindingExpr = convertActionBinding(
+        null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
+    const bindingName = binding.name && sanitizeIdentifier(binding.name);
+    const typeName = meta.name;
+    const functionName =
+        typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
+    const handler = o.fn(
+        [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
+        null, functionName);
+    return o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt();
+  });
 }
 
 function metadataAsSummary(meta: R3DirectiveMetadata): CompileDirectiveSummary {
@@ -660,8 +721,8 @@ const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
 
 // Represents the groups in the above regex.
 const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]"
-  Property = 1,
+  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]"
+  Binding = 1,
 
   // group 2: "event" from "(event)"
   Event = 2,
@@ -686,8 +747,8 @@ export function parseHostBindings(host: {[key: string]: string}): {
     const matches = key.match(HOST_REG_EXP);
     if (matches === null) {
       attributes[key] = value;
-    } else if (matches[HostBindingGroup.Property] != null) {
-      properties[matches[HostBindingGroup.Property]] = value;
+    } else if (matches[HostBindingGroup.Binding] != null) {
+      properties[matches[HostBindingGroup.Binding]] = value;
     } else if (matches[HostBindingGroup.Event] != null) {
       listeners[matches[HostBindingGroup.Event]] = value;
     } else if (matches[HostBindingGroup.Animation] != null) {

@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+///<reference types="jasmine"/>
+
 import * as path from 'path';
 import * as ts from 'typescript';
 
 export function makeProgram(
-    files: {name: string, contents: string}[], options?: ts.CompilerOptions,
+    files: {name: string, contents: string, isRoot?: boolean}[], options?: ts.CompilerOptions,
     host: ts.CompilerHost = new InMemoryHost(),
     checkForErrors: boolean = true): {program: ts.Program, host: ts.CompilerHost} {
   files.forEach(file => host.writeFile(file.name, file.contents, false, undefined, []));
 
-  const rootNames = files.map(file => host.getCanonicalFileName(file.name));
+  const rootNames =
+      files.filter(file => file.isRoot !== false).map(file => host.getCanonicalFileName(file.name));
   const program = ts.createProgram(
       rootNames, {
         noLib: true,

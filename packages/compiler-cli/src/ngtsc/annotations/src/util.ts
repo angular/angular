@@ -64,29 +64,19 @@ export function getConstructorDependencies(
           ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
           `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
-    if (ts.isIdentifier(tokenExpr)) {
-      const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
-      if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
-        switch (importedSymbol.name) {
-          case 'Injector':
-            resolved = R3ResolvedDependencyType.Injector;
-            break;
-          default:
-            // Leave as a Token or Attribute.
-        }
-      }
-    }
     const token = new WrappedNodeExpr(tokenExpr);
     useType.push({token, optional, self, skipSelf, host, resolved});
   });
   return useType;
 }
 
-export function toR3Reference(ref: Reference, context: ts.SourceFile): R3Reference {
-  const value = ref.toExpression(context, ImportMode.UseExistingImport);
-  const type = ref.toExpression(context, ImportMode.ForceNewImport);
+export function toR3Reference(
+    valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
+    typeContext: ts.SourceFile): R3Reference {
+  const value = valueRef.toExpression(valueContext, ImportMode.UseExistingImport);
+  const type = typeRef.toExpression(typeContext, ImportMode.ForceNewImport);
   if (value === null || type === null) {
-    throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
+    throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
   return {value, type};
 }

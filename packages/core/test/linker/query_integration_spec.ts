@@ -9,13 +9,13 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-
+import {fixmeIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util';
 
 {
-  describe('Query API', () => {
+  fixmeIvy('unknown') && describe('Query API', () => {
 
     beforeEach(() => TestBed.configureTestingModule({
       declarations: [

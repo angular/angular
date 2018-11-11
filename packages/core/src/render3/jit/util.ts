@@ -6,16 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LiteralExpr, R3DependencyMetadata, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
-
-import {Injector} from '../../di/injector';
 import {Host, Inject, Optional, Self, SkipSelf} from '../../di/metadata';
-import {ElementRef} from '../../linker/element_ref';
-import {TemplateRef} from '../../linker/template_ref';
-import {ViewContainerRef} from '../../linker/view_container_ref';
 import {Attribute} from '../../metadata/di';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
+
+import {CompilerFacade, R3DependencyMetadataFacade, getCompilerFacade} from './compiler_facade';
 
 let _reflect: ReflectionCapabilities|null = null;
 
@@ -23,31 +19,28 @@ export function getReflect(): ReflectionCapabilities {
   return (_reflect = _reflect || new ReflectionCapabilities());
 }
 
-export function reflectDependencies(type: Type<any>): R3DependencyMetadata[] {
+export function reflectDependencies(type: Type<any>): R3DependencyMetadataFacade[] {
   return convertDependencies(getReflect().parameters(type));
 }
 
-export function convertDependencies(deps: any[]): R3DependencyMetadata[] {
-  return deps.map(dep => reflectDependency(dep));
+export function convertDependencies(deps: any[]): R3DependencyMetadataFacade[] {
+  const compiler = getCompilerFacade();
+  return deps.map(dep => reflectDependency(compiler, dep));
 }
 
-function reflectDependency(dep: any | any[]): R3DependencyMetadata {
-  const meta: R3DependencyMetadata = {
-    token: new LiteralExpr(null),
+function reflectDependency(compiler: CompilerFacade, dep: any | any[]): R3DependencyMetadataFacade {
+  const meta: R3DependencyMetadataFacade = {
+    token: null,
     host: false,
     optional: false,
-    resolved: R3ResolvedDependencyType.Token,
+    resolved: compiler.R3ResolvedDependencyType.Token,
     self: false,
     skipSelf: false,
   };
 
   function setTokenAndResolvedType(token: any): void {
-    if (token === Injector) {
-      meta.resolved = R3ResolvedDependencyType.Injector;
-    } else {
-      meta.resolved = R3ResolvedDependencyType.Token;
-    }
-    meta.token = new WrappedNodeExpr(token);
+    meta.resolved = compiler.R3ResolvedDependencyType.Token;
+    meta.token = token;
   }
 
   if (Array.isArray(dep)) {
@@ -56,7 +49,10 @@ function reflectDependency(dep: any | any[]): R3DependencyMetadata {
     }
     for (let j = 0; j < dep.length; j++) {
       const param = dep[j];
-      if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
+      if (param === undefined) {
+        // param may be undefined if type of dep is not set by ngtsc
+        continue;
+      } else if (param instanceof Optional || param.__proto__.ngMetadataName === 'Optional') {
         meta.optional = true;
       } else if (param instanceof SkipSelf || param.__proto__.ngMetadataName === 'SkipSelf') {
         meta.skipSelf = true;
@@ -65,13 +61,13 @@ function reflectDependency(dep: any | any[]): R3DependencyMetadata {
       } else if (param instanceof Host || param.__proto__.ngMetadataName === 'Host') {
         meta.host = true;
       } else if (param instanceof Inject) {
-        meta.token = new WrappedNodeExpr(param.token);
+        meta.token = param.token;
       } else if (param instanceof Attribute) {
         if (param.attributeName === undefined) {
           throw new Error(`Attribute name must be defined.`);
         }
-        meta.token = new LiteralExpr(param.attributeName);
-        meta.resolved = R3ResolvedDependencyType.Attribute;
+        meta.token = param.attributeName;
+        meta.resolved = compiler.R3ResolvedDependencyType.Attribute;
       } else {
         setTokenAndResolvedType(param);
       }

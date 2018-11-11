@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import '@angular/compiler';
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {withBody} from '@angular/private/testing';
-import * as fs from 'fs';
 import * as path from 'path';
 
 const UTF8 = {

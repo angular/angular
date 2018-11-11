@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -18,6 +18,7 @@ import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
+import {generateSetClassMetadataCall} from './metadata';
 import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
 import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
 
@@ -26,6 +27,7 @@ const EMPTY_MAP = new Map<string, Expression>();
 export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
   parsedTemplate: TmplAstNode[];
+  metadataStmt: Statement|null;
 }
 
 /**
@@ -118,6 +120,10 @@ export class ComponentDecoratorHandler implements
       preserveWhitespaces = value;
     }
 
+    const viewProviders: Expression|null = component.has('viewProviders') ?
+        new WrappedNodeExpr(component.get('viewProviders') !) :
+        null;
+
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const filePath = node.getSourceFile().fileName;
@@ -200,9 +206,11 @@ export class ComponentDecoratorHandler implements
           // analyzed and the full compilation scope for the component can be realized.
           pipes: EMPTY_MAP,
           directives: EMPTY_MAP,
-          wrapDirectivesInClosure: false,  //
+          wrapDirectivesAndPipesInClosure: false,  //
           animations,
+          viewProviders
         },
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
         parsedTemplate: template.nodes,
       },
       typeCheck: true,
@@ -232,15 +240,19 @@ export class ComponentDecoratorHandler implements
       const {pipes, containsForwardDecls} = scope;
       const directives = new Map<string, Expression>();
       scope.directives.forEach((meta, selector) => directives.set(selector, meta.directive));
-      const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
-      metadata = {...metadata, directives, pipes, wrapDirectivesInClosure};
+      const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
+      metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }
 
     const res = compileComponentFromMetadata(metadata, pool, makeBindingParser());
+
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngComponentDef',
-      initializer: res.expression,
-      statements: res.statements,
+      initializer: res.expression, statements,
       type: res.type,
     };
   }

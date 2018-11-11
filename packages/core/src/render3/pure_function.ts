@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBinding, getCreationMode, bindingUpdated3, getBindingRoot, getTView,} from './instructions';
+import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './instructions';
+import {getBindingRoot, getCreationMode} from './state';
+
 
 /**
  * Bindings for pure functions are stored after regular bindings.

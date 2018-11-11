@@ -5,24 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
 import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
-import {PublicFeature} from './features/public_feature';
+import {ProvidersFeature} from './features/providers_feature';
 import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2, injectComponentFactoryResolver} from './component_ref';
-export {directiveInject, getFactoryOf, getInheritedFactory, injectAttribute} from './di';
+export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
 // clang-format off
 export {
-
-  NO_CHANGE,
-
   bind,
   interpolation1,
   interpolation2,
@@ -55,9 +51,6 @@ export {
   elementStyleProp,
   elementStylingApply,
 
-  getCurrentView,
-  restoreView,
-
   listener,
   store,
   load,
@@ -65,9 +58,6 @@ export {
   namespaceHTML,
   namespaceMathML,
   namespaceSVG,
-
-  enableBindings,
-  disableBindings,
 
   projection,
   projectionDef,
@@ -83,7 +73,18 @@ export {
   detectChanges,
   markDirty,
   tick,
+
+  directiveInject,
+  injectAttribute,
 } from './instructions';
+
+export {
+  getCurrentView,
+  restoreView,
+
+  enableBindings,
+  disableBindings,
+} from './state';
 
 export {
   i18nAttribute,
@@ -111,6 +112,10 @@ export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 export {
     AttributeMarker
 } from './interfaces/node';
+
+export {
+  setClassMetadata,
+} from './metadata';
 
 export {
   pipe,
@@ -161,7 +166,7 @@ export {
   DirectiveType,
   NgOnChangesFeature,
   InheritDefinitionFeature,
-  PublicFeature,
+  ProvidersFeature,
   PipeDef,
   PipeDefWithMeta,
   LifecycleHooksFeature,
@@ -175,3 +180,5 @@ export {
   renderComponent,
   whenRendered,
 };
+
+export {NO_CHANGE} from './tokens';

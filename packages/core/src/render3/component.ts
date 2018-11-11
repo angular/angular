@@ -15,19 +15,18 @@ import {Sanitizer} from '../sanitization/security';
 import {assertComponentType, assertDefined} from './assert';
 import {getComponentViewByInstance} from './context_discovery';
 import {getComponentDef} from './definition';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getOrCreateTView, leaveView, locateHostElement, prefillHostVars, resetComponentState, setHostBindings} from './instructions';
+import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
+import {enterView, leaveView, resetComponentState} from './state';
+import {defaultScheduler, getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
 
-
-
-// Root component will always have an element index of 0 and an injector size of 1
-const ROOT_EXPANDO_INSTRUCTIONS = [0, 1];
 
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
@@ -106,6 +105,7 @@ export function renderComponent<T>(
         Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
+  ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
@@ -117,8 +117,7 @@ export function renderComponent<T>(
   const hostRNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                           LViewFlags.CheckAlways | LViewFlags.IsRoot;
-  const rootContext = createRootContext(
-      opts.scheduler || requestAnimationFrame.bind(window), opts.playerHandler || null);
+  const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LViewData = createLViewData(
@@ -129,14 +128,12 @@ export function renderComponent<T>(
   let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
-
     const componentView =
         createRootComponentView(hostRNode, componentDef, rootView, renderer, sanitizer);
     component = createRootComponent(
-        hostRNode, componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
+        componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    executeInitAndContentHooks();
-    detectChangesInternal(componentView, component);
+    refreshDescendantViews(rootView, null);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -169,10 +166,10 @@ export function createRootComponentView(
   const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
 
   if (tView.firstTemplatePass) {
-    tView.expandoInstructions = ROOT_EXPANDO_INSTRUCTIONS.slice();
-    if (def.diPublic) def.diPublic(def);
-    tNode.flags =
-        rootView.length << TNodeFlags.DirectiveStartingIndexShift | TNodeFlags.isComponent;
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
+    tNode.flags = TNodeFlags.isComponent;
+    initNodeFlags(tNode, rootView.length, 1);
+    queueComponentIndexForCheck(tNode);
   }
 
   // Store component view at node index, with node as the HOST
@@ -186,27 +183,27 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    hostRNode: RNode | null, componentView: LViewData, componentDef: ComponentDef<T>,
-    rootView: LViewData, rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+    componentView: LViewData, componentDef: ComponentDef<T>, rootView: LViewData,
+    rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+  const tView = rootView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
-  const component =
-      baseDirectiveCreate(rootView.length, componentDef.factory() as T, componentDef, hostRNode);
+  const component = instantiateRootComponent(tView, rootView, componentDef);
 
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
-  if (rootView[TVIEW].firstTemplatePass) prefillHostVars(componentDef.hostVars);
-  setHostBindings();
+
+  if (tView.firstTemplatePass) prefillHostVars(tView, rootView, componentDef.hostVars);
   return component;
 }
 
 
 export function createRootContext(
-    scheduler: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
+    scheduler?: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
   return {
     components: [],
-    scheduler: scheduler,
+    scheduler: scheduler || defaultScheduler,
     clean: CLEAN_PROMISE,
     playerHandler: playerHandler || null,
     flags: RootContextFlags.Empty

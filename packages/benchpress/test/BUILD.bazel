@@ -1,0 +1,20 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+# TODO: these tests don't even compile under bazel right now
+#
+# ts_library(
+#     name = "test_lib",
+#     testonly = True,
+#     srcs = glob(["**/*.ts"]),
+#     tags = ["manual"]
+# )
+
+# jasmine_node_test(
+#     name = "test",
+#     deps = [
+#         ":test_lib",
+#         "//packages/benchpress"
+#        # "//tools/testing:node",
+#     ],
+#     tags = ["manual"]
+# )

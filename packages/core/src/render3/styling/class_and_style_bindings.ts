@@ -11,6 +11,7 @@ import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerI
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LViewData, RootContext} from '../interfaces/view';
+import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
@@ -45,7 +46,7 @@ const EMPTY_OBJ: {[key: string]: any} = {};
 export function createStylingContextTemplate(
     initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null): StylingContext {
+    styleSanitizer?: StyleSanitizeFn | null, onlyProcessSingleClasses?: boolean): StylingContext {
   const initialStylingValues: InitialStyles = [null];
   const context: StylingContext =
       createEmptyStylingContext(null, styleSanitizer, initialStylingValues);
@@ -80,6 +81,7 @@ export function createStylingContextTemplate(
   // make where the class offsets begin
   context[StylingIndex.ClassOffsetPosition] = totalStyleDeclarations;
 
+  const initialStaticClasses: string[]|null = onlyProcessSingleClasses ? [] : null;
   if (initialClassDeclarations) {
     let hasPassedDeclarations = false;
     for (let i = 0; i < initialClassDeclarations.length; i++) {
@@ -93,6 +95,7 @@ export function createStylingContextTemplate(
           const value = initialClassDeclarations[++i] as boolean;
           initialStylingValues.push(value);
           classesLookup[className] = initialStylingValues.length - 1;
+          initialStaticClasses && initialStaticClasses.push(className);
         } else {
           classesLookup[className] = 0;
         }
@@ -143,8 +146,14 @@ export function createStylingContextTemplate(
 
   // there is no initial value flag for the master index since it doesn't
   // reference an initial style value
-  setFlag(context, StylingIndex.MasterFlagPosition, pointers(0, 0, multiStart));
+  const masterFlag = pointers(0, 0, multiStart) |
+      (onlyProcessSingleClasses ? StylingFlags.OnlyProcessSingleClasses : 0);
+  setFlag(context, StylingIndex.MasterFlagPosition, masterFlag);
   setContextDirty(context, initialStylingValues.length > 1);
+
+  if (initialStaticClasses) {
+    context[StylingIndex.PreviousOrCachedMultiClassValue] = initialStaticClasses.join(' ');
+  }
 
   return context;
 }
@@ -164,8 +173,8 @@ export function createStylingContextTemplate(
  */
 export function updateStylingMap(
     context: StylingContext, classesInput: {[key: string]: any} | string |
-        BoundPlayerFactory<null|string|{[key: string]: any}>| null,
-    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>|
+        BoundPlayerFactory<null|string|{[key: string]: any}>| NO_CHANGE | null,
+    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| NO_CHANGE |
         null): void {
   stylesInput = stylesInput || null;
 
@@ -181,13 +190,14 @@ export function updateStylingMap(
       (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
       classesInput;
   const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
-
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
-  const ignoreAllClassUpdates = classesValue === context[StylingIndex.PreviousMultiClassValue];
-  const ignoreAllStyleUpdates = stylesValue === context[StylingIndex.PreviousMultiStyleValue];
+  const ignoreAllClassUpdates = limitToSingleClasses(context) || classesValue === NO_CHANGE ||
+      classesValue === context[StylingIndex.PreviousOrCachedMultiClassValue];
+  const ignoreAllStyleUpdates =
+      stylesValue === NO_CHANGE || stylesValue === context[StylingIndex.PreviousMultiStyleValue];
   if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
 
-  context[StylingIndex.PreviousMultiClassValue] = classesValue;
+  context[StylingIndex.PreviousOrCachedMultiClassValue] = classesValue;
   context[StylingIndex.PreviousMultiStyleValue] = stylesValue;
 
   let classNames: string[] = EMPTY_ARR;
@@ -470,14 +480,18 @@ export function updateClassProp(
  */
 export function renderStyleAndClassBindings(
     context: StylingContext, renderer: Renderer3, rootOrView: RootContext | LViewData,
-    classesStore?: BindingStore | null, stylesStore?: BindingStore | null): number {
+    isFirstRender: boolean, classesStore?: BindingStore | null,
+    stylesStore?: BindingStore | null): number {
   let totalPlayersQueued = 0;
+
   if (isContextDirty(context)) {
     const flushPlayerBuilders: any =
         context[StylingIndex.MasterFlagPosition] & StylingFlags.PlayerBuildersDirty;
     const native = context[StylingIndex.ElementPosition] !;
     const multiStartIndex = getMultiStartIndex(context);
     const styleSanitizer = getStyleSanitizer(context);
+    const onlySingleClasses = limitToSingleClasses(context);
+
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;
          i += StylingIndex.Size) {
       // there is no point in rendering styles that have not changed on screen
@@ -488,6 +502,7 @@ export function renderStyleAndClassBindings(
         const playerBuilder = getPlayerBuilder(context, i);
         const isClassBased = flag & StylingFlags.Class ? true : false;
         const isInSingleRegion = i < multiStartIndex;
+        const readInitialValue = !isClassBased || !onlySingleClasses;
 
         let valueToApply: string|boolean|null = value;
 
@@ -506,19 +521,27 @@ export function renderStyleAndClassBindings(
         // note that this should always be a falsy check since `false` is used
         // for both class and style comparisons (styles can't be false and false
         // classes are turned off and should therefore defer to their initial values)
-        if (!valueExists(valueToApply, isClassBased)) {
+        if (!valueExists(valueToApply, isClassBased) && readInitialValue) {
           valueToApply = getInitialValue(context, flag);
         }
 
-        if (isClassBased) {
-          setClass(
-              native, prop, valueToApply ? true : false, renderer, classesStore, playerBuilder);
-        } else {
-          const sanitizer = (flag & StylingFlags.Sanitize) ? styleSanitizer : null;
-          setStyle(
-              native, prop, valueToApply as string | null, renderer, sanitizer, stylesStore,
-              playerBuilder);
+        // if the first render is true then we do not want to start applying falsy
+        // values to the DOM element's styling. Otherwise then we know there has
+        // been a change and even if it's falsy then it's removing something that
+        // was truthy before.
+        const doApplyValue = isFirstRender ? valueToApply : true;
+        if (doApplyValue) {
+          if (isClassBased) {
+            setClass(
+                native, prop, valueToApply ? true : false, renderer, classesStore, playerBuilder);
+          } else {
+            const sanitizer = (flag & StylingFlags.Sanitize) ? styleSanitizer : null;
+            setStyle(
+                native, prop, valueToApply as string | null, renderer, sanitizer, stylesStore,
+                playerBuilder);
+          }
         }
+
         setDirty(context, i, false);
       }
     }
@@ -534,7 +557,7 @@ export function renderStyleAndClassBindings(
         const playerInsertionIndex = i + PlayerIndex.PlayerOffsetPosition;
         const oldPlayer = playerContext[playerInsertionIndex] as Player | null;
         if (builder) {
-          const player = builder.buildPlayer(oldPlayer);
+          const player = builder.buildPlayer(oldPlayer, isFirstRender);
           if (player !== undefined) {
             if (player != null) {
               const wasQueued = addPlayerInternal(
@@ -765,6 +788,10 @@ export function isContextDirty(context: StylingContext): boolean {
   return isDirty(context, StylingIndex.MasterFlagPosition);
 }
 
+export function limitToSingleClasses(context: StylingContext) {
+  return context[StylingIndex.MasterFlagPosition] & StylingFlags.OnlyProcessSingleClasses;
+}
+
 export function setContextDirty(context: StylingContext, isDirtyYes: boolean): void {
   setDirty(context, StylingIndex.MasterFlagPosition, isDirtyYes);
 }
@@ -907,13 +934,13 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
     }
   }
 
-  buildPlayer(currentPlayer?: Player|null): Player|undefined|null {
+  buildPlayer(currentPlayer: Player|null, isFirstRender: boolean): Player|undefined|null {
     // if no values have been set here then this means the binding didn't
     // change and therefore the binding values were not updated through
     // `setValue` which means no new player will be provided.
     if (this._dirty) {
-      const player =
-          this._factory.fn(this._element, this._type, this._values !, currentPlayer || null);
+      const player = this._factory.fn(
+          this._element, this._type, this._values !, isFirstRender, currentPlayer || null);
       this._values = {};
       this._dirty = false;
       return player;

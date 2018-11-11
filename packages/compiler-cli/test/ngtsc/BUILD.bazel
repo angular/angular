@@ -2,12 +2,13 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "ngtsc_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -20,5 +21,6 @@ jasmine_node_test(
     deps = [
         ":ngtsc_lib",
         "//tools/testing:node_no_angular",
+        "@ngdeps//minimist",
     ],
 )

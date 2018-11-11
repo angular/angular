@@ -155,7 +155,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
 ];
 
 /**
- * @experimental
+ * @publicApi
  */
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];

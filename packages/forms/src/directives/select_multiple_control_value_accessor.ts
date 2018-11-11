@@ -71,6 +71,7 @@ abstract class HTMLCollection {
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:

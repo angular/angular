@@ -380,7 +380,7 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = env.getContents('test.js');
     expect(jsContents)
         .toContain(
-            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(ChangeDetectorRef), i0.ɵdirectiveInject(ElementRef), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵdirectiveInject(Renderer2), i0.ɵdirectiveInject(TemplateRef), i0.ɵdirectiveInject(ViewContainerRef)); }`);
+            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(ChangeDetectorRef), i0.ɵdirectiveInject(ElementRef), i0.ɵdirectiveInject(Injector), i0.ɵdirectiveInject(Renderer2), i0.ɵdirectiveInject(TemplateRef), i0.ɵdirectiveInject(ViewContainerRef)); }`);
   });
 
   it('should generate queries for components', () => {
@@ -469,7 +469,7 @@ describe('ngtsc behavioral tests', () => {
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('onChange', ['arg'])
+          @HostListener('change', ['arg1', 'arg2', 'arg3'])
           onChange(event: any, arg: any): void {}
         }
     `);
@@ -477,14 +477,57 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     expect(jsContents)
-        .toContain(`i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
+        .toContain(`i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
     expect(jsContents)
         .toContain(`i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵload(dirIndex).bar));`);
     expect(jsContents)
         .toContain(
             'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵload(dirIndex).someClass))');
-    expect(jsContents).toContain('i0.ɵload(dirIndex).onClick($event)');
-    expect(jsContents).toContain('i0.ɵload(dirIndex).onChange(i0.ɵload(dirIndex).arg)');
+
+    const factoryDef = `
+      factory: function FooCmp_Factory(t) {
+        var f = new (t || FooCmp)();
+        i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) {
+          return f.onClick($event);
+        });
+        i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) {
+          return f.onChange(f.arg1, f.arg2, f.arg3);
+        });
+        return f;
+      }
+    `;
+    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
+  });
+
+  it('should generate host listeners for directives with base factories', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Directive, HostListener} from '@angular/core';
+
+        class Base {}
+
+        @Directive({
+          selector: '[test]',
+        })
+        class Dir extends Base {
+          @HostListener('change', ['arg'])
+          onChange(event: any, arg: any): void {}
+        }
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    const factoryDef = `
+      factory: function Dir_Factory(t) {
+        var f = ɵDir_BaseFactory((t || Dir));
+        i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) {
+          return f.onChange(f.arg);
+        });
+        return f;
+      }
+    `;
+    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
+    expect(jsContents).toContain('var ɵDir_BaseFactory = i0.ɵgetInheritedFactory(Dir)');
   });
 
   it('should correctly recognize local symbols', () => {
@@ -571,6 +614,38 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
+
+  it('should generate a summary stub for decorated classes in the input file only', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        export class NotAModule {}
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const summaryContents = env.getContents('test.ngsummary.js');
+    expect(summaryContents).toEqual(`export var TestModuleNgSummary = null;\n`);
+  });
+
+  it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
+     () => {
+       env.tsconfig({'allowEmptyCodegenFiles': true});
+       env.write('empty.ts', `
+        export class NotAModule {}
+    `);
+
+       env.driveMain();
+
+       const emptySummary = env.getContents('empty.ngsummary.js');
+       // The empty export ensures this js file is still an ES module.
+       expect(emptySummary).toEqual(`export var ɵempty = null;\n`);
+     });
 
   it('should compile a banana-in-a-box inside of a template', () => {
     env.tsconfig();
@@ -673,4 +748,25 @@ describe('ngtsc behavioral tests', () => {
        const jsContents = env.getContents('test.js');
        expect(jsContents).toContain('directives: function () { return [CmpB]; }');
      });
+
+  it('should emit setClassMetadata calls for all types', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
+
+      @Component({selector: 'cmp', template: 'I am a component!'}) class TestComponent {}
+      @Directive({selector: 'dir'}) class TestDirective {}
+      @Injectable() class TestInjectable {}
+      @NgModule({declarations: [TestComponent, TestDirective]}) class TestNgModule {}
+      @Pipe({name: 'pipe'}) class TestPipe {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestComponent, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestDirective, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestInjectable, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestNgModule, ');
+    expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
+  });
 });

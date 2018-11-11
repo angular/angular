@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
@@ -14,6 +14,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck",
+        "@ngdeps//typescript",
     ],
 )
 

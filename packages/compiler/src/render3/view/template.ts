@@ -643,18 +643,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       const stylingInput = mapBasedStyleInput || mapBasedClassInput;
       if (stylingInput) {
+        // these values must be outside of the update block so that they can
+        // be evaluted (the AST visit call) during creation time so that any
+        // pipes can be picked up in time before the template is built
+        const mapBasedClassValue =
+            mapBasedClassInput ? mapBasedClassInput.value.visit(this._valueConverter) : null;
+        const mapBasedStyleValue =
+            mapBasedStyleInput ? mapBasedStyleInput.value.visit(this._valueConverter) : null;
         this.updateInstruction(stylingInput.sourceSpan, R3.elementStylingMap, () => {
           const params: o.Expression[] = [indexLiteral];
 
-          if (mapBasedClassInput) {
-            const mapBasedClassValue = mapBasedClassInput.value.visit(this._valueConverter);
+          if (mapBasedClassValue) {
             params.push(this.convertPropertyBinding(implicit, mapBasedClassValue, true));
           } else if (mapBasedStyleInput) {
             params.push(o.NULL_EXPR);
           }
 
-          if (mapBasedStyleInput) {
-            const mapBasedStyleValue = mapBasedStyleInput.value.visit(this._valueConverter);
+          if (mapBasedStyleValue) {
             params.push(this.convertPropertyBinding(implicit, mapBasedStyleValue, true));
           }
 
@@ -670,15 +675,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const key = input.name;
           const styleIndex: number = stylesIndexMap[key] !;
           const value = input.value.visit(this._valueConverter);
-          const params: o.Expression[] = [
-            indexLiteral, o.literal(styleIndex), this.convertPropertyBinding(implicit, value, true)
-          ];
+          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, () => {
+            const params: o.Expression[] = [
+              indexLiteral, o.literal(styleIndex),
+              this.convertPropertyBinding(implicit, value, true)
+            ];
 
-          if (input.unit != null) {
-            params.push(o.literal(input.unit));
-          }
+            if (input.unit != null) {
+              params.push(o.literal(input.unit));
+            }
 
-          this.updateInstruction(input.sourceSpan, R3.elementStyleProp, params);
+            return params;
+          });
         }
 
         lastInputCommand = styleInputs[styleInputs.length - 1];
@@ -696,10 +704,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const classIndex: number = classesIndexMap[key] !;
           const value = input.value.visit(this._valueConverter);
           this.updateInstruction(input.sourceSpan, R3.elementClassProp, () => {
-            return [
-              indexLiteral, o.literal(classIndex),
-              this.convertPropertyBinding(implicit, value, true), ...params
-            ];
+            const valueLiteral = this.convertPropertyBinding(implicit, value, true);
+            return [indexLiteral, o.literal(classIndex), valueLiteral];
           });
         }
 

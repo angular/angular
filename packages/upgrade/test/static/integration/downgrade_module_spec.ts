@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, DoCheck, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, ViewRef, destroyPlatform} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, DoCheck, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, Type, ViewRef, destroyPlatform, getPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {downgradeComponent, downgradeModule} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
-import {$ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/static/src/common/constants';
+import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/static/src/common/constants';
 import {LazyModuleRef} from '@angular/upgrade/static/src/common/util';
 
 import {html, multiTrim, withEachNg1Version} from '../test_helpers';
@@ -24,6 +24,58 @@ withEachNg1Version(() => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
 
       beforeEach(() => destroyPlatform());
+
+      it('should support multiple downgraded modules', async(() => {
+           @Component({selector: 'ng2A', template: 'a'})
+           class Ng2ComponentA {
+           }
+
+           @Component({selector: 'ng2B', template: 'b'})
+           class Ng2ComponentB {
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentA],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleA {
+             ngDoBootstrap() {}
+           }
+
+           @NgModule({
+             declarations: [Ng2ComponentB],
+             entryComponents: [Ng2ComponentB],
+             imports: [BrowserModule],
+           })
+           class Ng2ModuleB {
+             ngDoBootstrap() {}
+           }
+
+           const doDowngradeModule = (module: Type<any>) => {
+             const bootstrapFn = (extraProviders: StaticProvider[]) =>
+                 (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(module);
+             return downgradeModule(bootstrapFn);
+           };
+
+           const downModA = doDowngradeModule(Ng2ModuleA);
+           const downModB = doDowngradeModule(Ng2ModuleB);
+           const ng1Module = angular.module('ng1', [downModA, downModB])
+                                 .directive('ng2A', downgradeComponent({
+                                              component: Ng2ComponentA,
+                                              downgradedModule: downModA, propagateDigest,
+                                            }))
+                                 .directive('ng2B', downgradeComponent({
+                                              component: Ng2ComponentB,
+                                              downgradedModule: downModB, propagateDigest,
+                                            }));
+
+           const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+           angular.bootstrap(element, [ng1Module.name]);
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => expect(element.textContent).toBe('a | b'));
+         }));
 
       it('should support downgrading a component and propagate inputs', async(() => {
            @Component(
@@ -609,6 +661,138 @@ withEachNg1Version(() => {
            // Wait for the module to be bootstrapped.
            setTimeout(() => expect($injectorFromNg2).toBe($injectorFromNg1));
          }));
+
+      describe('(common error)', () => {
+        let Ng2CompA: Type<any>;
+        let Ng2CompB: Type<any>;
+        let downModA: string;
+        let downModB: string;
+        let errorSpy: jasmine.Spy;
+
+        const doDowngradeModule = (module: Type<any>) => {
+          const bootstrapFn = (extraProviders: StaticProvider[]) =>
+              (getPlatform() || platformBrowserDynamic(extraProviders)).bootstrapModule(module);
+          return downgradeModule(bootstrapFn);
+        };
+
+        beforeEach(() => {
+          @Component({selector: 'ng2A', template: 'a'})
+          class Ng2ComponentA {
+          }
+
+          @Component({selector: 'ng2B', template: 'b'})
+          class Ng2ComponentB {
+          }
+
+          @NgModule({
+            declarations: [Ng2ComponentA],
+            entryComponents: [Ng2ComponentA],
+            imports: [BrowserModule],
+          })
+          class Ng2ModuleA {
+            ngDoBootstrap() {}
+          }
+
+          @NgModule({
+            declarations: [Ng2ComponentB],
+            entryComponents: [Ng2ComponentB],
+            imports: [BrowserModule],
+          })
+          class Ng2ModuleB {
+            ngDoBootstrap() {}
+          }
+
+          Ng2CompA = Ng2ComponentA;
+          Ng2CompB = Ng2ComponentB;
+          downModA = doDowngradeModule(Ng2ModuleA);
+          downModB = doDowngradeModule(Ng2ModuleB);
+          errorSpy = jasmine.createSpy($EXCEPTION_HANDLER);
+        });
+
+        it('should throw if no downgraded module is included', async(() => {
+             const ng1Module = angular.module('ng1', [])
+                                   .value($EXCEPTION_HANDLER, errorSpy)
+                                   .directive('ng2A', downgradeComponent({
+                                                component: Ng2CompA,
+                                                downgradedModule: downModA, propagateDigest,
+                                              }))
+                                   .directive('ng2B', downgradeComponent({
+                                                component: Ng2CompB,
+                                                propagateDigest,
+                                              }));
+
+             const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+             angular.bootstrap(element, [ng1Module.name]);
+
+             expect(errorSpy).toHaveBeenCalledTimes(2);
+             expect(errorSpy).toHaveBeenCalledWith(
+                 new Error(
+                     'Error while instantiating component \'Ng2ComponentA\': Not a valid ' +
+                     '\'@angular/upgrade\' application.\n' +
+                     'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
+                     'application?'),
+                 '<ng2-a>');
+             expect(errorSpy).toHaveBeenCalledWith(
+                 new Error(
+                     'Error while instantiating component \'Ng2ComponentB\': Not a valid ' +
+                     '\'@angular/upgrade\' application.\n' +
+                     'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
+                     'application?'),
+                 '<ng2-b>');
+           }));
+
+        it('should throw if the corresponding downgraded module is not included', async(() => {
+             const ng1Module = angular.module('ng1', [downModA])
+                                   .value($EXCEPTION_HANDLER, errorSpy)
+                                   .directive('ng2A', downgradeComponent({
+                                                component: Ng2CompA,
+                                                downgradedModule: downModA, propagateDigest,
+                                              }))
+                                   .directive('ng2B', downgradeComponent({
+                                                component: Ng2CompB,
+                                                downgradedModule: downModB, propagateDigest,
+                                              }));
+
+             const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+             angular.bootstrap(element, [ng1Module.name]);
+
+             expect(errorSpy).toHaveBeenCalledTimes(1);
+             expect(errorSpy).toHaveBeenCalledWith(
+                 new Error(
+                     'Error while instantiating component \'Ng2ComponentB\': Unable to find the ' +
+                     'specified downgraded module.\n' +
+                     'Did you forget to downgrade an Angular module or include it in the AngularJS ' +
+                     'application?'),
+                 '<ng2-b>');
+           }));
+
+        it('should throw if `downgradedModule` is not specified and there are multiple downgraded modules',
+           async(() => {
+             const ng1Module = angular.module('ng1', [downModA, downModB])
+                                   .value($EXCEPTION_HANDLER, errorSpy)
+                                   .directive('ng2A', downgradeComponent({
+                                                component: Ng2CompA,
+                                                downgradedModule: downModA, propagateDigest,
+                                              }))
+                                   .directive('ng2B', downgradeComponent({
+                                                component: Ng2CompB,
+                                                propagateDigest,
+                                              }));
+
+             const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+             angular.bootstrap(element, [ng1Module.name]);
+
+             expect(errorSpy).toHaveBeenCalledTimes(1);
+             expect(errorSpy).toHaveBeenCalledWith(
+                 new Error(
+                     'Error while instantiating component \'Ng2ComponentB\': \'downgradedModule\' not ' +
+                     'specified.\n' +
+                     'This application contains more than one downgraded Angular module, thus you need ' +
+                     'to always specify \'downgradedModule\' when downgrading components and ' +
+                     'injectables.'),
+                 '<ng2-b>');
+           }));
+      });
     });
   });
 });

@@ -7,7 +7,9 @@ load("//tools/http-server:http_server.bzl", "http_server")
 ng_module(
     name = "animation_world",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+    ],
     type_check = False,  # see #26462
     deps = [
         "//packages/common",
@@ -25,7 +27,9 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/animation_world/index.js",
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":animation_world",
         "//packages/core",
@@ -37,7 +41,7 @@ js_expected_symbol_test(
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
     tags = [
-        "ivy-local",
+        "ivy-aot",
         "ivy-only",
     ],
 )
@@ -50,5 +54,8 @@ http_server(
         "index.html",
         ":bundle.min.js",
         ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
     ],
 )

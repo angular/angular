@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, InjectionToken, OnChanges, OnDestroy, Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵPublicFeature as PublicFeature, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
@@ -17,6 +17,14 @@ import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
 import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
 
+const Directive: typeof _Directive = function(...args: any[]): any {
+  // In test we use @Directive for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
+const Pipe: typeof _Pipe = function(...args: any[]): any {
+  // In test we use @Pipe for documentation only so it's safe to mock out the implementation.
+  return () => undefined;
+} as any;
 
 let log: string[] = [];
 let person: Person;
@@ -367,7 +375,6 @@ describe('pipe', () => {
         static ngComponentDef = defineComponent({
           type: MyComponent,
           selectors: [['my-app']],
-          features: [PublicFeature],
           factory: function MyComponent_Factory() { return new MyComponent(); },
           consts: 2,
           vars: 3,

@@ -15,5 +15,6 @@
 import {Version} from '@angular/core';
 /**
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

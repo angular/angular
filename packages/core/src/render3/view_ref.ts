@@ -11,10 +11,11 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, getRendererFactory, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TViewNode} from './interfaces/node';
 import {FLAGS, LViewData, LViewFlags, PARENT} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
+import {getRendererFactory} from './state';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates

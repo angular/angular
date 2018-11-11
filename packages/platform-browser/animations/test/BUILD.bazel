@@ -1,0 +1,44 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "@rxjs",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    tags = [
+        "fixme-ivy-aot",
+    ],
+    deps = [
+        ":test_lib",
+        "//tools/testing:node",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test_web",
+    tags = [
+        "fixme-ivy-aot",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

@@ -33,9 +33,9 @@ let _platform: PlatformRef;
 
 let compileNgModuleFactory:
     <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
-        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_NGCC__;
+        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_R3__;
 
-function compileNgModuleFactory__PRE_NGCC__<M>(
+function compileNgModuleFactory__PRE_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   const compilerFactory: CompilerFactory = injector.get(CompilerFactory);
@@ -43,7 +43,7 @@ function compileNgModuleFactory__PRE_NGCC__<M>(
   return compiler.compileModuleAsync(moduleType);
 }
 
-export function compileNgModuleFactory__POST_NGCC__<M>(
+export function compileNgModuleFactory__POST_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
@@ -57,7 +57,7 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultip
 /**
  * A token for third-party components that can register themselves with NgProbe.
  *
- * @experimental
+ * @publicApi
  */
 export class NgProbeToken {
   constructor(public name: string, public token: any) {}
@@ -67,7 +67,7 @@ export class NgProbeToken {
  * Creates a platform.
  * Platforms have to be eagerly created via this function.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function createPlatform(injector: Injector): PlatformRef {
   if (_platform && !_platform.destroyed &&
@@ -84,7 +84,7 @@ export function createPlatform(injector: Injector): PlatformRef {
 /**
  * Creates a factory for a platform
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function createPlatformFactory(
     parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
@@ -111,7 +111,7 @@ export function createPlatformFactory(
 /**
  * Checks that there currently is a platform which contains the given token as a provider.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
@@ -131,7 +131,7 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 /**
  * Destroy the existing platform.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function destroyPlatform(): void {
   if (_platform && !_platform.destroyed) {
@@ -142,7 +142,7 @@ export function destroyPlatform(): void {
 /**
  * Returns the current platform.
  *
- * @experimental APIs related to application bootstrap are currently under review.
+ * @publicApi
  */
 export function getPlatform(): PlatformRef|null {
   return _platform && !_platform.destroyed ? _platform : null;
@@ -171,6 +171,8 @@ export interface BootstrapOptions {
  *
  * A page's platform is initialized implicitly when a platform is created via a platform factory
  * (e.g. {@link platformBrowser}), or explicitly by calling the {@link createPlatform} function.
+ *
+ * @publicApi
  */
 @Injectable()
 export class PlatformRef {
@@ -202,8 +204,6 @@ export class PlatformRef {
    *
    * let moduleRef = platformBrowser().bootstrapModuleFactory(MyModuleNgFactory);
    * ```
-   *
-   * @experimental APIs related to application bootstrap are currently under review.
    */
   bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions):
       Promise<NgModuleRef<M>> {
@@ -346,6 +346,8 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
 
 /**
  * A reference to an Angular application running on a page.
+ *
+ * @publicApi
  */
 @Injectable()
 export class ApplicationRef {

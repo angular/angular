@@ -17,10 +17,10 @@ ivy-ngcc
   ls node_modules/@angular/common | grep __modified_by_ngcc_for_esm2015
   if [[ $? != 0 ]]; then exit 1; fi
 
-# Did it replace the NGCC_PRE markers correctly?
-  grep "= R3_COMPILE_COMPONENT__POST_NGCC__" node_modules/@angular/core/fesm2015/core.js
+# Did it replace the PRE_R3 markers correctly?
+  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm2015/core.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "= R3_COMPILE_COMPONENT__POST_NGCC__" node_modules/@angular/core/fesm5/core.js
+  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm5/core.js
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it compile @angular/core/ApplicationModule correctly?
@@ -39,6 +39,8 @@ ivy-ngcc
 # Now try compiling the app using the ngcc compiled libraries
 ngc -p tsconfig-app.json
 
-# Did it compile the main.ts correctly?
-  grep "directives: \[\S*\.NgIf\]" dist/src/main.js
+# Did it compile the main.ts correctly (including the ngIf and MatButton directives)?
+  grep "directives: \[.*\.NgIf.*\]" dist/src/main.js
+  if [[ $? != 0 ]]; then exit 1; fi
+  grep "directives: \[.*\.MatButton.*\]" dist/src/main.js
   if [[ $? != 0 ]]; then exit 1; fi

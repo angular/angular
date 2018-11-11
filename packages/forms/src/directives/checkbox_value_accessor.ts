@@ -28,6 +28,7 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({
   selector:

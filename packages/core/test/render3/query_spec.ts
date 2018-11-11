@@ -10,13 +10,13 @@ import {NgForOfContext} from '@angular/common';
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {directiveInject} from '../../src/render3/di';
 
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 import {getNativeByIndex} from '../../src/render3/util';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, _getViewData} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
+import {getViewData} from '../../src/render3/state';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
@@ -115,7 +115,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', '']);
-                elToQuery = getNativeByIndex(1, _getViewData());
+                elToQuery = getNativeByIndex(1, getViewData());
               }
             },
             2, 0, [Child], [],
@@ -222,7 +222,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, _getViewData());
+                elToQuery = getNativeByIndex(1, getViewData());
                 element(3, 'div');
               }
             },
@@ -259,7 +259,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(2, 'div', null, ['foo', '', 'bar', '']);
-                elToQuery = getNativeByIndex(2, _getViewData());
+                elToQuery = getNativeByIndex(2, getViewData());
                 element(5, 'div');
               }
             },
@@ -306,10 +306,10 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                el1ToQuery = getNativeByIndex(1, _getViewData());
+                el1ToQuery = getNativeByIndex(1, getViewData());
                 element(3, 'div');
                 element(4, 'div', null, ['bar', '']);
-                el2ToQuery = getNativeByIndex(4, _getViewData());
+                el2ToQuery = getNativeByIndex(4, getViewData());
               }
             },
             6, 0, [], [],
@@ -345,7 +345,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, _getViewData());
+                elToQuery = getNativeByIndex(1, getViewData());
                 element(3, 'div');
               }
             },
@@ -381,7 +381,7 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    elementContainerStart(1, null, ['foo', '']);
-                   elToQuery = getNativeByIndex(1, _getViewData());
+                   elToQuery = getNativeByIndex(1, getViewData());
                    elementContainerEnd();
                  }
                },
@@ -417,7 +417,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 elementContainerStart(1, null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, _getViewData());
+                elToQuery = getNativeByIndex(1, getViewData());
                 elementContainerEnd();
               }
             },
@@ -480,7 +480,7 @@ describe('query', () => {
                 elementContainerStart(2);
                 {
                   element(3, 'div', null, ['foo', '']);
-                  elToQuery = getNativeByIndex(3, _getViewData());
+                  elToQuery = getNativeByIndex(3, getViewData());
                 }
                 elementContainerEnd();
               }
@@ -890,7 +890,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', ''], ['foo', 'child']);
-                div = getNativeByIndex(1, _getViewData());
+                div = getNativeByIndex(1, getViewData());
               }
             },
             3, 0, [Child], [],
@@ -925,7 +925,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
-                div = getNativeByIndex(1, _getViewData());
+                div = getNativeByIndex(1, getViewData());
               }
               if (rf & RenderFlags.Update) {
                 childInstance = getDirectiveOnNode(1);
@@ -949,7 +949,7 @@ describe('query', () => {
         expect(qList.last).toBe(childInstance);
       });
 
-      it('should not add results to query if a requested token cant be read', () => {
+      it('should not add results to selector-based query if a requested token cant be read', () => {
         const Child = createDirective('child');
 
         /**
@@ -976,9 +976,224 @@ describe('query', () => {
               }
             });
 
-        const cmptInstance = renderComponent(Cmpt);
-        const qList = (cmptInstance.query as QueryList<any>);
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
         expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to directive-based query if requested token cant be read', () => {
+        const Child = createDirective('child');
+        const OtherChild = createDirective('otherchild');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(Child, {read: OtherChild}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child, OtherChild], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, Child, false, OtherChild);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to directive-based query if only read token matches', () => {
+        const Child = createDirective('child');
+        const OtherChild = createDirective('otherchild');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(OtherChild, {read: Child}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child, OtherChild], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, OtherChild, false, Child);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should not add results to TemplateRef-based query if only read token matches', () => {
+        /**
+         * <div></div>
+         * class Cmpt {
+         *  @ViewChildren(TemplateRef, {read: ElementRef}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div');
+              }
+            },
+            2, 0, [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false, ElementRef);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should match using string selector and directive as a read argument', () => {
+        const Child = createDirective('child');
+
+        /**
+         * <div child #foo></div>
+         * class Cmpt {
+         *  @ViewChildren('foo', {read: Child}) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', ''], ['foo', '']);
+              }
+            },
+            3, 0, [Child], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, ['foo'], false, Child);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(1);
+        expect(qList.first instanceof Child).toBeTruthy();
+      });
+
+      it('should not add results to the query in case no match found (via TemplateRef)', () => {
+        const Child = createDirective('child');
+
+        /**
+         * <div child></div>
+         * class Cmpt {
+         *  @ViewChildren(TemplateRef) query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                element(1, 'div', ['child', '']);
+              }
+            },
+            2, 0, [Child], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+        const qList = component.query;
+        expect(qList.length).toBe(0);
+      });
+
+      it('should query templates if the type is TemplateRef (and respect "read" option)', () => {
+        function Cmpt_Template_1(rf: RenderFlags, ctx1: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div');
+            text(1, 'Test');
+            elementEnd();
+          }
+        }
+        /**
+         * <ng-template #foo><div>Test</div></ng-template>
+         * <ng-template #bar><div>Test</div></ng-template>
+         * <ng-template #baz><div>Test</div></ng-template>
+         * class Cmpt {
+         *   @ViewChildren(TemplateRef) tmplQuery;
+         *   @ViewChildren(TemplateRef, {read: ElementRef}) elemQuery;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                template(2, Cmpt_Template_1, 2, 0, null, null, ['foo', ''], templateRefExtractor);
+                template(3, Cmpt_Template_1, 2, 0, null, null, ['bar', ''], templateRefExtractor);
+                template(4, Cmpt_Template_1, 2, 0, null, null, ['baz', ''], templateRefExtractor);
+              }
+            },
+            5, 0, [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, TemplateRef as any, false);
+                query(1, TemplateRef as any, false, ElementRef);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) &&
+                    (ctx.tmplQuery = tmp as QueryList<any>);
+                queryRefresh(tmp = load<QueryList<any>>(1)) &&
+                    (ctx.elemQuery = tmp as QueryList<any>);
+              }
+            });
+
+        const {component} = new ComponentFixture(Cmpt);
+
+        // check template-based query set
+        const tmplQList = component.tmplQuery;
+        expect(tmplQList.length).toBe(3);
+        expect(isTemplateRef(tmplQList.first)).toBeTruthy();
+
+        // check element-based query set
+        const elemQList = component.elemQuery;
+        expect(elemQList.length).toBe(3);
+        expect(isElementRef(elemQList.first)).toBeTruthy();
       });
 
     });
@@ -1409,7 +1624,7 @@ describe('query', () => {
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, _getViewData());
+                        firstEl = getNativeByIndex(0, getViewData());
                       }
                     }
                     embeddedViewEnd();
@@ -1461,10 +1676,10 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    element(1, 'span', null, ['foo', '']);
-                   firstEl = getNativeByIndex(1, _getViewData());
+                   firstEl = getNativeByIndex(1, getViewData());
                    container(3);
                    element(4, 'span', null, ['foo', '']);
-                   lastEl = getNativeByIndex(4, _getViewData());
+                   lastEl = getNativeByIndex(4, getViewData());
                  }
                  if (rf & RenderFlags.Update) {
                    containerRefreshStart(3);
@@ -1474,7 +1689,7 @@ describe('query', () => {
                        {
                          if (rf1 & RenderFlags.Create) {
                            element(0, 'div', null, ['foo', '']);
-                           viewEl = getNativeByIndex(0, _getViewData());
+                           viewEl = getNativeByIndex(0, getViewData());
                          }
                        }
                        embeddedViewEnd();
@@ -1541,7 +1756,7 @@ describe('query', () => {
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, _getViewData());
+                        firstEl = getNativeByIndex(0, getViewData());
                       }
                     }
                     embeddedViewEnd();
@@ -1551,7 +1766,7 @@ describe('query', () => {
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'span', null, ['foo', '']);
-                        lastEl = getNativeByIndex(0, _getViewData());
+                        lastEl = getNativeByIndex(0, getViewData());
                       }
                     }
                     embeddedViewEnd();
@@ -1614,7 +1829,7 @@ describe('query', () => {
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, _getViewData());
+                        firstEl = getNativeByIndex(0, getViewData());
                         container(2);
                       }
                       if (rf0 & RenderFlags.Update) {
@@ -1625,7 +1840,7 @@ describe('query', () => {
                             {
                               if (rf2) {
                                 element(0, 'span', null, ['foo', '']);
-                                lastEl = getNativeByIndex(0, _getViewData());
+                                lastEl = getNativeByIndex(0, getViewData());
                               }
                             }
                             embeddedViewEnd();
@@ -1911,7 +2126,8 @@ describe('query', () => {
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
         factory: () => new WithContentDirective(),
-        contentQueries: () => { registerContentQuery(query(null, ['foo'], true)); },
+        contentQueries:
+            (dirIndex) => { registerContentQuery(query(null, ['foo'], true), dirIndex); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
           withContentInstance = load<WithContentDirective>(dirIndex);
@@ -1932,7 +2148,8 @@ describe('query', () => {
         template: function(rf: RenderFlags, ctx: any) {},
         consts: 0,
         vars: 0,
-        contentQueries: () => { registerContentQuery(query(null, ['foo'], false)); },
+        contentQueries:
+            (dirIndex) => { registerContentQuery(query(null, ['foo'], false), dirIndex); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
           shallowCompInstance = load<ShallowComp>(dirIndex);
@@ -1955,6 +2172,51 @@ describe('query', () => {
           elementEnd();
         }
       }, 3, 0, [WithContentDirective]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      expect(withContentInstance !.foos.length)
+          .toBe(1, `Expected content query to match <span #foo>.`);
+
+      expect(withContentInstance !.contentInitQuerySnapshot)
+          .toBe(
+              1,
+              `Expected content query results to be available when ngAfterContentInit was called.`);
+
+      expect(withContentInstance !.contentCheckedQuerySnapshot)
+          .toBe(
+              1,
+              `Expected content query results to be available when ngAfterContentChecked was called.`);
+    });
+
+    it('should support content queries for directives within repeated embedded views', () => {
+      /**
+       * % for (let i = 0; i < 3; i++) {
+       *   <div with-content>
+       *     <span #foo></span>
+       *   </div>
+       * % }
+       */
+      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          container(0);
+        }
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            for (let i = 0; i < 3; i++) {
+              let rf = embeddedViewStart(1, 3, 0);
+              if (rf & RenderFlags.Create) {
+                elementStart(0, 'div', [AttributeMarker.SelectOnly, 'with-content']);
+                { element(1, 'span', null, ['foo', '']); }
+                elementEnd();
+              }
+              embeddedViewEnd();
+            }
+          }
+
+          containerRefreshEnd();
+        }
+      }, 1, 0, [WithContentDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -2109,10 +2371,10 @@ describe('query', () => {
           selectors: [['', 'query', '']],
           exportAs: 'query',
           factory: () => new QueryDirective(),
-          contentQueries: () => {
+          contentQueries: (dirIndex) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            registerContentQuery(query(null, ['foo', 'bar', 'baz'], true));
+            registerContentQuery(query(null, ['foo', 'bar', 'baz'], true), dirIndex);
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
@@ -2173,10 +2435,10 @@ describe('query', () => {
           selectors: [['', 'query', '']],
           exportAs: 'query',
           factory: () => new QueryDirective(),
-          contentQueries: () => {
+          contentQueries: (dirIndex) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            registerContentQuery(query(null, ['foo'], false));
+            registerContentQuery(query(null, ['foo'], false), dirIndex);
           },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
@@ -2227,9 +2489,9 @@ describe('query', () => {
              selectors: [['', 'shallow-query', '']],
              exportAs: 'shallow-query',
              factory: () => new ShallowQueryDirective(),
-             contentQueries: () => {
+             contentQueries: (dirIndex) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
-               registerContentQuery(query(null, ['foo'], false));
+               registerContentQuery(query(null, ['foo'], false), dirIndex);
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
@@ -2247,9 +2509,9 @@ describe('query', () => {
              selectors: [['', 'deep-query', '']],
              exportAs: 'deep-query',
              factory: () => new DeepQueryDirective(),
-             contentQueries: () => {
+             contentQueries: (dirIndex) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
-               registerContentQuery(query(null, ['foo'], true));
+               registerContentQuery(query(null, ['foo'], true), dirIndex);
              },
              contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;

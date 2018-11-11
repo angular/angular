@@ -121,8 +121,8 @@ function getRouteGuards(
     }
 
     if (shouldRun) {
-      const outlet = context !.outlet !;
-      checks.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
+      const component = context && context.outlet && context.outlet.component || null;
+      checks.canDeactivateChecks.push(new CanDeactivate(component, curr));
     }
   } else {
     if (curr) {
