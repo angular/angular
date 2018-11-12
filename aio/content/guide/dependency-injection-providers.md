@@ -10,8 +10,8 @@ which that injector uses to provide the concrete, runtime version of a dependenc
 The injector relies on the provider configuration to create instances of the dependencies
 that it injects into components, directives, pipes, and other services.
 -->
-의존성 [프로바이더](guide/glossary#provider)와 [의존성 주입 토큰](guide/glossary#di-token)을 연결하면 인젝터에 의존성 객체를 등록할 수 있습니다.
-그러면 프로바이더에 지정된 방법대로 인젝터가 의존성 객체의 인스턴스를 생성하며, 이 인스턴스는 컴포넌트나 디렉티브, 파이프, 서비스와 같이 의존성 객체가 필요한 곳에 주입됩니다.
+의존성으로 주입할 객체는 [프로바이더](guide/glossary#provider)와 [토큰](guide/glossary#di-token)을 연결하는 방식으로 인젝터에 등록합니다.
+그러면 인젝터가 프로바이더에 지정된 방법대로 의존성 객체의 인스턴스를 생성하며, 이 인스턴스는 컴포넌트나 디렉티브, 파이프, 서비스와 같이 의존성 객체가 필요한 곳에 주입됩니다.
 
 <!--
 You must configure an injector with a provider, or it won't know how to create the dependency.  
@@ -19,7 +19,7 @@ The most obvious way for an injector to create an instance of a service class is
 If you specify the service class itself as the provider token, the default behavior is for the injector to instantiate that class with `new`. 
 -->
 그래서 의존성 객체를 주입하려면 인젝터에 프로바이더를 꼭 등록해야 합니다.
-서비스 클래스를 인스턴스로 등록하는 방법 중 가장 간단한 방법은 클래스에서 직접 프로바이더를 등록하는 것입니다.
+서비스 클래스를 인스턴스로 등록하는 방법 중 가장 간단한 방법은 클래스를 선언하면서 직접 프로바이더를 등록하는 것입니다.
 이렇게 등록하면 서비스 클래스 이름을 바로 프로바이더 토큰으로 사용할 수 있으며, 인젝터는 `new` 키워드를 사용해서 이 서비스 클래스의 인스턴스를 생성합니다.
 
 <!--
@@ -40,12 +40,11 @@ For instance:
 
 * Your provider can call a logger factory function.
 -->
-이 외에도 프로바이더는 다양한 방법으로 등록할 수 있습니다. 필요하다면 다른 클래스로 `Logger` 클래스를 대체할 수도 있습니다.
-프로바이더는 이렇게 등록할 수도 있습니다:
+이 외에도 프로바이더는 다양한 방법으로 등록할 수 있으며, 필요하다면 다른 클래스의 인스턴스로 대체할 수도 있습니다:
 
-* 클래스 프로바이더로 다른 클래스를 지정할 수 있습니다.
+* 클래스 프로바이더를 사용하면서 다른 클래스의 인스턴스를 주입할 수 있습니다.
 
-* `Logger`와 비슷한 객체를 프로바이더로 등록할 수 있습니다.
+* `Logger`와 형태가 같은 객체를 프로바이더로 등록할 수 있습니다.
 
 * 팩토리 함수를 실행하고 받은 반환값을 프로바이더로 등록할 수 있습니다.
 
@@ -62,7 +61,7 @@ into a provider configuration, defined by the [`Provider` interface](api/core/Pr
 The following code snippets shows how a class that is given as the `providers` value is expanded into a full provider object.
 -->
 클래스를 바로 프로바이더 배열에 등록하는 문법은 [`Provider` 인터페이스](api/core/Provider)에 정의된 문법을 짧게 줄인 것입니다.
-그리고 이 문법은 짧게 줄이지 않고 모두 풀어서 등록할 수도 있습니다.
+이 문법은 짧게 줄이지 않고 모두 풀어서 등록할 수도 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
@@ -88,7 +87,7 @@ It can also be `useExisting`, `useValue`, or `useFactory`.
 Each of these keys provides a different type of dependency, as discussed below. 
 -->
 * 인젝터가 의존성 객체의 인스턴스를 생성하는 방법은 두번째 프로퍼티로 지정합니다.
-클래스를 직접 인젝터에 등록하는 경우에는 `useClass`를 사용하며, 이 외에도 `useExisting`, `useValue`, `useFactory`를 사용하는 경우도 있습니다.
+클래스를 직접 인젝터에 등록하는 경우에는 `useClass`를 사용하며, 상황에 따라 `useExisting`, `useValue`, `useFactory`를 사용하는 경우도 있습니다.
 각각에 대해서는 이어지는 내용에서 자세하게 살펴봅시다.
 
 {@a class-provider}
@@ -104,8 +103,8 @@ For example, the following code tells the injector
 to return a `BetterLogger` instance when the component asks for a logger
 using the `Logger` token.
 -->
-어떤 서비스의 이름으로 다른 클래스를 프로바이더로 등록할 수 있습니다.
-그래서 인젝터가 `Logger` 토큰으로 의존성 객체를 요청받았을 때 `BetterLogger` 인스턴스를 제공하도록 설정할 수도 있습니다.
+서비스 클래스 프로바이더는 이 클래스와 다른 이름으로도 등록할 수 있습니다.
+그래서 인젝터가 `Logger` 토큰으로 의존성 객체를 요청받았을 때 `BetterLogger` 인스턴스를 제공하도록 설정할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-4" >
 </code-example>
@@ -122,7 +121,7 @@ Another class, `EvenBetterLogger`, might display the user name in the log messag
 This logger gets the user from an injected `UserService` instance.
 -->
 `EvenBetterLogger`는 로그를 출력할 때 사용자의 이름도 함께 출력하는 클래스입니다.
-그리고 이 때 출력하는 사용자의 이름은 주입받은 `UserService`에서 참조합니다.
+그리고 이 때 출력하는 사용자의 이름은 `UserService`를 주입 받아서 참조합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"  linenums="false">
 </code-example>
@@ -130,7 +129,7 @@ This logger gets the user from an injected `UserService` instance.
 <!--
 The injector needs providers for both this new logging service and its dependent `UserService`. Configure this alternative logger with the `useClass` provider-definition key, like `BetterLogger`. The following array specifies both providers in the `providers` metadata option of the parent module or component.
 -->
-이제 인젝터에는 `EventBetterLogger`와 `UserService`의 프로바이더가 모두 등록되어야 합니다. 그리고 이 때 어떤 클래스의 프로바이더를 다른 클래스로 지정하려면 `useClass` 프로바이더-정의 키를 사용해서 지정할 수 있습니다. 이 내용은 다음과 같이 구현할 수 있습니다. 이 코드는 부모 모듈이나 컴포넌트의 `providers` 메타데이터 옵션에 사용됩니다.
+이제 인젝터에는 `EventBetterLogger`와 `UserService`의 프로바이더가 모두 등록되어야 합니다. 이 때 `useClass` 프로바이더-정의 키를 사용하면 어떤 클래스의 프로바이더를 다른 클래스로 지정할 수 있습니다. 아래 코드는 부모 모듈이나 컴포넌트의 `providers` 메타데이터 옵션에 사용한 예제 코드입니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"  linenums="false">
 </code-example>
@@ -147,8 +146,8 @@ Suppose an old component depends upon the `OldLogger` class.
 `OldLogger` has the same interface as `NewLogger`, but for some reason
 you can't update the old component to use it. 
 -->
-이전에 사용하던 컴포넌트에 `OldLogger` 클래스가 의존성으로 주입된다고 합시다.
-`OldLogger`의 인터페이스는 `NewLogger`와 같지만, 어떤 이유로 이 컴포넌트를 수정할 수가 없는 상황입니다.
+이전부터 사용하던 컴포넌트가 있는데, 이 컴포넌트에는 `OldLogger` 클래스가 의존성으로 주입된다고 합시다.
+그런데 `OldLogger`와 같은 인터페이스를 갖는 `NewLogger`를 만들었지만, 어떤 이유로 이 컴포넌트 코드는 수정할 수 없는 상황입니다.
 
 <!--
 When the old component logs a message with `OldLogger`,
@@ -157,13 +156,12 @@ In this case, the dependency injector should inject that singleton instance
 when a component asks for either the new or the old logger.
 `OldLogger` should be an *alias* for `NewLogger`.
 -->
-이 때 `OldLogger`를 주입받는 코드는 수정하지 않은 상태로 이 컴포넌트도 `NewLogger`를 사용하도록 하려고 합니다. 이 경우에 `NewLogger`와 `OldLogger`의 프로바이더를 모두 인젝터가 관리하면서 이전 로거와 새로운 로거를 모두 사용할 수 있도록 제공해야 합니다.
-그리고 `OldLogger`를 주입받도록 요청받았을 때 `NewLogger`를 대신 주입하려고 합니다. 결국 `OldLogger`는 `NewLogger`의 *또 다른 이름* 이라고 할 수 있습니다.
+이 때 `OldLogger`를 주입받는 코드는 수정하지 않은 상태로 이 컴포넌트도 `NewLogger`를 사용하도록 하려고 합니다. 이 경우에 `NewLogger`와 `OldLogger`의 프로바이더를 모두 인젝터가 관리하면서 이전 로거와 새로운 로거의 토큰을 모두 등록하면서, `OldLogger`를 주입받도록 요청받았을 때 `NewLogger`를 대신 주입하려고 합니다. 이 상황에서 `OldLogger`는 결국 `NewLogger`의 *또 다른 이름* 이라고 할 수 있습니다.
 
 <!--
 If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with two different `NewLogger` instances in your app. 
 -->
-이 때 프로바이더에 `useClass`를 사용하면 `OldLogger`를 `NewLogger`로 대체하는 것이 아니라 `NewLogger` 인스턴스를 두 개로 나누는 방식으로 등록됩니다.
+프로바이더에 `useClass`를 사용하면 `OldLogger`를 `NewLogger`로 대체하는 것이 아니라 `NewLogger` 인스턴스를 두 개로 나누는 방식으로 등록됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a" linenums="false">
 </code-example>
@@ -171,7 +169,7 @@ If you try to alias `OldLogger` to `NewLogger` with `useClass`, you end up with 
 <!--
 To make sure there is only one instance of `NewLogger`, alias `OldLogger` with the `useExisting` option.
 -->
-그래서 `NewLogger`의 인스턴스를 하나로 유지하려면 `oldLogger` 토큰에 `useExisting` 옵션을 사용해야 합니다.
+`NewLogger`의 인스턴스를 하나로 유지하려면 `oldLogger` 토큰에 `useExisting` 옵션을 사용해야 합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b" linenums="false">
 </code-example>
@@ -190,7 +188,7 @@ configure the injector with the `useValue` option
 
 The following code defines a variable that creates such an object to play the logger role.
 -->
-의존성 객체는 클래스의 인스턴스를 만들어서 제공하는 대신 미리 만들어둔 객체를 제공하는 것이 더 쉬울 때도 있습니다.
+의존성 객체는 클래스의 인스턴스를 만들어서 제공하는 대신 미리 만들어둔 객체를 제공하는 것이 더 간단할 때도 있습니다.
 객체를 프로바이더로 등록하려면 `useValue` 옵션을 사용합니다.
 
 아래 코드는 `Logger`와 모양이 같은 객체를 정의하는 코드입니다.
@@ -223,9 +221,9 @@ These configuration objects aren't always instances of a class.
 They can be object literals, as shown in the following example.
 -->
 의존성 객체가 반드시 클래스 타입이어야 하는 것은 아닙니다.
-어떤 경우에는 문자열이나 함수, 객체도 의존성으로 주입될 수도 있습니다.
+문자열이나 함수, 객체도 의존성으로 주입될 수도 있습니다.
 
-애플리케이션 제목이나 웹 API 엔드포인트 주소와 같이 여러 상수를 객체로 만들어서 사용하는 경우가 있습니다. 이 때 객체는 클래스 인스턴스인 것보다는 다음과 같이 객체 리터럴로 정의하는 경우가 일반적입니다.
+애플리케이션 제목이나 웹 API 엔드포인트 주소와 같이 여러 상수를 객체로 만들어서 사용하는 경우를 생각해 봅시다. 이 때 의존성 객체는 클래스 인스턴스인 것보다는 다음과 같이 객체 리터럴로 정의하는 경우가 일반적입니다.
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)" linenums="false">
 </code-example>
@@ -244,7 +242,7 @@ In TypeScript, an interface is a design-time artifact, and doesn't have a runtim
 -->
 변수 `HERO_DI_CONFIG`는 `AppConfig` 타입의 인터페이스입니다.
 하지만 아쉽게도 TypeScript 인터페이스는 토큰으로 사용할 수 없습니다:
-인터페이스는 개발중에만 사용되는 개념이기 때문에 실행되는 시점에는 존재하지 않습니다. 따라서 의존성 주입에 사용하는 토큰으로 사용할 수 없습니다.
+인터페이스는 개발 단계에만 사용되는 개념이기 때문에 실행되는 시점에는 존재하지 않습니다. 따라서 의존성 주입에 사용하는 토큰으로 사용할 수 없습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"  linenums="false">
 </code-example>
@@ -259,16 +257,16 @@ This might seem strange if you're used to dependency injection in strongly typed
 However, JavaScript, doesn't have interfaces, so when TypeScript is transpiled to JavaScript, the interface disappears.
 There is no interface type information left for Angular to find at runtime.
 -->
-정적 타입을 지정 언어에서 의존성 주입을 해본 적이 있다면 왜 이것이 문제가 되는지 이상할 것입니다.
+정적 타입을 지정하는 언어에서 의존성 주입을 사용해본 적이 있다면 왜 이것이 문제가 되는지 의아할 것입니다.
 이들 언어에서는 인터페이스도 의존성 주입 키로 사용할 수 있기 때문입니다.
-하지만 JavaScript에는 인터페이스가 없기 때문에 TypeScript로 작성한 인터페이스는 JavaScript 코드로 변환되면서 사라집니다. 그래서 인터페이스에 대한 정보는 Angular가 실행되는 시점에는 확인할 수 없습니다.
+하지만 JavaScript에는 인터페이스가 없기 때문에 TypeScript로 작성한 인터페이스는 JavaScript 코드로 변환되면서 사라집니다. 그래서 인터페이스에 대한 정보는 Angular가 실행되는 시점에 확인할 수 없습니다.
 
 </div>
 
 <!--
 One alternative is to provide and inject the configuration object in an NgModule like `AppModule`.
 -->
-이 방법과 비슷하게 `AppModule`과 같은 NgModule에도 객체를 프로바이더로 등록할 수도 있습니다.
+객체를 프로바이더로 등록하는 방식은 `AppModule`과 같은 NgModule에도 사용할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)"></code-example>
 
@@ -277,7 +275,7 @@ Another solution to choosing a provider token for non-class dependencies is
 to define and use an `InjectionToken` object.
 The following example shows how to define such a token.
 -->
-클래스가 아닌 의존성 객체는 `InjectionToken` 객체를 정의하는 방법으로도 프로바이더를 등록할 수 있습니다.
+그리고 클래스가 아닌 의존성 객체는 `InjectionToken` 객체를 정의하는 방법으로도 프로바이더를 등록할 수 있습니다.
 토큰은 다음과 같이 정의합니다.
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts" linenums="false">
@@ -292,7 +290,7 @@ The token description is another developer aid.
 <!--
 Register the dependency provider using the `InjectionToken` object:
 -->
-이렇게 정의한 `InjectionToken`은 다음과 같이 등록합니다:
+이렇게 정의한 `InjectionToken`은 다음과 같이 인젝터에 등록합니다:
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9"  linenums="false">
 </code-example>
@@ -333,7 +331,7 @@ Also, your injectable service might not have independent access to the source of
 -->
 어떤 경우에는 실행환경에서 가져온 정보를 바탕으로 의존성 객체를 동적으로 생성해야 하는 경우가 있습니다.
 그리고 이 객체는 브라우저 세션 상태에 따라 지속적으로 변경되는 경우도 있습니다.
-그런데 서비스의 입장에서는 정보를 직접 가져올 수 없는 상황이라고 가정해 봅시다.
+이 때 서비스의 입장에서는 정보를 직접 가져올 수 없는 상황이라고 가정해 봅시다.
 
 <!--
 In cases like this you can use a *factory provider*.
@@ -341,7 +339,7 @@ Factory providers can also be useful when creating an instance of a dependency f
 a third-party library that wasn't designed to work with DI.
 -->
 *팩토리 프로바이더*는 이런 경우에 사용합니다.
-그리고 팩토리 프로바이더는 의존성 주입을 제공하지 않는 서드 파티 라이브러리에 의존성 주입 시스템을 적용하는 용도로도 사용할 수 있습니다.
+팩토리 프로바이더는 의존성 주입을 제공하지 않는 서드 파티 라이브러리에 의존성 주입 시스템을 적용하는 용도로도 사용할 수 있습니다.
 
 <!--
 For example, suppose `HeroService` must hide *secret* heroes from normal users.
@@ -357,13 +355,13 @@ who is authorized and who isn't.
 
 To resolve this, we give the `HeroService` constructor a boolean flag to control display of secret heroes.
 -->
-예를 들어 `HeroService`에서 *비밀* 히어로의 명단은 일반 사용자에게 감춰야 한다고 합시다.
+예를 들어 `HeroService`가 제공하는 정보 중에 *비밀* 히어로의 명단은 일반 사용자에게 감춰야 한다고 합시다.
 이 목록은 사전에 허가된 사용자만 접근할 수 있어야 합니다.
 
-그러면 `EvenBetterLogger`와 마찬가지로 `HeroService`에서도 어떤 사용자가 허가를 받았는지 알아야 합니다.
-그리고 이 인증정보는 애플리케이션에 다른 사용자로 로그인하면 바뀔 수 있기 때문에 한 세션 중에서도 계속 변경될 수 있습니다.
+그러면 `EvenBetterLogger`와 마찬가지로 `HeroService`도 어떤 사용자가 허가를 받았는지 알아야 합니다.
+인증정보는 애플리케이션에 다른 사용자로 로그인하면 바뀔 수 있기 때문에 한 세션 중에서도 계속 변경될 수 있습니다.
 
-보안에 민감한 정보를 서비스에서 처리하면 로직이 복잡해지기 때문에 `UserService`를 `HeroService`에 직접 주입하는 것은 피하려고 합니다.
+보안에 민감한 정보를 서비스에서 처리하면 서비스 클래스의 로직이 복잡해지기 때문에 `UserService`를 `HeroService`에 직접 주입하는 것은 피하려고 합니다.
 하지만 `HeroService`는 사용자가 허가를 받았는지, 그렇지 않았는지 사용자 정보를 직접 확인할 수 없습니다.
 
 그래서 이런 경우에 `HeroService`의 생성자에 `boolean` 플래그를 사용해서 비밀 히어로의 명단을 화면에 표시할지, 표시하지 않을지 결정하려고 합니다.
@@ -376,7 +374,7 @@ You can inject `Logger`, but you can't inject the  `isAuthorized` flag. Instead,
 
 A factory provider needs a factory function.
 -->
-하지만 `Logger`는 의존성으로 주입할 수 있지만 `isAuthorized` 플래그는 주입할 수 없습니다. 대신 새로운 `HeroService`의 인스턴스를 생성할 때 이 플래그를 설정할 수 있습니다.
+하지만 `Logger`는 의존성으로 주입할 수 있는 반면에 `isAuthorized` 플래그는 주입할 수 없습니다. 대신 새로운 `HeroService`의 인스턴스를 생성할 때 이 플래그를 설정하도록 합시다.
 
 팩토리 프로바이더는 팩토리 함수를 사용합니다.
 
@@ -389,7 +387,7 @@ You inject both `Logger` and `UserService` into the factory provider
 and let the injector pass them along to the factory function.
 -->
 이 코드에서 `HeroService`는 `UserService`에 직접 접근할 수 없지만, 팩토리 함수는 접근할 수 있습니다.
-그러면 이 팩토리 함수를 동작시키기 위해 팩토리 함수에 대한 의존성을 다음과 같이 지정해야 합니다.
+그러면 이 팩토리 함수가 동작하기 위한 의존성을 다음과 같이 지정해야 합니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
@@ -412,13 +410,13 @@ The following shows the new and the old implementations side-by-side.
 * 서비스 프로바이더를 등록할 때 `useFactory` 필드를 사용하면 이 의존성 객체는 `heroServiceFactory`와 같은 팩토리 함수가 사용된다는 것을 의미합니다.
 
 * 팩토리 함수에 필요한 [프로바이더 토큰](guide/dependency-injection#token)은 `deps` 프로퍼티로 지정합니다.
-그래서 이 코드에는 `Logger`와 `UserService` 클래스가 각각 클래스 프로바이더 토큰으로 사용되었습니다.
+이 코드에는 `Logger`와 `UserService` 클래스가 각각 클래스 프로바이더 토큰으로 사용되었습니다.
 이 토큰들은 인젝터가 확인한 후에 각 토큰에 매칭되는 서비스 인스턴스로 팩토리 함수의 인자에 주입됩니다.
 
-팩토리 프로바이더는 `heroServiceProvider`와 같이 변수에 할당하고 파일 외부로 공개한다는 것을 잊지 마세요.
-팩토리 프로바이더는 이렇게 사용해야 다음번에도 재사용할 수 있습니다.
-`HeroService`가 필요한 곳이라면 이 변수를 가져다 사용할 수 있습니다.
-지금까지 예제에서는 `HeroesComponent`만 이 서비스 프로바이더를 사용하며, 기존에 사용되던 `HeroService` 프로바이더를 대체하기 위해 컴포넌트 메타데이터의 `providers` 배열에 이 서비스 프로바이더를 등록해야 합니다.
+팩토리 프로바이더는 `heroServiceProvider`와 같이 변수에 할당하고 파일 외부로 공개해야 한다는 것을 잊지 마세요.
+팩토리 프로바이더는 이렇게 정의해야 이후에도 재사용할 수 있습니다.
+`HeroService`가 필요한 곳이라면 이 변수를 불러와서 사용하면 됩니다.
+지금까지 작성한 예제에서는 `HeroesComponent`만 이 서비스 프로바이더를 사용하며, 기존에 사용되던 `HeroService` 프로바이더를 대체하기 위해 컴포넌트 메타데이터의 `providers` 배열에 이 서비스 프로바이더를 등록했습니다.
 
 지금까지 작성한 코드를 단계별로 살펴봅시다.
 
@@ -444,10 +442,10 @@ various systems.
 For example, you can use the following built-in tokens as hooks into the framework’s bootstrapping and initialization process.  
 A provider object can associate any of these injection tokens with one or more callback functions that take app-specific initialization actions.
 -->
-애플리케이션을 다양한 시스템 환경에 맞게 커스터마이징할 수 있도록 Angular가 제공하는 의존성 토큰 상수들이 있습니다.
+Angular 애플리케이션은 다양한 시스템 환경에서 실행될 수 있으며, 이 때 각 상황에 맞게 커스터마이징할 때 사용하는 의존성 토큰 상수를 제공합니다.
 
-그래서 다음과 같이 Angular가 정의한 토큰을 사용하면 Angular 프레임워크의 부트스트랩 과정과 초기화 과정을 조정할 수 있습니다.
-그리고 이 의존성 토큰들은 콜백 함수와 함께 사용해서 특정 환경에서 실행되어야 하는 로직을 실행할 수도 있습니다.
+이 토큰들을 사용하면 Angular 프레임워크의 부트스트랩 과정과 초기화 과정을 조정할 수 있습니다.
+그리고 이 토큰에 콜백 함수를 연결하면 특정 환경에서 실행되어야 하는 로직을 실행할 수도 있습니다.
 
 <!--
 * [PLATFORM_INITIALIZER](api/core/PLATFORM_INITIALIZER): Callback is invoked when a platform is initialized.
@@ -470,7 +468,7 @@ For example, when bootstrapping an application, you can register many initialize
 -->
 프로바이더 객체에는 `multi: true` 옵션을 사용할 수 있기 때문에 `APP_INITIALIZER`와 같은 토큰에 여러 함수를 함께 등록할 수도 있습니다.
 
-그래서 애플리케이션이 부트스트랩되는 과정에 여러 함수를 실행해야 한다면 다음과 같이 구현할 수 있습니다.
+애플리케이션을 부트스트랩하면서 특정 함수를 실행하려면 다음과 같이 구현합니다.
 
 ```
 export const APP_TOKENS = [
@@ -491,12 +489,12 @@ When you provide multiple sets of routes using [RouterModule.forRoot](api/router
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
 -->
-한 토큰에 프로바이더를 여러개 등록하는 것은 Angular가 제공하는 기능 중 하나입니다.
+한 토큰에 프로바이더를 여러개 등록하는 것은 Angular가 제공하는 패턴 중 하나입니다.
 그래서 폼 유효성 검사기를 [NG_VALIDATORS](api/forms/NG_VALIDATORS) 토큰에 등록하면서 `multi: true` 옵션을 사용하면 폼 유효성 검사기 여러개를 한 번에 적용할 수도 있습니다.
 이렇게 등록된 폼 유효성 검사기는 Angular가 원래 제공하던 폼 유효성 검사기와 함께 사용할 수 있습니다.
 
 라우터를 사용할 때도 한 토큰에 프로바이더를 여러개 등록할 수 있습니다.
-어떤 모듈에 [RouterModule.forRoot](api/router/RouterModule#forroot)와 [RouterModule.forChild](api/router/RouterModule#forchild)를 사용해서 라우팅 규칙을 등록하면, 이 라우팅 규칙은 모두 [ROUTES](api/router/ROUTES) 토큰으로 조합되어 하나의 객체로 변환합니다.
+어떤 모듈에 [RouterModule.forRoot](api/router/RouterModule#forroot)와 [RouterModule.forChild](api/router/RouterModule#forchild)를 사용해서 라우팅 규칙을 등록하면, 이 라우팅 규칙은 모두 [ROUTES](api/router/ROUTES) 토큰으로 조합되어 하나의 객체로 변환됩니다.
 
 <div class="alert is-helpful">
 
@@ -522,8 +520,8 @@ services from the final output when it determines that they are not used in your
 This significantly reduces the size of your bundles.
 -->
 트리 셰이킹은 애플리케이션에 사용되지 않은 코드를 최종 번들링 결과물에 포함시키지 않는 기능을 의미합니다.
-이 때 Angular 컴파일러는 트리 셰이킹될 수 있도록 등록된 프로바이더에만 트리 셰이킹을 적용할 수 있습니다.
-이 과정을 통해 불필요한 코드를 줄임으로써 최종 빌드 결과물의 용량을 줄일 수 있습니다.
+그리고 Angular 컴파일러는 트리 셰이킹될 수 있도록 등록된 프로바이더에만 트리 셰이킹을 적용할 수 있습니다.
+이 과정을 통해 불필요한 코드를 제거하면 최종 빌드 결과물의 용량을 줄일 수 있습니다.
 
 <div class="alert is-helpful">
 
@@ -535,10 +533,10 @@ Angular can't identify all of the places in your code where this injection could
 so it has no choice but to include the service in the injector. 
 Thus, services provided at the NgModule or component level are not tree-shakable.
 -->
-이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면, 최종 결과물에는 어떠한 서비스도 포함되지 않는 것이 좋습니다.
+이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면 최종 빌드 결과물에는 어떠한 서비스도 포함되지 않을 것입니다.
 하지만 이 것은 Angular 컴파일러가 빌드 시점에 확인할 수 없는 내용입니다.
 왜냐하면 의존성 객체는 클래스 생성자 뿐 아니라 `injector.get(서비스)`를 통해 직접 인스턴스를 가져올 수 있기 때문입니다.
-이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다.
+이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 결국 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다.
 그래서 NgModule이나 컴포넌트 계층에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
 
 </div>
@@ -564,7 +562,7 @@ When `ngc` runs, it compiles `AppModule` into a module factory, which contains d
 
 Tree-shaking doesn't work here because Angular can't decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
 -->
-`ngc`가 실행되면 `AppModule`은 모듈 팩토리로 변환되는데, 이 때 자식 모듈에 있는 모든 프로바이더가 이 팩토리에 포함됩니다. 그래서 실행시점에는 모듈 팩토리가 인젝터 역할을 하며 필요한 서비스의 인스턴스를 생성합니다.
+이제 `ngc`가 실행되면 `AppModule`은 모듈 팩토리로 변환되는데, 이 때 자식 모듈에 있는 모든 프로바이더가 이 팩토리에 포함됩니다. 그래서 실행시점에는 모듈 팩토리가 인젝터 역할을 하며 필요한 서비스의 인스턴스를 생성합니다.
 
 하지만 이 과정에는 트리 셰이킹이 동작하지 않습니다. 왜냐하면 Angular는 모듈 팩토리와 같은 코드 덩어리와 서비스 클래스와 같은 코드 덩어리만 보고는 이 서비스가 실제로 사용되었는지 판단할 수 없기 때문입니다. 그래서 서비스를 트리 셰이킹 대상으로 만들려면, 이 서비스가 어떻게 사용되는지에 대한 정보를 추가로 제공해야 합니다.
 
@@ -578,9 +576,9 @@ You can make a provider tree-shakable by specifying it in the `@Injectable()` de
 
 The following example shows the tree-shakable equivalent to the `ServiceModule` example above.
 -->
-서비스 프로바이더를 NgModule이나 컴포넌트에 등록하지 않고 서비스에 `@Injectable()` 데코레이터로 직접 등록하면 트리 셰이킹 되상이 되도록 프로바이더를 등록할 수 있습니다.
+서비스 프로바이더를 NgModule이나 컴포넌트에 등록하지 않고 서비스에 `@Injectable()` 데코레이터로 직접 등록하면 트리 셰이킹 대상으로 지정할 수 있습니다.
 
-그래서 위에서 살펴봤던 `ServiceModule` 예제에서 `Service`를 트리 셰이킹할 수 있도록 변형하면 다음과 같이 작성할 수 있습니다.
+그래서 위에서 살펴봤던 `ServiceModule` 예제의 `Service` 클래스를 트리 셰이킹할 수 있도록 변형하면 다음과 같이 작성할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
 
