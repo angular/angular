@@ -317,6 +317,30 @@ Within Angular, use [NgModules](guide/glossary#ngmodule) to make public parts av
 
 {@a F}
 
+{@a form-control}
+
+## form control
+
+A instance of `FormControl`, which is a fundamental building block for Angular forms. Together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input element.
+
+Read more forms in the [Introduction to forms in Angular](guide/forms-overview).
+
+{@a form-model}
+
+## form model
+
+The "source of truth" for the value and validation status of a form input element at a given point in time. When using [reactive forms](guide/glossary#reactive-forms), the form model is created explicitly in the component class. When using [template-driven forms](guide/glossary#template-driven-forms), the form model is implicitly created by directives.
+
+Learn more about reactive and template-driven forms in the [Introduction to forms in Angular](guide/forms-overview).
+
+{@a form-validation}
+
+## form validation
+
+A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation#adding-to-template-driven-forms).
+
+
+To learn more, see [Form Validation](guide/form-validation).
 
 {@a G}
 
@@ -324,6 +348,14 @@ Within Angular, use [NgModules](guide/glossary#ngmodule) to make public parts av
 {@a H}
 
 {@a I}
+
+
+{@a immutability}
+
+## immutability
+
+The ability to alter the state of a value after its creation. [Reactive forms](guide/glossary#reactive-forms) perform immutable changes in that
+each change to the data model produces a new data model rather than modifying the existing one. [Template-driven forms](guide/glossary#template-driven-forms) perform mutable changes with `NgModel` and [two-way data binding](guide/glossary#data-binding) to modify the existing data model in place.
 
 {@a injectable}
 
@@ -575,14 +607,15 @@ Learn more in [Dependency Injection](guide/dependency-injection).
 A framework for building Angular forms through code in a component.
 The alternative is a [template-driven form](guide/glossary#template-driven-forms).
 
-When building reactive forms:
+When using reactive forms:
 
-* The "source of truth" is the component. The validation is defined using code in the component.
-* Each control is explicitly created in the component class with `new FormControl()` or with `FormBuilder`.
+* The "source of truth", the form model, is defined in the component class.
+* Validation is set up through validation functions rather than valdation directives.
+* Each control is explicitly created in the component class by creating a `FormControl` instance manually or with `FormBuilder`.
 * The template input elements do *not* use `ngModel`.
-* The associated Angular directives are prefixed with `Form`, such as `FormGroup()`, `FormControl()`, and `FormControlName()`.
+* The associated Angular directives are prefixed with `form`, such as `formControl`, `formGroup`, and `formControlName`.
 
-Reactive forms are powerful, flexible, and a good choice for more complex data-entry form scenarios, such as dynamic generation of form controls.
+The alternative is a template-driven form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
 
 {@a router}
 {@a router-module}
@@ -697,16 +730,14 @@ Additional templates, represented by `TemplateRef` objects, can define alternati
 A format for building Angular forms using HTML forms and input elements in the view.
 The alternative format uses the [reactive forms](guide/glossary#reactive-forms) framework.
 
-When building template-driven forms:
+When using template-driven forms:
 
 * The "source of truth" is the template. The validation is defined using attributes on the individual input elements.
 * [Two-way binding](guide/glossary#data-binding) with `ngModel` keeps the component model synchronized with the user's entry into the input elements.
 * Behind the scenes, Angular creates a new control for each input element, provided you have set up a `name` attribute and two-way binding for each input.
 * The associated Angular directives are prefixed with `ng` such as `ngForm`, `ngModel`, and `ngModelGroup`.
 
-Template-driven forms are convenient, quick, and simple. They are a good choice for many basic data-entry form scenarios.
-
-Read about how to build template-driven forms in [Forms](guide/forms).
+The alternative is a reactive form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
 
 {@a template-expression}
 
