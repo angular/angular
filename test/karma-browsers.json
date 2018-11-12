@@ -1,5 +1,5 @@
 {
-  "ChromeHeadlesSAUCELABSocal": {
+  "ChromeHeadlessLocal": {
     "base": "ChromeHeadless",
     "flags": [
       "--window-size=1024,768"

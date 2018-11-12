@@ -1,8 +1,7 @@
 const path = require('path');
 const {customLaunchers, platformMap} = require('./browser-providers');
 
-module.exports = (config) => {
-
+module.exports = config => {
   config.set({
     basePath: path.join(__dirname, '..'),
     frameworks: ['jasmine'],
