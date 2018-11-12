@@ -7,7 +7,7 @@ size:
   # artifacts that will be measured by the robot.
   circleCiStatusName: "ci/circleci: build_release_packages"
   # Byte value of maximum allowed change in size
-  maxSizeIncrease: 1500
+  maxSizeIncrease: 10000
 
 # options for the merge plugin
 merge:
