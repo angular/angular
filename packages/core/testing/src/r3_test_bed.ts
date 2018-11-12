@@ -251,7 +251,13 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
-    throw new Error('the Render3 compiler is not configurable !');
+    if (config.useJit != null) {
+      throw new Error('the Render3 compiler JiT mode is not configurable !');
+    }
+
+    if (config.providers) {
+      this._providerOverrides.push(...config.providers);
+    }
   }
 
   configureTestingModule(moduleDef: TestModuleMetadata): void {
