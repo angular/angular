@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {ElementRef, EventEmitter} from '@angular/core';
 
-import {AttributeMarker, defineComponent, template, defineDirective, ProvidersFeature, NgOnChangesFeature} from '../../src/render3/index';
-import {bind, directiveInject, element, elementEnd, elementProperty, elementStart, load, text, textBinding} from '../../src/render3/instructions';
+import {AttributeMarker, defineComponent, template, defineDirective, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
+import {bind, directiveInject, element, elementEnd, elementProperty, elementStart, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {query, queryRefresh} from '../../src/render3/query';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
 
@@ -21,6 +22,7 @@ describe('host bindings', () => {
   let hostBindingDir: HostBindingDir|null;
 
   beforeEach(() => {
+    nameComp = null;
     nameComp = null;
     hostBindingDir = null;
   });
@@ -644,6 +646,98 @@ describe('host bindings', () => {
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html).toEqual(`<div hostattributedir="" role="listbox"></div>`);
+  });
+
+  it('should support content children in host bindings', () => {
+    /**
+     * host: {
+     *   '[id]': 'foos.length'
+     * }
+     */
+    class HostBindingWithContentChildren {
+      // @ContentChildren('foo')
+      foos !: QueryList<any>;
+
+      static ngComponentDef = defineComponent({
+        type: HostBindingWithContentChildren,
+        selectors: [['host-binding-comp']],
+        factory: () => new HostBindingWithContentChildren(),
+        consts: 0,
+        vars: 0,
+        hostVars: 1,
+        hostBindings: (dirIndex: number, elIndex: number) => {
+          elementProperty(
+              elIndex, 'id', bind(load<HostBindingWithContentChildren>(dirIndex).foos.length));
+        },
+        contentQueries: (dirIndex) => { registerContentQuery(query(null, ['foo']), dirIndex); },
+        contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          let tmp: any;
+          const instance = load<HostBindingWithContentChildren>(dirIndex);
+          queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) && (instance.foos = tmp);
+        },
+        template: (rf: RenderFlags, cmp: HostBindingWithContentChildren) => {}
+      });
+    }
+
+    /**
+     * <host-binding-comp>
+     *   <div #foo></div>
+     *   <div #foo></div>
+     * </host-binding-comp>
+     */
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'host-binding-comp');
+        {
+          element(1, 'div', null, ['foo', '']);
+          element(3, 'div', null, ['foo', '']);
+        }
+        elementEnd();
+      }
+    }, 5, 0, [HostBindingWithContentChildren]);
+
+    const fixture = new ComponentFixture(App);
+    const hostBindingEl = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+    expect(hostBindingEl.id).toEqual('2');
+  });
+
+  it('should support host bindings dependent on content hooks', () => {
+    /**
+     * host: {
+     *   '[id]': 'myValue'
+     * }
+     */
+    class HostBindingWithContentHooks {
+      myValue = 'initial';
+
+      ngAfterContentInit() { this.myValue = 'after-content'; }
+
+      ngAfterViewInit() { this.myValue = 'after-view'; }
+
+      static ngComponentDef = defineComponent({
+        type: HostBindingWithContentHooks,
+        selectors: [['host-binding-comp']],
+        factory: () => new HostBindingWithContentHooks(),
+        consts: 0,
+        vars: 0,
+        hostVars: 1,
+        hostBindings: (dirIndex: number, elIndex: number) => {
+          elementProperty(elIndex, 'id', bind(load<HostBindingWithContentHooks>(dirIndex).myValue));
+        },
+        template: (rf: RenderFlags, cmp: HostBindingWithContentHooks) => {}
+      });
+    }
+
+    /** <host-binding-comp></host-binding-comp> */
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'host-binding-comp');
+      }
+    }, 1, 0, [HostBindingWithContentHooks]);
+
+    const fixture = new ComponentFixture(App);
+    const hostBindingEl = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+    expect(hostBindingEl.id).toEqual('after-content');
   });
 
 });
