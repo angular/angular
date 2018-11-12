@@ -20,6 +20,7 @@ import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
+import {BundleInfo, createBundleInfo} from './bundle';
 import {EntryPoint, EntryPointFormat} from './entry_point';
 
 /**
@@ -76,16 +77,22 @@ export class Transformer {
     const packageProgram = ts.createProgram(rootPaths, options, host);
     const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
 
-    console.time(`${entryPoint.name} (dtsMapper creation)`);
+    // Create the program for processing DTS files if enabled for this format.
     const dtsFilePath = entryPoint.typings;
-    const r3SymbolsDtsPath =
-        isCore ? this.findR3SymbolsPath(dirname(dtsFilePath), 'r3_symbols.d.ts') : null;
-    const rootDtsPaths = r3SymbolsDtsPath ? [dtsFilePath, r3SymbolsDtsPath] : [dtsFilePath];
-    const dtsProgram = transformDts ? ts.createProgram(rootDtsPaths, options, host) : null;
-    const r3SymbolsDtsFile =
-        dtsProgram && r3SymbolsDtsPath && dtsProgram.getSourceFile(r3SymbolsDtsPath) || null;
-    console.timeEnd(`${entryPoint.name} (dtsMapper creation)`);
+    let dtsProgram: ts.Program|null = null;
+    let r3SymbolsDtsFile: ts.SourceFile|null = null;
+    if (transformDts) {
+      console.time(`${entryPoint.name} (dtsMapper creation)`);
+      const r3SymbolsDtsPath =
+          isCore ? this.findR3SymbolsPath(dirname(dtsFilePath), 'r3_symbols.d.ts') : null;
+      const rootDtsPaths = r3SymbolsDtsPath ? [dtsFilePath, r3SymbolsDtsPath] : [dtsFilePath];
 
+      dtsProgram = ts.createProgram(rootDtsPaths, options, host);
+      r3SymbolsDtsFile = r3SymbolsDtsPath && dtsProgram.getSourceFile(r3SymbolsDtsPath) || null;
+      console.timeEnd(`${entryPoint.name} (dtsMapper creation)`);
+    }
+
+    const bundle = createBundleInfo(isCore, r3SymbolsFile, r3SymbolsDtsFile);
     const reflectionHost = this.getHost(isCore, format, packageProgram, dtsFilePath, dtsProgram);
 
     // Parse and analyze the files.
@@ -94,9 +101,7 @@ export class Transformer {
 
     console.time(`${entryPoint.name} (rendering)`);
     // Transform the source files and source maps.
-    const renderer = this.getRenderer(
-        format, packageProgram, reflectionHost, isCore, r3SymbolsFile, r3SymbolsDtsFile,
-        transformDts);
+    const renderer = this.getRenderer(format, packageProgram, reflectionHost, bundle, transformDts);
     const renderedFiles =
         renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
     console.timeEnd(`${entryPoint.name} (rendering)`);
@@ -134,20 +139,15 @@ export class Transformer {
   }
 
   getRenderer(
-      format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null, rewriteDtsCoreImportsTo: ts.SourceFile|null,
+      format: string, program: ts.Program, host: NgccReflectionHost, bundle: BundleInfo,
       transformDts: boolean): Renderer {
     switch (format) {
       case 'esm2015':
       case 'fesm2015':
-        return new EsmRenderer(
-            host, isCore, rewriteCoreImportsTo, rewriteDtsCoreImportsTo, this.sourcePath,
-            this.targetPath, transformDts);
+        return new EsmRenderer(host, bundle, this.sourcePath, this.targetPath, transformDts);
       case 'esm5':
       case 'fesm5':
-        return new Esm5Renderer(
-            host, isCore, rewriteCoreImportsTo, rewriteDtsCoreImportsTo, this.sourcePath,
-            this.targetPath, transformDts);
+        return new Esm5Renderer(host, bundle, this.sourcePath, this.targetPath, transformDts);
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
