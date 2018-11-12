@@ -74,10 +74,10 @@ to your original sources. More options may be added as we implement more feature
 We recommend you avoid checking generated files into version control. This permits a state where
 the generated files in the repository were created from sources that were never checked in,
 making it impossible to reproduce the current state. Also, your changes will effectively appear
-twice in code reviews, with the generated version inscrutible by the reviewer.
+twice in code reviews, with the generated version inscrutable by the reviewer.
 
 In TypeScript 1.8, the generated sources will have to be written alongside your originals,
-so set `genDir` to the same location as your files (typicially the same as `rootDir`).
+so set `genDir` to the same location as your files (typically the same as `rootDir`).
 Add `**/*.ngfactory.ts` and `**/*.ngsummary.json` to your `.gitignore` or other mechanism for your
 version control system.
 
