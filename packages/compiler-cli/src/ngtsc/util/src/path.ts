@@ -10,7 +10,7 @@
 
 import * as path from 'path';
 
-const TS_DTS_JS_EXTENSION = /(\.d)?\.ts|\.js$/;
+const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
 export function relativePathBetween(from: string, to: string): string|null {
   let relative = path.posix.relative(path.dirname(from), to).replace(TS_DTS_JS_EXTENSION, '');
