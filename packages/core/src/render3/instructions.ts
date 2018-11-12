@@ -83,8 +83,6 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
       executeInitHooks(viewData, tView, creationMode);
     }
 
-    setHostBindings(tView, viewData);
-
     refreshDynamicEmbeddedViews(viewData);
 
     // Content query results must be refreshed before content hooks are called.
@@ -93,6 +91,8 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
     if (!checkNoChangesMode) {
       executeHooks(viewData, tView.contentHooks, tView.contentCheckHooks, creationMode);
     }
+
+    setHostBindings(tView, viewData);
   }
 
   refreshChildComponents(tView.components, parentFirstTemplatePass, rf);
