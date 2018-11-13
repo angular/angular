@@ -8,6 +8,7 @@
 
 import './ng_dev_mode';
 
+import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags} from '../di/injector_compatibility';
 import {QueryList} from '../linker';
@@ -2653,6 +2654,7 @@ export function directiveInject<T>(token: Type<T>| InjectionToken<T>): T;
 export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
 export function directiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
+  token = resolveForwardRef(token);
   return getOrCreateInjectable<T>(
       getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode,
       getViewData(), token, flags);
