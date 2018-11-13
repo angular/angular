@@ -13,6 +13,7 @@
  * from the global scope.
  */
 export class Adapter {
+  ngsw = 'ngsw';
   /**
    * Wrapper around the `Request` constructor.
    */
@@ -53,6 +54,17 @@ export class Adapter {
    */
   timeout(ms: number): Promise<void> {
     return new Promise<void>(resolve => { setTimeout(() => resolve(), ms); });
+  }
+
+   /**
+   * suffixing the baseHref with `ngsw` string to avoid clash of cache files
+   * in same domain with multiple apps
+   */
+  setBaseHref(baseHref: string) {
+    if (baseHref && ['/'].indexOf(baseHref) == -1) {
+      const str = baseHref.replace(/^\//, '').replace(/\/$/, '').replace(/\//, ':');
+      this.ngsw += ':' + str;
+    }
   }
 }
 

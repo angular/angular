@@ -109,6 +109,12 @@ export class Driver implements Debuggable, UpdateSource {
 
   constructor(
       private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private db: Database) {
+    /**
+     * Extract Base Href from scope
+     * send the baseHref to adapter to suffix with ngsw string
+     */
+    const baseHref = new URL(scope.registration.scope).pathname;
+    adapter.setBaseHref(baseHref);
     // Set up all the event handlers that the SW needs.
 
     // The install event is triggered when the service worker is first installed.
@@ -694,7 +700,7 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async deleteAllCaches(): Promise<void> {
     await(await this.scope.caches.keys())
-        .filter(key => key.startsWith('ngsw:'))
+        .filter(key => key.startsWith(`${this.adapter.ngsw}:`))
         .reduce(async(previous, key) => {
           await Promise.all([
             previous,
@@ -913,8 +919,9 @@ export class Driver implements Debuggable, UpdateSource {
    */
   async cleanupOldSwCaches(): Promise<void> {
     const cacheNames = await this.scope.caches.keys();
+    const regex = new RegExp(`^${this.adapter.ngsw}:(?:active|staged|manifest:.+)$`)
     const oldSwCacheNames =
-        cacheNames.filter(name => /^ngsw:(?:active|staged|manifest:.+)$/.test(name));
+        cacheNames.filter(name => regex.test(name));
 
     await Promise.all(oldSwCacheNames.map(name => this.scope.caches.delete(name)));
   }
