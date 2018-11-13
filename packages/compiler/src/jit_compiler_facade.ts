@@ -185,6 +185,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     host: extractHostBindings(facade.host, facade.propMetadata),
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
+    queries: facade.queries.map(convertToR3QueryMetadata),
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
   };
 }
