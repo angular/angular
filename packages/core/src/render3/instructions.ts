@@ -7,7 +7,6 @@
  */
 
 import './ng_dev_mode';
-
 import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags} from '../di/injector_compatibility';
@@ -16,7 +15,6 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
 import {noop} from '../util/noop';
-
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
@@ -25,11 +23,12 @@ import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} fro
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_SIZE, NodeInjectorFactory} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {SanitizerFn} from './interfaces/sanitization';
 import {StylingIndex} from './interfaces/styling';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -42,7 +41,6 @@ import {getStylingContext} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isDifferent, loadInternal, readPatchedLViewData, stringify} from './util';
 
-
 /**
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
@@ -53,11 +51,6 @@ const enum BindingDirection {
   Input,
   Output,
 }
-
-/**
- * Function used to sanitize the value before writing it into the renderer.
- */
-type SanitizerFn = (value: any) => string;
 
 /**
  * Refreshes the view, executing the following steps in that order:
@@ -198,8 +191,12 @@ export function createNodeAtIndex(
     index: number, type: TNodeType.ElementContainer, native: RComment, name: null,
     attrs: TAttributes | null): TElementContainerNode;
 export function createNodeAtIndex(
+    index: number, type: TNodeType.IcuContainer, native: RComment, name: null,
+    attrs: TAttributes | null): TElementContainerNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null): TElementNode&TContainerNode&TElementContainerNode&TProjectionNode {
+    attrs: TAttributes | null): TElementNode&TContainerNode&TElementContainerNode&TProjectionNode&
+    TIcuContainerNode {
   const viewData = getViewData();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
@@ -233,7 +230,7 @@ export function createNodeAtIndex(
   setPreviousOrParentTNode(tNode);
   setIsParent(true);
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
-      TProjectionNode;
+      TProjectionNode & TIcuContainerNode;
 }
 
 export function createViewNode(index: number, view: LViewData) {
@@ -255,11 +252,12 @@ export function createViewNode(index: number, view: LViewData) {
  * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
  * template passes.
  */
-export function adjustBlueprintForNewNode(view: LViewData) {
+export function allocExpando(view: LViewData) {
   const tView = view[TVIEW];
   if (tView.firstTemplatePass) {
     tView.expandoStartIndex++;
     tView.blueprint.push(null);
+    tView.data.push(null);
     view.push(null);
   }
 }
@@ -914,7 +912,7 @@ export function elementEnd(): void {
  * @param sanitizer An optional function used to sanitize the value.
  */
 export function elementAttribute(
-    index: number, name: string, value: any, sanitizer?: SanitizerFn): void {
+    index: number, name: string, value: any, sanitizer?: SanitizerFn | null): void {
   if (value !== NO_CHANGE) {
     const viewData = getViewData();
     const renderer = getRenderer();
@@ -947,7 +945,7 @@ export function elementAttribute(
  */
 
 export function elementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void {
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): void {
   if (value === NO_CHANGE) return;
   const viewData = getViewData();
   const element = getNativeByIndex(index, viewData) as RElement | RComment;

@@ -253,3 +253,15 @@ export const defaultScheduler =
     (typeof requestAnimationFrame !== 'undefined' && requestAnimationFrame ||  // browser only
      setTimeout                                                                // everything else
      ).bind(global);
+
+/**
+ * Equivalent to ES6 spread, add each item to an array.
+ *
+ * @param items The items to add
+ * @param arr The array to which you want to add the items
+ */
+export function addAllToArray(items: any[], arr: any[]) {
+  for (let i = 0; i < items.length; i++) {
+    arr.push(items[i]);
+  }
+}

@@ -21,6 +21,7 @@ export const enum TNodeType {
   Element = 0b011,
   ViewOrElement = 0b010,
   ElementContainer = 0b100,
+  IcuContainer = 0b101,
 }
 
 /**
@@ -255,7 +256,7 @@ export interface TNode {
   parent: TElementNode|TContainerNode|null;
 
   /**
-   * If this node is part of an i18n block, it indicates whether this container is part of the DOM
+   * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
    * If this node is not part of an i18n block, this field is null.
    */
   detached: boolean|null;
@@ -358,7 +359,6 @@ export interface TContainerNode extends TNode {
   projection: null;
 }
 
-
 /** Static data for an <ng-container> */
 export interface TElementContainerNode extends TNode {
   /** Index in the LViewData[] array. */
@@ -367,6 +367,21 @@ export interface TElementContainerNode extends TNode {
   parent: TElementNode|TElementContainerNode|null;
   tViews: null;
   projection: null;
+}
+
+/** Static data for an ICU expression */
+export interface TIcuContainerNode extends TNode {
+  /** Index in the LViewData[] array. */
+  index: number;
+  child: TElementNode|TTextNode|null;
+  parent: TElementNode|TElementContainerNode|null;
+  tViews: null;
+  projection: null;
+  /**
+   * Indicates the current active case for an ICU expression.
+   * It is null when there is no active case.
+   */
+  activeCaseIndex: number|null;
 }
 
 /** Static data for a view  */
