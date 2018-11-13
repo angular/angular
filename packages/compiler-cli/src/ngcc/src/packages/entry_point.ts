@@ -11,22 +11,26 @@ import * as fs from 'fs';
 
 
 /**
- * The possible values for the format of an entry-point.
- */
-export type EntryPointFormat = 'esm5' | 'fesm5' | 'esm2015' | 'fesm2015' | 'umd';
-
-/**
  * An object containing paths to the entry-points for each format.
  */
-export type EntryPointPaths = {
-  [Format in EntryPointFormat]?: string;
-};
+export interface EntryPointPaths {
+  esm5?: string;
+  fesm5?: string;
+  esm2015?: string;
+  fesm2015?: string;
+  umd?: string;
+}
+
+/**
+ * The possible values for the format of an entry-point.
+ */
+export type EntryPointFormat = keyof(EntryPointPaths);
 
 /**
  * An object containing information about an entry-point, including paths
  * to each of the possible entry-point formats.
  */
-export type EntryPoint = EntryPointPaths & {
+export interface EntryPoint extends EntryPointPaths {
   /** The name of the package (e.g. `@angular/core`). */
   name: string;
   /** The path to the package that contains this entry-point. */
@@ -35,8 +39,11 @@ export type EntryPoint = EntryPointPaths & {
   path: string;
   /** The path to a typings (.d.ts) file for this entry-point. */
   typings: string;
-};
+}
 
+/**
+ * The properties that may be loaded from the `package.json` file.
+ */
 interface EntryPointPackageJson {
   name: string;
   fesm2015?: string;
@@ -66,13 +73,13 @@ function loadEntryPointPackage(packageJsonPath: string): {[key: string]: any}|nu
 }
 
 /**
- * Try to get entry point info from the given path.
- * @param pkgPath the absolute path to the containing npm package
- * @param entryPoint the absolute path to the potential entry point.
+ * Try to get an entry point from the given path.
+ * @param packagePath the absolute path to the containing npm package
+ * @param entryPointPath the absolute path to the potential entry point.
  * @returns Info about the entry point if it is valid, `null` otherwise.
  */
-export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoint|null {
-  const packageJsonPath = path.resolve(entryPoint, 'package.json');
+export function getEntryPointInfo(packagePath: string, entryPointPath: string): EntryPoint|null {
+  const packageJsonPath = path.resolve(entryPointPath, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return null;
   }
@@ -88,7 +95,7 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
     name,
     module: modulePath,
     types,
-    typings = types,  // synonymous
+    typings = types,     // synonymous
     es2015,
     fesm2015 = es2015,   // synonymous
     fesm5 = modulePath,  // synonymous
@@ -101,33 +108,33 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
     return null;
   }
 
-  // Also we need to have a metadata.json file
-  const metadataPath = path.resolve(entryPoint, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  // Also there must exist a `metadata.json` file next to the typings entry-point.
+  const metadataPath = path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
   if (!fs.existsSync(metadataPath)) {
     return null;
   }
 
   const entryPointInfo: EntryPoint = {
     name,
-    package: pkgPath,
-    path: entryPoint,
-    typings: path.resolve(entryPoint, typings),
+    package: packagePath,
+    path: entryPointPath,
+    typings: path.resolve(entryPointPath, typings),
   };
 
   if (esm2015) {
-    entryPointInfo.esm2015 = path.resolve(entryPoint, esm2015);
+    entryPointInfo.esm2015 = path.resolve(entryPointPath, esm2015);
   }
   if (fesm2015) {
-    entryPointInfo.fesm2015 = path.resolve(entryPoint, fesm2015);
+    entryPointInfo.fesm2015 = path.resolve(entryPointPath, fesm2015);
   }
   if (fesm5) {
-    entryPointInfo.fesm5 = path.resolve(entryPoint, fesm5);
+    entryPointInfo.fesm5 = path.resolve(entryPointPath, fesm5);
   }
   if (esm5) {
-    entryPointInfo.esm5 = path.resolve(entryPoint, esm5);
+    entryPointInfo.esm5 = path.resolve(entryPointPath, esm5);
   }
   if (main) {
-    entryPointInfo.umd = path.resolve(entryPoint, main);
+    entryPointInfo.umd = path.resolve(entryPointPath, main);
   }
 
   return entryPointInfo;
