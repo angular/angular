@@ -7,13 +7,8 @@
  */
 
 import {KeyValuePipe} from '@angular/common';
-import {EventEmitter, KeyValueDiffers, WrappedValue, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
-import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
-import {defaultComparator} from '../../src/pipes/keyvalue_pipe';
-import {SpyChangeDetectorRef} from '../spies';
+import {defaultComparator} from '@angular/common/src/pipes/keyvalue_pipe';
+import {ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
 
 describe('KeyValuePipe', () => {
   it('should return null when given null', () => {

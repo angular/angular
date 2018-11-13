@@ -7,20 +7,17 @@
  */
 
 
+import {DeprecatedI18NPipesModule, Plural} from '@angular/common';
+import {DEPRECATED_PLURAL_FN, getPluralCase} from '@angular/common/src/i18n/localization';
 import {TestBed, inject} from '@angular/core/testing';
-import {DeprecatedI18NPipesModule} from '../src/common_module';
-import {Plural} from '../src/i18n/locale_data_api';
-import {DEPRECATED_PLURAL_FN, getPluralCase} from '../src/i18n/localization';
 
-{
-  describe('DeprecatedI18NPipesModule', () => {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [DeprecatedI18NPipesModule]}); });
+describe('DeprecatedI18NPipesModule', () => {
+  beforeEach(() => { TestBed.configureTestingModule({imports: [DeprecatedI18NPipesModule]}); });
 
-    it('should define the token DEPRECATED_PLURAL_FN',
-       inject(
-           [DEPRECATED_PLURAL_FN],
-           (injectedGetPluralCase?: (locale: string, value: number | string) => Plural) => {
-             expect(injectedGetPluralCase).toEqual(getPluralCase);
-           }));
-  });
-}
+  it('should define the token DEPRECATED_PLURAL_FN',
+     inject(
+         [DEPRECATED_PLURAL_FN],
+         (injectedGetPluralCase?: (locale: string, value: number | string) => Plural) => {
+           expect(injectedGetPluralCase).toEqual(getPluralCase);
+         }));
+});
