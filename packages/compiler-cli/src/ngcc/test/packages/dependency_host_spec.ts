@@ -222,29 +222,30 @@ describe('DependencyHost', () => {
     }
   });
 
-  describe('hasImportOrReeportStatements', () => {
+  describe('hasImportOrReexportStatements', () => {
     it('should return true if there is an import statement', () => {
-      expect(host.hasImportOrReeportStatements('import {X} from "some/x";')).toBe(true);
-      expect(host.hasImportOrReeportStatements('import * as X from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
       expect(
-          host.hasImportOrReeportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
+          host.hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
           .toBe(true);
-      expect(host.hasImportOrReeportStatements('\t\timport {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
     });
     it('should return true if there is a re-export statement', () => {
-      expect(host.hasImportOrReeportStatements('export {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
       expect(
-          host.hasImportOrReeportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
+          host.hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
           .toBe(true);
-      expect(host.hasImportOrReeportStatements('\t\texport {X} from "some/x";')).toBe(true);
-      expect(host.hasImportOrReeportStatements(
+      expect(host.hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements(
                  'blah blah\n\n  export * from "@angular/core;\nblah blah'))
           .toBe(true);
     });
     it('should return false if there is no import nor re-export statement', () => {
-      expect(host.hasImportOrReeportStatements('blah blah')).toBe(false);
-      expect(host.hasImportOrReeportStatements('export function moo() {}')).toBe(false);
-      expect(host.hasImportOrReeportStatements('Some text that happens to include the word import'))
+      expect(host.hasImportOrReexportStatements('blah blah')).toBe(false);
+      expect(host.hasImportOrReexportStatements('export function moo() {}')).toBe(false);
+      expect(
+          host.hasImportOrReexportStatements('Some text that happens to include the word import'))
           .toBe(false);
     });
   });
