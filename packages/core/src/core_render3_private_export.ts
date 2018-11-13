@@ -31,6 +31,7 @@ export {
   ProvidersFeature as ɵProvidersFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
+  LifecycleHooksFeature as ɵLifecycleHooksFeature,
   NgModuleType as ɵNgModuleType,
   NgModuleRef as ɵRender3NgModuleRef,
   CssSelectorList as ɵCssSelectorList,
