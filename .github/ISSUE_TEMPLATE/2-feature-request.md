@@ -15,7 +15,7 @@ Existing issues often contain information about workarounds, resolution, or prog
 
 # 🚀 feature request
 
-### Releavant Package
+### Relevant Package
 <!-- Can you pin-point one or more @angular/* packages the are relevant for this feature request? -->
 <!-- ✍️edit: --> This feature request is for @angular/....
 
