@@ -11,12 +11,12 @@ For example index `123` may point to a component instance in the `LViewData` but
 
 The layout is as such:
 
-| Section    | `LViewData`                                   | `TView.data`
-| ---------- | --------------------------------------------- | --------------------------------------------------
-| `HEADER`   | contextual data                               |  mostly `null`
-| `CONSTS`   | DOM, pipe, and local ref instances            |
-| `VARS`     | binding values                                |  property names
-| `EXPANDO`  | host bindings; directive instances; providers | host prop names; directive tokens; provider tokens
+| Section    | `LViewData`                                                  | `TView.data`
+| ---------- | ------------------------------------------------------------ | --------------------------------------------------
+| `HEADER`   | contextual data                                              |  mostly `null`
+| `CONSTS`   | DOM, pipe, and local ref instances                           |
+| `VARS`     | binding values                                               |  property names
+| `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
 
 
 ## `HEADER`

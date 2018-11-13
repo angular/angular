@@ -678,7 +678,7 @@
     "name": "PlatformRef"
   },
   {
-    "name": "Plural"
+    "name": "Plural$1"
   },
   {
     "name": "QUERIES"
@@ -1689,6 +1689,9 @@
     "name": "getErrorLogger"
   },
   {
+    "name": "getFirstParentNative"
+  },
+  {
     "name": "getFirstTemplatePass"
   },
   {
@@ -1851,7 +1854,7 @@
     "name": "getPlayerContext"
   },
   {
-    "name": "getPluralCategory"
+    "name": "getPluralCategory$1"
   },
   {
     "name": "getPointers"
