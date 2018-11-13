@@ -9,9 +9,8 @@ import {ConstantPool} from '@angular/compiler';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
+import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
 import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
-
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
@@ -63,13 +62,15 @@ export class DecorationAnalyzer {
         this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true),
     new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.host, this.isCore),
-    new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new NgModuleDecoratorHandler(
+        this.typeChecker, this.host, this.scopeRegistry, this.referencesRegistry, this.isCore),
     new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
   ];
 
   constructor(
       private typeChecker: ts.TypeChecker, private host: NgccReflectionHost,
-      private rootDirs: string[], private isCore: boolean) {}
+      private referencesRegistry: ReferencesRegistry, private rootDirs: string[],
+      private isCore: boolean) {}
 
   /**
    * Analyze a program to find all the decorated files should be transformed.

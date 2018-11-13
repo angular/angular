@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
@@ -214,6 +214,7 @@ export class NgtscProgram implements api.Program {
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
     const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector);
+    const referencesRegistry = new NoopReferencesRegistry();
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
@@ -223,7 +224,8 @@ export class NgtscProgram implements api.Program {
           this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false),
       new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
-      new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
+      new NgModuleDecoratorHandler(
+          checker, this.reflector, scopeRegistry, referencesRegistry, this.isCore),
       new PipeDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
     ];
 

@@ -62,7 +62,7 @@ interface EntryPointPackageJson {
  * @param packageJsonPath the absolute path to the package.json file.
  * @returns JSON from the package.json file if it is valid, `null` otherwise.
  */
-function loadEntryPointPackage(packageJsonPath: string): {[key: string]: any}|null {
+function loadEntryPointPackage(packageJsonPath: string): EntryPointPackageJson|null {
   try {
     return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
   } catch (e) {
@@ -95,7 +95,7 @@ export function getEntryPointInfo(packagePath: string, entryPointPath: string): 
     name,
     module: modulePath,
     types,
-    typings = types,     // synonymous
+    typings = types,  // synonymous
     es2015,
     fesm2015 = es2015,   // synonymous
     fesm5 = modulePath,  // synonymous
@@ -109,7 +109,8 @@ export function getEntryPointInfo(packagePath: string, entryPointPath: string): 
   }
 
   // Also there must exist a `metadata.json` file next to the typings entry-point.
-  const metadataPath = path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  const metadataPath =
+      path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
   if (!fs.existsSync(metadataPath)) {
     return null;
   }
