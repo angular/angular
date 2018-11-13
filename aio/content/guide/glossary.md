@@ -333,7 +333,7 @@ The "source of truth" for the value, validation, and status a form input element
 
 ## form validation
 
-An automated check that determines and reports whether form inputs are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation##adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation##adding-to-template-driven-forms).
+An automated check that determines and reports whether form inputs are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation#adding-to-template-driven-forms).
 
 
 {@a G}
