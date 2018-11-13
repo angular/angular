@@ -321,20 +321,20 @@ Within Angular, use [NgModules](guide/glossary#ngmodule) to make public parts av
 
 ## form control
 
-One of the three fundamental building blocks of Angular forms, along with `FormGroup` and `FormArray` to track the value,
-validation, and status of a form input [element](guide/glossary#element).
+A fundamental building block for Angular forms. Together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input [element](guide/glossary#element).
 
 {@a form-model}
 
 ## form model
 
-The "source of truth" for a form element at a given point in time. With [reactive forms](guide/glossary#reactive-forms), the form model is created explicitly in the component class. With [template-driven forms], the form model is implicitly created by directives.
+The "source of truth" for the value, validation, and status a form input element at a given point in time. With [reactive forms](guide/glossary#reactive-forms), the form model is created explicitly in the component class. With [template-driven forms](guide/glossary#template-driven-forms), the form model is implicitly created by directives.
 
 {@a form-validation}
 
 ## form validation
 
-Validation of form inputs for correctness and completeness. Angular uses validator functions with [reactive forms](guide/glossary#reactive-forms), and validator directives with [template-driven forms](guide/glossary#template-driven-forms).
+An automated check that determines and reports whether form inputs are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation##adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation##adding-to-template-driven-forms).
+
 
 {@a G}
 
@@ -348,8 +348,8 @@ Validation of form inputs for correctness and completeness. Angular uses validat
 
 ## immutability
 
-The ability to alter the state of a value after its creation. [Reactive forms](guide/glossary#reactive-forms) promote immutability in that
-each change to the data model produces a new data model rather than modifying the existing one. [Template-driven forms](guide/glossary#template-driven-forms) promote mutable changes with `NgModel` and [two-way data binding](guide/glossary#data-binding) to modify the existing data model in-place.
+The ability to alter the state of a value after its creation. [Reactive forms](guide/glossary#reactive-forms) perform immutable changes in that
+each change to the data model produces a new data model rather than modifying the existing one. [Template-driven forms](guide/glossary#template-driven-forms) perform mutable changes with `NgModel` and [two-way data binding](guide/glossary#data-binding) to modify the existing data model in place.
 
 {@a injectable}
 
@@ -603,12 +603,12 @@ The alternative is a [template-driven form](guide/glossary#template-driven-forms
 
 When building reactive forms:
 
-* The "source of truth", the form model, is defined in the component class. The validation is defined using code in the component.
+* The "source of truth", the form model, is defined in the component class. Validation functions are defined in the component.
 * Each control is explicitly created in the component class by creating a `FormControl` instance manually or with `FormBuilder`.
 * The template input elements do *not* use `ngModel`.
 * The associated Angular directives are prefixed with `Form`, such as `FormControl`, `FormGroup`, and `FormControlName`.
 
-Reactive forms are powerful, flexible, and more scalable for more complex data-entry form scenarios, such as dynamic generation of form controls.
+Reactive forms are powerful, flexible, and more scalable for complex data-entry form scenarios, such as dynamic generation of form controls.
 
 {@a router}
 {@a router-module}
