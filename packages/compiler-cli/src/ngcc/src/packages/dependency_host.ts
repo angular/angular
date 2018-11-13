@@ -28,7 +28,7 @@ export class DependencyHost {
       from: string, resolved: Set<string>, missing: Set<string>, deepImports: Set<string>,
       internal: Set<string> = new Set()): void {
     const fromContents = fs.readFileSync(from, 'utf8');
-    if (!this.hasImportOrReeportStatements(fromContents)) {
+    if (!this.hasImportOrReexportStatements(fromContents)) {
       return;
     }
 
@@ -142,7 +142,7 @@ export class DependencyHost {
    * @returns false if there are definitely no import or re-export statements
    * in this file, true otherwise.
    */
-  hasImportOrReeportStatements(source: string): boolean {
+  hasImportOrReexportStatements(source: string): boolean {
     return /(import|export)\s.+from/.test(source);
   }
 }
