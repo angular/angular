@@ -26,6 +26,8 @@ const htmlParser = new HtmlParser();
 const diff = (a: Set<string>, b: Set<string>): Set<string> =>
     new Set([...Array.from(a)].filter(x => !b.has(x)));
 
+// verify that we extracted all the necessary translations
+// and their ids match the ones extracted via 'ng xi18n'
 const verifyTranslationIds = (source: string, output: string, exceptions = {}) => {
   const parseResult = htmlParser.parse(source, 'path:://to/template', true);
   const extractedIdToMsg = new Map<string, any>();
@@ -53,6 +55,40 @@ const verifyTranslationIds = (source: string, output: string, exceptions = {}) =
       `);
     }
   }
+  return true;
+};
+
+// verify that placeholders in translation string match
+// placeholders object defined as goog.getMsg function argument
+const verifyPlaceholdersIntegrity = (output: string) => {
+  const extract = (from: string, regex: any, transformFn: (match: any[]) => any) => {
+    const result = new Set<string>();
+    let item;
+    while ((item = regex.exec(from)) !== null) {
+      result.add(transformFn(item));
+    }
+    return result;
+  };
+  const extactTranslations = (from: string) => {
+    const regex = /const\s*(.*?)\s*=\s*goog\.getMsg\("(.*?)",?\s*(.*?)\)/g;
+    return extract(from, regex, v => [v[2], v[3]]);
+  };
+  const extractPlaceholdersFromBody = (body: string) => {
+    const regex = /{\$(.*?)}/g;
+    return extract(body, regex, v => v[1]);
+  };
+  const extractPlaceholdersFromArgs = (args: string) => {
+    const regex = /\s+(.+?):\s*".*?"/g;
+    return extract(args, regex, v => v[1]);
+  };
+  const translations = extactTranslations(output);
+  translations.forEach((translation) => {
+    const bodyPhs = extractPlaceholdersFromBody(translation[0]);
+    const argsPhs = extractPlaceholdersFromArgs(translation[1]);
+    if (bodyPhs.size !== argsPhs.size || diff(bodyPhs, argsPhs).size) {
+      return false;
+    }
+  });
   return true;
 };
 
@@ -86,6 +122,7 @@ ${result.source}
     `);
   }
   expect(verifyTranslationIds(input, result.source, extra.exceptions)).toBe(true);
+  expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
   expectEmit(result.source, output, 'Incorrect template');
   return result.source;
 };
