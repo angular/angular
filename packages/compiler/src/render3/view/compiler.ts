@@ -442,7 +442,7 @@ function createQueryDefinition(
     query: R3QueryMetadata, constantPool: ConstantPool, idx: number | null): o.Expression {
   const predicate = getQueryPredicate(query, constantPool);
 
-  // e.g. r3.Q(null, somePredicate, false) or r3.Q(0, ['div'], false)
+  // e.g. r3.query(null, somePredicate, false) or r3.query(0, ['div'], false)
   const parameters = [
     o.literal(idx, o.INFERRED_TYPE),
     predicate,

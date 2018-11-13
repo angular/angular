@@ -306,7 +306,7 @@ ivyEnabled && describe('render3 jit', () => {
     expect((C as any).ngBaseDef.outputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
   });
 
-  it('should compile ContentChildren query on a directive', () => {
+  it('should compile ContentChildren query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {
       @ContentChildren('foo') foos: QueryList<ElementRef>|undefined;
@@ -316,10 +316,34 @@ ivyEnabled && describe('render3 jit', () => {
     expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
-  it('should compile ContentChild query on a directive', () => {
+  it('should compile ContentChild query with string predicate on a directive', () => {
     @Directive({selector: '[test]'})
     class TestDirective {
       @ContentChild('foo') foo: ElementRef|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should compile ContentChildren query with type predicate on a directive', () => {
+    class SomeDir {}
+
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChildren(SomeDir) dirs: QueryList<SomeDir>|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should compile ContentChild query with type predicate on a directive', () => {
+    class SomeDir {}
+
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChild(SomeDir) dir: SomeDir|undefined;
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
