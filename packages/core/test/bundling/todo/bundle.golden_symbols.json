@@ -669,6 +669,9 @@
     "name": "getElementDepthCount"
   },
   {
+    "name": "getFirstParentNative"
+  },
+  {
     "name": "getFirstTemplatePass"
   },
   {
