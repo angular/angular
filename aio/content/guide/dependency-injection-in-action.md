@@ -1,15 +1,29 @@
+<!--
 # Dependency Injection in Action
+-->
+# 실전 의존성 주입
 
+<!--
 This section explores many of the features of dependency injection (DI) in Angular.
+-->
+이 문서는 Angular에서 활용할 수 있는 다양한 의존성 주입 테크닉에 대해 소개합니다.
+
 {@a toc}
 
+<!--
 See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
+-->
+이 문서에서 다루는 예제는 <live-example name="dependency-injection-in-action"></live-example>에서 직접 실행하거나 다운받아 확인할 수 있습니다.
 
 {@a nested-dependencies}
 
+<!--
 ## Nested service dependencies
+-->
+## 중첩된 서비스 의존성
 
+<!--
 The _consumer_ of an injected service doesn't need to know how to create that service.
 It's the job of the DI framework to create and cache dependencies. The consumer just
 needs to let the DI framework know which dependencies it needs.
@@ -20,21 +34,32 @@ At each step, the consumer of dependencies declares what it requires in its
 constructor, and lets the framework provide them.
 
 The following example shows that `AppComponent` declares its dependence on `LoggerService` and `UserContext`.
+-->
+서비스를 의존성으로 주입받아 _사용하는 쪽_ 에서는 이 서비스가 어떻게 생성되었는지 신경쓸 필요가 없습니다.
+의존성 객체를 생성하고 캐싱하는 것은 온전히 프레임워크가 담당합니다. 의존성을 주입받는 쪽에서는 프레임워크에게 필요한 객체를 요청하기만 하면 됩니다.
+
+때로는 의존성으로 주입되는 서비스에서도 다른 서비스를 다시 의존성으로 주입받아야 하는 경우가 있습니다.
+이 때 의존성이 있는 서비스들을 순서대로 처리하는 것도 프레임워크가 하는 일입니다.
+생성자에서 의존성으로 요청할 객체의 타입을 지정하면, 프레임워크가 이 생성자들의 처리 순서를 판단해서 요청하는 타입에 맞는 객체의 인스턴스를 생성해서 주입합니다.
+
+아래 코드는 `AppComponent`의 생성자가 `LoggerService`와 `UserContext`를 의존성으로 주입받도록 요청하는 예제 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
 
 </code-example>
 
 
+<!--
 `UserContext` in turn depends on both `LoggerService` and
 `UserService`, another service that gathers information about a particular user.
-
+-->
+그런데 `UserContext`에서도 `LoggerService`와 `UserService`를 의존성으로 주입받도록 요청합니다. 이 서비스는 특정 사용자에 대한 정보를 가져올 때 사용합니다.
 
 <code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="injectables" header="user-context.service.ts (injection)" linenums="false">
 
 </code-example>
 
-
+<!--
 When Angular creates `AppComponent`, the DI framework creates an instance of `LoggerService` and starts to create `UserContextService`.
 `UserContextService` also needs `LoggerService`, which the framework already has, so the framework can provide the same instance. `UserContextService` also needs `UserService`, which the framework has yet to create. `UserService` has no further dependencies, so the framework can simply use `new` to instantiate the class and provide the instance to the `UserContextService` constructor.
 
@@ -43,6 +68,14 @@ Declare what's needed in the constructor (in this case `LoggerService` and `User
 and the framework resolves the nested dependencies.
 
 When all dependencies are in place, `AppComponent` displays the user information.
+-->
+그러면 Angular가 `AppComponent`를 생성할 때 프레임워크는 `LoggerService`와 `UserContextService`의 인스턴스를 생성하기 시작합니다.
+그런데 `UserContextService`에서 필요한 `LoggerService`의 인스턴스는 이미 프레임워크가 생성했기 때문에 이전에 만들었던 인스턴스를 다시 활용합니다. 이 시점에 `UserContextService`에 필요한 `UserService`는 아직 생성되지 않았습니다. `UserService`는 추가로 필요한 의존성이 없기 때문에 프레임워크는 간단하게 `new` 키워드를 사용해서 `UserService`의 인스턴스를 생성하고 이 인스턴스를 `UserContextService`의 생성자에 주입합니다.
+
+`AppComponent`의 입장에서는 의존성 객체가 또다른 의존성을 갖는지 신경쓸 필요가 없습니다.
+원하는 객체 타입을 생성자에 지정하기만 하면 프레임워크가 모두 처리할 것입니다.
+
+그리고 모든 의존성 관계가 정리되면 `AppComponent`가 화면에 사용자 정보를 표시합니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/logged-in-user.png" alt="Logged In User">
@@ -50,8 +83,12 @@ When all dependencies are in place, `AppComponent` displays the user information
 
 {@a service-scope}
 
+<!--
 ## Limit service scope to a component subtree
+-->
+## 서비스가 주입될 수 있는 범위를 특정 컴포넌트로 제한하기
 
+<!--
 An Angular application has multiple injectors, arranged in a tree hierarchy that parallels the component tree. 
 Each injector creates a singleton instance of a dependency. 
 That same instance is injected wherever that injector provides that service.
@@ -67,22 +104,43 @@ You can limit the scope of an injected service to a *branch* of the application 
 by providing that service *at the sub-root component for that branch*.
 This example shows how to make a different instance of `HeroService` available to `HeroesBaseComponent`
 by adding it to the `providers` array of the `@Component()` decorator of the sub-component.
+-->
+Angular 애플리케이션의 인젝터는 여러개가 동시에 존재하며, 컴포넌트 트리의 구조에 따라 트리 형태로 구성되고 계층에 따라서 병렬로 존재하는 경우도 있습니다.
+그리고 각각의 인젝터는 해당 인젝터에 등록된 의존성 객체의 싱글턴 인스턴스를 생성하고 관리하며, 이 인젝터가 관리하는 서비스 인스턴스는 주입되는 곳에 관계없이 모두 같은 인스턴스를 공유합니다.
+그런데 서비스 프로바이더는 다양한 인젝터 계층에 등록될 수 있기 때문에, 특정 서비스의 인스턴스도 여러 인젝터에 동시에 존재할 수 있습니다.
+
+애플리케이션의 최상위 인젝터가 관리하는 의존성 객체의 인스턴스는 애플리케이션 *전역*의 *어떠한* 컴포넌트에도 자유롭게 주입될 수 있습니다.
+그런데 어떤 경우에는 특정 서비스를 애플리케이션 일부 범위에서만 사용할 수 있도록 제한하고 싶은 경우가 있습니다.
+그래서 최상위 인젝터가 아무 제한없이 의존성으로 주입하는 대신, 사용자가 명시적으로 서비스를 등록해야 그 서비스를 사용할 수 있도록 하고 싶을 수 있습니다.
+
+서비스 프로바이더를 *컴포넌트 트리의 특정 브랜치*에 등록하면 서비스가 의존성으로 주입될 수 있는 범위를 해당 *브랜치* 범위로 제한할 수 있습니다.
+아래 예제는 `HeroService`의 프로바이더를 `HeroesBaseComponent` 계층의 `@Component()` 데코레이터 `providers` 배열에 등록한 예제 코드입니다. 이렇게 구현하면 `HeroesBaseComponent` 상위 컴포넌트 트리와는 별개로 이 계층에 새로운 `HeroService`의 인스턴스가 생성됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" header="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 
 </code-example>
 
+<!--
 When Angular creates `HeroesBaseComponent`, it also creates a new instance of `HeroService`
 that is visible only to that component and its children, if any.
 
 You could also provide `HeroService` to a different component elsewhere in the application.
 That would result in a different instance of the service, living in a different injector.
+-->
+이제 Angular가 `HeroesBaseComponent`의 인스턴스를 생성하면 `HeroService`의 인스턴스도 새로 생성합니다. 그리고 `HeroesBaseComponent`와 이 컴포넌트의 자식 컴포넌트에서 `HeroService`를 의존성으로 요청하면 이 인스턴스가 사용됩니다.
+
+`HeroService`의 프로바이더는 다른 컴포넌트에도 등록할 수 있습니다.
+결국 서로 다른 인젝터에 서로 다른 서비스 인스턴스가 존재하게 됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 Examples of such scoped `HeroService` singletons appear throughout the accompanying sample code,
 including `HeroBiosComponent`, `HeroOfTheMonthComponent`, and `HeroesBaseComponent`.
 Each of these components has its own `HeroService` instance managing its own independent collection of heroes.
+-->
+이 문서에서 다루는 예제 코드에서 `HeroService`의 프로바이더를 등록하는 로직은 `HeroBiosComponent`, `HeroOfTheMonthComponent`, `HeroesBaseComponent`에 각각 사용되었습니다.
+그래서 각각의 컴포넌트는 독자적인 `HeroService` 인스턴스를 관리하며, 이들 컴포넌트가 관리하는 히어로의 목록도 서로 다릅니다.
 
 </div>
 
