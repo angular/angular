@@ -7,6 +7,7 @@
  */
 
 import './ng_dev_mode';
+import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags} from '../di/injector_compatibility';
 import {QueryList} from '../linker';
