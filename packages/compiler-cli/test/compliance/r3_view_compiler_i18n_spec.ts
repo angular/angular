@@ -528,6 +528,9 @@ describe('i18n support in the view compiler', () => {
       const input = `
         <div i18n></div>
         <div i18n>  </div>
+        <div i18n>
+
+        </div>
       `;
 
       const output = String.raw `
@@ -535,11 +538,15 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵelement(0, "div");
             $r3$.ɵelement(1, "div");
+            $r3$.ɵelement(2, "div");
           }
         }
       `;
 
-      const exceptions = {'6524085439495453930': 'No translation is produced for empty content'};
+      const exceptions = {
+        '6524085439495453930': 'No translation is produced for empty content (whitespaces)',
+        '1276236998240426220': 'No translation is produced for empty content (line breaks)'
+      };
       verify(input, output, {exceptions});
     });
 
