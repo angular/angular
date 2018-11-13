@@ -215,6 +215,17 @@ describe('providers', () => {
         });
       });
 
+      it('@Inject annotation wrapped in forwardRef', () => {
+        // @Inject(forwardRef(() => GREETER))
+        expectProvidersScenario({
+          parent: {
+            providers: [{provide: GREETER, useValue: {greet: 'Value'}}],
+            componentAssertion:
+                () => { expect(directiveInject(forwardRef(() => GREETER)).greet).toEqual('Value'); }
+          }
+        });
+      });
+
     });
 
   });

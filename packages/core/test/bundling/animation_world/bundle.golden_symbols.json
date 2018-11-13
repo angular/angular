@@ -249,6 +249,9 @@
     "name": "__extends"
   },
   {
+    "name": "__forward_ref__"
+  },
+  {
     "name": "__read"
   },
   {
@@ -556,6 +559,9 @@
   },
   {
     "name": "firstTemplatePass"
+  },
+  {
+    "name": "forwardRef"
   },
   {
     "name": "generateExpandoInstructionBlock"
@@ -1039,6 +1045,9 @@
   },
   {
     "name": "resolveDirectives"
+  },
+  {
+    "name": "resolveForwardRef"
   },
   {
     "name": "saveNameToExportMap"
