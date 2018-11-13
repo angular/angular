@@ -42,10 +42,6 @@ class SerializerVisitor implements i18n.Visitor {
 
 const serializerVisitor = new SerializerVisitor();
 
-function serializeNodes(nodes: i18n.Node[]): string[] {
-  return nodes.map(node => node.visit(serializerVisitor, null));
-}
-
 export function getSerializedI18nContent(message: i18n.Message): string {
-  return serializeNodes(message.nodes).join('');
+  return message.nodes.map(node => node.visit(serializerVisitor, null)).join('');
 }

@@ -11,7 +11,6 @@ import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} fr
 import {AST as I18nAST} from '../i18n/i18n_ast';
 import {ParseSourceSpan} from '../parse_util';
 
-
 export interface Node {
   sourceSpan: ParseSourceSpan;
   visit<Result>(visitor: Visitor<Result>): Result;
