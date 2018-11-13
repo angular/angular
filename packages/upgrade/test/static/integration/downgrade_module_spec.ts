@@ -222,6 +222,68 @@ withEachNg1Version(() => {
            });
          }));
 
+      it('should create complex nested components inside the Angular zone', async(() => {
+           @Component({
+             selector: 'zonetest',
+             template: 'In the zone: {{ inTheZone }}',
+           })
+           class ZonetestComponent {
+             inTheZone = false;
+             constructor() { this.inTheZone = NgZone.isInAngularZone(); }
+           }
+
+           @Component({
+             selector: 'wrapper',
+             template: '<ng-content></ng-content>',
+           })
+           class WrapperComponent {
+           }
+
+           @NgModule({
+             declarations: [WrapperComponent, ZonetestComponent],
+             entryComponents: [WrapperComponent, ZonetestComponent],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular
+                   .module('ng1', [lazyModuleName])
+                   // Important: `ng-if` makes zonetest render conditionally.
+                   .component('ngJs', {template: '<zonetest ng-if="true"></zonetest>'})
+                   .directive(
+                       'wrapper',
+                       downgradeComponent({component: WrapperComponent, propagateDigest}))
+                   .directive(
+                       'zonetest',
+                       downgradeComponent({component: ZonetestComponent, propagateDigest}));
+
+           // Structure:
+           // <wrapper> <!-- Angular Component w/ content projection -->
+           //   <ng-js> <!-- AngularJS Component w/ conditional rendering -->
+           //      <zonetest ng-if="true"> <!-- Angular Compnent -->
+           //        In the zone: {{ inTheZone }}
+           //      </zonetest>
+           //   </ng-js>
+           // </wrapper>
+
+           const element = html('<wrapper><ng-js></ng-js></wrapper>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+             $rootScope.$apply();
+             // Wait for `$evalAsync()` to propagate inputs.
+             setTimeout(() => expect(element.textContent).toBe('In the zone: true'));
+           });
+         }));
+
       it('should destroy components inside the Angular zone', async(() => {
            let destroyedInTheZone = false;
 

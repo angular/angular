@@ -101,15 +101,15 @@ export function downgradeComponent(info: {
         let parentInjector: Injector|Thenable<Injector>|undefined = required[0];
         let ranAsync = false;
 
+        const downgradedModule = info.downgradedModule || '';
+        const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
+        const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
+
+        validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
+
+        const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
+        needsNgZone = lazyModuleRef.needsNgZone;
         if (!parentInjector) {
-          const downgradedModule = info.downgradedModule || '';
-          const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
-          const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
-
-          validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
-
-          const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          needsNgZone = lazyModuleRef.needsNgZone;
           parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
         }
 
