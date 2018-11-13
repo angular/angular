@@ -15,4 +15,5 @@ export {DirectiveDecoratorHandler} from './src/directive';
 export {InjectableDecoratorHandler} from './src/injectable';
 export {NgModuleDecoratorHandler} from './src/ng_module';
 export {PipeDecoratorHandler} from './src/pipe';
+export {NoopReferencesRegistry, ReferencesRegistry} from './src/references_registry';
 export {CompilationScope, SelectorScopeRegistry} from './src/selector_scope';

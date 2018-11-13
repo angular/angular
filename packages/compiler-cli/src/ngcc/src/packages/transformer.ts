@@ -11,6 +11,7 @@ import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
@@ -156,8 +157,10 @@ export class Transformer {
   analyzeProgram(
       program: ts.Program, reflectionHost: NgccReflectionHost, rootDirs: string[],
       isCore: boolean) {
+    const typeChecker = bundle.program.getTypeChecker();
+    const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
     const decorationAnalyzer =
-        new DecorationAnalyzer(program.getTypeChecker(), reflectionHost, rootDirs, isCore);
+        new DecorationAnalyzer(typeChecker, reflectionHost, referencesRegistry, rootDirs, isCore);
     const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
     return {
       decorationAnalyses: decorationAnalyzer.analyzeProgram(program),
