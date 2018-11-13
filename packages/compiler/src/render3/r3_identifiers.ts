@@ -95,7 +95,7 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵpipeBindV', moduleName: CORE};
 
-  static i18nAttribute: o.ExternalReference = {name: 'ɵi18nAttribute', moduleName: CORE};
+  static i18nAttributes: o.ExternalReference = {name: 'ɵi18nAttributes', moduleName: CORE};
   static i18nExp: o.ExternalReference = {name: 'ɵi18nExp', moduleName: CORE};
   static i18nStart: o.ExternalReference = {name: 'ɵi18nStart', moduleName: CORE};
   static i18nEnd: o.ExternalReference = {name: 'ɵi18nEnd', moduleName: CORE};

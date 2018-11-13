@@ -157,6 +157,10 @@ export function getCurrentView(): OpaqueViewState {
   return viewData as any as OpaqueViewState;
 }
 
+export function _getViewData(): LViewData {
+  return viewData;
+}
+
 /**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *

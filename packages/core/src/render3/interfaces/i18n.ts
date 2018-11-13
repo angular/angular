@@ -16,24 +16,32 @@
  *
  * See: `I18nCreateOpCodes` for example of usage.
  */
+import {SanitizerFn} from './sanitization';
+
 export const enum I18nMutateOpCode {
-  /// Stores shift amount for bits 17-2 that contain reference index.
-  SHIFT_REF = 2,
+  /// Stores shift amount for bits 17-3 that contain reference index.
+  SHIFT_REF = 3,
   /// Stores shift amount for bits 31-17 that contain parent index.
   SHIFT_PARENT = 17,
   /// Mask for OpCode
-  MASK_OPCODE = 0b11,
+  MASK_OPCODE = 0b111,
   /// Mask for reference index.
   MASK_REF = ((2 ^ 16) - 1) << SHIFT_REF,
 
   /// OpCode to select a node. (next OpCode will contain the operation.)
-  Select = 0b00,
+  Select = 0b000,
   /// OpCode to append the current node to `PARENT`.
-  AppendChild = 0b01,
+  AppendChild = 0b001,
   /// OpCode to insert the current node to `PARENT` before `REF`.
-  InsertBefore = 0b10,
+  InsertBefore = 0b010,
   /// OpCode to remove the `REF` node from `PARENT`.
-  Remove = 0b11,
+  Remove = 0b011,
+  /// OpCode to set the attribute of a node.
+  Attr = 0b100,
+  /// OpCode to simulate elementEnd()
+  ElementEnd = 0b101,
+  /// OpCode to read the remove OpCodes for the nested ICU
+  RemoveNestedIcu = 0b110,
 }
 
 /**
@@ -114,8 +122,8 @@ export interface COMMENT_MARKER { marker: 'comment'; }
  *   // For removing existing nodes
  *   // --------------------------------------------------
  *   //   const node = lViewData[1];
- *   //   lViewData[2].remove(node);
- *   2 << SHIFT_PARENT | 1 << SHIFT_REF | Remove,
+ *   //   removeChild(tView.data(1), node, lViewData);
+ *   1 << SHIFT_REF | Remove,
  *
  *   // For writing attributes
  *   // --------------------------------------------------
@@ -178,7 +186,7 @@ export const enum I18nUpdateOpCode {
  *  }
  * ```
  * We can assume that each call to `i18nExp` sets an internal `changeMask` bit depending on the
- * index of `i18nExp` index.
+ * index of `i18nExp`.
  *
  * OpCodes
  * ```
@@ -222,7 +230,7 @@ export const enum I18nUpdateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|((text: string) => string | null)> {}
+export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null> {}
 
 /**
  * Store information for the i18n translation block.
@@ -355,10 +363,6 @@ export interface TIcu {
   update: I18nUpdateOpCodes[];
 }
 
-/**
- * Stores currently selected case in each ICU.
- *
- * For each ICU in translation, the `Li18n` stores the currently selected case for the current
- * `LView`. For perf reasons this array is only created if a translation block has an ICU.
- */
-export interface LI18n extends Array<number> {}
+// Note: This hack is necessary so we don't erroneously get a circular dependency
+// failure based on types.
+export const unusedValueExportToPlacateAjd = 1;
