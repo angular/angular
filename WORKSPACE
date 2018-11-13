@@ -18,8 +18,8 @@ load(
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/gregmagolan/rules_nodejs/archive/2199078e49e5019767232163e7b6b922acbd93e9.zip"],
-    strip_prefix = "rules_nodejs-2199078e49e5019767232163e7b6b922acbd93e9",
+    urls = ["https://github.com/gregmagolan/rules_nodejs/archive/0067f925aa01e611d3107ff0c34537213d00cd6a.zip"],
+    strip_prefix = "rules_nodejs-0067f925aa01e611d3107ff0c34537213d00cd6a",
 )
 
 # Angular Bazel users will call this function
