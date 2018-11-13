@@ -15,6 +15,7 @@ import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, stati
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
+import {ReferencesRegistry} from './references_registry';
 import {SelectorScopeRegistry} from './selector_scope';
 import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
@@ -32,7 +33,8 @@ export interface NgModuleAnalysis {
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
+      private isCore: boolean) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
     if (!decorators) {
@@ -72,6 +74,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const expr = ngModule.get('declarations') !;
       const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
+      this.referencesRegistry.add(...declarations);
     }
     let imports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('imports')) {
@@ -80,6 +83,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
           expr, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = this.resolveTypeList(expr, importsMeta, 'imports');
+      this.referencesRegistry.add(...imports);
     }
     let exports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('exports')) {
@@ -88,12 +92,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
           expr, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
+      this.referencesRegistry.add(...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
+      this.referencesRegistry.add(...bootstrap);
     }
 
     // Register this module's information with the SelectorScopeRegistry. This ensures that during

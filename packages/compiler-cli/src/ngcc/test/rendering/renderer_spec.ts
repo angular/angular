@@ -12,6 +12,7 @@ import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {CompiledClass, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {BundleInfo, createBundleInfo} from '../../src/packages/bundle';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -46,8 +47,10 @@ function createTestRenderer(
       options.rewriteCoreImportsTo ? program.getSourceFile(options.rewriteCoreImportsTo) ! : null;
   const bundle = createBundleInfo(options.isCore || false, rewriteCoreImportsTo, null);
   const host = new Esm2015ReflectionHost(bundle.isCore, program.getTypeChecker());
+  const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
-      new DecorationAnalyzer(program.getTypeChecker(), host, [''], bundle.isCore)
+      new DecorationAnalyzer(
+          program.getTypeChecker(), host, referencesRegistry, [''], bundle.isCore)
           .analyzeProgram(program);
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
   const renderer = new TestRenderer(host, bundle);
