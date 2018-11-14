@@ -22,7 +22,7 @@ function setI18nRefs(html: html.Node & {i18n: i18n.AST}, i18n: i18n.Node) {
 /**
  * This visitor walks over HTML parse tree and converts information stored in
  * i18n-related attributes ("i18n" and "i18n-*") into i18n meta object that is
- * stored with other element's and atrribute's information.
+ * stored with other element's and attribute's information.
  */
 export class I18nMetaVisitor implements html.Visitor {
   // i18n message generation factory
