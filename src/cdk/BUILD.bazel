@@ -4,9 +4,6 @@ load("@angular//:index.bzl", "ng_package")
 load("//:packages.bzl", "CDK_TARGETS", "ROLLUP_GLOBALS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//tools:defaults.bzl", "ng_module")
 
-# Export the CDK tsconfig so that subpackages can reference it directly.
-exports_files(["tsconfig-build.json"])
-
 # Root "@angular/cdk" entry-point that does not re-export individual entry-points.
 ng_module(
   name = "cdk",
@@ -15,7 +12,6 @@ ng_module(
   deps = [
     "@angular//packages/core",
   ],
-  tsconfig = ":tsconfig-build.json",
 )
 
 # Creates the @angular/cdk package published to npm.

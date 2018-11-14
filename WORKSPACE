@@ -1,5 +1,7 @@
 workspace(name = "angular_material")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
