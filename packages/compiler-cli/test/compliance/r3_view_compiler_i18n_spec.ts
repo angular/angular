@@ -545,7 +545,7 @@ describe('i18n support in the view compiler', () => {
 
       const exceptions = {
         '6524085439495453930': 'No translation is produced for empty content (whitespaces)',
-        '1276236998240426220': 'No translation is produced for empty content (line breaks)'
+        '814405839137385666': 'No translation is produced for empty content (line breaks)'
       };
       verify(input, output, {exceptions});
     });
