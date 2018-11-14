@@ -87,12 +87,24 @@ export {
 } from './state';
 
 export {
-  i18nAttributes,
+  i18nAttribute,
   i18nExp,
   i18nStart,
   i18nEnd,
   i18nApply,
-  i18nIcuReplaceVars,
+  i18nMapping,
+  i18nInterpolation1,
+  i18nInterpolation2,
+  i18nInterpolation3,
+  i18nInterpolation4,
+  i18nInterpolation5,
+  i18nInterpolation6,
+  i18nInterpolation7,
+  i18nInterpolation8,
+  i18nInterpolationV,
+  i18nExpMapping,
+  I18nInstruction,
+  I18nExpInstruction
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';

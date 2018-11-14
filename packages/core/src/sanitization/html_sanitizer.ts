@@ -57,14 +57,14 @@ const INLINE_ELEMENTS = merge(
         'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,picture,q,ruby,rp,rt,s,' +
         'samp,small,source,span,strike,strong,sub,sup,time,track,tt,u,var,video'));
 
-export const VALID_ELEMENTS =
+const VALID_ELEMENTS =
     merge(VOID_ELEMENTS, BLOCK_ELEMENTS, INLINE_ELEMENTS, OPTIONAL_END_TAG_ELEMENTS);
 
 // Attributes that have href and hence need to be sanitized
-export const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
+const URI_ATTRS = tagSet('background,cite,href,itemtype,longdesc,poster,src,xlink:href');
 
 // Attributes that have special href set hence need to be sanitized
-export const SRCSET_ATTRS = tagSet('srcset');
+const SRCSET_ATTRS = tagSet('srcset');
 
 const HTML_ATTRS = tagSet(
     'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
@@ -81,7 +81,7 @@ const HTML_ATTRS = tagSet(
 // can be sanitized, but they increase security surface area without a legitimate use case, so they
 // are left out here.
 
-export const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
+const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
 
 /**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
@@ -265,7 +265,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
   }
 }
 
-export function getTemplateContent(el: Node): Node|null {
+function getTemplateContent(el: Node): Node|null {
   return 'content' in (el as any /** Microsoft/TypeScript#21517 */) && isTemplateElement(el) ?
       el.content :
       null;
