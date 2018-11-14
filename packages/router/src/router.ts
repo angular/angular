@@ -181,7 +181,7 @@ export type NavigationTransition = {
   reject: any,
   promise: Promise<boolean>,
   source: NavigationTrigger,
-  state: {navigationId: number} | null,
+  restoredState: {navigationId: number} | null,
   currentSnapshot: RouterStateSnapshot,
   targetSnapshot: RouterStateSnapshot | null,
   currentRouterState: RouterState,
@@ -351,7 +351,7 @@ export class Router {
       reject: null,
       promise: Promise.resolve(true),
       source: 'imperative',
-      state: null,
+      restoredState: null,
       currentSnapshot: this.routerState.snapshot,
       targetSnapshot: null,
       currentRouterState: this.routerState,
@@ -393,7 +393,7 @@ export class Router {
                       switchMap(t => {
                         const transition = this.transitions.getValue();
                         eventsSubject.next(new NavigationStart(
-                            t.id, this.serializeUrl(t.extractedUrl), t.source, t.state));
+                            t.id, this.serializeUrl(t.extractedUrl), t.source, t.restoredState));
                         if (transition !== this.transitions.getValue()) {
                           return EMPTY;
                         }
@@ -431,9 +431,9 @@ export class Router {
                    * handle this "error condition" by navigating to the previously successful URL,
                    * but leaving the URL intact.*/
                   if (processPreviousUrl) {
-                    const {id, extractedUrl, source, state, extras} = t;
-                    const navStart =
-                        new NavigationStart(id, this.serializeUrl(extractedUrl), source, state);
+                    const {id, extractedUrl, source, restoredState, extras} = t;
+                    const navStart = new NavigationStart(
+                        id, this.serializeUrl(extractedUrl), source, restoredState);
                     eventsSubject.next(navStart);
                     const targetSnapshot =
                         createEmptyState(extractedUrl, this.rootComponentType).snapshot;
@@ -681,9 +681,9 @@ export class Router {
       this.locationSubscription = <any>this.location.subscribe((change: any) => {
         let rawUrlTree = this.parseUrl(change['url']);
         const source: NavigationTrigger = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
-        const state = change.state && change.state.navigationId ?
-            {navigationId: change.state.navigationId} :
-            null;
+        // Navigations coming from Angular router have a navigationId state property. When this
+        // exists, restore the state.
+        const state = change.state && change.state.navigationId ? change.state : null;
         setTimeout(
             () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 0);
       });
@@ -917,7 +917,7 @@ export class Router {
   }
 
   private scheduleNavigation(
-      rawUrl: UrlTree, source: NavigationTrigger, state: {navigationId: number}|null,
+      rawUrl: UrlTree, source: NavigationTrigger, restoredState: {navigationId: number}|null,
       extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.getTransition();
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
@@ -955,7 +955,7 @@ export class Router {
     this.setTransition({
       id,
       source,
-      state,
+      restoredState,
       currentUrlTree: this.currentUrlTree,
       currentRawUrl: this.rawUrlTree, rawUrl, extras, resolve, reject, promise,
       currentSnapshot: this.routerState.snapshot,
