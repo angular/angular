@@ -252,6 +252,9 @@
     "name": "NOT_FOUND"
   },
   {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
+  },
+  {
     "name": "NOT_YET"
   },
   {
@@ -631,6 +634,9 @@
   },
   {
     "name": "couldBeInjectableType"
+  },
+  {
+    "name": "createChainedInjector"
   },
   {
     "name": "createElementRef"

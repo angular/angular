@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, createInjector, defineInjectable, defineInjector, inject} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, createInjector, defineInjectable, defineInjector, inject, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
-import {ProvidersFeature, defineComponent, defineDirective, directiveInject} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
+import {ProvidersFeature, defineComponent, defineDirective, directiveInject, injectComponentFactoryResolver} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 
+import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture} from './render_util';
 
 const Component: typeof _Component = function(...args: any[]): any {
@@ -982,6 +984,137 @@ describe('providers', () => {
           .toEqual(
               '<div><repeated>bar1,2</repeated><repeated>bar1,2</repeated><repeated>bar1,2</repeated></div>');
     });
+  });
+
+  describe('- dynamic components dependency resolution', () => {
+    let hostComponent: HostComponent|null = null;
+
+    @Component({
+      template: `{{s}}`,
+    })
+    class EmbeddedComponent {
+      constructor(private s: String) {}
+
+      static ngComponentDef = defineComponent({
+        type: EmbeddedComponent,
+        selectors: [['embedded-cmp']],
+        factory: () => new EmbeddedComponent(directiveInject(String)),
+        consts: 1,
+        vars: 1,
+        template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
+          if (rf & RenderFlags.Create) {
+            text(0);
+          }
+          if (rf & RenderFlags.Update) {
+            textBinding(0, interpolation1('', cmp.s, ''));
+          }
+        }
+      });
+    }
+
+    @Component({template: `foo`, providers: [{provide: String, useValue: 'From host component'}]})
+    class HostComponent {
+      constructor(public vcref: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
+
+      static ngComponentDef = defineComponent({
+        type: HostComponent,
+        selectors: [['host-cmp']],
+        factory: () => hostComponent = new HostComponent(
+                     directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+        consts: 1,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: HostComponent) => {
+          if (rf & RenderFlags.Create) {
+            text(0, 'foo');
+          }
+        },
+        features: [
+          ProvidersFeature([{provide: String, useValue: 'From host component'}]),
+        ],
+      });
+    }
+
+    @Component({
+      template: `<host-cmp></host-cmp>`,
+      providers: [{provide: String, useValue: 'From app component'}]
+    })
+    class AppComponent {
+      constructor() {}
+
+      static ngComponentDef = defineComponent({
+        type: AppComponent,
+        selectors: [['app-cmp']],
+        factory: () => new AppComponent(),
+        consts: 1,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: AppComponent) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'host-cmp');
+          }
+        },
+        features: [
+          ProvidersFeature([{provide: String, useValue: 'From app component'}]),
+        ],
+        directives: [HostComponent]
+      });
+    }
+
+    it('should not cross the root view boundary, and use the root view injector', () => {
+      const fixture = new ComponentFixture(AppComponent);
+      expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+
+      hostComponent !.vcref.createComponent(
+          hostComponent !.cfr.resolveComponentFactory(EmbeddedComponent), undefined, {
+            get: (token: any, notFoundValue?: any) => {
+              return token === String ? 'From custom root view injector' : notFoundValue;
+            }
+          });
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<host-cmp>foo</host-cmp><embedded-cmp>From custom root view injector</embedded-cmp>');
+    });
+
+    it('should not cross the root view boundary, and use the module injector if no root view injector',
+       () => {
+
+         const fixture = new ComponentFixture(AppComponent);
+         expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+
+         class MyAppModule {
+           static ngInjectorDef = defineInjector({
+             factory: () => new MyAppModule(),
+             imports: [],
+             providers: [
+               {provide: RendererFactory2, useValue: getRendererFactory2(document)},
+               {provide: String, useValue: 'From module injector'}
+             ]
+           });
+           static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
+         }
+         const myAppModuleFactory = new NgModuleFactory(MyAppModule);
+         const ngModuleRef = myAppModuleFactory.create(null);
+
+         hostComponent !.vcref.createComponent(
+             hostComponent !.cfr.resolveComponentFactory(EmbeddedComponent), undefined,
+             {get: (token: any, notFoundValue?: any) => notFoundValue}, undefined, ngModuleRef);
+         fixture.update();
+         expect(fixture.html)
+             .toMatch(
+                 /<host-cmp>foo<\/host-cmp><embedded-cmp _nghost-c(\d+)="">From module injector<\/embedded-cmp>/);
+       });
+
+    it('should cross the root view boundary to the parent of the host, thanks to the default root view injector',
+       () => {
+         const fixture = new ComponentFixture(AppComponent);
+         expect(fixture.html).toEqual('<host-cmp>foo</host-cmp>');
+
+         hostComponent !.vcref.createComponent(
+             hostComponent !.cfr.resolveComponentFactory(EmbeddedComponent));
+         fixture.update();
+         expect(fixture.html)
+             .toEqual('<host-cmp>foo</host-cmp><embedded-cmp>From app component</embedded-cmp>');
+       });
   });
 
   describe('deps boundary:', () => {

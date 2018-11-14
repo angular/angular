@@ -236,9 +236,12 @@ export function getParentInjectorTNode(
   }
 
   let viewOffset = getParentInjectorViewOffset(location);
+  // view offset is 1
   let parentView = startView;
   let parentTNode = startView[HOST_NODE] as TElementNode;
-  while (viewOffset > 0) {
+
+  // view offset is superior to 1
+  while (viewOffset > 1) {
     parentView = parentView[DECLARATION_VIEW] !;
     parentTNode = parentView[HOST_NODE] as TElementNode;
     viewOffset--;
