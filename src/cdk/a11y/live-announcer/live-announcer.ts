@@ -216,8 +216,8 @@ export class CdkAriaLive implements OnDestroy {
 
 /** @docs-private @deprecated @breaking-change 8.0.0 */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
-    parentDispatcher: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone) {
-  return parentDispatcher || new LiveAnnouncer(liveElement, _document, ngZone);
+    parentAnnouncer: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone) {
+  return parentAnnouncer || new LiveAnnouncer(liveElement, ngZone, _document);
 }
 
 
