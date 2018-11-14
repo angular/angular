@@ -7,7 +7,6 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {ElementRef, TemplateRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
 import {bind, template, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';

@@ -429,6 +429,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "collectNativeNodes"
+  },
+  {
     "name": "componentRefresh"
   },
   {
