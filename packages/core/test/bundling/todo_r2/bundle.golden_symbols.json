@@ -1281,6 +1281,9 @@
     "name": "cleanUpView"
   },
   {
+    "name": "collectNativeNodes"
+  },
+  {
     "name": "compileNgModuleFactory"
   },
   {
