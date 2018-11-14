@@ -10,9 +10,8 @@ import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
 
-fixmeIvy('expr.visitExpression is not a function - fixed by #26968') && describe('NgTemplateOutlet', () => {
+describe('NgTemplateOutlet', () => {
   let fixture: ComponentFixture<any>;
 
   function setTplRef(value: any): void { fixture.componentInstance.currentTplRef = value; }
