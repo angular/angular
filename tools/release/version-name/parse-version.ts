@@ -51,7 +51,7 @@ export function serializeVersion(newVersion: Version): string {
 
   let versionString = `${major}.${minor}.${patch}`;
 
-  if (prereleaseLabel && prereleaseNumber) {
+  if (prereleaseLabel && !isNaN(prereleaseNumber)) {
     versionString += `-${prereleaseLabel}.${prereleaseNumber}`;
   }
 

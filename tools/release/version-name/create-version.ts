@@ -2,7 +2,7 @@ import {Version} from './parse-version';
 import {VersionType} from './publish-branch';
 
 /** Type of a new release */
-export type ReleaseType = VersionType | 'stable-release' | 'pre-release' | 'custom-release';
+export type ReleaseType = VersionType | 'stable-release' | 'bump-prerelease';
 
 /** Creates a new version that can be used for the given release type. */
 export function createNewVersion(currentVersion: Version, releaseType: ReleaseType):
@@ -10,7 +10,7 @@ export function createNewVersion(currentVersion: Version, releaseType: ReleaseTy
   // Clone the version object in order to keep the original version info un-modified.
   const newVersion = currentVersion.clone();
 
-  if (releaseType === 'pre-release') {
+  if (releaseType === 'bump-prerelease') {
     newVersion.prereleaseNumber++;
   } else {
     // For all other release types, the pre-release label and number should be removed
