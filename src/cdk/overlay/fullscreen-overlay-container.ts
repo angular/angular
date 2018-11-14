@@ -18,7 +18,7 @@ import {DOCUMENT} from '@angular/common';
  *
  * Should be provided in the root component.
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class FullscreenOverlayContainer extends OverlayContainer implements OnDestroy {
   private _fullScreenEventName: string | undefined;
   private _fullScreenListener: () => void;
