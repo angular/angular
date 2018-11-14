@@ -508,7 +508,32 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBe('translate3d(25px, 50px, 0px)');
     }));
 
-  });
+    it('should not dispatch multiple events for a mouse event right after a touch event',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        // Dispatch a touch sequence.
+        dispatchTouchEvent(dragElement, 'touchstart');
+        fixture.detectChanges();
+        dispatchTouchEvent(dragElement, 'touchend');
+        fixture.detectChanges();
+        tick();
+
+        // Immediately dispatch a mouse sequence to simulate a fake event.
+        startDraggingViaMouse(fixture, dragElement);
+        fixture.detectChanges();
+        dispatchMouseEvent(dragElement, 'mouseup');
+        fixture.detectChanges();
+        tick();
+
+        expect(fixture.componentInstance.startedSpy).toHaveBeenCalledTimes(1);
+        expect(fixture.componentInstance.endedSpy).toHaveBeenCalledTimes(1);
+      }));
+
+    });
 
   describe('draggable with a handle', () => {
     it('should not be able to drag the entire element if it has a handle', fakeAsync(() => {
