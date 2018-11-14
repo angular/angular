@@ -380,7 +380,7 @@ export function getLocaleCurrencySymbol(locale: string): string|null {
 }
 
 /**
- * The name of the currency for the main country using this locale (e.g. USD for the locale
+ * The name of the currency for the main country using this locale (e.g. 'US Dollar' for the locale
  * en-US).
  * The name will be `null` if the main country cannot be determined.
  *
