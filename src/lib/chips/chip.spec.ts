@@ -4,6 +4,7 @@ import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule} from './index';
 
 
@@ -20,7 +21,10 @@ describe('Chips', () => {
       imports: [MatChipsModule],
       declarations: [BasicChip, SingleChip],
       providers: [{
-        provide: Directionality, useFactory: () => ({value: dir})
+        provide: Directionality, useFactory: () => ({
+          value: dir,
+          change: new Subject()
+        })
       }]
     });
 

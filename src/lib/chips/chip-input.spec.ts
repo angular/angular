@@ -7,6 +7,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {Subject} from 'rxjs';
 import {MatChipInput, MatChipInputEvent} from './chip-input';
 import {MatChipsModule} from './index';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
@@ -27,7 +28,10 @@ describe('MatChipInput', () => {
       declarations: [TestChipInput],
       providers: [{
         provide: Directionality, useFactory: () => {
-          return {value: dir.toLowerCase()};
+          return {
+            value: dir.toLowerCase(),
+            change: new Subject()
+          };
         }
       }]
     });

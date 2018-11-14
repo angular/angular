@@ -35,6 +35,7 @@ import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from 
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {Subject} from 'rxjs';
 import {MatInputModule} from '../input/index';
 import {MatChip} from './chip';
 import {MatChipInputEvent} from './chip-input';
@@ -50,6 +51,7 @@ describe('MatChipList', () => {
   let chips: QueryList<MatChip>;
   let manager: FocusKeyManager<MatChip>;
   let zone: MockNgZone;
+  let dirChange: Subject<Direction>;
 
   describe('StandardChipList', () => {
     describe('basic behaviors', () => {
@@ -422,6 +424,38 @@ describe('MatChipList', () => {
           expect(chipListInstance._tabIndex).toBe(4, 'Expected tabIndex to be reset back to 4');
         }));
       });
+
+      it('should account for the direction changing', () => {
+        setupStandardList();
+        manager = chipListInstance._keyManager;
+
+        let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+        let firstNativeChip = nativeChips[0] as HTMLElement;
+
+        let RIGHT_EVENT: KeyboardEvent =
+          createKeyboardEvent('keydown', RIGHT_ARROW, firstNativeChip);
+        let array = chips.toArray();
+        let firstItem = array[0];
+
+        firstItem.focus();
+        expect(manager.activeItemIndex).toBe(0);
+
+        chipListInstance._keydown(RIGHT_EVENT);
+        chipListInstance._blur();
+        fixture.detectChanges();
+
+        expect(manager.activeItemIndex).toBe(1);
+
+        dirChange.next('rtl');
+        fixture.detectChanges();
+
+        chipListInstance._keydown(RIGHT_EVENT);
+        chipListInstance._blur();
+        fixture.detectChanges();
+
+        expect(manager.activeItemIndex).toBe(0);
+      });
+
     });
   });
 
@@ -1239,8 +1273,12 @@ describe('MatChipList', () => {
   }
 
   function setupStandardList(direction: Direction = 'ltr') {
+    dirChange = new Subject();
     fixture = createComponent(StandardChipList, [{
-      provide: Directionality, useFactory: () => ({value: direction.toLowerCase()})
+      provide: Directionality, useFactory: () => ({
+        value: direction.toLowerCase(),
+        change: dirChange
+      })
     }]);
     fixture.detectChanges();
 
