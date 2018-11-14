@@ -923,24 +923,26 @@ describe('ViewContainerRef', () => {
     describe('createComponent', () => {
       let templateExecutionCounter = 0;
 
-      class EmbeddedComponent {
-        static ngComponentDef = defineComponent({
-          type: EmbeddedComponent,
-          encapsulation: ViewEncapsulation.None,
-          selectors: [['embedded-cmp']],
-          factory: () => new EmbeddedComponent(),
-          consts: 1,
-          vars: 0,
-          template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
-            templateExecutionCounter++;
-            if (rf & RenderFlags.Create) {
-              text(0, 'foo');
-            }
-          }
-        });
-      }
-
       it('should work without Injector and NgModuleRef', () => {
+        class EmbeddedComponent {
+          constructor() {}
+
+          static ngComponentDef = defineComponent({
+            type: EmbeddedComponent,
+            encapsulation: ViewEncapsulation.None,
+            selectors: [['embedded-cmp']],
+            factory: () => new EmbeddedComponent(),
+            consts: 1,
+            vars: 0,
+            template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
+              templateExecutionCounter++;
+              if (rf & RenderFlags.Create) {
+                text(0, 'foo');
+              }
+            }
+          });
+        }
+
         templateExecutionCounter = 0;
         const fixture =
             new TemplateFixture(createTemplate, updateTemplate, 3, 1, [DirectiveWithVCRef]);
@@ -965,13 +967,33 @@ describe('ViewContainerRef', () => {
       });
 
       it('should work with NgModuleRef and Injector', () => {
+        class EmbeddedComponent {
+          constructor(public s: String) {}
+
+          static ngComponentDef = defineComponent({
+            type: EmbeddedComponent,
+            encapsulation: ViewEncapsulation.None,
+            selectors: [['embedded-cmp']],
+            factory: () => new EmbeddedComponent(directiveInject(String)),
+            consts: 1,
+            vars: 0,
+            template: (rf: RenderFlags, cmp: EmbeddedComponent) => {
+              templateExecutionCounter++;
+              if (rf & RenderFlags.Create) {
+                text(0, 'foo');
+              }
+            }
+          });
+        }
+
         class MyAppModule {
           static ngInjectorDef = defineInjector({
             factory: () => new MyAppModule(),
             imports: [],
             providers: [
               {provide: APP_ROOT, useValue: true},
-              {provide: RendererFactory2, useValue: getRendererFactory2(document)}
+              {provide: RendererFactory2, useValue: getRendererFactory2(document)},
+              {provide: String, useValue: 'module'}
             ]
           });
           static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
@@ -982,7 +1004,10 @@ describe('ViewContainerRef', () => {
         class SomeModule {
           static ngInjectorDef = defineInjector({
             factory: () => new SomeModule(),
-            providers: [{provide: NgModuleRef, useValue: ngModuleRef}]
+            providers: [
+              {provide: NgModuleRef, useValue: ngModuleRef},
+              {provide: String, useValue: 'injector'}
+            ]
           });
         }
         const injector = createInjector(SomeModule);
@@ -993,11 +1018,12 @@ describe('ViewContainerRef', () => {
         expect(fixture.html).toEqual('<p vcref=""></p>');
         expect(templateExecutionCounter).toEqual(0);
 
-        directiveInstance !.vcref.createComponent(
+        const componentRef = directiveInstance !.vcref.createComponent(
             directiveInstance !.cfr.resolveComponentFactory(EmbeddedComponent), 0, injector);
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p><embedded-cmp>foo</embedded-cmp>');
         expect(templateExecutionCounter).toEqual(2);
+        expect(componentRef.instance.s).toEqual('injector');
 
         directiveInstance !.vcref.createComponent(
             directiveInstance !.cfr.resolveComponentFactory(EmbeddedComponent), 0, undefined,

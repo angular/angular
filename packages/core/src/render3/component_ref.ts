@@ -72,6 +72,29 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
 export const WRAP_RENDERER_FACTORY2 =
     new InjectionToken<(rf: RendererFactory2) => RendererFactory2>('WRAP_RENDERER_FACTORY2');
 
+// TODO: use the token from ../view/provider
+const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
+
+function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
+  return {
+    get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T): T => {
+      const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
+
+      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+          notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+        // Return the value from the root element injector when
+        // - it provides it
+        //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        // - the module injector should not be checked
+        //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        return value;
+      }
+
+      return moduleInjector.get(token, notFoundValue);
+    }
+  };
+}
+
 /**
  * Render3 implementation of {@link viewEngine_ComponentFactory}.
  */
@@ -122,7 +145,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
         renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-    rootView[INJECTOR] = ngModule && ngModule.injector || null;
+    rootView[INJECTOR] = ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
