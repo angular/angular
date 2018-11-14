@@ -10,7 +10,13 @@ import {
   RIGHT_ARROW,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  dispatchMouseEvent,
+  createMouseEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing';
 import {Component, DebugElement, ViewChild, Type} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -66,6 +72,14 @@ describe('MatSlider', () => {
       dispatchMousedownEventSequence(sliderNativeElement, 0.19);
 
       expect(sliderInstance.value).toBe(19);
+    });
+
+    it('should not update when pressing the right mouse button', () => {
+      expect(sliderInstance.value).toBe(0);
+
+      dispatchMousedownEventSequence(sliderNativeElement, 0.19, 1);
+
+      expect(sliderInstance.value).toBe(0);
     });
 
     it('should update the value on a slide', () => {
@@ -1599,15 +1613,17 @@ class SliderWithTwoWayBinding {
  * @param sliderElement The mat-slider element from which the event will be dispatched.
  * @param percentage The percentage of the slider where the event should occur. Used to find the
  * physical location of the pointer.
+ * @param button Button that should be held down when starting to drag the slider.
  */
-function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: number): void {
-  let trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
-  let dimensions = trackElement.getBoundingClientRect();
-  let x = dimensions.left + (dimensions.width * percentage);
-  let y = dimensions.top + (dimensions.height * percentage);
+function dispatchMousedownEventSequence(sliderElement: HTMLElement, percentage: number,
+                                        button = 0): void {
+  const trackElement = sliderElement.querySelector('.mat-slider-wrapper')!;
+  const dimensions = trackElement.getBoundingClientRect();
+  const x = dimensions.left + (dimensions.width * percentage);
+  const y = dimensions.top + (dimensions.height * percentage);
 
   dispatchMouseenterEvent(sliderElement);
-  dispatchMouseEvent(sliderElement, 'mousedown', x, y);
+  dispatchEvent(sliderElement, createMouseEvent('mousedown', x, y, button));
 }
 
 /**

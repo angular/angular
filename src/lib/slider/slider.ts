@@ -502,7 +502,9 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   _onMousedown(event: MouseEvent) {
-    if (this.disabled) {
+    // Don't do anything if the slider is disabled or the
+    // user is using anything other than the main mouse button.
+    if (this.disabled || event.button !== 0) {
       return;
     }
 
