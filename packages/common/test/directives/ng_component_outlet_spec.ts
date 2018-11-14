@@ -120,31 +120,29 @@ describe('insert/remove', () => {
        expect(cmpRef.instance.testToken).toBeNull();
      }));
 
-  fixmeIvy('can not pass projectable nodes') &&
-      it('should render projectable nodes, if supplied', async(() => {
-           const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
-           TestBed.overrideComponent(TestComponent, {set: {template: template}})
-               .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
+  it('should render projectable nodes, if supplied', async(() => {
+       const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
+       TestBed.overrideComponent(TestComponent, {set: {template: template}})
+           .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
 
-           TestBed
-               .overrideComponent(InjectedComponent, {set: {template: `<ng-content></ng-content>`}})
-               .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
+       TestBed.overrideComponent(InjectedComponent, {set: {template: `<ng-content></ng-content>`}})
+           .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
 
-           let fixture = TestBed.createComponent(TestComponent);
+       let fixture = TestBed.createComponent(TestComponent);
 
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('');
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('');
 
-           fixture.componentInstance.currentComponent = InjectedComponent;
-           fixture.componentInstance.projectables =
-               [fixture.componentInstance.vcRef
-                    .createEmbeddedView(fixture.componentInstance.tplRefs.first)
-                    .rootNodes];
+       fixture.componentInstance.currentComponent = InjectedComponent;
+       fixture.componentInstance.projectables =
+           [fixture.componentInstance.vcRef
+                .createEmbeddedView(fixture.componentInstance.tplRefs.first)
+                .rootNodes];
 
 
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('projected foo');
-         }));
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('projected foo');
+     }));
 
   fixmeIvy('Runtime compiler is not loaded') &&
       it('should resolve components from other modules, if supplied', async(() => {
