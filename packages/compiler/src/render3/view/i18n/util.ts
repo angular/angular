@@ -53,7 +53,7 @@ function i18nTranslationToDeclStmt(
     params?: {[name: string]: o.Expression}): o.DeclareVarStmt {
   const args = [o.literal(message) as o.Expression];
   if (params && Object.keys(params).length) {
-    args.push(mapLiteral(params));
+    args.push(mapLiteral(params, true));
   }
   const fnCall = o.variable(GOOG_GET_MSG).callFn(args);
   return variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);

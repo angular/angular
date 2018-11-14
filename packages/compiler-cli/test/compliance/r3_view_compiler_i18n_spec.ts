@@ -78,7 +78,7 @@ const verifyPlaceholdersIntegrity = (output: string) => {
     return extract(body, regex, v => v[1]);
   };
   const extractPlaceholdersFromArgs = (args: string) => {
-    const regex = /\s+(.+?):\s*".*?"/g;
+    const regex = /\s+"(.+?)":\s*".*?"/g;
     return extract(args, regex, v => v[1]);
   };
   const translations = extactTranslations(output);
@@ -283,12 +283,12 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:8977039798304050198] d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7432761130955693041] d1
          * @meaning m1
          */
-        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c4$ = ["aria-roledescription", $MSG_APP_SPEC_TS_1$, "title", $MSG_APP_SPEC_TS_2$, "aria-label", $MSG_APP_SPEC_TS_3$];
         const $_c5$ = ["id", "dynamic-2"];
         /**
@@ -296,14 +296,14 @@ describe('i18n support in the view compiler', () => {
          * @meaning m2
          */
         const $MSG_APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
-          interpolation: "\uFFFD0\uFFFD",
-          interpolation_1: "\uFFFD1\uFFFD",
-          interpolation_2: "\uFFFD2\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD",
+          "interpolation_2": "\uFFFD2\uFFFD"
         });
         /**
          * @desc [BACKUP_MESSAGE_ID:6639222533406278123]
          */
-        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const _c8 = ["title", $MSG_APP_SPEC_TS_6$, "aria-roledescription", $MSG_APP_SPEC_TS_7$];
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -345,7 +345,7 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:8538466649243975456] d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c2$ = ["title", $MSG_APP_SPEC_TS__1$];
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
@@ -399,12 +399,12 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:8977039798304050198] d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7432761130955693041] d1
          * @meaning m1
          */
-        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c4$ = ["aria-roledescription", $MSG_APP_SPEC_TS_1$, "title", $MSG_APP_SPEC_TS_2$, "aria-label", $MSG_APP_SPEC_TS_3$];
         const $_c5$ = ["id", "dynamic-2"];
         /**
@@ -412,14 +412,14 @@ describe('i18n support in the view compiler', () => {
          * @meaning m2
          */
         const $MSG_APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
-          interpolation: "\uFFFD0\uFFFD",
-          interpolation_1: "\uFFFD1\uFFFD",
-          interpolation_2: "\uFFFD2\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD",
+          "interpolation_2": "\uFFFD2\uFFFD"
         });
         /**
          * @desc [BACKUP_MESSAGE_ID:6639222533406278123]
          */
-        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c8$ = ["title", $MSG_APP_SPEC_TS_6$, "aria-roledescription", $MSG_APP_SPEC_TS_7$];
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -461,7 +461,7 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:8538466649243975456] d
          * @meaning m
          */
-        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c2$ = ["title", $MSG_APP_SPEC_TS__1$];
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
@@ -606,7 +606,7 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:2817319788724342848]
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", { phA: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", { "phA": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -635,15 +635,15 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:572579892698764378]
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:609623417156596326]
          */
-        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("My i18n block #{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:3998119318957372120]
          */
-        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("My i18n block #{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -695,20 +695,20 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7905233330103651696]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
-          interpolation: "\uFFFD0\uFFFD",
-          startTagSpan: "\uFFFD#2\uFFFD",
-          closeTagSpan: "\uFFFD/#2\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "startTagSpan": "\uFFFD#2\uFFFD",
+          "closeTagSpan": "\uFFFD/#2\uFFFD"
         });
         /**
          * @desc [BACKUP_MESSAGE_ID:5788821996131681377]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
-          interpolation: "\uFFFD0\uFFFD",
-          startTagDiv: "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
-          startTagSpan: "\uFFFD#8\uFFFD",
-          interpolation_1: "\uFFFD1\uFFFD",
-          closeTagSpan: "\uFFFD/#8\uFFFD",
-          closeTagDiv: "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
+          "interpolation": "\uFFFD0\uFFFD",
+          "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
+          "startTagSpan": "\uFFFD#8\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD",
+          "closeTagSpan": "\uFFFD/#8\uFFFD",
+          "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
         });
         const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$);
         …
@@ -764,30 +764,30 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:4782264005467235841]
          */
         const $MSG_APP_SPEC_TS_1$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
-          interpolation: "\uFFFD0\uFFFD",
-          interpolation_1: "\uFFFD1\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD"
         });
         const $_c2$ = ["title", $MSG_APP_SPEC_TS_1$];
         /**
          * @desc [BACKUP_MESSAGE_ID:4446430594603971069]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
-          interpolation: "\uFFFD0\uFFFD",
-          startTagSpan: "\uFFFD#2\uFFFD",
-          closeTagSpan: "\uFFFD/#2\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "startTagSpan": "\uFFFD#2\uFFFD",
+          "closeTagSpan": "\uFFFD/#2\uFFFD"
         });
         /**
          * @desc [BACKUP_MESSAGE_ID:2719594642740200058]
          */
-        const $MSG_APP_SPEC_TS_4$ = goog.getMsg("Span title {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_4$ = goog.getMsg("Span title {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c5$ = ["title", $MSG_APP_SPEC_TS_4$];
         /**
          * @desc [BACKUP_MESSAGE_ID:2778714953278357902]
          */
         const $MSG_APP_SPEC_TS_3$ = goog.getMsg(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
-          interpolation: "\uFFFD0\uFFFD",
-          startTagSpan: "\uFFFD#7\uFFFD",
-          closeTagSpan: "\uFFFD/#7\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "startTagSpan": "\uFFFD#7\uFFFD",
+          "closeTagSpan": "\uFFFD/#7\uFFFD"
         });
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -846,10 +846,10 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7679414751795588050]
          */
         const $MSG_APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
-          interpolation: "\uFFFD0\uFFFD",
-          startTagDiv: "\uFFFD#3\uFFFD",
-          interpolation_1: "\uFFFD1\uFFFD",
-          closeTagDiv: "\uFFFD/#3\uFFFD"
+          "interpolation": "\uFFFD0\uFFFD",
+          "startTagDiv": "\uFFFD#3\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD",
+          "closeTagDiv": "\uFFFD/#3\uFFFD"
         });
         …
         function MyComponent_div_Template_2(rf, ctx) {
@@ -903,7 +903,7 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:2367729185105559721]
          */
-        const $MSG_APP_SPEC_TS__2$ = goog.getMsg("App logo #{$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS__2$ = goog.getMsg("App logo #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c3$ = ["title", $MSG_APP_SPEC_TS__2$];
         function MyComponent_img_Template_2(rf, ctx) {
           if (rf & 1) {
@@ -999,17 +999,17 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:1221890473527419724]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
-          startTagDiv_2: "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          closeTagDiv: "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
-          startTagDiv_3: "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
-          interpolation: "\uFFFD0:1\uFFFD",
-          startTagDiv: "[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]",
-          interpolation_1: "\uFFFD1:1\uFFFD",
-          startTagDiv_1: "\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD",
-          interpolation_2: "\uFFFD0:2\uFFFD",
-          interpolation_3: "\uFFFD1:2\uFFFD",
-          interpolation_4: "\uFFFD0:3\uFFFD",
-          interpolation_5: "\uFFFD1:3\uFFFD"
+          "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+          "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
+          "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
+          "interpolation": "\uFFFD0:1\uFFFD",
+          "startTagDiv": "[\uFFFD#2:1\uFFFD|\uFFFD#2:2\uFFFD|\uFFFD#2:3\uFFFD]",
+          "interpolation_1": "\uFFFD1:1\uFFFD",
+          "startTagDiv_1": "\uFFFD*4:2\uFFFD\uFFFD#1:2\uFFFD",
+          "interpolation_2": "\uFFFD0:2\uFFFD",
+          "interpolation_3": "\uFFFD1:2\uFFFD",
+          "interpolation_4": "\uFFFD0:3\uFFFD",
+          "interpolation_5": "\uFFFD1:3\uFFFD"
         });
         const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$);
         function MyComponent_div_Template_3(rf, ctx) {
@@ -1059,9 +1059,9 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:119975189388320493]
          */
         const $MSG_APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
-          startTagSpan: "\uFFFD#2\uFFFD",
-          interpolation: "\uFFFD0\uFFFD",
-          closeTagSpan: "\uFFFD/#2\uFFFD"
+          "startTagSpan": "\uFFFD#2\uFFFD",
+          "interpolation": "\uFFFD0\uFFFD",
+          "closeTagSpan": "\uFFFD/#2\uFFFD"
         });
         …
         function MyComponent_div_Template_0(rf, ctx) {
@@ -1127,7 +1127,7 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:8806993169187953163]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1190,7 +1190,7 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:355394464191978948]
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1218,7 +1218,7 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:355394464191978948]
          */
-        const $MSG_APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", { interpolation: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         function Template_0(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18n(0, $MSG_APP_SPEC_TS__0$);
@@ -1253,12 +1253,12 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:702706566400598764]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
-          startTagNgTemplate: "\uFFFD*2:1\uFFFD",
-          closeTagNgTemplate: "\uFFFD/*2:1\uFFFD",
-          startTagNgContainer: "\uFFFD#3\uFFFD",
-          interpolation_1: "\uFFFD0\uFFFD",
-          closeTagNgContainer: "\uFFFD/#3\uFFFD",
-          interpolation: "\uFFFD0:1\uFFFD"
+          "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
+          "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
+          "startTagNgContainer": "\uFFFD#3\uFFFD",
+          "interpolation_1": "\uFFFD0\uFFFD",
+          "closeTagNgContainer": "\uFFFD/#3\uFFFD",
+          "interpolation": "\uFFFD0:1\uFFFD"
         });
         function Template_2(rf, ctx) {
           if (rf & 1) {
@@ -1335,11 +1335,11 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:2051477021417799640]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
-          startTagNgTemplate: "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
-          closeTagNgTemplate: "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
-          interpolation: "\uFFFD0:1\uFFFD",
-          interpolation_1: "\uFFFD0:2\uFFFD",
-          interpolation_2: "\uFFFD0:3\uFFFD"
+          "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
+          "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
+          "interpolation": "\uFFFD0:1\uFFFD",
+          "interpolation_1": "\uFFFD0:2\uFFFD",
+          "interpolation_2": "\uFFFD0:3\uFFFD"
         });
         const MSG_APP_SPEC_TS_0 = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$);
         function Template_2(rf, ctx) {
@@ -1381,12 +1381,12 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:8806993169187953163]
          */
         const $MSG_APP_SPEC_TS__1_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         function Template_2(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18n(0, $MSG_APP_SPEC_TS__1$);
@@ -1430,11 +1430,11 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc [BACKUP_MESSAGE_ID:394166286969183735]
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo ", { tagImg: "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo ", { "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:394166286969183735]
          */
-        const $MSG_APP_SPEC_TS__2$ = goog.getMsg("{$tagImg} is my logo ", { tagImg: "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD" });
+        const $MSG_APP_SPEC_TS__2$ = goog.getMsg("{$tagImg} is my logo ", { "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD" });
         function Template_3(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS__2$);
@@ -1473,8 +1473,8 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:963542717423364282]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
-          startTagSpan: "\uFFFD#3\uFFFD",
-          closeTagSpan: "\uFFFD/#3\uFFFD"
+          "startTagSpan": "\uFFFD#3\uFFFD",
+          "closeTagSpan": "\uFFFD/#3\uFFFD"
         });
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1505,7 +1505,7 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1553,26 +1553,26 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:2417296354340576868]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
-          startBoldText: "<b>",
-          closeBoldText: "</b>",
-          startItalicText: "<i>",
-          closeItalicText: "</i>",
-          startTagDiv: "<div class=\"other\">",
-          closeTagDiv: "</div>"
+          "startBoldText": "<b>",
+          "closeBoldText": "</b>",
+          "startItalicText": "<i>",
+          "closeItalicText": "</i>",
+          "startTagDiv": "<div class=\"other\">",
+          "closeTagDiv": "</div>"
         });
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         const $_c2$ = ["other", 1, "other", true];
         /**
          * @desc [BACKUP_MESSAGE_ID:9102821288363830807]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
-          startBoldText: "\uFFFD#2\uFFFD",
-          closeBoldText: "\uFFFD/#2\uFFFD",
-          startTagDiv: "\uFFFD#3\uFFFD",
-          startItalicText: "\uFFFD#4\uFFFD",
-          closeItalicText: "\uFFFD/#4\uFFFD",
-          closeTagDiv: "\uFFFD/#3\uFFFD",
-          icu: $MSG_APP_SPEC_TS_1$
+          "startBoldText": "\uFFFD#2\uFFFD",
+          "closeBoldText": "\uFFFD/#2\uFFFD",
+          "startTagDiv": "\uFFFD#3\uFFFD",
+          "startItalicText": "\uFFFD#4\uFFFD",
+          "closeItalicText": "\uFFFD/#4\uFFFD",
+          "closeTagDiv": "\uFFFD/#3\uFFFD",
+          "icu": $MSG_APP_SPEC_TS_1$
         });
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1607,9 +1607,9 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:6879461626778511059]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
-          interpolation: "\uFFFD1\uFFFD"
+          "interpolation": "\uFFFD1\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1641,16 +1641,19 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7068143081688428291]
          */
         const $MSG_APP_SPEC_TS_2_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2_RAW$, { VAR_SELECT: "\uFFFD1\uFFFD" });
+        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2_RAW$, { "VAR_SELECT": "\uFFFD1\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:2967249209167308918]
          */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", { icu: $MSG_APP_SPEC_TS_1$, icu_1: $MSG_APP_SPEC_TS_2$ });
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
+          "icu": $MSG_APP_SPEC_TS_1$,
+          "icu_1": $MSG_APP_SPEC_TS_2$
+        });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -1687,29 +1690,29 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_2_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2_RAW$, { VAR_SELECT: "\uFFFD1\uFFFD" });
+        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2_RAW$, { "VAR_SELECT": "\uFFFD1\uFFFD" });
         const $_c3$ = [1, "ngIf"];
         /**
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS__4_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4_RAW$, { VAR_SELECT: "\uFFFD0:1\uFFFD" });
+        const $MSG_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4_RAW$, { "VAR_SELECT": "\uFFFD0:1\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7986645988117050801]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
-          startTagDiv: "\uFFFD#2\uFFFD",
-          closeTagDiv: "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
-          startTagDiv_1: "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
-          icu: "\uFFFDI18N_EXP_ICU\uFFFD"
+          "startTagDiv": "\uFFFD#2\uFFFD",
+          "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
+          "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
+          "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
         });
         const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, {
-          ICU: [$MSG_APP_SPEC_TS_1$, $MSG_APP_SPEC_TS_2$, $MSG_APP_SPEC_TS__4$]
+          "ICU": [$MSG_APP_SPEC_TS_1$, $MSG_APP_SPEC_TS_2$, $MSG_APP_SPEC_TS__4$]
         });
         function MyComponent_div_Template_3(rf, ctx) {
           if (rf & 1) {
@@ -1762,8 +1765,8 @@ describe('i18n support in the view compiler', () => {
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
         const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, {
-          VAR_SELECT: "\uFFFD0\uFFFD",
-          VAR_SELECT_1: "\uFFFD1\uFFFD"
+          "VAR_SELECT": "\uFFFD0\uFFFD",
+          "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
         …
         template: function MyComponent_Template(rf, ctx) {
@@ -1801,21 +1804,21 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         const $_c2$ = [1, "ngIf"];
         /**
          * @desc [BACKUP_MESSAGE_ID:7068143081688428291]
          */
         const $MSG_APP_SPEC_TS__3_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $MSG_APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__3_RAW$, { VAR_SELECT: "\uFFFD0:1\uFFFD" });
+        const $MSG_APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__3_RAW$, { "VAR_SELECT": "\uFFFD0:1\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:1194472282609532229]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
-          startTagSpan: "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          closeTagSpan: "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          icu: MSG_APP_SPEC_TS_1,
-          icu_1: MSG_APP_SPEC_TS__3
+          "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+          "icu": MSG_APP_SPEC_TS_1,
+          "icu_1": MSG_APP_SPEC_TS__3
         });
         function MyComponent_span_Template_2(rf, ctx) {
           if (rf & 1) {
@@ -1864,26 +1867,26 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:7825031864601787094]
          */
         const $MSG_APP_SPEC_TS_1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
-          interpolation: "\uFFFD1\uFFFD",
-          interpolation_1: "\uFFFD2\uFFFD"
+          "interpolation": "\uFFFD1\uFFFD",
+          "interpolation_1": "\uFFFD2\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         const $_c2$ = [1, "ngIf"];
         /**
          * @desc [BACKUP_MESSAGE_ID:2310343208266678305]
          */
         const $MSG_APP_SPEC_TS__3_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
-          interpolation: "\uFFFD1:1\uFFFD"
+          "interpolation": "\uFFFD1:1\uFFFD"
         });
-        const $MSG_APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__3_RAW$, { VAR_SELECT: "\uFFFD0:1\uFFFD" });
+        const $MSG_APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__3_RAW$, { "VAR_SELECT": "\uFFFD0:1\uFFFD" });
         /**
          * @desc [BACKUP_MESSAGE_ID:7186042105600518133]
          */
         const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
-          startTagSpan: "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
-          closeTagSpan: "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          icu: $MSG_APP_SPEC_TS_1$,
-          icu_1: $MSG_APP_SPEC_TS__3$
+          "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
+          "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
+          "icu": $MSG_APP_SPEC_TS_1$,
+          "icu_1": $MSG_APP_SPEC_TS__3$
         });
         function MyComponent_span_Template_2(rf, ctx) {
           if (rf & 1) {
@@ -1936,11 +1939,11 @@ describe('i18n support in the view compiler', () => {
          * @desc [BACKUP_MESSAGE_ID:4853189513362404940]
          */
         const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
-          phA: "\uFFFD1\uFFFD",
-          phB: "\uFFFD2\uFFFD",
-          phC: "\uFFFD3\uFFFD"
+          "phA": "\uFFFD1\uFFFD",
+          "phB": "\uFFFD2\uFFFD",
+          "phC": "\uFFFD3\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { VAR_SELECT: "\uFFFD0\uFFFD" });
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {

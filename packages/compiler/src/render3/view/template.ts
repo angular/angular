@@ -336,7 +336,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         transformFn = (raw: o.ReadVarExpr) => {
           const args: o.Expression[] = [raw];
           if (Object.keys(icuMapping).length) {
-            args.push(mapLiteral(icuMapping));
+            args.push(mapLiteral(icuMapping, true));
           }
           return instruction(null, R3.i18nPostprocess, args);
         };
@@ -778,7 +778,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // output ICU directly and keep ICU reference in context
       const message = icu.i18n !as i18n.Message;
       const transformFn = (raw: o.ReadVarExpr) =>
-          instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars)]);
+          instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars, true)]);
 
       // in case the whole i18n message is a single ICU - we do not need to
       // create a separate top-level translation, we can use the root ref instead
