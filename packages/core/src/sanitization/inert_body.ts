@@ -77,13 +77,21 @@ export class InertBodyHelper {
     } catch (e) {
       return null;
     }
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'document';
-    xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
-    xhr.send(undefined);
-    const body: HTMLBodyElement = xhr.response.body;
-    body.removeChild(body.firstChild !);
-    return body;
+
+    // Wrap in a try/catch because if your Content Security Policy
+    // does not allow data urls this will crash the application.
+    // See https://github.com/cure53/DOMPurify/issues/215
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'document';
+      xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
+      xhr.send(undefined);
+      const body: HTMLBodyElement = xhr.response.body;
+      body.removeChild(body.firstChild !);
+      return body;
+    } catch (e) {
+      return null;
+    }
   }
 
   /**
