@@ -85,6 +85,10 @@
   }
 
   @include input-placeholder {
+    // Prevent users from being able to select the placeholder text. Most of the time this can't
+    // happen, however it's possible to do it when clicking on a disabled input (see #13479).
+    @include user-select(none);
+
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
     transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
