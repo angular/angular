@@ -1449,10 +1449,11 @@ const RAW_ICU_REGEXP = /{\s*(\S*)\s*,\s*\S{6}\s*,[\s\S]*}/gi;
  */
 export function i18nIcuReplaceVars(message: string, replacements: {[key: string]: string}): string {
   const keys = Object.keys(replacements);
+  function replaceFn(replacement: string) {
+    return (str: string, varMatch: string) => { return str.replace(varMatch, replacement); };
+  }
   for (let i = 0; i < keys.length; i++) {
-    message = message.replace(RAW_ICU_REGEXP, (str: string, varMatch: string) => {
-      return str.replace(varMatch, replacements[keys[i]]);
-    });
+    message = message.replace(RAW_ICU_REGEXP, replaceFn(replacements[keys[i]]));
   }
   return message;
 }
