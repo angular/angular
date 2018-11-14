@@ -11,9 +11,9 @@ import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
 import {Type} from '../../type';
+
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
-import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries} from './query';
@@ -297,7 +297,7 @@ export interface TView {
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
 
-  /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */
+  /** Static data equivalent of LView.data[]. Contains TNodes. */
   data: TData;
 
   /**
@@ -535,7 +535,7 @@ export type HookData = (number | (() => void))[];
  */
 export type TData =
     (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null)[];
+     InjectionToken<any>| null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

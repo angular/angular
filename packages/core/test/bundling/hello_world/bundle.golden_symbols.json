@@ -261,9 +261,6 @@
     "name": "getDirectiveDef"
   },
   {
-    "name": "getFirstParentNative"
-  },
-  {
     "name": "getFirstTemplatePass"
   },
   {

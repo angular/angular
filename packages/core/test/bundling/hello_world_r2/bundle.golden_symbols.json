@@ -846,9 +846,6 @@
     "name": "getErrorLogger"
   },
   {
-    "name": "getFirstParentNative"
-  },
-  {
     "name": "getFirstTemplatePass"
   },
   {
@@ -1107,7 +1104,7 @@
     "name": "markViewDirty"
   },
   {
-    "name": "merge$1"
+    "name": "merge"
   },
   {
     "name": "mergeAll"

@@ -490,7 +490,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         if (i18nAttrArgs.length) {
           const index: o.Expression = o.literal(this.allocateDataSlot());
           const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
-          this.creationInstruction(element.sourceSpan, R3.i18nAttributes, [index, args]);
+          this.creationInstruction(element.sourceSpan, R3.i18nAttribute, [index, args]);
           if (hasBindings) {
             this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
           }
