@@ -148,43 +148,65 @@ Each of these components has its own `HeroService` instance managing its own ind
 {@a multiple-service-instances}
 
 
+<!--
 ## Multiple service instances (sandboxing)
+-->
+## 다중 서비스 인스턴스 (샌드박싱, sandboxing)
 
+<!--
 Sometimes you want multiple instances of a service at *the same level* of the component hierarchy.
 
 A good example is a service that holds state for its companion component instance.
 You need a separate instance of the service for each component.
 Each service has its own work-state, isolated from the service-and-state of a different component.
 This is called *sandboxing* because each service and component instance has its own sandbox to play in.
+-->
+어떤 경우에는 *같은 계층의* 컴포넌트마다 서비스 인스턴스를 각각 유지해야 하는 경우가 있습니다.
+
+히어로 정보 관리 컴포넌트로 이 경우를 생각해 봅시다.
+이 예제에서는 각 컴포넌트에 각각 서비스 인스턴스를 두려고 합니다.
+그리고 각각의 서비스 인스턴스는 현재 작업 상태를 저장하며, 다른 컴포넌트의 작업 상태에 영향을 받지 않게 하려고 합니다.
+이런 구조를 샌드박싱(sandboxing)이라고 합니다. 이 구조에서 서비스와 컴포넌트 인스턴스는 서로 연관된 것들끼리만 동작합니다.
 
 {@a hero-bios-component}
 
+<!--
 In this example, `HeroBiosComponent` presents three instances of `HeroBioComponent`.
+-->
+이번 예제에서 `HeroBiosComponent`에는 `HeroBioComponent` 인스턴스가 다음과 같이 3개 존재합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="simple" header="ap/hero-bios.component.ts">
 
 </code-example>
 
-
+<!--
 Each `HeroBioComponent` can edit a single hero's biography.
 `HeroBioComponent` relies on `HeroCacheService` to fetch, cache, and perform other persistence operations on that hero.
+-->
+각각의 `HeroBioComponent`에서는 히어로 한 명의 정보를 편집할 수 있습니다.
+그리고 히어로의 정보를 가져오거나 캐싱하고, 수정할 때는 `HeroCacheService`를 활용합니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-cache.service.ts" region="service" header="src/app/hero-cache.service.ts">
 
 </code-example>
 
-
+<!--
 Three instances of `HeroBioComponent` can't share the same instance of `HeroCacheService`,
 as they'd be competing with each other to determine which hero to cache.
 
 Instead, each `HeroBioComponent` gets its *own* `HeroCacheService` instance
 by listing `HeroCacheService` in its metadata `providers` array.
+-->
+이 때 각각의 `HeroBioComponent`가 `HeroCacheService` 인스턴스를 공유한다면 각 컴포넌트에서 작업하는 히어로의 정보를 서로 덮어쓰기 때문에 정상적으로 동작하지 않습니다.
+
+그래서 `HeroBioComponent` 메타데이터의 `providers` 배열에 `HeroCacheService` 프로바이더를 등록하면 각 컴포넌트마다 독립된 `HeroCacheService` 인스턴스를 생성할 수 있습니다.
+
 
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="component" header="src/app/hero-bio.component.ts">
 
 </code-example>
 
-
+<!--
 The parent `HeroBiosComponent` binds a value to `heroId`.
 `ngOnInit` passes that ID to the service, which fetches and caches the hero.
 The getter for the `hero` property pulls the cached hero from the service.
@@ -192,6 +214,13 @@ The template displays this data-bound property.
 
 Find this example in <live-example name="dependency-injection-in-action">live code</live-example>
 and confirm that the three `HeroBioComponent` instances have their own cached hero data.
+-->
+부모 컴포넌트인 `HeroBiosComponent`는 자식 컴포넌트의 `heroId` 프로퍼티에 히어로의 ID를 바인딩합니다.
+그러면 자식 컴포넌트의 `ngOnInit()` 메소드에서 이 ID를 서비스로 전달하면 서비스가 해당되는 히어로의 정보를 가져와서 캐싱합니다.
+그리고 `hero` 프로퍼티에 사용된 게터 함수는 서비스에서 히어로의 정보를 가져옵니다.
+템플릿은 이 프로퍼티를 데이터 바인딩해서 표시할 것입니다.
+
+이제 `HeroBioComponent`의 인스턴스 3개는 모두 독립된 히어로의 정보를 캐싱할 수 있습니다. 이 예제는 <live-example name="dependency-injection-in-action">live code</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">
