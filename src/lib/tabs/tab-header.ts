@@ -328,6 +328,11 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     // and ripples will exceed the boundaries of the visible tab bar.
     // See: https://github.com/angular/material2/issues/10276
     this._tabList.nativeElement.style.transform = `translateX(${translateX}px)`;
+
+    // Setting the `transform` on IE will change the scroll offset of the parent, causing the
+    // position to be thrown off in some cases. We have to reset it ourselves to ensure that
+    // it doesn't get thrown off.
+    this._tabListContainer.nativeElement.scrollLeft = 0;
   }
 
   /** Sets the distance in pixels that the tab header should be transformed in the X-axis. */
