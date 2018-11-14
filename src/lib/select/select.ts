@@ -20,6 +20,7 @@ import {
   RIGHT_ARROW,
   SPACE,
   UP_ARROW,
+  hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {CdkConnectedOverlay, Overlay, ScrollStrategy} from '@angular/cdk/overlay';
 import {ViewportRuler} from '@angular/cdk/scrolling';
@@ -695,7 +696,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const manager = this._keyManager;
 
     // Open the select on ALT + arrow key to match the native <select>
-    if (isOpenKey || ((this.multiple || event.altKey) && isArrowKey)) {
+    if ((isOpenKey && !hasModifierKey(event)) || ((this.multiple || event.altKey) && isArrowKey)) {
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
     } else if (!this.multiple) {
@@ -721,7 +722,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       // Close the select on ALT + arrow key to match the native <select>
       event.preventDefault();
       this.close();
-    } else if ((keyCode === ENTER || keyCode === SPACE) && manager.activeItem) {
+    } else if ((keyCode === ENTER || keyCode === SPACE) && manager.activeItem &&
+      !hasModifierKey(event)) {
       event.preventDefault();
       manager.activeItem._selectViaInteraction();
     } else if (this._multiple && keyCode === A && event.ctrlKey) {

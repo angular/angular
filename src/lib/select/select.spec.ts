@@ -669,6 +669,21 @@ describe('MatSelect', () => {
           expect(event.defaultPrevented).toBe(true);
         }));
 
+        it('should prevent the default action when pressing enter', fakeAsync(() => {
+          const event = dispatchKeyboardEvent(select, 'keydown', ENTER);
+          expect(event.defaultPrevented).toBe(true);
+        }));
+
+        it('should not prevent the default actions on selection keys when pressing a modifier',
+          fakeAsync(() => {
+            [ENTER, SPACE].forEach(key => {
+              const event = createKeyboardEvent('keydown', key);
+              Object.defineProperty(event, 'shiftKey', {get: () => true});
+              expect(event.defaultPrevented).toBe(false);
+            });
+
+          }));
+
         it('should consider the selection a result of a user action when closed', fakeAsync(() => {
           const option = fixture.componentInstance.options.first;
           const spy = jasmine.createSpy('option selection spy');
@@ -1065,26 +1080,6 @@ describe('MatSelect', () => {
 
         expect(panel.classList).toContain('custom-one');
         expect(panel.classList).toContain('custom-two');
-      }));
-
-      it('should prevent the default action when pressing SPACE on an option', fakeAsync(() => {
-        trigger.click();
-        fixture.detectChanges();
-
-        const option = overlayContainerElement.querySelector('mat-option')!;
-        const event = dispatchKeyboardEvent(option, 'keydown', SPACE);
-
-        expect(event.defaultPrevented).toBe(true);
-      }));
-
-      it('should prevent the default action when pressing ENTER on an option', fakeAsync(() => {
-        trigger.click();
-        fixture.detectChanges();
-
-        const option = overlayContainerElement.querySelector('mat-option')!;
-        const event = dispatchKeyboardEvent(option, 'keydown', ENTER);
-
-        expect(event.defaultPrevented).toBe(true);
       }));
 
       it('should update disableRipple properly on each option', fakeAsync(() => {

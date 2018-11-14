@@ -1,7 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing';
+import {SPACE, ENTER} from '@angular/cdk/keycodes';
 import {MatOption, MatOptionModule} from './index';
 
 describe('MatOption component', () => {
@@ -80,6 +86,65 @@ describe('MatOption component', () => {
     const optionInstance = fixture.debugElement.query(By.directive(MatOption)).componentInstance;
 
     expect(optionInstance.id).toBe('custom-option');
+  });
+
+  it('should select the option when pressing space', () => {
+    const fixture = TestBed.createComponent(BasicOption);
+    fixture.detectChanges();
+
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
+    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const spy = jasmine.createSpy('selection change spy');
+    const subscription = optionInstance.onSelectionChange.subscribe(spy);
+
+    const event = dispatchKeyboardEvent(optionNativeElement, 'keydown', SPACE);
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(true);
+    subscription.unsubscribe();
+  });
+
+  it('should select the option when pressing enter', () => {
+    const fixture = TestBed.createComponent(BasicOption);
+    fixture.detectChanges();
+
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
+    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const spy = jasmine.createSpy('selection change spy');
+    const subscription = optionInstance.onSelectionChange.subscribe(spy);
+
+    const event = dispatchKeyboardEvent(optionNativeElement, 'keydown', ENTER);
+    fixture.detectChanges();
+
+    expect(spy).toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(true);
+    subscription.unsubscribe();
+  });
+
+  it('should not do anything when pressing the selection keys with a modifier', () => {
+    const fixture = TestBed.createComponent(BasicOption);
+    fixture.detectChanges();
+
+    const optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
+    const optionNativeElement: HTMLElement = optionDebugElement.nativeElement;
+    const optionInstance: MatOption = optionDebugElement.componentInstance;
+    const spy = jasmine.createSpy('selection change spy');
+    const subscription = optionInstance.onSelectionChange.subscribe(spy);
+
+    [ENTER, SPACE].forEach(key => {
+      const event = createKeyboardEvent('keydown', key);
+      Object.defineProperty(event, 'shiftKey', {get: () => true});
+      dispatchEvent(optionNativeElement, event);
+      fixture.detectChanges();
+
+      expect(event.defaultPrevented).toBe(false);
+    });
+
+    expect(spy).not.toHaveBeenCalled();
+    subscription.unsubscribe();
   });
 
   describe('ripples', () => {
