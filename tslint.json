@@ -134,6 +134,8 @@
   },
   "linterOptions": {
     "exclude": [
+      // Exclude the API golden files
+      "tools/public_api_guard/**/*.d.ts",
       // Exclude schematic template files and test cases that can't be linted.
       "src/lib/schematics/ng-generate/*/files/**/*",
       "src/cdk/schematics/ng-generate/*/files/**/*",
