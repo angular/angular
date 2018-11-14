@@ -95,8 +95,9 @@ module.exports = config => {
   if (process.env['CIRCLECI']) {
     const instanceIndex = Number(process.env['CIRCLE_NODE_INDEX']);
     const maxParallelInstances = Number(process.env['CIRCLE_NODE_TOTAL']);
-    const tunnelIdentifier = `${process.env['CIRCLE_BUILD_NUM']}-${instanceIndex}`;
-    const buildIdentifier = `angular-material-${tunnelIdentifier}`;
+    const tunnelIdentifier =
+        `angular-material-${process.env['CIRCLE_BUILD_NUM']}-${instanceIndex}`;
+    const buildIdentifier = `circleci-${tunnelIdentifier}`;
     const testPlatform = process.env['TEST_PLATFORM'];
 
     if (testPlatform === 'browserstack') {
