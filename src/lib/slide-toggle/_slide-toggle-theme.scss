@@ -4,9 +4,7 @@
 @import '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
-  // Do not apply the checked colors if the toggle is disabled, because the
-  // specificity would be to high for the disabled styles.
-  &.mat-checked:not(.mat-disabled) {
+  &.mat-checked {
     .mat-slide-toggle-thumb {
       background-color: mat-color($palette, $thumb-checked-hue);
     }
@@ -39,11 +37,8 @@
   // specifications. See: https://material.io/design/components/selection-controls.html#specs
   $thumb-unchecked-hue: if($is-dark, 400, 50);
   $thumb-checked-hue: if($is-dark, 200, default);
-  $thumb-disabled-hue: if($is-dark, 800, 400);
 
   $bar-unchecked-color: mat-color($foreground, disabled);
-  $bar-disabled-color: if($is-dark, rgba(white, 0.12), rgba(black, 0.1));
-
   $ripple-unchecked-color: mat-color($foreground, base);
 
   .mat-slide-toggle {
@@ -61,18 +56,6 @@
       // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
       // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
       background-color: $ripple-unchecked-color;
-    }
-  }
-
-  .mat-disabled {
-    .mat-slide-toggle-thumb {
-      // The thumb of the slide-toggle always uses the hue 400 of the grey palette in dark
-      // or light themes. Since this is very specific to the slide-toggle component, we're not
-      // providing it in the background palette.
-      background-color: mat-color($mat-grey, $thumb-disabled-hue);
-    }
-    .mat-slide-toggle-bar {
-      background-color: $bar-disabled-color;
     }
   }
 

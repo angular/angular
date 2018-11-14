@@ -40,6 +40,9 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   }
 
   &.mat-disabled {
+    // The value is based on MDC.
+    opacity: 0.38;
+
     .mat-slide-toggle-label, .mat-slide-toggle-thumb-container {
       cursor: default;
     }
