@@ -6,7 +6,6 @@ ts_library(
   name = "keycodes",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/keycodes",
-  deps = ["@matdeps//tslib"],
 )
 
 ts_library(

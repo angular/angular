@@ -6,7 +6,6 @@ ts_library(
   name = "coercion",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/coercion",
-  deps = ["@matdeps//tslib"],
 )
 
 ts_library(

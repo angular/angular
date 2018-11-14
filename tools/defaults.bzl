@@ -15,13 +15,17 @@ def _getDefaultTsConfig(testonly):
   else:
     return _DEFAULT_TSCONFIG_BUILD
 
-def ts_library(tsconfig = None, testonly = False, **kwargs):
+def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
+  # Add tslib because we use import helpers for all public packages.
+  local_deps = ["@matdeps//tslib"] + deps
+
   if not tsconfig:
     tsconfig = _getDefaultTsConfig(testonly)
 
   _ts_library(
     tsconfig = tsconfig,
     testonly = testonly,
+    deps = local_deps,
     node_modules = _DEFAULT_TS_TYPINGS,
     **kwargs
   )
@@ -31,8 +35,7 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
     tsconfig = _getDefaultTsConfig(testonly)
 
   local_deps = [
-    # Since we use the TypeScript import helpers (tslib) for each TypeScript configuration,
-    # we declare TSLib as default dependency
+    # Add tslib because we use import helpers for all public packages.
     "@matdeps//tslib",
 
     # Depend on the module typings for each `ng_module`. Since all components within the project
