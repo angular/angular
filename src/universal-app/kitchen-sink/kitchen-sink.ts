@@ -47,6 +47,7 @@ import {
 import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 import {FocusMonitor} from '@angular/cdk/a11y';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 import {Observable, of as observableOf} from 'rxjs';
 
 export class TableDataSource extends DataSource<any> {
@@ -136,7 +137,8 @@ export class KitchenSink {
     MatStepperModule,
 
     // CDK Modules
-    CdkTableModule
+    CdkTableModule,
+    DragDropModule,
   ],
   bootstrap: [KitchenSink],
   declarations: [KitchenSink, TestEntryComponent],
