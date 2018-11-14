@@ -550,6 +550,21 @@ describe('i18n support in the view compiler', () => {
       verify(input, output, {exceptions});
     });
 
+    it('should properly escape quotes in content', () => {
+      const input = `
+        <div i18n>Some text 'with single quotes', "with double quotes" and without quotes.</div>
+      `;
+
+      const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:4924931801512133405]
+         */
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+      `;
+
+      verify(input, output);
+    });
+
     it('should handle i18n attributes with plain-text content', () => {
       const input = `
         <div i18n>My i18n block #1</div>
@@ -1518,6 +1533,22 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(1);
           }
         }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should properly escape quotes in content', () => {
+      const input = `
+        <div i18n>{gender, select, single {'single quotes'} double {"double quotes"} other {other}}</div>
+      `;
+
+      const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:4166854826696768832]
+         */
+        const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
       `;
 
       verify(input, output);
