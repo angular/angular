@@ -743,12 +743,14 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
             native.setAttributeNS(namespaceURI, attrName, attrVal);
         i += 4;
       } else {
-        // Standard attributes
-        const attrVal = attrs[i + 1];
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName as string, attrVal as string) :
-            native.setAttribute(attrName as string, attrVal as string);
+        // Standard attributes, skip synthetic properties
+        if (attrName.charAt(0) !== '@') {
+          const attrVal = attrs[i + 1];
+          isProc ?
+              (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal as string) :
+              native.setAttribute(attrName, attrVal as string);
+        }
+
         i += 2;
       }
     }
