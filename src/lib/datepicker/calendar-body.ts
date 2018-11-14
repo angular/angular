@@ -15,6 +15,8 @@ import {
   Output,
   ViewEncapsulation,
   NgZone,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import {take} from 'rxjs/operators';
 
@@ -54,7 +56,7 @@ export class MatCalendarCell {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatCalendarBody {
+export class MatCalendarBody implements OnChanges {
   /** The label for the table. (e.g. "Jan 2017"). */
   @Input() label: string;
 
@@ -85,6 +87,15 @@ export class MatCalendarBody {
   /** Emits when a new value is selected. */
   @Output() readonly selectedValueChange: EventEmitter<number> = new EventEmitter<number>();
 
+  /** The number of blank cells to put at the beginning for the first row. */
+  _firstRowOffset: number;
+
+  /** Padding for the individual date cells. */
+  _cellPadding: string;
+
+  /** Width of an individual cell. */
+  _cellWidth: string;
+
   constructor(private _elementRef: ElementRef<HTMLElement>, private _ngZone: NgZone) { }
 
   _cellClicked(cell: MatCalendarCell): void {
@@ -93,10 +104,21 @@ export class MatCalendarBody {
     }
   }
 
-  /** The number of blank cells to put at the beginning for the first row. */
-  get _firstRowOffset(): number {
-    return this.rows && this.rows.length && this.rows[0].length ?
-        this.numCols - this.rows[0].length : 0;
+  ngOnChanges(changes: SimpleChanges) {
+    const columnChanges = changes.numCols;
+    const {rows, numCols} = this;
+
+    if (changes.rows || columnChanges) {
+      this._firstRowOffset = rows && rows.length && rows[0].length ? numCols - rows[0].length : 0;
+    }
+
+    if (changes.cellAspectRatio || columnChanges || !this._cellPadding) {
+      this._cellPadding = `${50 * this.cellAspectRatio / numCols}%`;
+    }
+
+    if (columnChanges || !this._cellWidth) {
+      this._cellWidth = `${100 / numCols}%`;
+    }
   }
 
   _isActiveCell(rowIndex: number, colIndex: number): boolean {

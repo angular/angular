@@ -5,8 +5,8 @@
 <tr *ngIf="_firstRowOffset < labelMinRequiredCells" aria-hidden="true">
   <td class="mat-calendar-body-label"
       [attr.colspan]="numCols"
-      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
-      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
+      [style.paddingTop]="_cellPadding"
+      [style.paddingBottom]="_cellPadding">
     {{label}}
   </td>
 </tr>
@@ -23,8 +23,8 @@
       aria-hidden="true"
       class="mat-calendar-body-label"
       [attr.colspan]="_firstRowOffset"
-      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
-      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
+      [style.paddingTop]="_cellPadding"
+      [style.paddingBottom]="_cellPadding">
     {{_firstRowOffset >= labelMinRequiredCells ? label : ''}}
   </td>
   <td *ngFor="let item of row; let colIndex = index"
@@ -38,9 +38,9 @@
       [attr.aria-disabled]="!item.enabled || null"
       [attr.aria-selected]="selectedValue === item.value"
       (click)="_cellClicked(item)"
-      [style.width.%]="100 / numCols"
-      [style.paddingTop.%]="50 * cellAspectRatio / numCols"
-      [style.paddingBottom.%]="50 * cellAspectRatio / numCols">
+      [style.width]="_cellWidth"
+      [style.paddingTop]="_cellPadding"
+      [style.paddingBottom]="_cellPadding">
     <div class="mat-calendar-body-cell-content"
          [class.mat-calendar-body-selected]="selectedValue === item.value"
          [class.mat-calendar-body-today]="todayValue === item.value">
