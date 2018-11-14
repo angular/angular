@@ -33,4 +33,4 @@ The `<mat-radio-button>` uses an internal `<input type="radio">` to provide an a
 This internal radio button receives focus and is automatically labelled by the text content of the
 `<mat-radio-button>` element.
 
-Radio button groups should should be given a meaningful label via `aria-label` or `aria-labelledby`.
+Radio button groups should be given a meaningful label via `aria-label` or `aria-labelledby`.
