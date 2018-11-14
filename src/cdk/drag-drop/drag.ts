@@ -29,6 +29,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Observable, Subject, Subscription, Observer} from 'rxjs';
 import {startWith, take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
@@ -217,6 +218,16 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
    */
   @Input('cdkDragRootElement') rootElementSelector: string;
 
+  /** Whether starting to drag this element is disabled. */
+  @Input('cdkDragDisabled')
+  get disabled(): boolean {
+    return this._disabled || (this.dropContainer && this.dropContainer.disabled);
+  }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
+
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
 
@@ -351,10 +362,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
         return !!target && (target === element || element.contains(target as HTMLElement));
       });
 
-      if (targetHandle) {
+      if (targetHandle && !targetHandle.disabled && !this.disabled) {
         this._initializeDragSequence(targetHandle.element.nativeElement, event);
       }
-    } else {
+    } else if (!this.disabled) {
       this._initializeDragSequence(this._rootElement, event);
     }
   }

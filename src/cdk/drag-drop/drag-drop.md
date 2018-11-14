@@ -158,3 +158,11 @@ new container. Depending on whether the predicate returns `true` or `false`, the
 be allowed into the new container.
 
 <!-- example(cdk-drag-drop-enter-predicate) -->
+
+### Disable dragging
+If you want to disable dragging for a particular drag item, you can do so by setting the
+`cdkDragDisabled` input on a `cdkDrag` item. Furthermore, you can disable an entire list
+using the `cdkDropListDisabled` input on a `cdkDropList` or a particular handle via
+`cdkDragHandleDisabled` on `cdkDragHandle`.
+
+<!-- example(cdk-drag-drop-disabled) -->

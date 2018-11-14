@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceArray} from '@angular/cdk/coercion';
+import {coerceArray, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   ContentChildren,
   ElementRef,
@@ -115,6 +115,14 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
 
   /** Locks the position of the draggable elements inside the container along the specified axis. */
   @Input('cdkDropListLockAxis') lockAxis: 'x' | 'y';
+
+  /** Whether starting a dragging sequence from this container is disabled. */
+  @Input('cdkDropListDisabled')
+  get disabled(): boolean { return this._disabled; }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
 
   /**
    * Function that is used to determine whether an item

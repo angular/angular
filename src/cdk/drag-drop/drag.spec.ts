@@ -452,6 +452,18 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should not be able to drag the element if dragging is disabled', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      fixture.componentInstance.dragInstance.disabled = true;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBeFalsy();
+    }));
+
     it('should stop propagation for the drag sequence start event', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();
@@ -555,6 +567,32 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
       dragElementViaMouse(fixture, handle, 50, 100);
       expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
+
+    it('should not be able to drag the element if the handle is disabled', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      fixture.componentInstance.handleInstance.disabled = true;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, handle, 50, 100);
+      expect(dragElement.style.transform).toBeFalsy();
+    }));
+
+    it('should not be able to drag using the handle if the element is disabled', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      fixture.componentInstance.dragInstance.disabled = true;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, handle, 50, 100);
+      expect(dragElement.style.transform).toBeFalsy();
     }));
 
     it('should be able to use a handle that was added after init', fakeAsync(() => {
@@ -1698,6 +1736,30 @@ describe('CdkDrag', () => {
       expect(thirdItem.style.transform).toBeFalsy();
     }));
 
+    it('should not move the item if the list is disabled', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+
+      fixture.componentInstance.dropInstance.disabled = true;
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.right + 1, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+    }));
+
   });
 
   describe('in a connected drop container', () => {
@@ -2178,6 +2240,8 @@ class StandaloneDraggable {
 class StandaloneDraggableWithHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
+  @ViewChild(CdkDragHandle) handleInstance: CdkDragHandle;
 }
 
 @Component({
