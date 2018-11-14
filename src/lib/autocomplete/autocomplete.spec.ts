@@ -571,6 +571,18 @@ describe('MatAutocomplete', () => {
           .toEqual('al', 'Expected control value to be updated as user types.');
     });
 
+    it('should update control value when autofilling', () => {
+      // Simulate the browser autofilling the input by setting a value and
+      // dispatching an `input` event while the input is out of focus.
+      expect(document.activeElement).not.toBe(input, 'Expected input not to have focus.');
+      input.value = 'Alabama';
+      dispatchFakeEvent(input, 'input');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.value)
+          .toBe('Alabama', 'Expected value to be propagated to the form control.');
+    });
+
     it('should update control value when option is selected with option value', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
