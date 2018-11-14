@@ -88,7 +88,6 @@ jobs:
       - *restore_cache
       - *copy_bazel_config
 
-      # TODO(jelbourn): Update this command to run all tests if the Bazel issues have been fixed.
       - run: bazel build src/...
       - run: bazel test src/... tools/public_api_guard/...
 

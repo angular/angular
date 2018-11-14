@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+  name = "transform-markdown",
+  srcs = [":transform-markdown.ts"],
+  deps = ["@matdeps//@types/node"],
+  tsconfig = ":tsconfig.json",
+)
+
+nodejs_binary(
+  name = "markdown-to-html",
+  entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
+  data = [
+    "@matdeps//highlight.js",
+    "@matdeps//marked",
+    "@matdeps//source-map-support",
+    ":transform-markdown",
+  ],
+)
+
+
