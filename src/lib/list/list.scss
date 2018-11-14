@@ -197,9 +197,7 @@ $mat-list-item-inset-divider-offset: 72px;
 
   // This needs slightly more specificity, because it
   // can be overwritten by the typography styles.
-  .mat-list &,
-  .mat-nav-list &,
-  .mat-selection-list & {
+  .mat-list-base & {
     margin: 0;
   }
 }
@@ -214,7 +212,7 @@ $mat-list-item-inset-divider-offset: 72px;
   }
 }
 
-.mat-list, .mat-nav-list, .mat-selection-list {
+.mat-list-base {
   padding-top: $mat-list-top-padding;
   display: block;
   -webkit-tap-highlight-color: transparent;
@@ -237,9 +235,7 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 
-.mat-list[dense],
-.mat-nav-list[dense],
-.mat-selection-list[dense] {
+.mat-list-base[dense] {
   padding-top: $mat-dense-top-padding;
   display: block;
 

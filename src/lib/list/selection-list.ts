@@ -267,7 +267,7 @@ export class MatListOption extends _MatListOptionMixinBase
   host: {
     'role': 'listbox',
     '[tabIndex]': 'tabIndex',
-    'class': 'mat-selection-list',
+    'class': 'mat-selection-list mat-list-base',
     '(focus)': 'focus()',
     '(blur)': '_onTouched()',
     '(keydown)': '_keydown($event)',
