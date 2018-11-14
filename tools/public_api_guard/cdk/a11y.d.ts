@@ -156,7 +156,7 @@ export declare function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null;
 
 export declare const LIVE_ANNOUNCER_PROVIDER: Provider;
 
-export declare function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentDispatcher: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone): LiveAnnouncer;
+export declare function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentAnnouncer: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone): LiveAnnouncer;
 
 export declare class LiveAnnouncer implements OnDestroy {
     constructor(elementToken: any, _ngZone: NgZone, _document: any);

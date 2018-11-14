@@ -11,6 +11,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     _pointerDown: (event: TouchEvent | MouseEvent) => void;
     _previewTemplate: CdkDragPreview;
     data: T;
+    disabled: boolean;
     dropContainer: CdkDropListContainer;
     dropped: EventEmitter<CdkDragDrop<any>>;
     element: ElementRef<HTMLElement>;
@@ -61,6 +62,7 @@ export interface CdkDragExit<T = any, I = T> {
 
 export declare class CdkDragHandle {
     _parentDrag: {} | undefined;
+    disabled: boolean;
     element: ElementRef<HTMLElement>;
     constructor(element: ElementRef<HTMLElement>, parentDrag?: any);
 }
@@ -106,6 +108,7 @@ export declare class CdkDropList<T = any> implements OnInit, OnDestroy {
     _dragging: boolean;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
     data: T;
+    disabled: boolean;
     dropped: EventEmitter<CdkDragDrop<T, any>>;
     element: ElementRef<HTMLElement>;
     enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean;
@@ -134,6 +137,7 @@ export declare class CdkDropList<T = any> implements OnInit, OnDestroy {
 export interface CdkDropListContainer<T = any> {
     _draggables: QueryList<CdkDrag>;
     data: T;
+    disabled: boolean;
     element: ElementRef<HTMLElement>;
     id: string;
     lockAxis: 'x' | 'y';
