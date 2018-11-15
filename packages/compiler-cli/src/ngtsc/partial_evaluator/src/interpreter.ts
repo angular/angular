@@ -12,7 +12,8 @@ import {AbsoluteReference, NodeReference, Reference, ReferenceResolver, Resolved
 import {Declaration, ReflectionHost} from '../../reflection';
 
 import {ArraySliceBuiltinFn} from './builtin';
-import {BuiltinFn, DYNAMIC_VALUE, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap, isDynamicValue} from './result';
+import {DynamicValue} from './dynamic';
+import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 
 
 /**
@@ -126,7 +127,7 @@ export class StaticInterpreter {
     } else if (this.host.isClass(node)) {
       return this.visitDeclaration(node, context);
     } else {
-      return DYNAMIC_VALUE;
+      return DynamicValue.fromUnknownExpressionType(node);
     }
   }
 
@@ -137,21 +138,15 @@ export class StaticInterpreter {
       const element = node.elements[i];
       if (ts.isSpreadElement(element)) {
         const spread = this.visitExpression(element.expression, context);
-        if (isDynamicValue(spread)) {
-          return DYNAMIC_VALUE;
-        }
-        if (!Array.isArray(spread)) {
+        if (spread instanceof DynamicValue) {
+          array.push(DynamicValue.fromDynamicInput(element.expression, spread));
+        } else if (!Array.isArray(spread)) {
           throw new Error(`Unexpected value in spread expression: ${spread}`);
+        } else {
+          array.push(...spread);
         }
-
-        array.push(...spread);
       } else {
-        const result = this.visitExpression(element, context);
-        if (isDynamicValue(result)) {
-          return DYNAMIC_VALUE;
-        }
-
-        array.push(result);
+        array.push(this.visitExpression(element, context));
       }
     }
     return array;
@@ -164,30 +159,28 @@ export class StaticInterpreter {
       const property = node.properties[i];
       if (ts.isPropertyAssignment(property)) {
         const name = this.stringNameFromPropertyName(property.name, context);
-
         // Check whether the name can be determined statically.
         if (name === undefined) {
-          return DYNAMIC_VALUE;
+          return DynamicValue.fromDynamicInput(node, DynamicValue.fromDynamicString(property.name));
         }
-
         map.set(name, this.visitExpression(property.initializer, context));
       } else if (ts.isShorthandPropertyAssignment(property)) {
         const symbol = this.checker.getShorthandAssignmentValueSymbol(property);
         if (symbol === undefined || symbol.valueDeclaration === undefined) {
-          return DYNAMIC_VALUE;
+          map.set(property.name.text, DynamicValue.fromUnknown(property));
+        } else {
+          map.set(property.name.text, this.visitDeclaration(symbol.valueDeclaration, context));
         }
-        map.set(property.name.text, this.visitDeclaration(symbol.valueDeclaration, context));
       } else if (ts.isSpreadAssignment(property)) {
         const spread = this.visitExpression(property.expression, context);
-        if (isDynamicValue(spread)) {
-          return DYNAMIC_VALUE;
-        }
-        if (!(spread instanceof Map)) {
+        if (spread instanceof DynamicValue) {
+          return DynamicValue.fromDynamicInput(node, spread);
+        } else if (!(spread instanceof Map)) {
           throw new Error(`Unexpected value in spread assignment: ${spread}`);
         }
         spread.forEach((value, key) => map.set(key, value));
       } else {
-        return DYNAMIC_VALUE;
+        return DynamicValue.fromUnknown(node);
       }
     }
     return map;
@@ -201,8 +194,10 @@ export class StaticInterpreter {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
           value == null) {
         pieces.push(`${value}`);
+      } else if (value instanceof DynamicValue) {
+        return DynamicValue.fromDynamicInput(node, value);
       } else {
-        return DYNAMIC_VALUE;
+        return DynamicValue.fromDynamicInput(node, DynamicValue.fromDynamicString(span.expression));
       }
       pieces.push(span.literal.text);
     }
@@ -212,7 +207,7 @@ export class StaticInterpreter {
   private visitIdentifier(node: ts.Identifier, context: Context): ResolvedValue {
     const decl = this.host.getDeclarationOfIdentifier(node);
     if (decl === null) {
-      return DYNAMIC_VALUE;
+      return DynamicValue.fromUnknownIdentifier(node);
     }
     const result =
         this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
@@ -270,19 +265,19 @@ export class StaticInterpreter {
     if (node.argumentExpression === undefined) {
       throw new Error(`Expected argument in ElementAccessExpression`);
     }
-    if (isDynamicValue(lhs)) {
-      return DYNAMIC_VALUE;
+    if (lhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, lhs);
     }
     const rhs = this.visitExpression(node.argumentExpression, context);
-    if (isDynamicValue(rhs)) {
-      return DYNAMIC_VALUE;
+    if (rhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, rhs);
     }
     if (typeof rhs !== 'string' && typeof rhs !== 'number') {
       throw new Error(
           `ElementAccessExpression index should be string or number, got ${typeof rhs}: ${rhs}`);
     }
 
-    return this.accessHelper(lhs, rhs, context);
+    return this.accessHelper(node, lhs, rhs, context);
   }
 
   private visitPropertyAccessExpression(node: ts.PropertyAccessExpression, context: Context):
@@ -290,17 +285,16 @@ export class StaticInterpreter {
     const lhs = this.visitExpression(node.expression, context);
     const rhs = node.name.text;
     // TODO: handle reference to class declaration.
-    if (isDynamicValue(lhs)) {
-      return DYNAMIC_VALUE;
+    if (lhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, lhs);
     }
-
-    return this.accessHelper(lhs, rhs, context);
+    return this.accessHelper(node, lhs, rhs, context);
   }
 
   private visitSourceFile(node: ts.SourceFile, context: Context): ResolvedValue {
     const declarations = this.host.getExportsOfModule(node);
     if (declarations === null) {
-      return DYNAMIC_VALUE;
+      return DynamicValue.fromUnknown(node);
     }
     const map = new Map<string, ResolvedValue>();
     declarations.forEach((decl, name) => {
@@ -313,7 +307,9 @@ export class StaticInterpreter {
     return map;
   }
 
-  private accessHelper(lhs: ResolvedValue, rhs: string|number, context: Context): ResolvedValue {
+  private accessHelper(
+      node: ts.Expression, lhs: ResolvedValue, rhs: string|number,
+      context: Context): ResolvedValue {
     const strIndex = `${rhs}`;
     if (lhs instanceof Map) {
       if (lhs.has(strIndex)) {
@@ -325,10 +321,10 @@ export class StaticInterpreter {
       if (rhs === 'length') {
         return lhs.length;
       } else if (rhs === 'slice') {
-        return new ArraySliceBuiltinFn(lhs);
+        return new ArraySliceBuiltinFn(node, lhs);
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
-        return DYNAMIC_VALUE;
+        return DynamicValue.fromUnknown(node);
       }
       if (rhs < 0 || rhs >= lhs.length) {
         throw new Error(`Index out of bounds: ${rhs} vs ${lhs.length}`);
@@ -355,14 +351,17 @@ export class StaticInterpreter {
         }
         return value;
       }
+    } else if (lhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, lhs);
+    } else {
+      throw new Error(`Invalid dot property access: ${lhs} dot ${rhs}`);
     }
-    throw new Error(`Invalid dot property access: ${lhs} dot ${rhs}`);
   }
 
   private visitCallExpression(node: ts.CallExpression, context: Context): ResolvedValue {
     const lhs = this.visitExpression(node.expression, context);
-    if (isDynamicValue(lhs)) {
-      return DYNAMIC_VALUE;
+    if (lhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, lhs);
     }
 
     // If the call refers to a builtin function, attempt to evaluate the function.
@@ -387,8 +386,8 @@ export class StaticInterpreter {
         expr = context.foreignFunctionResolver(lhs, node.arguments);
       }
       if (expr === null) {
-        throw new Error(
-            `could not resolve foreign function declaration: ${node.getSourceFile().fileName} ${(lhs.node.name as ts.Identifier).text}`);
+        return DynamicValue.fromDynamicInput(
+            node, DynamicValue.fromExternalReference(node.expression, lhs));
       }
 
       // If the function is declared in a different file, resolve the foreign function expression
@@ -432,8 +431,8 @@ export class StaticInterpreter {
   private visitConditionalExpression(node: ts.ConditionalExpression, context: Context):
       ResolvedValue {
     const condition = this.visitExpression(node.condition, context);
-    if (isDynamicValue(condition)) {
-      return condition;
+    if (condition instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, condition);
     }
 
     if (condition) {
@@ -452,7 +451,11 @@ export class StaticInterpreter {
 
     const op = UNARY_OPERATORS.get(operatorKind) !;
     const value = this.visitExpression(node.operand, context);
-    return isDynamicValue(value) ? DYNAMIC_VALUE : op(value);
+    if (value instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, value);
+    } else {
+      return op(value);
+    }
   }
 
   private visitBinaryExpression(node: ts.BinaryExpression, context: Context): ResolvedValue {
@@ -470,8 +473,13 @@ export class StaticInterpreter {
       lhs = this.visitExpression(node.left, context);
       rhs = this.visitExpression(node.right, context);
     }
-
-    return isDynamicValue(lhs) || isDynamicValue(rhs) ? DYNAMIC_VALUE : opRecord.op(lhs, rhs);
+    if (lhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, lhs);
+    } else if (rhs instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, rhs);
+    } else {
+      return opRecord.op(lhs, rhs);
+    }
   }
 
   private visitParenthesizedExpression(node: ts.ParenthesizedExpression, context: Context):
@@ -500,12 +508,9 @@ function isFunctionOrMethodReference(ref: Reference<ts.Node>):
 }
 
 function literal(value: ResolvedValue): any {
-  if (value === null || value === undefined || typeof value === 'string' ||
-      typeof value === 'number' || typeof value === 'boolean') {
+  if (value instanceof DynamicValue || value === null || value === undefined ||
+      typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
-  }
-  if (isDynamicValue(value)) {
-    return DYNAMIC_VALUE;
   }
   throw new Error(`Value ${value} is not literal and cannot be used in this context.`);
 }
