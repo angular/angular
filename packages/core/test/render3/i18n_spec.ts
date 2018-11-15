@@ -9,10 +9,12 @@
 import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nStart, i18nPostprocess} from '../../src/render3/i18n';
+import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {getNativeByIndex} from '../../src/render3/util';
+
 import {NgIf} from './common_with_def';
+
 import {element, elementEnd, elementStart, template, text, bind, elementProperty, projectionDef, projection} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LViewData, TVIEW} from '../../src/render3/interfaces/view';
