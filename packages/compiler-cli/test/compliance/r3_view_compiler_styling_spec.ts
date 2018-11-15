@@ -94,7 +94,13 @@ describe('compiler compliance: styling', () => {
            }
          };
 
-         const template = 'div.cool { color: blue; }", ":host.nice p { color: gold; }';
+         const template = `
+         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+           …
+           styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
+           encapsulation: 1
+         })
+         `;
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });

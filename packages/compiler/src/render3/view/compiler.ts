@@ -269,6 +269,11 @@ export function compileComponentFromMetadata(
     definitionMap.set('styles', o.literalArr(strings));
   }
 
+  // Only set view encapsulation if it's not the default value
+  if (meta.encapsulation !== null && meta.encapsulation !== core.ViewEncapsulation.Emulated) {
+    definitionMap.set('encapsulation', o.literal(meta.encapsulation));
+  }
+
   // e.g. `animations: [trigger('123', [])]`
   if (meta.animations !== null) {
     definitionMap.set(
