@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -15,21 +15,25 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
 
 {
-  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
 
-  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  }
 
   declareTestsUsingBootstrap();
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   // Place to put reproductions for regressions
   describe('regressions', () => {
 
     beforeEach(() => { TestBed.configureTestingModule({declarations: [MyComp1, PlatformPipe]}); });
 
     describe('platform pipes', () => {
-      beforeEach(() => { TestBed.configureCompiler({useJit: useJit}); });
+      beforeEach(() => { TestBed.configureCompiler({...config}); });
 
       it('should overwrite them by custom pipes', () => {
         TestBed.configureTestingModule({declarations: [CustomPipe]});

@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {CompilerConfig} from '@angular/compiler';
-import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf, ViewRef} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleRef, OnDestroy, SkipSelf, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -30,16 +30,19 @@ import {stringify} from '../../src/util';
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
 {
-  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
-
-  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  }
 }
 
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('integration tests', function() {
 
-    beforeEach(() => { TestBed.configureCompiler({useJit}); });
+    beforeEach(() => { TestBed.configureCompiler({...config}); });
 
     describe('react to record changes', function() {
       it('should consume text node changes', () => {
