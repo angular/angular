@@ -1,12 +1,11 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ivy_ng_module", "ng_rollup_bundle", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_library")
 load("//tools/http-server:http_server.bzl", "http_server")
 
-ivy_ng_module(
+ng_module(
     name = "hello_world_i18n",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
     deps = [
         "//packages/core",
     ],
