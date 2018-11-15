@@ -147,7 +147,7 @@ export interface LViewData extends Array<any> {
   [CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  [INJECTOR]: Injector|null;
+  readonly[INJECTOR]: Injector|null;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer3;

@@ -121,8 +121,8 @@ export function renderComponent<T>(
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LViewData = createLViewData(
-      renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-  rootView[INJECTOR] = opts.injector || null;
+      renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, undefined,
+      opts.injector || null);
 
   const oldView = enterView(rootView, null);
   let component: T;
