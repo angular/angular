@@ -22,7 +22,7 @@ load(
 def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
 
-    Depending on the value of the 'compile' define flag or the '_global_mode' attribute, ng_module
+    Depending on the value of the 'compile' define flag, ng_module
     can be implemented in various ways. This function reads the configuration passed by the user and
     determines which mode is active.
 
@@ -30,18 +30,15 @@ def compile_strategy(ctx):
       ctx: skylark rule execution context
 
     Returns:
-      one of 'legacy', 'aot', 'jit', or 'global' depending on the configuration in ctx
+      one of 'legacy' or 'aot' depending on the configuration in ctx
     """
 
     strategy = "legacy"
     if "compile" in ctx.var:
         strategy = ctx.var["compile"]
 
-    if strategy not in ["legacy", "aot", "jit"]:
+    if strategy not in ["legacy", "aot"]:
         fail("Unknown --define=compile value '%s'" % strategy)
-
-    if strategy == "legacy" and hasattr(ctx.attr, "_global_mode") and ctx.attr._global_mode:
-        strategy = "global"
 
     return strategy
 
@@ -58,12 +55,8 @@ def _compiler_name(ctx):
     strategy = compile_strategy(ctx)
     if strategy == "legacy":
         return "ngc"
-    elif strategy == "global":
-        return "ngc.ivy"
     elif strategy == "aot":
         return "ngtsc"
-    elif strategy == "jit":
-        return "tsc"
     else:
         fail("unreachable")
 
@@ -80,12 +73,8 @@ def _enable_ivy_value(ctx):
     strategy = compile_strategy(ctx)
     if strategy == "legacy":
         return False
-    elif strategy == "global":
-        return True
     elif strategy == "aot":
         return "ngtsc"
-    elif strategy == "jit":
-        return "tsc"
     else:
         fail("unreachable")
 
@@ -101,7 +90,7 @@ def _include_ng_files(ctx):
     """
 
     strategy = compile_strategy(ctx)
-    return strategy == "legacy" or strategy == "global"
+    return strategy == "legacy"
 
 def _basename_of(ctx, file):
     ext_len = len(".ts")
@@ -636,16 +625,3 @@ This rule extends the [ts_library] rule.
 
 [ts_library]: http://tsetse.info/api/build_defs.html#ts_library
 """
-
-# TODO(alxhub): this rule causes legacy ngc to produce Ivy outputs from global analysis information.
-# It exists to facilitate testing of the Ivy runtime until ngtsc is mature enough to be used
-# instead, and should be removed once ngtsc is capable of fulfilling the same requirements.
-internal_global_ng_module = rule(
-    implementation = _ng_module_impl,
-    attrs = dict(NG_MODULE_RULE_ATTRS, **{
-        "_global_mode": attr.bool(
-            default = True,
-        ),
-    }),
-    outputs = COMMON_OUTPUTS,
-)
