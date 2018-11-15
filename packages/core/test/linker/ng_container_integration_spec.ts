@@ -7,22 +7,26 @@
  */
 
 
-import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
 
 {
-  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
-  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  }
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
     beforeEach(() => {
-      TestBed.configureCompiler({useJit: useJit});
+      TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
         declarations: [
           MyComp,

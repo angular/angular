@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
 import {NgModuleData} from '@angular/core/src/view/types';
@@ -99,12 +99,16 @@ class DummyConsole implements Console {
 }
 
 {
-  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
 
-  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  }
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('NgModule', () => {
     let compiler: Compiler;
     let injector: Injector;
@@ -112,8 +116,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
     beforeEach(() => {
       console = new DummyConsole();
-      TestBed.configureCompiler(
-          {useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
     });
 
     beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
