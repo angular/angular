@@ -771,24 +771,38 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitIcu(icu: t.Icu) {
-    if (this.i18n) {
-      const vars = this.i18nBindProps(icu.vars);
-      const placeholders = this.i18nBindProps(icu.placeholders);
+    let initWasInvoked = false;
 
+    // if an ICU was created outside of i18n block, we still treat
+    // it as a translatable entity and invoke i18nStart and i18nEnd
+    // to generate i18n context and the necessary instructions
+    if (!this.i18n) {
+      initWasInvoked = true;
+      this.i18nStart(null, icu.i18n !, true);
+    }
+
+    const i18n = this.i18n !;
+    const vars = this.i18nBindProps(icu.vars);
+    const placeholders = this.i18nBindProps(icu.placeholders);
+
+    // output ICU directly and keep ICU reference in context
+    const message = icu.i18n !as i18n.Message;
+    const transformFn = (raw: o.ReadVarExpr) =>
+        instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars, true)]);
+
+    // in case the whole i18n message is a single ICU - we do not need to
+    // create a separate top-level translation, we can use the root ref instead
+    // and make this ICU a top-level translation
+    if (isSingleI18nIcu(i18n.meta)) {
+      this.i18nTranslate(message, placeholders, i18n.ref, transformFn);
+    } else {
       // output ICU directly and keep ICU reference in context
-      const message = icu.i18n !as i18n.Message;
-      const transformFn = (raw: o.ReadVarExpr) =>
-          instruction(null, R3.i18nPostprocess, [raw, mapLiteral(vars, true)]);
+      const ref = this.i18nTranslate(message, placeholders, undefined, transformFn);
+      i18n.appendIcu(icuFromI18nMessage(message).name, ref);
+    }
 
-      // in case the whole i18n message is a single ICU - we do not need to
-      // create a separate top-level translation, we can use the root ref instead
-      // and make this ICU a top-level translation
-      if (isSingleI18nIcu(this.i18n.meta)) {
-        this.i18nTranslate(message, placeholders, this.i18n.ref, transformFn);
-      } else {
-        const ref = this.i18nTranslate(message, placeholders, undefined, transformFn);
-        this.i18n.appendIcu(icuFromI18nMessage(message).name, ref);
-      }
+    if (initWasInvoked) {
+      this.i18nEnd(null, true);
     }
     return null;
   }

@@ -92,13 +92,8 @@ export class I18nMetaVisitor implements html.Visitor {
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    const meta = expansion.i18n;
-    // do not generate i18n meta in case this Icu
-    // was defined outside of i18n block in a template
-    if (!meta) {
-      return null;
-    }
     let message;
+    const meta = expansion.i18n;
     if (meta instanceof i18n.IcuPlaceholder) {
       // set ICU placeholder name (e.g. "ICU_1"),
       // generated while processing root element contents,

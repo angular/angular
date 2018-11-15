@@ -1308,6 +1308,51 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
+    it('should handle ICUs outside of translatable sections', () => {
+      const input = `
+        <ng-template>{gender, select, male {male} female {female} other {other}}</ng-template>
+        <ng-container>{age, select, 10 {ten} 20 {twenty} other {other}}</ng-container>
+      `;
+
+      const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:8806993169187953163]
+         */
+        const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        /**
+         * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
+         */
+        const $MSG_APP_SPEC_TS__1_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $MSG_APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__1_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        function Template_0(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵi18n(0, $MSG_APP_SPEC_TS__1$);
+          }
+          if (rf & 2) {
+            const $ctx_r0$ = $r3$.ɵnextContext();
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.gender));
+            $r3$.ɵi18nApply(0);
+          }
+        }
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵtemplate(0, Template_0, 1, 0);
+            $r3$.ɵelementContainerStart(1);
+            $r3$.ɵi18n(2, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementContainerEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
+            $r3$.ɵi18nApply(2);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
     it('should correctly propagate i18n context through nested templates', () => {
       const input = `
         <div i18n>
@@ -1554,15 +1599,79 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
-    it('should ignore icus generated outside of i18n block', () => {
+    it('should generate i18n instructions for icus generated outside of i18n blocks', () => {
       const input = `
         <div>{gender, select, male {male} female {female} other {other}}</div>
+        <div *ngIf="visible" title="icu only">
+          {age, select, 10 {ten} 20 {twenty} other {other}}
+        </div>
+        <div *ngIf="available" title="icu and text">
+          You have {count, select, 0 {no emails} 1 {one email} other {{{count}} emails}}.
+        </div>
       `;
 
       const output = String.raw `
+        /**
+         * @desc [BACKUP_MESSAGE_ID:7842238767399919809]
+         */
+        const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        const $_c1$ = [1, "ngIf"];
+        const $_c2$ = ["title", "icu only"];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:8806993169187953163]
+         */
+        const $MSG_APP_SPEC_TS__3_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $MSG_APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__3_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        function MyComponent_div_Template_2(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div", $_c2$);
+            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS__3$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            const $ctx_r0$ = $r3$.ɵnextContext();
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.age));
+            $r3$.ɵi18nApply(1);
+          }
+        }
+        const $_c4$ = ["title", "icu and text"];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:1922743304863699161]
+         */
+        const MSG_APP_SPEC_TS__5_RAW = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
+          "interpolation": "\uFFFD1\uFFFD"
+        });
+        const MSG_APP_SPEC_TS__5 = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__5_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        function MyComponent_div_Template_3(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div", $_c4$);
+            $r3$.ɵtext(1, " You have ");
+            $r3$.ɵi18n(2, $MSG_APP_SPEC_TS__5$);
+            $r3$.ɵtext(3, ". ");
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            const $ctx_r1$ = $r3$.ɵnextContext();
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
+            $r3$.ɵi18nExp($r3$.ɵbind($ctx_r1$.count));
+            $r3$.ɵi18nApply(2);
+          }
+        }
+        …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelement(0, "div");
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementEnd();
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 2, 0, null, $_c1$);
+            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 0, null, $_c1$);
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
+            $r3$.ɵi18nApply(1);
+            $r3$.ɵelementProperty(2, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.ɵelementProperty(3, "ngIf", $r3$.ɵbind(ctx.available));
           }
         }
       `;
