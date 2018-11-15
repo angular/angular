@@ -7,6 +7,7 @@
  */
 
 import {Injectable, InjectionToken, Injector, NgModule, createInjector, forwardRef} from '@angular/core';
+import {fixmeIvy} from '@angular/private/testing';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
 describe('Ivy NgModule', () => {
