@@ -163,8 +163,7 @@ export function createLViewData<T>(
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
   instance[PARENT] = instance[DECLARATION_VIEW] = viewData;
   instance[CONTEXT] = context;
-  instance[INJECTOR as any] =
-      injector === undefined ? (viewData ? viewData[INJECTOR] : null) : injector;
+  instance[INJECTOR as any] = injector == null ? (viewData ? viewData[INJECTOR] : null) : injector;
   instance[RENDERER] = renderer;
   instance[SANITIZER] = sanitizer || null;
   return instance;

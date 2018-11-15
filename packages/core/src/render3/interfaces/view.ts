@@ -69,7 +69,7 @@ export interface LViewData extends Array<any> {
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  [TVIEW]: TView;
+  readonly[TVIEW]: TView;
 
   /** Flags for this view. See LViewFlags for more info. */
   [FLAGS]: LViewFlags;
@@ -103,7 +103,7 @@ export interface LViewData extends Array<any> {
    *
    * If this is an embedded view, HOST will be null.
    */
-  [HOST]: RElement|StylingContext|null;
+  readonly[HOST]: RElement|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
