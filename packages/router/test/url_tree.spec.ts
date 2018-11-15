@@ -35,6 +35,12 @@ describe('UrlTree', () => {
         expect(containsTree(t2, t1, true)).toBe(true);
       });
 
+      it('should return true for root', () => {
+        const t1 = serializer.parse('/');
+        const t2 = serializer.parse('/');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
       it('should return true when queryParams are the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1&page=5');
@@ -69,6 +75,30 @@ describe('UrlTree', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two(right:three)');
         expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when containee has an extra matrix param', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one;page=1/two');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when containee has varying param', () => {
+        const t1 = serializer.parse('/one/two;page=4');
+        const t2 = serializer.parse('/one/two;page=1');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return true when matrix params are identical', () => {
+        const t1 = serializer.parse('/one/two;page=4');
+        const t2 = serializer.parse('/one/two;page=4');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
+      it('should return true when matrix params on lower levels are identical', () => {
+        const t1 = serializer.parse('/one;test=1/two;box=foo');
+        const t2 = serializer.parse('/one;test=1/two;box=foo');
+        expect(containsTree(t1, t2, true)).toBe(true);
       });
     });
 
@@ -143,6 +173,24 @@ describe('UrlTree', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
         expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return true when matrix params are different', () => {
+        const t1 = serializer.parse('/one/two;page=2');
+        const t2 = serializer.parse('/one/two;page=4');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when containee has more matrix params', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one/two;page=4');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when containee has fewer matrix params', () => {
+        const t1 = serializer.parse('/one;test=box/two');
+        const t2 = serializer.parse('/one/two');
+        expect(containsTree(t1, t2, false)).toBe(true);
       });
     });
   });

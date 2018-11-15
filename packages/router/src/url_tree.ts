@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
-import {forEach, shallowEqual} from './utils/collection';
+import {forEach, shallowEqual, shallowEqualArrays} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
@@ -16,16 +16,27 @@ export function createEmptyUrlTree() {
 export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
   if (exact) {
     return equalQueryParams(container.queryParams, containee.queryParams) &&
-        equalSegmentGroups(container.root, containee.root);
+        equalSegmentGroups(container.root, containee.root) &&
+        equalMatrixParams(container.root, containee.root);
   }
 
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
+  return containsParams(container.queryParams, containee.queryParams) &&
       containsSegmentGroup(container.root, containee.root);
 }
 
 function equalQueryParams(container: Params, containee: Params): boolean {
   // TODO: This does not handle array params correctly.
   return shallowEqual(container, containee);
+}
+
+function equalMatrixParams(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
+  const containerParams = container.children[PRIMARY_OUTLET] ?
+      container.children[PRIMARY_OUTLET].segments.map((s) => s.parameters) :
+      [];
+  const containeeParams = containee.children[PRIMARY_OUTLET] ?
+      containee.children[PRIMARY_OUTLET].segments.map((s) => s.parameters) :
+      [];
+  return shallowEqualArrays(containerParams, containeeParams);
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -38,7 +49,7 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
   return true;
 }
 
-function containsQueryParams(container: Params, containee: Params): boolean {
+function containsParams(container: Params, containee: Params): boolean {
   // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => containee[key] === container[key]);
