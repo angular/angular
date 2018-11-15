@@ -200,6 +200,7 @@ export class R3Injector {
       defOrWrappedDef: InjectorType<any>|InjectorTypeWithProviders<any>,
       parents: InjectorType<any>[], dedupStack: InjectorType<any>[]) {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
+    if (!defOrWrappedDef) return;
 
     // Either the defOrWrappedDef is an InjectorType (with ngInjectorDef) or an
     // InjectorDefTypeWithProviders (aka ModuleWithProviders). Detecting either is a megamorphic

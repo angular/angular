@@ -10,8 +10,9 @@ import {TemplateRef, ViewContainerRef} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
-import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
+import {whenRendered} from '../../src/render3/component';
+import {LifecycleHooksFeature, defineComponent, defineDirective, getRenderedText, templateRefExtractor} from '../../src/render3/index';
+
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';

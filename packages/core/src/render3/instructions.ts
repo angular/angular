@@ -163,15 +163,14 @@ function refreshChildComponents(
 }
 
 export function createLViewData<T>(
-    renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
-    sanitizer?: Sanitizer | null, injector?: Injector | null): LViewData {
-  const viewData = getViewData();
+    parentViewData: LViewData | null, renderer: Renderer3, tView: TView, context: T | null,
+    flags: LViewFlags, sanitizer?: Sanitizer | null, injector?: Injector | null): LViewData {
   const instance = tView.blueprint.slice() as LViewData;
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
-  instance[PARENT] = instance[DECLARATION_VIEW] = viewData;
+  instance[PARENT] = instance[DECLARATION_VIEW] = parentViewData;
   instance[CONTEXT] = context;
   instance[INJECTOR as any] =
-      injector === undefined ? (viewData ? viewData[INJECTOR] : null) : injector;
+      injector === undefined ? (parentViewData ? parentViewData[INJECTOR] : null) : injector;
   instance[RENDERER] = renderer;
   instance[SANITIZER] = sanitizer || null;
   return instance;
@@ -299,16 +298,15 @@ export function renderTemplate<T>(
     setRenderer(renderer);
 
     // We need to create a root view so it's possible to look up the host element through its index
-    enterView(
-        createLViewData(
-            renderer, createTView(-1, null, 1, 0, null, null, null), {},
-            LViewFlags.CheckAlways | LViewFlags.IsRoot),
-        null);
+    const lView = createLViewData(
+        null, renderer, createTView(-1, null, 1, 0, null, null, null), {},
+        LViewFlags.CheckAlways | LViewFlags.IsRoot);
+    enterView(lView, null);
 
     const componentTView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
-    hostView =
-        createLViewData(renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer);
+    hostView = createLViewData(
+        lView, renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer);
     hostView[HOST_NODE] = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
   }
   renderComponentOrTemplate(hostView, context, null, templateFn);
@@ -329,8 +327,8 @@ export function createEmbeddedViewAndNode<T>(
   setIsParent(true);
   setPreviousOrParentTNode(null !);
 
-  const lView =
-      createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+  const lView = createLViewData(
+      declarationView, renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
   lView[DECLARATION_VIEW] = declarationView;
 
   if (queries) {
@@ -1672,7 +1670,7 @@ function addComponentLogic<T>(
   const componentView = addToViewTree(
       viewData, previousOrParentTNode.index as number,
       createLViewData(
-          getRendererFactory().createRenderer(native as RElement, def), tView, null,
+          getViewData(), getRendererFactory().createRenderer(native as RElement, def), tView, null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, getCurrentSanitizer()));
 
   componentView[HOST_NODE] = previousOrParentTNode as TElementNode;
@@ -2000,7 +1998,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     viewToRender = createLViewData(
-        getRenderer(),
+        getViewData(), getRenderer(),
         getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
 
@@ -2469,6 +2467,8 @@ function updateViewQuery<T>(
  * can be provided.
  *
  * @param component Component to mark as dirty.
+ *
+ * @publicApi
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');

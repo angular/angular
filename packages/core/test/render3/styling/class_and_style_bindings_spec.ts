@@ -33,7 +33,7 @@ describe('style and class based bindings', () => {
     const rootContext =
         createRootContext(requestAnimationFrame.bind(window), playerHandler || null);
     const lViewData = createLViewData(
-        domRendererFactory3.createRenderer(element, null),
+        null, domRendererFactory3.createRenderer(element, null),
         createTView(-1, null, 1, 0, null, null, null), rootContext, LViewFlags.IsRoot);
     return lViewData;
   }

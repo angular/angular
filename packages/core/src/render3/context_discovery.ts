@@ -8,11 +8,13 @@
 import './ng_dev_mode';
 
 import {assertEqual} from './assert';
+import {EMPTY_ARRAY} from './definition';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LViewData, TVIEW} from './interfaces/view';
 import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+
 
 
 /** Returns the matching `LContext` data for a given DOM node, directive or component instance.
@@ -31,6 +33,8 @@ import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatched
  * will be updated with a new context (which is then returned). If the monkey-patch value is not
  * detected for a component/directive instance then it will throw an error (all components and
  * directives should be automatically monkey-patched by ivy).
+ *
+ * @param target Component, Directive or DOM Node.
  */
 export function getContext(target: any): LContext|null {
   let mpValue = readPatchedData(target);
@@ -54,7 +58,7 @@ export function getContext(target: any): LContext|null {
         if (nodeIndex == -1) {
           throw new Error('The provided directive was not found in the application');
         }
-        directives = discoverDirectives(nodeIndex, lViewData, false);
+        directives = getDirectivesAtNodeIndex(nodeIndex, lViewData, false);
       } else {
         nodeIndex = findViaNativeElement(lViewData, target as RElement);
         if (nodeIndex == -1) {
@@ -132,7 +136,8 @@ export function getContext(target: any): LContext|null {
 function createLContext(lViewData: LViewData, nodeIndex: number, native: RElement): LContext {
   return {
     lViewData,
-    nodeIndex: nodeIndex, native,
+    nodeIndex,
+    native,
     component: undefined,
     directives: undefined,
     localRefs: undefined,
@@ -271,13 +276,20 @@ function assertDomElement(element: any) {
  * @param lViewData The target view data
  * @param includeComponents Whether or not to include components in returned directives
  */
-export function discoverDirectives(
+export function getDirectivesAtNodeIndex(
     nodeIndex: number, lViewData: LViewData, includeComponents: boolean): any[]|null {
   const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
   let directiveStartIndex = getDirectiveStartIndex(tNode);
+  if (directiveStartIndex == 0) return EMPTY_ARRAY;
   const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
   if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
   return lViewData.slice(directiveStartIndex, directiveEndIndex);
+}
+
+export function getComponentAtNodeIndex(nodeIndex: number, lViewData: LViewData): {}|null {
+  const tNode = lViewData[TVIEW].data[nodeIndex] as TNode;
+  let directiveStartIndex = getDirectiveStartIndex(tNode);
+  return tNode.flags & TNodeFlags.isComponent ? lViewData[directiveStartIndex] : null;
 }
 
 /**

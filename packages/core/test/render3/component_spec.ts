@@ -7,9 +7,8 @@
  */
 
 import {ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
-import {getRenderedText} from '../../src/render3/component';
 
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
