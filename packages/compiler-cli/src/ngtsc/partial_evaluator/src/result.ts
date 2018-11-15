@@ -10,6 +10,8 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 
+import {DynamicValue} from './dynamic';
+
 
 /**
  * A value resulting from static resolution.
@@ -19,34 +21,7 @@ import {Reference} from '../../imports';
  * available statically.
  */
 export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue;
-
-/**
- * Represents a value which cannot be determined statically.
- *
- * Use `isDynamicValue` to determine whether a `ResolvedValue` is a `DynamicValue`.
- */
-export class DynamicValue {
-  /**
-   * This is needed so the "is DynamicValue" assertion of `isDynamicValue` actually has meaning.
-   *
-   * Otherwise, "is DynamicValue" is akin to "is {}" which doesn't trigger narrowing.
-   */
-  private _isDynamic = true;
-}
-
-/**
- * An internal flyweight for `DynamicValue`. Eventually the dynamic value will carry information
- * on the location of the node that could not be statically computed.
- */
-export const DYNAMIC_VALUE: DynamicValue = new DynamicValue();
-
-/**
- * Used to test whether a `ResolvedValue` is a `DynamicValue`.
- */
-export function isDynamicValue(value: any): value is DynamicValue {
-  return value === DYNAMIC_VALUE;
-}
+    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue<{}>;
 
 /**
  * An array of `ResolvedValue`s.
