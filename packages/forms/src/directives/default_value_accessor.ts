@@ -27,7 +27,7 @@ function _isAndroid(): boolean {
 
 /**
  * @description
- * Provider `InjectionToken` to control if form directives buffer IME input until
+ * Provide this token to control if form directives buffer IME input until
  * the "compositionend" event occurs.
  * @publicApi
  */

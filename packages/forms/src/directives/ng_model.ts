@@ -67,7 +67,7 @@ const resolvedPromise = Promise.resolve(null);
  * To inspect the properties of the associated `FormControl` (like validity state), 
  * export the directive into a local template variable using `ngModel` as the key (ex: `#myVar="ngModel"`).
  * You then access the control using the directive's `control` property, 
- * ut most properties used (like `valid` and `dirty`) fall through to the control anyway for direct access. 
+ * but most properties used (like `valid` and `dirty`) fall through to the control anyway for direct access. 
  * See a full list of properties directly available in `AbstractControlDirective`.
  *
  * @see `RadioControlValueAccessor` 
@@ -84,10 +84,10 @@ const resolvedPromise = Promise.resolve(null);
  * When using the `ngModel` within `<form>` tags, you'll also need to supply a `name` attribute
  * so that the control can be registered with the parent form under that name.
  *
- * In the context of a parent form, when skipping one-way or
- * two-way binding, the parent form syncs the value for you. You access
- * its properties by exporting it into a local template variable using `ngForm` such as (`#f="ngForm"`).
- * Use the variable where needed on form submission.
+ * In the context of a parent form, it's often unnecessary to include one-way or two-way binding, 
+ * as the parent form syncs the value for you. You access its properties by exporting it into a 
+ * local template variable using `ngForm` such as (`#f="ngForm"`). Use the variable where 
+ * needed on form submission.
  *
  * If you do need to populate initial values into your form, using a one-way binding for
  * `ngModel` tends to be sufficient as long as you use the exported form's value rather
@@ -102,7 +102,7 @@ const resolvedPromise = Promise.resolve(null);
  * ### Using a standalone ngModel within a group
  * 
  * The following example shows you how to use a standalone ngModel control
- * within a form. This controls the display of the form, but does't contain form data.
+ * within a form. This controls the display of the form, but doesn't contain form data.
  *
  * ```html
  * <form>
@@ -147,21 +147,22 @@ export class NgModel extends NgControl implements OnChanges,
 
   /**
    * @description
-   * Tracks the name bound to the directive.
+   * Tracks the name bound to the directive. The parent form
+   * uses this name as a key to retrieve this control's value.
    */
   // TODO(issue/24571): remove '!'.
   @Input() name !: string;
 
   /**
    * @description
-   * Tracks whether the control is disabled
+   * Tracks whether the control is disabled.
    */
   // TODO(issue/24571): remove '!'.
   @Input('disabled') isDisabled !: boolean;
 
   /**
    * @description
-   * Tracks the model bound to this directive.
+   * Tracks the value bound to this directive.
    */
   @Input('ngModel') model: any;
 
@@ -169,7 +170,9 @@ export class NgModel extends NgControl implements OnChanges,
    * @description
    * Tracks the configuration options for this `ngModel` instance.
    *
-   * **name**: An alternative to setting the name attribute on the form control element.
+   * **name**: An alternative to setting the name attribute on the form control element. See
+   * the [example](api/forms/NgModel#using-ngmodel-on-a-standalone-control) for using `NgModel`
+   * as a stanaldone control.
    *
    * **standalone**: When set to true, the `ngModel` will not register itself with its parent form,
    * and acts as if it's not in the form. Defaults to false.
@@ -239,7 +242,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               /**
                * @description
-               * The top-level directive for this group if present, otherwise null.
+               * The top-level directive for this conrol if present, otherwise null.
                */
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
@@ -263,7 +266,7 @@ export class NgModel extends NgControl implements OnChanges,
                * @description
                * Sets the new value for the view model and emits an `ngModelChange` event.
                *
-               * @param newValue The new value for the view model.
+               * @param newValue The new value emitted by `ngModelChange`.
                */
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;

@@ -33,16 +33,16 @@ const resolvedPromise = Promise.resolve(null);
  * As soon as you import the `FormsModule`, this directive becomes active by default on
  * all `<form>` tags.  You don't need to add a special selector.
  *
- * You export the directive into a local template variable using `ngForm` as the key
+ * You optionally export the directive into a local template variable using `ngForm` as the key
  * (ex: `#myForm="ngForm"`). This is optional, but useful.  Many properties from the underlying
  * `FormGroup` instance are duplicated on the directive itself, so a reference to it
  * gives you access to the aggregate value and validity status of the form, as well as
  * user interaction properties like `dirty` and `touched`.
  *
  * To register child controls with the form, use `NgModel` with a `name`
- * attribute. You also use `NgModelGroup` to create sub-groups within the form.
+ * attribute. You may use `NgModelGroup` to create sub-groups within the form.
  *
- * You listen to the directive's `ngSubmit` event to be notified when the user has
+ * If necessary, listen to the directive's `ngSubmit` event to be notified when the user has
  * triggered a form submission. The `ngSubmit` event emits the original form
  * submission event.
  *
@@ -127,7 +127,7 @@ export class NgForm extends ControlContainer implements Form,
    * Tracks options for the `NgForm` instance.
    *
    * **updateOn**: Sets as the default `updateOn` value for all child `NgModels` below it
-   * unless explicitly by a child `NgModel` using `ngModelOptions`). Defaults to 'change'.
+   * unless explicitly set by a child `NgModel` using `ngModelOptions`). Defaults to 'change'.
    * Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
@@ -163,7 +163,7 @@ export class NgForm extends ControlContainer implements Form,
   /**
    * @description
    * Returns an array representing the path to this group. Because this directive
-   * always lives at the top level of a form, it always an empty array.
+   * always lives at the top level of a form, it is always an empty array.
    */
   get path(): string[] { return []; }
 
@@ -277,7 +277,7 @@ export class NgForm extends ControlContainer implements Form,
 
   /**
    * @description
-   * Method called with the "submit" event is triggered on the form.
+   * Method called when the "submit" event is triggered on the form.
    * Triggers the `ngSubmit` emitter to emit the "submit" event as its payload.
    *
    * @param $event The "submit" event object

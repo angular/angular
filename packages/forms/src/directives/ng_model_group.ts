@@ -26,12 +26,12 @@ export const modelGroupProvider: any = {
  *
  * This directive can only be used as a child of `NgForm` (within `<form>` tags).
  *
- * Use this directive to create a sub-group within a form. Use this directive to
- * validate a sub-group of your form separately from the rest of your form, or if some
- * values in your domain model make more sense to consume together in a nested object.
+ * Use this directive to validate a sub-group of your form separately from the 
+ * rest of your form, or if some values in your domain model make more sense 
+ * to consume together in a nested object.
  *
  * Provide a name for the sub-group and it will become the key
- * for the sub-group in the form's full value. You also export the directive into
+ * for the sub-group in the form's full value. If you need direct access, export the directive into
  * a local template variable using `ngModelGroup` (ex: `#myGroup="ngModelGroup"`).
  *
  * @usageNotes
