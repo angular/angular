@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {getComponent, getDirectives, getHostComponent, getInjector, getRootComponents} from '../../src/render3/discovery_utils';
+import {ɵmarkDirty as markDirty} from '@angular/core';
+
+import {getComponent, getDirectives, getHostElement, getInjector, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
 import {getPlayers} from '../../src/render3/players';
 import {global} from '../../src/util';
@@ -26,15 +28,20 @@ describe('global utils', () => {
 
     it('should publish getComponent', () => { assertPublished('getComponent', getComponent); });
 
+    it('should publish getViewComponent',
+       () => { assertPublished('getViewComponent', getViewComponent); });
+
     it('should publish getRootComponents',
        () => { assertPublished('getRootComponents', getRootComponents); });
 
     it('should publish getDirectives', () => { assertPublished('getDirectives', getDirectives); });
 
     it('should publish getHostComponent',
-       () => { assertPublished('getHostComponent', getHostComponent); });
+       () => { assertPublished('getHostElement', getHostElement); });
 
     it('should publish getInjector', () => { assertPublished('getInjector', getInjector); });
+
+    it('should publish markDirty', () => { assertPublished('markDirty', markDirty); });
 
     it('should publish getPlayers', () => { assertPublished('getPlayers', getPlayers); });
   });

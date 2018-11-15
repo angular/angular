@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {global} from '../util';
-import {getComponent, getDirectives, getHostComponent, getInjector, getPlayers, getRootComponents} from './global_utils_api';
+
+import {assertDefined} from './assert';
+import {getComponent, getDirectives, getHostElement, getInjector, getPlayers, getRootComponents, getViewComponent, markDirty} from './global_utils_api';
+
+
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -37,11 +41,13 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
     publishGlobalUtil('getComponent', getComponent);
-    publishGlobalUtil('getHostComponent', getHostComponent);
+    publishGlobalUtil('getViewComponent', getViewComponent);
+    publishGlobalUtil('getHostElement', getHostElement);
     publishGlobalUtil('getInjector', getInjector);
     publishGlobalUtil('getRootComponents', getRootComponents);
     publishGlobalUtil('getDirectives', getDirectives);
     publishGlobalUtil('getPlayers', getPlayers);
+    publishGlobalUtil('markDirty', markDirty);
   }
 }
 
@@ -55,6 +61,7 @@ export declare type GlobalDevModeContainer = {
  */
 export function publishGlobalUtil(name: string, fn: Function): void {
   const w = global as any as GlobalDevModeContainer;
+  ngDevMode && assertDefined(fn, 'function not defined');
   if (w) {
     let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
     if (!container) {

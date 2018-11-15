@@ -13,9 +13,10 @@ import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
-import {getComponentViewByInstance} from './context_discovery';
+import {getContext} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {getHostElement} from './discovery_utils';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
@@ -26,6 +27,7 @@ import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './inte
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, leaveView, resetComponentState} from './state';
 import {defaultScheduler, getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -121,8 +123,8 @@ export function renderComponent<T>(
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LViewData = createLViewData(
-      renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, undefined,
-      opts.injector || null);
+      null, renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags,
+      undefined, opts.injector || null);
 
   const oldView = enterView(rootView, null);
   let component: T;
@@ -159,7 +161,7 @@ export function createRootComponentView(
   resetComponentState();
   const tView = rootView[TVIEW];
   const componentView = createLViewData(
-      renderer,
+      rootView, renderer,
       getOrCreateTView(
           def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
       null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer);
@@ -243,32 +245,6 @@ function getRootContext(component: any): RootContext {
   return rootContext;
 }
 
-/**
- * Retrieve the host element of the component.
- *
- * Use this function to retrieve the host element of the component. The host
- * element is the element which the component is associated with.
- *
- * @param component Component for which the host element should be retrieved.
- */
-export function getHostElement<T>(component: T): HTMLElement {
-  return readElementValue(getComponentViewByInstance(component)) as HTMLElement;
-}
-
-/**
- * Retrieves the rendered text for a given component.
- *
- * This function retrieves the host element of a component and
- * and then returns the `textContent` for that element. This implies
- * that the text returned will include re-projected content of
- * the component as well.
- *
- * @param component The component to return the content text for.
- */
-export function getRenderedText(component: any): string {
-  const hostElement = getHostElement(component);
-  return hostElement.textContent || '';
-}
 
 /**
  * Wait on component until it is rendered.
