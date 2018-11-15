@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
 
@@ -1033,6 +1033,72 @@ describe('ViewContainerRef', () => {
             .toEqual(
                 '<p vcref=""></p><embedded-cmp>foo</embedded-cmp><embedded-cmp>foo</embedded-cmp>');
         expect(templateExecutionCounter).toEqual(5);
+      });
+
+      describe('ComponentRef', () => {
+        let dynamicComp !: DynamicComp;
+
+        class AppComp {
+          constructor(public vcr: ViewContainerRef, public cfr: ComponentFactoryResolver) {}
+
+          static ngComponentDef = defineComponent({
+            type: AppComp,
+            selectors: [['app-comp']],
+            factory:
+                () => new AppComp(
+                    directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
+            consts: 0,
+            vars: 0,
+            template: (rf: RenderFlags, cmp: AppComp) => {}
+          });
+        }
+
+        class DynamicComp {
+          doCheckCount = 0;
+
+          ngDoCheck() { this.doCheckCount++; }
+
+          static ngComponentDef = defineComponent({
+            type: DynamicComp,
+            selectors: [['dynamic-comp']],
+            factory: () => dynamicComp = new DynamicComp(),
+            consts: 0,
+            vars: 0,
+            template: (rf: RenderFlags, cmp: DynamicComp) => {}
+          });
+        }
+
+        it('should return ComponentRef with ChangeDetectorRef attached to root view', () => {
+          const fixture = new ComponentFixture(AppComp);
+
+          const dynamicCompFactory = fixture.component.cfr.resolveComponentFactory(DynamicComp);
+          const ref = fixture.component.vcr.createComponent(dynamicCompFactory);
+          fixture.update();
+          expect(dynamicComp.doCheckCount).toEqual(1);
+
+          // The change detector ref should be attached to the root view that contains
+          // DynamicComp, so the doCheck hook for DynamicComp should run upon ref.detectChanges().
+          ref.changeDetectorRef.detectChanges();
+          expect(dynamicComp.doCheckCount).toEqual(2);
+          expect((ref.changeDetectorRef as any).context).toBeNull();
+        });
+
+        it('should return ComponentRef that can retrieve component ChangeDetectorRef through its injector',
+           () => {
+             const fixture = new ComponentFixture(AppComp);
+
+             const dynamicCompFactory = fixture.component.cfr.resolveComponentFactory(DynamicComp);
+             const ref = fixture.component.vcr.createComponent(dynamicCompFactory);
+             fixture.update();
+             expect(dynamicComp.doCheckCount).toEqual(1);
+
+             // The injector should retrieve the change detector ref for DynamicComp. As such,
+             // the doCheck hook for DynamicComp should NOT run upon ref.detectChanges().
+             const changeDetector = ref.injector.get(ChangeDetectorRef);
+             changeDetector.detectChanges();
+             expect(dynamicComp.doCheckCount).toEqual(1);
+             expect(changeDetector.context).toEqual(dynamicComp);
+           });
       });
 
       class EmbeddedComponentWithNgContent {

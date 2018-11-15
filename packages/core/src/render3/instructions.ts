@@ -9,6 +9,7 @@
 import './ng_dev_mode';
 import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
+import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/injector_compatibility';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
@@ -156,13 +157,14 @@ function refreshChildComponents(
 
 export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
-    sanitizer?: Sanitizer | null): LViewData {
+    sanitizer?: Sanitizer | null, injector?: Injector | null): LViewData {
   const viewData = getViewData();
   const instance = tView.blueprint.slice() as LViewData;
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
   instance[PARENT] = instance[DECLARATION_VIEW] = viewData;
   instance[CONTEXT] = context;
-  instance[INJECTOR] = viewData ? viewData[INJECTOR] : null;
+  instance[INJECTOR as any] =
+      injector === undefined ? (viewData ? viewData[INJECTOR] : null) : injector;
   instance[RENDERER] = renderer;
   instance[SANITIZER] = sanitizer || null;
   return instance;
@@ -680,7 +682,7 @@ export function createTView(
   // that has a host binding, we will update the blueprint with that def's hostVars count.
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
-  return blueprint[TVIEW] = {
+  return blueprint[TVIEW as any] = {
     id: viewIndex,
     blueprint: blueprint,
     template: templateFn,

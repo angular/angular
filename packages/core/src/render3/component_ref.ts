@@ -20,9 +20,10 @@ import {Type} from '../type';
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
+import {NodeInjector} from './di';
 import {createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
-import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {FLAGS, HEADER_OFFSET, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
@@ -138,10 +139,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         ngModule && !isInternalRootView ? ngModule.injector.get(ROOT_CONTEXT) : createRootContext();
 
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
+    const rootViewInjector =
+        ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
-        renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-    rootView[INJECTOR] = ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
+        renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, undefined,
+        rootViewInjector);
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
@@ -198,8 +201,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     }
 
     const componentRef = new ComponentRef(
-        this.componentType, component, rootView, injector,
-        createElementRef(viewEngine_ElementRef, tElementNode, rootView));
+        this.componentType, component,
+        createElementRef(viewEngine_ElementRef, tElementNode, rootView), rootView, tElementNode);
 
     if (isInternalRootView) {
       // The host element of the internal root view is attached to the component's host view node
@@ -232,22 +235,23 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
  */
 export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   destroyCbs: (() => void)[]|null = [];
-  injector: Injector;
   instance: T;
   hostView: ViewRef<T>;
   changeDetectorRef: ViewEngine_ChangeDetectorRef;
   componentType: Type<T>;
 
   constructor(
-      componentType: Type<T>, instance: T, rootView: LViewData, injector: Injector,
-      public location: viewEngine_ElementRef) {
+      componentType: Type<T>, instance: T, public location: viewEngine_ElementRef,
+      private _rootView: LViewData,
+      private _tNode: TElementNode|TContainerNode|TElementContainerNode) {
     super();
     this.instance = instance;
-    this.hostView = this.changeDetectorRef = new RootViewRef<T>(rootView);
-    this.hostView._tViewNode = createViewNode(-1, rootView);
-    this.injector = injector;
+    this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootView);
+    this.hostView._tViewNode = createViewNode(-1, _rootView);
     this.componentType = componentType;
   }
+
+  get injector(): Injector { return new NodeInjector(this._tNode, this._rootView); }
 
   destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
