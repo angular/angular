@@ -275,6 +275,8 @@ export class RootViewRef<T> extends ViewRef<T> {
   detectChanges(): void { detectChangesInRootView(this._view); }
 
   checkNoChanges(): void { checkNoChangesInRootView(this._view); }
+
+  get context(): T { return null !; }
 }
 
 function collectNativeNodes(lView: LViewData, parentTNode: TNode, result: any[]): any[] {

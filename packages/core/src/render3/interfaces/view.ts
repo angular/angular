@@ -69,7 +69,7 @@ export interface LViewData extends Array<any> {
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  [TVIEW]: TView;
+  readonly[TVIEW]: TView;
 
   /** Flags for this view. See LViewFlags for more info. */
   [FLAGS]: LViewFlags;
@@ -147,7 +147,7 @@ export interface LViewData extends Array<any> {
   [CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  [INJECTOR]: Injector|null;
+  readonly[INJECTOR]: Injector|null;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer3;
