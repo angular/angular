@@ -26,10 +26,10 @@ const {outputDir, packagesDir, projectDir} = buildConfig;
 /** Path to the directory where all bundles live. */
 const bundlesDir = join(outputDir, 'bundles');
 
-const appDir = join(packagesDir, 'demo-app');
-const outDir = join(outputDir, 'packages', 'demo-app');
+const appDir = join(packagesDir, 'dev-app');
+const outDir = join(outputDir, 'packages', 'dev-app');
 
-/** Array of vendors that are required to serve the demo-app. */
+/** Array of vendors that are required to serve the dev-app. */
 const appVendors = [
   '@angular',
   'systemjs',
@@ -42,13 +42,13 @@ const appVendors = [
   '@webcomponents',
 ];
 
-/** Glob that matches all required vendors for the demo-app. */
+/** Glob that matches all required vendors for the dev-app. */
 const vendorGlob = `+(${appVendors.join('|')})/**/*.+(html|css|js|map)`;
 
 /** Glob that matches all assets that need to be copied to the output. */
 const assetsGlob = join(appDir, `**/*.+(html|css|svg|ico)`);
 
-/** Path to the demo-app tsconfig file. */
+/** Path to the dev-app tsconfig file. */
 const tsconfigPath = join(appDir, 'tsconfig-build.json');
 
 task(':build:devapp:ts', tsBuildTask(tsconfigPath));
@@ -70,7 +70,7 @@ task('build:devapp', sequenceTask(
   'material-examples:build-no-bundles',
   [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts'],
   // Inline all component resources because otherwise SystemJS tries to load HTML, CSS and
-  // JavaScript files which makes loading the demo-app extremely slow.
+  // JavaScript files which makes loading the dev-app extremely slow.
   ':build:devapp:inline-resources',
 ));
 
@@ -81,7 +81,7 @@ task('serve:devapp', ['build:devapp'], sequenceTask([':serve:devapp', ':watch:de
  * serve task with a middleware. e.g. on Firebase hosting.
  */
 
-/** Task that copies all vendors into the demo-app package. Allows hosting the app on firebase. */
+/** Task that copies all vendors into the dev-app package. Allows hosting the app on firebase. */
 task('stage-deploy:devapp', ['build:devapp'], () => {
   copyFiles(join(projectDir, 'node_modules'), vendorGlob, join(outDir, 'node_modules'));
   copyFiles(bundlesDir, '*.+(js|map)', join(outDir, 'dist/bundles'));
@@ -100,14 +100,14 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
 });
 
 /**
- * Task that deploys the demo-app to Firebase. Firebase project will be the one that is
+ * Task that deploys the dev-app to Firebase. Firebase project will be the one that is
  * set for project directory using the Firebase CLI.
  */
 task('deploy:devapp', ['stage-deploy:devapp'], () => {
   return firebaseTools.deploy({cwd: projectDir, only: 'hosting'})
     // Firebase tools opens a persistent websocket connection and the process will never exit.
     .then(() => {
-      console.log('Successfully deployed the demo-app to firebase');
+      console.log('Successfully deployed the dev-app to firebase');
       process.exit(0);
     })
     .catch((err: any) => {
@@ -127,7 +127,7 @@ task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.scss'), [':watch:devapp:rebuild-scss']);
   watchFiles(join(appDir, '**/*.html'), [':watch:devapp:rebuild-html']);
 
-  // Custom watchers for all packages that are used inside of the demo-app. This is necessary
+  // Custom watchers for all packages that are used inside of the dev-app. This is necessary
   // because we only want to build the changed package (using the build-no-bundles task).
 
   // CDK package watchers.

@@ -1,4 +1,4 @@
-// TypeScript config that extends the demo-app tsconfig file. This config compiles the
+// TypeScript config that extends the dev-app tsconfig file. This config compiles the
 // "main-aot.ts" file and also enables templage code generation / AOT.
 {
   "extends": "./tsconfig-build",
@@ -11,12 +11,12 @@
     "strictFunctionTypes": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "outDir": "../../dist/packages/demo-app",
+    "outDir": "../../dist/packages/dev-app",
     "rootDirs": [
       ".",
       // Include the package output here because otherwise NGC won't be able to load
       // the SCSS files.
-      "../../dist/packages/demo-app"
+      "../../dist/packages/dev-app"
     ],
     "paths": {
       "@angular/material/*": ["../../dist/releases/material/*"],
@@ -32,8 +32,8 @@
     }
   },
   "files": [
-    "./demo-app-types.d.ts",
-    "./demo-app-module.ts",
+    "./typings.d.ts",
+    "./dev-app-module.ts",
     "./main-aot.ts"
   ],
   "angularCompilerOptions": {

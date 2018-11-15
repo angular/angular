@@ -17,7 +17,7 @@ import {DialogAccessibilityDemo} from './dialog/dialog-a11y';
 import {ExpansionPanelAccessibilityDemo} from './expansion/expansion-a11y';
 import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
-import {AccessibilityHome} from './a11y';
+import {AccessibilityDemoHome} from './a11y-demo';
 import {ToolbarAccessibilityDemo} from './toolbar/toolbar-a11y';
 import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {IconAccessibilityDemo} from './icon/icon-a11y';
@@ -40,7 +40,7 @@ import {SidenavDualAccessibilityDemo} from './sidenav/dual-sidenav-a11y';
 import {SidenavMobileAccessibilityDemo} from './sidenav/mobile-sidenav-a11y';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
-  {path: '', component: AccessibilityHome},
+  {path: '', component: AccessibilityDemoHome},
   {path: 'autocomplete', component: AutocompleteAccessibilityDemo},
   {path: 'button', component: ButtonAccessibilityDemo},
   {path: 'button-toggle', component: ButtonToggleAccessibilityDemo},

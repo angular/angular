@@ -24,7 +24,7 @@ greatly in keeping the library stable by running against the tests of many appli
 Google. Due to the volume of tests involved, this process means that there can be some delay
 between a PR being approved and it being merged.
 
-The "merge safe" label means that the change doesn't affect the library itself (or the demo-app),
+The "merge safe" label means that the change doesn't affect the library itself (or the dev-app),
 and thus can be merged without this extra presubmit.
 
 The "presubmit failure" label means that the PR has encountered some failure during presubmit and

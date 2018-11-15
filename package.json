@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "gulp :publish:build-releases",
-    "demo-app": "gulp serve:devapp",
+    "dev-app": "gulp serve:devapp",
     "test": "gulp test",
     "lint": "gulp lint",
     "e2e": "gulp e2e",

@@ -8,10 +8,10 @@
 
 import {NgModule} from '@angular/core';
 import {TableDemo} from './table-demo';
-import {MaterialExampleModule} from '../example/example-module';
+import {ExamplePageModule} from '../example/example-module';
 
 @NgModule({
-  imports: [MaterialExampleModule],
+  imports: [ExamplePageModule],
   declarations: [TableDemo],
 })
 export class TableDemoModule { }

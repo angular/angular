@@ -1,0 +1,45 @@
+<section>
+  <h2>Mouse over or tab to trigger a tooltip</h2>
+  <p>Mouse over or focus the button to show and hide the tooltip</p>
+  <button mat-raised-button matTooltip="This is an example of a tooltip">What is this?</button>
+</section>
+
+
+<section>
+  <h2>Click to trigger a tooltip</h2>
+  <button mat-raised-button (click)="tooltip.toggle(); $event.stopPropagation()">Toggle the tooltip</button>
+  <button mat-raised-button matTooltip="This is a tooltip that shows on click" #tooltip="matTooltip">I have a tooltip</button>
+</section>
+
+
+<section>
+  <h2>Different tooltip positions</h2>
+
+  <button
+    mat-raised-button
+    matTooltip="This tooltip appears below the trigger"
+    matTooltipPosition="below">Below</button>
+
+  <button
+    mat-raised-button
+    matTooltip="This tooltip appears above the trigger"
+    matTooltipPosition="above">Above</button>
+
+  <button
+    mat-raised-button
+    matTooltip="This tooltip appears to the left of the trigger"
+    matTooltipPosition="left">Left</button>
+
+  <button
+    mat-raised-button
+    matTooltip="This tooltip appears to the right of the trigger"
+    matTooltipPosition="right">Right</button>
+</section>
+
+<section>
+  <h2>Delayed tooltip</h2>
+  <button
+    mat-raised-button
+    matTooltip="This tooltip will show up after a delay"
+    [matTooltipShowDelay]="2000">What is this?</button>
+</section>

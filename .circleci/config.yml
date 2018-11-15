@@ -157,10 +157,10 @@ jobs:
     - run: ./scripts/circleci/run-saucelabs-tests.sh
 
   # -----------------------------------------------------------------------------------------
-  # Job that builds the demo-app with AOT. In order to speed up this job, the release output
+  # Job that builds the dev-app with AOT. In order to speed up this job, the release output
   # from the workspace storage will be attached to this job.
   # -----------------------------------------------------------------------------------------
-  build_demoapp_aot:
+  build_devapp_aot:
     <<: *job_defaults
     steps:
       - *checkout_code
@@ -197,7 +197,7 @@ jobs:
 
   # -------------------------------------------------------------------------------------------
   # Job that builds all release packages with Gulp. The built packages can be then used in the
-  # same workflow to publish snapshot builds or test the demo-app with the release packages.
+  # same workflow to publish snapshot builds or test the dev-app with the release packages.
   # -------------------------------------------------------------------------------------------
   build_release_packages:
     <<: *job_defaults
@@ -298,7 +298,7 @@ workflows:
   release_output:
     jobs:
       - build_release_packages
-      - build_demoapp_aot:
+      - build_devapp_aot:
           requires:
             - build_release_packages
       - publish_snapshots:

@@ -102,7 +102,7 @@ System.config({
     'rxjs': {main: 'index'},
     'rxjs/operators': {main: 'index'},
 
-    // Set the default extension for the root package, because otherwise the demo-app can't
+    // Set the default extension for the root package, because otherwise the tests can't
     // be built within the production mode. Due to missing file extensions.
     '.': {
       defaultExtension: 'js'

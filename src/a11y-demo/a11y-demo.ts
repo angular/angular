@@ -10,23 +10,13 @@ import {Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
 
-
 @Component({
   moduleId: module.id,
-  selector: 'accessibility-home',
-  template: `<p>Welcome to the accessibility demos for Angular Material!</p>`,
+  templateUrl: 'a11y-demo.html',
+  styleUrls: ['a11y-demo.css'],
 })
-export class AccessibilityHome {}
-
-@Component({
-  moduleId: module.id,
-  selector: 'accessibility-demo',
-  templateUrl: 'a11y.html',
-  styleUrls: ['a11y.css'],
-})
-export class AccessibilityDemo implements OnDestroy {
+export class AccessibilityDemoRoot implements OnDestroy {
   currentComponent = '';
-
   fullscreen = false;
 
   private _routerSubscription = Subscription.EMPTY;
@@ -90,3 +80,10 @@ export class AccessibilityDemo implements OnDestroy {
     this._routerSubscription.unsubscribe();
   }
 }
+
+@Component({
+  moduleId: module.id,
+  selector: 'accessibility-home',
+  template: `<p>Welcome to the accessibility examples for Angular Material!</p>`,
+})
+export class AccessibilityDemoHome {}

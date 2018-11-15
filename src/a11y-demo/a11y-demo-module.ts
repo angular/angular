@@ -10,8 +10,9 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {DemoMaterialModule} from '../demo-material-module';
-import {AccessibilityDemo, AccessibilityHome} from './a11y';
+import {AccessibilityDemoHome, AccessibilityDemoRoot} from './a11y-demo';
+import {ACCESSIBILITY_DEMO_ROUTES} from './a11y-demo-routes';
+import {DemoMaterialModule} from './a11y-material-module';
 import {AutocompleteAccessibilityDemo} from './autocomplete/autocomplete-a11y';
 import {ButtonToggleAccessibilityDemo} from './button-toggle/button-toggle-a11y';
 import {ButtonAccessibilityDemo} from './button/button-a11y';
@@ -36,7 +37,6 @@ import {MenuAccessibilityDemo} from './menu/menu-a11y';
 import {ProgressBarAccessibilityDemo} from './progress-bar/progress-bar-a11y';
 import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
-import {ACCESSIBILITY_DEMO_ROUTES} from './routes';
 import {SelectAccessibilityDemo} from './select/select-a11y';
 import {SidenavBasicAccessibilityDemo} from './sidenav/basic-sidenav-a11y';
 import {SidenavDualAccessibilityDemo} from './sidenav/dual-sidenav-a11y';
@@ -75,8 +75,8 @@ export class AccessibilityRoutingModule {}
     ReactiveFormsModule,
   ],
   declarations: [
-    AccessibilityDemo,
-    AccessibilityHome,
+    AccessibilityDemoHome,
+    AccessibilityDemoRoot,
     AutocompleteAccessibilityDemo,
     ButtonAccessibilityDemo,
     ButtonToggleAccessibilityDemo,

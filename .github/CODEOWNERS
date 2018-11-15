@@ -94,58 +94,59 @@
 /guides/**                                         @jelbourn
 /src/material-examples/**                          @jelbourn
 
-# Demo app
-/src/demo-app/*                                    @jelbourn
-/src/demo-app/a11y/**                              @jelbourn
-/src/demo-app/autocomplete/**                      @crisbeto
-/src/demo-app/badge/**                             @jelbourn
-/src/demo-app/baseline/**                          @mmalerba
-/src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
-/src/demo-app/button-toggle/**                     @jelbourn
-/src/demo-app/button/**                            @jelbourn
-/src/demo-app/card/**                              @jelbourn
-/src/demo-app/checkbox/**                          @jelbourn @devversion
-/src/demo-app/chips/**                             @jelbourn
-/src/demo-app/connected-overlay/**                 @jelbourn @crisbeto
-/src/demo-app/dataset/**                           @andrewseguin
-/src/demo-app/datepicker/**                        @mmalerba
-/src/demo-app/demo-app/**                          @jelbourn
-/src/demo-app/dialog/**                            @jelbourn @crisbeto
-/src/demo-app/drawer/**                            @mmalerba
-/src/demo-app/drag-drop/**                         @crisbeto
-/src/demo-app/example/**                           @andrewseguin
-/src/demo-app/examples-page/**                     @andrewseguin
-/src/demo-app/expansion/**                         @josephperrott
-/src/demo-app/focus-origin/**                      @mmalerba
-/src/demo-app/gestures/**                          @jelbourn
-/src/demo-app/grid-list/**                         @jelbourn
-/src/demo-app/icon/**                              @jelbourn
-/src/demo-app/input/**                             @mmalerba
-/src/demo-app/list/**                              @jelbourn @crisbeto @devversion
-/src/demo-app/live-announcer/**                    @jelbourn
-/src/demo-app/menu/**                              @crisbeto
-/src/demo-app/overlay/**                           @jelbourn @crisbeto
-/src/demo-app/paginator/**                         @andrewseguin
-/src/demo-app/platform/**                          @jelbourn @devversion
-/src/demo-app/portal/**                            @jelbourn
-/src/demo-app/progress-bar/**                      @jelbourn @crisbeto @josephperrott
-/src/demo-app/progress-spinner/**                  @jelbourn @crisbeto @josephperrott
-/src/demo-app/radio/**                             @jelbourn @devversion
-/src/demo-app/ripple/**                            @devversion
-/src/demo-app/screen-type/**                       @josephperrott
-/src/demo-app/select/**                            @crisbeto
-/src/demo-app/sidenav/**                           @mmalerba
-/src/demo-app/slide-toggle/**                      @devversion
-/src/demo-app/slider/**                            @mmalerba
-/src/demo-app/snack-bar/**                         @jelbourn @crisbeto @josephperrott
-/src/demo-app/stepper/**                           @mmalerba
-/src/demo-app/table/**                             @andrewseguin
-/src/demo-app/tabs/**                              @andrewseguin
-/src/demo-app/toolbar/**                           @devversion
-/src/demo-app/tooltip/**                           @andrewseguin
-/src/demo-app/tree/**                              @jelbourn
-/src/demo-app/typography/**                        @crisbeto
-/src/demo-app/virtual-scroll/**                    @mmalerba
+# Accessibility demos
+/src/a11y-demo/**/*                                @jelbourn
+
+# Dev-app
+/src/dev-app/*                                     @jelbourn
+/src/dev-app/autocomplete/**                       @crisbeto
+/src/dev-app/badge/**                              @jelbourn
+/src/dev-app/baseline/**                           @mmalerba
+/src/dev-app/bottom-sheet/**                       @jelbourn @crisbeto
+/src/dev-app/button-toggle/**                      @jelbourn
+/src/dev-app/button/**                             @jelbourn
+/src/dev-app/card/**                               @jelbourn
+/src/dev-app/checkbox/**                           @jelbourn @devversion
+/src/dev-app/chips/**                              @jelbourn
+/src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
+/src/dev-app/dataset/**                            @andrewseguin
+/src/dev-app/datepicker/**                         @mmalerba
+/src/dev-app/dialog/**                             @jelbourn @crisbeto
+/src/dev-app/drawer/**                             @mmalerba
+/src/dev-app/drag-drop/**                          @crisbeto
+/src/dev-app/example/**                            @andrewseguin
+/src/dev-app/examples-page/**                      @andrewseguin
+/src/dev-app/expansion/**                          @josephperrott
+/src/dev-app/focus-origin/**                       @mmalerba
+/src/dev-app/gestures/**                           @jelbourn
+/src/dev-app/grid-list/**                          @jelbourn
+/src/dev-app/icon/**                               @jelbourn
+/src/dev-app/input/**                              @mmalerba
+/src/dev-app/list/**                               @jelbourn @crisbeto @devversion
+/src/dev-app/menu/**                               @crisbeto
+/src/dev-app/live-announcer/**                     @jelbourn
+/src/dev-app/overlay/**                            @jelbourn @crisbeto
+/src/dev-app/paginator/**                          @andrewseguin
+/src/dev-app/platform/**                           @jelbourn @devversion
+/src/dev-app/portal/**                             @jelbourn
+/src/dev-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
+/src/dev-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott
+/src/dev-app/radio/**                              @jelbourn @devversion
+/src/dev-app/ripple/**                             @devversion
+/src/dev-app/screen-type/**                        @josephperrott
+/src/dev-app/select/**                             @crisbeto
+/src/dev-app/sidenav/**                            @mmalerba
+/src/dev-app/slide-toggle/**                       @devversion
+/src/dev-app/slider/**                             @mmalerba
+/src/dev-app/snack-bar/**                          @jelbourn @crisbeto @josephperrott
+/src/dev-app/stepper/**                            @mmalerba
+/src/dev-app/table/**                              @andrewseguin
+/src/dev-app/tabs/**                               @andrewseguin
+/src/dev-app/toolbar/**                            @devversion
+/src/dev-app/tooltip/**                            @andrewseguin
+/src/dev-app/tree/**                               @jelbourn
+/src/dev-app/typography/**                         @crisbeto
+/src/dev-app/virtual-scroll/**                     @mmalerba
 
 # E2E app
 /e2e/*                                             @jelbourn

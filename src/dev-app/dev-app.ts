@@ -9,43 +9,15 @@
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
 
-
-/**
- * The entry app for demo site. Routes under `accessibility` will use AccessibilityDemo component,
- * while other demos will use `DemoApp` component. Since DemoApp and AccessibilityDemo use
- * different templates (DemoApp has toolbar and sidenav), we use this EntryApp in index.html
- * as our entry point.
- */
+/** Root component for the dev-app demos. */
 @Component({
   moduleId: module.id,
-  selector: 'entry-app',
-  template: '<router-outlet></router-outlet>',
-})
-export class EntryApp {}
-
-/**
- * Home component for welcome message in DemoApp.
- */
-@Component({
-  selector: 'home',
-  template: `
-    <p>Welcome to the development demos for Angular Material!</p>
-    <p>Open the sidenav to select a demo.</p>
-  `,
-})
-export class Home {}
-
-/**
- * DemoApp with toolbar and sidenav.
- */
-@Component({
-  moduleId: module.id,
-  selector: 'demo-app',
-  templateUrl: 'demo-app.html',
-  styleUrls: ['demo-app.css'],
+  selector: 'dev-app',
+  templateUrl: 'dev-app.html',
+  styleUrls: ['dev-app.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class DemoApp {
+export class DevAppComponent {
   dark = false;
   navItems = [
     {name: 'Examples', route: '/examples'},
@@ -127,3 +99,14 @@ export class DemoApp {
     }
   }
 }
+
+
+/** Home component which includes a welcome message for the dev-app. */
+@Component({
+  selector: 'home',
+  template: `
+    <p>Welcome to the development demos for Angular Material!</p>
+    <p>Open the sidenav to select a demo.</p>
+  `,
+})
+export class DevAppHome {}

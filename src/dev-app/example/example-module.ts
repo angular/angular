@@ -18,4 +18,4 @@ import {Example} from './example';
   declarations: [Example, ExampleList],
   exports: [Example, ExampleList]
 })
-export class MaterialExampleModule {}
+export class ExamplePageModule {}
