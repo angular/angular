@@ -228,25 +228,45 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 
 {@a qualify-dependency-lookup}
 
+<!--
 ## Qualify dependency lookup with parameter decorators
+-->
+## 인자 데코레이터로 의존성 객체 보정하기
 
+<!--
 When a class requires a dependency, that dependency is added to the constructor as a parameter.
 When Angular needs to instantiate the class, it calls upon the DI framework to supply the dependency.
 By default, the DI framework searches for a provider in the injector hierarchy,
 starting at the component's local injector of the component, and if necessary bubbling up 
 through the injector tree until it reaches the root injector.
+-->
+클래스에 의존성 객체를 주입하려면 의존성 객체의 타입을 생성자의 인자로 지정하면 됩니다.
+그러면 Angular가 이 클래스의 인스턴스를 생성하면서 의존성 주입 프레임워크에 의존성 객체의 인스턴스를 요청합니다.
+의존성 주입 프레임워크는 인젝터 계층을 따라가면서 프로바이더를 찾기 시작하는데, 이 과정은 의존성 객체 주입을 요청한 컴포넌트 클래스의 인젝터부터 애플리케이션 최상위 인젝터에 도달할 때까지 버블링됩니다.
 
+<!--
 * The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.  
 
 * If no provider is found in the root injector, the DI framework returns null to the constructor.
+-->
+* 의존성 객체를 찾는 과정에서 처음 만나는 프로바이더를 사용해서 인스턴스를 생성하고, 의존성 주입을 요청한 클래스의 생성자에 주입합니다.
 
+* 애플리케이션 최상위 인젝터에 도달할 때까지 프로바이더를 찾지 못하면 에러가 발생합니다.
+
+<!--
 There are a number of options for modifying the default search behavior, using _parameter decorators_
 on the service-valued parameters of a class constructor. 
+-->
+그런데 클래스 생성자에 _인자 데코레이터(parameter decorators)_ 를 지정하면 의존성을 찾는 과정을 변형할 수 있습니다. 이 데코레이터들에 대해 알아봅시다.
 
 {@a optional}
 
+<!--
 ### Make a dependency `@Optional` and limit search with `@Host`
+-->
+### 생략해도 되는 `@Optional`과 탐색 범위를 제한하는 `@Host`
 
+<!--
 Dependencies can be registered at any level in the component hierarchy. 
 When a component requests a dependency, Angular starts with that component's injector 
 and walks up the injector tree until it finds the first suitable provider.  
@@ -255,54 +275,89 @@ Angular throws an error if it can't find the dependency during that walk.
 In some cases, you need to limit the search or accommodate a missing dependency.
 You can modify Angular's search behavior with the `@Host` and `@Optional` qualifying
 decorators on a service-valued parameter of the component's constructor. 
+-->
+의존성 객체는 컴포넌트 계층 중 어떠한 곳에도 자유롭게 등록할 수 있습니다.
+그래서 컴포넌트 클래스가 의존성 객체를 요청하면 Angular는 해당 컴포넌트의 인젝터부터 인젝터를 찾기 시작하며, 적당한 인젝터를 찾을 때까지 인젝터 트리를 따라 올라갑니다.
+그리고 어디에서도 의존성 객체를 찾지 못하면 에러가 발생합니다.
 
+그런데 필요하다면 Angular가 의존성 객체를 찾는 범위를 제한하거나, 의존성 객체를 찾지 못하는 것을 허용할 수도 있습니다.
+이 동작은 생성자에 선언한 인자에 `@Host`와 `@Optional` 보정 데코레이터를 사용하면 됩니다.
+
+<!--
 * The `@Optional` property decorator tells Angular to return null when it can't find the dependency.
 
 * The `@Host` property decorator stops the upward search at the *host component*. 
 The host component is typically the component requesting the dependency. 
 However, when this component is projected into a *parent* component, 
 that parent component becomes the host. The following example covers this second case.
+-->
+* `@Optional` 프로퍼티 데코레이터를 사용하면 의존성 객체를 찾지 못했을 때 에러를 발생하는 대신 `null`을 주입합니다.
 
+* `@Host` 프로퍼티 데코레이터를 사용하면 의존성 객체를 찾는 과정이 *호스트 컴포넌트* 까지만 이루어집니다.
+이 때 호스트 컴포넌트는 일반적으로 의존성 객체를 요청한 컴포넌트를 의미합니다.
+그런데 이 컴포넌트가 *부모* 컴포넌트에 프로젝트된 상태라면 이 경우에는 부모 컴포넌트가 호스트 컴포넌트입니다.
+이 내용에 대해서는 아래에서 자세하게 알아봅시다.
+
+<!--
 These decorators can be used individually or together, as shown in the example.
 This `HeroBiosAndContactsComponent` is a revision of `HeroBiosComponent` which you looked at [above](guide/dependency-injection-in-action#hero-bios-component).
+-->
+아래에서 예제와 함께 다시 설명하겠지만, 이 데코레이터들은 따로 사용할 수도 있고 함께 사용할 수도 있습니다.
+이제부터 자세하게 살펴볼 `HeroBiosAndContactsComponent`는 [위](guide/dependency-injection-in-action#hero-bios-component)에서 살펴본 `HeroBiosComponent`를 변형한 컴포넌트입니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="hero-bios-and-contacts" header="src/app/hero-bios.component.ts (HeroBiosAndContactsComponent)">
 
 </code-example>
 
+<!--
 Focus on the template:
+-->
+템플릿을 자세히 봅시다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="template" header="dependency-injection-in-action/src/app/hero-bios.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 Now there's a new `<hero-contact>` element between the `<hero-bio>` tags.
 Angular *projects*, or *transcludes*, the corresponding `HeroContactComponent` into the `HeroBioComponent` view,
 placing it in the `<ng-content>` slot of the `HeroBioComponent` template.
+-->
+템플릿에는 `<hero-bio>` 태그 안에 `<hero-contact>` 엘리먼트가 선언되어 있습니다.
+그러면 `HeroBioComponent`의 뷰에 있는 `<ng-content>` 안에 `HeroContactComponent`가 *프로젝트(project, transclude)* 됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bio.component.ts" region="template" header="src/app/hero-bio.component.ts (template)" linenums="false">
 
 </code-example>
 
+<!--
 The result is shown below, with the hero's telephone number from `HeroContactComponent` projected above the hero description.
+-->
+이제 이 코드를 실행하면 `HeroContactComponent`에 정의되어 히어로의 전화번호를 입력하는 엘리먼트가 히어로의 정보 위에 다음과 같이 표시됩니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-and-content.png" alt="bio and contact">
 </figure>
 
-
+<!--
 Here's `HeroContactComponent`, which demonstrates the qualifying decorators.
+-->
+그리고 이 때 `HeroContactComponent`에는 보정 데코레이터가 다음과 같이 선언되어 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="component" header="src/app/hero-contact.component.ts">
 
 </code-example>
 
+<!--
 Focus on the constructor parameters.
+-->
+생성자의 인자 선언을 자세히 봅시다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-contact.component.ts" region="ctor-params" header="src/app/hero-contact.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 The `@Host()` function decorating the  `heroCache` constructor property ensures that
 you get a reference to the cache service from the parent `HeroBioComponent`.
 Angular throws an error if the parent lacks that service, even if a component higher
@@ -314,50 +369,86 @@ The host `HeroBioComponent` doesn't have its own `LoggerService` provider.
 
 Angular throws an error if you haven't also decorated the property with `@Optional()`.
 When the property is marked as optional, Angular sets `loggerService` to null and the rest of the component adapts.
+-->
+생성자의 인자인 `heroCache`에 사용된 `@Host()` 함수는 이 인자를 의존성으로 찾을 때 부모 컴포넌트인 `HeroBioComponent`까지만 찾도록 탐색 범위를 제한합니다.
+그러면 이 의존성 객체가 부모 컴포넌트 위쪽에 등록되어 있더라도 부모 컴포넌트까지 이 서비스를 찾지 못하면 에러가 발생합니다.
 
+두번째 `@Host()` 함수는 `loggerService` 생성자 인자에 지정되었습니다.
+그런데 `LoggerService`는 `AppComponent` 계층에만 등록되어 있다고 합시다.
+호스트 컴포넌트인 `HeroBioComponent`에는 `LoggerService`의 프로바이더가 등록되어 있지 않습니다.
 
+만약 `@Optional()` 데코레이터가 사용되지 않았다면 이 코드는 에러가 발생합니다.
+하지만 `loggerService`는 생략할 수 있도록 지정되었기 때문에 의존성 객체의 인스턴스를 찾지 못하더라도 에러가 발생하지 않으며 생성자에는 `null`이 주입됩니다.
+
+<!--
 Here's `HeroBiosAndContactsComponent` in action.
+-->
+`HeroBiosAndContactsComponent`는 이제 아래 그림과 같이 동작합니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios-and-contacts.png" alt="Bios with contact into">
 </figure>
 
 
-
+<!--
 If you comment out the `@Host()` decorator, Angular walks up the injector ancestor tree
 until it finds the logger at the `AppComponent` level. 
 The logger logic kicks in and the hero display updates 
 with the "!!!" marker to indicate that the logger was found.
+-->
+만약 `@Host()` 데코레이터를 제거하면 의존성 객체를 찾는 과정이 `AppComponent` 계층까지 버블링되기 때문에 이 애플리케이션은 에러없이 동작합니다.
+로그도 정상적으로 동작할 것이며, `logger` 인스턴스를 찾았다는 것은 화면에 "!!!"가 표시되는 것으로 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bio-contact-no-host.png" alt="Without @Host">
 </figure>
 
-
+<!--
 If you restore the `@Host()` decorator and comment out `@Optional`,
 the app throws an exception when it cannot find the required logger at the host component level.
+-->
+만약 `@Host()` 데코레이터를 다시 추가하고 `@Optional` 데코레이터를 제거하면, 호스트 컴포넌트 계층까지 탐색했을 때 의존성 객체를 찾을 수 없기 때문에 다음과 같은 에러가 발생합니다.
 
 `EXCEPTION: No provider for LoggerService! (HeroContactComponent -> LoggerService)`
 
+<!--
 ### Supply a custom provider with `@Inject`
+-->
+### `@Inject`로 커스텀 프로바이더 주입하기
 
+<!--
 Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs. The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`. 
+-->
+브라우저 내장 API로 제공되는 객체는 커스텀 프로바이더를 사용해서 의존성으로 주입할 수 있습니다. 아래 예제는 브라우저가 제공하는 API 중 [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)에`InjectionToken`을 사용해서 `BrowserStorageService`로 만드는 예제 코드입니다.
 
 <code-example path="dependency-injection-in-action/src/app/storage.service.ts" header="src/app/storage.service.ts">
 
 </code-example>
 
+<!--
 The `factory` function returns the `localStorage` property that is attached to the browser window object. The `Inject` decorator is a constructor parameter used to specify a custom provider of a dependency. This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interactive with real browser APIs.
+-->
+`factory` 프로퍼티에 지정된 함수는 브라우저의 `window` 객체에서 `localStorage` 프로퍼티를 반환합니다. 그리고 이렇게 만든 커스텀 프로바이더를 생성자의 인자에 주입하기 위해 `@Inject` 데코레이터를 사용했습니다. 이제 커스텀 프로바이더는 기본 환경에서도 동작하지만, 테스트 환경에서 목 API로 `localStorage`를 대체할 때도 사용할 수 있습니다.
 
+<!--
 ### Modify the provider search with `@Self` and `@SkipSelf`
+-->
+### `@Self`와 `@SkipSelf`로 탐색 범위 조정하기
 
+<!--
 Providers can also be scoped by injector through constructor parameter decorators. The following example overrides the `BROWSER_STORAGE` token in the `Component` class `providers` with the `sessionStorage` browser API. The same `BrowserStorageService` is injected twice in the constructor, decorated with `@Self` and `@SkipSelf` to define which injector handles the provider dependency.
+-->
+프로바이더는 생성자의 인자에 사용된 데코레이터의 영향을 받기도 합니다.
+아래 예제에서 `@Component` 데코레이터의 `providers`에 등록된 `BROWSER_STORAGE`는 브라우저에서 API로 제공하는 `sessionStorage`를 오버라이드하는 토큰입니다. 이 때 `BrowserStorageService`는 생성자의 인자로 두 번 지정되었지만, 각각 `@Self`와 `@SkipSelf`가 지정되었기 때문에 의존성 주입이 동작하는 방식이 다릅니다.
 
 <code-example path="dependency-injection-in-action/src/app/storage.component.ts" header="src/app/storage.component.ts">
 
 </code-example>
 
+<!--
 Using the `@Self` decorator, the injector only looks at the component's injector for its providers. The `@SkipSelf` decorator allows you to skip the local injector and look up in the hierarchy to find a provider that satisfies this dependency. The `sessionStorageService` instance interacts with the `BrowserStorageService` using the `sessionStorage` browser API, while the `localStorageService` skips the local injector and uses the root `BrowserStorageService` that uses the `localStorage` browswer API.
+-->
+`@Self` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터에 등록된 프로바이더만 참조합니다. 그리고 `@SkipSelf` 데코레이터가 사용된 의존성 객체는 해당 컴포넌트의 인젝터를 건너뛰고 그 위쪽 인젝터부터 의존성 객체를 찾기 시작합니다. 결국 `sessionStorageService`에 할당되는 것은 이 컴포넌트에 등록된 프로바이더에 따라 브라우저 내장 `sessionStorage`가 될 것이며, `localStorageService`는 이 컴포넌트를 건너뛰고 탐색하도록 지정했기 때문에 `BrowserStorageService`에서 제공하는 `localStorage`가 할당될 것입니다.
 
 {@a component-element}
 
