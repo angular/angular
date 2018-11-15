@@ -163,7 +163,8 @@ export function createLViewData<T>(
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
   instance[PARENT] = instance[DECLARATION_VIEW] = viewData;
   instance[CONTEXT] = context;
-  instance[INJECTOR as any] = injector == null ? (viewData ? viewData[INJECTOR] : null) : injector;
+  instance[INJECTOR as any] =
+      injector === undefined ? (viewData ? viewData[INJECTOR] : null) : injector;
   instance[RENDERER] = renderer;
   instance[SANITIZER] = sanitizer || null;
   return instance;
@@ -681,7 +682,7 @@ export function createTView(
   // that has a host binding, we will update the blueprint with that def's hostVars count.
   const initialViewLength = bindingStartIndex + vars;
   const blueprint = createViewBlueprint(bindingStartIndex, initialViewLength);
-  return blueprint[TVIEW] = {
+  return blueprint[TVIEW as any] = {
     id: viewIndex,
     blueprint: blueprint,
     template: templateFn,

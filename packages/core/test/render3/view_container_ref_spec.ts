@@ -1080,7 +1080,7 @@ describe('ViewContainerRef', () => {
           // DynamicComp, so the doCheck hook for DynamicComp should run upon ref.detectChanges().
           ref.changeDetectorRef.detectChanges();
           expect(dynamicComp.doCheckCount).toEqual(2);
-          expect((ref.changeDetectorRef as any).context).toEqual({});
+          expect((ref.changeDetectorRef as any).context).toBeNull();
         });
 
         it('should return ComponentRef that can retrieve component ChangeDetectorRef through its injector',

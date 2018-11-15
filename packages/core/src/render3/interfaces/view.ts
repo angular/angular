@@ -103,7 +103,7 @@ export interface LViewData extends Array<any> {
    *
    * If this is an embedded view, HOST will be null.
    */
-  readonly[HOST]: RElement|StylingContext|null;
+  [HOST]: RElement|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
