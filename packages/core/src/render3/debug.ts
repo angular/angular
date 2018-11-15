@@ -11,10 +11,11 @@ import {Renderer2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 
-import {getHostComponent, getInjector, getLocalRefs, loadContext} from './discovery_utils';
+import {getComponent, getInjector, getLocalRefs, loadContext} from './discovery_utils';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {TVIEW} from './interfaces/view';
+
 
 /**
  * Adapts the DebugRendererFactory2 to create a DebugRenderer2 specific for IVY.
@@ -43,7 +44,7 @@ class Render3DebugContext implements DebugContext {
 
   get injector(): Injector { return getInjector(this._nativeNode); }
 
-  get component(): any { return getHostComponent(this._nativeNode); }
+  get component(): any { return getComponent(this._nativeNode); }
 
   get providerTokens(): any[] {
     const lDebugCtx = loadContext(this._nativeNode);

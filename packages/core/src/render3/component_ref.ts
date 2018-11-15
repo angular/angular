@@ -143,8 +143,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
         ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
-        renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, undefined,
-        rootViewInjector);
+        null, renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags,
+        undefined, rootViewInjector);
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
