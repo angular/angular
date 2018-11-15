@@ -3,7 +3,6 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test_suite = "ts_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
@@ -80,36 +79,6 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(
-        name = name,
-        flat_module_out_file = name,
-        tsconfig = tsconfig,
-        entry_point = entry_point,
-        testonly = testonly,
-        deps = deps,
-        compiler = _INTERNAL_NG_MODULE_COMPILER,
-        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        node_modules = _DEFAULT_TS_TYPINGS,
-        **kwargs
-    )
-
-# ivy_ng_module behaves like ng_module, and under --define=compile=legacy it runs ngc with global
-# analysis but produces Ivy outputs. Under other compile modes, it behaves as ng_module.
-# TODO(alxhub): remove when ngtsc supports the same use cases.
-def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], **kwargs):
-    """Default values for ivy_ng_module"""
-    deps = deps + ["@ngdeps//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@ngdeps//@types/jasmine")
-        deps.append("@ngdeps//@types/node")
-    if not tsconfig:
-        if testonly:
-            tsconfig = _DEFAULT_TSCONFIG_TEST
-        else:
-            tsconfig = _DEFAULT_TSCONFIG_BUILD
-    if not entry_point:
-        entry_point = "public_api.ts"
-    _internal_global_ng_module(
         name = name,
         flat_module_out_file = name,
         tsconfig = tsconfig,
