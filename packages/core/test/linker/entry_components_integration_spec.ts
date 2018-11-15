@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
@@ -14,8 +14,12 @@ import {fixmeIvy} from '@angular/private/testing';
 
 
 {
-  fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
-  fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
+    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+  }
 }
 
 class DummyConsole implements Console {
@@ -25,13 +29,12 @@ class DummyConsole implements Console {
   warn(message: string) { this.warnings.push(message); }
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('@Component.entryComponents', function() {
     let console: DummyConsole;
     beforeEach(() => {
       console = new DummyConsole();
-      TestBed.configureCompiler(
-          {useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
       TestBed.configureTestingModule({declarations: [MainComp, ChildComp, NestedChildComp]});
     });
 
