@@ -321,8 +321,9 @@ export function getOrCreateInjectable<T>(
     let injectorIndex = getInjectorIndex(tNode, lViewData);
     let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
 
-    // If we should skip this injector, start by searching the parent injector.
-    if (flags & InjectFlags.SkipSelf) {
+    // If we should skip this injector, or if there is no injector on this node, start by searching
+    // the parent injector.
+    if (injectorIndex === -1 || flags & InjectFlags.SkipSelf) {
       parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lViewData) :
                                               lViewData[injectorIndex + PARENT_INJECTOR];
 

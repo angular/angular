@@ -8,6 +8,7 @@
 
 import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, createInjector, defineInjectable, defineInjector, inject, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
+import {getInjector} from '../../src/render3/discovery_utils';
 import {ProvidersFeature, defineComponent, defineDirective, directiveInject, injectComponentFactoryResolver} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1178,6 +1179,74 @@ describe('providers', () => {
     });
   });
 
+  describe('from a node without injector', () => {
+    abstract class Some { abstract location: String; }
+
+    class SomeInj implements Some {
+      constructor(public location: String) {}
+
+      static ngInjectableDef = defineInjectable({factory: () => new SomeInj(inject(String))});
+    }
+
+    @Component({template: `<p></p>`, providers: [{provide: String, useValue: 'From my component'}]})
+    class MyComponent {
+      constructor() {}
+
+      static ngComponentDef = defineComponent({
+        type: MyComponent,
+        selectors: [['my-cmp']],
+        factory: () => new MyComponent(),
+        consts: 1,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: MyComponent) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'p');
+          }
+        },
+        features: [
+          ProvidersFeature([{provide: String, useValue: 'From my component'}]),
+        ],
+      });
+    }
+
+    @Component({
+      template: `<my-cmp></my-cmp>`,
+      providers:
+          [{provide: String, useValue: 'From app component'}, {provide: Some, useClass: SomeInj}]
+    })
+    class AppComponent {
+      constructor() {}
+
+      static ngComponentDef = defineComponent({
+        type: AppComponent,
+        selectors: [['app-cmp']],
+        factory: () => new AppComponent(),
+        consts: 1,
+        vars: 0,
+        template: (rf: RenderFlags, cmp: AppComponent) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'my-cmp');
+          }
+        },
+        features: [
+          ProvidersFeature([
+            {provide: String, useValue: 'From app component'}, {provide: Some, useClass: SomeInj}
+          ]),
+        ],
+        directives: [MyComponent]
+      });
+    }
+
+    it('should work', () => {
+      const fixture = new ComponentFixture(AppComponent);
+      expect(fixture.html).toEqual('<my-cmp><p></p></my-cmp>');
+
+      const p = fixture.hostElement.querySelector('p');
+      const injector = getInjector(p as any);
+      expect(injector.get(String)).toEqual('From my component');
+      expect(injector.get(Some).location).toEqual('From app component');
+    });
+  });
 });
 interface ComponentTest {
   providers?: Provider[];
