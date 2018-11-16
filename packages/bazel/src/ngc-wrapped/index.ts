@@ -21,9 +21,6 @@ const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
 
 const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
 
-// TODO(alexeagle): probably not needed, see
-// https://github.com/bazelbuild/rules_typescript/issues/28
-const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
@@ -58,7 +55,6 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
-    allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     compilerOpts,
     tsHost,
@@ -84,9 +80,8 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
-  allowNonHermeticReads: boolean,
+export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
+                         inputs, expectedOuts, gatherDiagnostics}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -104,7 +99,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
+    fileLoader = new CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     const inputKeys = Object.keys(inputs);
@@ -186,8 +181,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
-      generatedFileModuleResolver);
+      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
   if (isInIvyMode) {
