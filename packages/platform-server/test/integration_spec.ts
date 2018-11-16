@@ -7,16 +7,17 @@
  */
 
 import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
-import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
+import {PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {fixmeIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -432,20 +433,21 @@ class HiddenModule {
          });
        }));
 
-    it('adds styles with ng-transition attribute', async(() => {
-         const platform = platformDynamicServer([{
-           provide: INITIAL_CONFIG,
-           useValue: {document: '<html><head></head><body><app></app></body></html>'}
-         }]);
-         platform.bootstrapModule(ExampleStylesModule).then(ref => {
-           const doc = ref.injector.get(DOCUMENT);
-           const head = getDOM().getElementsByTagName(doc, 'head')[0];
-           const styles: any[] = head.children as any;
-           expect(styles.length).toBe(1);
-           expect(getDOM().getText(styles[0])).toContain('color: red');
-           expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
-         });
-       }));
+    fixmeIvy('no deduplication of imported modules') &&
+        it('adds styles with ng-transition attribute', async(() => {
+             const platform = platformDynamicServer([{
+               provide: INITIAL_CONFIG,
+               useValue: {document: '<html><head></head><body><app></app></body></html>'}
+             }]);
+             platform.bootstrapModule(ExampleStylesModule).then(ref => {
+               const doc = ref.injector.get(DOCUMENT);
+               const head = getDOM().getElementsByTagName(doc, 'head')[0];
+               const styles: any[] = head.children as any;
+               expect(styles.length).toBe(1);
+               expect(getDOM().getText(styles[0])).toContain('color: red');
+               expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
+             });
+           }));
 
     it('copies known properties to attributes', async(() => {
          const platform = platformDynamicServer(
@@ -538,29 +540,32 @@ class HiddenModule {
       });
       afterEach(() => { expect(called).toBe(true); });
 
-      it('using long form should work', async(() => {
-           const platform =
-               platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+      fixmeIvy('to investigate') &&
+          it('using long form should work', async(() => {
+               const platform =
+                   platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
-           platform.bootstrapModule(AsyncServerModule)
-               .then((moduleRef) => {
-                 const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-                 return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
-                     .toPromise();
-               })
-               .then((b) => {
-                 expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
-                 platform.destroy();
+               platform.bootstrapModule(AsyncServerModule)
+                   .then((moduleRef) => {
+                     const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                     return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
+                         .toPromise();
+                   })
+                   .then((b) => {
+                     expect(platform.injector.get(PlatformState).renderToString())
+                         .toBe(expectedOutput);
+                     platform.destroy();
+                     called = true;
+                   });
+             }));
+
+      fixmeIvy('to investigate') &&
+          it('using renderModule should work', async(() => {
+               renderModule(AsyncServerModule, {document: doc}).then(output => {
+                 expect(output).toBe(expectedOutput);
                  called = true;
                });
-         }));
-
-      it('using renderModule should work', async(() => {
-           renderModule(AsyncServerModule, {document: doc}).then(output => {
-             expect(output).toBe(expectedOutput);
-             called = true;
-           });
-         }));
+             }));
 
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -574,25 +579,27 @@ class HiddenModule {
            });
          })));
 
-      it('works with SVG elements', async(() => {
-           renderModule(SVGServerModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('works with SVG elements', async(() => {
+               renderModule(SVGServerModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('works with animation', async(() => {
-           renderModule(AnimationServerModule, {document: doc}).then(output => {
-             expect(output).toContain('Works!');
-             expect(output).toContain('ng-trigger-myAnimation');
-             expect(output).toContain('opacity:1;');
-             expect(output).toContain('transform:translate3d(0 , 0 , 0);');
-             expect(output).toContain('font-weight:bold;');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('works with animation', async(() => {
+               renderModule(AnimationServerModule, {document: doc}).then(output => {
+                 expect(output).toContain('Works!');
+                 expect(output).toContain('ng-trigger-myAnimation');
+                 expect(output).toContain('opacity:1;');
+                 expect(output).toContain('transform:translate3d(0 , 0 , 0);');
+                 expect(output).toContain('font-weight:bold;');
+                 called = true;
+               });
+             }));
 
       it('should handle ViewEncapsulation.Native', async(() => {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
@@ -603,75 +610,82 @@ class HiddenModule {
          }));
 
 
-      it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
-           renderModule(ExampleStylesModule, {document: doc}).then(output => {
-             expect(output).toMatch(
-                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
+               renderModule(ExampleStylesModule, {document: doc}).then(output => {
+                 expect(output).toMatch(
+                     /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+                 called = true;
+               });
+             }));
 
-      it('should handle false values on attributes', async(() => {
-           renderModule(FalseAttributesModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should handle false values on attributes', async(() => {
+               renderModule(FalseAttributesModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('should handle element property "name"', async(() => {
-           renderModule(NameModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<input name=""></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should handle element property "name"', async(() => {
+               renderModule(NameModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<input name=""></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('should work with sanitizer to handle "innerHTML"', async(() => {
-           // Clear out any global states. These should be set when platform-server
-           // is initialized.
-           (global as any).Node = undefined;
-           (global as any).Document = undefined;
-           renderModule(HTMLTypesModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<div><b>foo</b> bar</div></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should work with sanitizer to handle "innerHTML"', async(() => {
+               // Clear out any global states. These should be set when platform-server
+               // is initialized.
+               (global as any).Node = undefined;
+               (global as any).Document = undefined;
+               renderModule(HTMLTypesModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<div><b>foo</b> bar</div></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('should handle element property "hidden"', async(() => {
-           renderModule(HiddenModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<input hidden=""><input></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should handle element property "hidden"', async(() => {
+               renderModule(HiddenModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<input hidden=""><input></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('should call render hook', async(() => {
-           renderModule(RenderHookModule, {document: doc}).then(output => {
-             // title should be added by the render hook.
-             expect(output).toBe(
-                 '<html><head><title>RenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should call render hook', async(() => {
+               renderModule(RenderHookModule, {document: doc}).then(output => {
+                 // title should be added by the render hook.
+                 expect(output).toBe(
+                     '<html><head><title>RenderHook</title></head><body>' +
+                     '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('should call multiple render hooks', async(() => {
-           const consoleSpy = spyOn(console, 'warn');
-           renderModule(MultiRenderHookModule, {document: doc}).then(output => {
-             // title should be added by the render hook.
-             expect(output).toBe(
-                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
-             expect(consoleSpy).toHaveBeenCalled();
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('should call multiple render hooks', async(() => {
+               const consoleSpy = spyOn(console, 'warn');
+               renderModule(MultiRenderHookModule, {document: doc}).then(output => {
+                 // title should be added by the render hook.
+                 expect(output).toBe(
+                     '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                     '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 expect(consoleSpy).toHaveBeenCalled();
+                 called = true;
+               });
+             }));
     });
 
     describe('http', () => {
@@ -682,6 +696,7 @@ class HiddenModule {
              expect(ref.injector.get(Http) instanceof Http).toBeTruthy();
            });
          }));
+
       it('can make Http requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -702,25 +717,29 @@ class HiddenModule {
              });
            });
          }));
-      it('requests are macrotasks', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(ExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
+
+      fixmeIvy('no deduplication of imported modules') &&
+          it('requests are macrotasks', async(() => {
+               const platform = platformDynamicServer(
+                   [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+               platform.bootstrapModule(ExampleModule).then(ref => {
+                 const mock = ref.injector.get(MockBackend);
+                 const http = ref.injector.get(Http);
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+                 ref.injector.get<NgZone>(NgZone).run(() => {
+                   NgZone.assertInAngularZone();
+                   mock.connections.subscribe((mc: MockConnection) => {
+                     expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
+                     mc.mockRespond(
+                         new Response(new ResponseOptions({body: 'success!', status: 200})));
+                   });
+                   http.get('http://localhost/testing').subscribe(resp => {
+                     expect(resp.text()).toBe('success!');
+                   });
+                 });
                });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
+             }));
+
       it('works when HttpModule is included before ServerModule', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -740,25 +759,29 @@ class HiddenModule {
              });
            });
          }));
-      it('works when HttpModule is included after ServerModule', async(() => {
-           const platform = platformDynamicServer(
-               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
-             const mock = ref.injector.get(MockBackend);
-             const http = ref.injector.get(Http);
-             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get<NgZone>(NgZone).run(() => {
-               NgZone.assertInAngularZone();
-               mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
+
+      fixmeIvy('no deduplication of imported modules') &&
+          it('works when HttpModule is included after ServerModule', async(() => {
+               const platform = platformDynamicServer(
+                   [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+               platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
+                 const mock = ref.injector.get(MockBackend);
+                 const http = ref.injector.get(Http);
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+                 ref.injector.get<NgZone>(NgZone).run(() => {
+                   NgZone.assertInAngularZone();
+                   mock.connections.subscribe((mc: MockConnection) => {
+                     expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
+                     mc.mockRespond(
+                         new Response(new ResponseOptions({body: 'success!', status: 200})));
+                   });
+                   http.get('http://localhost/testing').subscribe(resp => {
+                     expect(resp.text()).toBe('success!');
+                   });
+                 });
                });
-               http.get('http://localhost/testing').subscribe(resp => {
-                 expect(resp.text()).toBe('success!');
-               });
-             });
-           });
-         }));
+             }));
+
       it('throws when given a relative URL', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -770,6 +793,7 @@ class HiddenModule {
            });
          }));
     });
+
     describe('HttpClient', () => {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
@@ -778,6 +802,7 @@ class HiddenModule {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
+
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -793,6 +818,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -809,6 +835,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('can use HttpInterceptor that injects HttpClient', () => {
         const platform =
             platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -834,12 +861,13 @@ class HiddenModule {
       beforeEach(() => { called = false; });
       afterEach(() => { expect(called).toBe(true); });
 
-      it('adds transfer script tag when using renderModule', async(() => {
-           renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
-             expect(output).toBe(defaultExpectedOutput);
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('adds transfer script tag when using renderModule', async(() => {
+               renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
+                 expect(output).toBe(defaultExpectedOutput);
+                 called = true;
+               });
+             }));
 
       it('adds transfer script tag when using renderModuleFactory',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -853,18 +881,19 @@ class HiddenModule {
            });
          })));
 
-      it('cannot break out of <script> tag in serialized output', async(() => {
-           renderModule(EscapedTransferStoreModule, {
-             document: '<esc-app></esc-app>'
-           }).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
-                 '<script id="transfer-state" type="application/json">' +
-                 '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-                 'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('to investigate') &&
+          it('cannot break out of <script> tag in serialized output', async(() => {
+               renderModule(EscapedTransferStoreModule, {
+                 document: '<esc-app></esc-app>'
+               }).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+                     '<script id="transfer-state" type="application/json">' +
+                     '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
+                     'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
+                 called = true;
+               });
+             }));
     });
   });
 })();
