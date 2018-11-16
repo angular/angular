@@ -35,7 +35,7 @@
   "dependencies": {
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.0.4",
-    "@bazel/typescript": "0.20.3",
+    "@bazel/typescript": "0.21.0",
     "@schematics/angular": "^7.0.4",
     "@types/chokidar": "1.7.3",
     "@types/convert-source-map": "^1.5.1",
@@ -90,7 +90,7 @@
   "devDependencies": {
     "@bazel/bazel": "^0.18.1",
     "@bazel/ibazel": "^0.1.1",
-    "@bazel/karma": "0.20.3",
+    "@bazel/karma": "0.21.0",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
     "@types/jasminewd2": "^2.0.4",
