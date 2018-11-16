@@ -27,6 +27,17 @@ export interface StylingInstruction {
 }
 
 /**
+ * An internal record of the input data for a styling binding
+ */
+interface BoundStylingEntry {
+  name: string;
+  unit: string|null;
+  sourceSpan: ParseSourceSpan;
+  value: AST;
+}
+
+
+/**
  * Produces creation/update instructions for all styling bindings (class and style)
  *
  * The builder class below handles producing instructions for the following cases:
@@ -51,21 +62,14 @@ export interface StylingInstruction {
  *
  * The creation/update methods within the builder class produce these instructions.
  */
-interface BindingEntry {
-  name: string;
-  unit: string|null;
-  sourceSpan: ParseSourceSpan;
-  value: AST;
-}
-
 export class StylingBuilder {
   public readonly hasBindingsOrInitialValues = false;
 
-  private _classMapInput: BindingEntry|null = null;
-  private _styleMapInput: BindingEntry|null = null;
-  private _singleStyleInputs: BindingEntry[]|null = null;
-  private _singleClassInputs: BindingEntry[]|null = null;
-  private _lastStylingInput: BindingEntry|null = null;
+  private _classMapInput: BoundStylingEntry|null = null;
+  private _styleMapInput: BoundStylingEntry|null = null;
+  private _singleStyleInputs: BoundStylingEntry[]|null = null;
+  private _singleClassInputs: BoundStylingEntry[]|null = null;
+  private _lastStylingInput: BoundStylingEntry|null = null;
 
   // maps are used instead of hash maps because a Map will
   // retain the ordering of the keys
@@ -87,7 +91,7 @@ export class StylingBuilder {
     // with style="", [style]="" and [style.prop]="", class="",
     // [class.prop]="". [class]="" assignments
     const name = input.name;
-    let binding: BindingEntry|null = null;
+    let binding: BoundStylingEntry|null = null;
     switch (input.type) {
       case BindingType.Property:
         if (name == 'style') {
@@ -108,8 +112,8 @@ export class StylingBuilder {
 
   registerStyleInput(
       propertyName: string|null, value: AST, unit: string|null,
-      sourceSpan: ParseSourceSpan): BindingEntry {
-    const entry = { name: propertyName, unit, value, sourceSpan } as BindingEntry;
+      sourceSpan: ParseSourceSpan): BoundStylingEntry {
+    const entry = { name: propertyName, unit, value, sourceSpan } as BoundStylingEntry;
     if (propertyName) {
       (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
       this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(propertyName);
@@ -126,8 +130,8 @@ export class StylingBuilder {
   }
 
   registerClassInput(className: string|null, value: AST, sourceSpan: ParseSourceSpan):
-      BindingEntry {
-    const entry = { name: className, value, sourceSpan } as BindingEntry;
+      BoundStylingEntry {
+    const entry = { name: className, value, sourceSpan } as BoundStylingEntry;
     if (className) {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
       (this as any).hasBindingsOrInitialValues = true;
@@ -272,7 +276,7 @@ export class StylingBuilder {
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, inputs: BindingEntry[], mapIndex: Map<string, number>,
+      reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
       allowUnits: boolean, valueConverter: ValueConverter): StylingInstruction[] {
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name) !;
