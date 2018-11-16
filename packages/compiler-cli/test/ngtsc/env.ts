@@ -11,7 +11,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {main, mainDiagnosticsForTest} from '../../src/main';
+import {createCompilerHost, createProgram} from '../../ngtools2';
+import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
+import {LazyRoute} from '../../src/ngtsc/routing';
 import {TestSupport, isInBazel, setup} from '../test_support';
 
 function setupFakeCore(support: TestSupport): void {
@@ -125,6 +127,13 @@ export class NgtscTestEnvironment {
   driveDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     // Cast is safe as ngtsc mode only produces ts.Diagnostics.
     return mainDiagnosticsForTest(['-p', this.basePath]) as ReadonlyArray<ts.Diagnostic>;
+  }
+
+  driveRoutes(entryPoint?: string): LazyRoute[] {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const host = createCompilerHost({options});
+    const program = createProgram({rootNames, host, options});
+    return program.listLazyRoutes(entryPoint);
   }
 
   static get supported(): boolean { return isInBazel(); }
