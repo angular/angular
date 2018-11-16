@@ -481,8 +481,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents)
         .toContain(`i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵload(dirIndex).bar));`);
     expect(jsContents)
-        .toContain(
-            'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵload(dirIndex).someClass))');
+        .toContain('i0.ɵelementClassProp(elIndex, 0, i0.ɵload(dirIndex).someClass, dirIndex)');
 
     const factoryDef = `
       factory: function FooCmp_Factory(t) {
