@@ -23,7 +23,9 @@ import { HeroDetailComponent } from './hero-detail.component';
 export class AppModule {
   constructor(private upgrade: UpgradeModule) { }
   ngDoBootstrap() {
-    this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
+    angular.element(document).ready(() => {
+      this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
+    });
   }
 }
 // #enddocregion ngmodule
