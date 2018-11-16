@@ -433,21 +433,20 @@ class HiddenModule {
          });
        }));
 
-    fixmeIvy('no deduplication of imported modules') &&
-        it('adds styles with ng-transition attribute', async(() => {
-             const platform = platformDynamicServer([{
-               provide: INITIAL_CONFIG,
-               useValue: {document: '<html><head></head><body><app></app></body></html>'}
-             }]);
-             platform.bootstrapModule(ExampleStylesModule).then(ref => {
-               const doc = ref.injector.get(DOCUMENT);
-               const head = getDOM().getElementsByTagName(doc, 'head')[0];
-               const styles: any[] = head.children as any;
-               expect(styles.length).toBe(1);
-               expect(getDOM().getText(styles[0])).toContain('color: red');
-               expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
-             });
-           }));
+    it('adds styles with ng-transition attribute', async(() => {
+         const platform = platformDynamicServer([{
+           provide: INITIAL_CONFIG,
+           useValue: {document: '<html><head></head><body><app></app></body></html>'}
+         }]);
+         platform.bootstrapModule(ExampleStylesModule).then(ref => {
+           const doc = ref.injector.get(DOCUMENT);
+           const head = getDOM().getElementsByTagName(doc, 'head')[0];
+           const styles: any[] = head.children as any;
+           expect(styles.length).toBe(1);
+           expect(getDOM().getText(styles[0])).toContain('color: red');
+           expect(getDOM().getAttribute(styles[0], 'ng-transition')).toBe('example-styles');
+         });
+       }));
 
     it('copies known properties to attributes', async(() => {
          const platform = platformDynamicServer(
@@ -718,27 +717,25 @@ class HiddenModule {
            });
          }));
 
-      fixmeIvy('no deduplication of imported modules') &&
-          it('requests are macrotasks', async(() => {
-               const platform = platformDynamicServer(
-                   [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-               platform.bootstrapModule(ExampleModule).then(ref => {
-                 const mock = ref.injector.get(MockBackend);
-                 const http = ref.injector.get(Http);
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-                 ref.injector.get<NgZone>(NgZone).run(() => {
-                   NgZone.assertInAngularZone();
-                   mock.connections.subscribe((mc: MockConnection) => {
-                     expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                     mc.mockRespond(
-                         new Response(new ResponseOptions({body: 'success!', status: 200})));
-                   });
-                   http.get('http://localhost/testing').subscribe(resp => {
-                     expect(resp.text()).toBe('success!');
-                   });
-                 });
+      it('requests are macrotasks', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(ExampleModule).then(ref => {
+             const mock = ref.injector.get(MockBackend);
+             const http = ref.injector.get(Http);
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
+               NgZone.assertInAngularZone();
+               mock.connections.subscribe((mc: MockConnection) => {
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-             }));
+               http.get('http://localhost/testing').subscribe(resp => {
+                 expect(resp.text()).toBe('success!');
+               });
+             });
+           });
+         }));
 
       it('works when HttpModule is included before ServerModule', async(() => {
            const platform = platformDynamicServer(
@@ -760,27 +757,25 @@ class HiddenModule {
            });
          }));
 
-      fixmeIvy('no deduplication of imported modules') &&
-          it('works when HttpModule is included after ServerModule', async(() => {
-               const platform = platformDynamicServer(
-                   [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-               platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
-                 const mock = ref.injector.get(MockBackend);
-                 const http = ref.injector.get(Http);
-                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
-                 ref.injector.get<NgZone>(NgZone).run(() => {
-                   NgZone.assertInAngularZone();
-                   mock.connections.subscribe((mc: MockConnection) => {
-                     expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
-                     mc.mockRespond(
-                         new Response(new ResponseOptions({body: 'success!', status: 200})));
-                   });
-                   http.get('http://localhost/testing').subscribe(resp => {
-                     expect(resp.text()).toBe('success!');
-                   });
-                 });
+      it('works when HttpModule is included after ServerModule', async(() => {
+           const platform = platformDynamicServer(
+               [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+           platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
+             const mock = ref.injector.get(MockBackend);
+             const http = ref.injector.get(Http);
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
+               NgZone.assertInAngularZone();
+               mock.connections.subscribe((mc: MockConnection) => {
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
-             }));
+               http.get('http://localhost/testing').subscribe(resp => {
+                 expect(resp.text()).toBe('success!');
+               });
+             });
+           });
+         }));
 
       it('throws when given a relative URL', async(() => {
            const platform = platformDynamicServer(
