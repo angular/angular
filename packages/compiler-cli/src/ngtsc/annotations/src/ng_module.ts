@@ -13,6 +13,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference, ResolvedReference} from '../../imports';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
+import {NgModuleRouteAnalyzer} from '../../routing';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -35,7 +36,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
-      private isCore: boolean) {}
+      private isCore: boolean, private routeAnalyzer: NgModuleRouteAnalyzer|null) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
     if (!decorators) {
@@ -77,18 +78,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
     }
     let imports: Reference<ts.Declaration>[] = [];
+    let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
-      const expr = ngModule.get('imports') !;
+      rawImports = ngModule.get('imports') !;
       const importsMeta = this.evaluator.evaluate(
-          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      imports = this.resolveTypeList(expr, importsMeta, 'imports');
+          rawImports, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      imports = this.resolveTypeList(rawImports, importsMeta, 'imports');
     }
     let exports: Reference<ts.Declaration>[] = [];
+    let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
-      const expr = ngModule.get('exports') !;
+      rawExports = ngModule.get('exports') !;
       const exportsMeta = this.evaluator.evaluate(
-          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      exports = this.resolveTypeList(expr, exportsMeta, 'exports');
+          rawExports, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      exports = this.resolveTypeList(rawExports, exportsMeta, 'exports');
       this.referencesRegistry.add(node, ...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
@@ -123,6 +126,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const providers: Expression = ngModule.has('providers') ?
         new WrappedNodeExpr(ngModule.get('providers') !) :
         new LiteralArrayExpr([]);
+    const rawProviders = ngModule.has('providers') ? ngModule.get('providers') ! : null;
 
     const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
     if (ngModule.has('imports')) {
@@ -130,6 +134,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
     if (ngModule.has('exports')) {
       injectorImports.push(new WrappedNodeExpr(ngModule.get('exports') !));
+    }
+
+    if (this.routeAnalyzer !== null) {
+      this.routeAnalyzer.add(
+          node.getSourceFile(), node.name !.text, rawImports, rawExports, rawProviders);
     }
 
     const ngInjectorDef: R3InjectorMetadata = {

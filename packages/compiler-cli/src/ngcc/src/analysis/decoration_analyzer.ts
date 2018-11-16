@@ -76,7 +76,7 @@ export class DecorationAnalyzer {
     new InjectableDecoratorHandler(this.reflectionHost, this.isCore),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.referencesRegistry,
-        this.isCore),
+        this.isCore, /* routeAnalyzer */ null),
     new PipeDecoratorHandler(this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
   ];
 
