@@ -16,7 +16,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
+import {ImportRewriter, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
@@ -45,6 +45,7 @@ export class NgtscProgram implements api.Program {
   private flatIndexGenerator: FlatIndexGenerator|null = null;
 
   private constructionDiagnostics: ts.Diagnostic[] = [];
+  private moduleResolver: ModuleResolver;
 
 
   constructor(
@@ -124,6 +125,7 @@ export class NgtscProgram implements api.Program {
         ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.getTsProgram());
 
     this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
+    this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
