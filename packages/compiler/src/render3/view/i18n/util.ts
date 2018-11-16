@@ -158,6 +158,15 @@ export function assembleBoundTextPlaceholders(
   return placeholders;
 }
 
+export function findIndex(items: any[], callback: (item: any) => boolean): number {
+  for (let i = 0; i < items.length; i++) {
+    if (callback(items[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 /**
  * Parses i18n metas like:
  *  - "@@id",

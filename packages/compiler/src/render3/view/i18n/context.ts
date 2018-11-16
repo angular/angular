@@ -9,7 +9,7 @@
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
-import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
+import {assembleBoundTextPlaceholders, findIndex, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
 
 enum TagType {
   ELEMENT,
@@ -133,7 +133,7 @@ export class I18nContext {
         return;
       }
       // try to find matching template...
-      const tmplIdx = phs.findIndex(findTemplateFn(context.id, context.templateIndex));
+      const tmplIdx = findIndex(phs, findTemplateFn(context.id, context.templateIndex));
       if (tmplIdx >= 0) {
         // ... if found - replace it with nested template content
         const isCloseTag = key.startsWith('CLOSE');
@@ -172,8 +172,8 @@ function wrapTag(symbol: string, {index, ctx, isVoid}: any, closed?: boolean): s
 }
 
 function findTemplateFn(ctx: number, templateIndex: number | null) {
-  return (token: any) =>
-             token.type === TagType.TEMPLATE && token.index === templateIndex && token.ctx === ctx;
+  return (token: any) => typeof token === 'object' && token.type === TagType.TEMPLATE &&
+      token.index === templateIndex && token.ctx === ctx;
 }
 
 function serializePlaceholderValue(value: any): string {
