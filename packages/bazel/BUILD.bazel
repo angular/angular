@@ -14,6 +14,7 @@ npm_package(
     ],
     tags = ["release-with-framework"],
     deps = [
+        "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/bazel/src/protractor/utils",
