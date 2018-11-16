@@ -19,12 +19,6 @@ const TRANSLATION_PREFIX = 'MSG_';
 /** Closure uses `goog.getMsg(message)` to lookup translations */
 const GOOG_GET_MSG = 'goog.getMsg';
 
-/** String key that is used to provide backup id of translatable message in Closure */
-const BACKUP_MESSAGE_ID = 'BACKUP_MESSAGE_ID';
-
-/** Regexp to identify whether backup id already provided in description */
-const BACKUP_MESSAGE_ID_REGEXP = new RegExp(BACKUP_MESSAGE_ID);
-
 /** I18n separators for metadata **/
 const I18N_MEANING_SEPARATOR = '|';
 const I18N_ID_SEPARATOR = '@@';
@@ -63,15 +57,11 @@ function i18nTranslationToDeclStmt(
 // to a JsDoc statement formatted as expected by the Closure compiler.
 function i18nMetaToDocStmt(meta: I18nMeta): o.JSDocCommentStmt|null {
   const tags: o.JSDocTag[] = [];
-  const {id, description, meaning} = meta;
-  if (id || description) {
-    const hasBackupId = !!description && BACKUP_MESSAGE_ID_REGEXP.test(description);
-    const text =
-        id && !hasBackupId ? `[${BACKUP_MESSAGE_ID}:${id}] ${description || ''}` : description;
-    tags.push({tagName: o.JSDocTagName.Desc, text: text !.trim()});
+  if (meta.description) {
+    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
   }
-  if (meaning) {
-    tags.push({tagName: o.JSDocTagName.Meaning, text: meaning});
+  if (meta.meaning) {
+    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
   }
   return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
 }
@@ -92,9 +82,9 @@ export function hasI18nAttrs(element: html.Element): boolean {
   return element.attrs.some((attr: html.Attribute) => isI18nAttribute(attr.name));
 }
 
-export function metaFromI18nMessage(message: i18n.Message): I18nMeta {
+export function metaFromI18nMessage(message: i18n.Message, id: string | null = null): I18nMeta {
   return {
-    id: message.id || '',
+    id: typeof id === 'string' ? id : message.id || '',
     meaning: message.meaning || '',
     description: message.description || ''
   };
@@ -222,8 +212,14 @@ export function formatI18nPlaceholderName(name: string): string {
   return postfix ? `${raw}_${postfix}` : raw;
 }
 
-export function getTranslationConstPrefix(fileBasedSuffix: string): string {
-  return `${TRANSLATION_PREFIX}${fileBasedSuffix}`.toUpperCase();
+/**
+ * Generates a prefix for translation const name.
+ *
+ * @param extra Additional local prefix that should be injected into translation var name
+ * @returns Complete translation const prefix
+ */
+export function getTranslationConstPrefix(extra: string): string {
+  return `${TRANSLATION_PREFIX}${extra}`.toUpperCase();
 }
 
 /**
@@ -246,7 +242,7 @@ export function getTranslationDeclStmts(
     statements.push(docStatements);
   }
   if (transformFn) {
-    const raw = o.variable(`${variable.name}_RAW`);
+    const raw = o.variable(`${variable.name}$$RAW`);
     statements.push(i18nTranslationToDeclStmt(raw, message, params));
     statements.push(
         variable.set(transformFn(raw)).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));

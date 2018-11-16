@@ -109,7 +109,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
       private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
       private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
-      private relativeContextFilePath: string) {
+      private relativeContextFilePath: string, private i18nUseExternalIds: boolean) {
     // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
     // function)
     this._dataIndex = viewQueries.length;
@@ -184,8 +184,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // - this template has parent i18n context
     // - or the template has i18n meta associated with it,
     //   but it's not initiated by the Element (e.g. <ng-template i18n>)
-    const initI18nContext = this.i18nContext ||
-        (isI18nRootNode(i18n) && !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
+    const initI18nContext =
+        this.i18nContext || (isI18nRootNode(i18n) && !isSingleI18nIcu(i18n) &&
+                             !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
     const selfClosingI18nInstruction = hasTextChildrenOnly(nodes);
     if (initI18nContext) {
       this.i18nStart(null, i18n !, selfClosingI18nInstruction);
@@ -254,8 +255,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
-      transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Expression {
-    const _ref = ref || this.i18nAllocateRef();
+      transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
+    const _ref = ref || this.i18nAllocateRef(message.id);
     const _params: {[key: string]: any} = {};
     if (params && Object.keys(params).length) {
       Object.keys(params).forEach(key => _params[formatI18nPlaceholderName(key)] = params[key]);
@@ -296,9 +297,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return bound;
   }
 
-  i18nAllocateRef() {
-    const prefix = getTranslationConstPrefix(this.fileBasedI18nSuffix);
-    return o.variable(this.constantPool.uniqueName(prefix));
+  i18nAllocateRef(messageId: string): o.ReadVarExpr {
+    let name: string;
+    if (this.i18nUseExternalIds) {
+      const prefix = getTranslationConstPrefix(`EXTERNAL_`);
+      name = `${prefix}${messageId}`;
+    } else {
+      const prefix = getTranslationConstPrefix(this.fileBasedI18nSuffix);
+      name = this.constantPool.uniqueName(prefix);
+    }
+    return o.variable(name);
   }
 
   i18nUpdateRef(context: I18nContext): void {
@@ -350,7 +358,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18nContext) {
       this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !, meta);
     } else {
-      const ref = this.i18nAllocateRef();
+      const ref = this.i18nAllocateRef((meta as i18n.Message).id);
       this.i18n = new I18nContext(index, ref, 0, this.templateIndex, meta);
     }
 
@@ -434,7 +442,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const stylingBuilder = new StylingBuilder(o.literal(elementIndex), null);
 
     let isNonBindableMode: boolean = false;
-    const isI18nRootElement: boolean = isI18nRootNode(element.i18n);
+    const isI18nRootElement: boolean =
+        isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
     if (isI18nRootElement && this.i18n) {
       throw new Error(`Could not mark an element as translatable inside of a translatable section`);
@@ -704,7 +713,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
         templateIndex, templateName, [], this.directiveMatcher, this.directives,
-        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix);
+        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix,
+        this.i18nUseExternalIds);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1383,25 +1393,14 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {},
-    relativeContextFilePath: string): {
-  errors?: ParseError[],
-  nodes: t.Node[],
-  hasNgContent: boolean,
-  ngContentSelectors: string[],
-  relativeContextFilePath: string
-} {
+    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean}):
+    {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, true);
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {
-      errors: parseResult.errors,
-      nodes: [],
-      hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath
-    };
+    return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -1426,15 +1425,10 @@ export function parseTemplate(
   const {nodes, hasNgContent, ngContentSelectors, errors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {
-      errors,
-      nodes: [],
-      hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath
-    };
+    return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }
 
-  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath};
+  return {nodes, hasNgContent, ngContentSelectors};
 }
 
 /**

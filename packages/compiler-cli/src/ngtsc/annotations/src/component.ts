@@ -40,7 +40,7 @@ export class ComponentDecoratorHandler implements
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
-      private defaultPreserveWhitespaces: boolean) {}
+      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -131,7 +131,7 @@ export class ComponentDecoratorHandler implements
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const filePath = node.getSourceFile().fileName;
-    const relativeFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
+    const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
       const candidate = path.posix.relative(rootDir, filePath);
       if (previous === undefined || candidate.length < previous.length) {
         return candidate;
@@ -142,7 +142,7 @@ export class ComponentDecoratorHandler implements
 
     const template = parseTemplate(
         templateStr, `${node.getSourceFile().fileName}#${node.name!.text}/template.html`,
-        {preserveWhitespaces}, relativeFilePath);
+        {preserveWhitespaces});
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
@@ -212,7 +212,8 @@ export class ComponentDecoratorHandler implements
           directives: EMPTY_ARRAY,
           wrapDirectivesAndPipesInClosure: false,  //
           animations,
-          viewProviders
+          viewProviders,
+          i18nUseExternalIds: this.i18nUseExternalIds, relativeContextFilePath
         },
         metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
         parsedTemplate: template.nodes,

@@ -29,8 +29,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
 
 describe('t2 binding', () => {
   it('should bind a simple template', () => {
-    const template =
-        parseTemplate('<div *ngFor="let item of items">{{item.name}}</div>', '', {}, '');
+    const template = parseTemplate('<div *ngFor="let item of items">{{item.name}}</div>', '', {});
     const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta>());
     const res = binder.bind({template: template.nodes});
 
@@ -48,8 +47,7 @@ describe('t2 binding', () => {
   });
 
   it('should match directives when binding a simple template', () => {
-    const template =
-        parseTemplate('<div *ngFor="let item of items">{{item.name}}</div>', '', {}, '');
+    const template = parseTemplate('<div *ngFor="let item of items">{{item.name}}</div>', '', {});
     const binder = new R3TargetBinder(makeSelectorMatcher());
     const res = binder.bind({template: template.nodes});
     const tmpl = template.nodes[0] as a.Template;

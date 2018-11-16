@@ -104,11 +104,9 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const constantPool = new ConstantPool();
 
     // Parse the template and check for errors.
-    const template = parseTemplate(
-        facade.template, sourceMapUrl, {
-          preserveWhitespaces: facade.preserveWhitespaces || false,
-        },
-        '');
+    const template = parseTemplate(facade.template, sourceMapUrl, {
+      preserveWhitespaces: facade.preserveWhitespaces || false,
+    });
     if (template.errors !== undefined) {
       const errors = template.errors.map(err => err.toString()).join(', ');
       throw new Error(`Errors during JIT compilation of template for ${facade.name}: ${errors}`);
@@ -129,6 +127,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
           animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
           viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
                                                         null,
+          relativeContextFilePath: '',
+          i18nUseExternalIds: true,
         },
         constantPool, makeBindingParser());
     const preStatements = [...constantPool.statements, ...res.statements];
