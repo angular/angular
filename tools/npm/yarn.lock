@@ -25,9 +25,9 @@
   dependencies:
     tslib "^1.9.0"
 
-"@bazel/karma@0.20.3":
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.20.3.tgz#a63bb82b4887ae8c0d01f3028c6fa4764470851d"
+"@bazel/karma@0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.21.0.tgz#c5ed4c141f44d0e7e18586ad4cff5bd54f70f3cc"
   dependencies:
     jasmine-core "2.8.0"
     karma alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a
@@ -40,13 +40,12 @@
     requirejs "2.3.5"
     tmp "0.0.33"
 
-"@bazel/typescript@0.20.3":
-  version "0.20.3"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.20.3.tgz#51dcc369c2af0d7f2311d6e692d07776492060f4"
+"@bazel/typescript@0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.21.0.tgz#41c304f77a42c6a016280d0f4c20e0749c3f4b2a"
   dependencies:
     protobufjs "5.0.3"
     source-map-support "0.5.9"
-    tsickle "0.28.0"
     tsutils "2.27.2"
 
 "@bazel/typescript@^0.15.0":
@@ -1694,7 +1693,7 @@ karma-sourcemap-loader@0.3.7:
   dependencies:
     graceful-fs "^4.1.2"
 
-karma@alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a:
+"karma@github:alexeagle/karma#fa1a84ac881485b5657cb669e9b4e5da77b79f0a":
   version "1.7.1"
   resolved "https://codeload.github.com/alexeagle/karma/tar.gz/fa1a84ac881485b5657cb669e9b4e5da77b79f0a"
   dependencies:
@@ -3016,15 +3015,6 @@ tsickle@0.25.x:
     mkdirp "^0.5.1"
     source-map "^0.5.6"
     source-map-support "^0.4.2"
-
-tsickle@0.28.0:
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.28.0.tgz#6cd6fa004766c6ad9261b599c83866ee97cc7875"
-  dependencies:
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    source-map "^0.6.0"
-    source-map-support "^0.5.0"
 
 tsickle@^0.32.1:
   version "0.32.1"

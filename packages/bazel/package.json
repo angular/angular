@@ -14,7 +14,7 @@
   "dependencies": {
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.0.4",
-    "@bazel/typescript": "^0.20.3",
+    "@bazel/typescript": "^0.21.0",
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",
     "shelljs": "0.8.2",
