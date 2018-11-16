@@ -7,7 +7,7 @@
  */
 import {ConstantPool} from '../../constant_pool';
 import {InitialStylingFlags} from '../../core';
-import {BindingType} from '../../expression_parser/ast';
+import {AST, BindingType, ParseSpan} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -15,6 +15,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 
 import {parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
+
 
 /**
  * A styling expression summary that is to be processed by the compiler
@@ -24,6 +25,17 @@ export interface StylingInstruction {
   reference: o.ExternalReference;
   buildParams(convertFn: (value: any) => o.Expression): o.Expression[];
 }
+
+/**
+ * An internal record of the input data for a styling binding
+ */
+interface BoundStylingEntry {
+  name: string;
+  unit: string|null;
+  sourceSpan: ParseSourceSpan;
+  value: AST;
+}
+
 
 /**
  * Produces creation/update instructions for all styling bindings (class and style)
@@ -53,12 +65,11 @@ export interface StylingInstruction {
 export class StylingBuilder {
   public readonly hasBindingsOrInitialValues = false;
 
-  private _indexLiteral: o.LiteralExpr;
-  private _classMapInput: t.BoundAttribute|null = null;
-  private _styleMapInput: t.BoundAttribute|null = null;
-  private _singleStyleInputs: t.BoundAttribute[]|null = null;
-  private _singleClassInputs: t.BoundAttribute[]|null = null;
-  private _lastStylingInput: t.BoundAttribute|null = null;
+  private _classMapInput: BoundStylingEntry|null = null;
+  private _styleMapInput: BoundStylingEntry|null = null;
+  private _singleStyleInputs: BoundStylingEntry[]|null = null;
+  private _singleClassInputs: BoundStylingEntry[]|null = null;
+  private _lastStylingInput: BoundStylingEntry|null = null;
 
   // maps are used instead of hash maps because a Map will
   // retain the ordering of the keys
@@ -69,46 +80,69 @@ export class StylingBuilder {
   private _useDefaultSanitizer = false;
   private _applyFnRequired = false;
 
-  constructor(elementIndex: number) { this._indexLiteral = o.literal(elementIndex); }
+  constructor(
+      private _elementIndexExpr: o.Expression, private _directiveIndexExpr: o.Expression|null) {}
 
-  registerInput(input: t.BoundAttribute): boolean {
+  registerBoundInput(input: t.BoundAttribute): boolean {
     // [attr.style] or [attr.class] are skipped in the code below,
     // they should not be treated as styling-based bindings since
     // they are intended to be written directly to the attr and
     // will therefore skip all style/class resolution that is present
     // with style="", [style]="" and [style.prop]="", class="",
     // [class.prop]="". [class]="" assignments
-    let registered = false;
     const name = input.name;
+    let binding: BoundStylingEntry|null = null;
     switch (input.type) {
       case BindingType.Property:
         if (name == 'style') {
-          this._styleMapInput = input;
-          this._useDefaultSanitizer = true;
-          registered = true;
-        } else if (isClassBinding(input)) {
-          this._classMapInput = input;
-          registered = true;
+          binding = this.registerStyleInput(null, input.value, '', input.sourceSpan);
+        } else if (isClassBinding(input.name)) {
+          binding = this.registerClassInput(null, input.value, input.sourceSpan);
         }
         break;
       case BindingType.Style:
-        (this._singleStyleInputs = this._singleStyleInputs || []).push(input);
-        this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
-        registerIntoMap(this._stylesIndex, name);
-        registered = true;
+        binding = this.registerStyleInput(input.name, input.value, input.unit, input.sourceSpan);
         break;
       case BindingType.Class:
-        (this._singleClassInputs = this._singleClassInputs || []).push(input);
-        registerIntoMap(this._classesIndex, name);
-        registered = true;
+        binding = this.registerClassInput(input.name, input.value, input.sourceSpan);
         break;
     }
-    if (registered) {
-      this._lastStylingInput = input;
+    return binding ? true : false;
+  }
+
+  registerStyleInput(
+      propertyName: string|null, value: AST, unit: string|null,
+      sourceSpan: ParseSourceSpan): BoundStylingEntry {
+    const entry = { name: propertyName, unit, value, sourceSpan } as BoundStylingEntry;
+    if (propertyName) {
+      (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
+      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(propertyName);
+      registerIntoMap(this._stylesIndex, propertyName);
       (this as any).hasBindingsOrInitialValues = true;
-      this._applyFnRequired = true;
+    } else {
+      this._useDefaultSanitizer = true;
+      this._styleMapInput = entry;
     }
-    return registered;
+    this._lastStylingInput = entry;
+    (this as any).hasBindingsOrInitialValues = true;
+    this._applyFnRequired = true;
+    return entry;
+  }
+
+  registerClassInput(className: string|null, value: AST, sourceSpan: ParseSourceSpan):
+      BoundStylingEntry {
+    const entry = { name: className, value, sourceSpan } as BoundStylingEntry;
+    if (className) {
+      (this._singleClassInputs = this._singleClassInputs || []).push(entry);
+      (this as any).hasBindingsOrInitialValues = true;
+      registerIntoMap(this._classesIndex, className);
+    } else {
+      this._classMapInput = entry;
+    }
+    this._lastStylingInput = entry;
+    (this as any).hasBindingsOrInitialValues = true;
+    this._applyFnRequired = true;
+    return entry;
   }
 
   registerStyleAttr(value: string) {
@@ -153,7 +187,7 @@ export class StylingBuilder {
     return exprs.length ? o.literalArr(exprs) : null;
   }
 
-  buildCreateLevelInstruction(sourceSpan: ParseSourceSpan, constantPool: ConstantPool):
+  buildCreateLevelInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
       StylingInstruction|null {
     if (this.hasBindingsOrInitialValues) {
       const initialClasses = this._buildInitExpr(this._classesIndex, this._initialClassValues);
@@ -183,13 +217,16 @@ export class StylingBuilder {
         // can be processed during runtime. These initial styles values are bound to
         // a constant because the inital style values do not change (since they're static).
         params.push(constantPool.getConstLiteral(initialStyles, true));
-      } else if (useSanitizer) {
+      } else if (useSanitizer || this._directiveIndexExpr) {
         // no point in having an extra `null` value unless there are follow-up params
         params.push(o.NULL_EXPR);
       }
 
-      if (useSanitizer) {
-        params.push(o.importExpr(R3.defaultStyleSanitizer));
+      if (useSanitizer || this._directiveIndexExpr) {
+        params.push(useSanitizer ? o.importExpr(R3.defaultStyleSanitizer) : o.NULL_EXPR);
+        if (this._directiveIndexExpr) {
+          params.push(this._directiveIndexExpr);
+        }
       }
 
       return {sourceSpan, reference: R3.elementStyling, buildParams: () => params};
@@ -213,7 +250,7 @@ export class StylingBuilder {
         sourceSpan: stylingInput.sourceSpan,
         reference: R3.elementStylingMap,
         buildParams: (convertFn: (value: any) => o.Expression) => {
-          const params: o.Expression[] = [this._indexLiteral];
+          const params: o.Expression[] = [this._elementIndexExpr];
 
           if (mapBasedClassValue) {
             params.push(convertFn(mapBasedClassValue));
@@ -223,6 +260,12 @@ export class StylingBuilder {
 
           if (mapBasedStyleValue) {
             params.push(convertFn(mapBasedStyleValue));
+          } else if (this._directiveIndexExpr) {
+            params.push(o.NULL_EXPR);
+          }
+
+          if (this._directiveIndexExpr) {
+            params.push(this._directiveIndexExpr);
           }
 
           return params;
@@ -233,8 +276,8 @@ export class StylingBuilder {
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, inputs: t.BoundAttribute[], mapIndex: Map<string, number>,
-      valueConverter: ValueConverter): StylingInstruction[] {
+      reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
+      allowUnits: boolean, valueConverter: ValueConverter): StylingInstruction[] {
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name) !;
       const value = input.value.visit(valueConverter);
@@ -242,9 +285,17 @@ export class StylingBuilder {
         sourceSpan: input.sourceSpan,
         reference,
         buildParams: (convertFn: (value: any) => o.Expression) => {
-          const params = [this._indexLiteral, o.literal(bindingIndex), convertFn(value)];
-          if (input.unit != null) {
-            params.push(o.literal(input.unit));
+          const params = [this._elementIndexExpr, o.literal(bindingIndex), convertFn(value)];
+          if (allowUnits) {
+            if (input.unit) {
+              params.push(o.literal(input.unit));
+            } else if (this._directiveIndexExpr) {
+              params.push(o.NULL_EXPR);
+            }
+          }
+
+          if (this._directiveIndexExpr) {
+            params.push(this._directiveIndexExpr);
           }
           return params;
         }
@@ -255,7 +306,7 @@ export class StylingBuilder {
   private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleClassInputs) {
       return this._buildSingleInputs(
-          R3.elementClassProp, this._singleClassInputs, this._classesIndex, valueConverter);
+          R3.elementClassProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
     }
     return [];
   }
@@ -263,7 +314,7 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.elementStyleProp, this._singleStyleInputs, this._stylesIndex, valueConverter);
+          R3.elementStyleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
     }
     return [];
   }
@@ -272,7 +323,13 @@ export class StylingBuilder {
     return {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
       reference: R3.elementStylingApply,
-      buildParams: () => [this._indexLiteral]
+      buildParams: () => {
+        const params: o.Expression[] = [this._elementIndexExpr];
+        if (this._directiveIndexExpr) {
+          params.push(this._directiveIndexExpr);
+        }
+        return params;
+      }
     };
   }
 
@@ -293,8 +350,8 @@ export class StylingBuilder {
   }
 }
 
-function isClassBinding(input: t.BoundAttribute): boolean {
-  return input.name == 'className' || input.name == 'class';
+function isClassBinding(name: string): boolean {
+  return name == 'className' || name == 'class';
 }
 
 function registerIntoMap(map: Map<string, number>, key: string) {
