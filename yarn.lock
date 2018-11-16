@@ -2,10 +2,29 @@
 # yarn lockfile v1
 
 
+"@angular-devkit/architect@^0.10.6":
+  version "0.10.6"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.10.6.tgz#7007e7591be21eeb478951106c84c83802ca21a4"
+  integrity sha512-IygpkXNn946vVUFFWKWEDxRqRy888vOAUWcmkZzqPEBYkuwWt7WnLfe8Sjw4fH/+HLWEMS8RXbdSTHiiaP9qOg==
+  dependencies:
+    "@angular-devkit/core" "7.0.6"
+    rxjs "6.3.3"
+
 "@angular-devkit/core@7.0.5", "@angular-devkit/core@^7.0.4":
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-7.0.5.tgz#60866c0a2367cea44b436a359ac9be99a138e180"
   integrity sha512-QaORf9NCnwlHEuMs45Vb/KBf5eO2m+hIdNdIK0MnTaK9SrvhQhg0AFjo2KCPtOjI9eCcvsDz/O7W28CHJrG1iA==
+  dependencies:
+    ajv "6.5.3"
+    chokidar "2.0.4"
+    fast-json-stable-stringify "2.0.0"
+    rxjs "6.3.3"
+    source-map "0.7.3"
+
+"@angular-devkit/core@7.0.6":
+  version "7.0.6"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-7.0.6.tgz#26c4cd4d271e8cd03f6e50b4ec30cbc606f3346e"
+  integrity sha512-RPSXUtLrpYDTqAEL0rCyDKxES76EomsPBvUUZTD6UkE2pihoh9ZIxkzhzlE+HU/xdqm28+smQYFhvvEAXFWwSQ==
   dependencies:
     ajv "6.5.3"
     chokidar "2.0.4"

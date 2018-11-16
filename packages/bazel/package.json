@@ -12,6 +12,7 @@
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
   "dependencies": {
+    "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.0.4",
     "@bazel/typescript": "^0.21.0",
@@ -28,6 +29,7 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "builders": "./src/builders/builders.json",
   "schematics": "./src/schematics/collection.json",
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"

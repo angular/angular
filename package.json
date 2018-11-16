@@ -33,6 +33,7 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
+    "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.0.4",
     "@bazel/typescript": "0.21.0",
