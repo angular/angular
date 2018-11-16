@@ -115,7 +115,7 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
 
-function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
+export function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
   const options: api.CompilerOptions = {};
   const parsedArgs = require('minimist')(args);
   if (parsedArgs.i18nFile) options.i18nInFile = parsedArgs.i18nFile;
