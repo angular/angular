@@ -108,8 +108,8 @@ export class R3Injector {
       readonly parent: Injector) {
     // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in `def`.
-    deepForEach(
-        [def], injectorDef => this.processInjectorType(injectorDef, new Set<InjectorType<any>>()));
+    const dedupStack: InjectorType<any>[] = [];
+    deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
     additionalProviders &&
         deepForEach(additionalProviders, provider => this.processProvider(provider));
@@ -198,7 +198,7 @@ export class R3Injector {
    */
   private processInjectorType(
       defOrWrappedDef: InjectorType<any>|InjectorTypeWithProviders<any>,
-      parents: Set<InjectorType<any>>) {
+      parents: InjectorType<any>[], dedupStack: InjectorType<any>[]) {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
 
     // Either the defOrWrappedDef is an InjectorType (with ngInjectorDef) or an
@@ -218,6 +218,18 @@ export class R3Injector {
     const defType: InjectorType<any> =
         (ngModule === undefined) ? (defOrWrappedDef as InjectorType<any>) : ngModule;
 
+    // Check for circular dependencies.
+    if (ngDevMode && parents.indexOf(defType) !== -1) {
+      const defName = stringify(defType);
+      throw new Error(
+          `Circular dependency in DI detected for type ${defName}. Dependency path: ${parents.map(defType => stringify(defType)).join(' > ')} > ${defName}.`);
+    }
+
+    // Check for multiple imports of the same module
+    if (dedupStack.indexOf(defType) !== -1) {
+      return;
+    }
+
     // If defOrWrappedType was an InjectorDefTypeWithProviders, then .providers may hold some
     // extra providers.
     const providers =
@@ -235,11 +247,6 @@ export class R3Injector {
       return;
     }
 
-    // Check for circular dependencies.
-    if (parents.has(defType)) {
-      throw new Error(`Circular dependency: type ${stringify(defType)} ends up importing itself.`);
-    }
-
     // Track the InjectorType and add a provider for it.
     this.injectorDefTypes.add(defType);
     this.records.set(defType, makeRecord(def.factory));
@@ -250,12 +257,16 @@ export class R3Injector {
     if (def.imports != null) {
       // Before processing defType's imports, add it to the set of parents. This way, if it ends
       // up deeply importing itself, this can be detected.
-      parents.add(defType);
+      ngDevMode && parents.push(defType);
+      // Add it to the set of dedups. This way we can detect multiple imports of the same module
+      dedupStack.push(defType);
+
       try {
-        deepForEach(def.imports, imported => this.processInjectorType(imported, parents));
+        deepForEach(
+            def.imports, imported => this.processInjectorType(imported, parents, dedupStack));
       } finally {
         // Remove it from the parents set when finished.
-        parents.delete(defType);
+        ngDevMode && parents.pop();
       }
     }
 
