@@ -17,6 +17,22 @@ export interface ReferenceResolver {
       Reference<ts.Declaration>;
 }
 
+export class ModuleResolver {
+  constructor(
+      private program: ts.Program, private compilerOptions: ts.CompilerOptions,
+      private host: ts.CompilerHost) {}
+
+  resolveModuleName(module: string, containingFile: ts.SourceFile): ts.SourceFile|null {
+    const resolved =
+        ts.resolveModuleName(module, containingFile.fileName, this.compilerOptions, this.host)
+            .resolvedModule;
+    if (resolved === undefined) {
+      return null;
+    }
+    return this.program.getSourceFile(resolved.resolvedFileName) || null;
+  }
+}
+
 export class TsReferenceResolver implements ReferenceResolver {
   private moduleExportsCache = new Map<string, Map<ts.Declaration, string>|null>();
 
