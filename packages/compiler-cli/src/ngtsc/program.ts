@@ -220,7 +220,7 @@ export class NgtscProgram implements api.Program {
       new BaseDefDecoratorHandler(checker, this.reflector),
       new ComponentDecoratorHandler(
           checker, this.reflector, scopeRegistry, this.isCore, this.resourceLoader, this.rootDirs,
-          this.options.preserveWhitespaces || false),
+          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false),
       new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),

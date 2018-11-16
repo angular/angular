@@ -40,7 +40,7 @@ describe('ComponentDecoratorHandler', () => {
     const host = new TypeScriptReflectionHost(checker);
     const handler = new ComponentDecoratorHandler(
         checker, host, new SelectorScopeRegistry(checker, host), false, new NoopResourceLoader(),
-        [''], false);
+        [''], false, true);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
     const detected = handler.detect(TestCmp, host.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
