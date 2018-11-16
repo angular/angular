@@ -1111,7 +1111,7 @@ export function elementClassProp(
 export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null): void {
+    styleSanitizer?: StyleSanitizeFn | null, directiveIndex?: number): void {
   const tNode = getPreviousOrParentTNode();
   const inputData = initializeTNodeInputs(tNode);
 
@@ -1153,7 +1153,7 @@ export function elementStyling(
  *        specifically for element styling--the index must be the next index after the element
  *        index.)
  */
-export function elementStylingApply(index: number): void {
+export function elementStylingApply(index: number, directiveIndex?: number): void {
   const viewData = getViewData();
   const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(

@@ -724,4 +724,179 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
   });
+
+  describe('@Component host styles/classes', () => {
+    it('should generate style/class instructions for a host component creation definition', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule, HostBinding} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: '',
+                  host: {
+                    'style': 'width:200px; height:500px',
+                    'class': 'foo baz'
+                  }
+                })
+                export class MyComponent {
+                  @HostBinding('style')
+                  myStyle = {width:'100px'};
+
+                  @HostBinding('class')
+                  myClass = {bar:false};
+
+                  @HostBinding('style.color')
+                  myColorProp = 'red';
+
+                  @HostBinding('class.foo')
+                  myFooClass = 'red';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          const _c0 = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
+          const _c1 = ["width", "height", "color", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
+          …
+          hostBindings: function MyComponent_HostBindings(dirIndex, elIndex) {
+            $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, dirIndex);
+            $r3$.ɵelementStylingMap(elIndex, $r3$.ɵload(dirIndex).myClass, $r3$.ɵload(dirIndex).myStyle, dirIndex);
+            $r3$.ɵelementStyleProp(elIndex, 2, $r3$.ɵload(dirIndex).myColorProp, null, dirIndex);
+            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
+            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate style/class instructions for multiple host binding definitions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule, HostBinding} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: '',
+                  host: {
+                    '[style.height.pt]': 'myHeightProp',
+                    '[class.bar]': 'myBarClass'
+                  }
+                })
+                export class MyComponent {
+                  myHeightProp = 20;
+                  myBarClass = true;
+
+                  @HostBinding('style')
+                  myStyle = {};
+
+                  @HostBinding('style.width')
+                  myWidthProp = '500px';
+
+                  @HostBinding('class.foo')
+                  myFooClass = true;
+
+                  @HostBinding('class')
+                  myClasses = {a:true, b:true};
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          const _c0 = ["bar", "foo"];
+          const _c1 = ["height", "width"];
+          …
+          hostBindings: function MyComponent_HostBindings(dirIndex, elIndex) {
+            $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, dirIndex);
+            $r3$.ɵelementStylingMap(elIndex, $r3$.ɵload(dirIndex).myClasses, $r3$.ɵload(dirIndex).myStyle, dirIndex);
+            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myHeightProp, "pt", dirIndex);
+            $r3$.ɵelementStyleProp(elIndex, 1, $r3$.ɵload(dirIndex).myWidthProp, null, dirIndex);
+            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myBarClass, dirIndex);
+            $r3$.ɵelementClassProp(elIndex, 1, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
+            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate styling instructions for multiple directives that contain host binding definitions',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Directive, Component, NgModule, HostBinding} from '@angular/core';
+
+                @Directive({selector: '[myWidthDir]'})
+                export class WidthDirective {
+                  @HostBinding('style.width')
+                  myWidth = 200;
+
+                  @HostBinding('class.foo')
+                  myFooClass = true;
+                }
+
+                @Directive({selector: '[myHeightDir]'})
+                export class HeightDirective {
+                  @HostBinding('style.height')
+                  myHeight = 200;
+
+                  @HostBinding('class.bar')
+                  myBarClass = true;
+                }
+
+                @Component({
+                  selector: 'my-component',
+                  template: '
+                    <div myWidthDir myHeightDir></div>
+                  ',
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+          const _c0 = ["foo"];
+          const _c1 = ["width"];
+          const _c2 = ["bar"];
+          const _c3 = ["height"];
+          …
+          function WidthDirective_HostBindings(dirIndex, elIndex) {
+            $r3$.ɵelementStyling(_c0, _c1, null, dirIndex);
+            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myWidth, null, dirIndex);
+            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
+            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          }
+          …
+          function HeightDirective_HostBindings(dirIndex, elIndex) {
+            $r3$.ɵelementStyling(_c2, _c3, null, dirIndex);
+            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myHeight, null, dirIndex);
+            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myBarClass, dirIndex);
+            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          }
+          …
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+  });
 });
