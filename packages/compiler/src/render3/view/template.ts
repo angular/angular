@@ -94,6 +94,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // i18n context local to this template
   private i18n: I18nContext|null = null;
 
+  // flag that enables a format of translation
+  // const names that includes message id
+  private i18nUseIdsInVarNames: boolean = true;
+
   // Number of slots to reserve for pureFunctions
   private _pureFunctionSlots = 0;
 
@@ -184,8 +188,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // - this template has parent i18n context
     // - or the template has i18n meta associated with it,
     //   but it's not initiated by the Element (e.g. <ng-template i18n>)
-    const initI18nContext = this.i18nContext ||
-        (isI18nRootNode(i18n) && !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
+    const initI18nContext =
+        this.i18nContext || (isI18nRootNode(i18n) && !isSingleI18nIcu(i18n) &&
+                             !(isSingleElementTemplate(nodes) && nodes[0].i18n === i18n));
     const selfClosingI18nInstruction = hasTextChildrenOnly(nodes);
     if (initI18nContext) {
       this.i18nStart(null, i18n !, selfClosingI18nInstruction);
@@ -254,8 +259,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nTranslate(
       message: i18n.Message, params: {[name: string]: o.Expression} = {}, ref?: o.ReadVarExpr,
-      transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Expression {
-    const _ref = ref || this.i18nAllocateRef();
+      transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.ReadVarExpr {
+    const _ref = ref || this.i18nAllocateRef(message.id);
     const _params: {[key: string]: any} = {};
     if (params && Object.keys(params).length) {
       Object.keys(params).forEach(key => _params[formatI18nPlaceholderName(key)] = params[key]);
@@ -296,9 +301,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return bound;
   }
 
-  i18nAllocateRef() {
-    const prefix = getTranslationConstPrefix(this.fileBasedI18nSuffix);
-    return o.variable(this.constantPool.uniqueName(prefix));
+  i18nAllocateRef(messageId: string): o.ReadVarExpr {
+    let name: string;
+    if (this.i18nUseIdsInVarNames) {
+      const prefix = getTranslationConstPrefix(`EXTERNAL_`);
+      name = `${prefix}${messageId}`;
+    } else {
+      const prefix = getTranslationConstPrefix(this.fileBasedI18nSuffix);
+      name = this.constantPool.uniqueName(prefix);
+    }
+    return o.variable(name);
   }
 
   i18nUpdateRef(context: I18nContext): void {
@@ -350,7 +362,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18nContext) {
       this.i18n = this.i18nContext.forkChildContext(index, this.templateIndex !, meta);
     } else {
-      const ref = this.i18nAllocateRef();
+      const ref = this.i18nAllocateRef((meta as i18n.Message).id);
       this.i18n = new I18nContext(index, ref, 0, this.templateIndex, meta);
     }
 
@@ -434,7 +446,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const stylingBuilder = new StylingBuilder(o.literal(elementIndex), null);
 
     let isNonBindableMode: boolean = false;
-    const isI18nRootElement: boolean = isI18nRootNode(element.i18n);
+    const isI18nRootElement: boolean =
+        isI18nRootNode(element.i18n) && !isSingleI18nIcu(element.i18n);
 
     if (isI18nRootElement && this.i18n) {
       throw new Error(`Could not mark an element as translatable inside of a translatable section`);

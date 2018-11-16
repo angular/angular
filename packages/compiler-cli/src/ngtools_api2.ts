@@ -58,6 +58,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   i18nInLocale?: string;
   i18nInFile?: string;
   i18nInMissingTranslations?: 'error'|'warning'|'ignore';
+  i18nUseIdsInVarNames?: boolean;
   preserveWhitespaces?: boolean;
   disableTypeScriptVersionCheck?: boolean;
 }
