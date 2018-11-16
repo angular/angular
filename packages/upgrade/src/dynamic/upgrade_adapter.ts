@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type, resolveForwardRef} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
@@ -574,7 +574,7 @@ export class UpgradeAdapter {
                   {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
                   this.upgradedProviders
                 ],
-                imports: [this.ng2AppModule],
+                imports: [resolveForwardRef(this.ng2AppModule)],
                 entryComponents: this.downgradedComponents
               };
               // At this point we have ng1 injector and we have prepared
