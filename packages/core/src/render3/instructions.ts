@@ -1072,9 +1072,11 @@ function generatePropertyAliases(
  * @param className Name of class to toggle. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
+ * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementClassProp(
-    index: number, stylingIndex: number, value: boolean | PlayerFactory): void {
+    index: number, stylingIndex: number, value: boolean | PlayerFactory,
+    directiveIndex?: number): void {
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
   updateElementClassProp(getStylingContext(index, getViewData()), stylingIndex, val);
@@ -1107,11 +1109,12 @@ export function elementClassProp(
  *   values that are passed in here will be applied to the element (if matched).
  * @param styleSanitizer An optional sanitizer function that will be used (if provided)
  *   to sanitize the any CSS property values that are applied to the element (during rendering).
+ * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null): void {
+    styleSanitizer?: StyleSanitizeFn | null, directiveIndex?: number): void {
   const tNode = getPreviousOrParentTNode();
   const inputData = initializeTNodeInputs(tNode);
 
@@ -1152,8 +1155,9 @@ export function elementStyling(
  *        (Note that this is not the element index, but rather an index value allocated
  *        specifically for element styling--the index must be the next index after the element
  *        index.)
+ * @param directiveIndex the index for the directive that is attempting to change styling.
  */
-export function elementStylingApply(index: number): void {
+export function elementStylingApply(index: number, directiveIndex?: number): void {
   const viewData = getViewData();
   const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
@@ -1224,10 +1228,11 @@ export function elementStyleProp(
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
+ * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null): void {
+    styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
   const viewData = getViewData();
   const tNode = getTNode(index, viewData);
   const stylingContext = getStylingContext(index, viewData);
