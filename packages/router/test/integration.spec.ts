@@ -1878,6 +1878,36 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/team/22/simple?q=1#f');
            })));
+
+        it('should support history state',
+           fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{
+               path: 'team/:id',
+               component: TeamCmp,
+               children: [
+                 {path: 'link', component: LinkWithState},
+                 {path: 'simple', component: SimpleCmp}
+               ]
+             }]);
+
+             router.navigateByUrl('/team/22/link');
+             advance(fixture);
+
+             const native = fixture.nativeElement.querySelector('a');
+             expect(native.getAttribute('href')).toEqual('/team/22/simple');
+             native.click();
+             advance(fixture);
+
+             expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+             // Check the history entry
+             const history = (location as any)._history;
+
+             expect(history[history.length - 1].state.foo).toBe('bar');
+             expect(history[history.length - 1].state).toEqual({foo: 'bar', navigationId: history.length});
+           })));
   });
 
   describe('redirects', () => {
@@ -4576,6 +4606,13 @@ class RelativeLinkCmp {
 class LinkWithQueryParamsAndFragment {
 }
 
+@Component({
+  selector: 'link-cmp',
+  template: `<a [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</a>`
+})
+class LinkWithState {
+}
+
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
@@ -4770,6 +4807,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -4797,6 +4835,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -4826,6 +4865,7 @@ class LazyComponent {
     RelativeLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
+    LinkWithState,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
