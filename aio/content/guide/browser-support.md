@@ -372,6 +372,27 @@ Here are the features which may require additional polyfills:
 
   </tr>
 
+  <tr style="vertical-align: top">
+
+    <td>
+
+      [Router](guide/router) 
+      
+      when using hash-based routing
+    </td>
+
+    <td>
+
+      [ES7/array](guide/browser-support#core-es7-reflect)
+
+    </td>
+
+    <td>
+      IE 11
+    </td>
+
+  </tr>
+
 </table>
 
 
@@ -402,7 +423,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
 
-      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/blob/master/es7/reflect.js">ES7/reflect</a>
+      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/tree/v2/es7/reflect.js">ES7/reflect</a>
 
     </td>
 
@@ -412,6 +433,24 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
       0.5KB
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td>
+
+      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/tree/v2/es7/array.js">ES7/array</a>
+
+    </td>
+
+    <td>
+      MIT
+    </td>
+
+    <td>
+      0.1KB
     </td>
 
   </tr>
