@@ -142,6 +142,7 @@ const XSSI_PREFIX = ')]}\'\n';
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
         expect(err instanceof HttpErrorResponse).toBe(true);
         expect(err.error instanceof Error);
+        expect(err.url).toBe('/test');
         done();
       });
       factory.mock.mockErrorEvent(new Error('blah'));
