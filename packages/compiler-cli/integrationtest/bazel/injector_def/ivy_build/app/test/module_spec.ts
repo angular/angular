@@ -42,7 +42,7 @@ describe('Ivy NgModule', () => {
 
     it('throws an error on circular module dependencies', () => {
       @NgModule({
-        imports: [forwardRef(() => BModule)],
+        imports: [forwardRef(() => null)],
       })
       class AModule {
       }
