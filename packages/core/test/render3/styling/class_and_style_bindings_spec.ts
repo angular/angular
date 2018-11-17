@@ -15,7 +15,7 @@ import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/int
 import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
 import {CONTEXT, LViewData, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
+import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStylingProp, updateStylingMap, patchDirectiveStylingToStylingTemplate, pointers as generateStylingConfig, getDirectiveOwnerOffset, getMultiStartIndex, getMultiEntryCount} from '../../../src/render3/styling/class_and_style_bindings';
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
 import {allocStylingContext} from '../../../src/render3/styling/util';
@@ -54,7 +54,7 @@ describe('style and class based bindings', () => {
     const handler = new CorePlayerHandler();
     _renderStyling(
         context, (renderer || {}) as Renderer3,
-        getRootContextInternal(lViewData || createMockViewData(handler, context)), !!firstRender,
+        getRootContextInternal(lViewData || createMockViewData(handler, context)), !!firstRender, 0,
         null, store);
     return store.getValues();
   }
@@ -67,7 +67,7 @@ describe('style and class based bindings', () => {
           const lViewData = createMockViewData(handler, context);
           _renderStyling(
               context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, null, store);
+              !!firstRender, 0, null, store);
           return store !.getValues();
         };
   }
@@ -80,7 +80,7 @@ describe('style and class based bindings', () => {
           const lViewData = createMockViewData(handler, context);
           _renderStyling(
               context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, store);
+              !!firstRender, 0, store);
           return store !.getValues();
         };
   }
@@ -94,7 +94,7 @@ describe('style and class based bindings', () => {
           const lViewData = createMockViewData(handler, context);
           _renderStyling(
               context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, classStore, styleStore);
+              !!firstRender, 0, classStore, styleStore);
           return [classStore.getValues(), styleStore.getValues()];
         };
   }
@@ -257,7 +257,7 @@ describe('style and class based bindings', () => {
           height: '100px',
         });
         expect(renderStyles(stylingContext)).toEqual({height: '100px'});
-        updateStyleProp(stylingContext, 1, '100px');
+        updateStylingProp(stylingContext, 1, '100px');
         expect(renderStyles(stylingContext)).toEqual({});
         updateStyles(stylingContext, {
           width: '100px',
@@ -273,7 +273,7 @@ describe('style and class based bindings', () => {
           width: '100px',
           height: '100px',
         });
-        updateStyleProp(stylingContext, 1, '200px');
+        updateStylingProp(stylingContext, 1, '200px');
         expect(getStyles(stylingContext)).toEqual({width: '100px', height: '200px'});
       });
 
@@ -311,12 +311,12 @@ describe('style and class based bindings', () => {
 
         setContextDirty(stylingContext, false);
 
-        updateStyleProp(stylingContext, 0, '100px');
+        updateStylingProp(stylingContext, 0, '100px');
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
         setContextDirty(stylingContext, false);
 
-        updateStyleProp(stylingContext, 0, '200px');
+        updateStylingProp(stylingContext, 0, '200px');
         expect(isContextDirty(stylingContext)).toBeTruthy();
       });
 
@@ -342,7 +342,7 @@ describe('style and class based bindings', () => {
           opacity: '0',
         });
 
-        updateStyleProp(stylingContext, 0, '300px');
+        updateStylingProp(stylingContext, 0, '300px');
 
         expect(getStyles(stylingContext)).toEqual({
           width: '300px',
@@ -350,7 +350,7 @@ describe('style and class based bindings', () => {
           opacity: '0',
         });
 
-        updateStyleProp(stylingContext, 0, null);
+        updateStylingProp(stylingContext, 0, null);
 
         expect(getStyles(stylingContext)).toEqual({
           width: '200px',
@@ -495,7 +495,7 @@ describe('style and class based bindings', () => {
         ]);
 
         updateStyles(stylingContext, {width: null});
-        updateStyleProp(stylingContext, 0, '300px');
+        updateStylingProp(stylingContext, 0, '300px');
 
         expect(stylingContext).toEqual([
           null,
@@ -540,7 +540,7 @@ describe('style and class based bindings', () => {
 
         getStyles(stylingContext);
 
-        updateStyleProp(stylingContext, 0, null);
+        updateStylingProp(stylingContext, 0, null);
         expect(stylingContext).toEqual([
           null,
           null,
@@ -727,7 +727,7 @@ describe('style and class based bindings', () => {
              0,
            ]);
 
-           updateStyleProp(stylingContext, 0, '200px');
+           updateStylingProp(stylingContext, 0, '200px');
 
            expect(stylingContext).toEqual([
              null,
@@ -840,7 +840,7 @@ describe('style and class based bindings', () => {
           width: '100px',
         });
 
-        updateStyleProp(stylingContext, 0, '200px');
+        updateStylingProp(stylingContext, 0, '200px');
 
         expect(stylingContext).toEqual([
           null,
@@ -910,8 +910,8 @@ describe('style and class based bindings', () => {
            const styleSanitizer = defaultStyleSanitizer;
            const stylingContext = initContext(initialStyles, null, styleSanitizer);
 
-           updateStyleProp(stylingContext, 0, 'url(foo.jpg)');
-           updateStyleProp(stylingContext, 1, '100px');
+           updateStylingProp(stylingContext, 0, 'url(foo.jpg)');
+           updateStylingProp(stylingContext, 1, '100px');
 
            expect(stylingContext).toEqual([
              null,
@@ -1042,21 +1042,21 @@ describe('style and class based bindings', () => {
       const getStyles = trackStylesFactory(store);
 
       let styles: any = {fontSize: ''};
-      updateStyleProp(stylingContext, 0, '');
+      updateStylingProp(stylingContext, 0, '');
       updateStylingMap(stylingContext, null, styles);
 
       getStyles(stylingContext, true);
       expect(store.getValues()).toEqual({});
 
       styles = {fontSize: '20px'};
-      updateStyleProp(stylingContext, 0, 'red');
+      updateStylingProp(stylingContext, 0, 'red');
       updateStylingMap(stylingContext, null, styles);
 
       getStyles(stylingContext);
       expect(store.getValues()).toEqual({fontSize: '20px', color: 'red'});
 
       styles = {};
-      updateStyleProp(stylingContext, 0, '');
+      updateStylingProp(stylingContext, 0, '');
       updateStylingMap(stylingContext, null, styles);
 
       getStyles(stylingContext);
@@ -1288,7 +1288,7 @@ describe('style and class based bindings', () => {
       ]);
 
       updateStylingMap(stylingContext, {tall: true, wide: true}, {width: '500px'});
-      updateStyleProp(stylingContext, 0, '300px');
+      updateStylingProp(stylingContext, 0, '300px');
 
       expect(stylingContext).toEqual([
         null,
@@ -1693,7 +1693,7 @@ describe('style and class based bindings', () => {
              widthFactory, element as HTMLElement, BindingType.Style);
          const barPlayerBuilder =
              new ClassAndStylePlayerBuilder(barFactory, element as HTMLElement, BindingType.Class);
-         updateStyleProp(context, 0, widthFactory as any);
+         updateStylingProp(context, 0, widthFactory as any);
          updateClassProp(context, 0, barFactory as any);
 
          expect(context[StylingIndex.PlayerContext]).toEqual([
@@ -1725,7 +1725,7 @@ describe('style and class based bindings', () => {
              heightFactory, element as HTMLElement, BindingType.Style);
          const bazPlayerBuilder =
              new ClassAndStylePlayerBuilder(bazFactory, element as HTMLElement, BindingType.Class);
-         updateStyleProp(context, 1, heightFactory as any);
+         updateStylingProp(context, 1, heightFactory as any);
          updateClassProp(context, 1, bazFactory as any);
 
          expect(context[StylingIndex.PlayerContext]).toEqual([
@@ -1853,7 +1853,7 @@ describe('style and class based bindings', () => {
          const fooWithPlayerFactory = bindPlayerFactory(buildClassFn, true);
          const colorPlayerBuilder = makePlayerBuilder(colorWithPlayerFactory, false);
          const fooPlayerBuilder = makePlayerBuilder(fooWithPlayerFactory, true);
-         updateStyleProp(context, 0, colorWithPlayerFactory as any);
+         updateStylingProp(context, 0, colorWithPlayerFactory as any);
          updateClassProp(context, 0, fooWithPlayerFactory as any);
          renderStyles(context, false, undefined, lViewData);
 
@@ -1917,7 +1917,7 @@ describe('style and class based bindings', () => {
 
          const colorWithoutPlayerFactory = 'blue';
          const fooWithoutPlayerFactory = false;
-         updateStyleProp(context, 0, colorWithoutPlayerFactory);
+         updateStylingProp(context, 0, colorWithoutPlayerFactory);
          updateClassProp(context, 0, fooWithoutPlayerFactory);
          renderStyles(context, false, undefined, lViewData);
 
@@ -2037,14 +2037,14 @@ describe('style and class based bindings', () => {
 
          const mapFactory = bindPlayerFactory(mapBuildFn, {color: 'black'});
          updateStylingMap(context, null, mapFactory);
-         updateStyleProp(context, 0, 'green');
+         updateStylingProp(context, 0, 'green');
          renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeFalsy();
 
          const propFactory = bindPlayerFactory(propBuildFn, 'orange');
-         updateStyleProp(context, 0, propFactory as any);
+         updateStylingProp(context, 0, propFactory as any);
          renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeTruthy();
@@ -2052,7 +2052,7 @@ describe('style and class based bindings', () => {
 
          propPlayer = styleMapPlayer = null;
 
-         updateStyleProp(context, 0, null);
+         updateStylingProp(context, 0, null);
          renderStyles(context, false, undefined, lViewData);
 
          expect(propPlayer).toBeFalsy();
@@ -2189,7 +2189,7 @@ describe('style and class based bindings', () => {
          const styleMapFactory = bindPlayerFactory(styleBuildFn, {opacity: '1'});
          const classMapFactory = bindPlayerFactory(classBuildFn, {map: true});
          updateStylingMap(context, classMapFactory, styleMapFactory);
-         updateStyleProp(context, 0, bindPlayerFactory(styleBuildFn, '100px') as any);
+         updateStylingProp(context, 0, bindPlayerFactory(styleBuildFn, '100px') as any);
          updateClassProp(context, 0, bindPlayerFactory(classBuildFn, true) as any);
          updateClassProp(context, 1, bindPlayerFactory(classBuildFn, true) as any);
          renderStyles(context, false, undefined, lViewData);
@@ -2202,7 +2202,7 @@ describe('style and class based bindings', () => {
          expect(p4.state).toEqual(PlayState.Running);
 
          updateStylingMap(context, {bar: true}, {height: '200px'});
-         updateStyleProp(context, 0, '200px');
+         updateStylingProp(context, 0, '200px');
          updateClassProp(context, 0, false);
          expect(p1.state).toEqual(PlayState.Running);
          expect(p2.state).toEqual(PlayState.Running);
@@ -2360,7 +2360,273 @@ describe('style and class based bindings', () => {
       expect(otherRenderCaptures[3]).toEqual({type: BindingType.Class, value: {foo: false}});
     });
   });
+
+  describe('directives', () => {
+    it('should patch the initial styling details of a directive\'s values to an existing template', () => {
+      const classes = [InitialStylingFlags.VALUES_MODE, 'foo', true, 'bar', true];
+      const styles = [InitialStylingFlags.VALUES_MODE, 'color', 'red', 'width', '10px'];
+      const tpl = createStylingContextTemplate(classes, styles, null);
+
+      expectOnStylingContext(tpl, 8 + StylingIndex.PropertyOffset).toEqual('color');
+      expectOnStylingContext(tpl, 12 + StylingIndex.PropertyOffset).toEqual('width');
+      expectOnStylingContext(tpl, 16 + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(tpl, 20 + StylingIndex.PropertyOffset).toEqual('bar');
+
+      expectOnStylingContext(tpl, 24 + StylingIndex.PropertyOffset).toEqual('color');
+      expectOnStylingContext(tpl, 28 + StylingIndex.PropertyOffset).toEqual('width');
+      expectOnStylingContext(tpl, 32 + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(tpl, 36 + StylingIndex.PropertyOffset).toEqual('bar');
+
+      let masterConfigValue = generateStylingConfig(0, 0, 24) | StylingFlags.Dirty;
+      expectOnStylingContext(tpl, StylingIndex.MasterFlagPosition).toEqual(masterConfigValue);
+
+      const dirClasses1 = [InitialStylingFlags.VALUES_MODE, 'baz', true];
+      const dirStyles1 = [InitialStylingFlags.VALUES_MODE, 'height', '200px'];
+      patchDirectiveStylingToStylingTemplate(tpl, 1, dirClasses1, dirStyles1);
+
+      let totalClasses = 3;
+      let totalStyles = 3;
+      let length = StylingIndex.SingleStylesStartPosition + ((totalClasses + totalStyles) * StylingIndex.Size * 2); // 2 for map and single values
+      expect(tpl.length).toEqual(length);
+
+      expectOnStylingContext(tpl, StylingIndex.PlayerContext).toBeFalsy();
+      expectOnStylingContext(tpl, StylingIndex.InitialStylesPosition).toEqual([
+        null, 'red', '10px', true, true, '200px', true
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.SinglePropOffsetsPosition).toEqual([
+        20, 1, 3, 1, 1, 28, 16
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.PreviousOrCachedMultiClassValue).toEqual([
+        null, null
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.PreviousMultiStyleValue).toEqual([
+        null, null
+      ]);
+
+      expectOnStylingContext(tpl, 16 + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(tpl, 28 + StylingIndex.PropertyOffset).toEqual('baz');
+
+      expectOnStylingContext(tpl, 40 + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(tpl, 52 + StylingIndex.PropertyOffset).toEqual('baz');
+
+      masterConfigValue = generateStylingConfig(0, 0, 32) | StylingFlags.Dirty;
+      expectOnStylingContext(tpl, StylingIndex.MasterFlagPosition).toEqual(masterConfigValue);
+
+      const dirClasses2 = ['foo', 'car', InitialStylingFlags.VALUES_MODE, 'car', true];
+      const dirStyles2 = ['opacity', 'border', InitialStylingFlags.VALUES_MODE, 'opacity', '1'];
+      patchDirectiveStylingToStylingTemplate(tpl, 2, dirClasses2, dirStyles2);
+
+      totalClasses = 4; // foo was not added
+      totalStyles = 5;
+      length = StylingIndex.SingleStylesStartPosition + ((totalClasses + totalStyles) * StylingIndex.Size * 2); // 2 for map and single values
+      expect(tpl.length).toEqual(length);
+
+      expectOnStylingContext(tpl, StylingIndex.PlayerContext).toBeFalsy();
+      expectOnStylingContext(tpl, StylingIndex.InitialStylesPosition).toEqual([
+        null, 'red', '10px', true, true, '200px', true, '1', true
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.SinglePropOffsetsPosition).toEqual([
+        28, 2, 4, 8, 1, 1, 28, 16, 2, 2, 28, 40, 20, 24
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.PreviousOrCachedMultiClassValue).toEqual([
+        null, null, null,
+      ]);
+
+      expectOnStylingContext(tpl, StylingIndex.PreviousMultiStyleValue).toEqual([
+        null, null, null,
+      ]);
+
+      expectOnStylingContext(tpl, 16 + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(tpl, 36 + StylingIndex.PropertyOffset).toEqual('baz');
+
+      expectOnStylingContext(tpl, 52 + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(tpl, 72 + StylingIndex.PropertyOffset).toEqual('baz');
+
+      expectOnStylingContext(tpl, 20 + StylingIndex.PropertyOffset).toEqual('opacity');
+      expectOnStylingContext(tpl, 24 + StylingIndex.PropertyOffset).toEqual('border');
+      expectOnStylingContext(tpl, 28 + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(tpl, 40 + StylingIndex.PropertyOffset).toEqual('car');
+
+      expectOnStylingContext(tpl, 56 + StylingIndex.PropertyOffset).toEqual('opacity');
+      expectOnStylingContext(tpl, 60 + StylingIndex.PropertyOffset).toEqual('border');
+      expectOnStylingContext(tpl, 64 + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(tpl, 76 + StylingIndex.PropertyOffset).toEqual('car');
+
+      masterConfigValue = generateStylingConfig(0, 0, 44) | StylingFlags.Dirty;
+      expectOnStylingContext(tpl, StylingIndex.MasterFlagPosition).toEqual(masterConfigValue);
+    });
+
+    it('should apply single property changes for newly patched in values', () => {
+      const initialStyles = ['width', 'height', InitialStylingFlags.VALUES_MODE, 'width', '100px'];
+      const initialClasses = ['foo', 'bar', InitialStylingFlags.VALUES_MODE, 'foo', true];
+      const ctx = initContext(initialStyles, initialClasses);
+
+      updateStylingProp(ctx, 0, '200px', false);
+      updateStylingProp(ctx, 1, '500px', false);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('200px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 4 + StylingIndex.ValueOffset).toEqual('500px');
+
+      updateStylingProp(ctx, 0, '200px', false);
+      updateStylingProp(ctx, 1, '500px', false);
+
+      const dirClasses1 = [InitialStylingFlags.VALUES_MODE, 'baz', true];
+      const dirStyles1 = [InitialStylingFlags.VALUES_MODE, 'opacity', '1'];
+      patchDirectiveStylingToStylingTemplate(ctx, 1, dirClasses1, dirStyles1);
+
+      updateStylingProp(ctx, 0, '0.5', false, 1);
+      updateClassProp(ctx, 0, true, 1);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('200px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 4 + StylingIndex.ValueOffset).toEqual('500px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 8 + StylingIndex.PropertyOffset).toEqual('opacity');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 8 + StylingIndex.ValueOffset).toEqual('0.5');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 20 + StylingIndex.PropertyOffset).toEqual('baz');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 20 + StylingIndex.ValueOffset).toEqual(true);
+    });
+
+    it('should only append changes to styles if they are set to null when a directive applies styling', () => {
+      const initialStyles = ['width', 'height', InitialStylingFlags.VALUES_MODE, 'width', '100px'];
+      const initialClasses = ['foo', 'bar', InitialStylingFlags.VALUES_MODE, 'foo', true];
+      const ctx = initContext(initialStyles, initialClasses);
+
+      updateStylingProp(ctx, 0, '200px', false);
+      updateStylingProp(ctx, 1, '111px', false);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('200px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 4 + StylingIndex.ValueOffset).toEqual('111px');
+
+      updateStylingProp(ctx, 0, '300px', false);
+      updateStylingProp(ctx, 1, '222px', false);
+
+      const dirStyles1 = [InitialStylingFlags.VALUES_MODE, 'width', '400px', 'color', 'red'];
+      const dirClasses1 = [InitialStylingFlags.VALUES_MODE, 'car', true];
+      patchDirectiveStylingToStylingTemplate(ctx, 1, dirClasses1, dirStyles1);
+
+      updateStylingProp(ctx, 0, '500px', false, 1);
+      updateStylingProp(ctx, 1, 'blue', false, 1);
+      updateClassProp(ctx, 0, true, 1);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('300px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 4 + StylingIndex.ValueOffset).toEqual('222px');
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 8 + StylingIndex.ValueOffset).toEqual('blue');
+
+      updateStylingProp(ctx, 0, null, false);
+      updateStylingProp(ctx, 0, '600px', false, 1);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('600px');
+      expect(getDirectiveOwnerOffset(ctx, StylingIndex.SingleStylesStartPosition + 0)).toEqual(1);
+
+      updateStylingProp(ctx, 0, null, false);
+
+      expectOnStylingContext(ctx, StylingIndex.SingleStylesStartPosition + 0 + StylingIndex.ValueOffset).toEqual('600px');
+      expect(getDirectiveOwnerOffset(ctx, StylingIndex.SingleStylesStartPosition + 0)).toEqual(1);
+    });
+
+    fit('should update the delta of a style map to an existing map\'s values when a directive style map is updated', () => {
+      const initialStyles = ['width', 'height', InitialStylingFlags.VALUES_MODE, 'width', '100px'];
+      const initialClasses = ['foo', 'bar', InitialStylingFlags.VALUES_MODE, 'foo', true];
+      const ctx = initContext(initialStyles, initialClasses);
+
+      patchDirectiveStylingToStylingTemplate(ctx, 1, null, null);
+      updateStylingMap(ctx, 'foo bar', { width: '200px', height: '200px'});
+      updateStylingMap(ctx, 'foo baz', { width: '500px', opacity: '1', height: '999px'}, 1);
+
+      const multiStartPosition = getMultiStartIndex(ctx);
+      expect(multiStartPosition).toEqual(24);
+
+      expect(getMultiEntryCount(ctx, false)).toEqual(3);
+      expect(getMultiEntryCount(ctx, true)).toEqual(3);
+
+      let multiIndex = multiStartPosition;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('width');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('opacity');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('1');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('bar');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('baz');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      updateStylingMap(ctx, 'foo', { color: 'red' }, 1);
+
+      multiIndex = multiStartPosition;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('width');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('color');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('red');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('bar');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('baz');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(null);
+
+      debugger;
+      updateStylingMap(ctx, 'car', {}, 1);
+
+      multiIndex = multiStartPosition;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('width');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('height');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual('200px');
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('color');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(null);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('foo');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('bar');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+      multiIndex += StylingIndex.Size;
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.PropertyOffset).toEqual('car');
+      expectOnStylingContext(ctx, multiIndex + StylingIndex.ValueOffset).toEqual(true);
+
+    });
+  });
 });
+
+function expectOnStylingContext(context: StylingContext, index: number)  {
+  return expect(context[index]);
+}
 
 class MockStylingStore implements BindingStore {
   private _values: {[key: string]: any} = {};

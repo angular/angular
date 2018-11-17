@@ -36,7 +36,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {assertDataInRange, assertHasParent, assertPreviousIsParent, decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getCleanup, getContextViewData, getCreationMode, getCurrentQueries, getCurrentSanitizer, getElementDepthCount, getFirstTemplatePass, getIsParent, getPreviousOrParentTNode, getRenderer, getRendererFactory, getTView, getTViewCleanup, getViewData, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentQueries, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode, setRenderer, setRendererFactory} from './state';
-import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStylingProp as updateElementStyleProp, updateStylingMap, patchDirectiveStylingToStylingTemplate} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {NO_CHANGE} from './tokens';
@@ -1011,7 +1011,8 @@ export function createTNode(
     parent: tParent,
     detached: null,
     stylingTemplate: null,
-    projection: null
+    projection: null,
+    stylingDirectives: null
   };
 }
 
@@ -1079,7 +1080,12 @@ export function elementClassProp(
     directiveIndex?: number): void {
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
-  updateElementClassProp(getStylingContext(index, getViewData()), stylingIndex, val);
+  let internalDirectiveIndex = 0;
+  if (directiveIndex) {
+    const tNode = getPreviousOrParentTNode();
+    internalDirectiveIndex = getInternalDirectiveStylingIndex(tNode, directiveIndex!);
+  }
+  updateElementClassProp(getStylingContext(index, getViewData())!, stylingIndex, val, internalDirectiveIndex);
 }
 
 /**
@@ -1115,8 +1121,18 @@ export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directiveIndex?: number): void {
-  if (directiveIndex) return;  // supported in next PR
   const tNode = getPreviousOrParentTNode();
+  const index = tNode.index - HEADER_OFFSET;
+
+  let patchDirectiveStyling = directiveIndex != null;
+  const internalDirectiveIndex = patchDirectiveStyling ? getInternalDirectiveStylingIndex(tNode, directiveIndex!) : 0;
+  if (internalDirectiveIndex > 0) {
+    // early exit if the directive is already apart of the context
+    // TODO (matsko|kara): ensure directive's have a creation mode block to avoid
+    //                     having to have this check happen each time CD runs
+    return;
+  }
+
   const inputData = initializeTNodeInputs(tNode);
 
   if (!tNode.stylingTemplate) {
@@ -1128,14 +1144,24 @@ export function elementStyling(
     // initialize the styling template.
     tNode.stylingTemplate = createStylingContextTemplate(
         classDeclarations, styleDeclarations, styleSanitizer, hasClassInput);
+
+    patchDirectiveStyling = false;
+  }
+
+  if (patchDirectiveStyling) {
+    const dirs = tNode.stylingDirectives || (tNode.stylingDirectives = [0]);
+    const internalDirectiveIndex = dirs.length;
+    dirs.push(directiveIndex!);
+    patchDirectiveStylingToStylingTemplate(tNode.stylingTemplate, internalDirectiveIndex, 
+        classDeclarations, styleDeclarations, styleSanitizer);
   }
 
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
-    const index = tNode.index - HEADER_OFFSET;
     if (delegateToClassInput(tNode)) {
-      const stylingContext = getStylingContext(index, getViewData());
-      const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+      const viewData = getViewData();
+      const stylingContext = getStylingContext(index, viewData)!;
+      const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue][StylingIndex.CachedMapRegistrValuesOffset];
       setInputsForProperty(getViewData(), tNode.inputs !['class'] !, initialClasses);
     }
     elementStylingApply(index);
@@ -1159,11 +1185,15 @@ export function elementStyling(
  * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementStylingApply(index: number, directiveIndex?: number): void {
-  if (directiveIndex) return;  // supported in next PR
+  let internalDirectiveIndex = 0;
+  if (directiveIndex) {
+    const tNode = getPreviousOrParentTNode();
+    internalDirectiveIndex = getInternalDirectiveStylingIndex(tNode, directiveIndex!);
+  }
   const viewData = getViewData();
   const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
-      getStylingContext(index, viewData), getRenderer(), viewData, isFirstRender);
+      getStylingContext(index, viewData)!, getRenderer(), viewData, isFirstRender, internalDirectiveIndex);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(viewData);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
@@ -1194,7 +1224,11 @@ export function elementStylingApply(index: number, directiveIndex?: number): voi
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string, directiveIndex?: number): void {
-  if (directiveIndex) return;  // supported in next PR
+  let internalDirectiveIndex = 0;
+  if (directiveIndex) {
+    const tNode = getPreviousOrParentTNode();
+    internalDirectiveIndex = getInternalDirectiveStylingIndex(tNode, directiveIndex!);
+  }
   let valueToAdd: string|null = null;
   if (value) {
     if (suffix) {
@@ -1209,7 +1243,7 @@ export function elementStyleProp(
       valueToAdd = value as any as string;
     }
   }
-  updateElementStyleProp(getStylingContext(index, getViewData()), styleIndex, valueToAdd);
+  updateElementStyleProp(getStylingContext(index, getViewData())!, styleIndex, valueToAdd, false, internalDirectiveIndex);
 }
 
 /**
@@ -1237,17 +1271,21 @@ export function elementStyleProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
-  if (directiveIndex) return;  // supported in next PR
+  let internalDirectiveIndex = 0;
+  if (directiveIndex) {
+    const tNode = getPreviousOrParentTNode();
+    internalDirectiveIndex = getInternalDirectiveStylingIndex(tNode, directiveIndex!);
+  }
   const viewData = getViewData();
   const tNode = getTNode(index, viewData);
-  const stylingContext = getStylingContext(index, viewData);
+  const stylingContext = getStylingContext(index, viewData)!;
   if (delegateToClassInput(tNode) && classes !== NO_CHANGE) {
-    const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+    const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue][StylingIndex.CachedMapRegistrValuesOffset];
     const classInputVal =
-        (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
+        (initialClasses && initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
     setInputsForProperty(getViewData(), tNode.inputs !['class'] !, classInputVal);
   }
-  updateStylingMap(stylingContext, classes, styles);
+  updateStylingMap(stylingContext, classes, styles || null, internalDirectiveIndex);
 }
 
 //////////////////////////
@@ -2714,4 +2752,9 @@ function initializeTNodeInputs(tNode: TNode | null) {
 
 export function delegateToClassInput(tNode: TNode) {
   return tNode.flags & TNodeFlags.hasClassInput;
+}
+
+function getInternalDirectiveStylingIndex(tNode: TNode, directiveIndex: number): number {
+  const index = tNode.stylingDirectives ? tNode.stylingDirectives.indexOf(directiveIndex) : -1;
+  return index == -1 ? 0 : index;
 }

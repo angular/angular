@@ -299,6 +299,13 @@ export interface TNode {
    *   the process is recursive in nature (not implementation).
    */
   projection: (TNode|null)[]|number|null;
+
+  /**
+   * A static list of all the directive indices that contain
+   * [style] and [class] bindings. This is used by the styling
+   * algorithm to figure out what styling to apply and when.
+   */
+  stylingDirectives: null|number[];
 }
 
 /** Static data for an element  */

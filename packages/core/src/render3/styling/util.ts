@@ -18,6 +18,7 @@ import {FLAGS, HEADER_OFFSET, HOST, LViewData, RootContext} from '../interfaces/
 import {getTNode} from '../util';
 
 import {CorePlayerHandler} from './core_player_handler';
+import {TNode} from '../interfaces/node';
 
 export function createEmptyStylingContext(
     element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
@@ -29,8 +30,8 @@ export function createEmptyStylingContext(
     0,                               // MasterFlags
     0,                               // ClassOffset
     element || null,                 // Element
-    null,                            // PreviousMultiClassValue
-    null                             // PreviousMultiStyleValue
+    [0,null],                      // PreviousMultiClassValue
+    [0,null]                       // PreviousMultiStyleValue
   ];
 }
 
@@ -59,7 +60,7 @@ export function allocStylingContext(
  * @param index Index of the style allocation. See: `elementStyling`.
  * @param viewData The view to search for the styling context
  */
-export function getStylingContext(index: number, viewData: LViewData): StylingContext {
+export function getStylingContext(index: number, viewData: LViewData, doNotCreate?: boolean): StylingContext|null {
   let storageIndex = index + HEADER_OFFSET;
   let slotValue: LContainer|LViewData|StylingContext|RElement = viewData[storageIndex];
   let wrapper: LContainer|LViewData|StylingContext = viewData;
@@ -71,7 +72,7 @@ export function getStylingContext(index: number, viewData: LViewData): StylingCo
 
   if (isStylingContext(wrapper)) {
     return wrapper as StylingContext;
-  } else {
+  } else if (!doNotCreate) {
     // This is an LViewData or an LContainer
     const stylingTemplate = getTNode(index, viewData).stylingTemplate;
 
@@ -83,6 +84,8 @@ export function getStylingContext(index: number, viewData: LViewData): StylingCo
         allocStylingContext(slotValue, stylingTemplate) :
         createEmptyStylingContext(slotValue);
   }
+
+  return null;
 }
 
 function isStylingContext(value: LViewData | LContainer | StylingContext) {
@@ -159,7 +162,7 @@ export function getOrCreatePlayerContext(target: {}, context?: LContext | null):
   }
 
   const {lViewData, nodeIndex} = context;
-  const stylingContext = getStylingContext(nodeIndex - HEADER_OFFSET, lViewData);
+  const stylingContext = getStylingContext(nodeIndex - HEADER_OFFSET, lViewData)!;
   return getPlayerContext(stylingContext) || allocPlayerContext(stylingContext);
 }
 

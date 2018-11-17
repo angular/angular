@@ -9,13 +9,13 @@ import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {InitialStylingFlags} from '../interfaces/definition';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {InitialStyles, StylingContext, StylingFlags, StylingIndex, CachedMapRegistry} from '../interfaces/styling';
 import {LViewData, RootContext} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
-import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext} from './util';
+import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext, getStylingContext} from './util';
 
 const EMPTY_ARR: any[] = [];
 const EMPTY_OBJ: {[key: string]: any} = {};
@@ -78,9 +78,6 @@ export function createStylingContextTemplate(
     }
   }
 
-  // make where the class offsets begin
-  context[StylingIndex.ClassOffsetPosition] = totalStyleDeclarations;
-
   const initialStaticClasses: string[]|null = onlyProcessSingleClasses ? [] : null;
   if (initialClassDeclarations) {
     let hasPassedDeclarations = false;
@@ -107,6 +104,9 @@ export function createStylingContextTemplate(
   const classNames = Object.keys(classesLookup);
   const classNamesIndexStart = styleProps.length;
   const totalProps = styleProps.length + classNames.length;
+
+  // make where the class offsets begin
+  context[StylingIndex.SinglePropOffsetsPosition] = styleProps.length * StylingIndex.Size + StylingIndex.SingleStylesStartPosition;
 
   // *2 because we are filling for both single and multi style spaces
   const maxLength = totalProps * StylingIndex.Size * 2 + StylingIndex.SingleStylesStartPosition;
@@ -152,11 +152,187 @@ export function createStylingContextTemplate(
   setContextDirty(context, initialStylingValues.length > 1);
 
   if (initialStaticClasses) {
-    context[StylingIndex.PreviousOrCachedMultiClassValue] = initialStaticClasses.join(' ');
+    setCachedMapValue(context, true, initialStaticClasses.join(' '), 0);
   }
+
+  setMultiEntryCount(context, false, styleProps.length, 0);
+  setMultiEntryCount(context, true, classNames.length, 0);
 
   return context;
 }
+
+export function patchDirectiveStylingToStylingTemplate(
+  contextTemplate: StylingContext,
+  internalDirectiveIndex: number,
+  initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+  initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+  styleSanitizer?: StyleSanitizeFn | null) {
+
+  const styles: {[key: string]: any} = {};
+  const classes: {[className: string]: boolean} = {};
+
+  let insideValuesMode = false;
+  const classStyleBreakIndex = initialClassDeclarations ? initialClassDeclarations.length : 0;
+  const length = classStyleBreakIndex + (initialStyleDeclarations ? initialStyleDeclarations.length : 0);
+  let i = 0;
+  for (let j = 0; j < length; j++) {
+    if (classStyleBreakIndex === j) {
+      i = 0;
+      insideValuesMode = false;
+    }
+
+    const store = j >= classStyleBreakIndex ? styles : classes;
+    const collection: string[] = (j >= classStyleBreakIndex ? initialStyleDeclarations! : initialClassDeclarations!) as any;
+    const prop = collection[i++];
+    if (!insideValuesMode && (prop as any) === InitialStylingFlags.VALUES_MODE) {
+      insideValuesMode = true;
+    } else {
+      let propValue: string|null = null;
+      if (insideValuesMode) {
+        propValue = collection[i++] as string;
+        j++;
+      }
+      store[prop] = propValue;
+    }
+  }
+
+  let offsets: number[] = contextTemplate[StylingIndex.SinglePropOffsetsPosition] as any;
+  if (!Array.isArray(offsets)) {
+    offsets = contextTemplate[StylingIndex.SinglePropOffsetsPosition] = [offsets, 0];
+  }
+
+  const totalDirectives = offsets[StylingIndex.StylingPropOffsetsCountPosition];
+  const indexKeyPosition = totalDirectives + StylingIndex.StylingPropsValuesStartOffset;
+  const indexValuesStartPosition = offsets.length + 1; // +1 because we're splice-inserting a new value here
+
+  const totalNewClasses = Object.keys(classes).length;
+  const totalNewStyles = Object.keys(styles).length;
+  offsets[StylingIndex.StylingPropOffsetsCountPosition]++;
+  offsets.splice(indexKeyPosition, 0, indexValuesStartPosition);
+  offsets.push(totalNewClasses, totalNewStyles); // class count and style count
+  const totalNew = totalNewClasses + totalNewStyles;
+  for (let i = 0; i < totalNew; i++) {
+    offsets.push(0);
+  }
+
+  for (let i = StylingIndex.StylingPropOffsetsCountPosition + 1; i < indexKeyPosition; i++) {
+    offsets[i]++;
+  }
+
+  // we retrieve this again since the value likely changed in the populate fn call above
+  let multiStartIndex = getMultiStartIndex(contextTemplate);
+  let classOffset = getClassOffset(contextTemplate);
+  let totalClasses = (multiStartIndex - classOffset) / StylingIndex.Size;
+  let totalStyles = (classOffset - StylingIndex.SingleStylesStartPosition) / StylingIndex.Size;
+
+  let insertSingleStartIndex = classOffset;
+  let insertMultiStartIndex = classOffset + (totalStyles + totalClasses) * StylingIndex.Size;
+
+  if (!Array.isArray(contextTemplate[StylingIndex.PreviousMultiStyleValue])) {
+    contextTemplate[StylingIndex.PreviousMultiStyleValue] = [0, null];
+  }
+
+  if (!Array.isArray(contextTemplate[StylingIndex.PreviousOrCachedMultiClassValue])) {
+    contextTemplate[StylingIndex.PreviousOrCachedMultiClassValue] = [0, null];
+  }
+
+  if (initialStyleDeclarations) {
+    (contextTemplate[StylingIndex.PreviousMultiStyleValue] as CachedMapRegistry)!.push(0, null);
+    const totalNewStylesInContext = populateStylingContextEntries(contextTemplate, false, styles, indexValuesStartPosition, offsets, insertSingleStartIndex, insertMultiStartIndex);
+    const totalNewInserts = totalNewStylesInContext * StylingIndex.Size;
+    totalStyles += totalNewStylesInContext;
+    classOffset += totalNewInserts;
+    multiStartIndex += totalNewInserts;
+    setClassOffset(contextTemplate, classOffset);
+  }
+
+  insertSingleStartIndex = classOffset + (totalClasses * StylingIndex.Size);
+  insertMultiStartIndex = contextTemplate.length;
+
+  if (initialClassDeclarations) {
+    (contextTemplate[StylingIndex.PreviousOrCachedMultiClassValue] as CachedMapRegistry).push(0, null);
+    
+    const totalNewClassesInContext = populateStylingContextEntries(contextTemplate, true, classes, indexValuesStartPosition, offsets, insertSingleStartIndex, insertMultiStartIndex);
+    totalClasses += totalNewClassesInContext;
+    multiStartIndex += totalNewClassesInContext * StylingIndex.Size;
+  }
+
+  const onlyProcessSingleClasses = (contextTemplate[StylingIndex.MasterFlagPosition] & StylingFlags.OnlyProcessSingleClasses) ? true : false;
+
+  const isDirty = isContextDirty(contextTemplate);
+  const masterFlag = pointers(0, 0, multiStartIndex) |
+      (onlyProcessSingleClasses ? StylingFlags.OnlyProcessSingleClasses : 0);
+  setFlag(contextTemplate, StylingIndex.MasterFlagPosition, masterFlag);
+  if (isDirty) {
+    setContextDirty(contextTemplate, true);
+  }
+
+  setMultiEntryCount(contextTemplate, false, totalStyles, internalDirectiveIndex);
+  setMultiEntryCount(contextTemplate, true, totalClasses, internalDirectiveIndex);
+}
+
+function populateStylingContextEntries(contextTemplate: StylingContext, isClassBased: boolean, values: {[key: string]: any}, offsetRegistryIndex: number, offsets: number[], singleInsertionIndex: number, multiInsertionIndex: number): number {
+  const props = Object.keys(values);
+  let offsetInsertionIndex = offsetRegistryIndex + StylingIndex.StylingPropsValuesStartOffset;
+  if (!isClassBased) {
+    offsetInsertionIndex += offsets[offsetRegistryIndex + StylingIndex.StylingPropsClassesCountOffset] as number;
+  }
+
+  let totalNew = 0;
+  const start = StylingIndex.SingleStylesStartPosition;
+  const initialValues = contextTemplate[StylingIndex.InitialStylesPosition];
+
+  for (let i = 0; i < props.length; i++) {
+    const prop = props[i];
+    let detectedSingleIndex = 0;
+    for (let j = start; j < multiInsertionIndex; j += StylingIndex.Size) {
+      const ctxProp = getProp(contextTemplate, j);
+      if (ctxProp === prop) {
+        detectedSingleIndex = j;
+        break;
+      }
+    }
+
+    if (!detectedSingleIndex) {
+      totalNew++;
+      let initialValueIndex = 0;
+      const initialValue = values[prop];
+      if (initialValue) {
+        initialValueIndex = initialValues.length;
+        initialValues.push(initialValue);
+      }
+      
+      const initialFlag = prepareInitialFlag(prop, isClassBased, null);
+      const indexForSingle = singleInsertionIndex;
+      const indexForMulti = multiInsertionIndex;
+      const flagForSingle = pointers(initialFlag, initialValueIndex, indexForMulti);
+      const flagForMulti = pointers(initialFlag, initialValueIndex, indexForSingle) | (initialValue !== null ? StylingFlags.Dirty : StylingFlags.None);
+
+      // multi is inserted first since it is after the single index and 
+      // inserting single first would warp the multi index
+      contextTemplate.splice(indexForMulti, 0, flagForMulti, prop, null, 0);
+      contextTemplate.splice(indexForSingle, 0, flagForSingle, prop, null, 0);
+
+      singleInsertionIndex += StylingIndex.Size;
+      multiInsertionIndex += StylingIndex.Size * 2; // two because the single shifted it and the multi
+      detectedSingleIndex = indexForSingle;
+    }
+
+    offsets[offsetInsertionIndex++] = detectedSingleIndex;
+  }
+
+  // directive offset slots should 
+  const totalDirectives = offsets[StylingIndex.StylingPropOffsetsCountPosition];
+  for (let i = StylingIndex.StylingPropOffsetsCountPosition; i < totalDirectives - 1; i++) {
+    offsets[i] += totalNew;
+  }
+
+  return totalNew;
+}
+
+/**
+ * [0, INDEX, INDEX, INDEX, CLASS_COUNT, STYLE_COUNT, val1, val2, vala, valb, CLASS_COUNT, STYLE_COUNT]
+ */
 
 /**
  * Sets and resolves all `multi` styling on an `StylingContext` so that they can be
@@ -175,8 +351,14 @@ export function updateStylingMap(
     context: StylingContext, classesInput: {[key: string]: any} | string |
         BoundPlayerFactory<null|string|{[key: string]: any}>| NO_CHANGE | null,
     stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| NO_CHANGE |
-        null): void {
+        null,
+    internalDirectiveIndex?: number): void {
   stylesInput = stylesInput || null;
+
+  internalDirectiveIndex = internalDirectiveIndex || 0;
+  const appendOnlyMode = internalDirectiveIndex >= 0;
+  const previousClassValue = getCachedMapValue(context, true, internalDirectiveIndex);
+  const previousStyleValue = getCachedMapValue(context, false, internalDirectiveIndex);
 
   const element = context[StylingIndex.ElementPosition] !as HTMLElement;
   const classesPlayerBuilder = classesInput instanceof BoundPlayerFactory ?
@@ -192,13 +374,13 @@ export function updateStylingMap(
   const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
   const ignoreAllClassUpdates = limitToSingleClasses(context) || classesValue === NO_CHANGE ||
-      classesValue === context[StylingIndex.PreviousOrCachedMultiClassValue];
+      classesValue === previousClassValue;
   const ignoreAllStyleUpdates =
-      stylesValue === NO_CHANGE || stylesValue === context[StylingIndex.PreviousMultiStyleValue];
+      stylesValue === NO_CHANGE || stylesValue === previousStyleValue;
   if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
 
-  context[StylingIndex.PreviousOrCachedMultiClassValue] = classesValue;
-  context[StylingIndex.PreviousMultiStyleValue] = stylesValue;
+  setCachedMapValue(context, true, classesValue, internalDirectiveIndex);
+  setCachedMapValue(context, false, stylesValue, internalDirectiveIndex);
 
   let classNames: string[] = EMPTY_ARR;
   let applyAllClasses = false;
@@ -237,7 +419,7 @@ export function updateStylingMap(
   const styleProps = stylesValue ? Object.keys(stylesValue) : EMPTY_ARR;
   const styles = stylesValue || EMPTY_OBJ;
 
-  const classesStartIndex = styleProps.length;
+  let classesStartIndex = styleProps.length;
   const multiStartIndex = getMultiStartIndex(context);
 
   let dirty = false;
@@ -246,11 +428,17 @@ export function updateStylingMap(
   let propIndex = 0;
   const propLimit = styleProps.length + classNames.length;
 
+  let deferedClassesInsert: any[]|null = null;
+  let deferedStylesInsert: any[]|null = null;
+  let totalStyles = getMultiEntryCount(context, false, internalDirectiveIndex);
+  let totalClasses = getMultiEntryCount(context, true, internalDirectiveIndex);
+
   // the main loop here will try and figure out how the shape of the provided
   // styles differ with respect to the context. Later if the context/styles/classes
   // are off-balance then they will be dealt in another loop after this one
   while (ctxIndex < context.length && propIndex < propLimit) {
     const isClassBased = propIndex >= classesStartIndex;
+    const isInsideDirectiveZone = getDirectiveOwnerOffset(context, ctxIndex) === internalDirectiveIndex;
     const processValue =
         (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
 
@@ -271,7 +459,7 @@ export function updateStylingMap(
         const flag = getPointers(context, ctxIndex);
         setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex);
 
-        if (hasValueChanged(flag, value, newValue)) {
+        if (hasValueChanged(flag, value, newValue, appendOnlyMode)) {
           setValue(context, ctxIndex, newValue);
           playerBuildersAreDirty = playerBuildersAreDirty || !!playerBuilderIndex;
 
@@ -290,8 +478,11 @@ export function updateStylingMap(
           // it was found at a later point ... just swap the values
           const valueToCompare = getValue(context, indexOfEntry);
           const flagToCompare = getPointers(context, indexOfEntry);
-          swapMultiContextEntries(context, ctxIndex, indexOfEntry);
-          if (hasValueChanged(flagToCompare, valueToCompare, newValue)) {
+          if (isInsideDirectiveZone) {
+            swapMultiContextEntries(context, ctxIndex, indexOfEntry);
+          }
+
+          if (hasValueChanged(flagToCompare, valueToCompare, newValue, appendOnlyMode)) {
             const initialValue = getInitialValue(context, flagToCompare);
             setValue(context, ctxIndex, newValue);
             if (hasValueChanged(flagToCompare, initialValue, newValue)) {
@@ -304,8 +495,20 @@ export function updateStylingMap(
           // we only care to do this if the insertion is in the middle
           const newFlag = prepareInitialFlag(newProp, isClassBased, getStyleSanitizer(context));
           playerBuildersAreDirty = playerBuildersAreDirty || !!playerBuilderIndex;
-          insertNewMultiProperty(
-              context, ctxIndex, isClassBased, newProp, newFlag, newValue, playerBuilderIndex);
+          if (isInsideDirectiveZone) {
+            isClassBased ? totalStyles++ : totalClasses++;
+            insertUpdateMultiProperty(false,
+                context, ctxIndex, isClassBased, newFlag, newProp, newValue, playerBuilderIndex, internalDirectiveIndex);
+          } else {
+            let defered: any[];
+            if (isClassBased) {
+              defered = deferedClassesInsert = deferedClassesInsert || [];
+            } else {
+              defered = deferedStylesInsert = deferedStylesInsert || [];
+            }
+            defered.push(newFlag, newProp, newValue, playerBuilderIndex);
+            ctxIndex -= StylingIndex.Size;
+          }
           dirty = true;
         }
       }
@@ -318,17 +521,31 @@ export function updateStylingMap(
   // this means that there are left-over values in the context that
   // were not included in the provided styles/classes and in this
   // case the  goal is to "remove" them from the context (by nullifying)
+  let totalDeletedStyles = 0;
+  let totalDeletedClasses = 0;
   while (ctxIndex < context.length) {
     const flag = getPointers(context, ctxIndex);
+    const directiveIndex = getDirectiveOwnerOffset(context, ctxIndex);
+    if (directiveIndex > internalDirectiveIndex) break;
+
     const isClassBased = (flag & StylingFlags.Class) === StylingFlags.Class;
     const processValue =
         (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
+
     if (processValue) {
       const value = getValue(context, ctxIndex);
-      const doRemoveValue = valueExists(value, isClassBased);
+      const isInsideDirectiveZone = getDirectiveOwnerOffset(context, ctxIndex) === internalDirectiveIndex;
+      const doRemoveValue = isInsideDirectiveZone && valueExists(value, isClassBased);
       if (doRemoveValue) {
         setDirty(context, ctxIndex, true);
         setValue(context, ctxIndex, null);
+        if (isClassBased) {
+          totalDeletedClasses++;
+          totalClasses--;
+        } else {
+          totalDeletedStyles++;
+          totalStyles-- 
+        }
 
         // we keep the player factory the same so that the `nulled` value can
         // be instructed into the player because removing a style and/or a class
@@ -348,8 +565,11 @@ export function updateStylingMap(
   const sanitizer = getStyleSanitizer(context);
   while (propIndex < propLimit) {
     const isClassBased = propIndex >= classesStartIndex;
+    isClassBased ? totalStyles++ : totalClasses++;
+
     const processValue =
         (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
+
     if (processValue) {
       const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
       const prop = isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
@@ -358,10 +578,36 @@ export function updateStylingMap(
       const flag = prepareInitialFlag(prop, isClassBased, sanitizer) | StylingFlags.Dirty;
       const playerBuilderIndex =
           isClassBased ? classesPlayerBuilderIndex : stylesPlayerBuilderIndex;
+      const index = context.length;
       context.push(flag, prop, value, playerBuilderIndex);
+      setDirectiveOwnerOffset(context, index, internalDirectiveIndex);
       dirty = true;
     }
+
     propIndex++;
+  }
+
+  let lastStyleIndex = multiStartIndex + totalStyles * StylingIndex.Size;
+  if (deferedStylesInsert) {
+    let i = 0;
+    while (i < deferedStylesInsert.length) {
+      const updateOrInsert = totalDeletedStyles-- > 0;
+      insertUpdateMultiProperty(
+        updateOrInsert, context, lastStyleIndex, false, deferedStylesInsert[i++], deferedStylesInsert[i++], deferedStylesInsert[i++], deferedStylesInsert[i++], internalDirectiveIndex);
+      lastStyleIndex += StylingIndex.Size;
+      totalStyles++;
+    }
+  }
+
+  let lastClassIndex = lastStyleIndex + totalClasses * StylingIndex.Size;
+  if (deferedClassesInsert) {
+    let i = 0;
+    while (i < deferedClassesInsert.length) {
+      const updateOrInsert = totalDeletedClasses-- > 0;
+      insertUpdateMultiProperty(updateOrInsert, context, lastClassIndex, true, deferedClassesInsert[i++], deferedClassesInsert[i++], deferedClassesInsert[i++], deferedClassesInsert[i++], internalDirectiveIndex);
+      lastClassIndex += StylingIndex.Size;
+      totalClasses++;
+    }
   }
 
   if (dirty) {
@@ -371,6 +617,9 @@ export function updateStylingMap(
   if (playerBuildersAreDirty) {
     setContextPlayersDirty(context, true);
   }
+
+  setMultiEntryCount(context, false, totalStyles);
+  setMultiEntryCount(context, true, totalClasses);
 }
 
 /**
@@ -384,26 +633,37 @@ export function updateStylingMap(
  *
  * @param context The styling context that will be updated with the
  *    newly provided style value.
- * @param index The index of the property which is being updated.
+ * @param offset The index of the property which is being updated.
  * @param value The CSS style value that will be assigned
  */
-export function updateStyleProp(
-    context: StylingContext, index: number,
-    input: string | boolean | null | BoundPlayerFactory<string|boolean|null>): void {
-  const singleIndex = StylingIndex.SingleStylesStartPosition + index * StylingIndex.Size;
+export function updateStylingProp(
+    context: StylingContext, offset: number,
+    input: string | boolean | null | BoundPlayerFactory<string|boolean|null>,
+    isClassBased?: boolean,
+    internalDirectiveIndex?: number): void {
+  internalDirectiveIndex = internalDirectiveIndex || 0;
+  const singleIndex = determineSingleIndex(context, offset, isClassBased, internalDirectiveIndex);
   const currValue = getValue(context, singleIndex);
   const currFlag = getPointers(context, singleIndex);
   const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
+  const appendOnlyMode = internalDirectiveIndex > 0;
 
   // didn't change ... nothing to make a note of
-  if (hasValueChanged(currFlag, currValue, value)) {
+  if (hasValueChanged(currFlag, currValue, value, appendOnlyMode)) {
+    if (value == null && currValue != null) {
+      const dir = getDirectiveOwnerOffset(context, singleIndex);
+
+      // this means a directive has ownership over this single property value
+      if (dir > internalDirectiveIndex) return;
+    }
+
     const isClassBased = (currFlag & StylingFlags.Class) === StylingFlags.Class;
     const element = context[StylingIndex.ElementPosition] !as HTMLElement;
     const playerBuilder = input instanceof BoundPlayerFactory ?
         new ClassAndStylePlayerBuilder(
             input as any, element, isClassBased ? BindingType.Class : BindingType.Style) :
         null;
-    const value = (playerBuilder ? (input as BoundPlayerFactory<any>).value : input) as string |
+    const rawVal = (playerBuilder ? (input as BoundPlayerFactory<any>).value : input) as string |
         boolean | null;
     const currPlayerIndex = getPlayerBuilderIndex(context, singleIndex);
 
@@ -417,17 +677,17 @@ export function updateStyleProp(
     }
 
     // the value will always get updated (even if the dirty flag is skipped)
-    setValue(context, singleIndex, value);
+    setValue(context, singleIndex, rawVal);
     const indexForMulti = getMultiOrSingleIndex(currFlag);
 
     // if the value is the same in the multi-area then there's no point in re-assembling
     const valueForMulti = getValue(context, indexForMulti);
-    if (!valueForMulti || hasValueChanged(currFlag, valueForMulti, value)) {
+    if (!valueForMulti || hasValueChanged(currFlag, valueForMulti, rawVal)) {
       let multiDirty = false;
       let singleDirty = true;
 
       // only when the value is set to `null` should the multi-value get flagged
-      if (!valueExists(value, isClassBased) && valueExists(valueForMulti, isClassBased)) {
+      if (!valueExists(rawVal, isClassBased) && valueExists(valueForMulti, isClassBased)) {
         multiDirty = true;
         singleDirty = false;
       }
@@ -435,6 +695,9 @@ export function updateStyleProp(
       setDirty(context, indexForMulti, multiDirty);
       setDirty(context, singleIndex, singleDirty);
       setContextDirty(context, true);
+      if (internalDirectiveIndex) {
+        setDirectiveOwnerOffset(context, singleIndex, internalDirectiveIndex);
+      }
     }
 
     if (playerBuildersAreDirty) {
@@ -454,9 +717,9 @@ export function updateStyleProp(
  */
 export function updateClassProp(
     context: StylingContext, index: number,
-    addOrRemove: boolean | BoundPlayerFactory<boolean>): void {
-  const adjustedIndex = index + context[StylingIndex.ClassOffsetPosition];
-  updateStyleProp(context, adjustedIndex, addOrRemove);
+    addOrRemove: boolean | BoundPlayerFactory<boolean>,
+    internalDirectiveIndex?: number): void {
+  updateStylingProp(context, index, addOrRemove, true, internalDirectiveIndex);
 }
 
 /**
@@ -480,8 +743,11 @@ export function updateClassProp(
  */
 export function renderStyleAndClassBindings(
     context: StylingContext, renderer: Renderer3, rootOrView: RootContext | LViewData,
-    isFirstRender: boolean, classesStore?: BindingStore | null,
+    isFirstRender: boolean,
+    internalDirectiveIndex?: number,
+    classesStore?: BindingStore | null,
     stylesStore?: BindingStore | null): number {
+  internalDirectiveIndex = internalDirectiveIndex || 0;
   let totalPlayersQueued = 0;
 
   if (isContextDirty(context)) {
@@ -680,7 +946,7 @@ function isSanitizable(context: StylingContext, index: number): boolean {
   return ((context[adjustedIndex] as number) & StylingFlags.Sanitize) == StylingFlags.Sanitize;
 }
 
-function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
+export function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
   return (configFlag & StylingFlags.BitMask) | (staticIndex << StylingFlags.BitCountSize) |
       (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
 }
@@ -700,7 +966,7 @@ function getMultiOrSingleIndex(flag: number): number {
   return index >= StylingIndex.SingleStylesStartPosition ? index : -1;
 }
 
-function getMultiStartIndex(context: StylingContext): number {
+export function getMultiStartIndex(context: StylingContext): number {
   return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
 }
 
@@ -745,11 +1011,23 @@ function setPlayerBuilder(
 }
 
 function setPlayerBuilderIndex(context: StylingContext, index: number, playerBuilderIndex: number) {
-  context[index + StylingIndex.PlayerBuilderIndexOffset] = playerBuilderIndex;
+  (context[index + StylingIndex.PlayerBuilderAndDirectiveOffset] as any) |= playerBuilderIndex & StylingIndex.PlayerBuilderDirectiveBitMask;
 }
 
 function getPlayerBuilderIndex(context: StylingContext, index: number): number {
-  return (context[index + StylingIndex.PlayerBuilderIndexOffset] as number) || 0;
+  const flag = context[index + StylingIndex.PlayerBuilderAndDirectiveOffset] as number;
+  return flag & StylingIndex.PlayerBuilderDirectiveBitMask;
+}
+
+function setDirectiveOwnerOffset(context: StylingContext, index: number, directiveIndex: number) {
+  // TODO make sure to clear the old value
+  const maskedValue = directiveIndex ? (directiveIndex & StylingIndex.PlayerBuilderDirectiveBitMask) << StylingIndex.PlayerBuilderBitCountSize : 0;
+  (context[index + StylingIndex.PlayerBuilderAndDirectiveOffset] as any) |= maskedValue;
+}
+
+export function getDirectiveOwnerOffset(context: StylingContext, index: number) {
+  const flag = context[index + StylingIndex.PlayerBuilderAndDirectiveOffset] as number;
+  return (flag >> StylingIndex.PlayerBuilderBitCountSize) & StylingIndex.PlayerBuilderDirectiveBitMask;
 }
 
 function getPlayerBuilder(context: StylingContext, index: number): ClassAndStylePlayerBuilder<any>|
@@ -866,15 +1144,27 @@ function updateSinglePointerValues(context: StylingContext, indexStartPosition: 
   }
 }
 
-function insertNewMultiProperty(
-    context: StylingContext, index: number, classBased: boolean, name: string, flag: number,
-    value: string | boolean, playerIndex: number): void {
-  const doShift = index < context.length;
+function insertUpdateMultiProperty(
+    doReplace: boolean,
+    context: StylingContext, index: number, classBased: boolean, flag: number, name: string,
+    value: string | boolean, playerIndex: number, internalDirectiveIndex: number): void {
 
   // prop does not exist in the list, add it in
-  context.splice(
-      index, 0, flag | StylingFlags.Dirty | (classBased ? StylingFlags.Class : StylingFlags.None),
-      name, value, playerIndex);
+  doReplace = doReplace && index < context.length;
+  const doShift = !doReplace && index < context.length;
+
+  const flagVal = flag | StylingFlags.Dirty | (classBased ? StylingFlags.Class : StylingFlags.None);
+  if (doReplace) {
+    setFlag(context, index, flagVal);
+    setValue(context, index, value);
+    setProp(context, index, name);
+    setPlayerBuilderIndex(context, index, playerIndex);
+  } else {
+    context.splice(
+        index, 0, flagVal,
+        name, value, playerIndex);
+  }
+  setDirectiveOwnerOffset(context, index, internalDirectiveIndex);
 
   if (doShift) {
     // because the value was inserted midway into the array then we
@@ -902,20 +1192,24 @@ function prepareInitialFlag(
 }
 
 function hasValueChanged(
-    flag: number, a: string | boolean | null, b: string | boolean | null): boolean {
+    flag: number, oldValue: string | boolean | null, newValue: string | boolean | null,
+    appendOnlyMode?: boolean): boolean {
   const isClassBased = flag & StylingFlags.Class;
-  const hasValues = a && b;
+  const hasValues = oldValue && newValue;
   const usesSanitizer = flag & StylingFlags.Sanitize;
+
+  if (appendOnlyMode && oldValue) return false;
+
   // the toString() comparison ensures that a value is checked
   // ... otherwise (during sanitization bypassing) the === comparsion
   // would fail since a new String() instance is created
   if (!isClassBased && hasValues && usesSanitizer) {
     // we know for sure we're dealing with strings at this point
-    return (a as string).toString() !== (b as string).toString();
+    return (oldValue as string).toString() !== (newValue as string).toString();
   }
 
   // everything else is safe to check with a normal equality check
-  return a !== b;
+  return oldValue !== newValue;
 }
 
 export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
@@ -948,4 +1242,62 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
 
     return undefined;
   }
+}
+
+function determineSingleIndex(context: StylingContext, offsetValue: number, isClassBased: boolean|undefined, internalDirectiveIndex: number): number {
+  if (internalDirectiveIndex > 0) {
+    const offsets = context[StylingIndex.SinglePropOffsetsPosition] as number[];
+    const totalDirectives = offsets[StylingIndex.StylingPropOffsetsCountPosition];
+    const directiveRegistryIndex = totalDirectives + StylingIndex.StylingPropOffsetsCountPosition + internalDirectiveIndex;
+    const classOffsetJump = isClassBased ? 0 : offsets[directiveRegistryIndex];
+    return offsets[directiveRegistryIndex + StylingIndex.StylingPropsValuesStartOffset + classOffsetJump + offsetValue];
+  } else {
+    const offsetWithSize = offsetValue * StylingIndex.Size;
+    return (isClassBased ? (context[StylingIndex.SinglePropOffsetsPosition] as number) : StylingIndex.SingleStylesStartPosition) + offsetWithSize;
+  }
+}
+
+function getClassOffset(context: StylingContext) {
+  const offsets = context[StylingIndex.SinglePropOffsetsPosition];
+  return Array.isArray(offsets) ? offsets[StylingIndex.StylingPropsPrimaryOffsetPosition] : offsets;
+}
+
+function setClassOffset(context: StylingContext, offset: number) {
+  const offsets = context[StylingIndex.SinglePropOffsetsPosition];
+  let value = offsets;
+  if (Array.isArray(offsets)) {
+    offsets[StylingIndex.StylingPropsPrimaryOffsetPosition] = offset;
+  } else {
+    value = offset;
+  }
+  context[StylingIndex.SinglePropOffsetsPosition] = value;
+}
+
+function getCachedMapValue(context: StylingContext, isClassBased: boolean, internalDirectiveIndex: number): {[key: string]: any}|string|null {
+  const position = isClassBased ? StylingIndex.PreviousOrCachedMultiClassValue : StylingIndex.PreviousMultiStyleValue;
+  const index = internalDirectiveIndex * StylingIndex.CachedMapRegistryValueSize + StylingIndex.CachedMapRegistryValueOffset;
+  return context[position][index] as {[key: string]: any}|string|null;
+}
+
+function setCachedMapValue(context: StylingContext, isClassBased: boolean, value: any, internalDirectiveIndex: number) {
+  const position = isClassBased ? StylingIndex.PreviousOrCachedMultiClassValue : StylingIndex.PreviousMultiStyleValue;
+  const registry = context[position];
+  const index = internalDirectiveIndex * StylingIndex.CachedMapRegistryValueSize + StylingIndex.CachedMapRegistryValueOffset;
+  registry[index] = value;
+
+  for (let i = index + 1; i < registry.length; i++) {
+    context[position][i] = null;
+  }
+}
+
+export function getMultiEntryCount(context: StylingContext, isClassBased: boolean, internalDirectiveIndex: number) {
+  const position = isClassBased ? StylingIndex.PreviousOrCachedMultiClassValue : StylingIndex.PreviousMultiStyleValue;
+  const index = internalDirectiveIndex * StylingIndex.CachedMapRegistryValueSize + StylingIndex.CachedMapRegistryCountOffset;
+  return context[position][index];
+}
+
+export function setMultiEntryCount(context: StylingContext, isClassBased: boolean, count: number, internalDirectiveIndex: number) {
+  const position = isClassBased ? StylingIndex.PreviousOrCachedMultiClassValue : StylingIndex.PreviousMultiStyleValue;
+  const index = internalDirectiveIndex * StylingIndex.CachedMapRegistryValueSize + StylingIndex.CachedMapRegistryCountOffset;
+  context[position][index] = count;
 }

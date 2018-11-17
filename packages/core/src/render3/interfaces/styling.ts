@@ -145,7 +145,7 @@ export interface StylingContext extends Array<InitialStyles|{[key: string]: any}
    * applied (using `elementClassProp`) it should have an styling index value that doesn't
    * need to take into account any style values that exist in the context.
    */
-  [StylingIndex.ClassOffsetPosition]: number;
+  [StylingIndex.SinglePropOffsetsPosition]: number|number[];
 
   /**
    * Location of element that is used as a target for this context.
@@ -156,13 +156,18 @@ export interface StylingContext extends Array<InitialStyles|{[key: string]: any}
    * The last class value that was interpreted by elementStylingMap. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
-  [StylingIndex.PreviousOrCachedMultiClassValue]: {[key: string]: any}|string|null;
+  [StylingIndex.PreviousOrCachedMultiClassValue]: CachedMapRegistry;
 
   /**
    * The last style value that was interpreted by elementStylingMap. This is cached
    * So that the algorithm can exit early incase the value has not changed.
    */
-  [StylingIndex.PreviousMultiStyleValue]: {[key: string]: any}|null;
+  [StylingIndex.PreviousMultiStyleValue]: CachedMapRegistry;
+}
+
+export interface CachedMapRegistry extends Array<number|null|string|{[key: string]: any}> {
+  [0]: number;
+  [1]: {[key: string]: any}|string|null;
 }
 
 /**
@@ -210,7 +215,7 @@ export const enum StylingIndex {
   // Index of location where the start of single properties are stored. (`updateStyleProp`)
   MasterFlagPosition = 3,
   // Index of location where the class index offset value is located
-  ClassOffsetPosition = 4,
+  SinglePropOffsetsPosition = 4,
   // Position of where the initial styles are stored in the styling context
   // This index must align with HOST, see interfaces/view.ts
   ElementPosition = 5,
@@ -225,11 +230,26 @@ export const enum StylingIndex {
   FlagsOffset = 0,
   PropertyOffset = 1,
   ValueOffset = 2,
-  PlayerBuilderIndexOffset = 3,
+  PlayerBuilderAndDirectiveOffset = 3,
   // Size of each multi or single entry (flag + prop + value + playerBuilderIndex)
   Size = 4,
   // Each flag has a binary digit length of this value
   BitCountSize = 14,  // (32 - 4) / 2 = ~14
   // The binary digit value as a mask
   BitMask = 0b11111111111111,  // 14 bits
+  StylingPropsPrimaryOffsetPosition = 0,
+  StylingPropOffsetsCountPosition = 1,
+  StylingPropsClassesCountOffset = 0,
+  StylingPropsStylesCountOffset = 1,
+  StylingPropsValuesStartOffset = 2,
+
+
+  PlayerBuilderIndexOffset = 0,
+  PlayerBuilderDirectiveIndexOffset = 1,
+  PlayerBuilderBitCountSize = 16,
+  PlayerBuilderDirectiveBitMask = 0b1111111111111111, // 16 bits
+
+  CachedMapRegistryCountOffset = 0,
+  CachedMapRegistryValueOffset = 1,
+  CachedMapRegistryValueSize = 2
 }
