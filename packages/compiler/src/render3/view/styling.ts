@@ -217,7 +217,7 @@ export class StylingBuilder {
         // can be processed during runtime. These initial styles values are bound to
         // a constant because the inital style values do not change (since they're static).
         params.push(constantPool.getConstLiteral(initialStyles, true));
-      } else if (useSanitizer) {
+      } else if (useSanitizer || this._directiveIndexExpr) {
         // no point in having an extra `null` value unless there are follow-up params
         params.push(o.NULL_EXPR);
       }

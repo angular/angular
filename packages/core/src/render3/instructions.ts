@@ -1115,6 +1115,7 @@ export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directiveIndex?: number): void {
+  if (directiveIndex) return;  // supported in next PR
   const tNode = getPreviousOrParentTNode();
   const inputData = initializeTNodeInputs(tNode);
 
@@ -1158,6 +1159,7 @@ export function elementStyling(
  * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementStylingApply(index: number, directiveIndex?: number): void {
+  if (directiveIndex) return;  // supported in next PR
   const viewData = getViewData();
   const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
@@ -1187,10 +1189,12 @@ export function elementStylingApply(index: number, directiveIndex?: number): voi
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
+ * @param directiveIndex the index for the directive that is attempting to change styling.
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string): void {
+    suffix?: string, directiveIndex?: number): void {
+  if (directiveIndex) return;  // supported in next PR
   let valueToAdd: string|null = null;
   if (value) {
     if (suffix) {
@@ -1233,6 +1237,7 @@ export function elementStyleProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
+  if (directiveIndex) return;  // supported in next PR
   const viewData = getViewData();
   const tNode = getTNode(index, viewData);
   const stylingContext = getStylingContext(index, viewData);
