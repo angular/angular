@@ -431,7 +431,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   visitElement(element: t.Element) {
     const elementIndex = this.allocateDataSlot();
-    const stylingBuilder = new StylingBuilder(o.literal(elementIndex), null);
+    const stylingBuilder = new StylingBuilder(elementIndex);
 
     let isNonBindableMode: boolean = false;
     const isI18nRootElement: boolean = isI18nRootNode(element.i18n);
@@ -476,7 +476,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
-      if (!stylingBuilder.registerBoundInput(input)) {
+      if (!stylingBuilder.registerInput(input)) {
         if (input.type == BindingType.Property) {
           if (input.i18n) {
             i18nAttrs.push(input);
