@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../host';
+
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -45,22 +48,46 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       const name = parameterName(node.name);
 
       const decorators = this.getDecoratorsOfDeclaration(node);
-
+      const hasInjectDecorator = decorators && decorators.some(d => d.name === 'Inject');
       // It may or may not be possible to write an expression that refers to the value side of the
-      // type named for the parameter.
+      // type named for the parameter. Or we have @Inject() decorator and don't care about the param
+      // type.
       let typeValueExpr: ts.Expression|null = null;
 
-      // It's not possible to get a value expression if the parameter doesn't even have a type.
-      if (node.type !== undefined) {
-        // It's only valid to convert a type reference to a value reference if the type actually has
-        // a
-        // value declaration associated with it.
-        const type = this.checker.getTypeFromTypeNode(node.type);
-        if (type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
-          // The type points to a valid value declaration. Rewrite the TypeReference into an
-          // Expression
-          // which references the value pointed to by the TypeReference, if possible.
-          typeValueExpr = typeNodeToValueExpr(node.type);
+      if (!hasInjectDecorator) {
+        // It's not possible to get a value expression if the parameter doesn't even have a type.
+        if (node.type !== undefined) {
+          // It's only valid to convert a type reference to a value reference if the type actually
+          // has a value declaration associated with it.
+          let type = this.checker.getTypeFromTypeNode(node.type);
+          let typeNode = node.type;
+
+          if (type.isUnion()) {
+            let actualType: ts.Type;
+            let actualTypeNode: ts.TypeNode;
+            node.type.forEachChild((childTypeNode: ts.TypeNode) => {
+              let childType = this.checker.getTypeFromTypeNode(childTypeNode);
+              if (childType.flags & ts.TypeFlags.Null) {
+                // ignore "null" types to support optional injection: @Optional() foo: Foo|null
+              } else {
+                if (actualType === undefined) {
+                  actualTypeNode = childTypeNode;
+                  actualType = childType;
+                } else {
+                  throw new FatalDiagnosticError(
+                      ErrorCode.CONSTRUCTOR_PARAM_IS_NON_NULL_UNION, node,
+                      `Injectable constructor parameter "${name}" of class "${clazz.name!.text}" can be only of a simple type or nullable union type. Was: ${node.getText()} \n${actualType}\n${childTypeNode}`);
+                }
+              }
+            });
+            type = actualType !;
+            typeNode = actualTypeNode !;
+          }
+          if (type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
+            // The type points to a valid value declaration. Rewrite the TypeReference into an
+            // Expression which references the value pointed to by the TypeReference, if possible.
+            typeValueExpr = typeNodeToValueExpr(typeNode);
+          }
         }
       }
 
