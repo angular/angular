@@ -15,13 +15,15 @@ import {ResourceLoader} from './annotations';
  */
 export class HostResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
-  private fetching = new Set<string>();
+  private fetching = new Map<string, Promise<void>>();
 
   constructor(private host: (url: string) => string | Promise<string>) {}
 
   preload(url: string): Promise<void>|undefined {
-    if (this.cache.has(url) || this.fetching.has(url)) {
+    if (this.cache.has(url)) {
       return undefined;
+    } else if (this.fetching.has(url)) {
+      return this.fetching.get(url);
     }
 
     const result = this.host(url);
@@ -29,11 +31,12 @@ export class HostResourceLoader implements ResourceLoader {
       this.cache.set(url, result);
       return undefined;
     } else {
-      this.fetching.add(url);
-      return result.then(str => {
+      const fetchCompletion = result.then(str => {
         this.fetching.delete(url);
         this.cache.set(url, str);
       });
+      this.fetching.set(url, fetchCompletion);
+      return fetchCompletion;
     }
   }
 
