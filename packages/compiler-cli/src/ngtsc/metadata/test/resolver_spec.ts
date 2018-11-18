@@ -118,6 +118,10 @@ describe('ngtsc metadata', () => {
   it('array `length` property access works',
      () => { expect(evaluate(`const a = [1, 2, 3];`, 'a[\'length\'] + 1')).toEqual(4); });
 
+  it('array `slice` function works', () => {
+    expect(evaluate(`const a = [1, 2, 3];`, 'a[\'slice\']()')).toEqual([1, 2, 3]);
+  });
+
   it('negation works', () => {
     expect(evaluate(`const x = 3;`, '!x')).toEqual(false);
     expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
