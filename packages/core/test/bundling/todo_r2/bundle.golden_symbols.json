@@ -2199,6 +2199,9 @@
     "name": "localeEn"
   },
   {
+    "name": "locateDirectiveOrProvider"
+  },
+  {
     "name": "locateHostElement"
   },
   {
