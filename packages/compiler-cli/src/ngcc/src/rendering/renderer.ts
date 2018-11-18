@@ -50,6 +50,14 @@ interface DtsClassInfo {
 }
 
 /**
+ * The collected decorators that have become redundant after the compilation
+ * of Ivy static fields. The map is keyed by the container node, such that we
+ * can tell if we should remove the entire decorator property
+ */
+export type RedundantDecoratorMap = Map<ts.Node, ts.Node[]>;
+export const RedundantDecoratorMap = Map;
+
+/**
  * A base-class for rendering an `AnalyzedFile`.
  *
  * Package formats have output files that must be rendered differently. Concrete sub-classes must
@@ -113,12 +121,15 @@ export abstract class Renderer {
 
     if (compiledFile) {
       const importManager = new NgccImportManager(this.bundle.isFlat, this.isCore, IMPORT_PREFIX);
-      const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+
+      // TODO: remove constructor param metadata and property decorators (we need info from the
+      // handlers to do this)
+      const decoratorsToRemove = this.computeDecoratorsToRemove(compiledFile.compiledClasses);
+      this.removeDecorators(outputText, decoratorsToRemove);
 
       compiledFile.compiledClasses.forEach(clazz => {
         const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.addDefinitions(outputText, clazz, renderedDefinition);
-        this.trackDecorators(clazz.decorators, decoratorsToRemove);
       });
 
       this.addConstants(
@@ -129,10 +140,6 @@ export abstract class Renderer {
       this.addImports(
           outputText, importManager.getAllImports(
                           compiledFile.sourceFile.fileName, this.bundle.src.r3SymbolsFile));
-
-      // TODO: remove constructor param metadata and property decorators (we need info from the
-      // handlers to do this)
-      this.removeDecorators(outputText, decoratorsToRemove);
     }
 
     // Add exports to the entry-point file
@@ -190,25 +197,31 @@ export abstract class Renderer {
   protected abstract addDefinitions(
       output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
-      output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
+      output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   protected abstract rewriteSwitchableDeclarations(
       outputText: MagicString, sourceFile: ts.SourceFile,
       declarations: SwitchableVariableDeclaration[]): void;
 
   /**
-   * Add the decorator nodes that are to be removed to a map
-   * So that we can tell if we should remove the entire decorator property
+   * From the given list of classes, computes a map of decorators that should be removed.
+   * The decorators to remove are keyed by their container node, such that we can tell if
+   * we should remove the entire decorator property.
+   * @param classes The list of classes that may have decorators to remove.
+   * @returns A map of decorators to remove, keyed by their container node.
    */
-  protected trackDecorators(decorators: Decorator[], decoratorsToRemove: Map<ts.Node, ts.Node[]>):
-      void {
-    decorators.forEach(dec => {
-      const decoratorArray = dec.node.parent !;
-      if (!decoratorsToRemove.has(decoratorArray)) {
-        decoratorsToRemove.set(decoratorArray, [dec.node]);
-      } else {
-        decoratorsToRemove.get(decoratorArray) !.push(dec.node);
-      }
+  protected computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
+    const decoratorsToRemove = new RedundantDecoratorMap();
+    classes.forEach(clazz => {
+      clazz.decorators.forEach(dec => {
+        const decoratorArray = dec.node.parent !;
+        if (!decoratorsToRemove.has(decoratorArray)) {
+          decoratorsToRemove.set(decoratorArray, [dec.node]);
+        } else {
+          decoratorsToRemove.get(decoratorArray) !.push(dec.node);
+        }
+      });
     });
+    return decoratorsToRemove;
   }
 
   /**
