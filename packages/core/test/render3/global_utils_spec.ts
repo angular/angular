@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {markDirty} from '@angular/core/src/render3';
+import {ɵmarkDirty as markDirty} from '@angular/core';
 
 import {getComponent, getDirectives, getHostElement, getInjector, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
