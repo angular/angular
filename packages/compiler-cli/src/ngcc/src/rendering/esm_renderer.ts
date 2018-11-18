@@ -10,8 +10,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {CompiledClass} from '../analysis/decoration_analyzer';
-import {ExportInfo} from '../analysis/private_declarations_analyzer';
-import {Renderer, stripExtension} from './renderer';
+import {RedundantDecoratorMap, Renderer, stripExtension} from './renderer';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 export class EsmRenderer extends Renderer {
@@ -71,7 +70,7 @@ export class EsmRenderer extends Renderer {
   /**
    * Remove static decorator properties from classes
    */
-  removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void {
+  removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void {
     decoratorsToRemove.forEach((nodesToRemove, containerNode) => {
       if (ts.isArrayLiteralExpression(containerNode)) {
         const items = containerNode.elements;
