@@ -321,7 +321,7 @@ export function createEmbeddedViewAndNode<T>(
   setPreviousOrParentTNode(null !);
 
   const lView = createLViewData(
-      null, renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+      declarationView, renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
   lView[DECLARATION_VIEW] = declarationView;
 
   if (queries) {
