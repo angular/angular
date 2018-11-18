@@ -948,6 +948,9 @@
     "name": "loadInternal"
   },
   {
+    "name": "locateDirectiveOrProvider"
+  },
+  {
     "name": "locateHostElement"
   },
   {

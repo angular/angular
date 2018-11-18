@@ -930,6 +930,9 @@
     "name": "loadContext"
   },
   {
+    "name": "locateDirectiveOrProvider"
+  },
+  {
     "name": "locateHostElement"
   },
   {
