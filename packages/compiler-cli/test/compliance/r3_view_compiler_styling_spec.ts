@@ -139,7 +139,7 @@ describe('compiler compliance: styling', () => {
           template:  function MyComponent_Template(rf, $ctx$) {
           },
           data: {
-            animations: [{name: 'foo123'}, {name: 'trigger123'}]
+            animation: [{name: 'foo123'}, {name: 'trigger123'}]
           }
         });
       `;
@@ -180,7 +180,7 @@ describe('compiler compliance: styling', () => {
           template:  function MyComponent_Template(rf, $ctx$) {
           },
           data: {
-            animations: []
+            animation: []
           }
         });
       `;
