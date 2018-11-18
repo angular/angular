@@ -14,7 +14,7 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {Renderer} from '../../src/rendering/renderer';
+import {RedundantDecoratorMap, Renderer} from '../../src/rendering/renderer';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {makeTestEntryPointBundle} from '../helpers/utils';
 
@@ -37,7 +37,7 @@ class TestRenderer extends Renderer {
   addDefinitions(output: MagicString, compiledClass: CompiledClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
-  removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>) {
+  removeDecorators(output: MagicString, decoratorsToRemove: RedundantDecoratorMap) {
     output.prepend('\n// REMOVE DECORATORS\n');
   }
   rewriteSwitchableDeclarations(output: MagicString, sourceFile: ts.SourceFile): void {
@@ -97,7 +97,7 @@ describe('Renderer', () => {
   });
 
   const RENDERED_CONTENTS =
-      `\n// ADD EXPORTS\n\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
+      `\n// ADD EXPORTS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n\n// REMOVE DECORATORS\n` +
       INPUT_PROGRAM.contents;
 
   const OUTPUT_PROGRAM_MAP = fromObject({
