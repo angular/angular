@@ -18,11 +18,12 @@ import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
 import {assertDefined, assertEqual} from './assert';
+import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
 import {store, storeCleanupWithContext} from './instructions';
-import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {LViewData, TVIEW} from './interfaces/view';
 import {assertPreviousIsParent, getOrCreateCurrentQueries, getViewData} from './state';
@@ -242,31 +243,6 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
   return null;
 }
 
-/**
- * Iterates over all the directives for a node and returns index of a directive for a given type.
- *
- * @param tNode TNode on which directives are present.
- * @param currentView The view we are currently processing
- * @param type Type of a directive to look for.
- * @returns Index of a found directive or null when none found.
- */
-function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: Type<any>): number|
-    null {
-  const defs = currentView[TVIEW].data;
-  if (defs) {
-    const flags = tNode.flags;
-    const count = flags & TNodeFlags.DirectiveCountMask;
-    const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
-    const end = start + count;
-    for (let i = start; i < end; i++) {
-      const def = defs[i] as DirectiveDef<any>;
-      if (def.type === type) {
-        return i;
-      }
-    }
-  }
-  return null;
-}
 
 // TODO: "read" should be an AbstractType (FW-486)
 function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any {
@@ -274,9 +250,10 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any 
   if (typeof factoryFn === 'function') {
     return factoryFn();
   } else {
-    const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
+    const matchingIdx = locateDirectiveOrProvider(tNode, currentView, read as Type<any>, false);
     if (matchingIdx !== null) {
-      return currentView[matchingIdx];
+      return getNodeInjectable(
+          currentView[TVIEW].data, currentView, matchingIdx, tNode as TElementNode);
     }
   }
   return null;
@@ -307,7 +284,8 @@ function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx:
     return queryByReadToken(read, tNode, currentView);
   }
   if (matchingIdx > -1) {
-    return currentView[matchingIdx];
+    return getNodeInjectable(
+        currentView[TVIEW].data, currentView, matchingIdx, tNode as TElementNode);
   }
   // if read token and / or strategy is not specified,
   // detect it using appropriate tNode type
@@ -326,7 +304,7 @@ function add(
       if (type === ViewEngine_TemplateRef) {
         result = queryByTemplateRef(type, tNode, currentView, predicate.read);
       } else {
-        const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, type);
+        const matchingIdx = locateDirectiveOrProvider(tNode, currentView, type, false);
         if (matchingIdx !== null) {
           result = queryRead(tNode, currentView, predicate.read, matchingIdx);
         }

@@ -1101,6 +1101,9 @@
     "name": "leaveView"
   },
   {
+    "name": "locateDirectiveOrProvider"
+  },
+  {
     "name": "locateHostElement"
   },
   {

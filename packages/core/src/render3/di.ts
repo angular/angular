@@ -396,9 +396,6 @@ function searchTokensOnInjector<T>(
     previousTView: TView | null) {
   const currentTView = injectorView[TVIEW];
   const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
-  const nodeFlags = tNode.flags;
-  const nodeProviderIndexes = tNode.providerIndexes;
-  const tInjectables = currentTView.data;
   // First, we step through providers
   let canAccessViewProviders = false;
   // We need to determine if view providers can be accessed by the starting element.
@@ -412,9 +409,35 @@ function searchTokensOnInjector<T>(
   // and check the host node of the current view to identify component views.
   if (previousTView == null && isComponent(tNode) && includeViewProviders ||
       previousTView != null && previousTView != currentTView &&
-          (currentTView.node == null || currentTView.node !.type === TNodeType.Element)) {
+          (currentTView.node == null || currentTView.node.type === TNodeType.Element)) {
     canAccessViewProviders = true;
   }
+  const injectableIdx =
+      locateDirectiveOrProvider(tNode, injectorView, token, canAccessViewProviders);
+  if (injectableIdx !== null) {
+    return getNodeInjectable(currentTView.data, injectorView, injectableIdx, tNode as TElementNode);
+  } else {
+    return NOT_FOUND;
+  }
+}
+
+/**
+ * Searches for the given token among the node's directives and providers.
+ *
+ * @param tNode TNode on which directives are present.
+ * @param view The view we are currently processing
+ * @param token Provider token or type of a directive to look for.
+ * @param canAccessViewProviders Whether view providers should be considered.
+ * @returns Index of a found directive or provider, or null when none found.
+ */
+export function locateDirectiveOrProvider<T>(
+    tNode: TNode, view: LViewData, token: Type<T>| InjectionToken<T>,
+    canAccessViewProviders: boolean): number|null {
+  const tView = view[TVIEW];
+  const nodeFlags = tNode.flags;
+  const nodeProviderIndexes = tNode.providerIndexes;
+  const tInjectables = tView.data;
+
   const startInjectables = nodeProviderIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
   const startDirectives = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
   const cptViewProvidersCount =
@@ -426,10 +449,10 @@ function searchTokensOnInjector<T>(
     const providerTokenOrDef = tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>;
     if (i < startDirectives && token === providerTokenOrDef ||
         i >= startDirectives && (providerTokenOrDef as DirectiveDef<any>).type === token) {
-      return getNodeInjectable(tInjectables, injectorView, i, tNode as TElementNode);
+      return i;
     }
   }
-  return NOT_FOUND;
+  return null;
 }
 
 /**
