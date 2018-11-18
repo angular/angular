@@ -24,6 +24,9 @@ const EMPTY_ARRAY: Type<any>[] = [];
  * This function automatically gets called when a class has a `@NgModule` decorator.
  */
 export function compileNgModule(moduleType: Type<any>, ngModule: NgModule): void {
+  if (!ngModule) {
+    ngModule = {};
+  }
   compileNgModuleDefs(moduleType, ngModule);
   setScopeOnDeclaredComponents(moduleType, ngModule);
 }
