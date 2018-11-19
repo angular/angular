@@ -138,6 +138,7 @@ describe('compiler compliance: styling', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
+          encapsulation: 2,
           data: {
             animations: [{name: 'foo123'}, {name: 'trigger123'}]
           }
@@ -179,6 +180,7 @@ describe('compiler compliance: styling', () => {
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
+          encapsulation: 2,
           data: {
             animations: []
           }
@@ -227,7 +229,8 @@ describe('compiler compliance: styling', () => {
             if (rf & 2) {
               $r3$.ɵelementAttribute(0, "@foo", $r3$.ɵbind(ctx.exp));
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 
@@ -327,7 +330,8 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
 
@@ -382,7 +386,8 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵelementStyleProp(0, 0, ctx.myImage);
                 $r3$.ɵelementStylingApply(0);
               }
-            }
+            },
+            encapsulation: 2
           });
         `;
 
@@ -523,7 +528,8 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("banana"));
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
 
@@ -576,7 +582,8 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("round"));
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("height:100px"), $r3$.ɵsanitizeStyle);
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
 

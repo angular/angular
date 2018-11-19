@@ -194,7 +194,8 @@ describe('compiler compliance: bindings', () => {
           hostVars: 3,
           consts: 0,
           vars: 0,
-          template: function HostBindingComp_Template(rf, ctx) {}
+          template: function HostBindingComp_Template(rf, ctx) {},
+          encapsulation: 2
         });
       `;
 

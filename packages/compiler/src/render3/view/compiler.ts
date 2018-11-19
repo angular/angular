@@ -286,6 +286,10 @@ export function compileComponentFromMetadata(
     definitionMap.set('pipes', pipesExpr);
   }
 
+  if (meta.encapsulation === null) {
+    meta.encapsulation = core.ViewEncapsulation.Emulated;
+  }
+
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
     const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
@@ -293,10 +297,13 @@ export function compileComponentFromMetadata(
         meta.styles;
     const strings = styleValues.map(str => o.literal(str));
     definitionMap.set('styles', o.literalArr(strings));
+  } else if (meta.encapsulation === core.ViewEncapsulation.Emulated) {
+    // If there is no style, don't generate css selectors on elements
+    meta.encapsulation = core.ViewEncapsulation.None;
   }
 
   // Only set view encapsulation if it's not the default value
-  if (meta.encapsulation !== null && meta.encapsulation !== core.ViewEncapsulation.Emulated) {
+  if (meta.encapsulation !== core.ViewEncapsulation.Emulated) {
     definitionMap.set('encapsulation', o.literal(meta.encapsulation));
   }
 
