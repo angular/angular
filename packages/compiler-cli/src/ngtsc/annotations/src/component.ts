@@ -68,7 +68,8 @@ export class ComponentDecoratorHandler implements
     return undefined;
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator, options: ts.CompilerOptions):
+      AnalysisOutput<ComponentHandlerData> {
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
 
@@ -118,6 +119,8 @@ export class ComponentDecoratorHandler implements
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
       }
       preserveWhitespaces = value;
+    } else if (typeof options.preserveWhitespaces === 'boolean') {
+      preserveWhitespaces = options.preserveWhitespaces;
     }
 
     const viewProviders: Expression|null = component.has('viewProviders') ?

@@ -68,16 +68,22 @@ export class IvyCompilation {
       private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
-  analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
+  analyzeSync(sf: ts.SourceFile, options: ts.CompilerOptions): void {
+    return this.analyze(sf, options, false);
+  }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
+  analyzeAsync(sf: ts.SourceFile, options: ts.CompilerOptions): Promise<void>|undefined {
+    return this.analyze(sf, options, true);
+  }
 
   /**
    * Analyze a source file and produce diagnostics for it (if any).
    */
-  private analyze(sf: ts.SourceFile, preanalyze: false): undefined;
-  private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
-  private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
+  private analyze(sf: ts.SourceFile, options: ts.CompilerOptions, preanalyze: false): undefined;
+  private analyze(sf: ts.SourceFile, options: ts.CompilerOptions, preanalyze: true):
+      Promise<void>|undefined;
+  private analyze(sf: ts.SourceFile, options: ts.CompilerOptions, preanalyze: boolean):
+      Promise<void>|undefined {
     const promises: Promise<void>[] = [];
 
     const analyzeClass = (node: ts.Declaration): void => {
@@ -103,7 +109,7 @@ export class IvyCompilation {
           // Run analysis on the metadata. This will produce either diagnostics, an
           // analysis result, or both.
           try {
-            const analysis = adapter.analyze(node, metadata);
+            const analysis = adapter.analyze(node, metadata, options);
             if (analysis.analysis !== undefined) {
               this.analysis.set(node, {
                 adapter,
