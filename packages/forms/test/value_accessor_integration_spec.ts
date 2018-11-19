@@ -11,7 +11,6 @@ import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/t
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {fixmeIvy} from '@angular/private/testing';
 
 {
   describe('value accessors', () => {

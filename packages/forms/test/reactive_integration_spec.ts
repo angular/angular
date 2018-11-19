@@ -12,7 +12,6 @@ import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MO
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {fixmeIvy} from '@angular/private/testing';
 import {merge, timer} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -713,133 +712,127 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
     });
 
-    fixmeIvy('Host bindings to styles do not yet work') &&
-        describe('setting status classes', () => {
-          it('should work with single fields', () => {
-            const fixture = initTest(FormControlComp);
-            const control = new FormControl('', Validators.required);
-            fixture.componentInstance.control = control;
-            fixture.detectChanges();
+    describe('setting status classes', () => {
+      it('should work with single fields', () => {
+        const fixture = initTest(FormControlComp);
+        const control = new FormControl('', Validators.required);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
-            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-            dispatchEvent(input, 'blur');
-            fixture.detectChanges();
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
 
-            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-            input.value = 'updatedValue';
-            dispatchEvent(input, 'input');
-            fixture.detectChanges();
+        input.value = 'updatedValue';
+        dispatchEvent(input, 'input');
+        fixture.detectChanges();
 
-            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-          });
+        expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+      });
 
-          it('should work with single fields and async validators', fakeAsync(() => {
-               const fixture = initTest(FormControlComp);
-               const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
-               fixture.debugElement.componentInstance.control = control;
-               fixture.detectChanges();
+      it('should work with single fields and async validators', fakeAsync(() => {
+           const fixture = initTest(FormControlComp);
+           const control = new FormControl('', null !, uniqLoginAsyncValidator('good'));
+           fixture.debugElement.componentInstance.control = control;
+           fixture.detectChanges();
 
-               const input = fixture.debugElement.query(By.css('input')).nativeElement;
-               expect(sortedClassList(input)).toEqual([
-                 'ng-pending', 'ng-pristine', 'ng-untouched'
-               ]);
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
-               dispatchEvent(input, 'blur');
-               fixture.detectChanges();
-               expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+           dispatchEvent(input, 'blur');
+           fixture.detectChanges();
+           expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
-               input.value = 'good';
-               dispatchEvent(input, 'input');
-               tick();
-               fixture.detectChanges();
+           input.value = 'good';
+           dispatchEvent(input, 'input');
+           tick();
+           fixture.detectChanges();
 
-               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-             }));
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+         }));
 
-          it('should work with single fields that combines async and sync validators',
-             fakeAsync(() => {
-               const fixture = initTest(FormControlComp);
-               const control =
-                   new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
-               fixture.debugElement.componentInstance.control = control;
-               fixture.detectChanges();
+      it('should work with single fields that combines async and sync validators', fakeAsync(() => {
+           const fixture = initTest(FormControlComp);
+           const control =
+               new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
+           fixture.debugElement.componentInstance.control = control;
+           fixture.detectChanges();
 
-               const input = fixture.debugElement.query(By.css('input')).nativeElement;
-               expect(sortedClassList(input)).toEqual([
-                 'ng-invalid', 'ng-pristine', 'ng-untouched'
-               ]);
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-               dispatchEvent(input, 'blur');
-               fixture.detectChanges();
-               expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+           dispatchEvent(input, 'blur');
+           fixture.detectChanges();
+           expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-               input.value = 'bad';
-               dispatchEvent(input, 'input');
-               fixture.detectChanges();
+           input.value = 'bad';
+           dispatchEvent(input, 'input');
+           fixture.detectChanges();
 
-               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
 
-               tick();
-               fixture.detectChanges();
+           tick();
+           fixture.detectChanges();
 
-               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
 
-               input.value = 'good';
-               dispatchEvent(input, 'input');
-               tick();
-               fixture.detectChanges();
+           input.value = 'good';
+           dispatchEvent(input, 'input');
+           tick();
+           fixture.detectChanges();
 
-               expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-             }));
+           expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+         }));
 
-          it('should work with single fields in parent forms', () => {
-            const fixture = initTest(FormGroupComp);
-            const form = new FormGroup({'login': new FormControl('', Validators.required)});
-            fixture.componentInstance.form = form;
-            fixture.detectChanges();
+      it('should work with single fields in parent forms', () => {
+        const fixture = initTest(FormGroupComp);
+        const form = new FormGroup({'login': new FormControl('', Validators.required)});
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
-            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-            dispatchEvent(input, 'blur');
-            fixture.detectChanges();
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
 
-            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+        expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-            input.value = 'updatedValue';
-            dispatchEvent(input, 'input');
-            fixture.detectChanges();
+        input.value = 'updatedValue';
+        dispatchEvent(input, 'input');
+        fixture.detectChanges();
 
-            expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-          });
+        expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+      });
 
-          it('should work with formGroup', () => {
-            const fixture = initTest(FormGroupComp);
-            const form = new FormGroup({'login': new FormControl('', Validators.required)});
-            fixture.componentInstance.form = form;
-            fixture.detectChanges();
+      it('should work with formGroup', () => {
+        const fixture = initTest(FormGroupComp);
+        const form = new FormGroup({'login': new FormControl('', Validators.required)});
+        fixture.componentInstance.form = form;
+        fixture.detectChanges();
 
-            const input = fixture.debugElement.query(By.css('input')).nativeElement;
-            const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
 
-            expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
+        expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-            dispatchEvent(input, 'blur');
-            fixture.detectChanges();
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
 
-            expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+        expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-            input.value = 'updatedValue';
-            dispatchEvent(input, 'input');
-            fixture.detectChanges();
+        input.value = 'updatedValue';
+        dispatchEvent(input, 'input');
+        fixture.detectChanges();
 
-            expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-          });
+        expect(sortedClassList(formEl)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+      });
 
-        });
+    });
 
     describe('updateOn options', () => {
 
