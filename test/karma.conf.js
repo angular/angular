@@ -93,12 +93,27 @@ module.exports = config => {
   });
 
   if (process.env['CIRCLECI']) {
-    const instanceIndex = Number(process.env['CIRCLE_NODE_INDEX']);
-    const maxParallelInstances = Number(process.env['CIRCLE_NODE_TOTAL']);
+    const containerInstanceIndex = Number(process.env['CIRCLE_NODE_INDEX']);
+    const maxParallelContainerInstances = Number(process.env['CIRCLE_NODE_TOTAL']);
     const tunnelIdentifier =
-        `angular-material-${process.env['CIRCLE_BUILD_NUM']}-${instanceIndex}`;
+        `angular-material-${process.env['CIRCLE_BUILD_NUM']}-${containerInstanceIndex}`;
     const buildIdentifier = `circleci-${tunnelIdentifier}`;
     const testPlatform = process.env['TEST_PLATFORM'];
+
+    // This defines how often a given browser should be launched in the same CircleCI
+    // container. This is helpful if we want to shard tests across the same browser.
+    const parallelBrowserInstances = Number(process.env['KARMA_PARALLEL_BROWSERS']) || 1;
+
+    // In case there should be multiple instances of the browsers, we need to set up the
+    // the karma-parallel plugin.
+    if (parallelBrowserInstances > 1) {
+      config.frameworks.unshift('parallel');
+      config.plugins.push(require('karma-parallel'));
+      config.parallelOptions = {
+        executors: parallelBrowserInstances,
+        shardStrategy: 'round-robin',
+      }
+    }
 
     if (testPlatform === 'browserstack') {
       config.browserStack.build = buildIdentifier;
@@ -110,11 +125,11 @@ module.exports = config => {
 
     const platformBrowsers = platformMap[testPlatform];
     const browserInstanceChunks = splitBrowsersIntoInstances(
-        platformBrowsers, maxParallelInstances);
+        platformBrowsers, maxParallelContainerInstances);
 
-    // Configure Karma to launch the browsers that belong to the given test platform
-    // and instance.
-    config.browsers = browserInstanceChunks[instanceIndex];
+    // Configure Karma to launch the browsers that belong to the given test platform and
+    // container instance.
+    config.browsers = browserInstanceChunks[containerInstanceIndex];
   }
 };
 
