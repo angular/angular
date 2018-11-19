@@ -574,42 +574,68 @@ You have to configure providers for your own app-specific dependencies.
 {@a defining-providers}
 
 
+<!--
 ### Defining providers
+-->
+### 프로바이더 정의하기
 
+<!--
 A dependency can't always be created by the default method of instantiating a class.
 You learned about some other methods in [Dependency Providers](guide/dependency-injection-providers). 
 The following `HeroOfTheMonthComponent` example demonstrates many of the alternatives and why you need them.
 It's visually simple: a few properties and the logs produced by a logger.
+-->
+의존성 객체의 인스턴스는 클래스를 생성하는 기본 방식 외에 다른 방식으로도 생성할 수 있습니다.
+그리고 이 내용은 [의존성 주입 프로바이더](guide/dependency-injection-providers)에서 이미 다뤘습니다.
+아래 `HeroOfTheMonthComponent` 예제를 보면서 기본 방식 외에 다른 방식이 어떤 경우에 사용되는지 알아봅시다.
+동작하는 모습은 간단합니다. 이 예제는 `logger`가 처리하는 프로퍼티와 로그를 아래 그림과 같이 화면에 단순하게 표시하는 예제입니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-of-month.png" alt="Hero of the month">
 </figure>
 
+<!--
 The code behind it customizes how and where the DI framework provides dependencies.
 The use cases illustrate different ways to use the [*provide* object literal](guide/dependency-injection-providers#provide) to associate a definition object with a DI token. 
+-->
+하지만 이 코드는 의존성 주입 프레임워크에 활용되는 의존성 객체를 모두 커스터마이징 하기 위해 조금 복잡해졌습니다.
+그럼에도 불구하고 모든 프로바이더는 의존성 객체와 토큰을 [*provide* 객체 리터럴](guide/dependency-injection-providers#provide)로 등록하는데 각각 다른 방식을 사용한 것 뿐입니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="hero-of-the-month" header="hero-of-the-month.component.ts">
 
 </code-example>
 
+<!--
 The `providers` array shows how you might use the different provider-definition keys;
 `useValue`, `useClass`, `useExisting`, or `useFactory`.
+-->
+`providers` 배열을 보면 알수 있듯이, 의존성 토큰에 프로바이더를 연결할 때는 `useValue`, `useClass`, `useExisting`, `useFactory`를 사용할 수 있습니다.
 
 {@a usevalue}
 
-
+<!--
 #### Value providers: `useValue`
+-->
+#### 값 프로바이더: `useValue`
 
+<!--
 The `useValue` key lets you associate a fixed value with a DI token.
 Use this technique to provide *runtime configuration constants* such as website base addresses and feature flags.
 You can also use a value provider in a unit test to provide mock data in place of a production data service.
 
 The `HeroOfTheMonthComponent` example has two value providers.
+-->
+`useValue`키를 사용하면 고정된 값을 의존성 토큰에 연결할 수 있습니다.
+이 방식은 웹사이트의 기본 주소나 플래그 값 등 *실행시점에 결정되는 상수*를 의존성으로 주입할 때 사용합니다.
+그리고 이 방식은 데이터 서비스에 유닛 테스트를 적용할 때 목 데이터를 주입하는 용도로도 사용할 수 있습니다.
+
+`HeroOfTheMonthComponent` 예제에서는 이 방식의 프로바이더가 두 번 사용되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-value" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 * The first provides an existing instance of the `Hero` class to use for the `Hero` token, rather than
 requiring the injector to create a new instance with `new` or use its own cached instance. 
 Here, the token is the class itself.
@@ -626,18 +652,37 @@ The value of a *value provider* must be defined before you specify it here.
 The title string literal is immediately available.
 The `someHero` variable in this example was set earlier in the file as shown below.
 You can't use a variable whose value will be defined later.
+-->
+* 첫번째 사용된 프로바이더는 `Hero` 토큰에 `Hero` 클래스 인스턴스를 `new` 키워드로 생성해서 반환하지 않고, 어딘가에 캐싱된 인스턴스를 사용하는 방식으로 등록되었습니다.
+이 때 토큰은 클래스 그 자체를 의미합니다.
+
+* 두번째로 사용된 프로바이더는 `TITLE` 토큰에 문자열 리소스를 연결하는 방식으로 등록되었습니다.
+이 때 `TITLE` 프로바이더 토큰은 *클래스*가 아니지만 이 토큰은 `InjectionToken` 인스턴스로 생성된 [인젝션 토큰](guide/dependency-injection-in-action#injection-token)이기 때문에 프로바이더를 찾는 키로 사용할 수 있습니다.
+
+프로바이더는 어떠한 것이라도 인젝션 토큰에 연결할 수 있지만, 이 방식은 보통 문자열이나 숫자, 함수를 연결할 때 유용합니다.
+
+*값 프로바이더*의 값(value)에 해당하는 객체는 프로바이더가 등록되기 전에 반드시 선언되어야 합니다.
+그래서 `TITLE`에 해당하는 문자열은 프로바이더를 등록하면서 바로 선언했으며, `someHero` 변수에 해당하는 객체는 프로바이더가 등록되기 전 어딘가에 이미 선언되어 있습니다.
+프로바이더 선언보다 늦게 선언되는 변수는 프로바이더에 제대로 등록되지 않습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="some-hero" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
+<!--
 Other types of providers can create their values *lazily*; that is, when they're needed for injection.
+-->
+다른 타입의 프로바이더는 값에 해당하는 객체가 의존성 주입되기 전까지라면 프로바이더가 등록되는 것보다 *늦게* 생성되어도 됩니다.
 
 {@a useclass}
 
 
+<!--
 #### Class providers: `useClass` 
+-->
+#### 클래스 프로바이더: `useClass`
 
+<!--
 The `useClass` provider key lets you create and return a new instance of the specified class.
 
 You can use this type of provider to substitute an *alternative implementation*
@@ -646,11 +691,19 @@ The alternative implementation could, for example, implement a different strateg
 extend the default class, or emulate the behavior of the real class in a test case.
 
 The following code shows two examples in `HeroOfTheMonthComponent`.
+-->
+`useClass` 프로바이더 키를 사용하면 지정된 클래스의 새로운 인스턴스가 생성되어 반환됩니다.
+
+이 방식은 어떤 클래스를 *다른 구현체로 대체할 때*도 사용할 수 있습니다.
+이 때 다른 구현체라는 것은 다른 정책일 수도 있고, 기본 클래스를 상속받은 클래스일 수도 있으며, 테스트 환경에서 실제 클래스를 대체하기 위한 객체일 수도 있습니다.
+
+`HeroOfTheMonthComponent` 예제에서는 이 방식의 프로바이더가 두 번 사용되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-class" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 The first provider is the *de-sugared*, expanded form of the most typical case in which the
 class to be created (`HeroService`) is also the provider's dependency injection token.
 The short form is generally preferred; this long form makes the details explicit.
@@ -658,15 +711,28 @@ The short form is generally preferred; this long form makes the details explicit
 The second provider substitutes `DateLoggerService` for `LoggerService`.
 `LoggerService` is already registered at the `AppComponent` level.
 When this child component requests `LoggerService`, it receives a `DateLoggerService` instance instead.
+-->
+첫번째 프로바이더는 *축약형을 사용하지 않은(de-sugared)* 문법이며 클래스를 의존성 객체로 등록할 때 가장 많이 사용하는 방식입니다. 이 경우에 `HeroService`는 의존성 토큰이면서 구현체이기도 합니다.
+일반적으로는 축약형이 사용되지만 이 예제에서는 개념을 명확하게 하기 위해 풀어서 사용했습니다.
+
+두번째 프로바이더는 `AppComponent` 계층에 등록된 `LoggerService`를 `DateLoggerService`로 대체하기 위해 사용했습니다.
+이제 이 프로바이더가 등록된 컴포넌트 계층부터는 `LoggerService`가 요청되었을 때 `DateLoggerService`의 인스턴스가 대신 주입됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 This component and its tree of child components receive `DateLoggerService` instance.
 Components outside the tree continue to receive the original `LoggerService` instance.
+-->
+이 컴포넌트와 이 컴포넌트 트리 아래에 있는 컴포넌트에는 `DateLoggerService`의 인스턴스가 주입됩니다.
+하지만 이 트리 밖에 있는 컴포넌트에는 여전히 `LoggerService`의 인스턴스가 주입됩니다.
 
 </div>
 
+<!--
 `DateLoggerService` inherits from `LoggerService`; it appends the current date/time to each message:
+-->
+이 때 `DateLoggerService`는 `LoggerService`를 상속한 클래스이며, 원래 로그의 기능에 날짜와 시간을 함께 출력하는 클래스입니다:
 
 <code-example path="dependency-injection-in-action/src/app/date-logger.service.ts" region="date-logger-service" header="src/app/date-logger.service.ts" linenums="false">
 
@@ -674,47 +740,75 @@ Components outside the tree continue to receive the original `LoggerService` ins
 
 {@a useexisting}
 
+<!--
 #### Alias providers: `useExisting`
+-->
+#### 별칭 프로바이더: `useExisting`
 
+<!--
 The `useExisting` provider key lets you map one token to another.
 In effect, the first token is an *alias* for the service associated with the second token,
 creating two ways to access the same service object.
+-->
+`useExisting` 프로바이더 키는 어떤 토큰을 다른 토큰과 연결할 때 사용합니다.
+그래서 `provide`에 사용된 토큰은 `useExisting`에 사용된 토큰의 *별칭(alias)* 역할을 하기 때문에, 결국 같은 서비스 객체를 또 다른 이름으로 참조할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
+<!--
 You can use this technique to narrow an API through an aliasing interface.
 The following example shows an alias introduced for that purpose.
 
 Imagine that `LoggerService` had a large API, much larger than the actual three methods and a property.
 You might want to shrink that API surface to just the members you actually need.
 In this example, the `MinimalLogger` [class-interface](#class-interface) reduces the API to two members:
+-->
+이 방식은 또 다른 인터페이스를 만들어서 어떤 클래스의 API를 제한하는 용도로 사용할 수 있습니다.
+아래 예제에서 확인해 봅시다.
 
+`LoggerService`가 제공하는 API가 너무 방대한데, 실제로 사용하는 API는 이 중에 2개밖에 안된다고 합시다.
+그래서 이 서비스를 그대로 사용하지 않고 2개의 API만 제공하는 인터페이스를 대신 사용하려고 합니다.
+아래 예제에서 `MinimalLogger` [클래스-인터페이스](#class-interface)에는 실제로 사용하는 API 2개만 정의되어 있습니다:
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
+<!--
 The following example puts `MinimalLogger` to use in a simplified version of `HeroOfTheMonthComponent`.
+-->
+그러면 `HeroOfTheMonthComponent`는 `MinimalLogger`를 주입받아 간단한 로그 서비스를 사용할 수 잇습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.1.ts" header="src/app/hero-of-the-month.component.ts (minimal version)" linenums="false">
 
 </code-example>
 
+<!--
 The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `MinimalLogger`, so only the `logs` and `logInfo` members are visible in a TypeScript-aware editor.
+-->
+`HeroOfTheMonthComponent`의 생성자 인자 `logger`는 `MinimalLogger` 타입으로 지정되었기 때문에 TypeScript를 지원하는 에디터에서는 `logs`와 `logInfo` 멤버만 보이게 됩니다.
 
 <figure>
+  <!--
   <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger restricted API">
+  -->
+  <img src="generated/images/guide/dependency-injection-in-action/minimal-logger-intellisense.png" alt="MinimalLogger로 제한된 API">
 </figure>
 
-
+<!--
 Behind the scenes, Angular sets the `logger` parameter to the full service registered under the `LoggingService` token, which happens to be the `DateLoggerService` instance that was [provided above](guide/dependency-injection-in-action#useclass).
+-->
+하지만 실제로 Angular가 `logger` 인자에 할당하는 것은 `LoggingService` 토큰에 해당하는 서비스 전체이며, 이 경우에는 [위에서 등록한 프로바이더](guide/dependency-injection-in-action#useclass) 때문에 `DateLoggerService`의 인스턴스가 주입됩니다.
 
 
 <div class="alert is-helpful">
 
+<!--
 This is illustrated in the following image, which displays the logging date.
+-->
+이 코드를 실행하면 날짜와 시간을 함께 출력하는 로그 서비스가 사용되는 것을 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/date-logger-entry.png" alt="DateLoggerService entry">
