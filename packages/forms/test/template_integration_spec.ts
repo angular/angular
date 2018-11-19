@@ -12,7 +12,6 @@ import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, F
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-import {fixmeIvy} from '@angular/private/testing';
 import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
@@ -149,101 +148,85 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.value).toEqual({});
          }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
-          it('should set status classes with ngModel', async(() => {
-               const fixture = initTest(NgModelForm);
-               fixture.componentInstance.name = 'aa';
-               fixture.detectChanges();
-               fixture.whenStable().then(() => {
-                 fixture.detectChanges();
+      it('should set status classes with ngModel', async(() => {
+           const fixture = initTest(NgModelForm);
+           fixture.componentInstance.name = 'aa';
+           fixture.detectChanges();
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
 
-                 const input = fixture.debugElement.query(By.css('input')).nativeElement;
-                 expect(sortedClassList(input)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-untouched'
-                 ]);
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-                 dispatchEvent(input, 'blur');
-                 fixture.detectChanges();
+             dispatchEvent(input, 'blur');
+             fixture.detectChanges();
 
-                 expect(sortedClassList(input)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-touched'
-                 ]);
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-                 input.value = 'updatedValue';
-                 dispatchEvent(input, 'input');
-                 fixture.detectChanges();
-                 expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-               });
-             }));
+             input.value = 'updatedValue';
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+           });
+         }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
-          it('should set status classes with ngModel and async validators', fakeAsync(() => {
+      it('should set status classes with ngModel and async validators', fakeAsync(() => {
 
-               const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
-               fixture.whenStable().then(() => {
-                 fixture.detectChanges();
+           const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
 
-                 const input = fixture.debugElement.query(By.css('input')).nativeElement;
-                 expect(sortedClassList(input)).toEqual([
-                   'ng-pending', 'ng-pristine', 'ng-untouched'
-                 ]);
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
-                 dispatchEvent(input, 'blur');
-                 fixture.detectChanges();
+             dispatchEvent(input, 'blur');
+             fixture.detectChanges();
 
-                 expect(sortedClassList(input)).toEqual([
-                   'ng-pending', 'ng-pristine', 'ng-touched'
-                 ]);
+             expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
-                 input.value = 'updatedValue';
-                 dispatchEvent(input, 'input');
-                 tick();
-                 fixture.detectChanges();
+             input.value = 'updatedValue';
+             dispatchEvent(input, 'input');
+             tick();
+             fixture.detectChanges();
 
-                 expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-               });
-             }));
+             expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+           });
+         }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
-          it('should set status classes with ngModelGroup and ngForm', async(() => {
-               const fixture = initTest(NgModelGroupForm);
-               fixture.componentInstance.first = '';
-               fixture.detectChanges();
+      it('should set status classes with ngModelGroup and ngForm', async(() => {
+           const fixture = initTest(NgModelGroupForm);
+           fixture.componentInstance.first = '';
+           fixture.detectChanges();
 
-               const form = fixture.debugElement.query(By.css('form')).nativeElement;
-               const modelGroup =
-                   fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
-               const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const form = fixture.debugElement.query(By.css('form')).nativeElement;
+           const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')).nativeElement;
 
-               // ngModelGroup creates its control asynchronously
-               fixture.whenStable().then(() => {
-                 fixture.detectChanges();
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-untouched'
-                 ]);
+           // ngModelGroup creates its control asynchronously
+           fixture.whenStable().then(() => {
+             fixture.detectChanges();
+             expect(sortedClassList(modelGroup)).toEqual([
+               'ng-invalid', 'ng-pristine', 'ng-untouched'
+             ]);
 
-                 expect(sortedClassList(form)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-untouched'
-                 ]);
+             expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
-                 dispatchEvent(input, 'blur');
-                 fixture.detectChanges();
+             dispatchEvent(input, 'blur');
+             fixture.detectChanges();
 
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-invalid', 'ng-pristine', 'ng-touched'
-                 ]);
-                 expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
+             expect(sortedClassList(modelGroup)).toEqual([
+               'ng-invalid', 'ng-pristine', 'ng-touched'
+             ]);
+             expect(sortedClassList(form)).toEqual(['ng-invalid', 'ng-pristine', 'ng-touched']);
 
-                 input.value = 'updatedValue';
-                 dispatchEvent(input, 'input');
-                 fixture.detectChanges();
+             input.value = 'updatedValue';
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
 
-                 expect(sortedClassList(modelGroup)).toEqual([
-                   'ng-dirty', 'ng-touched', 'ng-valid'
-                 ]);
-                 expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-               });
-             }));
+             expect(sortedClassList(modelGroup)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+             expect(sortedClassList(form)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+           });
+         }));
 
       it('should not create a template-driven form when ngNoForm is used', () => {
         const fixture = initTest(NgNoFormComp);
