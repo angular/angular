@@ -427,7 +427,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementClassProp(0, 0, ctx.error);
                 $r3$.ɵelementStylingApply(0);
               }
-            }
+            },
+            encapsulation: 2
         });
       `;
 
@@ -474,7 +475,8 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵtext(0, "child-view");
             }
-          }
+          },
+          encapsulation: 2
         });`;
 
       // SomeDirective definition should be:
@@ -502,7 +504,8 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(1, "!");
             }
           },
-          directives: [ChildComponent, SomeDirective]
+          directives: [ChildComponent, SomeDirective],
+          encapsulation: 2
         });
       `;
 
@@ -591,7 +594,8 @@ describe('compiler compliance', () => {
           },
           consts: 0,
           vars: 0,
-          template:  function MyComponent_Template(rf, ctx) {}
+          template:  function MyComponent_Template(rf, ctx) {},
+          encapsulation: 2
         });`;
 
          const result = compile(files, angularFiles);
@@ -660,7 +664,8 @@ describe('compiler compliance', () => {
               $r3$.ɵelementEnd();
             }
           },
-          directives:[IfDirective]
+          directives:[IfDirective],
+           encapsulation: 2
         });`;
 
       const result = compile(files, angularFiles);
@@ -723,7 +728,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(0, "names", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.customName)));
               }
             },
-           directives: [MyComp]
+           directives: [MyComp],
+           encapsulation: 2
           });
         `;
 
@@ -806,7 +812,8 @@ describe('compiler compliance', () => {
                     $r3$.ɵbind($r3$.ɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
               }
             },
-            directives: [MyComp]
+            directives: [MyComp],
+            encapsulation: 2
           });
         `;
 
@@ -867,7 +874,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(0, "config", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.name)));
               }
             },
-            directives: [ObjectComp]
+            directives: [ObjectComp],
+            encapsulation: 2
           });
         `;
 
@@ -936,7 +944,8 @@ describe('compiler compliance', () => {
                     $r3$.ɵbind($r3$.ɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵpureFunction1(3, $e0_ff_1$, $r3$.ɵpureFunction1(1, $e0_ff$, ctx.duration)))));
               }
             },
-            directives: [NestedComp]
+            directives: [NestedComp],
+            encapsulation: 2
           });
         `;
 
@@ -991,7 +1000,8 @@ describe('compiler compliance', () => {
               $r3$.ɵprojection(1);
               $r3$.ɵelementEnd();
             }
-          }
+          },
+          encapsulation: 2
         });`;
 
       const ComplexComponentDefinition = `
@@ -1016,7 +1026,8 @@ describe('compiler compliance', () => {
               $r3$.ɵprojection(3, 2);
               $r3$.ɵelementEnd();
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 
@@ -1088,7 +1099,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelement(1, "div", $e0_attrs$);
               }
             },
-            directives: function () { return [SomeDirective]; }
+            directives: function () { return [SomeDirective]; },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1267,7 +1279,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵprojection(1);
                 $r3$.ɵelementEnd();
               }
-            }
+            },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1468,7 +1481,8 @@ describe('compiler compliance', () => {
                   $r3$.ɵtextBinding(4, $r3$.ɵinterpolation1("", $r3$.ɵpipeBindV(5, 8, $r3$.ɵpureFunction1(15, $c0$, ctx.name)), ""));
                 }
               },
-              pipes: [MyPurePipe, MyPipe]
+              pipes: [MyPurePipe, MyPipe],
+              encapsulation: 2
             });`;
 
         const result = compile(files, angularFiles);
@@ -1536,7 +1550,8 @@ describe('compiler compliance', () => {
                   ));
                 }
               },
-              pipes: [MyPipe]
+              pipes: [MyPipe],
+              encapsulation: 2
             });`;
 
         const result = compile(files, angularFiles);
@@ -1579,7 +1594,8 @@ describe('compiler compliance', () => {
               const $user$ = $r3$.ɵreference(1);
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1("Hello ", $user$.value, "!"));
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 
@@ -1675,7 +1691,8 @@ describe('compiler compliance', () => {
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1(" ", $foo$, " "));
             }
           },
-          directives:[IfDirective]
+          directives:[IfDirective],
+          encapsulation: 2
         });`;
 
       const result = compile(files, angularFiles);
@@ -1809,7 +1826,8 @@ describe('compiler compliance', () => {
             features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
-            template:  function LifecycleComp_Template(rf, ctx) {}
+            template:  function LifecycleComp_Template(rf, ctx) {},
+            encapsulation: 2
           });`;
 
         const SimpleLayoutDefinition = `
@@ -1829,7 +1847,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(1, "name", $r3$.ɵbind(ctx.name2));
               }
             },
-            directives: [LifecycleComp]
+            directives: [LifecycleComp],
+           encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1957,7 +1976,8 @@ describe('compiler compliance', () => {
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
                 },
-                directives: function() { return [ForOfDirective]; }
+                directives: function() { return [ForOfDirective]; },
+                encapsulation: 2
               });
             `;
 
@@ -2036,7 +2056,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },
-            directives: function() { return [ForOfDirective]; }
+            directives: function() { return [ForOfDirective]; },
+            encapsulation: 2
           });
         `;
 
@@ -2135,7 +2156,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },
-            directives: function () { return [ForOfDirective]; }
+            directives: function () { return [ForOfDirective]; },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);

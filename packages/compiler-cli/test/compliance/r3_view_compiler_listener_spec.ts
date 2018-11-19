@@ -217,7 +217,8 @@ describe('compiler compliance: listen()', () => {
               $r3$.ɵelementEnd();
               $r3$.ɵelement(2, "input", null, $e2_refs$);
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 

@@ -48,7 +48,8 @@ describe('compiler compliance: directives', () => {
                     if (rf & 1) {
                         $r3$.ɵelement(0, "div");
                     }
-                }
+                },
+                encapsulation: 2
             });
         `;
 
@@ -93,7 +94,8 @@ describe('compiler compliance: directives', () => {
                     if (rf & 1) {
                         $r3$.ɵelement(0, "div");
                     }
-                }
+                },
+                encapsulation: 2
             });
         `;
 
@@ -141,7 +143,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -189,7 +192,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -233,7 +237,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -283,7 +288,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
