@@ -225,8 +225,8 @@ jobs:
       - run:
           name: Prepare CDK artifacts for publish.
           command: |
-            mkdir -p  /tmp/cdk-umd-artifacts
-            cp dist/releases/cdk/bundles/*.umd.js /tmp/cdk-umd-artifacts
+            mkdir -p /tmp/cdk-umd-minified-bundles
+            cp dist/releases/cdk/bundles/*.umd.min.js /tmp/cdk-umd-minified-bundles
 
       # Publish bundle artifacts which will be used to calculate the size change.
       # Note: Make sure that the size plugin from the Angular robot fetches the artifacts
@@ -236,10 +236,10 @@ jobs:
       # artifacts from CircleCI. See:
       # https://github.com/angular/github-robot/blob/master/functions/src/plugins/size.ts#L392-L394
       - store_artifacts:
-          path: dist/releases/material/bundles/material.umd.js
-          destination: /angular_material/material_release_output/material.umd.js
+          path: dist/releases/material/bundles/material.umd.min.js
+          destination: /angular_material/material_release_output/material.umd.min.js
       - store_artifacts:
-          path: /tmp/cdk-umd-artifacts
+          path: /tmp/cdk-umd-minified-bundles
           destination: /angular_material/cdk_release_output/
 
       - *save_cache
