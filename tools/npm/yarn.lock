@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@angular/bazel@7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.0.3.tgz#6ea2c98957f83db5902a2df0e5fed0e36574411c"
-  integrity sha512-IX6HtSht2etmC7IR6DnFpMt0eIedcElYCHu3ghqfIqQo8ZDZQAMbsBo02sYY5qkqRKYyrhzeWxtUoi7uFx9kHA==
+"@angular/bazel@7.0.4":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.0.4.tgz#e653db2202cfc2b41d592bb70e241bfd56bb99ab"
+  integrity sha512-QukWwQbZlcgzjGWYOwUBpCNlSe0pRrl1gJUOfpHks2mRCL7Nyr/75asMFmpvLCJDbcDGRx/UNQEY/sqUrNWNWw==
   dependencies:
     "@bazel/typescript" "^0.20.3"
     "@types/node" "6.0.84"
     shelljs "0.8.2"
     tsickle "0.32.1"
 
-"@angular/compiler-cli@7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-7.0.3.tgz#5d2567056251a8417ad0154de5d6757fa502f837"
-  integrity sha512-8/SNgyce0Eqhfn8N/XkwSDSxTJryA+/EVLA68D2IopOSg/95u6GgYv3mVNNQnclSzC4g1FuK0zt4z0zRIWZ6JA==
+"@angular/compiler-cli@7.0.4":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-7.0.4.tgz#f96fc1c0aec27ee97ec5f13a8eb72bc8b964db97"
+  integrity sha512-kvhWt6OTb1Uduns9Vm+Dwd/UUBNSEU6Jgu+QOPeHr7lg+4NTyr9uQLU0DtfBP0ljOlds8esmfii5IIFTeUQw1Q==
   dependencies:
     canonical-path "1.0.0"
     chokidar "^1.4.2"
@@ -26,12 +26,13 @@
     reflect-metadata "^0.1.2"
     shelljs "^0.8.1"
     source-map "^0.6.1"
+    tslib "^1.9.0"
     yargs "9.0.1"
 
-"@angular/compiler@7.0.3":
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-7.0.3.tgz#c9bf049b92d37f9fec932698f52743c3be8ad6e7"
-  integrity sha512-1eF4PzWej9eoEQhHwuMxujx9B4oSjP70vORIs9pgXF8O4nWDWTKtfPQyNCPxc8mY+Fwb0+nSOEvvA+Ou8Hnreg==
+"@angular/compiler@7.0.4":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-7.0.4.tgz#df91dab990c46b464705b0901d70d1cfdfd190e1"
+  integrity sha512-ExDhH1cJkuJkUsgNRZyZBse0a7wWkQyG5O8HONi3Rzig9dalFEuve9jD04zfA1Jx1GTXhovqtGnF72x4kw0V8Q==
   dependencies:
     tslib "^1.9.0"
 
