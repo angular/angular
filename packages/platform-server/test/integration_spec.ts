@@ -539,32 +539,29 @@ class HiddenModule {
       });
       afterEach(() => { expect(called).toBe(true); });
 
-      fixmeIvy('to investigate') &&
-          it('using long form should work', async(() => {
-               const platform =
-                   platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
+      it('using long form should work', async(() => {
+           const platform =
+               platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
-               platform.bootstrapModule(AsyncServerModule)
-                   .then((moduleRef) => {
-                     const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-                     return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
-                         .toPromise();
-                   })
-                   .then((b) => {
-                     expect(platform.injector.get(PlatformState).renderToString())
-                         .toBe(expectedOutput);
-                     platform.destroy();
-                     called = true;
-                   });
-             }));
-
-      fixmeIvy('to investigate') &&
-          it('using renderModule should work', async(() => {
-               renderModule(AsyncServerModule, {document: doc}).then(output => {
-                 expect(output).toBe(expectedOutput);
+           platform.bootstrapModule(AsyncServerModule)
+               .then((moduleRef) => {
+                 const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                 return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
+                     .toPromise();
+               })
+               .then((b) => {
+                 expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
+                 platform.destroy();
                  called = true;
                });
-             }));
+         }));
+
+      it('using renderModule should work', async(() => {
+           renderModule(AsyncServerModule, {document: doc}).then(output => {
+             expect(output).toBe(expectedOutput);
+             called = true;
+           });
+         }));
 
       it('using renderModuleFactory should work',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -609,14 +606,13 @@ class HiddenModule {
          }));
 
 
-      fixmeIvy('to investigate') &&
-          it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
-               renderModule(ExampleStylesModule, {document: doc}).then(output => {
-                 expect(output).toMatch(
-                     /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
-                 called = true;
-               });
-             }));
+      it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
+           renderModule(ExampleStylesModule, {document: doc}).then(output => {
+             expect(output).toMatch(
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+             called = true;
+           });
+         }));
 
       fixmeIvy('to investigate') &&
           it('should handle false values on attributes', async(() => {
@@ -662,29 +658,27 @@ class HiddenModule {
                });
              }));
 
-      fixmeIvy('to investigate') &&
-          it('should call render hook', async(() => {
-               renderModule(RenderHookModule, {document: doc}).then(output => {
-                 // title should be added by the render hook.
-                 expect(output).toBe(
-                     '<html><head><title>RenderHook</title></head><body>' +
-                     '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
-                 called = true;
-               });
-             }));
+      it('should call render hook', async(() => {
+           renderModule(RenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
+           });
+         }));
 
-      fixmeIvy('to investigate') &&
-          it('should call multiple render hooks', async(() => {
-               const consoleSpy = spyOn(console, 'warn');
-               renderModule(MultiRenderHookModule, {document: doc}).then(output => {
-                 // title should be added by the render hook.
-                 expect(output).toBe(
-                     '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                     '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
-                 expect(consoleSpy).toHaveBeenCalled();
-                 called = true;
-               });
-             }));
+      it('should call multiple render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(MultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
+             called = true;
+           });
+         }));
     });
 
     describe('http', () => {
@@ -856,13 +850,12 @@ class HiddenModule {
       beforeEach(() => { called = false; });
       afterEach(() => { expect(called).toBe(true); });
 
-      fixmeIvy('to investigate') &&
-          it('adds transfer script tag when using renderModule', async(() => {
-               renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
-                 expect(output).toBe(defaultExpectedOutput);
-                 called = true;
-               });
-             }));
+      it('adds transfer script tag when using renderModule', async(() => {
+           renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
+             expect(output).toBe(defaultExpectedOutput);
+             called = true;
+           });
+         }));
 
       it('adds transfer script tag when using renderModuleFactory',
          async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
@@ -876,19 +869,18 @@ class HiddenModule {
            });
          })));
 
-      fixmeIvy('to investigate') &&
-          it('cannot break out of <script> tag in serialized output', async(() => {
-               renderModule(EscapedTransferStoreModule, {
-                 document: '<esc-app></esc-app>'
-               }).then(output => {
-                 expect(output).toBe(
-                     '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
-                     '<script id="transfer-state" type="application/json">' +
-                     '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
-                     'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
-                 called = true;
-               });
-             }));
+      it('cannot break out of <script> tag in serialized output', async(() => {
+           renderModule(EscapedTransferStoreModule, {
+             document: '<esc-app></esc-app>'
+           }).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+                 '<script id="transfer-state" type="application/json">' +
+                 '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
+                 'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
+             called = true;
+           });
+         }));
     });
   });
 })();
