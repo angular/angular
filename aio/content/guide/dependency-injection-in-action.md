@@ -452,19 +452,29 @@ Using the `@Self` decorator, the injector only looks at the component's injector
 
 {@a component-element}
 
+<!--
 ## Inject the component's DOM element
+-->
+## 컴포넌트의 DOM 엘리먼트 주입하기
 
+<!--
 Although developers strive to avoid it, many visual effects and third-party tools, such as jQuery,
 require DOM access.
 As a result, you might need to access a component's DOM element.
 
 To illustrate, here's a simplified version of `HighlightDirective` from
 the [Attribute Directives](guide/attribute-directives) page.
+-->
+가능한 한 개발자들이 이 방법은 사용하지 않을 것을 권장하지만, 시각 효과를 위한 서드파티 툴이 jQuery를 사용한다면 DOM에 접근해야 하는 경우가 있습니다.
+그러면 결국 컴포넌트의 DOM 엘리먼트에 접근할 수 있는 방법을 찾아야 합니다.
+
+이 내용을 알아보기 위해 [어트리뷰트 디렉티브](guide/attribute-directives) 페이지에서 살펴봤던 `HighlightDirective`를 간단하게 확인해 봅시다.
 
 <code-example path="dependency-injection-in-action/src/app/highlight.directive.ts" header="src/app/highlight.directive.ts">
 
 </code-example>
 
+<!--
 The directive sets the background to a highlight color when the user mouses over the
 DOM element to which the directive is applied.
 
@@ -474,13 +484,22 @@ whose `nativeElement` property exposes the DOM element for the directive to mani
 
 The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
 first without a value (yielding the default color) and then with an assigned color value.
+-->
+이 디렉티브가 적용된 DOM 엘리먼트에 사용자가 마우스를 올리면 배경색이 변경됩니다.
+
+그리고 배경색을 변경하기 위해 디렉티브의 생성자로 `ElementRef`가 주입하고, 이 객체를 `el` 프로러티로 할당했습니다.
+(`ElementRef`는 DOM 엘리먼트를 랩핑한 타입이며, 이 객체의 `nativeElement` 프로퍼티를 사용하면 디렉티브가 DOM 엘리먼트를 직접 조작할 수 있습니다.)
+
+이 디렉티브는 DOM 엘리먼트에 적용하면서 입력값을 받을 수 있는데, 이 때 색상을 지정하지 않으면 배경색으로 기본 색상이 적용되고 색상을 지정하면 지정된 색상이 배경색이 됩니다.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" header="src/app/app.component.html (highlight)" linenums="false">
 
 </code-example>
 
-
+<!--
 The following image shows the effect of mousing over the `<hero-bios-and-contacts>` tag.
+-->
+그래서 이제 `<hero-bios-and-contacts>`에 마우스를 올려보면 아래 그림과 같이 표시됩니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/highlight.png" alt="Highlighted bios">
@@ -489,8 +508,12 @@ The following image shows the effect of mousing over the `<hero-bios-and-contact
 {@a providers}
 
 
+<!--
 ## Define dependencies with providers
+-->
+## 프로바이더로 의존성 정의하기
 
+<!--
 This section demonstrates how to write providers that deliver dependent services.
 
 In order to get a service from a dependency injector, you have to give it a [token](guide/glossary#token).
@@ -499,33 +522,54 @@ The parameter type serves as the injector lookup token.
 Angular passes this token to the injector and assigns the result to the parameter.
 
 The following is a typical example.
+-->
+이번 섹션에서는 의존성으로 주입하는 서비스의 프로바이더를 어떻게 정의할 수 있는지 알아봅시다.
 
+인젝터를 통해 서비스를 주입받으려면 이 서비스에 해당하는 [토큰](guide/glossary#token)을 선언해야 합니다.
+그리고 이렇게 선언된 토큰은 Angular가 생성자의 인자에 지정된 타입을 인젝터에서 찾을때 활용합니다.
+결국 인젝터에 토큰을 보내면 그 토큰에 해당되는 의존성 객체를 받아올 수 있습니다.
 
+예제를 보면서 이 내용을 확인해 봅시다.
+
+<!--
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
+-->
+<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" header="src/app/hero-bios.component.ts (컴포넌트 생성자로 주입되는 의존성 객체)" linenums="false">
 
 </code-example>
 
-
+<!--
 Angular asks the injector for the service associated with `LoggerService`
 and assigns the returned value to the `logger` parameter.
 
 If the injector has already cached an instance of the service associated with the token,
 it provides that instance. 
 If it doesn't, it needs to make one using the provider associated with the token.
+-->
+이 코드에서 Angular는 인젝터에 `LoggerService`에 해당하는 서비스가 있는지 확인하고, 인젝터가 반환하는 객체를 `logger` 프로퍼티에 할당합니다.
+
+그리고 인젝터는 이 토큰에 해당하는 서비스의 인스턴스가 이미 캐싱되어 있으면 그 인스턴스를 바로 반환하며, 인스턴스가 존재하지 않으면 프로바이더를 사용해서 새로운 인스턴스를 생성합니다.
 
 <div class="alert is-helpful">
 
+<!--
 If the injector doesn't have a provider for a requested token, it delegates the request
 to its parent injector, where the process repeats until there are no more injectors.
 If the search fails, the injector throws an error&mdash;unless the request was [optional](guide/dependency-injection-in-action#optional).
-
+-->
+요청된 토큰에 해당하는 프로바이더가 인젝터에 없다면 이 의존성 주입 요청은 부모 인젝터로 전달되며, 이 과정은 애플리케이션 최상위 인젝터까지 반복됩니다.
+그리고 &mdash;[optional](guide/dependency-injection-in-action#optional) 데코레이터가 사용되지 않은 상태에서&mdash;최종 인젝터에서도 프로바이더를 찾지 못하면 에러가 발생합니다.
 
 </div>
 
+<!--
 A new injector has no providers.
 Angular initializes the injectors it creates with a set of preferred providers.
 You have to configure providers for your own app-specific dependencies. 
-
+-->
+새로 생성된 인젝터에는 프로바이더가 없습니다.
+그리고 프로바이더가 등록되지 않은 인젝터는 Angular가 생성하지도 않습니다.
+그래서 애플리케이션에 의존성 객체가 필요하다면 프로바이더를 꼭 등록해야 합니다.
 
 {@a defining-providers}
 
