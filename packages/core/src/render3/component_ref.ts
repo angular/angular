@@ -16,16 +16,16 @@ import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Type} from '../type';
-
+import {VERSION} from '../version';
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
 import {createLViewData, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {FLAGS, HEADER_OFFSET, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {RElement, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {HEADER_OFFSET, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
@@ -141,6 +141,14 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
     const rootViewInjector =
         ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
+
+    if (rootSelectorOrNode && hostRNode) {
+      ngDevMode && ngDevMode.rendererSetAttribute++;
+      isProceduralRenderer(renderer) ?
+          renderer.setAttribute(hostRNode, 'ng-version', VERSION.full) :
+          hostRNode.setAttribute('ng-version', VERSION.full);
+    }
+
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
         renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, undefined,

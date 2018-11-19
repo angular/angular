@@ -441,6 +441,9 @@
     "name": "UnsubscriptionErrorImpl"
   },
   {
+    "name": "VERSION"
+  },
+  {
     "name": "VIEWS"
   },
   {
