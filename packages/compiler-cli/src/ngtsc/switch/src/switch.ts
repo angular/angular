@@ -120,9 +120,6 @@ function flipIvySwitchesInVariableStatement(
         /* name */ decl.name,
         /* type */ decl.type,
         /* initializer */ newIdentifier);
-
-    // Keeping parent pointers up to date is important for emit.
-    newIdentifier.parent = newDeclarations[i];
   }
 
   const newDeclList = ts.updateVariableDeclarationList(
@@ -134,12 +131,6 @@ function flipIvySwitchesInVariableStatement(
       /* modifiers */ stmt.modifiers,
       /* declarationList */ newDeclList);
 
-  // Keeping parent pointers up to date is important for emit.
-  for (const decl of newDeclarations) {
-    decl.parent = newDeclList;
-  }
-  newDeclList.parent = newStmt;
-  newStmt.parent = stmt.parent;
   return newStmt;
 }
 
