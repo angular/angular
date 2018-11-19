@@ -819,6 +819,18 @@
     "name": "getViewData"
   },
   {
+    "name": "hackImplementationOfElementClassProp"
+  },
+  {
+    "name": "hackImplementationOfElementStyling"
+  },
+  {
+    "name": "hackImplementationOfElementStylingApply"
+  },
+  {
+    "name": "hackSquashDeclaration"
+  },
+  {
     "name": "hasParentInjector"
   },
   {

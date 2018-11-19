@@ -1944,6 +1944,18 @@
     "name": "globalListener"
   },
   {
+    "name": "hackImplementationOfElementClassProp"
+  },
+  {
+    "name": "hackImplementationOfElementStyling"
+  },
+  {
+    "name": "hackImplementationOfElementStylingApply"
+  },
+  {
+    "name": "hackSquashDeclaration"
+  },
+  {
     "name": "hasBalancedQuotes"
   },
   {
