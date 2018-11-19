@@ -9,7 +9,7 @@ sass_generate_binaries("a11y_demo_scss", glob(["**/*.scss"]))
 
 ng_module(
   name = "a11y-demo",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  srcs = glob(["**/*.ts"]),
   assets = glob(["**/*.html"]) + [":a11y_demo_scss"],
   deps = [
     "@angular//packages/core",
