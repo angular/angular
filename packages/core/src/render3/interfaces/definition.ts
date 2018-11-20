@@ -145,7 +145,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   readonly hostVars: number;
 
   /** Refreshes host bindings on the associated directive. */
-  hostBindings: HostBindingsFunction|null;
+  hostBindings: HostBindingsFunction<T>|null;
 
   /**
    * Static attributes to set on host element.
@@ -333,7 +333,7 @@ export type DirectiveTypeList =
     (DirectiveDef<any>| ComponentDef<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type HostBindingsFunction = (directiveIndex: number, elementIndex: number) => void;
+export type HostBindingsFunction<T> = (rf: RenderFlags, ctx: T, elementIndex: number) => void;
 
 /**
  * Type used for PipeDefs on component definition.

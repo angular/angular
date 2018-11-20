@@ -308,9 +308,10 @@ describe('InheritDefinitionFeature', () => {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
-        hostBindings: (directiveIndex: number, elementIndex: number) => {
-          const instance = load(directiveIndex) as SuperDirective;
-          elementProperty(elementIndex, 'id', bind(instance.id));
+        hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'id', bind(ctx.id));
+          }
         },
         hostVars: 1,
         factory: () => new SuperDirective(),
@@ -323,9 +324,10 @@ describe('InheritDefinitionFeature', () => {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
-        hostBindings: (directiveIndex: number, elementIndex: number) => {
-          const instance = load(directiveIndex) as SubDirective;
-          elementProperty(elementIndex, 'title', bind(instance.title));
+        hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'title', bind(ctx.title));
+          }
         },
         hostVars: 1,
         factory: () => subDir = new SubDirective(),

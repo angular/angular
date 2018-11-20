@@ -124,15 +124,9 @@ export function setHostBindings(tView: TView, viewData: LViewData): void {
       } else {
         // If it's not a number, it's a host binding function that needs to be executed.
         viewData[BINDING_INDEX] = bindingRootIndex;
-        // We must subtract the header offset because the load() instruction
-        // expects a raw, unadjusted index.
-        // <HACK(misko)>: set the `previousOrParentTNode` so that hostBindings functions can
-        // correctly retrieve it. This should be removed once we call the hostBindings function
-        // inline as part of the `RenderFlags.Create` because in that case the value will already be
-        // correctly set.
-        setPreviousOrParentTNode(getTView().data[currentElementIndex + HEADER_OFFSET] as TNode);
-        // </HACK>
-        instruction(currentDirectiveIndex - HEADER_OFFSET, currentElementIndex);
+        instruction(
+            RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
+            currentElementIndex);
         currentDirectiveIndex++;
       }
     }
@@ -1461,6 +1455,9 @@ function instantiateAllDirectives(tView: TView, viewData: LViewData, previousOrP
     }
     const directive =
         getNodeInjectable(tView.data, viewData !, i, previousOrParentTNode as TElementNode);
+    if (def.hostBindings) {
+      def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
+    }
     postProcessDirective(viewData, directive, def, i);
   }
 }
