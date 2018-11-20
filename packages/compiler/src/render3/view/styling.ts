@@ -80,8 +80,7 @@ export class StylingBuilder {
   private _useDefaultSanitizer = false;
   private _applyFnRequired = false;
 
-  constructor(
-      private _elementIndexExpr: o.Expression, private _directiveIndexExpr: o.Expression|null) {}
+  constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
 
   registerBoundInput(input: t.BoundAttribute): boolean {
     // [attr.style] or [attr.class] are skipped in the code below,
@@ -217,15 +216,15 @@ export class StylingBuilder {
         // can be processed during runtime. These initial styles values are bound to
         // a constant because the inital style values do not change (since they're static).
         params.push(constantPool.getConstLiteral(initialStyles, true));
-      } else if (useSanitizer || this._directiveIndexExpr) {
+      } else if (useSanitizer || this._directiveExpr) {
         // no point in having an extra `null` value unless there are follow-up params
         params.push(o.NULL_EXPR);
       }
 
-      if (useSanitizer || this._directiveIndexExpr) {
+      if (useSanitizer || this._directiveExpr) {
         params.push(useSanitizer ? o.importExpr(R3.defaultStyleSanitizer) : o.NULL_EXPR);
-        if (this._directiveIndexExpr) {
-          params.push(this._directiveIndexExpr);
+        if (this._directiveExpr) {
+          params.push(this._directiveExpr);
         }
       }
 
@@ -260,12 +259,12 @@ export class StylingBuilder {
 
           if (mapBasedStyleValue) {
             params.push(convertFn(mapBasedStyleValue));
-          } else if (this._directiveIndexExpr) {
+          } else if (this._directiveExpr) {
             params.push(o.NULL_EXPR);
           }
 
-          if (this._directiveIndexExpr) {
-            params.push(this._directiveIndexExpr);
+          if (this._directiveExpr) {
+            params.push(this._directiveExpr);
           }
 
           return params;
@@ -289,13 +288,13 @@ export class StylingBuilder {
           if (allowUnits) {
             if (input.unit) {
               params.push(o.literal(input.unit));
-            } else if (this._directiveIndexExpr) {
+            } else if (this._directiveExpr) {
               params.push(o.NULL_EXPR);
             }
           }
 
-          if (this._directiveIndexExpr) {
-            params.push(this._directiveIndexExpr);
+          if (this._directiveExpr) {
+            params.push(this._directiveExpr);
           }
           return params;
         }
@@ -325,8 +324,8 @@ export class StylingBuilder {
       reference: R3.elementStylingApply,
       buildParams: () => {
         const params: o.Expression[] = [this._elementIndexExpr];
-        if (this._directiveIndexExpr) {
-          params.push(this._directiveIndexExpr);
+        if (this._directiveExpr) {
+          params.push(this._directiveExpr);
         }
         return params;
       }

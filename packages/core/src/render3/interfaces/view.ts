@@ -342,7 +342,7 @@ export interface TView {
    *
    * See VIEW_DATA.md for more information.
    */
-  expandoInstructions: (number|HostBindingsFunction)[]|null;
+  expandoInstructions: (number|HostBindingsFunction<any>)[]|null;
 
   /**
    * Full registry of directives and components that may be found in this view.

@@ -50,8 +50,10 @@ describe('host bindings', () => {
       selectors: [['', 'hostBindingDir', '']],
       factory: () => hostBindingDir = new HostBindingDir(),
       hostVars: 1,
-      hostBindings: (directiveIndex: number, elementIndex: number) => {
-        elementProperty(elementIndex, 'id', bind(load<HostBindingDir>(directiveIndex).id));
+      hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+        if (rf & RenderFlags.Update) {
+          elementProperty(elementIndex, 'id', bind(ctx.id));
+        }
       }
     });
   }
@@ -67,9 +69,10 @@ describe('host bindings', () => {
       consts: 0,
       vars: 0,
       hostVars: 1,
-      hostBindings: (dirIndex: number, elIndex: number) => {
-        const ctx = load(dirIndex) as HostBindingComp;
-        elementProperty(elIndex, 'id', bind(ctx.id));
+      hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
+        if (rf & RenderFlags.Update) {
+          elementProperty(elIndex, 'id', bind(ctx.id));
+        }
       },
       template: (rf: RenderFlags, ctx: HostBindingComp) => {}
     });
@@ -87,8 +90,10 @@ describe('host bindings', () => {
         selectors: [['', 'dir', '']],
         factory: () => directiveInstance = new Directive,
         hostVars: 1,
-        hostBindings: (directiveIndex: number, elementIndex: number) => {
-          elementProperty(elementIndex, 'className', bind(load<Directive>(directiveIndex).klass));
+        hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'className', bind(ctx.klass));
+          }
         }
       });
     }
@@ -135,9 +140,10 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 1,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          const instance = load(dirIndex) as CompWithProviders;
-          elementProperty(elIndex, 'id', bind(instance.id));
+        hostBindings: (rf: RenderFlags, ctx: CompWithProviders, elIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(ctx.id));
+          }
         },
         template: (rf: RenderFlags, ctx: CompWithProviders) => {},
         features: [ProvidersFeature([[ServiceOne], [ServiceTwo]])]
@@ -168,9 +174,10 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 1,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          const ctx = load(dirIndex) as HostTitleComp;
-          elementProperty(elIndex, 'title', bind(ctx.title));
+        hostBindings: (rf: RenderFlags, ctx: HostTitleComp, elIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'title', bind(ctx.title));
+          }
         },
         template: (rf: RenderFlags, ctx: HostTitleComp) => {}
       });
@@ -248,9 +255,10 @@ describe('host bindings', () => {
         vars: 0,
         hostVars: 1,
         features: [NgOnChangesFeature],
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          const ctx = load(dirIndex) as InitHookComp;
-          elementProperty(elIndex, 'title', bind(ctx.value));
+        hostBindings: (rf: RenderFlags, ctx: InitHookComp, elIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'title', bind(ctx.value));
+          }
         },
         inputs: {inputValue: 'inputValue'}
       });
@@ -413,12 +421,14 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 8,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          const ctx = load(dirIndex) as HostBindingComp;
+        hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LViewData: [..., id, dir, title, ctx.id, pf1, ctx.title, ctx.otherTitle, pf2]
-          elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
-          elementProperty(elIndex, 'dir', bind(ctx.dir));
-          elementProperty(elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)));
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
+            elementProperty(elIndex, 'dir', bind(ctx.dir));
+            elementProperty(
+                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)));
+          }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
       });
@@ -487,10 +497,11 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 3,
-        hostBindings: (dirIndex: number, elIndex: number) => {
+        hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LViewData: [..., id, ctx.id, pf1]
-          const ctx = load(dirIndex) as HostBindingComp;
-          elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
+          }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
       });
@@ -515,10 +526,11 @@ describe('host bindings', () => {
         selectors: [['', 'hostDir', '']],
         factory: () => hostBindingDir = new HostBindingDir(),
         hostVars: 3,
-        hostBindings: (dirIndex: number, elIndex: number) => {
+        hostBindings: (rf: RenderFlags, ctx: HostBindingDir, elIndex: number) => {
           // LViewData [..., title, ctx.title, pf1]
-          const ctx = load(dirIndex) as HostBindingDir;
-          elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+          }
         }
       });
     }
@@ -576,14 +588,15 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 6,
-        hostBindings: (dirIndex: number, elIndex: number) => {
+        hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
           // LViewData: [..., id, title, ctx.id, pf1, ctx.title, pf1]
-          const ctx = load(dirIndex) as HostBindingComp;
-          elementProperty(
-              elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));
-          elementProperty(
-              elIndex, 'title',
-              bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'));
+          if (rf & RenderFlags.Update) {
+            elementProperty(
+                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));
+            elementProperty(
+                elIndex, 'title',
+                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'));
+          }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
       });
@@ -665,9 +678,10 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 1,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          elementProperty(
-              elIndex, 'id', bind(load<HostBindingWithContentChildren>(dirIndex).foos.length));
+        hostBindings: (rf: RenderFlags, ctx: HostBindingWithContentChildren, elIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(ctx.foos.length));
+          }
         },
         contentQueries: (dirIndex) => { registerContentQuery(query(null, ['foo']), dirIndex); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
@@ -721,8 +735,10 @@ describe('host bindings', () => {
         consts: 0,
         vars: 0,
         hostVars: 1,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          elementProperty(elIndex, 'id', bind(load<HostBindingWithContentHooks>(dirIndex).myValue));
+        hostBindings: (rf: RenderFlags, ctx: HostBindingWithContentHooks, elIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(ctx.myValue));
+          }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentHooks) => {}
       });
