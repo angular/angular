@@ -1086,7 +1086,7 @@ export function elementClassProp(
     directiveIndex?: number): void {
   if (directiveIndex != undefined) {
     return hackImplementationOfElementClassProp(
-        index, classIndex, value, directiveIndex)  // proper supported in next PR
+        index, classIndex, value, directiveIndex);  // proper supported in next PR
   }
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
@@ -1294,11 +1294,6 @@ function hackImplementationOfElementStyling(
     styleSanitizer: StyleSanitizeFn | null, directiveIndex: number): void {
   const node = readElementValue(getViewData()[getPreviousOrParentTNode().index]);
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
-  console.log(
-      'elementStyling', 'classDeclarations=', classDeclarations, 'styleDeclarations=',
-      styleDeclarations, 'styleSanitizer=', styleSanitizer, 'node=',
-      (node as HTMLElement).outerHTML);
-  debugger;
   const hostStylingHackMap: HostStylingHackMap =
       ((node as any).hostStylingHack || ((node as any).hostStylingHack = {}));
   hostStylingHackMap[directiveIndex] = {
@@ -1310,7 +1305,7 @@ function hackImplementationOfElementStyling(
 function hackSquashDeclaration(declarations: (string | boolean | InitialStylingFlags)[] | null):
     string[] {
   // assume the array is correct. This should be fine for View Engine compatibility.
-  return declarations || [] as any
+  return declarations || [] as any;
 }
 
 function hackImplementationOfElementClassProp(
@@ -1318,9 +1313,6 @@ function hackImplementationOfElementClassProp(
     directiveIndex: number): void {
   const node = readElementValue(getViewData()[index + HEADER_OFFSET]);
   ngDevMode && assertDefined(node, 'could not locate node');
-  console.log(
-      'elementClassProp', 'index=', index, 'stylingIndex=', classIndex, 'value=', value,
-      'directiveIndex=', directiveIndex, 'node=', (node as HTMLElement).outerHTML);
   const hostStylingHack: HostStylingHack = (node as any).hostStylingHack[directiveIndex];
   const className = hostStylingHack.classDeclarations[classIndex];
   const renderer = getRenderer();
@@ -1333,8 +1325,6 @@ function hackImplementationOfElementClassProp(
 }
 
 function hackImplementationOfElementStylingApply(index: number, directiveIndex?: number): void {
-  console.log('elementStylingApply', 'index=', index, 'directiveIndex', directiveIndex);
-  debugger;
   // Do nothing because the hack implementation is eager.
 }
 
