@@ -179,10 +179,7 @@ export class UpgradeModule {
 
             .factory(
                 LAZY_MODULE_REF,
-                [
-                  INJECTOR_KEY,
-                  (injector: Injector) => ({ injector, needsNgZone: false } as LazyModuleRef)
-                ])
+                [INJECTOR_KEY, (injector: Injector) => ({ injector } as LazyModuleRef)])
 
             .config([
               $PROVIDE, $INJECTOR,

@@ -11,7 +11,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import * as angular from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, controllerKey, getTypeName, isFunction, validateInjectionKey} from './util';
+import {LazyModuleRef, UpgradeAppType, controllerKey, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
 
 
 interface Thenable<T> {
@@ -78,12 +78,15 @@ export function downgradeComponent(info: {
                                        $compile: angular.ICompileService,
                                        $injector: angular.IInjectorService,
                                        $parse: angular.IParseService): angular.IDirective {
-    // When using `UpgradeModule`, we don't need to ensure callbacks to Angular APIs (e.g. change
-    // detection) are run inside the Angular zone, because `$digest()` will be run inside the zone
-    // (except if explicitly escaped, in which case we shouldn't force it back in).
-    // When using `downgradeModule()` though, we need to ensure such callbacks are run inside the
-    // Angular zone.
-    let needsNgZone = false;
+    // When using `downgradeModule()`, we need to handle certain things specially. For example:
+    // - We always need to attach the component view to the `ApplicationRef` for it to be
+    //   dirty-checked.
+    // - We need to ensure callbacks to Angular APIs (e.g. change detection) are run inside the
+    //   Angular zone.
+    //   NOTE: This is not needed, when using `UpgradeModule`, because `$digest()` will be run
+    //         inside the Angular zone (except if explicitly escaped, in which case we shouldn't
+    //         force it back in).
+    let isNgUpgradeLite = false;
     let wrapCallback = <T>(cb: () => T) => cb;
     let ngZone: NgZone;
 
@@ -109,7 +112,7 @@ export function downgradeComponent(info: {
           validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          needsNgZone = lazyModuleRef.needsNgZone;
+          isNgUpgradeLite = getUpgradeAppType($injector) === UpgradeAppType.Lite;
           parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
         }
 
@@ -130,7 +133,7 @@ export function downgradeComponent(info: {
 
           const projectableNodes = facade.compileContents();
           facade.createComponent(projectableNodes);
-          facade.setupInputs(needsNgZone, info.propagateDigest);
+          facade.setupInputs(isNgUpgradeLite, info.propagateDigest);
           facade.setupOutputs();
           facade.registerCleanup();
 
@@ -143,7 +146,7 @@ export function downgradeComponent(info: {
           }
         };
 
-        const downgradeFn = !needsNgZone ? doDowngrade : (injector: Injector) => {
+        const downgradeFn = !isNgUpgradeLite ? doDowngrade : (injector: Injector) => {
           if (!ngZone) {
             ngZone = injector.get(NgZone);
             wrapCallback = <T>(cb: () => T) => () =>
