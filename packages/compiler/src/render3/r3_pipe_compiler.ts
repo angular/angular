@@ -6,13 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilePipeMetadata, identifierName} from '../compile_metadata';
-import {CompileReflector} from '../compile_reflector';
-import {DefinitionKind} from '../constant_pool';
 import * as o from '../output/output_ast';
-import {OutputContext, error} from '../util';
 
-import {R3DependencyMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
+import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 
 export interface R3PipeMetadata {
@@ -55,41 +51,4 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
   return {expression, type, statements: templateFactory.statements};
-}
-
-/**
- * Write a pipe definition to the output context.
- */
-export function compilePipeFromRender2(
-    outputCtx: OutputContext, pipe: CompilePipeMetadata, reflector: CompileReflector) {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
-
-  const name = identifierName(pipe.type);
-  if (!name) {
-    return error(`Cannot resolve the name of ${pipe.type}`);
-  }
-
-  const metadata: R3PipeMetadata = {
-    name,
-    pipeName: pipe.name,
-    type: outputCtx.importExpr(pipe.type.reference),
-    deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
-    pure: pipe.pure,
-  };
-
-  const res = compilePipeFromMetadata(metadata);
-
-  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Pipe);
-
-  outputCtx.statements.push(new o.ClassStmt(
-      /* name */ name,
-      /* parent */ null,
-      /* fields */[new o.ClassField(
-          /* name */ definitionField,
-          /* type */ o.INFERRED_TYPE,
-          /* modifiers */[o.StmtModifier.Static],
-          /* initializer */ res.expression)],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
 }

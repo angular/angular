@@ -1,6 +1,6 @@
 {
   "angularCompilerOptions": {
-    "enableIvy": "ngtsc",
+    "enableIvy": true,
   },
   "compileOnSave": false,
   "compilerOptions": {

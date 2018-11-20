@@ -69,7 +69,7 @@ export class NgtscTestEnvironment {
         "typeRoots": ["node_modules/@types"]
       },
       "angularCompilerOptions": {
-        "enableIvy": "ngtsc"
+        "enableIvy": true
       }
     }`);
 
@@ -97,7 +97,7 @@ export class NgtscTestEnvironment {
   write(fileName: string, content: string) { this.support.write(fileName, content); }
 
   tsconfig(extraOpts: {[key: string]: string | boolean} = {}): void {
-    const opts = JSON.stringify({...extraOpts, 'enableIvy': 'ngtsc'});
+    const opts = JSON.stringify({...extraOpts, 'enableIvy': true});
     const tsconfig: string =
         `{"extends": "./tsconfig-base.json", "angularCompilerOptions": ${opts}}`;
     this.write('tsconfig.json', tsconfig);

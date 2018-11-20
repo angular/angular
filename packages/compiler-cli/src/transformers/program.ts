@@ -43,18 +43,6 @@ const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
  */
 const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
 
-/**
- * Fields to lower within metadata in render3 mode.
- */
-const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
-
-const R3_REIFIED_DECORATORS = [
-  'Component',
-  'Directive',
-  'Injectable',
-  'NgModule',
-  'Pipe',
-];
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -110,7 +98,6 @@ class AngularCompilerProgram implements Program {
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
   // TODO(issue/24571): remove '!'.
-  private _reifiedDecorators !: Set<StaticSymbol>;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
@@ -142,8 +129,7 @@ class AngularCompilerProgram implements Program {
       }
     }
 
-    this.loweringMetadataTransform =
-        new LowerMetadataTransform(options.enableIvy ? R3_LOWER_FIELDS : LOWER_FIELDS);
+    this.loweringMetadataTransform = new LowerMetadataTransform(LOWER_FIELDS);
     this.metadataCache = this.createMetadataCache([this.loweringMetadataTransform]);
   }
 
@@ -263,80 +249,10 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy === 'ngtsc' || this.options.enableIvy === 'tsc') {
+    if (this.options.enableIvy === true || this.options.enableIvy === 'tsc') {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
-    return this.options.enableIvy === true ? this._emitRender3(parameters) :
-                                             this._emitRender2(parameters);
-  }
-
-  private _emitRender3(
-      {
-          emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-          emitCallback = defaultEmitCallback, mergeEmitResultsCallback = mergeEmitResults,
-      }: {
-        emitFlags?: EmitFlags,
-        cancellationToken?: ts.CancellationToken,
-        customTransformers?: CustomTransformers,
-        emitCallback?: TsEmitCallback,
-        mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
-      } = {}): ts.EmitResult {
-    const emitStart = Date.now();
-    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
-        0) {
-      return {emitSkipped: true, diagnostics: [], emittedFiles: []};
-    }
-
-    // analyzedModules and analyzedInjectables are created together. If one exists, so does the
-    // other.
-    const modules =
-        this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables !);
-
-    const writeTsFile: ts.WriteFileCallback =
-        (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
-          let genFile: GeneratedFile|undefined;
-          if (this.options.annotateForClosureCompiler && sourceFile &&
-              TS.test(sourceFile.fileName)) {
-            outData = nocollapseHack(outData);
-          }
-          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
-        };
-
-    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
-
-    const tsCustomTransformers = this.calculateTransforms(
-        /* genFiles */ undefined, /* partialModules */ modules,
-        /* stripDecorators */ this.reifiedDecorators, customTransformers);
-
-
-    // Restore the original references before we emit so TypeScript doesn't emit
-    // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
-    for (const sourceFile of this.tsProgram.getSourceFiles()) {
-      const originalReferences = getOriginalReferences(sourceFile);
-      if (originalReferences) {
-        augmentedReferences.set(sourceFile, sourceFile.referencedFiles);
-        sourceFile.referencedFiles = originalReferences;
-      }
-    }
-
-    try {
-      return emitCallback({
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        writeFile: writeTsFile, emitOnlyDtsFiles,
-        customTransformers: tsCustomTransformers
-      });
-    } finally {
-      // Restore the references back to the augmented value to ensure that the
-      // checks that TypeScript makes for project structure reuse will succeed.
-      for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        // TODO(chuckj): Remove any cast after updating build to 2.6
-        (sourceFile as any).referencedFiles = references;
-      }
-    }
+    return this._emitRender2(parameters);
   }
 
   private _emitRender2(
@@ -555,15 +471,6 @@ class AngularCompilerProgram implements Program {
       this.initSync();
     }
     return this._tsProgram !;
-  }
-
-  private get reifiedDecorators(): Set<StaticSymbol> {
-    if (!this._reifiedDecorators) {
-      const reflector = this.compiler.reflector;
-      this._reifiedDecorators = new Set(
-          R3_REIFIED_DECORATORS.map(name => reflector.findDeclaration('@angular/core', name)));
-    }
-    return this._reifiedDecorators;
   }
 
   private calculateTransforms(
@@ -899,7 +806,7 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
-  if (options.enableIvy === 'ngtsc') {
+  if (options.enableIvy === true) {
     return new NgtscProgram(rootNames, options, host, oldProgram);
   } else if (options.enableIvy === 'tsc') {
     return new TscPassThroughProgram(rootNames, options, host, oldProgram);

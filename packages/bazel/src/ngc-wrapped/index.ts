@@ -118,7 +118,7 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   }
 
   // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
-  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
+  const isInIvyMode = compilerOpts.enableIvy === true || compilerOpts.enableIvy === 'tsc';
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {

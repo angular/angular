@@ -50,7 +50,7 @@ export function mainDiagnosticsForTest(
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators = options.enableIvy !== 'ngtsc' && options.enableIvy !== 'tsc' &&
+  const transformDecorators = options.enableIvy !== true && options.enableIvy !== 'tsc' &&
       options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
@@ -173,7 +173,7 @@ function reportErrorsAndExit(
       getCanonicalFileName: fileName => fileName,
       getNewLine: () => ts.sys.newLine
     };
-    if (options && (options.enableIvy === true || options.enableIvy === 'ngtsc')) {
+    if (options && options.enableIvy === true) {
       const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
       const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
       consoleError(replaceTsWithNgInErrors(

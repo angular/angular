@@ -192,7 +192,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
    *
    * @publicApi
    */
-  enableIvy?: boolean|'ngtsc'|'tsc';
+  enableIvy?: boolean|'tsc';
 
   /** @internal */
   collectAllErrors?: boolean;
