@@ -85,7 +85,6 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
  * Returns the `RootContext` instance that is associated with
  * the application where the target is situated.
  *
- * @privateApi
  */
 export function getRootContext(target: LViewData | {}): RootContext {
   const lViewData = Array.isArray(target) ? target : loadContext(target) !.lViewData;
@@ -141,7 +140,6 @@ export function getDirectives(target: {}): Array<{}> {
  * Returns LContext associated with a target passed as an argument.
  * Throws if a given target doesn't have associated LContext.
  *
- * @privateApi
  */
 export function loadContext(target: {}): LContext {
   const context = getContext(target);
@@ -159,7 +157,6 @@ export function loadContext(target: {}): LContext {
  *
  * @param componentOrView any component or view
  *
- * @privateApi
  */
 export function getRootView(componentOrView: LViewData | {}): LViewData {
   let lViewData: LViewData;
