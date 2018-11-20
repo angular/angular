@@ -60,7 +60,7 @@ export class DecorationAnalyzer {
     new BaseDefDecoratorHandler(this.typeChecker, this.host),
     new ComponentDecoratorHandler(
         this.typeChecker, this.host, this.scopeRegistry, this.isCore, this.resourceLoader,
-        this.rootDirs),
+        this.rootDirs, /* defaultPreserveWhitespaces */ false),
     new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.host, this.isCore),
     new NgModuleDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
