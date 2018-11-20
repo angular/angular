@@ -11,7 +11,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import * as angular from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, UpgradeAppType, controllerKey, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
+import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
 
 
 interface Thenable<T> {
@@ -91,6 +91,10 @@ export function downgradeComponent(info: {
         !isNgUpgradeLite ? cb => cb : cb => () => NgZone.isInAngularZone() ? cb() : ngZone.run(cb);
     let ngZone: NgZone;
 
+    // When downgrading multiple modules, special handling is needed wrt injectors.
+    const hasMultipleDowngradedModules =
+        isNgUpgradeLite && (getDowngradedModuleCount($injector) > 1);
+
     return {
       restrict: 'E',
       terminal: true,
@@ -105,7 +109,7 @@ export function downgradeComponent(info: {
         let parentInjector: Injector|Thenable<Injector>|undefined = required[0];
         let ranAsync = false;
 
-        if (!parentInjector) {
+        if (!parentInjector || hasMultipleDowngradedModules) {
           const downgradedModule = info.downgradedModule || '';
           const lazyModuleRefKey = `${LAZY_MODULE_REF}${downgradedModule}`;
           const attemptedAction = `instantiating component '${getTypeName(info.component)}'`;
