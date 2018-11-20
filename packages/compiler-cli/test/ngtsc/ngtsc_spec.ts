@@ -832,4 +832,31 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('ɵsetClassMetadata(TestNgModule, ');
     expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
   });
+
+  it('should compile a template using multiple directives with the same selector', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component, Directive, NgModule} from '@angular/core';
+
+      @Directive({selector: '[test]'})
+      class DirA {}
+
+      @Directive({selector: '[test]'})
+      class DirB {}
+
+      @Component({
+        template: '<div test></div>',
+      })
+      class Cmp {}
+
+      @NgModule({
+        declarations: [Cmp, DirA, DirB],
+      })
+      class Module {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
+  });
 });

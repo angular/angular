@@ -23,6 +23,7 @@ import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
 import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
+const EMPTY_ARRAY: any[] = [];
 
 export interface ComponentHandlerData {
   meta: R3ComponentMetadata;
@@ -208,7 +209,7 @@ export class ComponentDecoratorHandler implements
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
           pipes: EMPTY_MAP,
-          directives: EMPTY_MAP,
+          directives: EMPTY_ARRAY,
           wrapDirectivesAndPipesInClosure: false,  //
           animations,
           viewProviders
@@ -225,7 +226,7 @@ export class ComponentDecoratorHandler implements
     const matcher = new SelectorMatcher<ScopeDirective<any>>();
     if (scope !== null) {
       scope.directives.forEach(
-          (meta, selector) => { matcher.addSelectables(CssSelector.parse(selector), meta); });
+          ({selector, meta}) => { matcher.addSelectables(CssSelector.parse(selector), meta); });
       ctx.addTemplate(node as ts.ClassDeclaration, meta.parsedTemplate, matcher);
     }
   }
@@ -241,8 +242,9 @@ export class ComponentDecoratorHandler implements
       // scope. This is possible now because during compile() the whole compilation unit has been
       // fully analyzed.
       const {pipes, containsForwardDecls} = scope;
-      const directives = new Map<string, Expression>();
-      scope.directives.forEach((meta, selector) => directives.set(selector, meta.directive));
+      const directives: {selector: string, expression: Expression}[] = [];
+      scope.directives.forEach(
+          ({selector, meta}) => directives.push({selector, expression: meta.directive}));
       const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
       metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }

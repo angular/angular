@@ -58,7 +58,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
           viewQueries: extractQueriesMetadata(getReflect().propMetadata(type), isViewQuery),
-          directives: new Map(),
+          directives: [],
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
           viewProviders: metadata.viewProviders || null,

@@ -91,7 +91,7 @@ describe('SelectorScopeRegistry', () => {
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
     expect(scope.directives).toBeDefined();
-    expect(scope.directives.size).toBe(2);
+    expect(scope.directives.length).toBe(2);
   });
 
   it('exports of third-party libs work', () => {
@@ -162,6 +162,6 @@ describe('SelectorScopeRegistry', () => {
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
     expect(scope.directives).toBeDefined();
-    expect(scope.directives.size).toBe(2);
+    expect(scope.directives.length).toBe(2);
   });
 });
