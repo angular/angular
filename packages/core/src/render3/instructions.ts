@@ -1292,7 +1292,7 @@ function hackImplementationOfElementStyling(
     classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer: StyleSanitizeFn | null, directiveIndex: number): void {
-  const node = getNativeByIndex(getPreviousOrParentTNode().index, getViewData());
+  const node = getNativeByTNode(getPreviousOrParentTNode(), getViewData());
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
   const hostStylingHackMap: HostStylingHackMap =
       ((node as any).hostStylingHack || ((node as any).hostStylingHack = {}));
