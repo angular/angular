@@ -139,6 +139,12 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * unique in certain contexts (such as g3).
      */
     relativeContextFilePath: string;
+
+    /**
+     * Whether translation variable name should contain external message id
+     * (used by Closure Compiler's output of `goog.getMsg` for transition period)
+     */
+    i18nUseExternalIds: boolean;
   };
 
   /**

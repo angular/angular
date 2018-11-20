@@ -936,7 +936,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
   return {
     locale: options.i18nInLocale,
     i18nFormat: options.i18nInFormat || options.i18nOutFormat,
-    i18nUseIdsInVarNames: options.i18nUseIdsInVarNames, translations, missingTranslation,
+    i18nUseExternalIds: options.i18nUseExternalIds, translations, missingTranslation,
     enableSummariesForJit: options.enableSummariesForJit,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,

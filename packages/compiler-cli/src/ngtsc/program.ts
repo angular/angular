@@ -126,7 +126,7 @@ export class NgtscProgram implements api.Program {
     }
     await Promise.all(this.tsProgram.getSourceFiles()
                           .filter(file => !file.fileName.endsWith('.d.ts'))
-                          .map(file => this.compilation !.analyzeAsync(file))
+                          .map(file => this.compilation !.analyzeAsync(file, this.options))
                           .filter((result): result is Promise<void> => result !== undefined));
   }
 
@@ -149,7 +149,7 @@ export class NgtscProgram implements api.Program {
       this.compilation = this.makeCompilation();
       this.tsProgram.getSourceFiles()
           .filter(file => !file.fileName.endsWith('.d.ts'))
-          .forEach(file => this.compilation !.analyzeSync(file));
+          .forEach(file => this.compilation !.analyzeSync(file, this.options));
     }
     return this.compilation;
   }

@@ -109,22 +109,35 @@ const getAppFilesWithTemplate = (template: string, args: any = {}) => ({
   }
 });
 
-const verify = (input: string, output: string, extra: any = {}) => {
-  const files = getAppFilesWithTemplate(input, extra.inputArgs);
-  const compilerOptions = {i18nUseIdsInVarNames: true, ...(extra.compilerOptions || {})};
-  const result = compile(files, angularFiles, compilerOptions);
-  if (extra.verbose) {
-    // tslint:disable-next-line
-    console.log(`
+const maybePrint = (output: string, verbose: boolean) => {
+  if (!verbose) return;
+  // tslint:disable-next-line
+  console.log(`
 ========== Generated output: ==========
-${result.source}
+${output}
 =======================================
-    `);
-  }
+  `);
+};
+
+const verify = (input: string, output: string, extra: any = {}): void => {
+  const files = getAppFilesWithTemplate(input, extra.inputArgs);
+  const opts = (i18nUseExternalIds: boolean) =>
+      ({i18nUseExternalIds, ...(extra.compilerOptions || {})});
+
+  // invoke with file-based prefix translation names
+  let result = compile(files, angularFiles, opts(false));
+  maybePrint(result.source, extra.verbose);
+  expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+  expectEmit(result.source, output, 'Incorrect template');
+
+  if (extra.skipIdBasedCheck) return;
+
+  // invoke with translation names based on external ids
+  result = compile(files, angularFiles, opts(true));
+  maybePrint(result.source, extra.verbose);
   expect(verifyTranslationIds(input, result.source, extra.exceptions)).toBe(true);
   expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
   expectEmit(result.source, output, 'Incorrect template');
-  return result.source;
 };
 
 describe('i18n support in the view compiler', () => {
@@ -1415,10 +1428,10 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png", "title", "Logo"];
-        const MSG_EXTERNAL_4891196282781544695 = goog.getMsg("{$tagImg} is my logo #1 ", {
+        const $MSG_EXTERNAL_4891196282781544695$ = goog.getMsg("{$tagImg} is my logo #1 ", {
           "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
         });
-        const MSG_EXTERNAL_461986953980355147 = goog.getMsg("{$tagImg} is my logo #2 ", {
+        const $MSG_EXTERNAL_461986953980355147$ = goog.getMsg("{$tagImg} is my logo #2 ", {
           "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
         });
         function Template_3(rf, ctx) {
@@ -1734,31 +1747,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_APP_SPEC_TS_1$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1$$RAW$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_APP_SPEC_TS_2$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$$RAW$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $_c0$ = [1, "ngIf"];
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $_c3$ = [1, "ngIf"];
+        const $MSG_APP_SPEC_TS__4$$RAW$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $MSG_APP_SPEC_TS__4$$RAW$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$$RAW$$RAW$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_EXTERNAL_7986645988117050801$$RAW$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
+        const $MSG_APP_SPEC_TS_0$$RAW$$RAW$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
           "startTagDiv": "\uFFFD#2\uFFFD",
           "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
           "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
           "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
         });
-        const $MSG_EXTERNAL_7986645988117050801$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7986645988117050801$$RAW$, {
-          "ICU": [$MSG_EXTERNAL_7842238767399919809$, $MSG_EXTERNAL_7842238767399919809$, $MSG_EXTERNAL_7842238767399919809$]
+        const $MSG_APP_SPEC_TS_0$$RAW$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0$$RAW$$RAW$, {
+          "ICU": [$MSG_APP_SPEC_TS_1$, $MSG_APP_SPEC_TS_2$, $MSG_APP_SPEC_TS__4$]
         });
         function MyComponent_div_Template_3(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_7986645988117050801$, 1);
+            $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 1);
             $r3$.ɵelement(1, "div");
             $r3$.ɵi18nEnd();
           }
@@ -1772,7 +1785,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7986645988117050801$);
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "div");
             $r3$.ɵtemplate(3, MyComponent_div_Template_3, 2, 0, null, $_c3$);
             $r3$.ɵi18nEnd();
@@ -1787,7 +1800,10 @@ describe('i18n support in the view compiler', () => {
         }
       `;
 
-      verify(input, output);
+      // TODO(akushnir): this use-case is currently supported with
+      // file-based prefix for translation const names. Translation statements
+      // caching is required to support this use-case (FW-635) with id-based consts.
+      verify(input, output, {skipIdBasedCheck: true});
     });
 
     it('should handle nested icus', () => {

@@ -151,9 +151,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
   i18nInFile?: string;
   // How to handle missing messages
   i18nInMissingTranslations?: 'error'|'warning'|'ignore';
-  // Whether translation var name should contain message id
-  // (needed for Closure Compiler output of `goog.getMsg`)
-  i18nUseIdsInVarNames?: boolean;
+  // Whether translation variable name should contain external message id
+  // (used by Closure Compiler's output of `goog.getMsg` for transition period)
+  i18nUseExternalIds?: boolean;
 
   // Whether to remove blank text nodes from compiled templates. It is `false` by default starting
   // from Angular 6.

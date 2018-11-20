@@ -94,10 +94,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // i18n context local to this template
   private i18n: I18nContext|null = null;
 
-  // flag that enables a format of translation
-  // const names that includes message id
-  private i18nUseIdsInVarNames: boolean = true;
-
   // Number of slots to reserve for pureFunctions
   private _pureFunctionSlots = 0;
 
@@ -113,7 +109,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
       private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
       private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
-      private relativeContextFilePath: string) {
+      private relativeContextFilePath: string, private i18nUseExternalIds: boolean) {
     // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
     // function)
     this._dataIndex = viewQueries.length;
@@ -303,7 +299,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nAllocateRef(messageId: string): o.ReadVarExpr {
     let name: string;
-    if (this.i18nUseIdsInVarNames) {
+    if (this.i18nUseExternalIds) {
       const prefix = getTranslationConstPrefix(`EXTERNAL_`);
       name = `${prefix}${messageId}`;
     } else {
@@ -717,7 +713,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
         templateIndex, templateName, [], this.directiveMatcher, this.directives,
-        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix);
+        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix,
+        this.i18nUseExternalIds);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1396,24 +1393,27 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {},
+    template: string, templateUrl: string,
+    options: {i18nUseExternalIds: boolean, preserveWhitespaces?: boolean},
     relativeContextFilePath: string): {
   errors?: ParseError[],
   nodes: t.Node[],
   hasNgContent: boolean,
   ngContentSelectors: string[],
-  relativeContextFilePath: string
+  relativeContextFilePath: string,
+  i18nUseExternalIds: boolean
 } {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, true);
+  const {i18nUseExternalIds, preserveWhitespaces} = options;
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {
       errors: parseResult.errors,
       nodes: [],
       hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath
+      ngContentSelectors: [], relativeContextFilePath, i18nUseExternalIds
     };
   }
 
@@ -1423,10 +1423,10 @@ export function parseTemplate(
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
-  const i18nConfig = {keepI18nAttrs: !options.preserveWhitespaces};
+  const i18nConfig = {keepI18nAttrs: !preserveWhitespaces};
   rootNodes = html.visitAll(new I18nMetaVisitor(i18nConfig), rootNodes);
 
-  if (!options.preserveWhitespaces) {
+  if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
 
     // run i18n meta visitor again in case we remove whitespaces, because
@@ -1443,11 +1443,11 @@ export function parseTemplate(
       errors,
       nodes: [],
       hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath
+      ngContentSelectors: [], relativeContextFilePath, i18nUseExternalIds
     };
   }
 
-  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath};
+  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath, i18nUseExternalIds};
 }
 
 /**

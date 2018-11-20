@@ -254,7 +254,7 @@ export function compileComponentFromMetadata(
   const templateBuilder = new TemplateDefinitionBuilder(
       constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, null, null, templateName,
       meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
-      meta.template.relativeContextFilePath);
+      meta.template.relativeContextFilePath, template.i18nUseExternalIds);
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(
       template.nodes, [], template.hasNgContent, template.ngContentSelectors);
@@ -374,6 +374,7 @@ export function compileComponentFromRender2(
       hasNgContent: render3Ast.hasNgContent,
       ngContentSelectors: render3Ast.ngContentSelectors,
       relativeContextFilePath: '',
+      i18nUseExternalIds: true,
     },
     directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
