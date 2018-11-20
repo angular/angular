@@ -35,7 +35,7 @@ fi
 #######################
 
 setEnvVar NODE_VERSION 10.9.0
-setEnvVar YARN_VERSION 1.9.2
+setEnvVar YARN_VERSION 1.12.1
 setEnvVar CHROMIUM_VERSION 561733  # Chrome 68 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9

@@ -36,7 +36,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_reposi
 check_bazel_version("0.17.0")
 node_repositories(
     node_version = "10.9.0",
-    yarn_version = "1.9.2",
+    yarn_version = "1.12.1",
 )
 
 yarn_install(
