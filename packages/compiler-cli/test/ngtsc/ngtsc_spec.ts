@@ -553,6 +553,46 @@ describe('ngtsc behavioral tests', () => {
     expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
+  it('should take preserveWhitespaces config option into account', () => {
+    env.tsconfig({preserveWhitespaces: true});
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        template: \`
+          <div>
+            Template with whitespaces
+          </div>
+        \`
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents)
+        .toContain('text(2, "\\n            Template with whitespaces\\n          ");');
+  });
+
+  it('@Component\'s preserveWhitespaces should override the one defined in config', () => {
+    env.tsconfig({preserveWhitespaces: true});
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        preserveWhitespaces: false,
+        template: \`
+          <div>
+            Template with whitespaces
+          </div>
+        \`
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('text(1, " Template with whitespaces ");');
+  });
+
   it('should correctly recognize local symbols', () => {
     env.tsconfig();
     env.write('module.ts', `
