@@ -1828,9 +1828,10 @@ describe('ViewContainerRef', () => {
           template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
           hostVars: 1,
           attributes: ['id', 'attribute'],
-          hostBindings: function(dirIndex, elIndex) {
-            const cmptInstance = load<HostBindingCmpt>(dirIndex);
-            elementProperty(elIndex, 'title', bind(cmptInstance.title));
+          hostBindings: function(rf: RenderFlags, ctx: HostBindingCmpt, elIndex: number) {
+            if (rf & RenderFlags.Update) {
+              elementProperty(elIndex, 'title', bind(ctx.title));
+            }
           },
         });
       }

@@ -124,15 +124,9 @@ export function setHostBindings(tView: TView, viewData: LViewData): void {
       } else {
         // If it's not a number, it's a host binding function that needs to be executed.
         viewData[BINDING_INDEX] = bindingRootIndex;
-        // We must subtract the header offset because the load() instruction
-        // expects a raw, unadjusted index.
-        // <HACK(misko)>: set the `previousOrParentTNode` so that hostBindings functions can
-        // correctly retrieve it. This should be removed once we call the hostBindings function
-        // inline as part of the `RenderFlags.Create` because in that case the value will already be
-        // correctly set.
-        setPreviousOrParentTNode(getTView().data[currentElementIndex + HEADER_OFFSET] as TNode);
-        // </HACK>
-        instruction(currentDirectiveIndex - HEADER_OFFSET, currentElementIndex);
+        instruction(
+            RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
+            currentElementIndex);
         currentDirectiveIndex++;
       }
     }
@@ -1077,14 +1071,13 @@ function generatePropertyAliases(
  * @param classIndex Index of class to toggle. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
- * @param directiveIndex the index for the directive that is attempting to change styling.
+ * @param directive the ref to the directive that is attempting to change styling.
  */
 export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory,
-    directiveIndex?: number): void {
-  if (directiveIndex != undefined) {
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
+  if (directive != undefined) {
     return hackImplementationOfElementClassProp(
-        index, classIndex, value, directiveIndex);  // proper supported in next PR
+        index, classIndex, value, directive);  // proper supported in next PR
   }
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
@@ -1118,17 +1111,17 @@ export function elementClassProp(
  *   values that are passed in here will be applied to the element (if matched).
  * @param styleSanitizer An optional sanitizer function that will be used (if provided)
  *   to sanitize the any CSS property values that are applied to the element (during rendering).
- * @param directiveIndex the index for the directive that is attempting to change styling.
+ * @param directive the ref to the directive that is attempting to change styling.
  */
 export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null, directiveIndex?: number): void {
-  if (directiveIndex !== undefined) {
+    styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
+  if (directive != undefined) {
     getCreationMode() &&
         hackImplementationOfElementStyling(
             classDeclarations || null, styleDeclarations || null, styleSanitizer || null,
-            directiveIndex);  // supported in next PR
+            directive);  // supported in next PR
     return;
   }
   const tNode = getPreviousOrParentTNode();
@@ -1171,11 +1164,11 @@ export function elementStyling(
  *        (Note that this is not the element index, but rather an index value allocated
  *        specifically for element styling--the index must be the next index after the element
  *        index.)
- * @param directiveIndex the index for the directive that is attempting to change styling.
+ * @param directive the ref to the directive that is attempting to change styling.
  */
-export function elementStylingApply(index: number, directiveIndex?: number): void {
-  if (directiveIndex != undefined) {
-    return hackImplementationOfElementStylingApply(index, directiveIndex);  // supported in next PR
+export function elementStylingApply(index: number, directive?: {}): void {
+  if (directive != undefined) {
+    return hackImplementationOfElementStylingApply(index, directive);  // supported in next PR
   }
   const viewData = getViewData();
   const isFirstRender = (viewData[FLAGS] & LViewFlags.CreationMode) !== 0;
@@ -1206,14 +1199,14 @@ export function elementStylingApply(index: number, directiveIndex?: number): voi
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
- * @param directiveIndex the index for the directive that is attempting to change styling.
+ * @param directive the ref to the directive that is attempting to change styling.
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directiveIndex?: number): void {
-  if (directiveIndex != undefined)
+    suffix?: string, directive?: {}): void {
+  if (directive != undefined)
     return hackImplementationOfElementStyleProp(
-        index, styleIndex, value, suffix, directiveIndex);  // supported in next PR
+        index, styleIndex, value, suffix, directive);  // supported in next PR
   let valueToAdd: string|null = null;
   if (value) {
     if (suffix) {
@@ -1251,14 +1244,14 @@ export function elementStyleProp(
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
- * @param directiveIndex the index for the directive that is attempting to change styling.
+ * @param directive the ref to the directive that is attempting to change styling.
  */
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
-  if (directiveIndex != undefined)
+    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
+  if (directive != undefined)
     return hackImplementationOfElementStylingMap(
-        index, classes, styles, directiveIndex);  // supported in next PR
+        index, classes, styles, directive);  // supported in next PR
   const viewData = getViewData();
   const tNode = getTNode(index, viewData);
   const stylingContext = getStylingContext(index, viewData);
@@ -1282,22 +1275,20 @@ interface HostStylingHack {
   styleDeclarations: string[];
   styleSanitizer: StyleSanitizeFn|null;
 }
-interface HostStylingHackMap {
-  [directiveIndex: number]: HostStylingHack;
-}
+type HostStylingHackMap = Map<{}, HostStylingHack>;
 
 function hackImplementationOfElementStyling(
     classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer: StyleSanitizeFn | null, directiveIndex: number): void {
+    styleSanitizer: StyleSanitizeFn | null, directive: {}): void {
   const node = getNativeByTNode(getPreviousOrParentTNode(), getViewData());
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
   const hostStylingHackMap: HostStylingHackMap =
-      ((node as any).hostStylingHack || ((node as any).hostStylingHack = {}));
-  hostStylingHackMap[directiveIndex] = {
+      ((node as any).hostStylingHack || ((node as any).hostStylingHack = new Map()));
+  hostStylingHackMap.set(directive, {
     classDeclarations: hackSquashDeclaration(classDeclarations),
     styleDeclarations: hackSquashDeclaration(styleDeclarations), styleSanitizer
-  };
+  });
 }
 
 function hackSquashDeclaration(declarations: (string | boolean | InitialStylingFlags)[] | null):
@@ -1307,11 +1298,10 @@ function hackSquashDeclaration(declarations: (string | boolean | InitialStylingF
 }
 
 function hackImplementationOfElementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory,
-    directiveIndex: number): void {
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive: {}): void {
   const node = getNativeByIndex(index, getViewData());
   ngDevMode && assertDefined(node, 'could not locate node');
-  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack[directiveIndex];
+  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
   const className = hostStylingHack.classDeclarations[classIndex];
   const renderer = getRenderer();
   if (isProceduralRenderer(renderer)) {
@@ -1322,19 +1312,19 @@ function hackImplementationOfElementClassProp(
   }
 }
 
-function hackImplementationOfElementStylingApply(index: number, directiveIndex?: number): void {
+function hackImplementationOfElementStylingApply(index: number, directive?: {}): void {
   // Do nothing because the hack implementation is eager.
 }
 
 function hackImplementationOfElementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directiveIndex?: number): void {
+    suffix?: string, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
 
 function hackImplementationOfElementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
+    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
 
@@ -1530,6 +1520,10 @@ function postProcessBaseDirective<T>(
                    viewData[BINDING_INDEX], getTView().bindingStartIndex,
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
+
+  if (def.hostBindings) {
+    def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
+  }
 
   attachPatchData(directive, viewData);
   if (native) {

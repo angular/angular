@@ -8,6 +8,8 @@
 
 import {NgtscTestEnvironment} from './env';
 
+const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
+
 describe('ngtsc behavioral tests', () => {
   if (!NgtscTestEnvironment.supported) {
     // These tests should be excluded from the non-Bazel build.
@@ -449,6 +451,37 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain(`i0.ɵquery(null, ViewContainerRef, true)`);
   });
 
+  it('should generate host listeners for components', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component, HostListener} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: 'Test'
+        })
+        class FooCmp {
+          @HostListener('document:click', ['$event.target'])
+          onClick(eventTarget: HTMLElement): void {}
+
+          @HostListener('window:scroll')
+          onScroll(event: any): void {}
+        }
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    const hostBindingsFn = `
+      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+        if (rf & 1) {
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event.target); });
+          i0.ɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onScroll(); });
+        }
+      }
+    `;
+    expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+  });
+
   it('should generate host bindings for directives', () => {
     env.tsconfig();
     env.write(`test.ts`, `
@@ -476,39 +509,33 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents)
-        .toContain(`i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(i0.ɵload(dirIndex).foo));`);
-    expect(jsContents)
-        .toContain(`i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵload(dirIndex).bar));`);
-    expect(jsContents)
-        .toContain('i0.ɵelementClassProp(elIndex, 0, i0.ɵload(dirIndex).someClass, dirIndex)');
-
-    const factoryDef = `
-      factory: function FooCmp_Factory(t) {
-        var f = new (t || FooCmp)();
-        i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) {
-          return f.onClick($event);
-        });
-        i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) {
-          return f.onChange(f.arg1, f.arg2, f.arg3);
-        });
-        return f;
+    const hostBindingsFn = `
+      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+        if (rf & 1) {
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
+          i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵelementStyling(_c0, null, null, ctx);
+        }
+        if (rf & 2) {
+          i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(ctx.foo));
+          i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(ctx.bar));
+          i0.ɵelementClassProp(elIndex, 0, ctx.someClass, ctx);
+          i0.ɵelementStylingApply(elIndex, ctx);
+        }
       }
     `;
-    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
+    expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
-  it('should generate host listeners for directives with base factories', () => {
+  it('should generate host listeners for directives within hostBindings section', () => {
     env.tsconfig();
     env.write(`test.ts`, `
         import {Directive, HostListener} from '@angular/core';
 
-        class Base {}
-
         @Directive({
           selector: '[test]',
         })
-        class Dir extends Base {
+        class Dir {
           @HostListener('change', ['arg'])
           onChange(event: any, arg: any): void {}
         }
@@ -516,17 +543,14 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    const factoryDef = `
-      factory: function Dir_Factory(t) {
-        var f = ɵDir_BaseFactory((t || Dir));
-        i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) {
-          return f.onChange(f.arg);
-        });
-        return f;
+    const hostBindingsFn = `
+      hostBindings: function Dir_HostBindings(rf, ctx, elIndex) {
+        if (rf & 1) {
+          i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg); });
+        }
       }
     `;
-    expect(jsContents).toContain(factoryDef.replace(/\s+/g, ' ').trim());
-    expect(jsContents).toContain('var ɵDir_BaseFactory = i0.ɵgetInheritedFactory(Dir)');
+    expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
   it('should correctly recognize local symbols', () => {

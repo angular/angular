@@ -449,7 +449,42 @@ describe('event listeners', () => {
     expect(comp.counters).toEqual([1, 1]);
   });
 
-  it('should support host listeners', () => {
+  it('should support host listeners on components', () => {
+    let events: string[] = [];
+    class MyComp {
+      /* @HostListener('click') */
+      onClick() { events.push('click!'); }
+
+      static ngComponentDef = defineComponent({
+        type: MyComp,
+        selectors: [['comp']],
+        consts: 1,
+        vars: 0,
+        template: function CompTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Some text');
+          }
+        },
+        factory: () => { return new MyComp(); },
+        hostBindings: function HostListenerDir_HostBindings(
+            rf: RenderFlags, ctx: any, elIndex: number) {
+          if (rf & RenderFlags.Create) {
+            listener('click', function() { return ctx.onClick(); });
+          }
+        }
+      });
+    }
+
+    const fixture = new ComponentFixture(MyComp);
+    const host = fixture.hostElement;
+    host.click();
+    expect(events).toEqual(['click!']);
+
+    host.click();
+    expect(events).toEqual(['click!', 'click!']);
+  });
+
+  it('should support host listeners on directives', () => {
     let events: string[] = [];
 
     class HostListenerDir {
@@ -459,11 +494,13 @@ describe('event listeners', () => {
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
-        factory: function HostListenerDir_Factory() {
-          const $dir$ = new HostListenerDir();
-          listener('click', function() { return $dir$.onClick(); });
-          return $dir$;
-        },
+        factory: function HostListenerDir_Factory() { return new HostListenerDir(); },
+        hostBindings: function HostListenerDir_HostBindings(
+            rf: RenderFlags, ctx: any, elIndex: number) {
+          if (rf & RenderFlags.Create) {
+            listener('click', function() { return ctx.onClick(); });
+          }
+        }
       });
     }
 

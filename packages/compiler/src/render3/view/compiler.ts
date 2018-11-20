@@ -55,7 +55,6 @@ function baseDirectiveFields(
     type: meta.type,
     deps: meta.deps,
     injectFn: R3.directiveInject,
-    extraStatementFn: createFactoryExtraStatementsFn(meta, bindingParser)
   });
   definitionMap.set('factory', result.factory);
 
@@ -67,8 +66,8 @@ function baseDirectiveFields(
   let hostVars = Object.keys(meta.host.properties).length;
 
   const elVarExp = o.variable('elIndex');
-  const dirVarExp = o.variable('dirIndex');
-  const styleBuilder = new StylingBuilder(elVarExp, dirVarExp);
+  const contextVarExp = o.variable(CONTEXT_NAME);
+  const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
 
   const allOtherAttributes: any = {};
   const attrNames = Object.getOwnPropertyNames(meta.host.attributes);
@@ -93,15 +92,15 @@ function baseDirectiveFields(
   // e.g. `attributes: ['role', 'listbox']`
   definitionMap.set('attributes', createHostAttributesArray(allOtherAttributes));
 
-  // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
+  // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
-      'hostBindings',
-      createHostBindingsFunction(
-          meta, elVarExp, dirVarExp, styleBuilder, bindingParser, constantPool, (slots: number) => {
-            const originalSlots = hostVars;
-            hostVars += slots;
-            return originalSlots;
-          }));
+      'hostBindings', createHostBindingsFunction(
+                          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool,
+                          (slots: number) => {
+                            const originalSlots = hostVars;
+                            hostVars += slots;
+                            return originalSlots;
+                          }));
 
   if (hostVars) {
     // e.g. `hostVars: 2
@@ -643,18 +642,26 @@ function createViewQueriesFunction(
 
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
-    meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, dirVarExp: o.ReadVarExpr,
+    meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
     styleBuilder: StylingBuilder, bindingParser: BindingParser, constantPool: ConstantPool,
     allocatePureFunctionSlots: (slots: number) => number): o.Expression|null {
-  const statements: o.Statement[] = [];
+  const createStatements: o.Statement[] = [];
+  const updateStatements: o.Statement[] = [];
 
   const hostBindingSourceSpan = meta.typeSourceSpan;
 
   const directiveSummary = metadataAsSummary(meta);
 
+  // Calculate host event bindings
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
+  if (eventBindings && eventBindings.length) {
+    const listeners = createHostListeners(bindingContext, eventBindings, meta);
+    createStatements.push(...listeners);
+  }
+
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
-  const bindingContext = o.importExpr(R3.load).callFn([dirVarExp]);
 
   const bindingFn = (implicit: any, value: AST) => {
     return convertPropertyBinding(
@@ -683,14 +690,14 @@ function createHostBindingsFunction(
 
         const {bindingName, instruction} = getBindingNameAndInstruction(name);
 
-        statements.push(...bindingExpr.stmts);
-        statements.push(o.importExpr(instruction)
-                            .callFn([
-                              elVarExp,
-                              o.literal(bindingName),
-                              o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
-                            ])
-                            .toStmt());
+        updateStatements.push(...bindingExpr.stmts);
+        updateStatements.push(o.importExpr(instruction)
+                                  .callFn([
+                                    elVarExp,
+                                    o.literal(bindingName),
+                                    o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
+                                  ])
+                                  .toStmt());
       }
     }
 
@@ -698,24 +705,31 @@ function createHostBindingsFunction(
       const createInstruction = styleBuilder.buildCreateLevelInstruction(null, constantPool);
       if (createInstruction) {
         const createStmt = createStylingStmt(createInstruction, bindingContext, bindingFn);
-        statements.push(createStmt);
+        createStatements.push(createStmt);
       }
 
       styleBuilder.buildUpdateLevelInstructions(valueConverter).forEach(instruction => {
         const updateStmt = createStylingStmt(instruction, bindingContext, bindingFn);
-        statements.push(updateStmt);
+        updateStatements.push(updateStmt);
       });
     }
   }
 
-  if (statements.length > 0) {
-    const typeName = meta.name;
+  if (createStatements.length > 0 || updateStatements.length > 0) {
+    const hostBindingsFnName = meta.name ? `${meta.name}_HostBindings` : null;
+    const statements: o.Statement[] = [];
+    if (createStatements.length > 0) {
+      statements.push(renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements));
+    }
+    if (updateStatements.length > 0) {
+      statements.push(renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements));
+    }
     return o.fn(
         [
-          new o.FnParam(dirVarExp.name !, o.NUMBER_TYPE),
-          new o.FnParam(elVarExp.name !, o.NUMBER_TYPE),
+          new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
+          new o.FnParam(elVarExp.name !, o.NUMBER_TYPE)
         ],
-        statements, o.INFERRED_TYPE, null, typeName ? `${typeName}_HostBindings` : null);
+        statements, o.INFERRED_TYPE, null, hostBindingsFnName);
   }
 
   return null;
@@ -743,15 +757,6 @@ function getBindingNameAndInstruction(bindingName: string):
   }
 
   return {bindingName, instruction};
-}
-
-function createFactoryExtraStatementsFn(meta: R3DirectiveMetadata, bindingParser: BindingParser):
-    ((instance: o.Expression) => o.Statement[])|null {
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
-  return eventBindings && eventBindings.length ?
-      (instance: o.Expression) => createHostListeners(instance, eventBindings, meta) :
-      null;
 }
 
 function createHostListeners(

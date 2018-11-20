@@ -771,12 +771,16 @@ describe('compiler compliance: styling', () => {
           const _c0 = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
           const _c1 = ["width", "height", "color", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
           …
-          hostBindings: function MyComponent_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, dirIndex);
-            $r3$.ɵelementStylingMap(elIndex, $r3$.ɵload(dirIndex).myClass, $r3$.ɵload(dirIndex).myStyle, dirIndex);
-            $r3$.ɵelementStyleProp(elIndex, 2, $r3$.ɵload(dirIndex).myColorProp, null, dirIndex);
-            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
-            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
+              $r3$.ɵelementStyleProp(elIndex, 2, ctx.myColorProp, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
           }
           `;
 
@@ -825,14 +829,18 @@ describe('compiler compliance: styling', () => {
           const _c0 = ["bar", "foo"];
           const _c1 = ["height", "width"];
           …
-          hostBindings: function MyComponent_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, dirIndex);
-            $r3$.ɵelementStylingMap(elIndex, $r3$.ɵload(dirIndex).myClasses, $r3$.ɵload(dirIndex).myStyle, dirIndex);
-            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myHeightProp, "pt", dirIndex);
-            $r3$.ɵelementStyleProp(elIndex, 1, $r3$.ɵload(dirIndex).myWidthProp, null, dirIndex);
-            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myBarClass, dirIndex);
-            $r3$.ɵelementClassProp(elIndex, 1, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
-            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(elIndex, ctx.myClasses, ctx.myStyle, ctx);
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myHeightProp, "pt", ctx);
+              $r3$.ɵelementStyleProp(elIndex, 1, ctx.myWidthProp, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myBarClass, ctx);
+              $r3$.ɵelementClassProp(elIndex, 1, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
           }
           `;
 
@@ -886,18 +894,26 @@ describe('compiler compliance: styling', () => {
           const _c2 = ["bar"];
           const _c3 = ["height"];
           …
-          function WidthDirective_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementStyling(_c0, _c1, null, dirIndex);
-            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myWidth, null, dirIndex);
-            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myFooClass, dirIndex);
-            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          function WidthDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, null, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
           }
           …
-          function HeightDirective_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementStyling(_c2, _c3, null, dirIndex);
-            $r3$.ɵelementStyleProp(elIndex, 0, $r3$.ɵload(dirIndex).myHeight, null, dirIndex);
-            $r3$.ɵelementClassProp(elIndex, 0, $r3$.ɵload(dirIndex).myBarClass, dirIndex);
-            $r3$.ɵelementStylingApply(elIndex, dirIndex);
+          function HeightDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c2, _c3, null, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myHeight, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myBarClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
           }
           …
           `;

@@ -43,7 +43,6 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
     type: metadata.type,
     deps: metadata.deps,
     injectFn: R3.directiveInject,
-    extraStatementFn: null,
   });
   definitionMapValues.push({key: 'factory', value: templateFactory.factory, quoted: false});
 

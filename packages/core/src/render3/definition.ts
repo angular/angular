@@ -16,7 +16,7 @@ import {Mutable, Type} from '../type';
 import {noSideEffects} from '../util';
 
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 export const EMPTY: {} = {};
@@ -149,7 +149,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+  hostBindings?: HostBindingsFunction<T>;
 
   /**
    * Function to create instances of content queries associated with a given directive.
@@ -597,7 +597,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+  hostBindings?: HostBindingsFunction<T>;
 
   /**
    * Function to create instances of content queries associated with a given directive.
