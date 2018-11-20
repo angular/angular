@@ -16,9 +16,8 @@ import {fixmeIvy} from '@angular/private/testing';
   if (ivyEnabled) {
     fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
   } else {
-    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
-
-    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+    describe('jit', () => { declareTests({useJit: true}); });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 }
 
