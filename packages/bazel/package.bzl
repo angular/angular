@@ -25,8 +25,8 @@ def rules_angular_dependencies():
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.3.zip",
-        strip_prefix = "rules_nodejs-0.15.3",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.2.zip",
+        strip_prefix = "rules_nodejs-0.16.2",
     )
 
     _maybe(
