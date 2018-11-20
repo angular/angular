@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
 
 {
-  fixmeIvy('unknown') && describe('projection', () => {
+  describe('projection', () => {
     beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
 
     it('should support simple components', () => {
@@ -82,7 +82,7 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('');
     });
 
-    it('should support multiple content tags', () => {
+    fixmeIvy('unknown') && it('should support multiple content tags', () => {
       TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
       TestBed.overrideComponent(MainComp, {
         set: {
@@ -113,33 +113,34 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('(, BAC)');
     });
 
-    it('should redistribute direct child viewcontainers when the light dom changes', () => {
-      TestBed.configureTestingModule(
-          {declarations: [MultipleContentTagsComponent, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<multiple-content-tags>' +
-              '<ng-template manual class="left"><div>A1</div></ng-template>' +
-              '<div>B</div>' +
-              '</multiple-content-tags>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should redistribute direct child viewcontainers when the light dom changes', () => {
+          TestBed.configureTestingModule(
+              {declarations: [MultipleContentTagsComponent, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<multiple-content-tags>' +
+                  '<ng-template manual class="left"><div>A1</div></ng-template>' +
+                  '<div>B</div>' +
+                  '</multiple-content-tags>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const viewportDirectives = main.debugElement.children[0]
-                                     .childNodes.filter(By.directive(ManualViewportDirective))
-                                     .map(de => de.injector.get(ManualViewportDirective));
+          const viewportDirectives = main.debugElement.children[0]
+                                         .childNodes.filter(By.directive(ManualViewportDirective))
+                                         .map(de => de.injector.get(ManualViewportDirective));
 
-      expect(main.nativeElement).toHaveText('(, B)');
+          expect(main.nativeElement).toHaveText('(, B)');
 
-      viewportDirectives.forEach(d => d.show());
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(A1, B)');
+          viewportDirectives.forEach(d => d.show());
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(A1, B)');
 
-      viewportDirectives.forEach(d => d.hide());
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(, B)');
-    });
+          viewportDirectives.forEach(d => d.hide());
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(, B)');
+        });
 
     it('should support nested components', () => {
       TestBed.configureTestingModule({declarations: [OuterWithIndirectNestedComponent]});
@@ -156,33 +157,34 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
     });
 
-    it('should support nesting with content being direct child of a nested component', () => {
-      TestBed.configureTestingModule({
-        declarations:
-            [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
-      });
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<outer>' +
-              '<ng-template manual class="left"><div>A</div></ng-template>' +
-              '<div>B</div>' +
-              '<div>C</div>' +
-              '</outer>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should support nesting with content being direct child of a nested component', () => {
+          TestBed.configureTestingModule({
+            declarations:
+                [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
+          });
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<outer>' +
+                  '<ng-template manual class="left"><div>A</div></ng-template>' +
+                  '<div>B</div>' +
+                  '<div>C</div>' +
+                  '</outer>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const viewportDirective =
-          main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-              ManualViewportDirective);
+          const viewportDirective =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
+                  .injector.get(ManualViewportDirective);
 
-      expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
-      viewportDirective.show();
+          expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
+          viewportDirective.show();
 
-      expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
-    });
+          expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
+        });
 
-    it('should redistribute when the shadow dom changes', () => {
+    fixmeIvy('unknown') && it('should redistribute when the shadow dom changes', () => {
       TestBed.configureTestingModule(
           {declarations: [ConditionalContentComponent, ManualViewportDirective]});
       TestBed.overrideComponent(MainComp, {
@@ -237,37 +239,38 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('P,text');
     });
 
-    it('should support moving non projected light dom around', () => {
-      let sourceDirective: ManualViewportDirective = undefined !;
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should support moving non projected light dom around', () => {
+          let sourceDirective: ManualViewportDirective = undefined !;
 
-      @Directive({selector: '[manual]'})
-      class ManualViewportDirective {
-        constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
-      }
+          @Directive({selector: '[manual]'})
+          class ManualViewportDirective {
+            constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
+          }
 
-      TestBed.configureTestingModule(
-          {declarations: [Empty, ProjectDirective, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<empty>' +
-              ' <ng-template manual><div>A</div></ng-template>' +
-              '</empty>' +
-              'START(<div project></div>)END'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+          TestBed.configureTestingModule(
+              {declarations: [Empty, ProjectDirective, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<empty>' +
+                  ' <ng-template manual><div>A</div></ng-template>' +
+                  '</empty>' +
+                  'START(<div project></div>)END'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const projectDirective: ProjectDirective =
-          main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
-              ProjectDirective);
+          const projectDirective: ProjectDirective =
+              main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
+                  ProjectDirective);
 
-      expect(main.nativeElement).toHaveText('START()END');
+          expect(main.nativeElement).toHaveText('START()END');
 
-      projectDirective.show(sourceDirective.templateRef);
-      expect(main.nativeElement).toHaveText('START(A)END');
-    });
+          projectDirective.show(sourceDirective.templateRef);
+          expect(main.nativeElement).toHaveText('START(A)END');
+        });
 
-    it('should support moving projected light dom around', () => {
+    fixmeIvy('unknown') && it('should support moving projected light dom around', () => {
       TestBed.configureTestingModule(
           {declarations: [Empty, ProjectDirective, ManualViewportDirective]});
       TestBed.overrideComponent(MainComp, {
@@ -290,83 +293,89 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
     });
 
-    it('should support moving ng-content around', () => {
-      TestBed.configureTestingModule(
-          {declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<conditional-content>' +
-              '<div class="left">A</div>' +
-              '<div>B</div>' +
-              '</conditional-content>' +
-              'START(<div project></div>)END'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should support moving ng-content around', () => {
+          TestBed.configureTestingModule({
+            declarations:
+                [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
+          });
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<conditional-content>' +
+                  '<div class="left">A</div>' +
+                  '<div>B</div>' +
+                  '</conditional-content>' +
+                  'START(<div project></div>)END'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const sourceDirective: ManualViewportDirective =
-          main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-              ManualViewportDirective);
-      const projectDirective: ProjectDirective =
-          main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
-              ProjectDirective);
-      expect(main.nativeElement).toHaveText('(, B)START()END');
+          const sourceDirective: ManualViewportDirective =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
+                  .injector.get(ManualViewportDirective);
+          const projectDirective: ProjectDirective =
+              main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
+                  ProjectDirective);
+          expect(main.nativeElement).toHaveText('(, B)START()END');
 
-      projectDirective.show(sourceDirective.templateRef);
-      expect(main.nativeElement).toHaveText('(, B)START(A)END');
+          projectDirective.show(sourceDirective.templateRef);
+          expect(main.nativeElement).toHaveText('(, B)START(A)END');
 
-      // Stamping ng-content multiple times should not produce the content multiple
-      // times...
-      projectDirective.show(sourceDirective.templateRef);
-      expect(main.nativeElement).toHaveText('(, B)START(A)END');
-    });
-
-    // Note: This does not use a ng-content element, but
-    // is still important as we are merging proto views independent of
-    // the presence of ng-content elements!
-    it('should still allow to implement a recursive trees', () => {
-      TestBed.configureTestingModule({declarations: [Tree, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
-      const main = TestBed.createComponent(MainComp);
-
-      main.detectChanges();
-      const manualDirective: ManualViewportDirective =
-          main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-              ManualViewportDirective);
-      expect(main.nativeElement).toHaveText('TREE(0:)');
-      manualDirective.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('TREE(0:TREE(1:))');
-    });
+          // Stamping ng-content multiple times should not produce the content multiple
+          // times...
+          projectDirective.show(sourceDirective.templateRef);
+          expect(main.nativeElement).toHaveText('(, B)START(A)END');
+        });
 
     // Note: This does not use a ng-content element, but
     // is still important as we are merging proto views independent of
     // the presence of ng-content elements!
-    it('should still allow to implement a recursive trees via multiple components', () => {
-      TestBed.configureTestingModule({declarations: [Tree, Tree2, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
-      TestBed.overrideComponent(
-          Tree, {set: {template: 'TREE({{depth}}:<tree2 *manual [depth]="depth+1"></tree2>)'}});
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should still allow to implement a recursive trees', () => {
+          TestBed.configureTestingModule({declarations: [Tree, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
+          const main = TestBed.createComponent(MainComp);
 
-      main.detectChanges();
+          main.detectChanges();
+          const manualDirective: ManualViewportDirective =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
+                  .injector.get(ManualViewportDirective);
+          expect(main.nativeElement).toHaveText('TREE(0:)');
+          manualDirective.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('TREE(0:TREE(1:))');
+        });
 
-      expect(main.nativeElement).toHaveText('TREE(0:)');
+    // Note: This does not use a ng-content element, but
+    // is still important as we are merging proto views independent of
+    // the presence of ng-content elements!
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should still allow to implement a recursive trees via multiple components', () => {
+          TestBed.configureTestingModule({declarations: [Tree, Tree2, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
+          TestBed.overrideComponent(
+              Tree, {set: {template: 'TREE({{depth}}:<tree2 *manual [depth]="depth+1"></tree2>)'}});
+          const main = TestBed.createComponent(MainComp);
 
-      const tree = main.debugElement.query(By.directive(Tree));
-      let manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
-          ManualViewportDirective))[0].injector.get(ManualViewportDirective);
-      manualDirective.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
+          main.detectChanges();
 
-      const tree2 = main.debugElement.query(By.directive(Tree2));
-      manualDirective = tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-          ManualViewportDirective);
-      manualDirective.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
-    });
+          expect(main.nativeElement).toHaveText('TREE(0:)');
+
+          const tree = main.debugElement.query(By.directive(Tree));
+          let manualDirective: ManualViewportDirective = tree.queryAllNodes(By.directive(
+              ManualViewportDirective))[0].injector.get(ManualViewportDirective);
+          manualDirective.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:))');
+
+          const tree2 = main.debugElement.query(By.directive(Tree2));
+          manualDirective =
+              tree2.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+                  ManualViewportDirective);
+          manualDirective.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
+        });
 
     if (getDOM().supportsNativeShadowDOM()) {
       it('should support native content projection and isolate styles per component', () => {
@@ -427,38 +436,41 @@ import {fixmeIvy} from '@angular/private/testing';
       });
     }
 
-    it('should support nested conditionals that contain ng-contents', () => {
-      TestBed.configureTestingModule(
-          {declarations: [ConditionalTextComponent, ManualViewportDirective]});
-      TestBed.overrideComponent(
-          MainComp, {set: {template: `<conditional-text>a</conditional-text>`}});
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
+        it('should support nested conditionals that contain ng-contents', () => {
+          TestBed.configureTestingModule(
+              {declarations: [ConditionalTextComponent, ManualViewportDirective]});
+          TestBed.overrideComponent(
+              MainComp, {set: {template: `<conditional-text>a</conditional-text>`}});
+          const main = TestBed.createComponent(MainComp);
 
-      expect(main.nativeElement).toHaveText('MAIN()');
+          expect(main.nativeElement).toHaveText('MAIN()');
 
-      let viewportElement =
-          main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
-      viewportElement.injector.get(ManualViewportDirective).show();
-      expect(main.nativeElement).toHaveText('MAIN(FIRST())');
+          let viewportElement =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
+          viewportElement.injector.get(ManualViewportDirective).show();
+          expect(main.nativeElement).toHaveText('MAIN(FIRST())');
 
-      viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
-      viewportElement.injector.get(ManualViewportDirective).show();
-      expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
-    });
+          viewportElement =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[1];
+          viewportElement.injector.get(ManualViewportDirective).show();
+          expect(main.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+        });
 
-    it('should allow to switch the order of nested components via ng-content', () => {
-      TestBed.configureTestingModule({declarations: [CmpA, CmpB, CmpD, CmpC]});
-      TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`}});
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('unknown') &&
+        it('should allow to switch the order of nested components via ng-content', () => {
+          TestBed.configureTestingModule({declarations: [CmpA, CmpB, CmpD, CmpC]});
+          TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`}});
+          const main = TestBed.createComponent(MainComp);
 
-      main.detectChanges();
-      expect(getDOM().getInnerHTML(main.nativeElement))
-          .toEqual(
-              '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
-              '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
-    });
+          main.detectChanges();
+          expect(getDOM().getInnerHTML(main.nativeElement))
+              .toEqual(
+                  '<cmp-a><cmp-b><cmp-d><i>cmp-d</i></cmp-d></cmp-b>' +
+                  '<cmp-c><b>cmp-c</b></cmp-c></cmp-a>');
+        });
 
-    it('should create nested components in the right order', () => {
+    fixmeIvy('unknown') && it('should create nested components in the right order', () => {
       TestBed.configureTestingModule(
           {declarations: [CmpA1, CmpA2, CmpB11, CmpB12, CmpB21, CmpB22]});
       TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`}});
@@ -471,7 +483,7 @@ import {fixmeIvy} from '@angular/private/testing';
               '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
     });
 
-    it('should project filled view containers into a view container', () => {
+    fixmeIvy('unknown') && it('should project filled view containers into a view container', () => {
       TestBed.configureTestingModule(
           {declarations: [ConditionalContentComponent, ManualViewportDirective]});
       TestBed.overrideComponent(MainComp, {

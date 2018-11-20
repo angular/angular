@@ -7,7 +7,7 @@
  */
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform, ɵivyEnabled as ivyEnabled} from '@angular/core';
-import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
+import {TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -16,11 +16,10 @@ import {fixmeIvy} from '@angular/private/testing';
 
 {
   if (ivyEnabled) {
-    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+    describe('ivy', () => { declareTests(); });
   } else {
-    fixmeIvy('unknown') && describe('jit', () => { declareTests({useJit: true}); });
-
-    fixmeIvy('unknown') && describe('no jit', () => { declareTests({useJit: false}); });
+    describe('jit', () => { declareTests({useJit: true}); });
+    describe('no jit', () => { declareTests({useJit: false}); });
   }
 
   declareTestsUsingBootstrap();
@@ -35,7 +34,7 @@ function declareTests(config?: {useJit: boolean}) {
     describe('platform pipes', () => {
       beforeEach(() => { TestBed.configureCompiler({...config}); });
 
-      it('should overwrite them by custom pipes', () => {
+      fixmeIvy('unknown') && it('should overwrite them by custom pipes', () => {
         TestBed.configureTestingModule({declarations: [CustomPipe]});
         const template = '{{true | somePipe}}';
         TestBed.overrideComponent(MyComp1, {set: {template}});
@@ -77,43 +76,46 @@ function declareTests(config?: {useJit: boolean}) {
         expect(CountingPipe.calls).toBe(1);
       });
 
-      it('should only update the bound property when using asyncPipe - #15205', fakeAsync(() => {
-           @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
-           class MyComp {
-             p = Promise.resolve(1);
-           }
+      fixmeIvy('unknown') &&
+          it('should only update the bound property when using asyncPipe - #15205',
+             fakeAsync(() => {
+               @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
+               class MyComp {
+                 p = Promise.resolve(1);
+               }
 
-           @Directive({selector: '[myDir]'})
-           class MyDir {
-             setterCalls: {[key: string]: any} = {};
-             // TODO(issue/24571): remove '!'.
-             changes !: SimpleChanges;
+               @Directive({selector: '[myDir]'})
+               class MyDir {
+                 setterCalls: {[key: string]: any} = {};
+                 // TODO(issue/24571): remove '!'.
+                 changes !: SimpleChanges;
 
-             @Input()
-             set a(v: number) { this.setterCalls['a'] = v; }
-             @Input()
-             set b(v: number) { this.setterCalls['b'] = v; }
+                 @Input()
+                 set a(v: number) { this.setterCalls['a'] = v; }
+                 @Input()
+                 set b(v: number) { this.setterCalls['b'] = v; }
 
-             ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
-           }
+                 ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
+               }
 
-           TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
-           const fixture = TestBed.createComponent(MyComp);
-           const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
+               TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+               const fixture = TestBed.createComponent(MyComp);
+               const dir =
+                   fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
 
-           fixture.detectChanges();
-           expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
-           expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
+               fixture.detectChanges();
+               expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
+               expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
 
-           dir.setterCalls = {};
-           dir.changes = {};
+               dir.setterCalls = {};
+               dir.changes = {};
 
-           tick();
-           fixture.detectChanges();
+               tick();
+               fixture.detectChanges();
 
-           expect(dir.setterCalls).toEqual({'a': 1});
-           expect(Object.keys(dir.changes)).toEqual(['a']);
-         }));
+               expect(dir.setterCalls).toEqual({'a': 1});
+               expect(Object.keys(dir.changes)).toEqual(['a']);
+             }));
 
       it('should only evaluate methods once - #10639', () => {
         TestBed.configureTestingModule({declarations: [MyCountingComp]});
@@ -160,13 +162,14 @@ function declareTests(config?: {useJit: boolean}) {
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      it('should support providers with string token with a `.` in it', () => {
-        const token = 'a.b';
-        const tokenValue = 1;
-        const injector = createInjector([{provide: token, useValue: tokenValue}]);
+      fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens') &&
+          it('should support providers with string token with a `.` in it', () => {
+            const token = 'a.b';
+            const tokenValue = 1;
+            const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
-        expect(injector.get(token)).toEqual(tokenValue);
-      });
+            expect(injector.get(token)).toEqual(tokenValue);
+          });
 
       it('should support providers with an anonymous function as token', () => {
         const token = () => true;
@@ -188,14 +191,15 @@ function declareTests(config?: {useJit: boolean}) {
         expect(injector.get(token2)).toEqual(tokenValue2);
       });
 
-      it('should support providers that have a `name` property with a number value', () => {
-        class TestClass {
-          constructor(public name: number) {}
-        }
-        const data = [new TestClass(1), new TestClass(2)];
-        const injector = createInjector([{provide: 'someToken', useValue: data}]);
-        expect(injector.get('someToken')).toEqual(data);
-      });
+      fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens') &&
+          it('should support providers that have a `name` property with a number value', () => {
+            class TestClass {
+              constructor(public name: number) {}
+            }
+            const data = [new TestClass(1), new TestClass(2)];
+            const injector = createInjector([{provide: 'someToken', useValue: data}]);
+            expect(injector.get('someToken')).toEqual(data);
+          });
 
       describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
 
@@ -333,7 +337,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.debugElement.childNodes.length).toBe(0);
       });
 
-      it('should allow empty embedded templates', () => {
+      fixmeIvy('unknown') && it('should allow empty embedded templates', () => {
         @Component({template: '<ng-template [ngIf]="true"></ng-template>'})
         class MyComp {
         }
@@ -350,35 +354,37 @@ function declareTests(config?: {useJit: boolean}) {
       });
     });
 
-    it('should support @ContentChild and @Input on the same property for static queries', () => {
-      @Directive({selector: 'test'})
-      class Test {
-        // TODO(issue/24571): remove '!'.
-        @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
-      }
+    fixmeIvy('unknown') &&
+        it('should support @ContentChild and @Input on the same property for static queries',
+           () => {
+             @Directive({selector: 'test'})
+             class Test {
+               // TODO(issue/24571): remove '!'.
+               @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+             }
 
-      @Component({
-        selector: 'my-app',
-        template: `
+             @Component({
+               selector: 'my-app',
+               template: `
           <test></test><br>
           <test><ng-template>Custom as a child</ng-template></test><br>
           <ng-template #custom>Custom as a binding</ng-template>
           <test [tpl]="custom"></test><br>
         `
-      })
-      class App {
-      }
+             })
+             class App {
+             }
 
-      const fixture =
-          TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
-      fixture.detectChanges();
+             const fixture =
+                 TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
+             fixture.detectChanges();
 
-      const testDirs =
-          fixture.debugElement.queryAll(By.directive(Test)).map(el => el.injector.get(Test));
-      expect(testDirs[0].tpl).toBeUndefined();
-      expect(testDirs[1].tpl).toBeDefined();
-      expect(testDirs[2].tpl).toBeDefined();
-    });
+             const testDirs =
+                 fixture.debugElement.queryAll(By.directive(Test)).map(el => el.injector.get(Test));
+             expect(testDirs[0].tpl).toBeUndefined();
+             expect(testDirs[1].tpl).toBeDefined();
+             expect(testDirs[2].tpl).toBeDefined();
+           });
 
     it('should not add ng-version for dynamically created components', () => {
       @Component({template: ''})
