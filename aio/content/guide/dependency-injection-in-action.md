@@ -818,15 +818,22 @@ This is illustrated in the following image, which displays the logging date.
 
 {@a usefactory}
 
+<!--
 #### Factory providers: `useFactory` 
+-->
+#### 팩토리 프로바이더: `useFactory`
 
+<!--
 The `useFactory` provider key lets you create a dependency object by calling a factory function,
 as in the following example.
+-->
+`useFactory` 프로바이더 키를 사용하면 팩토리 함수를 실행하고 반환하는 객체를 의존성으로 등록할 수 있습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-factory" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
+<!--
 The injector provides the dependency value by invoking a factory function,
 that you provide as the value of the `useFactory` key.
 Notice that this form of provider has a third key, `deps`, which specifies
@@ -844,12 +851,23 @@ In the example, the local state is the number `2`, the number of runners up that
 The state value is passed as an argument to `runnersUpFactory()`.
 The `runnersUpFactory()` returns the *provider factory function*, which can use both
 the passed-in state value and the injected services `Hero` and `HeroService`.
+-->
+이제 인젝터에 `useFactory` 키에 해당하는 의존성 객체 주입 요청이 들어오면 인젝터는 팩토리 함수를 실행하고 반환하는 값을 의존성으로 주입합니다.
+`useFactory` 키를 사용하는 프로바이더는 또 다른 키 `deps`를 갖습니다. 이 키는 `useFactory` 함수에 필요한 의존성 객체를 정의합니다.
 
+이 방식은 *의존성으로 주입되는 서비스*를 *로컬 상태*에 맞게 재구성해야 할 때 사용합니다.
+
+팩토리 함수가 반환하는 의존성 객체는 일반적으로 클래스 인스턴스인 경우가 많지만, 반드시 그래야 하는 것은 아닙니다.
+이 예제에서도 팩토리 함수가 반환하는 의존성 객체는 "Hero of the Month" 컨테스트에서 우승한 히어로의 이름을 의미하는 문자열입니다.
+
+예제에서 로컬 상태는 숫자 `2`인데, 이 숫자는 컴포넌트에 표시해야 하는 우승자의 숫자입니다.
+이 값은 `runnersUpFactory()`에 인자로 주입되며, `runnersUpFactory()`가 반환하는 것은 *또 다른 프로바이더 팩토리 함수*인데, 이 팩토리 함수는 `Hero`와 `HeroService`가 서비스로 주입되어야 합니다.
 
 <code-example path="dependency-injection-in-action/src/app/runners-up.ts" region="factory-synopsis" header="runners-up.ts (excerpt)" linenums="false">
 
 </code-example>
 
+<!--
 The provider factory function (returned by `runnersUpFactory()`) returns the actual dependency object,
 the string of names.
 
@@ -859,43 +877,74 @@ the two *tokens* in the `deps` array.
 
 * The function returns the string of names, which Angular than injects into
 the `runnersUp` parameter of `HeroOfTheMonthComponent`.
+-->
+`runnersUpFactory()`가 반환하는 프로바이더 팩토리 함수는 실제 의존성 객체로 주입되는 객체가 됩니다. 이 예제의 경우는 히어로들의 이름입니다.
+
+* 이 함수는 우승한 `Hero`와 `HeroService`를 인자로 받아야 합니다.
+그리고 이 인자에 해당하는 객체는 `deps` 배열에 등록된 *두 토큰*을 사용해서 주입됩니다.
+
+* 이 함수가 반환하는 히어로들의 이름은 최종적으로 `HeroOfTheMonthComponent`의 `runnersUp` 인자로 주입됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 The function retrieves candidate heroes from the `HeroService`,
 takes `2` of them to be the runners-up, and returns their concatenated names.
 Look at the <live-example name="dependency-injection-in-action"></live-example>
 for the full source code.
+-->
+이 함수의 역할은 `HeroService`에서 우승 후보 히어로의 이름을 `2`개 받아와서 조합한 문자열을 반환하는 것입니다.
+<live-example name="dependency-injection-in-action"></live-example>에서 전체 코드를 확인해 보세요.
 
 </div>
 
 {@a tokens}
 
+<!--
 ## Provider token alternatives: class interface and 'InjectionToken'
+-->
+## 프로바이더 토큰 대체하기: 클래스 인터페이스와 `InjectionToken`
 
+<!--
 Angular dependency injection is easiest when the provider token is a class
 that is also the type of the returned dependency object, or service.
 
 However, a token doesn't have to be a class and even when it is a class,
 it doesn't have to be the same type as the returned object.
 That's the subject of the next section.
+-->
+Angular의 의존성 주입은 프로바이더 토큰이 클래스일 때가 가장 간단한데, 의존성 객체가 객체이거나 클래스인 경우가 이 경우에 해당됩니다.
+
+그런데 토큰이 반드시 클래스일 필요는 없으며, 토큰이 클래스이더라도 의존성으로 반환되는 객체가 꼭 그 클래스일 필요도 없습니다.
+이 내용에 대해 알아봅시다.
+
 {@a class-interface}
 
+<!--
 ### Class interface
+-->
+### 클래스 인터페이스
 
+<!--
 The previous *Hero of the Month* example used the `MinimalLogger` class
 as the token for a provider of `LoggerService`.
+-->
+이전에 살펴본 *이번 달의 히어로* 예제에서 `MinimalLogger` 클래스는 `LoggerService`의 토큰 역할을 하며 프로바이더에 등록되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="use-existing" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts">
 
 </code-example>
 
+<!--
 `MinimalLogger` is an abstract class.
+-->
+그리고 `MinimalLogger`는 다음과 같은 추상 클래스입니다.
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
+<!--
 An abstract class is usually a base class that you can extend.
 In this app, however there is no class that inherits from `MinimalLogger`.
 The `LoggerService` and the `DateLoggerService`could have inherited from `MinimalLogger`,
@@ -904,7 +953,16 @@ But they did neither.
 `MinimalLogger` is used only as a dependency injection token.
 
 When you use a class this way, it's called a *class interface*.
+-->
+추상 클래스는 상속하기 위한 기초가 되는 클래스로 사용하는 것이 일반적입니다.
+하지만 이 앱에서 `MinimalLogger`를 상속받는 클래스는 하나도 없습니다.
+물론 `LoggerService`나 `DateLoggerService`도 `MinimalLogger`를 상속받을 수 있으며, `MinimalLogger`를 인터페이스로 정의하고 이 인터페이스를 기반으로 구현할 수도 있습니다.
+하지만 이 경우는 두가지 방법 중 아무것도 사용되지 않습니다.
+`MinimalLogger`는 오로지 의존성 주입 토큰으로만 사용될 뿐입니다.
+
+클래스가 이렇게 사용되는 것을 *클래스 인터페이스*라고 합니다.
   
+<!--
 As mentioned in [DI Providers](guide/dependency-injection-providers#interface-not-valid-token),
 an interface is not a valid DI token because it is a TypeScript artifact that doesn't exist at run time.
 Use this abstract class interface to get the strong typing of an interface,
@@ -912,31 +970,49 @@ and also use it as a provider token in the way you would a normal class.
 
 A  class interface should define *only* the members that its consumers are allowed to call.
 Such a narrowing interface helps decouple the concrete class from its consumers.
+-->
+[의존성 주입 프로바이더](guide/dependency-injection-providers#interface-not-valid-token)에서 언급했던 것처럼, 인터페이스는 TypeScript에만 있는 개념이며 애플리케이션이 실행되는 시점에는 존재하지 않기 때문에 의존성 주입 토큰으로 사용할 수 없습니다.
+그래서 인터페이스처럼 형태를 강제할 수 있고, 일반 클래스처럼 프로바이더 토큰으로 사용할 수 있는 추상 클래스 인터페이스를 사용하는 것입니다.
 
+그리고 클래스 인터페이스에는 이 클래스에 해당하는 클래스 중 주입된 곳에서 *사용할 수 있는 멤버만* 정의하는 것이 좋습니다.
+이렇게 인터페이스를 제한하면 클래스 사이의 결합도를 낮출 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 Using a class as an interface gives you the characteristics of an interface in a real JavaScript object.
 To minimize memory cost, however, the class should have *no implementation*.
 The `MinimalLogger` transpiles to this unoptimized, pre-minified JavaScript for a constructor function.
+-->
+클래스를 인터페이스처럼 사용하면 JavaScript 환경에서도 인터페이스를 사용하는 효과를 얻을 수 있습니다.
+하지만 사용되는 메모리를 절약하기 위해 이 클래스는 절대로 *실제 메소드를 정의하는 내용*이 없어야 합니다.
+이 클래스가 TypeScript 컴파일러에 의해 트랜스파일되고 아직 압축되기 전의 JavaScript 코드를 보면 다음과 같습니다.
 
 <code-example path="dependency-injection-in-action/src/app/minimal-logger.service.ts" region="minimal-logger-transpiled" header="dependency-injection-in-action/src/app/minimal-logger.service.ts" linenums="false">
 
 </code-example>
 
+<!--
 Notice that it doesn't have any members. It never grows no matter how many members you add to the class,
 as long as those members are typed but not implemented. 
 
 Look again at the TypeScript `MinimalLogger` class to confirm that it has no implementation.
+-->
+코드를 보면 알 수 있듯이 이 클래스의 멤버는 하나도 없습니다. 왜냐하면 이 클래스에 정의된 모든 멤버는 클래스 멤버의 타입을 지정하는 용도로만 사용되었기 때문입니다.
+
+그래서 `MinimalLogger` 클래스에는 메소드의 구현체를 정의하지 않았습니다.
 
 </div>
 
 
 {@a injection-token}
 
-
+<!--
 ### 'InjectionToken' objects
+-->
+### `InjectionToken` 객체
 
+<!--
 Dependency objects can be simple values like dates, numbers and strings, or
 shapeless objects like arrays and functions.
 
@@ -948,20 +1024,34 @@ another token that happens to have the same name.
 `InjectionToken` has these characteristics.
 You encountered them twice in the *Hero of the Month* example,
 in the *title* value provider and in the *runnersUp* factory provider.
+-->
+의존성 객체는 Date 객체나 숫자, 문자열, 심지어 배열이나 함수가 될 수도 있습니다.
+
+그런데 이런 객체는 인터페이스로 정의할 필요가 없으며 클래스로 정의해야할 이유는 더더욱 없습니다.
+이 객체는 이름이 겹치지 않고, 그 자체로 의미를 표현할 수 있는 JavaScript 객체, 즉, 토큰이기만 하면 되며, 쉽게 이해할 수 있지만 다른 곳에서 사용하는 이름과 겹치지 않기만 하면 됩니다.
+
+이런 경우에 `InjectionToken`을 사용합니다.
+이 객체는 *이번 달의 히어로* 예제를 설명하면서 다룬 *title* 값 프로바이더와 *runnersUp* 팩토리 프로바이더에 이미 사용되었습니다.
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="provide-injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 You created the `TITLE` token like this:
+-->
+`TITLE` 토큰은 다음과 같이 정의합니다:
 
 <code-example path="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" region="injection-token" header="dependency-injection-in-action/src/app/hero-of-the-month.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
 The token description is another developer aid.
-
+-->
+제네닉에 사용된 타입 정보는 생략할 수 있습니다. 이 타입은 단순하게 개발자와 IDE에 좀 더 많은 정보를 제공하기 위해 사용되었습니다.
+생성자 인자로 사용한 토큰 설명도 마찬가지입니다.
 
 {@a di-inheritance}
 
