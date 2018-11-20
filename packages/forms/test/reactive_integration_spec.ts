@@ -713,7 +713,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
     });
 
-    fixmeIvy('Host bindings to styles do not yet work') &&
+    fixmeIvy('FW-593: Host bindings to styles and classes do not yet work') &&
         describe('setting status classes', () => {
           it('should work with single fields', () => {
             const fixture = initTest(FormControlComp);

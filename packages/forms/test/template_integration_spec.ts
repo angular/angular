@@ -149,7 +149,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(form.value).toEqual({});
          }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
+      fixmeIvy('FW-593: host bindings to styles and classes do not yet work') &&
           it('should set status classes with ngModel', async(() => {
                const fixture = initTest(NgModelForm);
                fixture.componentInstance.name = 'aa';
@@ -176,7 +176,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                });
              }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
+      fixmeIvy('FW-593: host bindings to styles and classes do not yet work') &&
           it('should set status classes with ngModel and async validators', fakeAsync(() => {
 
                const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
@@ -204,7 +204,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                });
              }));
 
-      fixmeIvy('host bindings do not yet work with classes or styles') &&
+      fixmeIvy('FW-593: host bindings to styles and classes do not yet work') &&
           it('should set status classes with ngModelGroup and ngForm', async(() => {
                const fixture = initTest(NgModelGroupForm);
                fixture.componentInstance.first = '';
