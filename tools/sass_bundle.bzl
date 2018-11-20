@@ -1,4 +1,4 @@
-load("@io_bazel_rules_sass//sass:sass.bzl", "SassInfo")
+load("@io_bazel_rules_sass//:defs.bzl", "SassInfo")
 
 # Implementation of sass_bundle that performs an action
 def _sass_bundle(ctx):

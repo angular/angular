@@ -38,10 +38,8 @@ http_archive(
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
-  # Explicitly depend on SHA c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe because this one includes
-  # the major API overhaul and fix for the NodeJS source map warnings.
-  url = "https://github.com/bazelbuild/rules_sass/archive/c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe.zip",
-  strip_prefix = "rules_sass-c93cadb20753f4e4d4eabe83f8ea882bfb8f2efe",
+  url = "https://github.com/bazelbuild/rules_sass/archive/1.15.1.zip",
+  strip_prefix = "rules_sass-1.15.1",
 )
 
 # Since we are explitly fetching @build_bazel_rules_typescript, we should explicitly ask for
