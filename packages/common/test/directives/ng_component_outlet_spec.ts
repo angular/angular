@@ -91,7 +91,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('bar');
      }));
 
-  fixmeIvy('ComponentFactoryResolver not resolved with supplied injector') &&
+  fixmeIvy('FW-642: ASSERTION ERROR: Slot should have been initialized to NO_CHANGE') &&
       it('should use the injector, if one supplied', async(() => {
            let fixture = TestBed.createComponent(TestComponent);
 
@@ -144,7 +144,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('projected foo');
      }));
 
-  fixmeIvy('Runtime compiler is not loaded') &&
+  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
       it('should resolve components from other modules, if supplied', async(() => {
            const compiler = TestBed.get(Compiler) as Compiler;
            let fixture = TestBed.createComponent(TestComponent);
@@ -159,7 +159,7 @@ describe('insert/remove', () => {
            expect(fixture.nativeElement).toHaveText('baz');
          }));
 
-  fixmeIvy('Runtime compiler is not loaded') &&
+  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
       it('should clean up moduleRef, if supplied', async(() => {
            let destroyed = false;
            const compiler = TestBed.get(Compiler) as Compiler;
@@ -176,7 +176,7 @@ describe('insert/remove', () => {
            expect(moduleRef.destroy).toHaveBeenCalled();
          }));
 
-  fixmeIvy('Runtime compiler is not loaded') &&
+  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
       it('should not re-create moduleRef when it didn\'t actually change', async(() => {
            const compiler = TestBed.get(Compiler) as Compiler;
            const fixture = TestBed.createComponent(TestComponent);
@@ -194,7 +194,7 @@ describe('insert/remove', () => {
            expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
          }));
 
-  fixmeIvy('Runtime compiler is not loaded') &&
+  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
       it('should re-create moduleRef when changed', async(() => {
            const compiler = TestBed.get(Compiler) as Compiler;
            const fixture = TestBed.createComponent(TestComponent);
