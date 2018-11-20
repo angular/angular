@@ -129,9 +129,6 @@ export class ComponentDecoratorHandler implements
         new WrappedNodeExpr(component.get('viewProviders') !) :
         null;
 
-    const i18nUseExternalIds: boolean =
-        typeof this.i18nUseExternalIds === 'boolean' ? this.i18nUseExternalIds : true;
-
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
     const filePath = node.getSourceFile().fileName;
@@ -146,7 +143,7 @@ export class ComponentDecoratorHandler implements
 
     const template = parseTemplate(
         templateStr, `${node.getSourceFile().fileName}#${node.name!.text}/template.html`,
-        {preserveWhitespaces, i18nUseExternalIds}, relativeFilePath);
+        {preserveWhitespaces, i18nUseExternalIds: this.i18nUseExternalIds}, relativeFilePath);
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);

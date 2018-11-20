@@ -1394,7 +1394,7 @@ function interpolate(args: o.Expression[]): o.Expression {
  */
 export function parseTemplate(
     template: string, templateUrl: string,
-    options: {i18nUseExternalIds: boolean, preserveWhitespaces?: boolean},
+    options: {i18nUseExternalIds?: boolean, preserveWhitespaces?: boolean},
     relativeContextFilePath: string): {
   errors?: ParseError[],
   nodes: t.Node[],
@@ -1406,7 +1406,8 @@ export function parseTemplate(
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, true);
-  const {i18nUseExternalIds, preserveWhitespaces} = options;
+  const i18nUseExternalIds: boolean =
+      typeof options.i18nUseExternalIds === 'boolean' ? options.i18nUseExternalIds : true;
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {
@@ -1423,10 +1424,10 @@ export function parseTemplate(
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
-  const i18nConfig = {keepI18nAttrs: !preserveWhitespaces};
+  const i18nConfig = {keepI18nAttrs: !options.preserveWhitespaces};
   rootNodes = html.visitAll(new I18nMetaVisitor(i18nConfig), rootNodes);
 
-  if (!preserveWhitespaces) {
+  if (!options.preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
 
     // run i18n meta visitor again in case we remove whitespaces, because
