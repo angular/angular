@@ -12,6 +12,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
         "@rxjs",
@@ -23,9 +24,6 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    tags = [
-        "fixme-ivy-aot",
-    ],
     deps = [
         ":test_lib",
         "//tools/testing:node",
@@ -34,9 +32,6 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "test_web",
-    tags = [
-        "fixme-ivy-aot",
-    ],
     deps = [
         ":test_lib",
     ],

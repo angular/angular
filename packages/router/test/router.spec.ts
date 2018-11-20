@@ -8,6 +8,7 @@
 
 import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 import {of } from 'rxjs';
 
 import {Routes} from '../src/config';
@@ -20,7 +21,6 @@ import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {getAllRouteGuards} from '../src/utils/preactivation';
 import {TreeNode} from '../src/utils/tree';
-import {RouterTestingModule} from '../testing/src/router_testing_module';
 
 import {Logger, createActivatedRouteSnapshot, provideTokenLogger} from './helpers';
 

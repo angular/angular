@@ -8,6 +8,7 @@
 
 
 import {TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 import {Observable, Observer, of } from 'rxjs';
 import {every, mergeMap} from 'rxjs/operators';
 import {TestScheduler} from 'rxjs/testing';
@@ -15,7 +16,6 @@ import {TestScheduler} from 'rxjs/testing';
 import {prioritizedGuardValue} from '../../src/operators/prioritized_guard_value';
 import {Router} from '../../src/router';
 import {UrlTree} from '../../src/url_tree';
-import {RouterTestingModule} from '../../testing/src/router_testing_module';
 
 
 describe('prioritizedGuardValue operator', () => {
