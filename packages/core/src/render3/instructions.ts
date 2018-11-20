@@ -1076,7 +1076,7 @@ function generatePropertyAliases(
  * This instruction is meant to handle the [class.foo]="exp" case
  *
  * @param index The index of the element to update in the data array
- * @param classIndex Name of class to toggle. Because it is going to DOM, this is not subject to
+ * @param classIndex Index of class to toggle. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
  * @param directiveIndex the index for the directive that is attempting to change styling.
@@ -1258,7 +1258,7 @@ export function elementStyleProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directiveIndex?: number): void {
-  if (directiveIndex !== undefined)
+  if (directiveIndex != undefined)
     return hackImplementationOfElementStylingMap(
         index, classes, styles, directiveIndex);  // supported in next PR
   const viewData = getViewData();
@@ -1276,7 +1276,7 @@ export function elementStylingMap<T>(
 /* START OF HACK BLOCK */
 /*
  * HACK
- * The code bellow is a quick and dirty implementation of the host style binding so that we can make
+ * The code below is a quick and dirty implementation of the host style binding so that we can make
  * progress on TestBed. Once the correct implementation is created this code should be removed.
  */
 interface HostStylingHack {
@@ -1292,7 +1292,7 @@ function hackImplementationOfElementStyling(
     classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer: StyleSanitizeFn | null, directiveIndex: number): void {
-  const node = readElementValue(getViewData()[getPreviousOrParentTNode().index]);
+  const node = getNativeByIndex(getPreviousOrParentTNode().index, getViewData());
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
   const hostStylingHackMap: HostStylingHackMap =
       ((node as any).hostStylingHack || ((node as any).hostStylingHack = {}));
@@ -1311,7 +1311,7 @@ function hackSquashDeclaration(declarations: (string | boolean | InitialStylingF
 function hackImplementationOfElementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory,
     directiveIndex: number): void {
-  const node = readElementValue(getViewData()[index + HEADER_OFFSET]);
+  const node = getNativeByIndex(index, getViewData());
   ngDevMode && assertDefined(node, 'could not locate node');
   const hostStylingHack: HostStylingHack = (node as any).hostStylingHack[directiveIndex];
   const className = hostStylingHack.classDeclarations[classIndex];
