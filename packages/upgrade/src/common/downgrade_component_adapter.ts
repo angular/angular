@@ -81,7 +81,7 @@ export class DowngradeComponentAdapter {
     hookupNgModel(this.ngModel, this.component);
   }
 
-  setupInputs(needsNgZone: boolean, propagateDigest = true): void {
+  setupInputs(manuallyAttachView: boolean, propagateDigest = true): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
@@ -159,7 +159,7 @@ export class DowngradeComponentAdapter {
 
     // If necessary, attach the view so that it will be dirty-checked.
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
-    if (needsNgZone || !propagateDigest) {
+    if (manuallyAttachView || !propagateDigest) {
       let unwatch: Function|null = this.componentScope.$watch(() => {
         unwatch !();
         unwatch = null;

@@ -139,7 +139,6 @@ export function downgradeModule<T>(
             ($injector: angular.IInjectorService) => {
               setTempInjectorRef($injector);
               const result: LazyModuleRef = {
-                needsNgZone: true,
                 promise: bootstrapFn(angular1Providers).then(ref => {
                   injector = result.injector = new NgAdapterInjector(ref.injector);
                   injector.get($INJECTOR);
