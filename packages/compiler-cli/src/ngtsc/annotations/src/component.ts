@@ -39,7 +39,7 @@ export class ComponentDecoratorHandler implements
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
-      private defaultPreserveWhitespaces?: boolean) {}
+      private defaultPreserveWhitespaces: boolean = false) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -112,9 +112,7 @@ export class ComponentDecoratorHandler implements
           ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
     }
 
-    let preserveWhitespaces: boolean = typeof this.defaultPreserveWhitespaces === 'boolean' ?
-        this.defaultPreserveWhitespaces :
-        false;
+    let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces') !;
       const value = staticallyResolve(expr, this.reflector, this.checker);
