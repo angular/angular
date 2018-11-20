@@ -321,13 +321,17 @@ Within Angular, use [NgModules](guide/glossary#ngmodule) to make public parts av
 
 ## form control
 
-A fundamental building block for Angular forms. The `FormControl`, together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input [element](guide/glossary#element).
+A instance of `FormControl`, which is a fundamental building block for Angular forms. Together with `FormGroup` and `FormArray`, tracks the value, validation, and status of a form input element.
+
+Read more forms in the [Introduction to forms in Angular](guide/forms-overview).
 
 {@a form-model}
 
 ## form model
 
-The "source of truth" for the value and validation status of a form input element at a given point in time. With [reactive forms](guide/glossary#reactive-forms), the form model is created explicitly in the component class. With [template-driven forms](guide/glossary#template-driven-forms), the form model is implicitly created by directives.
+The "source of truth" for the value and validation status of a form input element at a given point in time. When using [reactive forms](guide/glossary#reactive-forms), the form model is created explicitly in the component class. When using [template-driven forms](guide/glossary#template-driven-forms), the form model is implicitly created by directives.
+
+Learn more about reactive and template-driven forms in the [Introduction to forms in Angular](guide/forms-overview).
 
 {@a form-validation}
 
@@ -335,6 +339,8 @@ The "source of truth" for the value and validation status of a form input elemen
 
 A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation#adding-to-template-driven-forms).
 
+
+To learn more, see [Form Validation](guide/form-validation).
 
 {@a G}
 
@@ -601,7 +607,7 @@ Learn more in [Dependency Injection](guide/dependency-injection).
 A framework for building Angular forms through code in a component.
 The alternative is a [template-driven form](guide/glossary#template-driven-forms).
 
-When building reactive forms:
+When using reactive forms:
 
 * The "source of truth", the form model, is defined in the component class.
 * Validation is set up through validation functions rather than valdation directives.
@@ -609,7 +615,7 @@ When building reactive forms:
 * The template input elements do *not* use `ngModel`.
 * The associated Angular directives are prefixed with `form`, such as `formControl`, `formGroup`, and `formControlName`.
 
-Reactive forms are powerful, flexible, and more scalable for complex data-entry form scenarios, such as dynamic generation of form controls.
+The alternative is a template-driven form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
 
 {@a router}
 {@a router-module}
