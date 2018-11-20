@@ -231,11 +231,11 @@ export function compileComponentFromMetadata(
   // Generate the CSS matcher that recognize directive
   let directiveMatcher: SelectorMatcher|null = null;
 
-  if (meta.directives.size) {
+  if (meta.directives.length > 0) {
     const matcher = new SelectorMatcher();
-    meta.directives.forEach((expression, selector: string) => {
+    for (const {selector, expression} of meta.directives) {
       matcher.addSelectables(CssSelector.parse(selector), expression);
-    });
+    }
     directiveMatcher = matcher;
   }
 
@@ -375,7 +375,7 @@ export function compileComponentFromRender2(
       ngContentSelectors: render3Ast.ngContentSelectors,
       relativeContextFilePath: '',
     },
-    directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
+    directives: [],
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
     wrapDirectivesAndPipesInClosure: false,

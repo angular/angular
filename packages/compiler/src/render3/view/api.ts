@@ -153,10 +153,10 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
   pipes: Map<string, o.Expression>;
 
   /**
-   * A map of directive selectors to an expression referencing the directive type which are in the
+   * A list of directive selectors and an expression referencing the directive type which are in the
    * scope of the compilation.
    */
-  directives: Map<string, o.Expression>;
+  directives: {selector: string, expression: o.Expression}[];
 
   /**
    * Whether to wrap the 'directives' and/or `pipes` array, if one is generated, in a closure.
