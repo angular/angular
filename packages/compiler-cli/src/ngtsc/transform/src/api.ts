@@ -42,7 +42,7 @@ export interface DecoratorHandler<A, M> {
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
    * isn't valid.
    */
-  analyze(node: ts.Declaration, metadata: M, options?: ts.CompilerOptions): AnalysisOutput<A>;
+  analyze(node: ts.Declaration, metadata: M): AnalysisOutput<A>;
 
   typeCheck?(ctx: TypeCheckContext, node: ts.Declaration, metadata: A): void;
 

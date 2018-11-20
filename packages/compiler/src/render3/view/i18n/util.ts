@@ -215,7 +215,7 @@ export function formatI18nPlaceholderName(name: string): string {
 /**
  * Generates a prefix for translation const name.
  *
- * @param extra Addiitonal local prefix that should be injected into translation var name
+ * @param extra Additional local prefix that should be injected into translation var name
  * @returns Complete translation const prefix
  */
 export function getTranslationConstPrefix(extra: string): string {

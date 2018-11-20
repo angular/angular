@@ -126,7 +126,7 @@ export class NgtscProgram implements api.Program {
     }
     await Promise.all(this.tsProgram.getSourceFiles()
                           .filter(file => !file.fileName.endsWith('.d.ts'))
-                          .map(file => this.compilation !.analyzeAsync(file, this.options))
+                          .map(file => this.compilation !.analyzeAsync(file))
                           .filter((result): result is Promise<void> => result !== undefined));
   }
 
@@ -149,7 +149,7 @@ export class NgtscProgram implements api.Program {
       this.compilation = this.makeCompilation();
       this.tsProgram.getSourceFiles()
           .filter(file => !file.fileName.endsWith('.d.ts'))
-          .forEach(file => this.compilation !.analyzeSync(file, this.options));
+          .forEach(file => this.compilation !.analyzeSync(file));
     }
     return this.compilation;
   }
@@ -220,7 +220,7 @@ export class NgtscProgram implements api.Program {
       new BaseDefDecoratorHandler(checker, this.reflector),
       new ComponentDecoratorHandler(
           checker, this.reflector, scopeRegistry, this.isCore, this.resourceLoader, this.rootDirs,
-          this.options.preserveWhitespaces || false),
+          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds),
       new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),

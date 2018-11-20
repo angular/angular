@@ -125,6 +125,7 @@ export interface R3DirectiveMetadataFacade {
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   template: string;
   preserveWhitespaces: boolean;
+  i18nUseExternalIds: boolean;
   animations: any[]|undefined;
   viewQueries: R3QueryMetadataFacade[];
   pipes: Map<string, any>;

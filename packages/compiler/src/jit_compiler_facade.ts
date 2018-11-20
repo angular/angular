@@ -107,6 +107,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const template = parseTemplate(
         facade.template, sourceMapUrl, {
           preserveWhitespaces: facade.preserveWhitespaces || false,
+          i18nUseExternalIds: facade.i18nUseExternalIds || true,
         },
         '');
     if (template.errors !== undefined) {
@@ -140,7 +141,9 @@ export class CompilerFacadeImpl implements CompilerFacade {
 // This seems to be needed to placate TS v3.0 only
 type R3ComponentMetadataFacadeNoPropAndWhitespace = Pick<
     R3ComponentMetadataFacade,
-    Exclude<Exclude<keyof R3ComponentMetadataFacade, 'preserveWhitespaces'>, 'propMetadata'>>;
+    Exclude<
+        Exclude<Exclude<keyof R3ComponentMetadataFacade, 'preserveWhitespaces'>, 'propMetadata'>,
+        'i18nUseExternalIds'>>;
 
 const USE_CLASS = Object.keys({useClass: null})[0];
 const USE_FACTORY = Object.keys({useFactory: null})[0];
