@@ -86,8 +86,9 @@ export function downgradeComponent(info: {
     //   NOTE: This is not needed, when using `UpgradeModule`, because `$digest()` will be run
     //         inside the Angular zone (except if explicitly escaped, in which case we shouldn't
     //         force it back in).
-    let isNgUpgradeLite = false;
-    let wrapCallback = <T>(cb: () => T) => cb;
+    const isNgUpgradeLite = getUpgradeAppType($injector) === UpgradeAppType.Lite;
+    const wrapCallback: <T>(cb: () => T) => typeof cb =
+        !isNgUpgradeLite ? cb => cb : cb => () => NgZone.isInAngularZone() ? cb() : ngZone.run(cb);
     let ngZone: NgZone;
 
     return {
@@ -112,7 +113,6 @@ export function downgradeComponent(info: {
           validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          isNgUpgradeLite = getUpgradeAppType($injector) === UpgradeAppType.Lite;
           parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
         }
 
@@ -149,8 +149,6 @@ export function downgradeComponent(info: {
         const downgradeFn = !isNgUpgradeLite ? doDowngrade : (injector: Injector) => {
           if (!ngZone) {
             ngZone = injector.get(NgZone);
-            wrapCallback = <T>(cb: () => T) => () =>
-                NgZone.isInAngularZone() ? cb() : ngZone.run(cb);
           }
 
           wrapCallback(() => doDowngrade(injector))();
