@@ -243,19 +243,6 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
   return null;
 }
 
-/**
- * Attempts to find the directive or provider of a given type on the given node and returns the
- * index, or null if not found.
- *
- * @param tNode TNode on which directives are present.
- * @param currentView The view we are currently processing
- * @param type Type of a directive to look for.
- * @returns Index of a found directive or null when none found.
- */
-function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: Type<any>): number|
-    null {
-  return locateDirectiveOrProvider(tNode, currentView, type, false);
-}
 
 // TODO: "read" should be an AbstractType (FW-486)
 function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any {
@@ -263,7 +250,7 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any 
   if (typeof factoryFn === 'function') {
     return factoryFn();
   } else {
-    const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
+    const matchingIdx = locateDirectiveOrProvider(tNode, currentView, read as Type<any>, false);
     if (matchingIdx !== null) {
       return getNodeInjectable(
           currentView[TVIEW].data, currentView, matchingIdx, tNode as TElementNode);
@@ -317,7 +304,7 @@ function add(
       if (type === ViewEngine_TemplateRef) {
         result = queryByTemplateRef(type, tNode, currentView, predicate.read);
       } else {
-        const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, type);
+        const matchingIdx = locateDirectiveOrProvider(tNode, currentView, type, false);
         if (matchingIdx !== null) {
           result = queryRead(tNode, currentView, predicate.read, matchingIdx);
         }
