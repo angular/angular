@@ -128,7 +128,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   animations: any[]|undefined;
   viewQueries: R3QueryMetadataFacade[];
   pipes: Map<string, any>;
-  directives: Map<string, any>;
+  directives: {selector: string, expression: any}[];
   styles: string[];
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;

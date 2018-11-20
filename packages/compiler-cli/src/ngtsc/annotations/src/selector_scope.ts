@@ -31,7 +31,7 @@ export interface ModuleData {
  * context of some module.
  */
 export interface CompilationScope<T> {
-  directives: Map<string, ScopeDirective<T>>;
+  directives: {selector: string, meta: ScopeDirective<T>}[];
   pipes: Map<string, T>;
   containsForwardDecls?: boolean;
 }
@@ -153,7 +153,7 @@ export class SelectorScopeRegistry {
     }
 
     // This is the first time the scope for this module is being computed.
-    const directives = new Map<string, ScopeDirective<Reference<ts.Declaration>>>();
+    const directives: {selector: string, meta: ScopeDirective<Reference<ts.Declaration>>}[] = [];
     const pipes = new Map<string, Reference>();
 
     // Process the declaration scope of the module, and lookup the selector of every declared type.
@@ -166,7 +166,7 @@ export class SelectorScopeRegistry {
       const metadata = this.lookupDirectiveMetadata(ref);
       // Only directives/components with selectors get added to the scope.
       if (metadata != null) {
-        directives.set(metadata.selector, {...metadata, directive: ref});
+        directives.push({selector: metadata.selector, meta: {...metadata, directive: ref}});
         return;
       }
 
@@ -418,18 +418,16 @@ function absoluteModuleName(ref: Reference): string|null {
   return ref.moduleName;
 }
 
-function convertDirectiveReferenceMap(
-    map: Map<string, ScopeDirective<Reference>>,
-    context: ts.SourceFile): Map<string, ScopeDirective<Expression>> {
-  const newMap = new Map<string, ScopeDirective<Expression>>();
-  map.forEach((meta, selector) => {
+function convertDirectiveReferenceList(
+    input: {selector: string, meta: ScopeDirective<Reference>}[],
+    context: ts.SourceFile): {selector: string, meta: ScopeDirective<Expression>}[] {
+  return input.map(({selector, meta}) => {
     const directive = meta.directive.toExpression(context);
     if (directive === null) {
       throw new Error(`Could not write expression to reference ${meta.directive.node}`);
     }
-    newMap.set(selector, {...meta, directive});
+    return {selector, meta: {...meta, directive}};
   });
-  return newMap;
 }
 
 function convertPipeReferenceMap(
@@ -448,13 +446,13 @@ function convertPipeReferenceMap(
 function convertScopeToExpressions(
     scope: CompilationScope<Reference>, context: ts.Declaration): CompilationScope<Expression> {
   const sourceContext = ts.getOriginalNode(context).getSourceFile();
-  const directives = convertDirectiveReferenceMap(scope.directives, sourceContext);
+  const directives = convertDirectiveReferenceList(scope.directives, sourceContext);
   const pipes = convertPipeReferenceMap(scope.pipes, sourceContext);
   const declPointer = maybeUnwrapNameOfDeclaration(context);
   let containsForwardDecls = false;
-  directives.forEach(expr => {
+  directives.forEach(({selector, meta}) => {
     containsForwardDecls = containsForwardDecls ||
-        isExpressionForwardReference(expr.directive, declPointer, sourceContext);
+        isExpressionForwardReference(meta.directive, declPointer, sourceContext);
   });
   !containsForwardDecls && pipes.forEach(expr => {
     containsForwardDecls =
