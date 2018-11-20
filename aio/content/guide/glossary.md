@@ -730,16 +730,14 @@ Additional templates, represented by `TemplateRef` objects, can define alternati
 A format for building Angular forms using HTML forms and input elements in the view.
 The alternative format uses the [reactive forms](guide/glossary#reactive-forms) framework.
 
-When building template-driven forms:
+When using template-driven forms:
 
 * The "source of truth" is the template. The validation is defined using attributes on the individual input elements.
 * [Two-way binding](guide/glossary#data-binding) with `ngModel` keeps the component model synchronized with the user's entry into the input elements.
 * Behind the scenes, Angular creates a new control for each input element, provided you have set up a `name` attribute and two-way binding for each input.
 * The associated Angular directives are prefixed with `ng` such as `ngForm`, `ngModel`, and `ngModelGroup`.
 
-Template-driven forms are convenient, quick, and simple. They are a good choice for many basic data-entry form scenarios.
-
-Read about how to build template-driven forms in [Forms](guide/forms).
+The alternative is a reactive form. For an introduction and comparison of both forms approaches, see [Introduction to Angular Forms](guide/forms-overview).
 
 {@a template-expression}
 
