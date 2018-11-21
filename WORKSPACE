@@ -16,20 +16,17 @@ load(
 #    path = "../rules_typescript",
 #)
 
+# Custom commit providing a rollup_bundle rule which supports 'es2015' entry points
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    url = "https://github.com/gregmagolan/rules_nodejs/archive/a43f80140f89cdb1e332a7775edda1e73ad529f2.zip",
+    strip_prefix = "rules_nodejs-a43f80140f89cdb1e332a7775edda1e73ad529f2",
+)
+
 # Angular Bazel users will call this function
 rules_angular_dependencies()
 # These are the dependencies only for us
 rules_angular_dev_dependencies()
-
-#
-# Point Bazel to WORKSPACEs that live in subdirectories
-#
-http_archive(
-    name = "rxjs",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
-    strip_prefix = "package/src",
-    sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
-)
 
 # Point to the integration test workspace just so that Bazel doesn't descend into it
 # when expanding the //... pattern
@@ -56,10 +53,9 @@ node_repositories(
     yarn_version = "1.12.1",
 )
 
-yarn_install(
-    name = "npm",
-    package_json = "//tools:npm/package.json",
-    yarn_lock = "//tools:npm/yarn.lock",
+local_repository(
+  name = "npm",
+  path = "tools/npm_workspace",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")

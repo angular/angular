@@ -5,7 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "reflect-metadata": "0.1.12",
-    "rxjs": "6.3.3",
+    "rxjs": "gregmagolan/rxjs#rxjs-dist-named-umd",
     "tslib": "1.9.3",
     "zone.js": "0.8.26"
   },

@@ -13,6 +13,6 @@ ivy_ng_module(
     module_name = "app_built",
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

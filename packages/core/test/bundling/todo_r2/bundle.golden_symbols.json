@@ -33,9 +33,6 @@
     "name": "AT_CHARCODE"
   },
   {
-    "name": "AnonymousSubject"
-  },
-  {
     "name": "ApplicationInitStatus"
   },
   {
@@ -159,9 +156,6 @@
     "name": "ComponentRef$1"
   },
   {
-    "name": "ConnectableSubscriber"
-  },
-  {
     "name": "Console"
   },
   {
@@ -282,9 +276,6 @@
     "name": "ElementRef"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "EmulatedEncapsulationDomRenderer2"
   },
   {
@@ -366,6 +357,9 @@
     "name": "ISO8601_DATE_REGEX"
   },
   {
+    "name": "Immediate"
+  },
+  {
     "name": "InertBodyHelper"
   },
   {
@@ -376,9 +370,6 @@
   },
   {
     "name": "Injector"
-  },
-  {
-    "name": "InnerSubscriber"
   },
   {
     "name": "IterableChangeRecord_"
@@ -430,21 +421,6 @@
   },
   {
     "name": "MULTI_PROVIDER_FN"
-  },
-  {
-    "name": "MapOperator"
-  },
-  {
-    "name": "MapSubscriber"
-  },
-  {
-    "name": "MergeMapOperator"
-  },
-  {
-    "name": "MergeMapSubscriber"
-  },
-  {
-    "name": "MulticastOperator"
   },
   {
     "name": "NAMED_FORMATS"
@@ -630,16 +606,10 @@
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
-    "name": "Observable"
-  },
-  {
     "name": "ObservableStrategy"
   },
   {
     "name": "Optional"
-  },
-  {
-    "name": "OuterSubscriber"
   },
   {
     "name": "PARAMETERS"
@@ -703,12 +673,6 @@
   },
   {
     "name": "RecordViewTuple"
-  },
-  {
-    "name": "RefCountOperator"
-  },
-  {
-    "name": "RefCountSubscriber"
   },
   {
     "name": "Renderer2"
@@ -780,9 +744,6 @@
     "name": "SafeStyleImpl"
   },
   {
-    "name": "SafeSubscriber"
-  },
-  {
     "name": "SafeUrlImpl"
   },
   {
@@ -817,21 +778,6 @@
   },
   {
     "name": "StaticInjector"
-  },
-  {
-    "name": "Subject"
-  },
-  {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
   },
   {
     "name": "SwitchView"
@@ -985,33 +931,6 @@
   },
   {
     "name": "__extends"
-  },
-  {
-    "name": "__extends$1"
-  },
-  {
-    "name": "__extends$2"
-  },
-  {
-    "name": "__extends$3"
-  },
-  {
-    "name": "__extends$4"
-  },
-  {
-    "name": "__extends$5"
-  },
-  {
-    "name": "__extends$l"
-  },
-  {
-    "name": "__extends$m"
-  },
-  {
-    "name": "__extends$n"
-  },
-  {
-    "name": "__extends$p"
   },
   {
     "name": "__forward_ref__"
@@ -2262,6 +2181,9 @@
     "name": "nextContextImpl"
   },
   {
+    "name": "nextHandle"
+  },
+  {
     "name": "nextNgElementId"
   },
   {
@@ -2445,6 +2367,9 @@
     "name": "roundNumber"
   },
   {
+    "name": "runIfPresent"
+  },
+  {
     "name": "rxSubscriber"
   },
   {
@@ -2614,6 +2539,9 @@
   },
   {
     "name": "tagSet"
+  },
+  {
+    "name": "tasksByHandle"
   },
   {
     "name": "template"

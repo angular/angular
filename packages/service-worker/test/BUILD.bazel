@@ -12,8 +12,7 @@ ts_library(
         "//packages/service-worker/testing",
         "//packages/service-worker/worker",
         "//packages/service-worker/worker/testing",
-        "@rxjs",
-        "@rxjs//operators",
+        "@ngdeps//rxjs",
     ],
 )
 
@@ -32,5 +31,6 @@ ts_web_test_suite(
     tags = ["fixme-ivy-aot"],
     deps = [
         ":test_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )

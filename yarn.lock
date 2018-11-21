@@ -7252,10 +7252,16 @@ rollup@0.47.4:
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.47.4.tgz#e3a55de83a78221d232ce29619a8d68189ae845e"
   integrity sha512-inBVqr6CRcR+DaWQZncoUK6FGCpjf3ZymXLFW7rbwVM3+kJQ2tFY2nUdnkhbBczDY+Z06pFa7Vxwk5mKPc7IvQ==
 
-rxjs@6.3.3, rxjs@^6.3.0:
+rxjs@6.3.3:
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz#3c6a7fa420e844a81390fb1158a9ec614f4bad55"
   integrity sha512-JTWmoY9tWCs7zvIk/CvRjhjGaOd+OVBM987mxFo+OW66cGpdKjZcpmc74ES1sB//7Kl/PAe8+wEakuhG4pcgOw==
+  dependencies:
+    tslib "^1.9.0"
+
+rxjs@gregmagolan/rxjs#rxjs-dist-named-umd:
+  version "6.3.3"
+  resolved "https://codeload.github.com/gregmagolan/rxjs/tar.gz/ca9ce77b4b2e023109b9c0d1609f61094c8d0ab8"
   dependencies:
     tslib "^1.9.0"
 

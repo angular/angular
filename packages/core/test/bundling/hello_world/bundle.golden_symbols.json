@@ -30,9 +30,6 @@
     "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "FLAGS"
   },
   {
@@ -52,6 +49,9 @@
   },
   {
     "name": "INJECTOR_SIZE"
+  },
+  {
+    "name": "Immediate"
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
@@ -90,6 +90,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
@@ -120,6 +123,9 @@
     "name": "TVIEW"
   },
   {
+    "name": "UnsubscriptionError"
+  },
+  {
     "name": "UnsubscriptionErrorImpl"
   },
   {
@@ -133,6 +139,9 @@
   },
   {
     "name": "__window"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
     "name": "_global"
@@ -165,10 +174,16 @@
     "name": "canInsertNativeNode"
   },
   {
+    "name": "canReportError"
+  },
+  {
     "name": "checkNoChangesMode"
   },
   {
     "name": "componentRefresh"
+  },
+  {
+    "name": "config"
   },
   {
     "name": "createLViewData"
@@ -216,7 +231,13 @@
     "name": "domRendererFactory3"
   },
   {
+    "name": "empty"
+  },
+  {
     "name": "enterView"
+  },
+  {
+    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -232,6 +253,9 @@
   },
   {
     "name": "firstTemplatePass"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
   },
   {
     "name": "generateExpandoInstructionBlock"
@@ -318,6 +342,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getPromiseCtor"
+  },
+  {
     "name": "getRenderFlags"
   },
   {
@@ -336,6 +363,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getSymbolIterator$1"
+  },
+  {
     "name": "getTView"
   },
   {
@@ -343,6 +373,9 @@
   },
   {
     "name": "hasParentInjector"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "includeViewProviders"
@@ -360,10 +393,19 @@
     "name": "invertObject"
   },
   {
+    "name": "isArray"
+  },
+  {
     "name": "isComponentDef"
   },
   {
     "name": "isFactory"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isObject"
   },
   {
     "name": "isProceduralRenderer"
@@ -387,6 +429,9 @@
     "name": "nativeParentNode"
   },
   {
+    "name": "nextHandle"
+  },
+  {
     "name": "nextNgElementId"
   },
   {
@@ -396,7 +441,16 @@
     "name": "noop"
   },
   {
+    "name": "noop$1"
+  },
+  {
+    "name": "observable"
+  },
+  {
     "name": "onChangesWrapper"
+  },
+  {
+    "name": "pipeFromArray"
   },
   {
     "name": "postProcessBaseDirective"
@@ -444,6 +498,12 @@
     "name": "resetComponentState"
   },
   {
+    "name": "runIfPresent"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
     "name": "setBindingRoot"
   },
   {
@@ -480,10 +540,22 @@
     "name": "syncViewWithBlueprint"
   },
   {
+    "name": "tasksByHandle"
+  },
+  {
     "name": "text"
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
   },
   {
     "name": "updateViewQuery"

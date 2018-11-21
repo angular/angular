@@ -14,6 +14,7 @@ ng_module(
         "@angular//packages/core",
         "@angular//packages/platform-browser",
         "@npm//@types",
+        "@npm//rxjs",
     ],
 )
 
@@ -22,14 +23,20 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 ts_devserver(
     name = "devserver",
     additional_root_paths = [
+        "npm/node_modules/rxjs/bundles",
         "npm/node_modules/tslib",
         "npm/node_modules/zone.js/dist",
     ],
     entry_module = "bazel_integration_test/src/main",
+    scripts = [
+        ":require.config.js",
+    ],
     serving_path = "/bundle.min.js",
     static_files = [
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
         "@npm//node_modules/tslib:tslib.js",
         "@npm//node_modules/zone.js:dist/zone.min.js",
+        ":rxjs_operators_shim.js",
         "index.html",
     ],
     deps = ["//src"],
@@ -40,7 +47,10 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main",
-    deps = ["//src"],
+    deps = [
+        "//src",
+        "@npm//rxjs",
+    ],
 )
 
 # Needed because the prodserver only loads static files that appear under this

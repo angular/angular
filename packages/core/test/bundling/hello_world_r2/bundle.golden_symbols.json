@@ -15,9 +15,6 @@
     "name": "APP_ROOT"
   },
   {
-    "name": "AnonymousSubject"
-  },
-  {
     "name": "ApplicationInitStatus"
   },
   {
@@ -84,9 +81,6 @@
     "name": "ComponentRef$1"
   },
   {
-    "name": "ConnectableSubscriber"
-  },
-  {
     "name": "Console"
   },
   {
@@ -132,9 +126,6 @@
     "name": "ElementRef"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "ErrorHandler"
   },
   {
@@ -174,6 +165,9 @@
     "name": "INJECTOR_SIZE"
   },
   {
+    "name": "Immediate"
+  },
+  {
     "name": "Inject"
   },
   {
@@ -183,9 +177,6 @@
     "name": "Injector"
   },
   {
-    "name": "InnerSubscriber"
-  },
-  {
     "name": "LifecycleHooksFeature"
   },
   {
@@ -193,21 +184,6 @@
   },
   {
     "name": "MULTI_PROVIDER_FN"
-  },
-  {
-    "name": "MapOperator"
-  },
-  {
-    "name": "MapSubscriber"
-  },
-  {
-    "name": "MergeMapOperator"
-  },
-  {
-    "name": "MergeMapSubscriber"
-  },
-  {
-    "name": "MulticastOperator"
   },
   {
     "name": "NATIVE"
@@ -309,13 +285,7 @@
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
-    "name": "Observable"
-  },
-  {
     "name": "Optional"
-  },
-  {
-    "name": "OuterSubscriber"
   },
   {
     "name": "PARAMETERS"
@@ -360,12 +330,6 @@
     "name": "ROOT_CONTEXT"
   },
   {
-    "name": "RefCountOperator"
-  },
-  {
-    "name": "RefCountSubscriber"
-  },
-  {
     "name": "RendererFactory2"
   },
   {
@@ -387,9 +351,6 @@
     "name": "SWITCH_INJECTOR_FACTORY"
   },
   {
-    "name": "SafeSubscriber"
-  },
-  {
     "name": "Self"
   },
   {
@@ -400,21 +361,6 @@
   },
   {
     "name": "StaticInjector"
-  },
-  {
-    "name": "Subject"
-  },
-  {
-    "name": "SubjectSubscriber"
-  },
-  {
-    "name": "SubjectSubscription"
-  },
-  {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -472,33 +418,6 @@
   },
   {
     "name": "__extends"
-  },
-  {
-    "name": "__extends$1"
-  },
-  {
-    "name": "__extends$2"
-  },
-  {
-    "name": "__extends$3"
-  },
-  {
-    "name": "__extends$4"
-  },
-  {
-    "name": "__extends$5"
-  },
-  {
-    "name": "__extends$l"
-  },
-  {
-    "name": "__extends$m"
-  },
-  {
-    "name": "__extends$n"
-  },
-  {
-    "name": "__extends$p"
   },
   {
     "name": "__forward_ref__"
@@ -1143,6 +1062,9 @@
     "name": "nativeParentNode"
   },
   {
+    "name": "nextHandle"
+  },
+  {
     "name": "nextNgElementId"
   },
   {
@@ -1284,6 +1206,9 @@
     "name": "resolveToken"
   },
   {
+    "name": "runIfPresent"
+  },
+  {
     "name": "rxSubscriber"
   },
   {
@@ -1381,6 +1306,9 @@
   },
   {
     "name": "syncViewWithBlueprint"
+  },
+  {
+    "name": "tasksByHandle"
   },
   {
     "name": "text"

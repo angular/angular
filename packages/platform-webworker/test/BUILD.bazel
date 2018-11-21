@@ -34,5 +34,6 @@ ts_web_test_suite(
     ],
     deps = [
         ":test_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )

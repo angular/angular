@@ -8,7 +8,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/router",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 

@@ -15,9 +15,7 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
-        "@rxjs",
-        "@rxjs//operators",
-        "@rxjs//testing",
+        "@ngdeps//rxjs",
     ],
 )
 
@@ -34,5 +32,6 @@ ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )

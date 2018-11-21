@@ -63,9 +63,6 @@
     "name": "ElementRef"
   },
   {
-    "name": "EmptyErrorImpl"
-  },
-  {
     "name": "FLAGS"
   },
   {
@@ -85,6 +82,9 @@
   },
   {
     "name": "INJECTOR_SIZE"
+  },
+  {
+    "name": "Immediate"
   },
   {
     "name": "IterableChangeRecord_"
@@ -148,6 +148,9 @@
   },
   {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
   },
   {
     "name": "ObjectUnsubscribedErrorImpl"
@@ -214,6 +217,9 @@
   },
   {
     "name": "TemplateRef"
+  },
+  {
+    "name": "UnsubscriptionError"
   },
   {
     "name": "UnsubscriptionErrorImpl"
@@ -283,6 +289,9 @@
   },
   {
     "name": "_devMode"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
     "name": "_global"
@@ -363,6 +372,9 @@
     "name": "canInsertNativeNode"
   },
   {
+    "name": "canReportError"
+  },
+  {
     "name": "checkNoChanges"
   },
   {
@@ -376,6 +388,9 @@
   },
   {
     "name": "componentRefresh"
+  },
+  {
+    "name": "config"
   },
   {
     "name": "containerInternal"
@@ -510,7 +525,13 @@
     "name": "elementStylingMap"
   },
   {
+    "name": "empty"
+  },
+  {
     "name": "enterView"
+  },
+  {
+    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -559,6 +580,9 @@
   },
   {
     "name": "firstTemplatePass"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
   },
   {
     "name": "forwardRef"
@@ -729,6 +753,9 @@
     "name": "getPreviousOrParentTNode"
   },
   {
+    "name": "getPromiseCtor"
+  },
+  {
     "name": "getProp"
   },
   {
@@ -763,6 +790,9 @@
   },
   {
     "name": "getSymbolIterator"
+  },
+  {
+    "name": "getSymbolIterator$1"
   },
   {
     "name": "getTNode"
@@ -805,6 +835,9 @@
   },
   {
     "name": "hasValueChanged"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "includeViewProviders"
@@ -852,6 +885,9 @@
     "name": "invertObject"
   },
   {
+    "name": "isArray"
+  },
+  {
     "name": "isClassBased"
   },
   {
@@ -885,6 +921,9 @@
     "name": "isFactory"
   },
   {
+    "name": "isFunction"
+  },
+  {
     "name": "isJsObject"
   },
   {
@@ -898,6 +937,9 @@
   },
   {
     "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isObject"
   },
   {
     "name": "isPositive"
@@ -969,6 +1011,9 @@
     "name": "nextContextImpl"
   },
   {
+    "name": "nextHandle"
+  },
+  {
     "name": "nextNgElementId"
   },
   {
@@ -978,7 +1023,16 @@
     "name": "noop"
   },
   {
+    "name": "noop$1"
+  },
+  {
+    "name": "observable"
+  },
+  {
     "name": "onChangesWrapper"
+  },
+  {
+    "name": "pipeFromArray"
   },
   {
     "name": "pointers"
@@ -1066,6 +1120,12 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "runIfPresent"
+  },
+  {
+    "name": "rxSubscriber"
   },
   {
     "name": "saveNameToExportMap"
@@ -1176,6 +1236,9 @@
     "name": "syncViewWithBlueprint"
   },
   {
+    "name": "tasksByHandle"
+  },
+  {
     "name": "template"
   },
   {
@@ -1194,10 +1257,19 @@
     "name": "tickRootContext"
   },
   {
+    "name": "toSubscriber"
+  },
+  {
     "name": "trackByIdentity"
   },
   {
     "name": "traverseNextElement"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
   },
   {
     "name": "updateSinglePointerValues"

@@ -129,7 +129,7 @@ export function setupBazelTo(basePath: string) {
   }
 
   // Link rxjs
-  const rxjsSource = path.join(sources, 'rxjs');
+  const rxjsSource = path.join(sources, 'ngdeps/node_modules/rxjs');
   const rxjsDest = path.join(nodeModulesPath, 'rxjs');
   if (fs.existsSync(rxjsSource)) {
     fs.symlinkSync(rxjsSource, rxjsDest);

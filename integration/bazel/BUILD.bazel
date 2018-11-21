@@ -11,3 +11,11 @@ alias(
     name = "tsconfig.json",
     actual = "//src:tsconfig.json",
 )
+
+filegroup(
+    name = "rxjs_testing_bundles",
+    srcs = [
+        "//src:rxjs_operators_shim.js",
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+    ],
+)

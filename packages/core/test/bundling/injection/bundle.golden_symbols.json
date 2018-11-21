@@ -9,10 +9,10 @@
     "name": "EMPTY_ARRAY$1"
   },
   {
-    "name": "EmptyErrorImpl"
+    "name": "INJECTOR$1"
   },
   {
-    "name": "INJECTOR$1"
+    "name": "Immediate"
   },
   {
     "name": "Inject"
@@ -37,6 +37,9 @@
   },
   {
     "name": "NullInjector"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
   },
   {
     "name": "ObjectUnsubscribedErrorImpl"
@@ -72,6 +75,9 @@
     "name": "USE_VALUE"
   },
   {
+    "name": "UnsubscriptionError"
+  },
+  {
     "name": "UnsubscriptionErrorImpl"
   },
   {
@@ -90,6 +96,15 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "canReportError"
+  },
+  {
+    "name": "config"
+  },
+  {
     "name": "couldBeInjectableType"
   },
   {
@@ -103,6 +118,15 @@
   },
   {
     "name": "defineInjector"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "errorObject"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
   },
   {
     "name": "forwardRef"
@@ -120,10 +144,19 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getSymbolIterator$1"
+  },
+  {
     "name": "hasDeps"
   },
   {
     "name": "hasOnDestroy"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "inject"
@@ -141,10 +174,19 @@
     "name": "injectableDefFactory"
   },
   {
+    "name": "isArray"
+  },
+  {
     "name": "isExistingProvider"
   },
   {
     "name": "isFactoryProvider"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isObject"
   },
   {
     "name": "isTypeProvider"
@@ -162,7 +204,19 @@
     "name": "makeRecord"
   },
   {
+    "name": "nextHandle"
+  },
+  {
+    "name": "noop$1"
+  },
+  {
+    "name": "observable"
+  },
+  {
     "name": "onChangesWrapper"
+  },
+  {
+    "name": "pipeFromArray"
   },
   {
     "name": "providerToFactory"
@@ -174,9 +228,27 @@
     "name": "resolveForwardRef"
   },
   {
+    "name": "runIfPresent"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "tasksByHandle"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
   }
 ]

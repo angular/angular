@@ -13,9 +13,8 @@ ng_module(
     module_name = "@angular/core",
     deps = [
         "//packages:types",
+        "@ngdeps//rxjs",
         "@ngdeps//zone.js",
-        "@rxjs",
-        "@rxjs//operators",
     ],
 )
 

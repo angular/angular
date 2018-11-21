@@ -22,7 +22,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 
@@ -48,5 +48,6 @@ ts_web_test_suite(
     ],
     deps = [
         ":test_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )

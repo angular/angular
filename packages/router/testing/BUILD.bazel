@@ -13,5 +13,6 @@ ng_module(
         "//packages/common/testing",
         "//packages/core",
         "//packages/router",
+        "@ngdeps//rxjs",
     ],
 )

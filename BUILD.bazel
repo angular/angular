@@ -49,3 +49,18 @@ nodejs_binary(
     install_source_map_support = False,
     templated_args = ["--node_options=--expose-gc"],
 )
+
+# A nodejs_binary for @bazel/typescript/tsc_wrapped to use by default in
+# ts_library that depends on @ngdeps//@bazel/typescript instead of the
+# output of the default @npm//@bazel/typescript. The generated
+# @ngdeps//@bazel/typescript/bin:tsc_wrapped target
+# does not work because it does not have the node `--expose-gc` flag
+# set which is required to support the call to `global.gc()`.
+nodejs_binary(
+    name = "@bazel/typescript/tsc_wrapped",
+    data = ["@ngdeps//@bazel/typescript"],
+    entry_point = "@bazel/typescript/tsc_wrapped/tsc_wrapped.js",
+    install_source_map_support = False,
+    templated_args = ["--node_options=--expose-gc"],
+    visibility = ["//visibility:public"],
+)

@@ -74,5 +74,6 @@ ts_web_test_suite(
     ],
     deps = [
         ":render3_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )

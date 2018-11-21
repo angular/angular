@@ -14,7 +14,7 @@ ts_library(
         "//packages/common",
         "//packages/core",
         "@ngdeps//@angular-devkit/schematics",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 
@@ -31,8 +31,7 @@ ts_library(
         "//packages/common",
         "//packages/core",
         "@ngdeps//@angular-devkit/schematics",
-        "@rxjs",
-        "@rxjs//operators",
+        "@ngdeps//rxjs",
     ],
 )
 

@@ -27,5 +27,6 @@ ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
+        "//tools/rxjs:rxjs_testing_bundles",
     ],
 )
