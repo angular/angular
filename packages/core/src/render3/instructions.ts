@@ -1074,8 +1074,7 @@ function generatePropertyAliases(
  * @param directive the ref to the directive that is attempting to change styling.
  */
 export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory,
-    directive?: Type<any>): void {
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
   if (directive != undefined) {
     return hackImplementationOfElementClassProp(
         index, classIndex, value, directive);  // proper supported in next PR
@@ -1117,7 +1116,7 @@ export function elementClassProp(
 export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer?: StyleSanitizeFn | null, directive?: Type<any>): void {
+    styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
   if (directive !== undefined) {
     getCreationMode() &&
         hackImplementationOfElementStyling(
@@ -1167,7 +1166,7 @@ export function elementStyling(
  *        index.)
  * @param directive the ref to the directive that is attempting to change styling.
  */
-export function elementStylingApply(index: number, directive?: Type<any>): void {
+export function elementStylingApply(index: number, directive?: {}): void {
   if (directive != undefined) {
     return hackImplementationOfElementStylingApply(index, directive);  // supported in next PR
   }
@@ -1204,7 +1203,7 @@ export function elementStylingApply(index: number, directive?: Type<any>): void 
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directive?: Type<any>): void {
+    suffix?: string, directive?: {}): void {
   if (directive != undefined)
     return hackImplementationOfElementStyleProp(
         index, styleIndex, value, suffix, directive);  // supported in next PR
@@ -1249,7 +1248,7 @@ export function elementStyleProp(
  */
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: Type<any>): void {
+    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
   if (directive != undefined)
     return hackImplementationOfElementStylingMap(
         index, classes, styles, directive);  // supported in next PR
@@ -1276,12 +1275,12 @@ interface HostStylingHack {
   styleDeclarations: string[];
   styleSanitizer: StyleSanitizeFn|null;
 }
-type HostStylingHackMap = Map<Type<any>, HostStylingHack>;
+type HostStylingHackMap = Map<{}, HostStylingHack>;
 
 function hackImplementationOfElementStyling(
     classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer: StyleSanitizeFn | null, directive: Type<any>): void {
+    styleSanitizer: StyleSanitizeFn | null, directive: {}): void {
   const node = getNativeByTNode(getPreviousOrParentTNode(), getViewData());
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
   const hostStylingHackMap: HostStylingHackMap =
@@ -1299,7 +1298,7 @@ function hackSquashDeclaration(declarations: (string | boolean | InitialStylingF
 }
 
 function hackImplementationOfElementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive: Type<any>): void {
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive: {}): void {
   const node = getNativeByIndex(index, getViewData());
   ngDevMode && assertDefined(node, 'could not locate node');
   const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
@@ -1313,19 +1312,19 @@ function hackImplementationOfElementClassProp(
   }
 }
 
-function hackImplementationOfElementStylingApply(index: number, directive?: Type<any>): void {
+function hackImplementationOfElementStylingApply(index: number, directive?: {}): void {
   // Do nothing because the hack implementation is eager.
 }
 
 function hackImplementationOfElementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directive?: Type<any>): void {
+    suffix?: string, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
 
 function hackImplementationOfElementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: Type<any>): void {
+    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
 
