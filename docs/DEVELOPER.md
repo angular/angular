@@ -114,23 +114,22 @@ All the tests are executed on our Continuous Integration infrastructure and a PR
 
 ## <a name="clang-format"></a> Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
-is not properly formatted, the CI will fail and the PR can not be merged.
+Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+If the source code is not properly formatted, the CI will fail and the PR can not be merged.
 
 You can automatically format your code by running:
+- `gulp format`: format all source code
+- `gulp format:changed`: re-format only edited source code.
 
-``` shell
-$ gulp format
-```
+A better way is to set up your IDE to format the changed file on each file save.
 
-There is a handy [clang-format extension](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
-for Visual Studio Code. Use the following settings to format your code when you save a file:
-
+### VS Code
+1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code. 
+2. Open `settings.json` in your workspace and add these lines:
 ```json
-{
-    "editor.formatOnSave": true,
-    "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format"
-}
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "clang-format.executable": "PATH_TO_YOUR_WORKSPACE/angular/node_modules/.bin/clang-format",
 ```
 
 ## Linting/verifying your source code
@@ -167,3 +166,33 @@ $ ./scripts/publish/publish-build-artifacts.sh [github username]
 
 The script will publish the build snapshot to a branch with the same name as your current branch,
 and create it if it doesn't exist.
+
+## Bazel support
+### VS Code
+
+1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
+2. Open `settings.json` in your workspace and add these lines:
+```json
+  "files.associations": {
+    "*.bazel": "bazel"
+  },
+```
+
+## General IDE settings
+### VS Code
+
+1. Open `settings.json` in your workspace and add these lines:
+```json
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "bazel-out": true,
+    ".idea": true,
+    ".bowerrc": true,
+    ".circleci": true,
+    ".github": true,
+    "dist/**": true,
+    "node_modules/**": true,
+    ".rpt2_cache": true,
+    ".vscode": true
+  },
+```
