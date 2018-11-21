@@ -445,9 +445,14 @@ const ARITY_CLASSES = [
 ];
 
 const TYPINGS_SRC_FILES = [
-  {name: '/src/index.js', contents: `export * from './class1'; export * from './class2';`},
+  {
+    name: '/src/index.js',
+    contents:
+        `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
+  },
   {name: '/src/class1.js', contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
   {name: '/src/class2.js', contents: 'export class Class2 {}'},
+  {name: '/src/internal.js', contents: 'export class InternalClass {}\nexport class Class2 {}'},
   {name: '/src/missing-class.js', contents: 'export class MissingClass2 {}'}, {
     name: '/src/flat-file.js',
     contents:
@@ -456,7 +461,11 @@ const TYPINGS_SRC_FILES = [
 ];
 
 const TYPINGS_DTS_FILES = [
-  {name: '/typings/index.d.ts', contents: `export * from './class1'; export * from './class2';`},
+  {
+    name: '/typings/index.d.ts',
+    contents:
+        `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
+  },
   {
     name: '/typings/class1.d.ts',
     contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
@@ -465,6 +474,10 @@ const TYPINGS_DTS_FILES = [
     name: '/typings/class2.d.ts',
     contents:
         `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
+  },
+  {
+    name: '/typings/internal.d.ts',
+    contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
   },
   {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
 ];
@@ -1277,7 +1290,7 @@ describe('Fesm2015ReflectionHost', () => {
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
     });
 
-    it('should throw an error if there is no matching class in the matching dts file', () => {
+    it('should return null if there is no matching class in the matching dts file', () => {
       const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
       const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
       const missingClass =
@@ -1285,12 +1298,10 @@ describe('Fesm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(
           false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
 
-      expect(() => host.getDtsDeclarationOfClass(missingClass))
-          .toThrowError(
-              'Unable to find matching typings (.d.ts) declaration for MissingClass1 in /src/class1.js');
+      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
     });
 
-    it('should throw an error if there is no matching dts file', () => {
+    it('should return null if there is no matching dts file', () => {
       const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
       const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
       const missingClass = getDeclaration(
@@ -1298,9 +1309,7 @@ describe('Fesm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(
           false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
 
-      expect(() => host.getDtsDeclarationOfClass(missingClass))
-          .toThrowError(
-              'Unable to find matching typings (.d.ts) declaration for MissingClass2 in /src/missing-class.js');
+      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
     });
 
     it('should find the dts file that contains a matching class declaration, even if the source files do not match',
@@ -1327,6 +1336,37 @@ describe('Fesm2015ReflectionHost', () => {
       const dtsDeclaration = host.getDtsDeclarationOfClass(class3);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
     });
-  });
 
+    it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
+       () => {
+         const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+         const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+         const internalClass =
+             getDeclaration(srcProgram, '/src/internal.js', 'InternalClass', ts.isClassDeclaration);
+         const host = new Esm2015ReflectionHost(
+             false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+         const dtsDeclaration = host.getDtsDeclarationOfClass(internalClass);
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
+       });
+
+    it('should prefer the publicly exported class if there are multiple classes with the same name',
+       () => {
+         const srcProgram = makeProgram(...TYPINGS_SRC_FILES);
+         const dtsProgram = makeProgram(...TYPINGS_DTS_FILES);
+         const class2 =
+             getDeclaration(srcProgram, '/src/class2.js', 'Class2', ts.isClassDeclaration);
+         const internalClass2 =
+             getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isClassDeclaration);
+         const host = new Esm2015ReflectionHost(
+             false, srcProgram.getTypeChecker(), TYPINGS_DTS_FILES[0].name, dtsProgram);
+
+         const class2DtsDeclaration = host.getDtsDeclarationOfClass(class2);
+         expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
+
+         const internalClass2DtsDeclaration = host.getDtsDeclarationOfClass(internalClass2);
+         expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
+             .toEqual('/typings/class2.d.ts');
+       });
+  });
 });
