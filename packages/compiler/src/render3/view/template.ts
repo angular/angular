@@ -1406,8 +1406,7 @@ export function parseTemplate(
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, true);
-  const i18nUseExternalIds: boolean =
-      typeof options.i18nUseExternalIds === 'boolean' ? options.i18nUseExternalIds : true;
+  const i18nUseExternalIds = options.i18nUseExternalIds !== false;
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {
