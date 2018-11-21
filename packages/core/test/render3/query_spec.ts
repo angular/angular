@@ -215,9 +215,9 @@ describe('query', () => {
       class MyDirective {
         constructor(public service: Service) {}
 
-        static ngComponentDef = defineDirective({
+        static ngDirectiveDef = defineDirective({
           type: MyDirective,
-          selectors: [['myDir']],
+          selectors: [['', 'myDir', '']],
           factory: function MyDirective_Factory() {
             return directive = new MyDirective(directiveInject(Service));
           },
@@ -251,7 +251,7 @@ describe('query', () => {
             factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                element(3, 'myDir', ['myDir']);
+                element(3, 'div', ['myDir']);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
@@ -296,7 +296,7 @@ describe('query', () => {
             factory: function App_Factory() { return new App(); },
             template: function App_Template(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                element(1, 'myDir', ['myDir']);
+                element(1, 'div', ['myDir']);
               }
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
