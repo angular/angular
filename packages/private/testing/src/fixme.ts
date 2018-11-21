@@ -17,6 +17,6 @@ import {bazelDefineCompileValue} from './bazel_define_compile_value';
  *
  * The above will prevent the execution of the test(s) in Ivy mode, until they can be fixed.
  */
-export function fixmeIvy(reason: string): boolean {
+export function fixmeIvy(reason?: string): boolean {
   return 'aot' !== (bazelDefineCompileValue as string);
 }
