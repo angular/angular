@@ -356,12 +356,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           throw new Error(
               `Cannot get the dts file for a class declaration that has no indetifier: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
         }
-        const dtsDeclaration = this.dtsClassMap.get(declaration.name.text);
-        if (!dtsDeclaration) {
-          throw new Error(
-              `Unable to find matching typings (.d.ts) declaration for ${declaration.name.text} in ${declaration.getSourceFile().fileName}`);
-        }
-        return dtsDeclaration;
+        return this.dtsClassMap.get(declaration.name.text) || null;
       }
     }
     return null;
@@ -993,31 +988,37 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
   }
 
+  /**
+   * Extract all the class declarations from the dtsTypings program, storing them in a map
+   * where the key is the declared name of the class and the value is the declaration itself.
+   *
+   * It is possible for there to be multiple class declarations with the same local name.
+   * Only the first declaration with a given name is added to the map; subsequent classes will be
+   * ignored.
+   *
+   * We are most interested in classes that are publicly exported from the entry point, so these are
+   * added to the map first, to ensure that they are not ignored.
+   *
+   * @param dtsRootFileName The filename of the entry-point to the `dtsTypings` program.
+   * @param dtsProgram The program containing all the typings files.
+   * @returns a map of class names to class declarations.
+   */
   protected computeDtsClassMap(dtsRootFileName: string, dtsProgram: ts.Program):
       Map<string, ts.ClassDeclaration> {
     const dtsClassMap = new Map<string, ts.ClassDeclaration>();
     const checker = dtsProgram.getTypeChecker();
-    const dtsRootFile = dtsProgram.getSourceFile(dtsRootFileName);
-    const rootModule = dtsRootFile && checker.getSymbolAtLocation(dtsRootFile);
-    const moduleExports = rootModule && checker.getExportsOfModule(rootModule);
-    if (moduleExports) {
-      moduleExports.forEach(exportedSymbol => {
-        if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
-          exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
-        }
-        const declaration = exportedSymbol.declarations[0];
-        if (declaration && ts.isClassDeclaration(declaration)) {
-          const name = exportedSymbol.name;
-          const previousDeclaration = dtsClassMap.get(name);
-          if (previousDeclaration && previousDeclaration !== declaration) {
-            console.warn(
-                `Ambiguous class name ${name} in typings files: ${previousDeclaration.getSourceFile().fileName} and ${declaration.getSourceFile().fileName}`);
-          } else {
-            dtsClassMap.set(name, declaration);
-          }
-        }
-      });
+
+    // First add all the classes that are publicly exported from the entry-point
+    const rootFile = dtsProgram.getSourceFile(dtsRootFileName);
+    if (!rootFile) {
+      throw new Error(`The given file ${dtsRootFileName} is not part of the typings program.`);
     }
+    collectExportedClasses(checker, dtsClassMap, rootFile);
+
+    // Now add any additional classes that are exported from individual  dts files,
+    // but are not publicly exported from the entry-point.
+    dtsProgram.getSourceFiles().forEach(
+        sourceFile => { collectExportedClasses(checker, dtsClassMap, sourceFile); });
     return dtsClassMap;
   }
 }
@@ -1150,4 +1151,29 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
     propertyAccess = propertyAccess.expression;
   }
   return ts.isIdentifier(propertyAccess.expression) ? propertyAccess.expression : null;
+}
+
+/**
+ * Search a source file for exported classes, storing them in the provided `dtsClassMap`.
+ * @param checker The typechecker for the source program.
+ * @param dtsClassMap The map in which to store the collected exported classes.
+ * @param srcFile The source file to search for exported classes.
+ */
+function collectExportedClasses(
+    checker: ts.TypeChecker, dtsClassMap: Map<string, ts.ClassDeclaration>,
+    srcFile: ts.SourceFile): void {
+  const srcModule = srcFile && checker.getSymbolAtLocation(srcFile);
+  const moduleExports = srcModule && checker.getExportsOfModule(srcModule);
+  if (moduleExports) {
+    moduleExports.forEach(exportedSymbol => {
+      if (exportedSymbol.flags & ts.SymbolFlags.Alias) {
+        exportedSymbol = checker.getAliasedSymbol(exportedSymbol);
+      }
+      const declaration = exportedSymbol.valueDeclaration;
+      const name = exportedSymbol.name;
+      if (declaration && ts.isClassDeclaration(declaration) && !dtsClassMap.has(name)) {
+        dtsClassMap.set(name, declaration);
+      }
+    });
+  }
 }
