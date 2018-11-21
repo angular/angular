@@ -66,8 +66,8 @@ function baseDirectiveFields(
   let hostVars = Object.keys(meta.host.properties).length;
 
   const elVarExp = o.variable('elIndex');
-  const dirVarExp = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(elVarExp, dirVarExp);
+  const contextVarExp = o.variable(CONTEXT_NAME);
+  const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
 
   const allOtherAttributes: any = {};
   const attrNames = Object.getOwnPropertyNames(meta.host.attributes);
@@ -92,15 +92,15 @@ function baseDirectiveFields(
   // e.g. `attributes: ['role', 'listbox']`
   definitionMap.set('attributes', createHostAttributesArray(allOtherAttributes));
 
-  // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
+  // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
-      'hostBindings',
-      createHostBindingsFunction(
-          meta, elVarExp, dirVarExp, styleBuilder, bindingParser, constantPool, (slots: number) => {
-            const originalSlots = hostVars;
-            hostVars += slots;
-            return originalSlots;
-          }));
+      'hostBindings', createHostBindingsFunction(
+                          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool,
+                          (slots: number) => {
+                            const originalSlots = hostVars;
+                            hostVars += slots;
+                            return originalSlots;
+                          }));
 
   if (hostVars) {
     // e.g. `hostVars: 2

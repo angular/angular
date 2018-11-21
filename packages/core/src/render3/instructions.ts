@@ -1117,7 +1117,7 @@ export function elementStyling(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
-  if (directive !== undefined) {
+  if (directive != undefined) {
     getCreationMode() &&
         hackImplementationOfElementStyling(
             classDeclarations || null, styleDeclarations || null, styleSanitizer || null,
@@ -1451,9 +1451,6 @@ function instantiateAllDirectives(tView: TView, viewData: LViewData, previousOrP
     }
     const directive =
         getNodeInjectable(tView.data, viewData !, i, previousOrParentTNode as TElementNode);
-    if (def.hostBindings) {
-      def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
-    }
     postProcessDirective(viewData, directive, def, i);
   }
 }
@@ -1523,6 +1520,10 @@ function postProcessBaseDirective<T>(
                    viewData[BINDING_INDEX], getTView().bindingStartIndex,
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
+
+  if (def.hostBindings) {
+    def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
+  }
 
   attachPatchData(directive, viewData);
   if (native) {
