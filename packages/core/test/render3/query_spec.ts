@@ -2235,7 +2235,7 @@ describe('query', () => {
         this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
-      static ngComponentDef = defineDirective({
+      static ngDirectiveDef = defineDirective({
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
         factory: () => new WithContentDirective(),

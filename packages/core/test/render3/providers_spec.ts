@@ -1298,7 +1298,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ViewChildDirective {
-    static ngComponentDef = defineDirective({
+    static ngDirectiveDef = defineDirective({
       type: ViewChildDirective,
       selectors: [['view-child']],
       factory: () => testDirectiveInjection(defs.viewChild, new ViewChildDirective()),
@@ -1325,7 +1325,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ContentChildDirective {
-    static ngComponentDef = defineDirective({
+    static ngDirectiveDef = defineDirective({
       type: ContentChildDirective,
       selectors: [['content-child']],
       factory: () => testDirectiveInjection(defs.contentChild, new ContentChildDirective()),
@@ -1353,7 +1353,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ParentDirective {
-    static ngComponentDef = defineDirective({
+    static ngDirectiveDef = defineDirective({
       type: ParentDirective,
       selectors: [['parent']],
       factory: () => testDirectiveInjection(defs.parent, new ParentDirective()),
@@ -1362,7 +1362,7 @@ function expectProvidersScenario(defs: {
   }
 
   class ParentDirective2 {
-    static ngComponentDef = defineDirective({
+    static ngDirectiveDef = defineDirective({
       type: ParentDirective2,
       selectors: [['parent']],
       factory: () => testDirectiveInjection(defs.parent, new ParentDirective2()),
