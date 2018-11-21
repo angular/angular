@@ -340,11 +340,11 @@ code with checkbox switches and additional displays to help you experience these
 
 
 Replacing the array is an efficient way to signal Angular to update the display.
-When do you replace the array? When the data change.
+When do you replace the array? When the data changes.
 That's an easy rule to follow in *this* example
 where the only way to change the data is by adding a hero.
 
-More often, you don't know when the data have changed,
+More often, you don't know when the data has changed,
 especially in applications that mutate data in many ways,
 perhaps in application locations far away.
 A component in such an application usually can't know about those changes.
@@ -495,7 +495,7 @@ Write one more impure pipe, a pipe that makes an HTTP request.
 Remember that impure pipes are called every few milliseconds.
 If you're not careful, this pipe will punish the server with requests.
 
-In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
+In the following code, the pipe only calls the server when the requested URL changes and it caches the server response.
 The code uses the [Angular http](guide/http) client to retrieve data:
 
 
