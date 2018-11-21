@@ -459,11 +459,13 @@ describe('event listeners', () => {
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
-        factory: function HostListenerDir_Factory() {
-          const $dir$ = new HostListenerDir();
-          listener('click', function() { return $dir$.onClick(); });
-          return $dir$;
-        },
+        factory: function HostListenerDir_Factory() { return new HostListenerDir(); },
+        hostBindings: function HostListenerDir_HostBindings(
+            rf: RenderFlags, ctx: any, elIndex: number) {
+          if (rf & RenderFlags.Create) {
+            listener('click', function() { return ctx.onClick(); });
+          }
+        }
       });
     }
 

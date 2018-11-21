@@ -42,7 +42,6 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     type: meta.type,
     deps: meta.ctorDeps,
     injectFn: Identifiers.inject,
-    extraStatementFn: null,
   };
 
   if (meta.useClass !== undefined) {

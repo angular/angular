@@ -55,7 +55,6 @@ function baseDirectiveFields(
     type: meta.type,
     deps: meta.deps,
     injectFn: R3.directiveInject,
-    extraStatementFn: createFactoryExtraStatementsFn(meta, bindingParser)
   });
   definitionMap.set('factory', result.factory);
 
@@ -653,6 +652,14 @@ function createHostBindingsFunction(
 
   const directiveSummary = metadataAsSummary(meta);
 
+  // Calculate host event bindings
+  const eventBindings =
+      bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
+  if (eventBindings && eventBindings.length) {
+    const listeners = createHostListeners(bindingContext, eventBindings, meta);
+    createStatements.push(...listeners);
+  }
+
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
 
@@ -750,15 +757,6 @@ function getBindingNameAndInstruction(bindingName: string):
   }
 
   return {bindingName, instruction};
-}
-
-function createFactoryExtraStatementsFn(meta: R3DirectiveMetadata, bindingParser: BindingParser):
-    ((instance: o.Expression) => o.Statement[])|null {
-  const eventBindings =
-      bindingParser.createDirectiveHostEventAsts(metadataAsSummary(meta), meta.typeSourceSpan);
-  return eventBindings && eventBindings.length ?
-      (instance: o.Expression) => createHostListeners(instance, eventBindings, meta) :
-      null;
 }
 
 function createHostListeners(
