@@ -227,9 +227,7 @@ export class R3Injector {
     }
 
     // Check for multiple imports of the same module
-    if (dedupStack.indexOf(defType) !== -1) {
-      return;
-    }
+    const isDuplicate = dedupStack.indexOf(defType) !== -1;
 
     // If defOrWrappedType was an InjectorDefTypeWithProviders, then .providers may hold some
     // extra providers.
@@ -255,7 +253,7 @@ export class R3Injector {
     // Add providers in the same way that @NgModule resolution did:
 
     // First, include providers from any imports.
-    if (def.imports != null) {
+    if (def.imports != null && !isDuplicate) {
       // Before processing defType's imports, add it to the set of parents. This way, if it ends
       // up deeply importing itself, this can be detected.
       ngDevMode && parents.push(defType);
@@ -272,7 +270,7 @@ export class R3Injector {
     }
 
     // Next, include providers listed on the definition itself.
-    if (def.providers != null) {
+    if (def.providers != null && !isDuplicate) {
       deepForEach(def.providers, provider => this.processProvider(provider));
     }
 
