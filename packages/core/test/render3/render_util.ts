@@ -218,11 +218,11 @@ export function resetDOM() {
 export function renderToHtml(
     template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
-    providedRendererFactory?: RendererFactory3 | null) {
+    providedRendererFactory?: RendererFactory3 | null, keepNgReflect = false) {
   hostView = renderTemplate(
       containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
       hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
-  return toHtml(containerEl);
+  return toHtml(containerEl, keepNgReflect);
 }
 
 function toDefs(
@@ -263,7 +263,7 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
 /**
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
-export function toHtml<T>(componentOrElement: T | RElement): string {
+export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = false): string {
   let element: any;
   if (isComponentInstance(componentOrElement)) {
     const context = getContext(componentOrElement);
@@ -273,13 +273,17 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
   }
 
   if (element) {
-    return stringifyElement(element)
-        .replace(/^<div host="">(.*)<\/div>$/, '$1')
-        .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
-        .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
-        .replace(' style=""', '')
-        .replace(/<!--container-->/g, '')
-        .replace(/<!--ng-container-->/g, '');
+    let html = stringifyElement(element)
+                   .replace(/^<div host="">(.*)<\/div>$/, '$1')
+                   .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
+                   .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
+                   .replace(' style=""', '')
+                   .replace(/<!--container-->/g, '')
+                   .replace(/<!--ng-container-->/g, '');
+    if (!keepNgReflect) {
+      html = html.replace(/\sng-reflect-\S*="[^"]*"/g, '');
+    }
+    return html;
   } else {
     return '';
   }
