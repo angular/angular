@@ -20,6 +20,7 @@ import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, Serv
 import {fixmeIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {ivyEnabled} from '../../core/src/ivy_switch';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -534,8 +535,12 @@ class HiddenModule {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
         doc = '<html><head></head><body><app></app></body></html>';
         called = false;
-        (global as any)['window'] = undefined;
-        (global as any)['document'] = undefined;
+        // We use `window` and `document` directly in some parts of render3 for ivy
+        // Only set it to undefined for legacy
+        if (!ivyEnabled) {
+          (global as any)['window'] = undefined;
+          (global as any)['document'] = undefined;
+        }
       });
       afterEach(() => { expect(called).toBe(true); });
 
@@ -632,19 +637,18 @@ class HiddenModule {
            });
          }));
 
-      fixmeIvy('to investigate') &&
-          it('should work with sanitizer to handle "innerHTML"', async(() => {
-               // Clear out any global states. These should be set when platform-server
-               // is initialized.
-               (global as any).Node = undefined;
-               (global as any).Document = undefined;
-               renderModule(HTMLTypesModule, {document: doc}).then(output => {
-                 expect(output).toBe(
-                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                     '<div><b>foo</b> bar</div></app></body></html>');
-                 called = true;
-               });
-             }));
+      it('should work with sanitizer to handle "innerHTML"', async(() => {
+           // Clear out any global states. These should be set when platform-server
+           // is initialized.
+           (global as any).Node = undefined;
+           (global as any).Document = undefined;
+           renderModule(HTMLTypesModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div><b>foo</b> bar</div></app></body></html>');
+             called = true;
+           });
+         }));
 
       it('should handle element property "hidden"', async(() => {
            renderModule(HiddenModule, {document: doc}).then(output => {
