@@ -684,7 +684,7 @@ and returns a [`ComponentFixture`](#component-fixture).
 
 Do not re-configure `TestBed` after calling `createComponent`.
 
-The `createComponent` method freezes the current `TestBed`definition,
+The `createComponent` method freezes the current `TestBed` definition,
 closing it to further configuration.
 
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule()`,
