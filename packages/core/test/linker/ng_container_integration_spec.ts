@@ -26,7 +26,11 @@ function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
     beforeEach(() => {
+      // Injecting goog.getMsg-like function into global scope to unblock tests run outside of
+      // Closure Compiler. It's a *temporary* measure until runtime translation service support is
+      // introduced.
       polyfillGoogGetMsg();
+
       TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
         declarations: [
