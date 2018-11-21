@@ -11,7 +11,7 @@ import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, 
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 {
   if (ivyEnabled) {
@@ -26,6 +26,11 @@ function declareTests(config?: {useJit: boolean}) {
   describe('<ng-container>', function() {
 
     beforeEach(() => {
+      // Injecting goog.getMsg-like function into global scope to unblock tests run outside of
+      // Closure Compiler. It's a *temporary* measure until runtime translation service support is
+      // introduced.
+      polyfillGoogGetMsg();
+
       TestBed.configureCompiler({...config});
       TestBed.configureTestingModule({
         declarations: [
@@ -38,17 +43,16 @@ function declareTests(config?: {useJit: boolean}) {
       });
     });
 
-    fixmeIvy('FW-663: ReferenceError: goog is not defined') &&
-        it('should support the "i18n" attribute', () => {
-          const template = '<ng-container i18n>foo</ng-container>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+    it('should support the "i18n" attribute', () => {
+      const template = '<ng-container i18n>foo</ng-container>';
+      TestBed.overrideComponent(MyComp, {set: {template}});
+      const fixture = TestBed.createComponent(MyComp);
 
-          fixture.detectChanges();
+      fixture.detectChanges();
 
-          const el = fixture.nativeElement;
-          expect(el).toHaveText('foo');
-        });
+      const el = fixture.nativeElement;
+      expect(el).toHaveText('foo');
+    });
 
     fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
         it('should be rendered as comment with children as siblings', () => {
