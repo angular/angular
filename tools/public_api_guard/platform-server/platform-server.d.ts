@@ -7,9 +7,9 @@ export interface PlatformConfig {
     url?: string;
 }
 
-export declare const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformDynamicServer: PlatformFactory;
 
-export declare const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformServer: PlatformFactory;
 
 export declare class PlatformState {
     constructor(_doc: any);

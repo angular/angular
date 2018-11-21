@@ -1,4 +1,4 @@
-export declare const platformServerTesting: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformServerTesting: PlatformFactory;
 
 export declare class ServerTestingModule {
 }

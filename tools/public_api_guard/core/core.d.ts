@@ -165,7 +165,7 @@ export declare function createInjector(defType: any, parent?: Injector | null, a
 
 export declare function createPlatform(injector: Injector): PlatformRef;
 
-export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;
+export declare function createPlatformFactory(parentPlatformFactory: PlatformFactory | null, name: string, providers?: StaticProvider[]): PlatformFactory;
 
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
@@ -560,7 +560,9 @@ export declare const PLATFORM_ID: InjectionToken<Object>;
 
 export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 
-export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformCore: PlatformFactory;
+
+export declare type PlatformFactory = (extraProviders?: StaticProvider[]) => PlatformRef;
 
 export declare class PlatformRef {
     readonly destroyed: boolean;
