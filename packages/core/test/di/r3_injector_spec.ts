@@ -44,6 +44,9 @@ describe('InjectorDef-based createInjector()', () => {
 
   const LOCALE = new InjectionToken<string[]>('LOCALE');
 
+  const PRIMITIVE_VALUE = new InjectionToken<string>('PRIMITIVE_VALUE');
+  const UNDEFINED_VALUE = new InjectionToken<undefined>('UNDEFINED_VALUE');
+
   class ServiceWithDep {
     constructor(readonly service: Service) {}
 
@@ -127,6 +130,8 @@ describe('InjectorDef-based createInjector()', () => {
         ServiceWithMultiDep,
         {provide: LOCALE, multi: true, useValue: 'en'},
         {provide: LOCALE, multi: true, useValue: 'es'},
+        {provide: PRIMITIVE_VALUE, useValue: 'foo'},
+        {provide: UNDEFINED_VALUE, useValue: undefined},
         Service,
         {provide: SERVICE_TOKEN, useExisting: Service},
         CircularA,
@@ -202,6 +207,16 @@ describe('InjectorDef-based createInjector()', () => {
   it('injects a token with useExisting', () => {
     const instance = injector.get(SERVICE_TOKEN);
     expect(instance).toBe(injector.get(Service));
+  });
+
+  it('injects a useValue token with a primitive value', () => {
+    const value = injector.get(PRIMITIVE_VALUE);
+    expect(value).toEqual('foo');
+  });
+
+  it('injects a useValue token with value undefined', () => {
+    const value = injector.get(UNDEFINED_VALUE);
+    expect(value).toBeUndefined();
   });
 
   it('instantiates a class with useClass and deps', () => {

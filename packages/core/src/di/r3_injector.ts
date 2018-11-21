@@ -248,7 +248,7 @@ export class R3Injector {
 
     // Track the InjectorType and add a provider for it.
     this.injectorDefTypes.add(defType);
-    this.records.set(defType, makeRecord(def.factory));
+    this.records.set(defType, makeRecord(def.factory, NOT_YET));
 
     // Add providers in the same way that @NgModule resolution did:
 
@@ -391,7 +391,7 @@ export function providerToFactory(provider: SingleProvider): () => any {
 }
 
 function makeRecord<T>(
-    factory: (() => T) | undefined, value: T | {} = NOT_YET, multi: boolean = false): Record<T> {
+    factory: (() => T) | undefined, value: T | {}, multi: boolean = false): Record<T> {
   return {
     factory: factory,
     value: value,
