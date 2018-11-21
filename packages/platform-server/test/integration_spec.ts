@@ -624,15 +624,14 @@ class HiddenModule {
                });
              }));
 
-      fixmeIvy('to investigate') &&
-          it('should handle element property "name"', async(() => {
-               renderModule(NameModule, {document: doc}).then(output => {
-                 expect(output).toBe(
-                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                     '<input name=""></app></body></html>');
-                 called = true;
-               });
-             }));
+      it('should handle element property "name"', async(() => {
+           renderModule(NameModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input name=""></app></body></html>');
+             called = true;
+           });
+         }));
 
       fixmeIvy('to investigate') &&
           it('should work with sanitizer to handle "innerHTML"', async(() => {
@@ -648,15 +647,14 @@ class HiddenModule {
                });
              }));
 
-      fixmeIvy('to investigate') &&
-          it('should handle element property "hidden"', async(() => {
-               renderModule(HiddenModule, {document: doc}).then(output => {
-                 expect(output).toBe(
-                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                     '<input hidden=""><input></app></body></html>');
-                 called = true;
-               });
-             }));
+      it('should handle element property "hidden"', async(() => {
+           renderModule(HiddenModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input hidden=""><input></app></body></html>');
+             called = true;
+           });
+         }));
 
       it('should call render hook', async(() => {
            renderModule(RenderHookModule, {document: doc}).then(output => {
