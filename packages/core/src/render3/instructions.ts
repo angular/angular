@@ -15,8 +15,8 @@ import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 import {noop} from '../util/noop';
-
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
@@ -956,6 +956,9 @@ export function elementProperty<T>(
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(viewData, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(viewData, index + HEADER_OFFSET);
+    if (ngDevMode && tNode.type === TNodeType.Element) {
+      setNgReflectProperties(element as RElement, propName, value);
+    }
   } else if (tNode.type === TNodeType.Element) {
     const renderer = getRenderer();
     // It is assumed that the sanitizer is only added when the compiler determines that the property
@@ -1023,6 +1026,15 @@ function setInputsForProperty(viewData: LViewData, inputs: PropertyAliasValue, v
     ngDevMode && assertDataInRange(inputs[i] as number, viewData);
     viewData[inputs[i] as number][inputs[i + 1]] = value;
   }
+}
+
+function setNgReflectProperties(element: RElement, propName: string, value: any) {
+  const renderer = getRenderer() as ProceduralRenderer3;
+  const isProcedural = isProceduralRenderer(renderer);
+  const attrName = normalizeDebugBindingName(propName);
+  const debugValue = normalizeDebugBindingValue(value);
+  isProcedural ? renderer.setAttribute(element, attrName, debugValue) :
+                 element.setAttribute(attrName, debugValue);
 }
 
 /**
