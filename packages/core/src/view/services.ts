@@ -18,14 +18,13 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
-import {tokenKey} from '../view/util';
-
+import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
 import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NgModuleDefinition, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
-import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, viewParentEl} from './util';
+import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, tokenKey, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
 
 
@@ -465,27 +464,6 @@ function debugCheckAndUpdateNode(
 function debugCheckNoChangesNode(
     view: ViewData, nodeDef: NodeDef, argStyle: ArgumentType, values: any[]): void {
   (<any>checkNoChangesNode)(view, nodeDef, argStyle, ...values);
-}
-
-function normalizeDebugBindingName(name: string) {
-  // Attribute names with `$` (eg `x-y$`) are valid per spec, but unsupported by some browsers
-  name = camelCaseToDashCase(name.replace(/[$@]/g, '_'));
-  return `ng-reflect-${name}`;
-}
-
-const CAMEL_CASE_REGEXP = /([A-Z])/g;
-
-function camelCaseToDashCase(input: string): string {
-  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
-}
-
-function normalizeDebugBindingValue(value: any): string {
-  try {
-    // Limit the size of the value as otherwise the DOM just gets polluted.
-    return value != null ? value.toString().slice(0, 30) : value;
-  } catch (e) {
-    return '[ERROR] Exception while trying to serialize the value';
-  }
 }
 
 function nextDirectiveWithBinding(view: ViewData, nodeIndex: number): number|null {
