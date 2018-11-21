@@ -9,7 +9,7 @@ import { AdComponent } from './ad.component';
   selector: 'app-ad-banner',
   // #docregion ad-host
   template: `
-              <div class="ad-banner">
+              <div class="ad-banner-example">
                 <h3>Advertisements</h3>
                 <ng-template ad-host></ng-template>
               </div>
