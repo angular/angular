@@ -476,7 +476,6 @@ describe('event listeners', () => {
     }
 
     const fixture = new ComponentFixture(MyComp);
-    // const comp = fixture.component;
     const host = fixture.hostElement;
     host.click();
     expect(events).toEqual(['click!']);
