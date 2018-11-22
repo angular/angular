@@ -358,9 +358,8 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   return positive.concat(...negative);
 }
 
-export function parseSelectorToR3Selector(selector: string): R3CssSelectorList {
-  const selectors = CssSelector.parse(selector);
-  return selectors.map(parserSelectorToR3Selector);
+export function parseSelectorToR3Selector(selector: string | null): R3CssSelectorList {
+  return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
 }
 
 // Pasted from render3/interfaces/definition since it cannot be referenced directly

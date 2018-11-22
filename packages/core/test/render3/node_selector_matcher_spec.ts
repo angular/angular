@@ -47,6 +47,9 @@ describe('css selector matching', () => {
             .toBeFalsy(`Selector 'span' should NOT match <SPAN>'`);
       });
 
+      it('should never match empty string selector', () => {
+        expect(isMatching('span', null, [''])).toBeFalsy(`Selector '' should NOT match <span>`);
+      });
     });
 
     describe('attributes matching', () => {

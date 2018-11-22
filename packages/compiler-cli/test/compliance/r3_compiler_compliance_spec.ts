@@ -561,6 +561,62 @@ describe('compiler compliance', () => {
       expectEmit(source, OtherDirectiveDefinition, 'Incorrect OtherDirective.ngDirectiveDef');
     });
 
+    it('should support components without selector', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Directive({})
+            export class EmptyOutletDirective {}
+
+            @Component({template: '<router-outlet></router-outlet>'})
+            export class EmptyOutletComponent {}
+
+            @NgModule({declarations: [EmptyOutletComponent]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      // EmptyOutletDirective definition should be:
+      const EmptyOutletDirectiveDefinition = `
+        …
+        EmptyOutletDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: EmptyOutletDirective,
+          selectors: [],
+          factory: function EmptyOutletDirective_Factory(t) { return new (t || EmptyOutletDirective)(); }
+        });
+      `;
+
+      // EmptyOutletComponent definition should be:
+      const EmptyOutletComponentDefinition = `
+        …
+        EmptyOutletComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: EmptyOutletComponent,
+          selectors: [["ng-component"]],
+          factory: function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); },
+          consts: 1,
+          vars: 0,
+          template: function EmptyOutletComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelement(0, "router-outlet");
+            }
+          },
+          encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(
+          source, EmptyOutletDirectiveDefinition,
+          'Incorrect EmptyOutletDirective.ngDirectiveDefDef');
+      expectEmit(
+          source, EmptyOutletComponentDefinition, 'Incorrect EmptyOutletComponent.ngComponentDef');
+    });
+
     it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
        () => {
          const files = {

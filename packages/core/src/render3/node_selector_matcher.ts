@@ -65,7 +65,7 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
     if (mode & SelectorFlags.ELEMENT) {
       mode = SelectorFlags.ATTRIBUTE | mode & SelectorFlags.NOT;
-      if (current !== '' && current !== tNode.tagName) {
+      if (current !== '' && current !== tNode.tagName || current === '' && selector.length === 1) {
         if (isPositive(mode)) return false;
         skipToNextSelector = true;
       }

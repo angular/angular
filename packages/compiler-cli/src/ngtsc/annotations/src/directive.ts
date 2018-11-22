@@ -93,7 +93,7 @@ export class DirectiveDecoratorHandler implements
  */
 export function extractDirectiveMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker,
-    reflector: ReflectionHost, isCore: boolean): {
+    reflector: ReflectionHost, isCore: boolean, defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   decoratedElements: ClassMember[],
@@ -154,7 +154,7 @@ export function extractDirectiveMetadata(
   }
 
   // Parse the selector.
-  let selector = '';
+  let selector = defaultSelector;
   if (directive.has('selector')) {
     const expr = directive.get('selector') !;
     const resolved = staticallyResolve(expr, reflector, checker);
