@@ -1164,9 +1164,6 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
-    "name": "_getViewData"
-  },
-  {
     "name": "_global"
   },
   {
@@ -1341,7 +1338,7 @@
     "name": "containerInternal"
   },
   {
-    "name": "contextViewData"
+    "name": "contextLView"
   },
   {
     "name": "convertTimezoneToLocal"
@@ -1377,7 +1374,7 @@
     "name": "createLContext"
   },
   {
-    "name": "createLViewData"
+    "name": "createLView"
   },
   {
     "name": "createNodeAtIndex"
@@ -1704,16 +1701,13 @@
     "name": "getContext"
   },
   {
-    "name": "getContextViewData"
+    "name": "getContextLView"
   },
   {
     "name": "getCreationMode"
   },
   {
     "name": "getCurrencySymbol"
-  },
-  {
-    "name": "getCurrentQueries"
   },
   {
     "name": "getCurrentView"
@@ -1795,6 +1789,9 @@
   },
   {
     "name": "getLContainer"
+  },
+  {
+    "name": "getLView"
   },
   {
     "name": "getLViewChild"
@@ -1953,12 +1950,6 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRenderer"
-  },
-  {
-    "name": "getRendererFactory"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -1980,9 +1971,6 @@
     "name": "getTNode"
   },
   {
-    "name": "getTView"
-  },
-  {
     "name": "getTViewCleanup"
   },
   {
@@ -1999,9 +1987,6 @@
   },
   {
     "name": "getValue"
-  },
-  {
-    "name": "getViewData"
   },
   {
     "name": "globalListener"
@@ -2460,7 +2445,7 @@
     "name": "readPatchedData"
   },
   {
-    "name": "readPatchedLViewData"
+    "name": "readPatchedLView"
   },
   {
     "name": "recursivelyProcessProviders"
@@ -2563,9 +2548,6 @@
   },
   {
     "name": "setCurrentInjector"
-  },
-  {
-    "name": "setCurrentQueries"
   },
   {
     "name": "setDirty"
@@ -2701,9 +2683,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwErrorIfNoChangesMode"
   },
   {
     "name": "throwMultipleComponentError"

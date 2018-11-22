@@ -11,8 +11,8 @@ import {assertDefined} from './assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getContext, getDirectivesAtNodeIndex} from './context_discovery';
 import {LContext} from './interfaces/context';
 import {TElementNode} from './interfaces/node';
-import {CONTEXT, FLAGS, HOST, LViewData, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
-import {readPatchedLViewData, stringify} from './util';
+import {CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
+import {readPatchedLView, stringify} from './util';
 import {NodeInjector} from './view_engine_compatibility';
 
 
@@ -42,7 +42,7 @@ export function getComponent<T = {}>(element: Element): T|null {
   const context = loadContext(element) !;
 
   if (context.component === undefined) {
-    context.component = getComponentAtNodeIndex(context.nodeIndex, context.lViewData);
+    context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
   }
 
   return context.component as T;
@@ -70,7 +70,7 @@ export function getComponent<T = {}>(element: Element): T|null {
  */
 export function getViewComponent<T = {}>(element: Element | {}): T|null {
   const context = loadContext(element) !;
-  let lView: LViewData = context.lViewData;
+  let lView: LView = context.lView;
   while (lView[PARENT] && lView[HOST] === null) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
     lView = lView[PARENT] !;
@@ -86,10 +86,10 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
  * the application where the target is situated.
  *
  */
-export function getRootContext(target: LViewData | {}): RootContext {
-  const lViewData = Array.isArray(target) ? target : loadContext(target) !.lViewData;
-  const rootLViewData = getRootView(lViewData);
-  return rootLViewData[CONTEXT] as RootContext;
+export function getRootContext(target: LView | {}): RootContext {
+  const lView = Array.isArray(target) ? target : loadContext(target) !.lView;
+  const rootLView = getRootView(lView);
+  return rootLView[CONTEXT] as RootContext;
 }
 
 /**
@@ -114,9 +114,9 @@ export function getRootComponents(target: {}): any[] {
  */
 export function getInjector(target: {}): Injector {
   const context = loadContext(target);
-  const tNode = context.lViewData[TVIEW].data[context.nodeIndex] as TElementNode;
+  const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
 
-  return new NodeInjector(tNode, context.lViewData);
+  return new NodeInjector(tNode, context.lView);
 }
 
 /**
@@ -130,7 +130,7 @@ export function getDirectives(target: {}): Array<{}> {
   const context = loadContext(target) !;
 
   if (context.directives === undefined) {
-    context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lViewData, false);
+    context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
   }
 
   return context.directives || [];
@@ -154,25 +154,25 @@ export function loadContext(target: {}, throwOnNotFound: boolean = true): LConte
 }
 
 /**
- * Retrieve the root view from any component by walking the parent `LViewData` until
- * reaching the root `LViewData`.
+ * Retrieve the root view from any component by walking the parent `LView` until
+ * reaching the root `LView`.
  *
  * @param componentOrView any component or view
  *
  */
-export function getRootView(componentOrView: LViewData | {}): LViewData {
-  let lViewData: LViewData;
+export function getRootView(componentOrView: LView | {}): LView {
+  let lView: LView;
   if (Array.isArray(componentOrView)) {
-    ngDevMode && assertDefined(componentOrView, 'lViewData');
-    lViewData = componentOrView as LViewData;
+    ngDevMode && assertDefined(componentOrView, 'lView');
+    lView = componentOrView as LView;
   } else {
     ngDevMode && assertDefined(componentOrView, 'component');
-    lViewData = readPatchedLViewData(componentOrView) !;
+    lView = readPatchedLView(componentOrView) !;
   }
-  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
-    lViewData = lViewData[PARENT] !;
+  while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
+    lView = lView[PARENT] !;
   }
-  return lViewData;
+  return lView;
 }
 
 /**
@@ -188,7 +188,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
   const context = loadContext(target) !;
 
   if (context.localRefs === undefined) {
-    context.localRefs = discoverLocalRefs(context.lViewData, context.nodeIndex);
+    context.localRefs = discoverLocalRefs(context.lView, context.nodeIndex);
   }
 
   return context.localRefs || {};

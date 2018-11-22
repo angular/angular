@@ -17,14 +17,14 @@ import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, createLViewData, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, leaveView, resetComponentState} from './state';
-import {defaultScheduler, getRootView, readPatchedLViewData, stringify} from './util';
+import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
 
 
 
@@ -120,7 +120,7 @@ export function renderComponent<T>(
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootView: LViewData = createLViewData(
+  const rootView: LView = createLView(
       null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, rendererFactory,
       renderer, undefined, opts.injector || null);
 
@@ -154,12 +154,11 @@ export function renderComponent<T>(
  * @returns Component view created
  */
 export function createRootComponentView(
-    rNode: RElement | null, def: ComponentDef<any>, rootView: LViewData,
-    rendererFactory: RendererFactory3, renderer: Renderer3,
-    sanitizer?: Sanitizer | null): LViewData {
+    rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
+    rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
   resetComponentState();
   const tView = rootView[TVIEW];
-  const componentView = createLViewData(
+  const componentView = createLView(
       rootView,
       getOrCreateTView(
           def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
@@ -185,8 +184,8 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    componentView: LViewData, componentDef: ComponentDef<T>, rootView: LViewData,
-    rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+    componentView: LView, componentDef: ComponentDef<T>, rootView: LView, rootContext: RootContext,
+    hostFeatures: HostFeature[] | null): any {
   const tView = rootView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootView, componentDef);
@@ -226,7 +225,7 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLViewData(component) ![TVIEW];
+  const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
   queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);

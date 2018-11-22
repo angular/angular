@@ -7,6 +7,8 @@
  */
 
 import {getComponentDef, getNgModuleDef} from './definition';
+import {TNode} from './interfaces/node';
+import {LView} from './interfaces/view';
 
 // The functions in this file verify that the assumptions we are making
 // about state in an instruction are correct before implementing any logic.
@@ -86,4 +88,23 @@ function throwError(msg: string): never {
 
 export function assertDomNode(node: any) {
   assertEqual(node instanceof Node, true, 'The provided value must be an instance of a DOM Node');
+}
+
+
+export function assertPreviousIsParent(isParent: boolean) {
+  assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
+}
+
+export function assertHasParent(tNode: TNode) {
+  assertDefined(tNode.parent, 'previousOrParentTNode should have a parent');
+}
+
+export function assertDataNext(lView: LView, index: number, arr?: any[]) {
+  if (arr == null) arr = lView;
+  assertEqual(
+      arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
+}
+
+export function assertDataInRange(arr: any[], index: number) {
+  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
 }

@@ -348,9 +348,6 @@
     "name": "PlatformRef"
   },
   {
-    "name": "QUERIES"
-  },
-  {
     "name": "R3Injector"
   },
   {
@@ -552,9 +549,6 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
-    "name": "_getViewData"
-  },
-  {
     "name": "_global"
   },
   {
@@ -663,7 +657,7 @@
     "name": "createLContext"
   },
   {
-    "name": "createLViewData"
+    "name": "createLView"
   },
   {
     "name": "createNodeAtIndex"
@@ -888,6 +882,9 @@
     "name": "getLContainer"
   },
   {
+    "name": "getLView"
+  },
+  {
     "name": "getLViewChild"
   },
   {
@@ -954,9 +951,6 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRenderer"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -969,13 +963,7 @@
     "name": "getTNode"
   },
   {
-    "name": "getTView"
-  },
-  {
     "name": "getTViewCleanup"
-  },
-  {
-    "name": "getViewData"
   },
   {
     "name": "hasDeps"
@@ -1239,7 +1227,7 @@
     "name": "readPatchedData"
   },
   {
-    "name": "readPatchedLViewData"
+    "name": "readPatchedLView"
   },
   {
     "name": "recursivelyProcessProviders"

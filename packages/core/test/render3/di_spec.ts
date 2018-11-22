@@ -13,12 +13,12 @@ import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {defineDirective, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {getNativeByIndex} from '../../src/render3/util';
 import {LViewFlags} from '../../src/render3/interfaces/view';
-import {getViewData, enterView, leaveView} from '../../src/render3/state';
+import {enterView, leaveView, getLView} from '../../src/render3/state';
 import {ViewRef} from '../../src/render3/view_ref';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -1264,7 +1264,7 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dir', '', 'dirSame', '']);
             elementEnd();
-            div = getNativeByIndex(0, getViewData());
+            div = getNativeByIndex(0, getLView());
           }
         }, 1, 0, [Directive, DirectiveSameInstance]);
 
@@ -2020,7 +2020,7 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView = createLViewData(
+      const contentView = createLView(
           null, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways,
           {} as any, {} as any);
       const oldView = enterView(contentView, null);

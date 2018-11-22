@@ -231,7 +231,7 @@ class DebugNode__POST_R3__ implements DebugNode {
     // TODO move to discoverable utils
     const context = loadContext(this.nativeNode as HTMLElement, false) !;
     if (!context) return [];
-    const lView = context.lViewData;
+    const lView = context.lView;
     const tView = lView[TVIEW];
     const tNode = tView.data[context.nodeIndex] as TNode;
     const providerTokens: any[] = [];
@@ -268,7 +268,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   get properties(): {[key: string]: any;} {
     const context = loadContext(this.nativeNode) !;
-    const lView = context.lViewData;
+    const lView = context.lView;
     const tView = lView[TVIEW];
     const tNode = tView.data[context.nodeIndex] as TNode;
     const properties = {};

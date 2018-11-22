@@ -1,17 +1,17 @@
 # View Data Explanation
 
-`LViewData` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
-`LViewData` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
-`TView.data` is a corollary to the `LViewData` and contains information which can be shared across the template instances.
+`LView` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
+`LView` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
+`TView.data` is a corollary to the `LView` and contains information which can be shared across the template instances.
 
-## `LViewData` / `TView.data` layout.
+## `LView` / `TView.data` layout.
 
-Both `LViewData` and `TView.data` are arrays whose indices refer to the same item.
-For example index `123` may point to a component instance in the `LViewData` but a component type in `TView.data`.
+Both `LView` and `TView.data` are arrays whose indices refer to the same item.
+For example index `123` may point to a component instance in the `LView` but a component type in `TView.data`.
 
 The layout is as such:
 
-| Section    | `LViewData`                                                  | `TView.data`
+| Section    | `LView`                                                  | `TView.data`
 | ---------- | ------------------------------------------------------------ | --------------------------------------------------
 | `HEADER`   | contextual data                                              |  mostly `null`
 | `CONSTS`   | DOM, pipe, and local ref instances                           |
@@ -22,7 +22,7 @@ The layout is as such:
 ## `HEADER`
 
 `HEADER` is a fixed array size which contains contextual information about the template.
-Mostly information such as parent `LViewData`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
+Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
 
 
 ## `CONSTS`
@@ -57,7 +57,7 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -70,9 +70,9 @@ The above will create following layout:
 
 NOTE:
 - The `10` is not the actual size of `HEADER` but it is left here for simplification.
-- `LViewData` contains DOM instances only
+- `LView` contains DOM instances only
 - `TView.data` contains information on relationships such as where the parent is.
-  You need the `TView.data` information to make sense of the `LViewData` information.
+  You need the `TView.data` information to make sense of the `LView` information.
 
 
 ## `VARS`
@@ -109,7 +109,7 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -121,7 +121,7 @@ The above will create following layout:
 | ...   | ...                 | ...
 
 NOTE:
-- `LViewData` contain DOM instances and previous binding values only
+- `LView` contain DOM instances and previous binding values only
 - `TView.data` contains information on relationships and property labels.
 
 
@@ -182,7 +182,7 @@ class Tooltip {
 
 The above will create the following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -256,10 +256,10 @@ This is because at the time of compilation we don't know about all of the inject
 
 Injection needs to store three things:
 - The injection token stored in `TView.data`
-- The token factory stored in `LProtoViewData` and subsequently in `LViewData`
-- The value for the injection token stored in `LViewData`. (Replacing token factory upon creation).
+- The token factory stored in `LProtoViewData` and subsequently in `LView`
+- The value for the injection token stored in `LView`. (Replacing token factory upon creation).
 
-To save time when creating `LViewData` we use an array clone operation to copy data from `LProtoViewdata` to `LViewData`.
+To save time when creating `LView` we use an array clone operation to copy data from `LProtoViewdata` to `LView`.
 The `LProtoViewData` is initialized by the `ProvidesFeature`.
 
 Injection tokens are sorted into three sections:
@@ -321,7 +321,7 @@ class Child {
 
 The above will create the following layout:
 
-| Index | `LViewData`                                  | `TView.data`
+| Index | `LView`                                  | `TView.data`
 | ----: | ------------                                 | -------------
 | `HEADER`
 | `CONSTS`
@@ -366,9 +366,9 @@ function isFactory(obj: any): obj is Factory {
 Pseudo code:
 1. Check if bloom filter has the value of the token. (If not exit)
 2. Locate the token in the expando honoring `directives`, `providers` and `viewProvider` rules by limiting the search scope.
-3. Read the value of `lViewData[index]` at that location.
-   - if `isFactory(lViewData[index])` then mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
-   - if `!isFactory(lViewData[index])` then return the cached value as is.
+3. Read the value of `lView[index]` at that location.
+   - if `isFactory(lView[index])` then mark it as resolving and invoke it. Replace `lView[index]` with the value returned from factory (caching mechanism).
+   - if `!isFactory(lView[index])` then return the cached value as is.
 
 # `EXPANDO` and Injecting Special Objects.
 
@@ -437,6 +437,6 @@ function inject(token: any): any {
 
 TODO
 
-## Combining `LContainer` with `LViewData`
+## Combining `LContainer` with `LView`
 
 TODO

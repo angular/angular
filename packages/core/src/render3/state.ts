@@ -6,58 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Sanitizer} from '../sanitization/security';
-
-import {assertDefined, assertEqual} from './assert';
+import {assertDefined} from './assert';
 import {executeHooks} from './hooks';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {Renderer3, RendererFactory3} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LViewData, LViewFlags, OpaqueViewState, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, TView} from './interfaces/view';
-import {assertDataInRangeInternal, isContentQueryHost} from './util';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW} from './interfaces/view';
+import {isContentQueryHost} from './util';
 
-/**
- * This property gets set before entering a template.
- *
- * This renderer can be one of two varieties of Renderer3:
- *
- * - ObjectedOrientedRenderer3
- *
- * This is the native browser API style, e.g. operations are methods on individual objects
- * like HTMLElement. With this style, no additional code is needed as a facade (reducing payload
- * size).
- *
- * - ProceduralRenderer3
- *
- * In non-native browser environments (e.g. platforms such as web-workers), this is the facade
- * that enables element manipulation. This also facilitates backwards compatibility with
- * Renderer2.
- */
-let renderer: Renderer3;
 
-export function getRenderer(): Renderer3 {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return renderer;
-}
-
-export function setRenderer(r: Renderer3): void {
-  renderer = r;
-}
-
-let rendererFactory: RendererFactory3;
-
-export function getRendererFactory(): RendererFactory3 {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return rendererFactory;
-}
-
-export function getCurrentSanitizer(): Sanitizer|null {
-  return viewData && viewData[SANITIZER];
-}
 
 /**
  * Store the element depth count. This is used to identify the root elements of the template
- * so that we can than attach `LViewData` to only those elements.
+ * so that we can than attach `LView` to only those elements.
  */
 let elementDepthCount !: number;
 
@@ -142,19 +102,8 @@ export function disableBindings(): void {
   bindingsEnabled = false;
 }
 
-/**
- * Returns the current OpaqueViewState instance.
- *
- * Used in conjunction with the restoreView() instruction to save a snapshot
- * of the current view and restore it when listeners are invoked. This allows
- * walking the declaration view tree in listeners to get vars from parent views.
- */
-export function getCurrentView(): OpaqueViewState {
-  return viewData as any as OpaqueViewState;
-}
-
-export function _getViewData(): LViewData {
-  return viewData;
+export function getLView(): LView {
+  return lView;
 }
 
 /**
@@ -167,7 +116,7 @@ export function _getViewData(): LViewData {
  * @param viewToRestore The OpaqueViewState instance to restore.
  */
 export function restoreView(viewToRestore: OpaqueViewState) {
-  contextViewData = viewToRestore as any as LViewData;
+  contextLView = viewToRestore as any as LView;
 }
 
 /** Used to set the parent property when nodes are created and track query results. */
@@ -182,9 +131,9 @@ export function setPreviousOrParentTNode(tNode: TNode) {
   previousOrParentTNode = tNode;
 }
 
-export function setTNodeAndViewData(tNode: TNode, view: LViewData) {
+export function setTNodeAndViewData(tNode: TNode, view: LView) {
   previousOrParentTNode = tNode;
-  viewData = view;
+  lView = view;
 }
 
 /**
@@ -203,24 +152,6 @@ export function setIsParent(value: boolean): void {
   isParent = value;
 }
 
-let tView: TView;
-
-export function getTView(): TView {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return tView;
-}
-
-let currentQueries: LQueries|null;
-
-export function getCurrentQueries(): LQueries|null {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return currentQueries;
-}
-
-export function setCurrentQueries(queries: LQueries | null): void {
-  currentQueries = queries;
-}
-
 /**
  * Query instructions can ask for "current queries" in 2 different cases:
  * - when creating view queries (at the root of a component view, before any node is created - in
@@ -230,15 +161,17 @@ export function setCurrentQueries(queries: LQueries | null): void {
  */
 export function getOrCreateCurrentQueries(
     QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
+  const lView = getLView();
+  let currentQueries = lView[QUERIES];
   // if this is the first content query on a node, any existing LQueries needs to be cloned
   // in subsequent template passes, the cloning occurs before directive instantiation.
-  if (previousOrParentTNode && previousOrParentTNode !== viewData[HOST_NODE] &&
+  if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
       !isContentQueryHost(previousOrParentTNode)) {
-    currentQueries && (currentQueries = currentQueries.clone());
+    currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
     previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
   }
 
-  return currentQueries || (currentQueries = new QueryType(null, null, null));
+  return currentQueries || (lView[QUERIES] = new QueryType(null, null, null));
 }
 
 /**
@@ -257,17 +190,7 @@ export function getCreationMode(): boolean {
  * An array of nodes (text, element, container, etc), pipes, their bindings, and
  * any local variables that need to be stored between invocations.
  */
-let viewData: LViewData;
-
-/**
- * Internal function that returns the current LViewData instance.
- *
- * The getCurrentView() instruction should be used for anything public.
- */
-export function getViewData(): LViewData {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return viewData;
-}
+let lView: LView;
 
 /**
  * The last viewData retrieved by nextContext().
@@ -275,21 +198,13 @@ export function getViewData(): LViewData {
  *
  * e.g. const inner = x().$implicit; const outer = x().$implicit;
  */
-let contextViewData: LViewData = null !;
+let contextLView: LView = null !;
 
-export function getContextViewData(): LViewData {
+export function getContextLView(): LView {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return contextViewData;
+  return contextLView;
 }
 
-export function getCleanup(view: LViewData): any[] {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
-}
-
-export function getTViewCleanup(view: LViewData): any[] {
-  return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
-}
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
  *
@@ -345,33 +260,29 @@ export function setBindingRoot(value: number) {
  * @param host Element to which the View is a child of
  * @returns the previous state;
  */
-export function enterView(
-    newView: LViewData, hostTNode: TElementNode | TViewNode | null): LViewData {
-  const oldView: LViewData = viewData;
-  tView = newView && newView[TVIEW];
+export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | null): LView {
+  const oldView = lView;
+  if (newView) {
+    const tView = newView[TVIEW];
 
-  creationMode = newView && (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
-  firstTemplatePass = newView && tView.firstTemplatePass;
-  bindingRootIndex = newView && tView.bindingStartIndex;
-  rendererFactory = newView && newView[RENDERER_FACTORY];
-  renderer = newView && newView[RENDERER];
+    creationMode = (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
+    firstTemplatePass = tView.firstTemplatePass;
+    bindingRootIndex = tView.bindingStartIndex;
+  }
 
   previousOrParentTNode = hostTNode !;
   isParent = true;
 
-  viewData = contextViewData = newView;
-  oldView && (oldView[QUERIES] = currentQueries);
-  currentQueries = newView && newView[QUERIES];
-
+  lView = contextLView = newView;
   return oldView;
 }
 
 export function nextContextImpl<T = any>(level: number = 1): T {
-  contextViewData = walkUpViews(level, contextViewData !);
-  return contextViewData[CONTEXT] as T;
+  contextLView = walkUpViews(level, contextLView !);
+  return contextLView[CONTEXT] as T;
 }
 
-function walkUpViews(nestingLevel: number, currentView: LViewData): LViewData {
+function walkUpViews(nestingLevel: number, currentView: LView): LView {
   while (nestingLevel > 0) {
     ngDevMode && assertDefined(
                      currentView[DECLARATION_VIEW],
@@ -400,34 +311,16 @@ export function resetComponentState() {
  * @param creationOnly An optional boolean to indicate that the view was processed in creation mode
  * only, i.e. the first update will be done later. Only possible for dynamically created views.
  */
-export function leaveView(newView: LViewData, creationOnly?: boolean): void {
+export function leaveView(newView: LView, creationOnly?: boolean): void {
+  const tView = lView[TVIEW];
   if (!creationOnly) {
     if (!checkNoChangesMode) {
-      executeHooks(viewData, tView.viewHooks, tView.viewCheckHooks, creationMode);
+      executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, creationMode);
     }
     // Views are clean and in update mode after being checked, so these bits are cleared
-    viewData[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
+    lView[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
-  viewData[FLAGS] |= LViewFlags.RunInit;
-  viewData[BINDING_INDEX] = tView.bindingStartIndex;
+  lView[FLAGS] |= LViewFlags.RunInit;
+  lView[BINDING_INDEX] = tView.bindingStartIndex;
   enterView(newView, null);
-}
-
-export function assertPreviousIsParent() {
-  assertEqual(isParent, true, 'previousOrParentTNode should be a parent');
-}
-
-export function assertHasParent() {
-  assertDefined(previousOrParentTNode.parent, 'previousOrParentTNode should have a parent');
-}
-
-export function assertDataInRange(index: number, arr?: any[]) {
-  if (arr == null) arr = viewData;
-  assertDataInRangeInternal(index, arr || viewData);
-}
-
-export function assertDataNext(index: number, arr?: any[]) {
-  if (arr == null) arr = viewData;
-  assertEqual(
-      arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
 }

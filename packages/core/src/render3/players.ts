@@ -36,9 +36,9 @@ export function addPlayer(
   }
 
   const element = context.native as HTMLElement;
-  const lViewData = context.lViewData;
+  const lView = context.lView;
   const playerContext = getOrCreatePlayerContext(element, context) !;
-  const rootContext = getRootContext(lViewData);
+  const rootContext = getRootContext(lView);
   addPlayerInternal(playerContext, rootContext, element, player, 0, ref);
   scheduleTick(rootContext, RootContextFlags.FlushPlayers);
 }
@@ -60,7 +60,7 @@ export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElem
     return [];
   }
 
-  const stylingContext = getStylingContext(context.nodeIndex - HEADER_OFFSET, context.lViewData);
+  const stylingContext = getStylingContext(context.nodeIndex - HEADER_OFFSET, context.lView);
   const playerContext = stylingContext ? getPlayerContext(stylingContext) : null;
   return playerContext ? getPlayersInternal(playerContext) : [];
 }

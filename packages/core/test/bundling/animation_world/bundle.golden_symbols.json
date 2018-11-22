@@ -387,7 +387,7 @@
     "name": "containerInternal"
   },
   {
-    "name": "contextViewData"
+    "name": "contextLView"
   },
   {
     "name": "createContainerRef"
@@ -411,7 +411,7 @@
     "name": "createLContext"
   },
   {
-    "name": "createLViewData"
+    "name": "createLView"
   },
   {
     "name": "createNodeAtIndex"
@@ -612,9 +612,6 @@
     "name": "getCreationMode"
   },
   {
-    "name": "getCurrentQueries"
-  },
-  {
     "name": "getDirectiveDef"
   },
   {
@@ -658,6 +655,9 @@
   },
   {
     "name": "getLContainer"
+  },
+  {
+    "name": "getLView"
   },
   {
     "name": "getLViewChild"
@@ -741,12 +741,6 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRenderer"
-  },
-  {
-    "name": "getRendererFactory"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -771,9 +765,6 @@
     "name": "getTNode"
   },
   {
-    "name": "getTView"
-  },
-  {
     "name": "getTViewCleanup"
   },
   {
@@ -784,9 +775,6 @@
   },
   {
     "name": "getValue"
-  },
-  {
-    "name": "getViewData"
   },
   {
     "name": "hackImplementationOfElementStyling"
@@ -1032,7 +1020,7 @@
     "name": "readPatchedData"
   },
   {
-    "name": "readPatchedLViewData"
+    "name": "readPatchedLView"
   },
   {
     "name": "refreshChildComponents"
@@ -1102,9 +1090,6 @@
   },
   {
     "name": "setContextPlayersDirty"
-  },
-  {
-    "name": "setCurrentQueries"
   },
   {
     "name": "setDirty"
@@ -1186,9 +1171,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwErrorIfNoChangesMode"
   },
   {
     "name": "throwMultipleComponentError"
