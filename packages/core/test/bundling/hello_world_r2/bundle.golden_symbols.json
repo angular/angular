@@ -357,6 +357,9 @@
     "name": "RENDERER"
   },
   {
+    "name": "RENDERER_FACTORY"
+  },
+  {
     "name": "RENDER_PARENT"
   },
   {
@@ -391,6 +394,9 @@
   },
   {
     "name": "SafeSubscriber"
+  },
+  {
+    "name": "Sanitizer"
   },
   {
     "name": "Self"
@@ -454,9 +460,6 @@
   },
   {
     "name": "ViewEncapsulation"
-  },
-  {
-    "name": "WRAP_RENDERER_FACTORY2"
   },
   {
     "name": "_CLEAN_PROMISE"
@@ -547,6 +550,9 @@
   },
   {
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "_getViewData"
   },
   {
     "name": "_global"
@@ -951,9 +957,6 @@
     "name": "getRenderer"
   },
   {
-    "name": "getRendererFactory"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -1321,9 +1324,6 @@
   },
   {
     "name": "setPreviousOrParentTNode"
-  },
-  {
-    "name": "setRendererFactory"
   },
   {
     "name": "setRootDomAdapter"

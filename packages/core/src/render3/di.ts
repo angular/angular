@@ -20,7 +20,7 @@ import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInject
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LViewData, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {getPreviousOrParentTNode, getViewData, setTNodeAndViewData} from './state';
+import {_getViewData, getPreviousOrParentTNode, getViewData, setTNodeAndViewData} from './state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, stringify} from './util';
 
 /**
@@ -556,13 +556,19 @@ export class NodeInjector implements Injector {
 
   constructor(
       private _tNode: TElementNode|TContainerNode|TElementContainerNode,
-      private _hostView: LViewData) {
-    this._injectorIndex = getOrCreateNodeInjectorForNode(_tNode, _hostView);
+      private _lView: LViewData) {
+    this._injectorIndex = getOrCreateNodeInjectorForNode(_tNode, _lView);
   }
 
   get(token: any): any {
-    setTNodeAndViewData(this._tNode, this._hostView);
-    return getOrCreateInjectable(this._tNode, this._hostView, token);
+    const previousTNode = getPreviousOrParentTNode();
+    const previousLView = _getViewData();
+    setTNodeAndViewData(this._tNode, this._lView);
+    try {
+      return getOrCreateInjectable(this._tNode, this._lView, token);
+    } finally {
+      setTNodeAndViewData(previousTNode, previousLView);
+    }
   }
 }
 

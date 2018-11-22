@@ -90,7 +90,7 @@ export interface AttributeDecorator {
    * ]
    * ```
    *
-   *
+   * @publicApi
    */
   (name: string): any;
   new (name: string): Attribute;

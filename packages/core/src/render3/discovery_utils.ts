@@ -141,9 +141,11 @@ export function getDirectives(target: {}): Array<{}> {
  * Throws if a given target doesn't have associated LContext.
  *
  */
-export function loadContext(target: {}): LContext {
+export function loadContext(target: {}): LContext;
+export function loadContext(target: {}, throwOnNotFound: false): LContext|null;
+export function loadContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
   const context = getContext(target);
-  if (!context) {
+  if (!context && throwOnNotFound) {
     throw new Error(
         ngDevMode ? `Unable to find context associated with ${stringify(target)}` :
                     'Invalid ng target');

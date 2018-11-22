@@ -76,12 +76,12 @@ export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 export declare class Compiler {
+    compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) => Promise<ModuleWithComponentFactories<T>>;
+    compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T>;
+    compileModuleAsync: <T>(moduleType: Type<T>) => Promise<NgModuleFactory<T>>;
+    compileModuleSync: <T>(moduleType: Type<T>) => NgModuleFactory<T>;
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
-    compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
-    compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
 }
 
@@ -188,47 +188,49 @@ export declare function createPlatformFactory(parentPlatformFactory: ((extraProv
 
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
-export declare class DebugElement extends DebugNode {
-    attributes: {
+export interface DebugElement extends DebugNode {
+    readonly attributes: {
         [key: string]: string | null;
     };
-    childNodes: DebugNode[];
+    readonly childNodes: DebugNode[];
     readonly children: DebugElement[];
-    classes: {
+    readonly classes: {
         [key: string]: boolean;
     };
-    name: string;
-    nativeElement: any;
-    properties: {
+    readonly name: string;
+    readonly nativeElement: any;
+    readonly properties: {
         [key: string]: any;
     };
-    styles: {
+    readonly styles: {
         [key: string]: string | null;
     };
-    constructor(nativeNode: any, parent: any, _debugContext: DebugContext);
-    addChild(child: DebugNode): void;
-    insertBefore(refChild: DebugNode, newChild: DebugNode): void;
-    insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]): void;
     query(predicate: Predicate<DebugElement>): DebugElement;
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
-    removeChild(child: DebugNode): void;
     triggerEventHandler(eventName: string, eventObj: any): void;
 }
 
-export declare class DebugNode {
+export declare const DebugElement: {
+    new (...args: any[]): DebugElement;
+};
+
+export interface DebugNode {
     readonly componentInstance: any;
     readonly context: any;
     readonly injector: Injector;
-    listeners: EventListener[];
-    nativeNode: any;
-    parent: DebugElement | null;
+    readonly listeners: EventListener[];
+    readonly nativeNode: any;
+    readonly parent: DebugElement | null;
     readonly providerTokens: any[];
     readonly references: {
         [key: string]: any;
     };
-    constructor(nativeNode: any, parent: DebugNode | null, _debugContext: DebugContext);
 }
+
+export declare const DebugNode: {
+    new (...args: any[]): DebugNode;
+};
 
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
@@ -330,7 +332,7 @@ export interface ForwardRefFn {
     (): any;
 }
 
-export declare function getDebugNode(nativeNode: any): DebugNode | null;
+export declare const getDebugNode: (nativeNode: any) => DebugNode | null;
 
 export declare function getModuleFactory(id: string): NgModuleFactory<any>;
 

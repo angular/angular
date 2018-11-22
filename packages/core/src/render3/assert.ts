@@ -83,3 +83,7 @@ function throwError(msg: string): never {
   debugger;  // Left intentionally for better debugger experience.
   throw new Error(`ASSERTION ERROR: ${msg}`);
 }
+
+export function assertDomNode(node: any) {
+  assertEqual(node instanceof Node, true, 'The provided value must be an instance of a DOM Node');
+}

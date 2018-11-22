@@ -142,8 +142,8 @@ function declareTests(config?: {useJit: boolean}) {
       return new ComponentFixture(comp, null !, false);
     }
 
-    describe('errors', () => {
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+    fixmeIvy('FW-682: Compiler error handling') &&  //
+        describe('errors', () => {
           it('should error when exporting a directive that was neither declared nor imported', () => {
             @NgModule({exports: [SomeDirective]})
             class SomeModule {
@@ -154,7 +154,6 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export directive ${stringify(SomeDirective)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
           it('should error when exporting a pipe that was neither declared nor imported', () => {
             @NgModule({exports: [SomePipe]})
             class SomeModule {
@@ -165,7 +164,6 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
           it('should error if a directive is declared in more than 1 module', () => {
             @NgModule({declarations: [SomeDirective]})
             class Module1 {
@@ -184,7 +182,6 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
           it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
              () => {
                @NgModule({declarations: [SomeDirective], exports: [SomeDirective]})
@@ -202,7 +199,6 @@ function declareTests(config?: {useJit: boolean}) {
                        `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
              });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
           it('should error if a pipe is declared in more than 1 module', () => {
             @NgModule({declarations: [SomePipe]})
             class Module1 {
@@ -221,7 +217,6 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
           it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
              () => {
                @NgModule({declarations: [SomePipe], exports: [SomePipe]})
@@ -239,10 +234,10 @@ function declareTests(config?: {useJit: boolean}) {
                        `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
              });
 
-    });
+        });
 
     describe('schemas', () => {
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -255,22 +250,19 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
-             () => {
-               @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-               class ComponentUsingInvalidProperty {
-               }
+      it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+         () => {
+           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+           class ComponentUsingInvalidProperty {
+           }
 
-               @NgModule({
-                 schemas: [CUSTOM_ELEMENTS_SCHEMA],
-                 declarations: [ComponentUsingInvalidProperty]
-               })
-               class SomeModule {
-               }
+           @NgModule(
+               {schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [ComponentUsingInvalidProperty]})
+           class SomeModule {
+           }
 
-               expect(() => createModule(SomeModule)).not.toThrow();
-             });
+           expect(() => createModule(SomeModule)).not.toThrow();
+         });
     });
 
     describe('id', () => {
@@ -284,7 +276,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       afterEach(() => clearModulesForTest());
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-740: missing global registry of NgModules by id') &&
           it('should register loaded modules', () => {
             createModule(SomeModule);
             const factory = getModuleFactory(token);
@@ -292,7 +284,7 @@ function declareTests(config?: {useJit: boolean}) {
             expect(factory.moduleType).toBe(SomeModule);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when registering a duplicate module', () => {
             createModule(SomeModule);
             expect(() => createModule(SomeOtherModule)).toThrowError(/Duplicate module registered/);
@@ -300,23 +292,21 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('entryComponents', () => {
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should create ComponentFactories in root modules', () => {
-            @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
-            class SomeModule {
-            }
+      it('should create ComponentFactories in root modules', () => {
+        @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
+        class SomeModule {
+        }
 
-            const ngModule = createModule(SomeModule);
-            expect(
-                ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
-                .toBe(SomeComp);
-            expect(ngModule.injector.get(ComponentFactoryResolver)
-                       .resolveComponentFactory(SomeComp)
-                       .componentType)
-                .toBe(SomeComp);
-          });
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
+            .toBe(SomeComp);
+        expect(ngModule.injector.get(ComponentFactoryResolver)
+                   .resolveComponentFactory(SomeComp)
+                   .componentType)
+            .toBe(SomeComp);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw if we cannot find a module associated with a module-level entryComponent',
              () => {
                @Component({template: ''})
@@ -332,7 +322,7 @@ function declareTests(config?: {useJit: boolean}) {
                        'Component SomeCompWithEntryComponents is not part of any NgModule or the module has not been imported into your module.');
              });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw if we cannot find a module associated with a component-level entryComponent',
              () => {
                @Component({template: '', entryComponents: [SomeComp]})
@@ -348,100 +338,91 @@ function declareTests(config?: {useJit: boolean}) {
                        'Component SomeComp is not part of any NgModule or the module has not been imported into your module.');
              });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
-            @NgModule({
-              declarations: [SomeComp],
-              providers: [{
-                provide: ANALYZE_FOR_ENTRY_COMPONENTS,
-                multi: true,
-                useValue: [{a: 'b', component: SomeComp}]
-              }]
-            })
-            class SomeModule {
-            }
+      it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
+        @NgModule({
+          declarations: [SomeComp],
+          providers: [{
+            provide: ANALYZE_FOR_ENTRY_COMPONENTS,
+            multi: true,
+            useValue: [{a: 'b', component: SomeComp}]
+          }]
+        })
+        class SomeModule {
+        }
 
-            const ngModule = createModule(SomeModule);
-            expect(
-                ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
-                .toBe(SomeComp);
-            expect(ngModule.injector.get(ComponentFactoryResolver)
-                       .resolveComponentFactory(SomeComp)
-                       .componentType)
-                .toBe(SomeComp);
-          });
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
+            .toBe(SomeComp);
+        expect(ngModule.injector.get(ComponentFactoryResolver)
+                   .resolveComponentFactory(SomeComp)
+                   .componentType)
+            .toBe(SomeComp);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should create ComponentFactories in imported modules', () => {
-            @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
-            class SomeImportedModule {
-            }
+      it('should create ComponentFactories in imported modules', () => {
+        @NgModule({declarations: [SomeComp], entryComponents: [SomeComp]})
+        class SomeImportedModule {
+        }
 
-            @NgModule({imports: [SomeImportedModule]})
-            class SomeModule {
-            }
+        @NgModule({imports: [SomeImportedModule]})
+        class SomeModule {
+        }
 
-            const ngModule = createModule(SomeModule);
-            expect(
-                ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
-                .toBe(SomeComp);
-            expect(ngModule.injector.get(ComponentFactoryResolver)
-                       .resolveComponentFactory(SomeComp)
-                       .componentType)
-                .toBe(SomeComp);
-          });
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
+            .toBe(SomeComp);
+        expect(ngModule.injector.get(ComponentFactoryResolver)
+                   .resolveComponentFactory(SomeComp)
+                   .componentType)
+            .toBe(SomeComp);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should create ComponentFactories if the component was imported', () => {
-            @NgModule({declarations: [SomeComp], exports: [SomeComp]})
-            class SomeImportedModule {
-            }
+      it('should create ComponentFactories if the component was imported', () => {
+        @NgModule({declarations: [SomeComp], exports: [SomeComp]})
+        class SomeImportedModule {
+        }
 
-            @NgModule({imports: [SomeImportedModule], entryComponents: [SomeComp]})
-            class SomeModule {
-            }
+        @NgModule({imports: [SomeImportedModule], entryComponents: [SomeComp]})
+        class SomeModule {
+        }
 
-            const ngModule = createModule(SomeModule);
-            expect(
-                ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
-                .toBe(SomeComp);
-            expect(ngModule.injector.get(ComponentFactoryResolver)
-                       .resolveComponentFactory(SomeComp)
-                       .componentType)
-                .toBe(SomeComp);
-          });
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
+            .toBe(SomeComp);
+        expect(ngModule.injector.get(ComponentFactoryResolver)
+                   .resolveComponentFactory(SomeComp)
+                   .componentType)
+            .toBe(SomeComp);
+      });
 
     });
 
     describe('bootstrap components', () => {
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should create ComponentFactories', () => {
-            @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
-            class SomeModule {
-            }
+      it('should create ComponentFactories', () => {
+        @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
+        class SomeModule {
+        }
 
-            const ngModule = createModule(SomeModule);
-            expect(
-                ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
-                .toBe(SomeComp);
-          });
+        const ngModule = createModule(SomeModule);
+        expect(ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp) !.componentType)
+            .toBe(SomeComp);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should store the ComponentFactories in the NgModuleInjector', () => {
-            @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
-            class SomeModule {
-            }
+      it('should store the ComponentFactories in the NgModuleInjector', () => {
+        @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
+        class SomeModule {
+        }
 
-            const ngModule = <InternalNgModuleRef<any>>createModule(SomeModule);
-            expect(ngModule._bootstrapComponents.length).toBe(1);
-            expect(ngModule._bootstrapComponents[0]).toBe(SomeComp);
-          });
+        const ngModule = <InternalNgModuleRef<any>>createModule(SomeModule);
+        expect(ngModule._bootstrapComponents.length).toBe(1);
+        expect(ngModule._bootstrapComponents[0]).toBe(SomeComp);
+      });
 
     });
 
     describe('directives and pipes', () => {
-      describe('declarations', () => {
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView') &&
+          describe('declarations', () => {
             it('should be supported in root modules', () => {
               @NgModule({
                 declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
@@ -457,7 +438,6 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
             it('should be supported in imported modules', () => {
               @NgModule({
                 declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
@@ -477,7 +457,6 @@ function declareTests(config?: {useJit: boolean}) {
             });
 
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
             it('should be supported in nested components', () => {
               @Component({
                 selector: 'parent',
@@ -501,11 +480,11 @@ function declareTests(config?: {useJit: boolean}) {
               expect(compFixture.debugElement.children[0].children[0].properties['title'])
                   .toBe('transformed someValue');
             });
-      });
+          });
 
       describe('import/export', () => {
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('Pipe with name \'somePipe\' not found!') &&
             it('should support exported directives and pipes', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
@@ -527,7 +506,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('Pipe with name \'somePipe\' not found!') &&
             it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
                () => {
                  @NgModule(
@@ -550,7 +529,7 @@ function declareTests(config?: {useJit: boolean}) {
                      .toBe('transformed someValue');
                });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('Pipe with name \'somePipe\' not found!') &&
             it('should support reexported modules', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
@@ -575,7 +554,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('Pipe with name \'somePipe\' not found!') &&
             it('should support exporting individual directives of an imported module', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
@@ -600,7 +579,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('FW-682: Compiler error handling') &&
             it('should not use non exported pipes of an imported module', () => {
               @NgModule({
                 declarations: [SomePipe],
@@ -620,7 +599,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toThrowError(/The pipe 'somePipe' could not be found/);
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('FW-682: Compiler error handling') &&
             it('should not use non exported directives of an imported module', () => {
               @NgModule({
                 declarations: [SomeDirective],
@@ -657,49 +636,45 @@ function declareTests(config?: {useJit: boolean}) {
         return createModule(SomeModule, parent).injector;
       }
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should provide the module', () => {
-        expect(createInjector([]).get(moduleType)).toBeAnInstanceOf(moduleType);
+      it('should provide the module',
+         () => { expect(createInjector([]).get(moduleType)).toBeAnInstanceOf(moduleType); });
+
+      it('should instantiate a class without dependencies', () => {
+        const injector = createInjector([Engine]);
+        const engine = injector.get(Engine);
+
+        expect(engine).toBeAnInstanceOf(Engine);
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should instantiate a class without dependencies', () => {
-            const injector = createInjector([Engine]);
-            const engine = injector.get(Engine);
+      it('should resolve dependencies based on type information', () => {
+        const injector = createInjector([Engine, Car]);
+        const car = injector.get(Car);
 
-            expect(engine).toBeAnInstanceOf(Engine);
-          });
+        expect(car).toBeAnInstanceOf(Car);
+        expect(car.engine).toBeAnInstanceOf(Engine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should resolve dependencies based on type information', () => {
-            const injector = createInjector([Engine, Car]);
-            const car = injector.get(Car);
+      it('should resolve dependencies based on @Inject annotation', () => {
+        const injector = createInjector([TurboEngine, Engine, CarWithInject]);
+        const car = injector.get(CarWithInject);
 
-            expect(car).toBeAnInstanceOf(Car);
-            expect(car.engine).toBeAnInstanceOf(Engine);
-          });
+        expect(car).toBeAnInstanceOf(CarWithInject);
+        expect(car.engine).toBeAnInstanceOf(TurboEngine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should resolve dependencies based on @Inject annotation', () => {
-            const injector = createInjector([TurboEngine, Engine, CarWithInject]);
-            const car = injector.get(CarWithInject);
-
-            expect(car).toBeAnInstanceOf(CarWithInject);
-            expect(car.engine).toBeAnInstanceOf(TurboEngine);
-          });
-
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when no type and not @Inject (class case)', () => {
             expect(() => createInjector([NoAnnotations]))
                 .toThrowError('Can\'t resolve all parameters for NoAnnotations: (?).');
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when no type and not @Inject (factory case)', () => {
             expect(() => createInjector([{provide: 'someToken', useFactory: factoryFn}]))
                 .toThrowError('Can\'t resolve all parameters for factoryFn: (?).');
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should cache instances', () => {
+      it('should cache instances', () => {
         const injector = createInjector([Engine]);
 
         const e1 = injector.get(Engine);
@@ -708,33 +683,31 @@ function declareTests(config?: {useJit: boolean}) {
         expect(e1).toBe(e2);
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should provide to a value', () => {
+      it('should provide to a value', () => {
         const injector = createInjector([{provide: Engine, useValue: 'fake engine'}]);
 
         const engine = injector.get(Engine);
         expect(engine).toEqual('fake engine');
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should provide to a factory', () => {
-            function sportsCarFactory(e: Engine) { return new SportsCar(e); }
+      it('should provide to a factory', () => {
+        function sportsCarFactory(e: Engine) { return new SportsCar(e); }
 
-            const injector = createInjector(
-                [Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
+        const injector =
+            createInjector([Engine, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
 
-            const car = injector.get(Car);
-            expect(car).toBeAnInstanceOf(SportsCar);
-            expect(car.engine).toBeAnInstanceOf(Engine);
-          });
+        const car = injector.get(Car);
+        expect(car).toBeAnInstanceOf(SportsCar);
+        expect(car.engine).toBeAnInstanceOf(Engine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should supporting provider to null', () => {
-            const injector = createInjector([{provide: Engine, useValue: null}]);
-            const engine = injector.get(Engine);
-            expect(engine).toBeNull();
-          });
+      it('should supporting provider to null', () => {
+        const injector = createInjector([{provide: Engine, useValue: null}]);
+        const engine = injector.get(Engine);
+        expect(engine).toBeNull();
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should provide to an alias', () => {
+      it('should provide to an alias', () => {
         const injector = createInjector([
           Engine, {provide: SportsCar, useClass: SportsCar},
           {provide: Car, useExisting: SportsCar}
@@ -746,109 +719,99 @@ function declareTests(config?: {useJit: boolean}) {
         expect(car).toBe(sportsCar);
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should support multiProviders', () => {
-            const injector = createInjector([
-              Engine, {provide: CARS, useClass: SportsCar, multi: true},
-              {provide: CARS, useClass: CarWithOptionalEngine, multi: true}
-            ]);
+      it('should support multiProviders', () => {
+        const injector = createInjector([
+          Engine, {provide: CARS, useClass: SportsCar, multi: true},
+          {provide: CARS, useClass: CarWithOptionalEngine, multi: true}
+        ]);
 
-            const cars = injector.get(CARS);
-            expect(cars.length).toEqual(2);
-            expect(cars[0]).toBeAnInstanceOf(SportsCar);
-            expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
-          });
+        const cars = injector.get(CARS);
+        expect(cars.length).toEqual(2);
+        expect(cars[0]).toBeAnInstanceOf(SportsCar);
+        expect(cars[1]).toBeAnInstanceOf(CarWithOptionalEngine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should support multiProviders that are created using useExisting', () => {
-            const injector = createInjector(
-                [Engine, SportsCar, {provide: CARS, useExisting: SportsCar, multi: true}]);
+      it('should support multiProviders that are created using useExisting', () => {
+        const injector = createInjector(
+            [Engine, SportsCar, {provide: CARS, useExisting: SportsCar, multi: true}]);
 
-            const cars = injector.get(CARS);
-            expect(cars.length).toEqual(1);
-            expect(cars[0]).toBe(injector.get(SportsCar));
-          });
+        const cars = injector.get(CARS);
+        expect(cars.length).toEqual(1);
+        expect(cars[0]).toBe(injector.get(SportsCar));
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when the aliased provider does not exist', () => {
             const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
             const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
             expect(() => injector.get('car')).toThrowError(e);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should handle forwardRef in useExisting', () => {
-            const injector = createInjector([
-              {provide: 'originalEngine', useClass: forwardRef(() => Engine)},
-              {provide: 'aliasedEngine', useExisting: <any>forwardRef(() => 'originalEngine')}
-            ]);
-            expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
-          });
+      it('should handle forwardRef in useExisting', () => {
+        const injector = createInjector([
+          {provide: 'originalEngine', useClass: forwardRef(() => Engine)},
+          {provide: 'aliasedEngine', useExisting: <any>forwardRef(() => 'originalEngine')}
+        ]);
+        expect(injector.get('aliasedEngine')).toBeAnInstanceOf(Engine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should support overriding factory dependencies', () => {
-            const injector = createInjector([
-              Engine, {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}
-            ]);
+      it('should support overriding factory dependencies', () => {
+        const injector = createInjector(
+            [Engine, {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}]);
 
-            const car = injector.get(Car);
-            expect(car).toBeAnInstanceOf(SportsCar);
-            expect(car.engine).toBeAnInstanceOf(Engine);
-          });
+        const car = injector.get(Car);
+        expect(car).toBeAnInstanceOf(SportsCar);
+        expect(car.engine).toBeAnInstanceOf(Engine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should support optional dependencies', () => {
-            const injector = createInjector([CarWithOptionalEngine]);
+      it('should support optional dependencies', () => {
+        const injector = createInjector([CarWithOptionalEngine]);
 
-            const car = injector.get(CarWithOptionalEngine);
-            expect(car.engine).toBeNull();
-          });
+        const car = injector.get(CarWithOptionalEngine);
+        expect(car.engine).toBeNull();
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should flatten passed-in providers', () => {
-            const injector = createInjector([[[Engine, Car]]]);
+      it('should flatten passed-in providers', () => {
+        const injector = createInjector([[[Engine, Car]]]);
 
-            const car = injector.get(Car);
-            expect(car).toBeAnInstanceOf(Car);
-          });
+        const car = injector.get(Car);
+        expect(car).toBeAnInstanceOf(Car);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should use the last provider when there are multiple providers for same token',
-             () => {
-               const injector = createInjector(
-                   [{provide: Engine, useClass: Engine}, {provide: Engine, useClass: TurboEngine}]);
+      it('should use the last provider when there are multiple providers for same token', () => {
+        const injector = createInjector(
+            [{provide: Engine, useClass: Engine}, {provide: Engine, useClass: TurboEngine}]);
 
-               expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
-             });
+        expect(injector.get(Engine)).toBeAnInstanceOf(TurboEngine);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should use non-type tokens', () => {
+      it('should use non-type tokens', () => {
         const injector = createInjector([{provide: 'token', useValue: 'value'}]);
 
         expect(injector.get('token')).toEqual('value');
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when given invalid providers', () => {
             expect(() => createInjector(<any>['blah']))
                 .toThrowError(
                     `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?blah?]`);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should throw when given blank providers', () => {
-            expect(() => createInjector(<any>[null, {provide: 'token', useValue: 'value'}]))
-                .toThrowError(
-                    `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?null?, ...]`);
-          });
+      fixmeIvy('FW-682: Compiler error handling') && it('should throw when given blank providers', () => {
+        expect(() => createInjector(<any>[null, {provide: 'token', useValue: 'value'}]))
+            .toThrowError(
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?null?, ...]`);
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should provide itself', () => {
+      it('should provide itself', () => {
         const parent = createInjector([]);
         const child = createInjector([], parent);
 
         expect(child.get(Injector)).toBe(child);
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should provide undefined', () => {
+      it('should provide undefined', () => {
         let factoryCounter = 0;
 
         const injector = createInjector([{
@@ -866,193 +829,180 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('injecting lazy providers into an eager provider via Injector.get', () => {
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should inject providers that were declared before it', () => {
-              @NgModule({
-                providers: [
-                  {provide: 'lazy', useFactory: () => 'lazyValue'},
-                  {
-                    provide: 'eager',
-                    useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
-                    deps: [Injector]
-                  },
-                ]
-              })
-              class MyModule {
-                // NgModule is eager, which makes all of its deps eager
-                constructor(@Inject('eager') eager: any) {}
-              }
+        it('should inject providers that were declared before it', () => {
+          @NgModule({
+            providers: [
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
 
-              expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
-            });
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should inject providers that were declared after it', () => {
-              @NgModule({
-                providers: [
-                  {
-                    provide: 'eager',
-                    useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
-                    deps: [Injector]
-                  },
-                  {provide: 'lazy', useFactory: () => 'lazyValue'},
-                ]
-              })
-              class MyModule {
-                // NgModule is eager, which makes all of its deps eager
-                constructor(@Inject('eager') eager: any) {}
-              }
+        it('should inject providers that were declared after it', () => {
+          @NgModule({
+            providers: [
+              {
+                provide: 'eager',
+                useFactory: (i: Injector) => `eagerValue: ${i.get('lazy')}`,
+                deps: [Injector]
+              },
+              {provide: 'lazy', useFactory: () => 'lazyValue'},
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager') eager: any) {}
+          }
 
-              expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
-            });
+          expect(createModule(MyModule).injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
       });
 
       describe('injecting eager providers into an eager provider via Injector.get', () => {
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should inject providers that were declared before it', () => {
-              @NgModule({
-                providers: [
-                  {provide: 'eager1', useFactory: () => 'v1'},
-                  {
-                    provide: 'eager2',
-                    useFactory: (i: Injector) => `v2: ${i.get('eager1')}`,
-                    deps: [Injector]
-                  },
-                ]
-              })
-              class MyModule {
-                // NgModule is eager, which makes all of its deps eager
-                constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
-              }
+        it('should inject providers that were declared before it', () => {
+          @NgModule({
+            providers: [
+              {provide: 'eager1', useFactory: () => 'v1'},
+              {
+                provide: 'eager2',
+                useFactory: (i: Injector) => `v2: ${i.get('eager1')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
+          }
 
-              expect(createModule(MyModule).injector.get('eager2')).toBe('v2: v1');
-            });
+          expect(createModule(MyModule).injector.get('eager2')).toBe('v2: v1');
+        });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should inject providers that were declared after it', () => {
-              @NgModule({
-                providers: [
-                  {
-                    provide: 'eager1',
-                    useFactory: (i: Injector) => `v1: ${i.get('eager2')}`,
-                    deps: [Injector]
-                  },
-                  {provide: 'eager2', useFactory: () => 'v2'},
-                ]
-              })
-              class MyModule {
-                // NgModule is eager, which makes all of its deps eager
-                constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
-              }
+        it('should inject providers that were declared after it', () => {
+          @NgModule({
+            providers: [
+              {
+                provide: 'eager1',
+                useFactory: (i: Injector) => `v1: ${i.get('eager2')}`,
+                deps: [Injector]
+              },
+              {provide: 'eager2', useFactory: () => 'v2'},
+            ]
+          })
+          class MyModule {
+            // NgModule is eager, which makes all of its deps eager
+            constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
+          }
 
-              expect(createModule(MyModule).injector.get('eager1')).toBe('v1: v2');
-            });
+          expect(createModule(MyModule).injector.get('eager1')).toBe('v1: v2');
+        });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('eager providers should get initialized only once', () => {
-              @Injectable()
-              class MyService1 {
-                public innerService: MyService2;
-                constructor(injector: Injector) {
-                  // Create MyService2 before it it's initialized by TestModule.
-                  this.innerService = injector.get(MyService2);
-                }
-              }
+        it('eager providers should get initialized only once', () => {
+          @Injectable()
+          class MyService1 {
+            public innerService: MyService2;
+            constructor(injector: Injector) {
+              // Create MyService2 before it it's initialized by TestModule.
+              this.innerService = injector.get(MyService2);
+            }
+          }
 
-              @Injectable()
-              class MyService2 {
-                constructor() {}
-              }
+          @Injectable()
+          class MyService2 {
+            constructor() {}
+          }
 
-              @NgModule({
-                providers: [MyService1, MyService2],
-              })
-              class TestModule {
-                constructor(public service1: MyService1, public service2: MyService2) {}
-              }
+          @NgModule({
+            providers: [MyService1, MyService2],
+          })
+          class TestModule {
+            constructor(public service1: MyService1, public service2: MyService2) {}
+          }
 
-              const moduleRef = createModule(TestModule, injector);
-              const module = moduleRef.instance;
+          const moduleRef = createModule(TestModule, injector);
+          const module = moduleRef.instance;
 
-              // MyService2 should not get initialized twice.
-              expect(module.service1.innerService).toBe(module.service2);
-            });
+          // MyService2 should not get initialized twice.
+          expect(module.service1.innerService).toBe(module.service2);
+        });
       });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-          it('should throw when no provider defined', () => {
-            const injector = createInjector([]);
-            expect(() => injector.get('NonExisting'))
-                .toThrowError('NullInjectorError: No provider for NonExisting!');
-          });
+      it('should throw when no provider defined', () => {
+        const injector = createInjector([]);
+        expect(() => injector.get('NonExisting'))
+            .toThrowError('NullInjectorError: No provider for NonExisting!');
+      });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should throw when trying to instantiate a cyclic dependency', () => {
             expect(() => createInjector([Car, {provide: Engine, useClass: CyclicEngine}]))
                 .toThrowError(/Cannot instantiate cyclic dependency! Car/g);
           });
 
-      fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should support null values', () => {
+      it('should support null values', () => {
         const injector = createInjector([{provide: 'null', useValue: null}]);
         expect(injector.get('null')).toBe(null);
       });
 
 
       describe('child', () => {
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should load instances from parent injector', () => {
-              const parent = createInjector([Engine]);
-              const child = createInjector([], parent);
+        it('should load instances from parent injector', () => {
+          const parent = createInjector([Engine]);
+          const child = createInjector([], parent);
 
-              const engineFromParent = parent.get(Engine);
-              const engineFromChild = child.get(Engine);
+          const engineFromParent = parent.get(Engine);
+          const engineFromChild = child.get(Engine);
 
-              expect(engineFromChild).toBe(engineFromParent);
-            });
+          expect(engineFromChild).toBe(engineFromParent);
+        });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should not use the child providers when resolving the dependencies of a parent provider',
-               () => {
-                 const parent = createInjector([Car, Engine]);
-                 const child = createInjector([{provide: Engine, useClass: TurboEngine}], parent);
+        it('should not use the child providers when resolving the dependencies of a parent provider',
+           () => {
+             const parent = createInjector([Car, Engine]);
+             const child = createInjector([{provide: Engine, useClass: TurboEngine}], parent);
 
-                 const carFromChild = child.get(Car);
-                 expect(carFromChild.engine).toBeAnInstanceOf(Engine);
-               });
+             const carFromChild = child.get(Car);
+             expect(carFromChild.engine).toBeAnInstanceOf(Engine);
+           });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should create new instance in a child injector', () => {
-              const parent = createInjector([Engine]);
-              const child = createInjector([{provide: Engine, useClass: TurboEngine}], parent);
+        it('should create new instance in a child injector', () => {
+          const parent = createInjector([Engine]);
+          const child = createInjector([{provide: Engine, useClass: TurboEngine}], parent);
 
-              const engineFromParent = parent.get(Engine);
-              const engineFromChild = child.get(Engine);
+          const engineFromParent = parent.get(Engine);
+          const engineFromChild = child.get(Engine);
 
-              expect(engineFromParent).not.toBe(engineFromChild);
-              expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
-            });
+          expect(engineFromParent).not.toBe(engineFromChild);
+          expect(engineFromChild).toBeAnInstanceOf(TurboEngine);
+        });
 
       });
 
       describe('depedency resolution', () => {
         describe('@Self()', () => {
-          fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-              it('should return a dependency from self', () => {
-                const inj = createInjector([
-                  Engine, {
-                    provide: Car,
-                    useFactory: (e: Engine) => new Car(e),
-                    deps: [[Engine, new Self()]]
-                  }
-                ]);
+          it('should return a dependency from self', () => {
+            const inj = createInjector([
+              Engine,
+              {provide: Car, useFactory: (e: Engine) => new Car(e), deps: [[Engine, new Self()]]}
+            ]);
 
-                expect(inj.get(Car)).toBeAnInstanceOf(Car);
-              });
+            expect(inj.get(Car)).toBeAnInstanceOf(Car);
+          });
         });
 
         describe('default', () => {
-          fixmeIvy('FW-561: Runtime compiler is not loaded') && it('should not skip self', () => {
+          it('should not skip self', () => {
             const parent = createInjector([Engine]);
             const child = createInjector(
                 [
@@ -1067,7 +1017,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('lifecycle', () => {
-        fixmeIvy('unknown') && it('should instantiate modules eagerly', () => {
+        it('should instantiate modules eagerly', () => {
           let created = false;
 
           @NgModule()
@@ -1084,22 +1034,21 @@ function declareTests(config?: {useJit: boolean}) {
           expect(created).toBe(true);
         });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should instantiate providers that are not used by a module lazily', () => {
-              let created = false;
+        it('should instantiate providers that are not used by a module lazily', () => {
+          let created = false;
 
-              createInjector([{
-                provide: 'someToken',
-                useFactory: () => {
-                  created = true;
-                  return true;
-                }
-              }]);
+          createInjector([{
+            provide: 'someToken',
+            useFactory: () => {
+              created = true;
+              return true;
+            }
+          }]);
 
-              expect(created).toBe(false);
-            });
+          expect(created).toBe(false);
+        });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('ngOnDestroy not running') &&
             it('should support ngOnDestroy on any provider', () => {
               let destroyed = false;
 
@@ -1119,7 +1068,7 @@ function declareTests(config?: {useJit: boolean}) {
               expect(destroyed).toBe(true);
             });
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+        fixmeIvy('ngOnDestroy not running') &&
             it('should support ngOnDestroy for lazy providers', () => {
               let created = false;
               let destroyed = false;
@@ -1151,233 +1100,220 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('imported and exported modules', () => {
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should add the providers of imported modules', () => {
-              @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
-              class ImportedModule {
-              }
+        it('should add the providers of imported modules', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
+          class ImportedModule {
+          }
 
-              @NgModule({imports: [ImportedModule]})
-              class SomeModule {
-              }
+          @NgModule({imports: [ImportedModule]})
+          class SomeModule {
+          }
 
-              const injector = createModule(SomeModule).injector;
+          const injector = createModule(SomeModule).injector;
 
-              expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
-              expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
-              expect(injector.get('token1')).toBe('imported');
-            });
+          expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
+          expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
+          expect(injector.get('token1')).toBe('imported');
+        });
 
-        fixmeIvy('unknown') &&
-            it('should add the providers of imported ModuleWithProviders', () => {
-              @NgModule()
-              class ImportedModule {
-              }
 
-              @NgModule({
-                imports: [{
-                  ngModule: ImportedModule,
-                  providers: [{provide: 'token1', useValue: 'imported'}]
-                }]
-              })
-              class SomeModule {
-              }
+        it('should add the providers of imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule {
+          }
 
-              const injector = createModule(SomeModule).injector;
+          @NgModule({
+            imports: [
+              {ngModule: ImportedModule, providers: [{provide: 'token1', useValue: 'imported'}]}
+            ]
+          })
+          class SomeModule {
+          }
 
-              expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
-              expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
-              expect(injector.get('token1')).toBe('imported');
-            });
+          const injector = createModule(SomeModule).injector;
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of imported modules', () => {
-              @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
-              class ImportedModule {
-              }
+          expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
+          expect(injector.get(ImportedModule)).toBeAnInstanceOf(ImportedModule);
+          expect(injector.get('token1')).toBe('imported');
+        });
 
-              @NgModule(
-                  {providers: [{provide: 'token1', useValue: 'direct'}], imports: [ImportedModule]})
-              class SomeModule {
-              }
+        it('should overwrite the providers of imported modules', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
+          class ImportedModule {
+          }
 
-              const injector = createModule(SomeModule).injector;
-              expect(injector.get('token1')).toBe('direct');
-            });
+          @NgModule(
+              {providers: [{provide: 'token1', useValue: 'direct'}], imports: [ImportedModule]})
+          class SomeModule {
+          }
 
-        fixmeIvy('unknown') &&
-            it('should overwrite the providers of imported ModuleWithProviders', () => {
-              @NgModule()
-              class ImportedModule {
-              }
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('direct');
+        });
 
-              @NgModule({
-                providers: [{provide: 'token1', useValue: 'direct'}],
-                imports: [{
-                  ngModule: ImportedModule,
-                  providers: [{provide: 'token1', useValue: 'imported'}]
-                }]
-              })
-              class SomeModule {
-              }
 
-              const injector = createModule(SomeModule).injector;
-              expect(injector.get('token1')).toBe('direct');
-            });
+        it('should overwrite the providers of imported ModuleWithProviders', () => {
+          @NgModule()
+          class ImportedModule {
+          }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of imported modules on the second import level',
-               () => {
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
-                 class ImportedModuleLevel2 {
-                 }
+          @NgModule({
+            providers: [{provide: 'token1', useValue: 'direct'}],
+            imports: [
+              {ngModule: ImportedModule, providers: [{provide: 'token1', useValue: 'imported'}]}
+            ]
+          })
+          class SomeModule {
+          }
 
-                 @NgModule({
-                   providers: [{provide: 'token1', useValue: 'direct'}],
-                   imports: [ImportedModuleLevel2]
-                 })
-                 class ImportedModuleLevel1 {
-                 }
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('direct');
+        });
 
-                 @NgModule({imports: [ImportedModuleLevel1]})
-                 class SomeModule {
-                 }
+        it('should overwrite the providers of imported modules on the second import level', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
+          class ImportedModuleLevel2 {
+          }
 
-                 const injector = createModule(SomeModule).injector;
-                 expect(injector.get('token1')).toBe('direct');
-               });
+          @NgModule({
+            providers: [{provide: 'token1', useValue: 'direct'}],
+            imports: [ImportedModuleLevel2]
+          })
+          class ImportedModuleLevel1 {
+          }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should add the providers of exported modules', () => {
-              @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
-              class ExportedValue {
-              }
+          @NgModule({imports: [ImportedModuleLevel1]})
+          class SomeModule {
+          }
 
-              @NgModule({exports: [ExportedValue]})
-              class SomeModule {
-              }
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('direct');
+        });
 
-              const injector = createModule(SomeModule).injector;
+        it('should add the providers of exported modules', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
+          class ExportedValue {
+          }
 
-              expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
-              expect(injector.get(ExportedValue)).toBeAnInstanceOf(ExportedValue);
-              expect(injector.get('token1')).toBe('exported');
-            });
+          @NgModule({exports: [ExportedValue]})
+          class SomeModule {
+          }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of exported modules', () => {
-              @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
-              class ExportedModule {
-              }
+          const injector = createModule(SomeModule).injector;
 
-              @NgModule(
-                  {providers: [{provide: 'token1', useValue: 'direct'}], exports: [ExportedModule]})
-              class SomeModule {
-              }
+          expect(injector.get(SomeModule)).toBeAnInstanceOf(SomeModule);
+          expect(injector.get(ExportedValue)).toBeAnInstanceOf(ExportedValue);
+          expect(injector.get('token1')).toBe('exported');
+        });
 
-              const injector = createModule(SomeModule).injector;
-              expect(injector.get('token1')).toBe('direct');
-            });
+        it('should overwrite the providers of exported modules', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
+          class ExportedModule {
+          }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of imported modules by following imported modules',
-               () => {
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
-                 class ImportedModule1 {
-                 }
+          @NgModule(
+              {providers: [{provide: 'token1', useValue: 'direct'}], exports: [ExportedModule]})
+          class SomeModule {
+          }
 
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
-                 class ImportedModule2 {
-                 }
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('direct');
+        });
 
-                 @NgModule({imports: [ImportedModule1, ImportedModule2]})
-                 class SomeModule {
-                 }
+        it('should overwrite the providers of imported modules by following imported modules',
+           () => {
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
+             class ImportedModule1 {
+             }
 
-                 const injector = createModule(SomeModule).injector;
-                 expect(injector.get('token1')).toBe('imported2');
-               });
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
+             class ImportedModule2 {
+             }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of exported modules by following exported modules',
-               () => {
-                 @NgModule({providers: [{provide: 'token1', useValue: 'exported1'}]})
-                 class ExportedModule1 {
-                 }
+             @NgModule({imports: [ImportedModule1, ImportedModule2]})
+             class SomeModule {
+             }
 
-                 @NgModule({providers: [{provide: 'token1', useValue: 'exported2'}]})
-                 class ExportedModule2 {
-                 }
+             const injector = createModule(SomeModule).injector;
+             expect(injector.get('token1')).toBe('imported2');
+           });
 
-                 @NgModule({exports: [ExportedModule1, ExportedModule2]})
-                 class SomeModule {
-                 }
+        it('should overwrite the providers of exported modules by following exported modules',
+           () => {
+             @NgModule({providers: [{provide: 'token1', useValue: 'exported1'}]})
+             class ExportedModule1 {
+             }
 
-                 const injector = createModule(SomeModule).injector;
-                 expect(injector.get('token1')).toBe('exported2');
-               });
+             @NgModule({providers: [{provide: 'token1', useValue: 'exported2'}]})
+             class ExportedModule2 {
+             }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should overwrite the providers of imported modules by exported modules', () => {
-              @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
-              class ImportedModule {
-              }
+             @NgModule({exports: [ExportedModule1, ExportedModule2]})
+             class SomeModule {
+             }
 
-              @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
-              class ExportedModule {
-              }
+             const injector = createModule(SomeModule).injector;
+             expect(injector.get('token1')).toBe('exported2');
+           });
 
-              @NgModule({imports: [ImportedModule], exports: [ExportedModule]})
-              class SomeModule {
-              }
+        it('should overwrite the providers of imported modules by exported modules', () => {
+          @NgModule({providers: [{provide: 'token1', useValue: 'imported'}]})
+          class ImportedModule {
+          }
 
-              const injector = createModule(SomeModule).injector;
-              expect(injector.get('token1')).toBe('exported');
-            });
+          @NgModule({providers: [{provide: 'token1', useValue: 'exported'}]})
+          class ExportedModule {
+          }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should not overwrite the providers if a module was already used on the same level',
-               () => {
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
-                 class ImportedModule1 {
-                 }
+          @NgModule({imports: [ImportedModule], exports: [ExportedModule]})
+          class SomeModule {
+          }
 
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
-                 class ImportedModule2 {
-                 }
+          const injector = createModule(SomeModule).injector;
+          expect(injector.get('token1')).toBe('exported');
+        });
 
-                 @NgModule({imports: [ImportedModule1, ImportedModule2, ImportedModule1]})
-                 class SomeModule {
-                 }
+        it('should not overwrite the providers if a module was already used on the same level',
+           () => {
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
+             class ImportedModule1 {
+             }
 
-                 const injector = createModule(SomeModule).injector;
-                 expect(injector.get('token1')).toBe('imported2');
-               });
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
+             class ImportedModule2 {
+             }
 
-        fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-            it('should not overwrite the providers if a module was already used on a child level',
-               () => {
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
-                 class ImportedModule1 {
-                 }
+             @NgModule({imports: [ImportedModule1, ImportedModule2, ImportedModule1]})
+             class SomeModule {
+             }
 
-                 @NgModule({imports: [ImportedModule1]})
-                 class ImportedModule3 {
-                 }
+             const injector = createModule(SomeModule).injector;
+             expect(injector.get('token1')).toBe('imported2');
+           });
 
-                 @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
-                 class ImportedModule2 {
-                 }
+        it('should not overwrite the providers if a module was already used on a child level',
+           () => {
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported1'}]})
+             class ImportedModule1 {
+             }
 
-                 @NgModule({imports: [ImportedModule3, ImportedModule2, ImportedModule1]})
-                 class SomeModule {
-                 }
+             @NgModule({imports: [ImportedModule1]})
+             class ImportedModule3 {
+             }
 
-                 const injector = createModule(SomeModule).injector;
-                 expect(injector.get('token1')).toBe('imported2');
-               });
+             @NgModule({providers: [{provide: 'token1', useValue: 'imported2'}]})
+             class ImportedModule2 {
+             }
 
-        fixmeIvy('unknown') &&
+             @NgModule({imports: [ImportedModule3, ImportedModule2, ImportedModule1]})
+             class SomeModule {
+             }
+
+             const injector = createModule(SomeModule).injector;
+             expect(injector.get('token1')).toBe('imported2');
+           });
+
+        fixmeIvy('FW-682: Compiler error handling') &&
             it('should throw when given invalid providers in an imported ModuleWithProviders', () => {
               @NgModule()
               class ImportedModule1 {
@@ -1394,7 +1330,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('unknown') &&
+        fixmeIvy('providersByKey is not defined') &&
             it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {

@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
+import {DebugElement__PRE_R3__, DebugNode__PRE_R3__, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
 import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {isDevMode} from '../is_dev_mode';
-import {ivyEnabled} from '../ivy_switch';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
@@ -700,8 +699,8 @@ export class DebugRenderer2 implements Renderer2 {
     const el = this.delegate.createElement(name, namespace);
     const debugCtx = this.createDebugContext(el);
     if (debugCtx) {
-      const debugEl = new DebugElement(el, null, debugCtx);
-      debugEl.name = name;
+      const debugEl = new DebugElement__PRE_R3__(el, null, debugCtx);
+      (debugEl as{name: string}).name = name;
       indexDebugNode(debugEl);
     }
     return el;
@@ -711,7 +710,7 @@ export class DebugRenderer2 implements Renderer2 {
     const comment = this.delegate.createComment(value);
     const debugCtx = this.createDebugContext(comment);
     if (debugCtx) {
-      indexDebugNode(new DebugNode(comment, null, debugCtx));
+      indexDebugNode(new DebugNode__PRE_R3__(comment, null, debugCtx));
     }
     return comment;
   }
@@ -720,7 +719,7 @@ export class DebugRenderer2 implements Renderer2 {
     const text = this.delegate.createText(value);
     const debugCtx = this.createDebugContext(text);
     if (debugCtx) {
-      indexDebugNode(new DebugNode(text, null, debugCtx));
+      indexDebugNode(new DebugNode__PRE_R3__(text, null, debugCtx));
     }
     return text;
   }
@@ -728,7 +727,7 @@ export class DebugRenderer2 implements Renderer2 {
   appendChild(parent: any, newChild: any): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);
-    if (debugEl && debugChildEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugChildEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.addChild(debugChildEl);
     }
     this.delegate.appendChild(parent, newChild);
@@ -738,7 +737,7 @@ export class DebugRenderer2 implements Renderer2 {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(newChild);
     const debugRefEl = getDebugNode(refChild) !;
-    if (debugEl && debugChildEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugChildEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.insertBefore(debugRefEl, debugChildEl);
     }
 
@@ -748,7 +747,7 @@ export class DebugRenderer2 implements Renderer2 {
   removeChild(parent: any, oldChild: any): void {
     const debugEl = getDebugNode(parent);
     const debugChildEl = getDebugNode(oldChild);
-    if (debugEl && debugChildEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugChildEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.removeChild(debugChildEl);
     }
     this.delegate.removeChild(parent, oldChild);
@@ -756,16 +755,16 @@ export class DebugRenderer2 implements Renderer2 {
 
   selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
     const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
-    const debugCtx = getCurrentDebugContext() || (ivyEnabled ? this.createDebugContext(el) : null);
+    const debugCtx = getCurrentDebugContext();
     if (debugCtx) {
-      indexDebugNode(new DebugElement(el, null, debugCtx));
+      indexDebugNode(new DebugElement__PRE_R3__(el, null, debugCtx));
     }
     return el;
   }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       const fullName = namespace ? namespace + ':' + name : name;
       debugEl.attributes[fullName] = value;
     }
@@ -774,7 +773,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       const fullName = namespace ? namespace + ':' + name : name;
       debugEl.attributes[fullName] = null;
     }
@@ -783,7 +782,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   addClass(el: any, name: string): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.classes[name] = true;
     }
     this.delegate.addClass(el, name);
@@ -791,7 +790,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   removeClass(el: any, name: string): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.classes[name] = false;
     }
     this.delegate.removeClass(el, name);
@@ -799,7 +798,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.styles[style] = value;
     }
     this.delegate.setStyle(el, style, value, flags);
@@ -807,7 +806,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.styles[style] = null;
     }
     this.delegate.removeStyle(el, style, flags);
@@ -815,7 +814,7 @@ export class DebugRenderer2 implements Renderer2 {
 
   setProperty(el: any, name: string, value: any): void {
     const debugEl = getDebugNode(el);
-    if (debugEl && debugEl instanceof DebugElement) {
+    if (debugEl && debugEl instanceof DebugElement__PRE_R3__) {
       debugEl.properties[name] = value;
     }
     this.delegate.setProperty(el, name, value);

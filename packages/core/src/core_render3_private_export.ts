@@ -114,11 +114,8 @@ export {
   i18nEnd as ɵi18nEnd,
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
-  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2,
   setClassMetadata as ɵsetClassMetadata,
 } from './render3/index';
-
-export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from './render3/debug';
 
 
 export {
