@@ -262,7 +262,7 @@ export function diPublicInInjector(
  *
  * @publicApi
  */
-export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|undefined {
+export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): string|null {
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
@@ -276,7 +276,7 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
       }
     }
   }
-  return undefined;
+  return null;
 }
 
 

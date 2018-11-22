@@ -2758,7 +2758,7 @@ export function directiveInject<T>(
 /**
  * Facade for the attribute injection from DI.
  */
-export function injectAttribute(attrNameToInject: string): string|undefined {
+export function injectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
 }
 

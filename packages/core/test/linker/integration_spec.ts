@@ -1268,7 +1268,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       });
 
-      fixmeIvy('unknown') && it('should support static attributes', () => {
+      it('should support static attributes', () => {
         TestBed.configureTestingModule({declarations: [MyComp, NeedsAttribute]});
         const template = '<input static type="text" title>';
         TestBed.overrideComponent(MyComp, {set: {template}});
