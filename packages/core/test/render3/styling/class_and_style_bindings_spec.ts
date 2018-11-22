@@ -8,12 +8,12 @@
 import {createRootContext} from '../../../src/render3/component';
 import {getContext} from '../../../src/render3/context_discovery';
 import {defineComponent} from '../../../src/render3/index';
-import {createLViewData, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
+import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
 import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
 import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
-import {CONTEXT, LViewData, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
+import {CONTEXT, LView, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
 import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
@@ -29,13 +29,13 @@ describe('style and class based bindings', () => {
   let element: RElement|null = null;
   beforeEach(() => { element = document.createElement('div') as any; });
 
-  function createMockViewData(playerHandler: PlayerHandler, context: StylingContext): LViewData {
+  function createMockViewData(playerHandler: PlayerHandler, context: StylingContext): LView {
     const rootContext =
         createRootContext(requestAnimationFrame.bind(window), playerHandler || null);
-    const lViewData = createLViewData(
+    const lView = createLView(
         null, createTView(-1, null, 1, 0, null, null, null), rootContext, LViewFlags.IsRoot,
         domRendererFactory3, domRendererFactory3.createRenderer(element, null));
-    return lViewData;
+    return lView;
   }
 
   function initContext(
@@ -44,18 +44,16 @@ describe('style and class based bindings', () => {
     return allocStylingContext(element, createStylingContextTemplate(classes, styles, sanitizer));
   }
 
-  function getRootContextInternal(lViewData: LViewData) {
-    return lViewData[CONTEXT] as RootContext;
-  }
+  function getRootContextInternal(lView: LView) { return lView[CONTEXT] as RootContext; }
 
   function renderStyles(
-      context: StylingContext, firstRender?: boolean, renderer?: Renderer3, lViewData?: LViewData) {
+      context: StylingContext, firstRender?: boolean, renderer?: Renderer3, lView?: LView) {
     const store = new MockStylingStore(element as HTMLElement, BindingType.Style);
     const handler = new CorePlayerHandler();
     _renderStyling(
         context, (renderer || {}) as Renderer3,
-        getRootContextInternal(lViewData || createMockViewData(handler, context)), !!firstRender,
-        null, store);
+        getRootContextInternal(lView || createMockViewData(handler, context)), !!firstRender, null,
+        store);
     return store.getValues();
   }
 
@@ -64,10 +62,10 @@ describe('style and class based bindings', () => {
     const handler = new CorePlayerHandler();
     return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
         {[key: string]: any} {
-          const lViewData = createMockViewData(handler, context);
+          const lView = createMockViewData(handler, context);
           _renderStyling(
-              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, null, store);
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lView), !!firstRender,
+              null, store);
           return store !.getValues();
         };
   }
@@ -77,10 +75,10 @@ describe('style and class based bindings', () => {
     const handler = new CorePlayerHandler();
     return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
         {[key: string]: any} {
-          const lViewData = createMockViewData(handler, context);
+          const lView = createMockViewData(handler, context);
           _renderStyling(
-              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, store);
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lView), !!firstRender,
+              store);
           return store !.getValues();
         };
   }
@@ -91,10 +89,10 @@ describe('style and class based bindings', () => {
     const handler = new CorePlayerHandler();
     return function(context: StylingContext, firstRender?: boolean, renderer?: Renderer3):
         {[key: string]: any} {
-          const lViewData = createMockViewData(handler, context);
+          const lView = createMockViewData(handler, context);
           _renderStyling(
-              context, (renderer || {}) as Renderer3, getRootContextInternal(lViewData),
-              !!firstRender, classStore, styleStore);
+              context, (renderer || {}) as Renderer3, getRootContextInternal(lView), !!firstRender,
+              classStore, styleStore);
           return [classStore.getValues(), styleStore.getValues()];
         };
   }
@@ -1599,7 +1597,7 @@ describe('style and class based bindings', () => {
     it('should store active players in the player context and remove them once destroyed', () => {
       const context = initContext(null, []);
       const handler = new CorePlayerHandler();
-      const lViewData = createMockViewData(handler, context);
+      const lView = createMockViewData(handler, context);
 
       let currentStylePlayer: Player;
       const styleBuildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -1625,7 +1623,7 @@ describe('style and class based bindings', () => {
         5, classPlayerBuilder, null, stylePlayerBuilder, null
       ]);
 
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(context[StylingIndex.PlayerContext]).toEqual([
         5, classPlayerBuilder, currentClassPlayer !, stylePlayerBuilder, currentStylePlayer !
       ]);
@@ -1661,7 +1659,7 @@ describe('style and class based bindings', () => {
        () => {
          const context = initContext(['width', 'height'], ['foo', 'bar']);
          const handler = new CorePlayerHandler();
-         const lViewData = createMockViewData(handler, context);
+         const lView = createMockViewData(handler, context);
 
          const capturedStylePlayers: Player[] = [];
          const styleBuildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -1701,7 +1699,7 @@ describe('style and class based bindings', () => {
            barPlayerBuilder, null
          ]);
 
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
          const classMapPlayer = capturedClassPlayers.shift() !;
          const barPlayer = capturedClassPlayers.shift() !;
          const styleMapPlayer = capturedStylePlayers.shift() !;
@@ -1734,7 +1732,7 @@ describe('style and class based bindings', () => {
            bazPlayerBuilder, null
          ]);
 
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
          const heightPlayer = capturedStylePlayers.shift() !;
          const bazPlayer = capturedClassPlayers.shift() !;
 
@@ -1757,7 +1755,7 @@ describe('style and class based bindings', () => {
        () => {
          const context = initContext(['width']);
          const handler = new CorePlayerHandler();
-         const lViewData = createMockViewData(handler, context);
+         const lView = createMockViewData(handler, context);
 
          const players: MockPlayer[] = [];
          const buildFn =
@@ -1772,7 +1770,7 @@ describe('style and class based bindings', () => {
 
          let mapFactory = bindPlayerFactory(buildFn, {width: '200px'});
          updateStylingMap(context, null, mapFactory);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(players.length).toEqual(1);
          const p1 = players.pop() !;
@@ -1780,7 +1778,7 @@ describe('style and class based bindings', () => {
 
          mapFactory = bindPlayerFactory(buildFn, {width: '100px'});
          updateStylingMap(context, null, mapFactory);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(players.length).toEqual(1);
          const p2 = players.pop() !;
@@ -1792,7 +1790,7 @@ describe('style and class based bindings', () => {
        () => {
          const context = initContext(['color'], ['foo']);
          const handler = new CorePlayerHandler();
-         const lViewData = createMockViewData(handler, context);
+         const lView = createMockViewData(handler, context);
 
          const stylePlayers: Player[] = [];
          const buildStyleFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -1855,7 +1853,7 @@ describe('style and class based bindings', () => {
          const fooPlayerBuilder = makePlayerBuilder(fooWithPlayerFactory, true);
          updateStyleProp(context, 0, colorWithPlayerFactory as any);
          updateClassProp(context, 0, fooWithPlayerFactory as any);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          const p1 = classPlayers.shift();
          const p2 = stylePlayers.shift();
@@ -1919,7 +1917,7 @@ describe('style and class based bindings', () => {
          const fooWithoutPlayerFactory = false;
          updateStyleProp(context, 0, colorWithoutPlayerFactory);
          updateClassProp(context, 0, fooWithoutPlayerFactory);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(context).toEqual([
            ([9, null, null, null, null, null, null, null, null] as any),
@@ -1972,7 +1970,7 @@ describe('style and class based bindings', () => {
     it('should not call a factory if no style and/or class values have been updated', () => {
       const context = initContext([]);
       const handler = new CorePlayerHandler();
-      const lViewData = createMockViewData(handler, context);
+      const lView = createMockViewData(handler, context);
 
       let styleCalls = 0;
       const buildStyleFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -1993,28 +1991,28 @@ describe('style and class based bindings', () => {
       expect(styleCalls).toEqual(0);
       expect(classCalls).toEqual(0);
 
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(1);
       expect(classCalls).toEqual(1);
 
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(1);
       expect(classCalls).toEqual(1);
 
       styleFactory.value = {opacity: '0.5'};
       updateStylingMap(context, classFactory, styleFactory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(1);
 
       classFactory.value = 'foo';
       updateStylingMap(context, classFactory, styleFactory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
 
       updateStylingMap(context, 'foo', {opacity: '0.5'});
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
       expect(styleCalls).toEqual(2);
       expect(classCalls).toEqual(2);
     });
@@ -2023,7 +2021,7 @@ describe('style and class based bindings', () => {
        () => {
          const context = initContext(['color']);
          const handler = new CorePlayerHandler();
-         const lViewData = createMockViewData(handler, context);
+         const lView = createMockViewData(handler, context);
 
          let propPlayer: Player|null = null;
          const propBuildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -2038,14 +2036,14 @@ describe('style and class based bindings', () => {
          const mapFactory = bindPlayerFactory(mapBuildFn, {color: 'black'});
          updateStylingMap(context, null, mapFactory);
          updateStyleProp(context, 0, 'green');
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeFalsy();
 
          const propFactory = bindPlayerFactory(propBuildFn, 'orange');
          updateStyleProp(context, 0, propFactory as any);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(propPlayer).toBeTruthy();
          expect(styleMapPlayer).toBeFalsy();
@@ -2053,7 +2051,7 @@ describe('style and class based bindings', () => {
          propPlayer = styleMapPlayer = null;
 
          updateStyleProp(context, 0, null);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeTruthy();
@@ -2061,7 +2059,7 @@ describe('style and class based bindings', () => {
          propPlayer = styleMapPlayer = null;
 
          updateStylingMap(context, null, null);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
 
          expect(propPlayer).toBeFalsy();
          expect(styleMapPlayer).toBeFalsy();
@@ -2070,7 +2068,7 @@ describe('style and class based bindings', () => {
     it('should return the old player for styles when a follow-up player is instantiated', () => {
       const context = initContext([]);
       const handler = new CorePlayerHandler();
-      const lViewData = createMockViewData(handler, context);
+      const lView = createMockViewData(handler, context);
 
       let previousPlayer: MockPlayer|null = null;
       let currentPlayer: MockPlayer|null = null;
@@ -2083,7 +2081,7 @@ describe('style and class based bindings', () => {
 
       let factory = bindPlayerFactory<{[key: string]: any}>(buildFn, {width: '200px'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(previousPlayer).toEqual(null);
       expect(currentPlayer !.value).toEqual({width: '200px'});
@@ -2091,7 +2089,7 @@ describe('style and class based bindings', () => {
       factory = bindPlayerFactory(buildFn, {height: '200px'});
 
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(previousPlayer !.value).toEqual({width: '200px'});
       expect(currentPlayer !.value).toEqual({width: null, height: '200px'});
@@ -2100,7 +2098,7 @@ describe('style and class based bindings', () => {
     it('should return the old player for classes when a follow-up player is instantiated', () => {
       const context = initContext([]);
       const handler = new CorePlayerHandler();
-      const lViewData = createMockViewData(handler, context);
+      const lView = createMockViewData(handler, context);
 
       let currentPlayer: MockPlayer|null = null;
       let previousPlayer: MockPlayer|null = null;
@@ -2113,7 +2111,7 @@ describe('style and class based bindings', () => {
 
       let factory = bindPlayerFactory<any>(buildFn, {foo: true});
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(currentPlayer).toBeTruthy();
       expect(previousPlayer).toBeFalsy();
@@ -2123,7 +2121,7 @@ describe('style and class based bindings', () => {
 
       factory = bindPlayerFactory(buildFn, {bar: true});
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(currentPlayer).toBeTruthy();
       expect(previousPlayer).toBeTruthy();
@@ -2142,7 +2140,7 @@ describe('style and class based bindings', () => {
 
       const context = initContext([], [], sanitizer);
       const handler = new CorePlayerHandler();
-      const lViewData = createMockViewData(handler, context);
+      const lView = createMockViewData(handler, context);
 
       let values: {[key: string]: any}|null = null;
       const buildFn =
@@ -2154,13 +2152,13 @@ describe('style and class based bindings', () => {
       let factory = bindPlayerFactory<{[key: string]: any}>(
           buildFn, {width: '200px', height: '100px', opacity: '1'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(values !).toEqual({width: '200px-safe!', height: '100px-safe!', opacity: '1'});
 
       factory = bindPlayerFactory(buildFn, {width: 'auto'});
       updateStylingMap(context, null, factory);
-      renderStyles(context, false, undefined, lViewData);
+      renderStyles(context, false, undefined, lView);
 
       expect(values !).toEqual({width: 'auto-safe!', height: null, opacity: null});
     });
@@ -2169,7 +2167,7 @@ describe('style and class based bindings', () => {
        () => {
          const context = initContext(['width'], ['foo', 'bar']);
          const handler = new CorePlayerHandler();
-         const lViewData = createMockViewData(handler, context);
+         const lView = createMockViewData(handler, context);
 
          const players: Player[] = [];
          const styleBuildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -2192,7 +2190,7 @@ describe('style and class based bindings', () => {
          updateStyleProp(context, 0, bindPlayerFactory(styleBuildFn, '100px') as any);
          updateClassProp(context, 0, bindPlayerFactory(classBuildFn, true) as any);
          updateClassProp(context, 1, bindPlayerFactory(classBuildFn, true) as any);
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
          handler.flushPlayers();
 
          const [p1, p2, p3, p4, p5] = players;
@@ -2210,7 +2208,7 @@ describe('style and class based bindings', () => {
          expect(p4.state).toEqual(PlayState.Running);
          expect(p5.state).toEqual(PlayState.Running);
 
-         renderStyles(context, false, undefined, lViewData);
+         renderStyles(context, false, undefined, lView);
          expect(p1.state).toEqual(PlayState.Destroyed);
          expect(p2.state).toEqual(PlayState.Destroyed);
          expect(p3.state).toEqual(PlayState.Destroyed);
@@ -2267,7 +2265,7 @@ describe('style and class based bindings', () => {
 
          const target = fixture.hostElement.querySelector('div') !as any;
          const elementContext = getContext(target) !;
-         const context = elementContext.lViewData[elementContext.nodeIndex] as StylingContext;
+         const context = elementContext.lView[elementContext.nodeIndex] as StylingContext;
 
          expect(players.length).toEqual(4);
          const [p1, p2, p3, p4] = players;

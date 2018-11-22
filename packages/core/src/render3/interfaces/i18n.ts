@@ -74,60 +74,60 @@ export interface COMMENT_MARKER { marker: 'comment'; }
  *   // For adding text nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createTextNode('abc');
- *   //   lViewData[1].insertBefore(node, lViewData[2]);
+ *   //   const node = lView[index++] = document.createTextNode('abc');
+ *   //   lView[1].insertBefore(node, lView[2]);
  *   'abc', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
  *
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createTextNode('xyz');
- *   //   lViewData[1].appendChild(node);
+ *   //   const node = lView[index++] = document.createTextNode('xyz');
+ *   //   lView[1].appendChild(node);
  *   'xyz', 1 << SHIFT_PARENT | AppendChild,
  *
  *   // For adding element nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createElement('div');
- *   //   lViewData[1].insertBefore(node, lViewData[2]);
+ *   //   const node = lView[index++] = document.createElement('div');
+ *   //   lView[1].insertBefore(node, lView[2]);
  *   ELEMENT_MARKER, 'div', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
  *
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createElement('div');
- *   //   lViewData[1].appendChild(node);
+ *   //   const node = lView[index++] = document.createElement('div');
+ *   //   lView[1].appendChild(node);
  *   ELEMENT_MARKER, 'div', 1 << SHIFT_PARENT | AppendChild,
  *
  *   // For adding comment nodes
  *   // ---------------------
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createComment('');
- *   //   lViewData[1].insertBefore(node, lViewData[2]);
+ *   //   const node = lView[index++] = document.createComment('');
+ *   //   lView[1].insertBefore(node, lView[2]);
  *   COMMENT_MARKER, '', 1 << SHIFT_PARENT | 2 << SHIFT_REF | InsertBefore,
  *
  *   // Equivalent to:
- *   //   const node = lViewData[index++] = document.createComment('');
- *   //   lViewData[1].appendChild(node);
+ *   //   const node = lView[index++] = document.createComment('');
+ *   //   lView[1].appendChild(node);
  *   COMMENT_MARKER, '', 1 << SHIFT_PARENT | AppendChild,
  *
  *   // For moving existing nodes to a different location
  *   // --------------------------------------------------
  *   // Equivalent to:
- *   //   const node = lViewData[1];
- *   //   lViewData[2].insertBefore(node, lViewData[3]);
+ *   //   const node = lView[1];
+ *   //   lView[2].insertBefore(node, lView[3]);
  *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | 3 << SHIFT_REF | InsertBefore,
  *
  *   // Equivalent to:
- *   //   const node = lViewData[1];
- *   //   lViewData[2].appendChild(node);
+ *   //   const node = lView[1];
+ *   //   lView[2].appendChild(node);
  *   1 << SHIFT_REF | Select, 2 << SHIFT_PARENT | AppendChild,
  *
  *   // For removing existing nodes
  *   // --------------------------------------------------
- *   //   const node = lViewData[1];
- *   //   removeChild(tView.data(1), node, lViewData);
+ *   //   const node = lView[1];
+ *   //   removeChild(tView.data(1), node, lView);
  *   1 << SHIFT_REF | Remove,
  *
  *   // For writing attributes
  *   // --------------------------------------------------
- *   //   const node = lViewData[1];
+ *   //   const node = lView[1];
  *   //   node.setAttribute('attr', 'value');
  *   1 << SHIFT_REF | Select, 'attr', 'value'
  *            // NOTE: Select followed by two string (vs select followed by OpCode)
@@ -196,7 +196,7 @@ export const enum I18nUpdateOpCode {
  *   //        has changed then execute update OpCodes.
  *   //        has NOT changed then skip `7` values and start processing next OpCodes.
  *   0b11, 7,
- *   // Concatenate `newValue = 'pre'+lViewData[bindIndex-4]+'in'+lViewData[bindIndex-3]+'post';`.
+ *   // Concatenate `newValue = 'pre'+lView[bindIndex-4]+'in'+lView[bindIndex-3]+'post';`.
  *   'pre', -4, 'in', -3, 'post',
  *   // Update attribute: `elementAttribute(1, 'title', sanitizerFn(newValue));`
  *   1 << SHIFT_REF | Attr, 'title', sanitizerFn,
@@ -206,9 +206,9 @@ export const enum I18nUpdateOpCode {
  *   //        has changed then execute update OpCodes.
  *   //        has NOT changed then skip `4` values and start processing next OpCodes.
  *   0b100, 4,
- *   // Concatenate `newValue = 'Hello ' + lViewData[bindIndex -2] + '!';`.
+ *   // Concatenate `newValue = 'Hello ' + lView[bindIndex -2] + '!';`.
  *   'Hello ', -2, '!',
- *   // Update text: `lViewData[1].textContent = newValue;`
+ *   // Update text: `lView[1].textContent = newValue;`
  *   1 << SHIFT_REF | Text,
  *
  *   // The following OpCodes represent: `<div i18n>{exp4, plural, ... }">`
@@ -216,14 +216,14 @@ export const enum I18nUpdateOpCode {
  *   //        has changed then execute update OpCodes.
  *   //        has NOT changed then skip `4` values and start processing next OpCodes.
  *   0b1000, 4,
- *   // Concatenate `newValue = lViewData[bindIndex -1];`.
+ *   // Concatenate `newValue = lView[bindIndex -1];`.
  *   -1,
- *   // Switch ICU: `icuSwitchCase(lViewData[1], 0, newValue);`
+ *   // Switch ICU: `icuSwitchCase(lView[1], 0, newValue);`
  *   0 << SHIFT_ICU | 1 << SHIFT_REF | IcuSwitch,
  *
  *   // Note `changeMask & -1` is always true, so the IcuUpdate will always execute.
  *   -1, 1,
- *   // Update ICU: `icuUpdateCase(lViewData[1], 0);`
+ *   // Update ICU: `icuUpdateCase(lView[1], 0);`
  *   0 << SHIFT_ICU | 1 << SHIFT_REF | IcuUpdate,
  *
  * ];

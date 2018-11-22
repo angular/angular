@@ -16,7 +16,7 @@ import {getNativeByIndex} from '../../src/render3/util';
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
-import {getViewData} from '../../src/render3/state';
+import {getLView} from '../../src/render3/state';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
@@ -115,7 +115,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', '']);
-                elToQuery = getNativeByIndex(1, getViewData());
+                elToQuery = getNativeByIndex(1, getLView());
               }
             },
             2, 0, [Child], [],
@@ -335,7 +335,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, getViewData());
+                elToQuery = getNativeByIndex(1, getLView());
                 element(3, 'div');
               }
             },
@@ -372,7 +372,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(2, 'div', null, ['foo', '', 'bar', '']);
-                elToQuery = getNativeByIndex(2, getViewData());
+                elToQuery = getNativeByIndex(2, getLView());
                 element(5, 'div');
               }
             },
@@ -419,10 +419,10 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                el1ToQuery = getNativeByIndex(1, getViewData());
+                el1ToQuery = getNativeByIndex(1, getLView());
                 element(3, 'div');
                 element(4, 'div', null, ['bar', '']);
-                el2ToQuery = getNativeByIndex(4, getViewData());
+                el2ToQuery = getNativeByIndex(4, getLView());
               }
             },
             6, 0, [], [],
@@ -458,7 +458,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, getViewData());
+                elToQuery = getNativeByIndex(1, getLView());
                 element(3, 'div');
               }
             },
@@ -494,7 +494,7 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    elementContainerStart(1, null, ['foo', '']);
-                   elToQuery = getNativeByIndex(1, getViewData());
+                   elToQuery = getNativeByIndex(1, getLView());
                    elementContainerEnd();
                  }
                },
@@ -530,7 +530,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 elementContainerStart(1, null, ['foo', '']);
-                elToQuery = getNativeByIndex(1, getViewData());
+                elToQuery = getNativeByIndex(1, getLView());
                 elementContainerEnd();
               }
             },
@@ -593,7 +593,7 @@ describe('query', () => {
                 elementContainerStart(2);
                 {
                   element(3, 'div', null, ['foo', '']);
-                  elToQuery = getNativeByIndex(3, getViewData());
+                  elToQuery = getNativeByIndex(3, getLView());
                 }
                 elementContainerEnd();
               }
@@ -1003,7 +1003,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', ''], ['foo', 'child']);
-                div = getNativeByIndex(1, getViewData());
+                div = getNativeByIndex(1, getLView());
               }
             },
             3, 0, [Child], [],
@@ -1038,7 +1038,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 element(1, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
-                div = getNativeByIndex(1, getViewData());
+                div = getNativeByIndex(1, getLView());
               }
               if (rf & RenderFlags.Update) {
                 childInstance = getDirectiveOnNode(1);
@@ -1737,7 +1737,7 @@ describe('query', () => {
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, getViewData());
+                        firstEl = getNativeByIndex(0, getLView());
                       }
                     }
                     embeddedViewEnd();
@@ -1789,10 +1789,10 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    element(1, 'span', null, ['foo', '']);
-                   firstEl = getNativeByIndex(1, getViewData());
+                   firstEl = getNativeByIndex(1, getLView());
                    container(3);
                    element(4, 'span', null, ['foo', '']);
-                   lastEl = getNativeByIndex(4, getViewData());
+                   lastEl = getNativeByIndex(4, getLView());
                  }
                  if (rf & RenderFlags.Update) {
                    containerRefreshStart(3);
@@ -1802,7 +1802,7 @@ describe('query', () => {
                        {
                          if (rf1 & RenderFlags.Create) {
                            element(0, 'div', null, ['foo', '']);
-                           viewEl = getNativeByIndex(0, getViewData());
+                           viewEl = getNativeByIndex(0, getLView());
                          }
                        }
                        embeddedViewEnd();
@@ -1869,7 +1869,7 @@ describe('query', () => {
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, getViewData());
+                        firstEl = getNativeByIndex(0, getLView());
                       }
                     }
                     embeddedViewEnd();
@@ -1879,7 +1879,7 @@ describe('query', () => {
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'span', null, ['foo', '']);
-                        lastEl = getNativeByIndex(0, getViewData());
+                        lastEl = getNativeByIndex(0, getLView());
                       }
                     }
                     embeddedViewEnd();
@@ -1942,7 +1942,7 @@ describe('query', () => {
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
-                        firstEl = getNativeByIndex(0, getViewData());
+                        firstEl = getNativeByIndex(0, getLView());
                         container(2);
                       }
                       if (rf0 & RenderFlags.Update) {
@@ -1953,7 +1953,7 @@ describe('query', () => {
                             {
                               if (rf2) {
                                 element(0, 'span', null, ['foo', '']);
-                                lastEl = getNativeByIndex(0, getViewData());
+                                lastEl = getNativeByIndex(0, getLView());
                               }
                             }
                             embeddedViewEnd();

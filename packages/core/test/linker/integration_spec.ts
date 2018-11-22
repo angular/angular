@@ -1116,7 +1116,7 @@ function declareTests(config?: {useJit: boolean}) {
                    .toHaveText('dynamic greet');
              }));
 
-          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
+          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation') &&
               it('should create a component that has been freshly compiled', () => {
                 @Component({template: ''})
                 class RootComp {
@@ -1156,7 +1156,7 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(compRef.instance.someToken).toBe('someRootValue');
               });
 
-          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
+          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation') &&
               it('should create a component with the passed NgModuleRef', () => {
                 @Component({template: ''})
                 class RootComp {
@@ -1197,7 +1197,7 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(compRef.instance.someToken).toBe('someValue');
               });
 
-          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
+          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation') &&
               it('should create a component with the NgModuleRef of the ComponentFactoryResolver',
                  () => {
                    @Component({template: ''})

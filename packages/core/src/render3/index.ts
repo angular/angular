@@ -78,10 +78,11 @@ export {
 
   directiveInject,
   injectAttribute,
+  
+  getCurrentView
 } from './instructions';
 
 export {
-  getCurrentView,
   restoreView,
 
   enableBindings,

@@ -16,7 +16,7 @@ import {RElement} from '../../src/render3/interfaces/renderer';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
-import {getViewData} from '../../src/render3/state';
+import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util';
 import {NgForOf} from '../../test/render3/common_with_def';
 import {fixmeIvy} from '@angular/private/testing';
@@ -2013,7 +2013,7 @@ describe('ViewContainerRef', () => {
               element(1, 'div', ['bar', ''], ['foo', '']);
             }
             // testing only
-            fooEl = getNativeByIndex(1, getViewData());
+            fooEl = getNativeByIndex(1, getLView());
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {

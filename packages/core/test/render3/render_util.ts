@@ -11,6 +11,7 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
+import {getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
@@ -28,8 +29,7 @@ import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LViewData} from '../../src/render3/interfaces/view';
-import {getViewData} from '../../src/render3/state';
+import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
 
@@ -82,7 +82,7 @@ function noop() {}
  * - access to the render `html`.
  */
 export class TemplateFixture extends BaseFixture {
-  hostView: LViewData;
+  hostView: LView;
   private _directiveDefs: DirectiveDefList|null;
   private _pipeDefs: PipeDefList|null;
   private _sanitizer: Sanitizer|null;
@@ -179,7 +179,7 @@ export class ComponentFixture<T> extends BaseFixture {
 
 export const document = ((typeof global == 'object' && global || window) as any).document;
 export let containerEl: HTMLElement = null !;
-let hostView: LViewData|null;
+let hostView: LView|null;
 const isRenderer2 =
     typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
@@ -323,7 +323,7 @@ export function createDirective(
 
 /** Gets the directive on the given node at the given index */
 export function getDirectiveOnNode(nodeIndex: number, dirIndex: number = 0) {
-  const directives = getDirectivesAtNodeIndex(nodeIndex + HEADER_OFFSET, getViewData(), true);
+  const directives = getDirectivesAtNodeIndex(nodeIndex + HEADER_OFFSET, getLView(), true);
   if (directives == null) {
     throw new Error(`No directives exist on node in slot ${nodeIndex}`);
   }

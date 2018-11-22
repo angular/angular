@@ -10,7 +10,7 @@ import {InitialStylingFlags} from '../interfaces/definition';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {InitialStyles, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
-import {LViewData, RootContext} from '../interfaces/view';
+import {LView, RootContext} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
@@ -479,7 +479,7 @@ export function updateClassProp(
  * @returns number the total amount of players that got queued for animation (if any)
  */
 export function renderStyleAndClassBindings(
-    context: StylingContext, renderer: Renderer3, rootOrView: RootContext | LViewData,
+    context: StylingContext, renderer: Renderer3, rootOrView: RootContext | LView,
     isFirstRender: boolean, classesStore?: BindingStore | null,
     stylesStore?: BindingStore | null): number {
   let totalPlayersQueued = 0;

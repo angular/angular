@@ -422,7 +422,7 @@ describe('host bindings', () => {
         vars: 0,
         hostVars: 8,
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
-          // LViewData: [..., id, dir, title, ctx.id, pf1, ctx.title, ctx.otherTitle, pf2]
+          // LView: [..., id, dir, title, ctx.id, pf1, ctx.title, ctx.otherTitle, pf2]
           if (rf & RenderFlags.Update) {
             elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
             elementProperty(elIndex, 'dir', bind(ctx.dir));
@@ -498,7 +498,7 @@ describe('host bindings', () => {
         vars: 0,
         hostVars: 3,
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
-          // LViewData: [..., id, ctx.id, pf1]
+          // LView: [..., id, ctx.id, pf1]
           if (rf & RenderFlags.Update) {
             elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
           }
@@ -527,7 +527,7 @@ describe('host bindings', () => {
         factory: () => hostBindingDir = new HostBindingDir(),
         hostVars: 3,
         hostBindings: (rf: RenderFlags, ctx: HostBindingDir, elIndex: number) => {
-          // LViewData [..., title, ctx.title, pf1]
+          // LView [..., title, ctx.title, pf1]
           if (rf & RenderFlags.Update) {
             elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
           }
@@ -589,7 +589,7 @@ describe('host bindings', () => {
         vars: 0,
         hostVars: 6,
         hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
-          // LViewData: [..., id, title, ctx.id, pf1, ctx.title, pf1]
+          // LView: [..., id, title, ctx.id, pf1, ctx.title, pf1]
           if (rf & RenderFlags.Update) {
             elementProperty(
                 elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));

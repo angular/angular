@@ -102,9 +102,6 @@
     "name": "PRIVATE_PREFIX"
   },
   {
-    "name": "QUERIES"
-  },
-  {
     "name": "RENDERER"
   },
   {
@@ -174,7 +171,7 @@
     "name": "componentRefresh"
   },
   {
-    "name": "createLViewData"
+    "name": "createLView"
   },
   {
     "name": "createNodeAtIndex"
@@ -279,6 +276,9 @@
     "name": "getLContainer"
   },
   {
+    "name": "getLView"
+  },
+  {
     "name": "getLViewChild"
   },
   {
@@ -321,19 +321,10 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRenderer"
-  },
-  {
     "name": "getRootContext"
   },
   {
     "name": "getRootView"
-  },
-  {
-    "name": "getTView"
-  },
-  {
-    "name": "getViewData"
   },
   {
     "name": "hasParentInjector"
@@ -411,7 +402,7 @@
     "name": "readPatchedData"
   },
   {
-    "name": "readPatchedLViewData"
+    "name": "readPatchedLView"
   },
   {
     "name": "refreshChildComponents"

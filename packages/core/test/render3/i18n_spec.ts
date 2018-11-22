@@ -17,7 +17,7 @@ import {NgIf} from './common_with_def';
 
 import {element, elementEnd, elementStart, template, text, bind, elementProperty, projectionDef, projection} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
-import {HEADER_OFFSET, LViewData, TVIEW} from '../../src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 const Component: typeof _Component = function(...args: any[]): any {
@@ -691,8 +691,8 @@ describe('Runtime i18n', () => {
       const opCodes = tView.data[index + HEADER_OFFSET] as I18nUpdateOpCodes;
 
       expect(opCodes).toEqual([]);
-      expect((getNativeByIndex(0, fixture.hostView as LViewData) as any as Element)
-                 .getAttribute('title'))
+      expect(
+          (getNativeByIndex(0, fixture.hostView as LView) as any as Element).getAttribute('title'))
           .toEqual(MSG_title);
     });
 

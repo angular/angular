@@ -10,9 +10,9 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
-import {HEADER_OFFSET} from './interfaces/view';
+import {HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-import {getTView} from './state';
+import {getLView} from './state';
 
 /**
  * Create a pipe.
@@ -22,7 +22,7 @@ import {getTView} from './state';
  * @returns T the instance of the pipe.
  */
 export function pipe(index: number, pipeName: string): any {
-  const tView = getTView();
+  const tView = getLView()[TVIEW];
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
 
@@ -152,5 +152,5 @@ export function pipeBindV(index: number, slotOffset: number, values: any[]): any
 }
 
 function isPure(index: number): boolean {
-  return (<PipeDef<any>>getTView().data[index + HEADER_OFFSET]).pure;
+  return (<PipeDef<any>>getLView()[TVIEW].data[index + HEADER_OFFSET]).pure;
 }
