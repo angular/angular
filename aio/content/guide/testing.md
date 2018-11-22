@@ -218,7 +218,7 @@ exports.config = config;
 Now you can run the following commands to use the `--no-sandbox` flag:
 
 <code-example language="sh" class="code-shell">
-  ng test --single-run --no-progress --browser=ChromeHeadlessCI
+  ng test --watch=false --no-progress --browsers=ChromeHeadlessCI
   ng e2e --no-progress --config=protractor-ci.conf.js
 </code-example>
 
