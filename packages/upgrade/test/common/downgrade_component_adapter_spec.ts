@@ -7,6 +7,7 @@
  */
 import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {fixmeIvy} from '@angular/private/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/src/common/downgrade_component_adapter';
 
@@ -177,26 +178,28 @@ withEachNg1Version(() => {
       beforeEach(() => registry.unregisterAllApplications());
       afterEach(() => registry.unregisterAllApplications());
 
-      it('should add testabilities hook when creating components', () => {
+      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+          it('should add testabilities hook when creating components', () => {
 
-        let registry = TestBed.get(TestabilityRegistry);
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(1);
+            let registry = TestBed.get(TestabilityRegistry);
+            adapter.createComponent([]);
+            expect(registry.getAllTestabilities().length).toEqual(1);
 
-        adapter = getAdaptor();  // get a new adaptor to creat a new component
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(2);
-      });
+            adapter = getAdaptor();  // get a new adaptor to creat a new component
+            adapter.createComponent([]);
+            expect(registry.getAllTestabilities().length).toEqual(2);
+          });
 
-      it('should remove the testability hook when destroy a component', () => {
-        const registry = TestBed.get(TestabilityRegistry);
-        expect(registry.getAllTestabilities().length).toEqual(0);
-        adapter.createComponent([]);
-        expect(registry.getAllTestabilities().length).toEqual(1);
-        adapter.registerCleanup();
-        element.remove !();
-        expect(registry.getAllTestabilities().length).toEqual(0);
-      });
+      fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+          it('should remove the testability hook when destroy a component', () => {
+            const registry = TestBed.get(TestabilityRegistry);
+            expect(registry.getAllTestabilities().length).toEqual(0);
+            adapter.createComponent([]);
+            expect(registry.getAllTestabilities().length).toEqual(1);
+            adapter.registerCleanup();
+            element.remove !();
+            expect(registry.getAllTestabilities().length).toEqual(0);
+          });
     });
 
   });
