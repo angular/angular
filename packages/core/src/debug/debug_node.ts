@@ -7,6 +7,11 @@
  */
 
 import {Injector} from '../di';
+import {DirectiveDef} from '../render3';
+import {assertDomNode} from '../render3/assert';
+import {getComponent, getInjector, getLocalRefs, loadContext} from '../render3/discovery_utils';
+import {TNode, TNodeFlags} from '../render3/interfaces/node';
+import {TVIEW} from '../render3/interfaces/view';
 import {DebugContext} from '../view/index';
 
 export class EventListener {
@@ -16,12 +21,26 @@ export class EventListener {
 /**
  * @publicApi
  */
-export class DebugNode {
-  listeners: EventListener[] = [];
-  parent: DebugElement|null = null;
+export interface DebugNode {
+  readonly listeners: EventListener[];
+  readonly parent: DebugElement|null;
+  readonly nativeNode: any;
+  readonly injector: Injector;
+  readonly componentInstance: any;
+  readonly context: any;
+  readonly references: {[key: string]: any};
+  readonly providerTokens: any[];
+}
+export class DebugNode__PRE_R3__ {
+  readonly listeners: EventListener[] = [];
+  readonly parent: DebugElement|null = null;
+  readonly nativeNode: any;
+  private readonly _debugContext: DebugContext;
 
-  constructor(public nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
-    if (parent && parent instanceof DebugElement) {
+  constructor(nativeNode: any, parent: DebugNode|null, _debugContext: DebugContext) {
+    this._debugContext = _debugContext;
+    this.nativeNode = nativeNode;
+    if (parent && parent instanceof DebugElement__PRE_R3__) {
       parent.addChild(this);
     }
   }
@@ -40,14 +59,29 @@ export class DebugNode {
 /**
  * @publicApi
  */
-export class DebugElement extends DebugNode {
-  name !: string;
-  properties: {[key: string]: any} = {};
-  attributes: {[key: string]: string | null} = {};
-  classes: {[key: string]: boolean} = {};
-  styles: {[key: string]: string | null} = {};
-  childNodes: DebugNode[] = [];
-  nativeElement: any;
+export interface DebugElement extends DebugNode {
+  readonly name: string;
+  readonly properties: {[key: string]: any};
+  readonly attributes: {[key: string]: string | null};
+  readonly classes: {[key: string]: boolean};
+  readonly styles: {[key: string]: string | null};
+  readonly childNodes: DebugNode[];
+  readonly nativeElement: any;
+  readonly children: DebugElement[];
+
+  query(predicate: Predicate<DebugElement>): DebugElement;
+  queryAll(predicate: Predicate<DebugElement>): DebugElement[];
+  queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
+  triggerEventHandler(eventName: string, eventObj: any): void;
+}
+export class DebugElement__PRE_R3__ extends DebugNode__PRE_R3__ implements DebugElement {
+  readonly name !: string;
+  readonly properties: {[key: string]: any} = {};
+  readonly attributes: {[key: string]: string | null} = {};
+  readonly classes: {[key: string]: boolean} = {};
+  readonly styles: {[key: string]: string | null} = {};
+  readonly childNodes: DebugNode[] = [];
+  readonly nativeElement: any;
 
   constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
     super(nativeNode, parent, _debugContext);
@@ -57,14 +91,14 @@ export class DebugElement extends DebugNode {
   addChild(child: DebugNode) {
     if (child) {
       this.childNodes.push(child);
-      child.parent = this;
+      (child as{parent: DebugNode}).parent = this;
     }
   }
 
   removeChild(child: DebugNode) {
     const childIndex = this.childNodes.indexOf(child);
     if (childIndex !== -1) {
-      child.parent = null;
+      (child as{parent: DebugNode | null}).parent = null;
       this.childNodes.splice(childIndex, 1);
     }
   }
@@ -75,9 +109,9 @@ export class DebugElement extends DebugNode {
       this.childNodes.splice(siblingIndex + 1, 0, ...newChildren);
       newChildren.forEach(c => {
         if (c.parent) {
-          c.parent.removeChild(c);
+          (c.parent as DebugElement__PRE_R3__).removeChild(c);
         }
-        c.parent = this;
+        (child as{parent: DebugNode}).parent = this;
       });
     }
   }
@@ -88,9 +122,9 @@ export class DebugElement extends DebugNode {
       this.addChild(newChild);
     } else {
       if (newChild.parent) {
-        newChild.parent.removeChild(newChild);
+        (newChild.parent as DebugElement__PRE_R3__).removeChild(newChild);
       }
-      newChild.parent = this;
+      (newChild as{parent: DebugNode}).parent = this;
       this.childNodes.splice(refIndex, 0, newChild);
     }
   }
@@ -113,7 +147,9 @@ export class DebugElement extends DebugNode {
   }
 
   get children(): DebugElement[] {
-    return this.childNodes.filter((node) => node instanceof DebugElement) as DebugElement[];
+    return this
+        .childNodes  //
+        .filter((node) => node instanceof DebugElement__PRE_R3__) as DebugElement[];
   }
 
   triggerEventHandler(eventName: string, eventObj: any) {
@@ -135,7 +171,7 @@ export function asNativeElements(debugEls: DebugElement[]): any {
 function _queryElementChildren(
     element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
   element.childNodes.forEach(node => {
-    if (node instanceof DebugElement) {
+    if (node instanceof DebugElement__PRE_R3__) {
       if (predicate(node)) {
         matches.push(node);
       }
@@ -146,27 +182,215 @@ function _queryElementChildren(
 
 function _queryNodeChildren(
     parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
-  if (parentNode instanceof DebugElement) {
+  if (parentNode instanceof DebugElement__PRE_R3__) {
     parentNode.childNodes.forEach(node => {
       if (predicate(node)) {
         matches.push(node);
       }
-      if (node instanceof DebugElement) {
+      if (node instanceof DebugElement__PRE_R3__) {
         _queryNodeChildren(node, predicate, matches);
       }
     });
   }
 }
 
+function notImplemented(): Error {
+  throw new Error('Missing proper ivy implementation.');
+}
+
+class DebugNode__POST_R3__ implements DebugNode {
+  readonly nativeNode: Node;
+
+  constructor(nativeNode: Node) { this.nativeNode = nativeNode; }
+
+  get parent(): DebugElement|null {
+    const parent = this.nativeNode.parentNode as HTMLElement;
+    return parent ? new DebugElement__POST_R3__(parent) : null;
+  }
+
+  get injector(): Injector { return getInjector(this.nativeNode); }
+
+  get componentInstance(): any {
+    const nativeElement = this.nativeNode;
+    return nativeElement && getComponent(nativeElement as HTMLElement);
+  }
+  get context(): any {
+    // https://angular-team.atlassian.net/browse/FW-719
+    throw notImplemented();
+  }
+
+  get listeners(): EventListener[] {
+    // TODO: add real implementation;
+    // https://angular-team.atlassian.net/browse/FW-719
+    return [];
+  }
+
+  get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
+
+  get providerTokens(): any[] {
+    // TODO move to discoverable utils
+    const context = loadContext(this.nativeNode as HTMLElement, false) !;
+    if (!context) return [];
+    const lView = context.lViewData;
+    const tView = lView[TVIEW];
+    const tNode = tView.data[context.nodeIndex] as TNode;
+    const providerTokens: any[] = [];
+    const nodeFlags = tNode.flags;
+    const startIndex = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
+    const directiveCount = nodeFlags & TNodeFlags.DirectiveCountMask;
+    const endIndex = startIndex + directiveCount;
+    for (let i = startIndex; i < endIndex; i++) {
+      let value = tView.data[i];
+      if (isDirectiveDefHack(value)) {
+        // The fact that we sometimes store Type and sometimes DirectiveDef in this location is a
+        // design flaw.  We should always store same type so that we can be monomorphic. The issue
+        // is that for Components/Directives we store the def instead the type. The correct behavior
+        // is that we should always be storing injectable type in this location.
+        value = value.type;
+      }
+      providerTokens.push(value);
+    }
+    return providerTokens;
+  }
+}
+
+class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
+  constructor(nativeNode: Element) {
+    ngDevMode && assertDomNode(nativeNode);
+    super(nativeNode);
+  }
+
+  get nativeElement(): Element|null {
+    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
+  }
+
+  get name(): string { return (this.nativeElement as HTMLElement).nodeName; }
+
+  get properties(): {[key: string]: any;} {
+    const context = loadContext(this.nativeNode) !;
+    const lView = context.lViewData;
+    const tView = lView[TVIEW];
+    const tNode = tView.data[context.nodeIndex] as TNode;
+    const properties = {};
+    // TODO: https://angular-team.atlassian.net/browse/FW-681
+    // Missing implementation here...
+    return properties;
+  }
+
+  get attributes(): {[key: string]: string | null;} {
+    // https://angular-team.atlassian.net/browse/FW-719
+    throw notImplemented();
+  }
+
+  get classes(): {[key: string]: boolean;} {
+    // https://angular-team.atlassian.net/browse/FW-719
+    throw notImplemented();
+  }
+
+  get styles(): {[key: string]: string | null;} {
+    // https://angular-team.atlassian.net/browse/FW-719
+    throw notImplemented();
+  }
+
+  get childNodes(): DebugNode[] {
+    const childNodes = this.nativeNode.childNodes;
+    const children: DebugNode[] = [];
+    for (let i = 0; i < childNodes.length; i++) {
+      const element = childNodes[i];
+      children.push(getDebugNode__POST_R3__(element));
+    }
+    return children;
+  }
+
+  get children(): DebugElement[] {
+    const nativeElement = this.nativeElement;
+    if (!nativeElement) return [];
+    const childNodes = nativeElement.children;
+    const children: DebugElement[] = [];
+    for (let i = 0; i < childNodes.length; i++) {
+      const element = childNodes[i];
+      children.push(getDebugNode__POST_R3__(element));
+    }
+    return children;
+  }
+
+  query(predicate: Predicate<DebugElement>): DebugElement {
+    const results = this.queryAll(predicate);
+    return results[0] || null;
+  }
+
+  queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
+    const matches: DebugElement[] = [];
+    _queryNodeChildrenR3(this, predicate, matches, true);
+    return matches;
+  }
+
+  queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
+    const matches: DebugNode[] = [];
+    _queryNodeChildrenR3(this, predicate, matches, false);
+    return matches;
+  }
+
+  triggerEventHandler(eventName: string, eventObj: any): void {
+    // This is a hack implementation. The correct implementation would bypass the DOM and `TNode`
+    // information to invoke the listeners directly.
+    // https://angular-team.atlassian.net/browse/FW-719
+    const event = document.createEvent('MouseEvent');
+    event.initEvent(eventName, true, true);
+    (this.nativeElement as HTMLElement).dispatchEvent(event);
+  }
+}
+
+/**
+ * This function should not exist because it is megamorphic and only mostly correct.
+ *
+ * See call site for more info.
+ */
+function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
+  return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
+}
+
+function _queryNodeChildrenR3(
+    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[],
+    elementsOnly: boolean) {
+  if (parentNode instanceof DebugElement__POST_R3__) {
+    parentNode.childNodes.forEach(node => {
+      if (predicate(node)) {
+        matches.push(node);
+      }
+      if (node instanceof DebugElement__POST_R3__) {
+        if (elementsOnly ? node.nativeElement : true) {
+          _queryNodeChildrenR3(node, predicate, matches, elementsOnly);
+        }
+      }
+    });
+  }
+}
+
+
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
+
+function getDebugNode__PRE_R3__(nativeNode: any): DebugNode|null {
+  return _nativeNodeToDebugNode.get(nativeNode) || null;
+}
+
+export function getDebugNode__POST_R3__(nativeNode: Element): DebugElement__POST_R3__;
+export function getDebugNode__POST_R3__(nativeNode: Node): DebugNode__POST_R3__;
+export function getDebugNode__POST_R3__(nativeNode: null): null;
+export function getDebugNode__POST_R3__(nativeNode: any): DebugNode|null {
+  if (nativeNode instanceof Node) {
+    return nativeNode.nodeType == Node.ELEMENT_NODE ?
+        new DebugElement__POST_R3__(nativeNode as Element) :
+        new DebugNode__POST_R3__(nativeNode);
+  }
+  return null;
+}
 
 /**
  * @publicApi
  */
-export function getDebugNode(nativeNode: any): DebugNode|null {
-  return _nativeNodeToDebugNode.get(nativeNode) || null;
-}
+export const getDebugNode: (nativeNode: any) => DebugNode | null = getDebugNode__PRE_R3__;
 
 export function getAllDebugNodes(): DebugNode[] {
   return Array.from(_nativeNodeToDebugNode.values());
@@ -187,3 +411,13 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  * @publicApi
  */
 export interface Predicate<T> { (value: T): boolean; }
+
+/**
+ * @publicApi
+ */
+export const DebugNode: {new (...args: any[]): DebugNode} = DebugNode__PRE_R3__ as any;
+
+/**
+ * @publicApi
+ */
+export const DebugElement: {new (...args: any[]): DebugElement} = DebugElement__PRE_R3__ as any;

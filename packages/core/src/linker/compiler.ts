@@ -11,6 +11,7 @@ import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
+import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
 import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
@@ -34,6 +35,42 @@ function _throwError() {
   throw new Error(`Runtime compiler is not loaded`);
 }
 
+const Compiler_compileModuleSync__PRE_R3__: <T>(moduleType: Type<T>) => NgModuleFactory<T> =
+    _throwError as any;
+export const Compiler_compileModuleSync__POST_R3__: <T>(moduleType: Type<T>) =>
+    NgModuleFactory<T> = function<T>(moduleType: Type<T>): NgModuleFactory<T> {
+  return new NgModuleFactoryR3(moduleType);
+};
+const Compiler_compileModuleSync = Compiler_compileModuleSync__PRE_R3__;
+
+const Compiler_compileModuleAsync__PRE_R3__: <T>(moduleType: Type<T>) =>
+    Promise<NgModuleFactory<T>> = _throwError as any;
+export const Compiler_compileModuleAsync__POST_R3__: <T>(moduleType: Type<T>) =>
+    Promise<NgModuleFactory<T>> = function<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
+  return Promise.resolve(Compiler_compileModuleSync__POST_R3__(moduleType));
+};
+const Compiler_compileModuleAsync = Compiler_compileModuleAsync__PRE_R3__;
+
+const Compiler_compileModuleAndAllComponentsSync__PRE_R3__: <T>(moduleType: Type<T>) =>
+    ModuleWithComponentFactories<T> = _throwError as any;
+export const Compiler_compileModuleAndAllComponentsSync__POST_R3__: <T>(moduleType: Type<T>) =>
+    ModuleWithComponentFactories<T> = function<T>(moduleType: Type<T>):
+        ModuleWithComponentFactories<T> {
+  return new ModuleWithComponentFactories(Compiler_compileModuleSync__POST_R3__(moduleType), []);
+};
+const Compiler_compileModuleAndAllComponentsSync =
+    Compiler_compileModuleAndAllComponentsSync__PRE_R3__;
+
+const Compiler_compileModuleAndAllComponentsAsync__PRE_R3__: <T>(moduleType: Type<T>) =>
+    Promise<ModuleWithComponentFactories<T>> = _throwError as any;
+export const Compiler_compileModuleAndAllComponentsAsync__POST_R3__: <T>(moduleType: Type<T>) =>
+    Promise<ModuleWithComponentFactories<T>> = function<T>(moduleType: Type<T>):
+        Promise<ModuleWithComponentFactories<T>> {
+  return Promise.resolve(Compiler_compileModuleAndAllComponentsSync__POST_R3__(moduleType));
+};
+const Compiler_compileModuleAndAllComponentsAsync =
+    Compiler_compileModuleAndAllComponentsAsync__PRE_R3__;
+
 /**
  * Low-level service for running the angular compiler during runtime
  * to create {@link ComponentFactory}s, which
@@ -51,27 +88,25 @@ export class Compiler {
    * Compiles the given NgModule and all of its components. All templates of the components listed
    * in `entryComponents` have to be inlined.
    */
-  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
+  compileModuleSync: <T>(moduleType: Type<T>) => NgModuleFactory<T> = Compiler_compileModuleSync;
 
   /**
    * Compiles the given NgModule and all of its components
    */
-  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
+  compileModuleAsync:
+      <T>(moduleType: Type<T>) => Promise<NgModuleFactory<T>> = Compiler_compileModuleAsync;
 
   /**
    * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    throw _throwError();
-  }
+  compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T> =
+      Compiler_compileModuleAndAllComponentsSync;
 
   /**
    * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
-      Promise<ModuleWithComponentFactories<T>> {
-    throw _throwError();
-  }
+  compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) =>
+      Promise<ModuleWithComponentFactories<T>> = Compiler_compileModuleAndAllComponentsAsync;
 
   /**
    * Clears all caches.

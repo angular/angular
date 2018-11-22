@@ -15,6 +15,7 @@ import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '.
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
+import {Sanitizer} from '../sanitization/security';
 import {Type} from '../type';
 import {VERSION} from '../version';
 import {assertComponentType, assertDefined} from './assert';
@@ -25,6 +26,7 @@ import {createLViewData, createNodeAtIndex, createTView, createViewNode, element
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {SanitizerFn} from './interfaces/sanitization';
 import {HEADER_OFFSET, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
@@ -65,13 +67,6 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
   providedIn: 'root',
   factory: () => defaultScheduler,
 });
-
-/**
- * A function used to wrap the `RendererFactory2`.
- * Used in tests to change the `RendererFactory2` into a `DebugRendererFactory2`.
- */
-export const WRAP_RENDERER_FACTORY2 =
-    new InjectionToken<(rf: RendererFactory2) => RendererFactory2>('WRAP_RENDERER_FACTORY2');
 
 const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
@@ -121,10 +116,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const isInternalRootView = rootSelectorOrNode === undefined;
 
     let rendererFactory: RendererFactory3;
+    let sanitizer: Sanitizer|null = null;
 
     if (ngModule) {
-      const wrapper = ngModule.injector.get(WRAP_RENDERER_FACTORY2, (v: RendererFactory2) => v);
-      rendererFactory = wrapper(ngModule.injector.get(RendererFactory2)) as RendererFactory3;
+      rendererFactory = ngModule.injector.get(RendererFactory2) as RendererFactory3;
+      sanitizer = ngModule.injector.get(Sanitizer, null);
     } else {
       rendererFactory = domRendererFactory3;
     }
@@ -151,8 +147,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
-        null, renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags,
-        undefined, rootViewInjector);
+        null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags,
+        rendererFactory, renderer, sanitizer, rootViewInjector);
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null);
@@ -162,8 +158,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     try {
       if (rendererFactory.begin) rendererFactory.begin();
 
-      const componentView =
-          createRootComponentView(hostRNode, this.componentDef, rootView, renderer);
+      const componentView = createRootComponentView(
+          hostRNode, this.componentDef, rootView, rendererFactory, renderer);
       tElementNode = getTNode(0, rootView) as TElementNode;
 
       // Transform the arrays of native nodes into a structure that can be consumed by the

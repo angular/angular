@@ -7,7 +7,7 @@
  */
 import './ng_dev_mode';
 
-import {assertEqual} from './assert';
+import {assertDomNode} from './assert';
 import {EMPTY_ARRAY} from './definition';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
@@ -95,7 +95,7 @@ export function getContext(target: any): LContext|null {
     }
   } else {
     const rElement = target as RElement;
-    ngDevMode && assertDomElement(rElement);
+    ngDevMode && assertDomNode(rElement);
 
     // if the context is not found then we need to traverse upwards up the DOM
     // to find the nearest element that has already been monkey patched with data
@@ -260,12 +260,6 @@ function findViaDirective(lViewData: LViewData, directiveInstance: {}): number {
     tNode = traverseNextElement(tNode);
   }
   return -1;
-}
-
-function assertDomElement(element: any) {
-  assertEqual(
-      element && (element.nodeType == Node.ELEMENT_NODE || element.nodeType == Node.TEXT_NODE),
-      true, 'The provided value must be an instance of an HTMLElement');
 }
 
 /**

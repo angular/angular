@@ -108,6 +108,9 @@
     "name": "RENDERER"
   },
   {
+    "name": "RENDERER_FACTORY"
+  },
+  {
     "name": "RENDER_PARENT"
   },
   {
@@ -321,9 +324,6 @@
     "name": "getRenderer"
   },
   {
-    "name": "getRendererFactory"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -457,9 +457,6 @@
   },
   {
     "name": "setPreviousOrParentTNode"
-  },
-  {
-    "name": "setRendererFactory"
   },
   {
     "name": "setTNodeAndViewData"

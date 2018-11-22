@@ -36,20 +36,20 @@ describe('RouterPreloader', () => {
       });
     });
 
-    fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-        it('should work',
-           fakeAsync(inject(
-               [NgModuleFactoryLoader, RouterPreloader, Router],
-               (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-                 loader.stubbedModules = {expected: LoadedModule};
 
-                 preloader.preload().subscribe(() => {});
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             loader.stubbedModules = {expected: LoadedModule};
 
-                 tick();
+             preloader.preload().subscribe(() => {});
 
-                 const c = router.config;
-                 expect((c[0] as any)._loadedConfig).not.toBeDefined();
-               })));
+             tick();
+
+             const c = router.config;
+             expect((c[0] as any)._loadedConfig).not.toBeDefined();
+           })));
   });
 
   describe('should preload configurations', () => {
@@ -60,7 +60,8 @@ describe('RouterPreloader', () => {
       });
     });
 
-    fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+
+    fixmeIvy('unknown') &&
         it('should work',
            fakeAsync(inject(
                [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef],
@@ -200,21 +201,21 @@ describe('RouterPreloader', () => {
       });
     });
 
-    fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-        it('should work',
-           fakeAsync(inject(
-               [NgModuleFactoryLoader, RouterPreloader, Router],
-               (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-                 loader.stubbedModules = {expected2: LoadedModule};
 
-                 preloader.preload().subscribe(() => {});
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             loader.stubbedModules = {expected2: LoadedModule};
 
-                 tick();
+             preloader.preload().subscribe(() => {});
 
-                 const c = router.config;
-                 expect((c[0] as any)._loadedConfig).not.toBeDefined();
-                 expect((c[1] as any)._loadedConfig).toBeDefined();
-               })));
+             tick();
+
+             const c = router.config;
+             expect((c[0] as any)._loadedConfig).not.toBeDefined();
+             expect((c[1] as any)._loadedConfig).toBeDefined();
+           })));
   });
 
   describe('should copy loaded configs', () => {
@@ -230,22 +231,22 @@ describe('RouterPreloader', () => {
       });
     });
 
-    fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-        it('should work',
-           fakeAsync(inject(
-               [NgModuleFactoryLoader, RouterPreloader, Router],
-               (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
-                 loader.stubbedModules = {expected: LoadedModule};
 
-                 preloader.preload().subscribe(() => {});
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             loader.stubbedModules = {expected: LoadedModule};
 
-                 tick();
+             preloader.preload().subscribe(() => {});
 
-                 const c = router.config as{_loadedConfig: LoadedRouterConfig}[];
-                 expect(c[0]._loadedConfig).toBeDefined();
-                 expect(c[0]._loadedConfig !.routes).not.toBe(configs);
-                 expect(c[0]._loadedConfig !.routes[0]).not.toBe(configs[0]);
-                 expect(c[0]._loadedConfig !.routes[0].component).toBe(configs[0].component);
-               })));
+             tick();
+
+             const c = router.config as{_loadedConfig: LoadedRouterConfig}[];
+             expect(c[0]._loadedConfig).toBeDefined();
+             expect(c[0]._loadedConfig !.routes).not.toBe(configs);
+             expect(c[0]._loadedConfig !.routes[0]).not.toBe(configs[0]);
+             expect(c[0]._loadedConfig !.routes[0].component).toBe(configs[0].component);
+           })));
   });
 });

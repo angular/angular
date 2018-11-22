@@ -8,6 +8,7 @@
 
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
+import {assertDefined} from '../assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_INJECTOR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
@@ -32,6 +33,8 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
  * Compiles and adds the `ngModuleDef` and `ngInjectorDef` properties to the module class.
  */
 export function compileNgModuleDefs(moduleType: Type<any>, ngModule: NgModule): void {
+  ngDevMode && assertDefined(moduleType, 'Required value moduleType');
+  ngDevMode && assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
 
   let ngModuleDef: any = null;

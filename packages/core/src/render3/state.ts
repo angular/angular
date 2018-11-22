@@ -13,7 +13,7 @@ import {executeHooks} from './hooks';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {Renderer3, RendererFactory3} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LViewData, LViewFlags, OpaqueViewState, QUERIES, RENDERER, SANITIZER, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LViewData, LViewFlags, OpaqueViewState, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, TView} from './interfaces/view';
 import {assertDataInRangeInternal, isContentQueryHost} from './util';
 
 /**
@@ -49,10 +49,6 @@ let rendererFactory: RendererFactory3;
 export function getRendererFactory(): RendererFactory3 {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return rendererFactory;
-}
-
-export function setRendererFactory(factory: RendererFactory3): void {
-  rendererFactory = factory;
 }
 
 export function getCurrentSanitizer(): Sanitizer|null {
@@ -357,6 +353,7 @@ export function enterView(
   creationMode = newView && (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && tView.firstTemplatePass;
   bindingRootIndex = newView && tView.bindingStartIndex;
+  rendererFactory = newView && newView[RENDERER_FACTORY];
   renderer = newView && newView[RENDERER];
 
   previousOrParentTNode = hostTNode !;

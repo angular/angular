@@ -17,12 +17,9 @@ import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries} from './query';
-import {RElement, Renderer3} from './renderer';
+import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
 
-
-/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 17;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -33,17 +30,21 @@ export const PARENT = 2;
 export const NEXT = 3;
 export const QUERIES = 4;
 export const HOST = 5;
-export const HOST_NODE = 6;
+export const HOST_NODE = 6;  // Rename to `T_HOST`?
 export const BINDING_INDEX = 7;
 export const CLEANUP = 8;
 export const CONTEXT = 9;
 export const INJECTOR = 10;
-export const RENDERER = 11;
-export const SANITIZER = 12;
-export const TAIL = 13;
-export const CONTAINER_INDEX = 14;
-export const CONTENT_QUERIES = 15;
-export const DECLARATION_VIEW = 16;
+export const RENDERER_FACTORY = 11;
+export const RENDERER = 12;
+export const SANITIZER = 13;
+export const TAIL = 14;
+export const CONTAINER_INDEX = 15;
+export const CONTENT_QUERIES = 16;
+export const DECLARATION_VIEW = 17;
+/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
+export const HEADER_OFFSET = 18;
+
 
 // This interface replaces the real LViewData interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -148,6 +149,9 @@ export interface LViewData extends Array<any> {
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
   readonly[INJECTOR]: Injector|null;
+
+  /** Renderer to be used for this view. */
+  [RENDERER_FACTORY]: RendererFactory3;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer3;

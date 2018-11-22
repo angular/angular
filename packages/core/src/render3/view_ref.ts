@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, HOST_NODE, LViewData, LViewFlags, PARENT} from './interfaces/view';
+import {FLAGS, HOST, HOST_NODE, LViewData, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 import {getRendererFactory} from './state';
 import {getNativeByTNode} from './util';
@@ -241,7 +241,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * See {@link ChangeDetectorRef#detach detach} for more information.
    */
   detectChanges(): void {
-    const rendererFactory = getRendererFactory();
+    const rendererFactory = this._view[RENDERER_FACTORY];
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
