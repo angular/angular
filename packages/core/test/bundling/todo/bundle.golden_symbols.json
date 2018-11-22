@@ -444,7 +444,7 @@
     "name": "containerInternal"
   },
   {
-    "name": "contextViewData"
+    "name": "contextLView"
   },
   {
     "name": "createContainerRef"
@@ -468,7 +468,7 @@
     "name": "createLContext"
   },
   {
-    "name": "createLViewData"
+    "name": "createLView"
   },
   {
     "name": "createNodeAtIndex"
@@ -654,13 +654,10 @@
     "name": "getContainerRenderParent"
   },
   {
-    "name": "getContextViewData"
+    "name": "getContextLView"
   },
   {
     "name": "getCreationMode"
-  },
-  {
-    "name": "getCurrentQueries"
   },
   {
     "name": "getCurrentView"
@@ -700,6 +697,9 @@
   },
   {
     "name": "getLContainer"
+  },
+  {
+    "name": "getLView"
   },
   {
     "name": "getLViewChild"
@@ -780,12 +780,6 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRenderer"
-  },
-  {
-    "name": "getRendererFactory"
-  },
-  {
     "name": "getRootContext"
   },
   {
@@ -804,9 +798,6 @@
     "name": "getTNode"
   },
   {
-    "name": "getTView"
-  },
-  {
     "name": "getTViewCleanup"
   },
   {
@@ -817,9 +808,6 @@
   },
   {
     "name": "getValue"
-  },
-  {
-    "name": "getViewData"
   },
   {
     "name": "hackImplementationOfElementClassProp"
@@ -1050,7 +1038,7 @@
     "name": "readPatchedData"
   },
   {
-    "name": "readPatchedLViewData"
+    "name": "readPatchedLView"
   },
   {
     "name": "reference"
@@ -1123,9 +1111,6 @@
   },
   {
     "name": "setContextPlayersDirty"
-  },
-  {
-    "name": "setCurrentQueries"
   },
   {
     "name": "setDirty"
@@ -1204,9 +1189,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwErrorIfNoChangesMode"
   },
   {
     "name": "throwMultipleComponentError"

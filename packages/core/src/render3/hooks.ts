@@ -9,7 +9,7 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
-import {FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
+import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
 
 
 /**
@@ -20,7 +20,7 @@ import {FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
  * directive index), then saved in the even indices of the initHooks array. The odd indices
  * hold the hook functions themselves.
  *
- * @param index The index of the directive in LViewData
+ * @param index The index of the directive in LView
  * @param hooks The static hooks map on the directive def
  * @param tView The current TView
  */
@@ -96,8 +96,7 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  *
  * @param currentView The current view
  */
-export function executeInitHooks(
-    currentView: LViewData, tView: TView, creationMode: boolean): void {
+export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
   if (currentView[FLAGS] & LViewFlags.RunInit) {
     executeHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
     currentView[FLAGS] &= ~LViewFlags.RunInit;
@@ -110,7 +109,7 @@ export function executeInitHooks(
  * @param currentView The current view
  */
 export function executeHooks(
-    data: LViewData, allHooks: HookData | null, checkHooks: HookData | null,
+    data: LView, allHooks: HookData | null, checkHooks: HookData | null,
     creationMode: boolean): void {
   const hooksToCall = creationMode ? allHooks : checkHooks;
   if (hooksToCall) {

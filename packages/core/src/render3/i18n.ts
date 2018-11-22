@@ -9,6 +9,7 @@
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
+
 import {assertDefined, assertEqual, assertGreaterThan} from './assert';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
@@ -17,9 +18,9 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/no
 import {RComment, RElement} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LViewData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LView, RENDERER, TVIEW, TView} from './interfaces/view';
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
-import {_getViewData, getIsParent, getPreviousOrParentTNode, getRenderer, getTView, setIsParent, setPreviousOrParentTNode} from './state';
+import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
 
@@ -334,7 +335,7 @@ const parentIndexStack: number[] = [];
  * @param subTemplateIndex Optional sub-template index in the `message`.
  */
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
-  const tView = getTView();
+  const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   ngDevMode &&
       assertEqual(
@@ -350,7 +351,7 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
 function i18nStartFirstPass(
     tView: TView, index: number, message: string, subTemplateIndex?: number) {
   i18nIndexStack[++i18nIndexStackPointer] = index;
-  const viewData = _getViewData();
+  const viewData = getLView();
   const expandoStartIndex = tView.blueprint.length - HEADER_OFFSET;
   const previousOrParentTNode = getPreviousOrParentTNode();
   const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
@@ -457,7 +458,7 @@ function i18nStartFirstPass(
 
 function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode | null): TNode {
   ngDevMode && ngDevMode.rendererMoveNode++;
-  const viewData = _getViewData();
+  const viewData = getLView();
   if (!previousTNode) {
     previousTNode = parentTNode;
   }
@@ -563,7 +564,7 @@ export function i18nPostprocess(
  * into the render tree, moves the placeholder nodes and removes the deleted nodes.
  */
 export function i18nEnd(): void {
-  const tView = getTView();
+  const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   ngDevMode &&
       assertEqual(
@@ -577,7 +578,7 @@ export function i18nEnd(): void {
  * See `i18nEnd` above.
  */
 function i18nEndFirstPass(tView: TView) {
-  const viewData = _getViewData();
+  const viewData = getLView();
   ngDevMode && assertEqual(
                    viewData[BINDING_INDEX], viewData[TVIEW].bindingStartIndex,
                    'i18nEnd should be called before any binding');
@@ -602,8 +603,8 @@ function i18nEndFirstPass(tView: TView) {
 
 function readCreateOpCodes(
     index: number, createOpCodes: I18nMutateOpCodes, expandoStartIndex: number,
-    viewData: LViewData): number[] {
-  const renderer = getRenderer();
+    viewData: LView): number[] {
+  const renderer = getLView()[RENDERER];
   let currentTNode: TNode|null = null;
   let previousTNode: TNode|null = null;
   const visitedPlaceholders: number[] = [];
@@ -702,7 +703,7 @@ function readCreateOpCodes(
 
 function readUpdateOpCodes(
     updateOpCodes: I18nUpdateOpCodes, icus: TIcu[] | null, bindingsStartIndex: number,
-    changeMask: number, viewData: LViewData, bypassCheckBit = false) {
+    changeMask: number, viewData: LView, bypassCheckBit = false) {
   let caseCreated = false;
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
@@ -786,7 +787,7 @@ function readUpdateOpCodes(
   }
 }
 
-function removeNode(index: number, viewData: LViewData) {
+function removeNode(index: number, viewData: LView) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
   removeChild(removedPhTNode, removedPhRNode || null, viewData);
@@ -839,7 +840,7 @@ export function i18n(index: number, message: string, subTemplateIndex?: number):
  * @param values
  */
 export function i18nAttributes(index: number, values: string[]): void {
-  const tView = getTView();
+  const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   ngDevMode &&
       assertEqual(
@@ -906,9 +907,9 @@ export function i18nExp<T>(expression: T | NO_CHANGE): void {
  */
 export function i18nApply(index: number) {
   if (shiftsCounter) {
-    const tView = getTView();
+    const lView = getLView();
+    const tView = lView[TVIEW];
     ngDevMode && assertDefined(tView, `tView should be defined`);
-    const viewData = _getViewData();
     const tI18n = tView.data[index + HEADER_OFFSET];
     let updateOpCodes: I18nUpdateOpCodes;
     let icus: TIcu[]|null = null;
@@ -918,8 +919,8 @@ export function i18nApply(index: number) {
       updateOpCodes = (tI18n as TI18n).update;
       icus = (tI18n as TI18n).icus;
     }
-    const bindingsStartIndex = viewData[BINDING_INDEX] - shiftsCounter - 1;
-    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, viewData);
+    const bindingsStartIndex = lView[BINDING_INDEX] - shiftsCounter - 1;
+    readUpdateOpCodes(updateOpCodes, icus, bindingsStartIndex, changeMask, lView);
 
     // Reset changeMask & maskBit to default for the next update cycle
     changeMask = 0b0;
@@ -1348,10 +1349,10 @@ function icuStart(
     update: updateCodes
   };
   tIcus.push(tIcu);
-  const lViewData = _getViewData();
+  const lView = getLView();
   const worstCaseSize = Math.max(...vars);
   for (let i = 0; i < worstCaseSize; i++) {
-    allocExpando(lViewData);
+    allocExpando(lView);
   }
 }
 

@@ -17,7 +17,7 @@ import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
-import {assertDefined, assertEqual} from './assert';
+import {assertDefined, assertEqual, assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
 import {store, storeCleanupWithContext} from './instructions';
@@ -25,8 +25,8 @@ import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition'
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {LViewData, TVIEW} from './interfaces/view';
-import {assertPreviousIsParent, getOrCreateCurrentQueries, getViewData} from './state';
+import {LView, TVIEW} from './interfaces/view';
+import {getIsParent, getLView, getOrCreateCurrentQueries} from './state';
 import {flatten, isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -245,7 +245,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
 
 
 // TODO: "read" should be an AbstractType (FW-486)
-function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any {
+function queryByReadToken(read: any, tNode: TNode, currentView: LView): any {
   const factoryFn = (read as any)[NG_ELEMENT_ID];
   if (typeof factoryFn === 'function') {
     return factoryFn();
@@ -259,7 +259,7 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LViewData): any 
   return null;
 }
 
-function queryByTNodeType(tNode: TNode, currentView: LViewData): any {
+function queryByTNodeType(tNode: TNode, currentView: LView): any {
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
     return createElementRef(ViewEngine_ElementRef, tNode, currentView);
   }
@@ -270,7 +270,7 @@ function queryByTNodeType(tNode: TNode, currentView: LViewData): any {
 }
 
 function queryByTemplateRef(
-    templateRefToken: ViewEngine_TemplateRef<any>, tNode: TNode, currentView: LViewData,
+    templateRefToken: ViewEngine_TemplateRef<any>, tNode: TNode, currentView: LView,
     read: any): any {
   const templateRefResult = (templateRefToken as any)[NG_ELEMENT_ID]();
   if (read) {
@@ -279,7 +279,7 @@ function queryByTemplateRef(
   return templateRefResult;
 }
 
-function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx: number): any {
+function queryRead(tNode: TNode, currentView: LView, read: any, matchingIdx: number): any {
   if (read) {
     return queryByReadToken(read, tNode, currentView);
   }
@@ -294,7 +294,7 @@ function queryRead(tNode: TNode, currentView: LViewData, read: any, matchingIdx:
 
 function add(
     query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
-  const currentView = getViewData();
+  const currentView = getLView();
 
   while (query) {
     const predicate = query.predicate;
@@ -455,11 +455,11 @@ export function query<T>(
     memoryIndex: number | null, predicate: Type<any>| string[], descend?: boolean,
     // TODO: "read" should be an AbstractType (FW-486)
     read?: any): QueryList<T> {
-  ngDevMode && assertPreviousIsParent();
+  ngDevMode && assertPreviousIsParent(getIsParent());
   const queryList = new QueryList<T>();
   const queries = getOrCreateCurrentQueries(LQueries_);
   queries.track(queryList, predicate, descend, read);
-  storeCleanupWithContext(null, queryList, queryList.destroy);
+  storeCleanupWithContext(getLView(), queryList, queryList.destroy);
   if (memoryIndex != null) {
     store(memoryIndex, queryList);
   }

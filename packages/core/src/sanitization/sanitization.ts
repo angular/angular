@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCurrentSanitizer} from '../render3/state';
+import {SANITIZER} from '../render3/interfaces/view';
+import {getLView} from '../render3/state';
 import {stringify} from '../render3/util';
 
 import {BypassType, allowSanitizationBypass} from './bypass';
@@ -31,9 +32,9 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * and urls have been removed.
  */
 export function sanitizeHtml(unsafeHtml: any): string {
-  const s = getCurrentSanitizer();
-  if (s) {
-    return s.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+  const sanitizer = getLView()[SANITIZER];
+  if (sanitizer) {
+    return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
   }
   if (allowSanitizationBypass(unsafeHtml, BypassType.Html)) {
     return unsafeHtml.toString();
@@ -55,9 +56,9 @@ export function sanitizeHtml(unsafeHtml: any): string {
  * dangerous javascript and urls have been removed.
  */
 export function sanitizeStyle(unsafeStyle: any): string {
-  const s = getCurrentSanitizer();
-  if (s) {
-    return s.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
+  const sanitizer = getLView()[SANITIZER];
+  if (sanitizer) {
+    return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
   }
   if (allowSanitizationBypass(unsafeStyle, BypassType.Style)) {
     return unsafeStyle.toString();
@@ -80,9 +81,9 @@ export function sanitizeStyle(unsafeStyle: any): string {
  * all of the dangerous javascript has been removed.
  */
 export function sanitizeUrl(unsafeUrl: any): string {
-  const s = getCurrentSanitizer();
-  if (s) {
-    return s.sanitize(SecurityContext.URL, unsafeUrl) || '';
+  const sanitizer = getLView()[SANITIZER];
+  if (sanitizer) {
+    return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
   }
   if (allowSanitizationBypass(unsafeUrl, BypassType.Url)) {
     return unsafeUrl.toString();
@@ -100,9 +101,9 @@ export function sanitizeUrl(unsafeUrl: any): string {
  * only trusted `url`s have been allowed to pass.
  */
 export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
-  const s = getCurrentSanitizer();
-  if (s) {
-    return s.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+  const sanitizer = getLView()[SANITIZER];
+  if (sanitizer) {
+    return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
   }
   if (allowSanitizationBypass(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return unsafeResourceUrl.toString();
@@ -113,16 +114,17 @@ export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
 /**
  * A `script` sanitizer which only lets trusted javascript through.
  *
- * This passes only `script`s marked trusted by calling {@link bypassSanitizationTrustScript}.
+ * This passes only `script`s marked trusted by calling {@link
+ * bypassSanitizationTrustScript}.
  *
  * @param unsafeScript untrusted `script`, typically from the user.
  * @returns `url` string which is safe to bind to the `<script>` element such as `<img src>`,
- * because only trusted `scripts`s have been allowed to pass.
+ * because only trusted `scripts` have been allowed to pass.
  */
 export function sanitizeScript(unsafeScript: any): string {
-  const s = getCurrentSanitizer();
-  if (s) {
-    return s.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+  const sanitizer = getLView()[SANITIZER];
+  if (sanitizer) {
+    return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
   }
   if (allowSanitizationBypass(unsafeScript, BypassType.Script)) {
     return unsafeScript.toString();

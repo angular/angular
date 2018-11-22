@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual} from '../change_detection/change_detection_util';
 import {global} from '../util';
 
-import {assertDefined, assertLessThan} from './assert';
+import {assertDataInRange, assertDefined} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -17,7 +16,7 @@ import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFl
 import {TContainerNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LViewData, LViewFlags, PARENT, RootContext, TData, TVIEW} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 
 
 
@@ -26,10 +25,7 @@ import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LViewD
  *
  * Constraints are relaxed in checkNoChanges mode. See `devModeEqual` for details.
  */
-export function isDifferent(a: any, b: any, checkNoChangesMode: boolean): boolean {
-  if (ngDevMode && checkNoChangesMode) {
-    return !devModeEqual(a, b);
-  }
+export function isDifferent(a: any, b: any): boolean {
   // NaN is the only value that is not equal to itself so the first
   // test checks if both a and b are not NaN
   return !(a !== a && b !== b) && a !== b;
@@ -67,29 +63,24 @@ export function flatten(list: any[]): any[] {
   return result;
 }
 
-/** Retrieves a value from any `LViewData` or `TData`. */
-export function loadInternal<T>(index: number, arr: LViewData | TData): T {
-  ngDevMode && assertDataInRangeInternal(index + HEADER_OFFSET, arr);
-  return arr[index + HEADER_OFFSET];
-}
-
-export function assertDataInRangeInternal(index: number, arr: any[]) {
-  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
+/** Retrieves a value from any `LView` or `TData`. */
+export function loadInternal<T>(view: LView | TData, index: number): T {
+  ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
+  return view[index + HEADER_OFFSET];
 }
 
 /**
- * Takes the value of a slot in `LViewData` and returns the element node.
+ * Takes the value of a slot in `LView` and returns the element node.
  *
  * Normally, element nodes are stored flat, but if the node has styles/classes on it,
  * it might be wrapped in a styling context. Or if that node has a directive that injects
  * ViewContainerRef, it may be wrapped in an LContainer. Or if that node is a component,
- * it will be wrapped in LViewData. It could even have all three, so we keep looping
+ * it will be wrapped in LView. It could even have all three, so we keep looping
  * until we find something that isn't an array.
  *
- * @param value The initial value in `LViewData`
+ * @param value The initial value in `LView`
  */
-export function readElementValue(value: RElement | StylingContext | LContainer | LViewData):
-    RElement {
+export function readElementValue(value: RElement | StylingContext | LContainer | LView): RElement {
   while (Array.isArray(value)) {
     value = value[HOST] as any;
   }
@@ -100,20 +91,20 @@ export function readElementValue(value: RElement | StylingContext | LContainer |
  * Retrieves an element value from the provided `viewData`, by unwrapping
  * from any containers, component views, or style contexts.
  */
-export function getNativeByIndex(index: number, arr: LViewData): RElement {
-  return readElementValue(arr[index + HEADER_OFFSET]);
+export function getNativeByIndex(index: number, lView: LView): RElement {
+  return readElementValue(lView[index + HEADER_OFFSET]);
 }
 
-export function getNativeByTNode(tNode: TNode, hostView: LViewData): RElement|RText|RComment {
+export function getNativeByTNode(tNode: TNode, hostView: LView): RElement|RText|RComment {
   return readElementValue(hostView[tNode.index]);
 }
 
-export function getTNode(index: number, view: LViewData): TNode {
+export function getTNode(index: number, view: LView): TNode {
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 
-export function getComponentViewByIndex(nodeIndex: number, hostView: LViewData): LViewData {
-  // Could be an LViewData or an LContainer. If LContainer, unwrap to find LViewData.
+export function getComponentViewByIndex(nodeIndex: number, hostView: LView): LView {
+  // Could be an LView or an LContainer. If LContainer, unwrap to find LView.
   const slotValue = hostView[nodeIndex];
   return slotValue.length >= HEADER_OFFSET ? slotValue : slotValue[HOST];
 }
@@ -135,26 +126,26 @@ export function isLContainer(value: RElement | RComment | LContainer | StylingCo
   return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
 }
 
-export function isRootView(target: LViewData): boolean {
+export function isRootView(target: LView): boolean {
   return (target[FLAGS] & LViewFlags.IsRoot) !== 0;
 }
 
 /**
- * Retrieve the root view from any component by walking the parent `LViewData` until
- * reaching the root `LViewData`.
+ * Retrieve the root view from any component by walking the parent `LView` until
+ * reaching the root `LView`.
  *
  * @param component any component
  */
-export function getRootView(target: LViewData | {}): LViewData {
+export function getRootView(target: LView | {}): LView {
   ngDevMode && assertDefined(target, 'component');
-  let lViewData = Array.isArray(target) ? (target as LViewData) : readPatchedLViewData(target) !;
-  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
-    lViewData = lViewData[PARENT] !;
+  let lView = Array.isArray(target) ? (target as LView) : readPatchedLView(target) !;
+  while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
+    lView = lView[PARENT] !;
   }
-  return lViewData;
+  return lView;
 }
 
-export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
+export function getRootContext(viewOrComponent: LView | {}): RootContext {
   const rootView = getRootView(viewOrComponent);
   ngDevMode &&
       assertDefined(rootView[CONTEXT], 'RootView has no context. Perhaps it is disconnected?');
@@ -165,14 +156,14 @@ export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
  * Returns the monkey-patch value data present on the target (which could be
  * a component, directive or a DOM node).
  */
-export function readPatchedData(target: any): LViewData|LContext|null {
+export function readPatchedData(target: any): LView|LContext|null {
   return target[MONKEY_PATCH_KEY_NAME];
 }
 
-export function readPatchedLViewData(target: any): LViewData|null {
+export function readPatchedLView(target: any): LView|null {
   const value = readPatchedData(target);
   if (value) {
-    return Array.isArray(value) ? value : (value as LContext).lViewData;
+    return Array.isArray(value) ? value : (value as LContext).lView;
   }
   return null;
 }
@@ -195,11 +186,10 @@ export function getParentInjectorViewOffset(parentLocation: RelativeInjectorLoca
  * injector.
  *
  * @param location The location of the parent injector, which contains the view offset
- * @param startView The LViewData instance from which to start walking up the view tree
- * @returns The LViewData instance that contains the parent injector
+ * @param startView The LView instance from which to start walking up the view tree
+ * @returns The LView instance that contains the parent injector
  */
-export function getParentInjectorView(
-    location: RelativeInjectorLocation, startView: LViewData): LViewData {
+export function getParentInjectorView(location: RelativeInjectorLocation, startView: LView): LView {
   let viewOffset = getParentInjectorViewOffset(location);
   let parentView = startView;
   // For most cases, the parent injector can be found on the host node (e.g. for component
@@ -218,12 +208,12 @@ export function getParentInjectorView(
  * then walks up the declaration view tree until the TNode of the parent injector is found.
  *
  * @param location The location of the parent injector, which contains the view offset
- * @param startView The LViewData instance from which to start walking up the view tree
+ * @param startView The LView instance from which to start walking up the view tree
  * @param startTNode The TNode instance of the starting element
  * @returns The TNode of the parent injector
  */
 export function getParentInjectorTNode(
-    location: RelativeInjectorLocation, startView: LViewData, startTNode: TNode): TElementNode|
+    location: RelativeInjectorLocation, startView: LView, startTNode: TNode): TElementNode|
     TContainerNode|null {
   if (startTNode.parent && startTNode.parent.injectorIndex !== -1) {
     // view offset is 0

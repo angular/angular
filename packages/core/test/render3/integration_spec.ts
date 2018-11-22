@@ -2034,14 +2034,14 @@ describe('render3 integration test', () => {
 
       const section = fixture.hostElement.querySelector('section') !;
       const sectionContext = getContext(section) !;
-      const sectionLView = sectionContext.lViewData !;
+      const sectionLView = sectionContext.lView !;
       expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
       expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
       expect(sectionContext.native).toBe(section);
 
       const div = fixture.hostElement.querySelector('div') !;
       const divContext = getContext(div) !;
-      const divLView = divContext.lViewData !;
+      const divLView = divContext.lView !;
       expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
       expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
       expect(divContext.native).toBe(div);
@@ -2077,7 +2077,7 @@ describe('render3 integration test', () => {
       expect(Array.isArray(result2)).toBeFalsy();
 
       expect(result2).toBe(context);
-      expect(result2.lViewData).toBe(result1);
+      expect(result2.lView).toBe(result1);
     });
 
     it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
@@ -2244,9 +2244,9 @@ describe('render3 integration test', () => {
          const shadowContext = getContext(header) !;
          const projectedContext = getContext(p) !;
 
-         const parentComponentData = parentContext.lViewData;
-         const shadowComponentData = shadowContext.lViewData;
-         const projectedComponentData = projectedContext.lViewData;
+         const parentComponentData = parentContext.lView;
+         const shadowComponentData = shadowContext.lView;
+         const projectedComponentData = projectedContext.lView;
 
          expect(projectedComponentData).toBe(parentComponentData);
          expect(shadowComponentData).not.toBe(parentComponentData);
@@ -2310,23 +2310,23 @@ describe('render3 integration test', () => {
       const hostElm = fixture.hostElement;
       const component = fixture.component;
 
-      const componentLViewData = (component as any)[MONKEY_PATCH_KEY_NAME];
-      expect(Array.isArray(componentLViewData)).toBeTruthy();
+      const componentLView = (component as any)[MONKEY_PATCH_KEY_NAME];
+      expect(Array.isArray(componentLView)).toBeTruthy();
 
-      const hostLViewData = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
-      expect(hostLViewData).toBe(componentLViewData);
+      const hostLView = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
+      expect(hostLView).toBe(componentLView);
 
       const context1 = getContext(hostElm) !;
-      expect(context1.lViewData).toBe(hostLViewData);
+      expect(context1.lView).toBe(hostLView);
       expect(context1.native).toEqual(hostElm);
 
       const context2 = getContext(component) !;
       expect(context2).toBe(context1);
-      expect(context2.lViewData).toBe(hostLViewData);
+      expect(context2.lView).toBe(hostLView);
       expect(context2.native).toEqual(hostElm);
     });
 
-    it('should by default monkey-patch the directives with LViewData so that they can be examined',
+    it('should by default monkey-patch the directives with LView so that they can be examined',
        () => {
          let myDir1Instance: MyDir1|null = null;
          let myDir2Instance: MyDir2|null = null;
@@ -2380,7 +2380,7 @@ describe('render3 integration test', () => {
          const div1 = hostElm.querySelector('div:first-child') !as any;
          const div2 = hostElm.querySelector('div:last-child') !as any;
          const context = getContext(hostElm) !;
-         const componentView = context.lViewData[context.nodeIndex];
+         const componentView = context.lView[context.nodeIndex];
 
          expect(componentView).toContain(myDir1Instance);
          expect(componentView).toContain(myDir2Instance);
@@ -2394,9 +2394,9 @@ describe('render3 integration test', () => {
          const d2Context = getContext(myDir2Instance) !;
          const d3Context = getContext(myDir3Instance) !;
 
-         expect(d1Context.lViewData).toEqual(componentView);
-         expect(d2Context.lViewData).toEqual(componentView);
-         expect(d3Context.lViewData).toEqual(componentView);
+         expect(d1Context.lView).toEqual(componentView);
+         expect(d2Context.lView).toEqual(componentView);
+         expect(d3Context.lView).toEqual(componentView);
 
          expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d1Context);
          expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
@@ -2473,41 +2473,41 @@ describe('render3 integration test', () => {
 
          const childCompHostElm = fixture.hostElement.querySelector('child-comp') !as any;
 
-         const lViewData = childCompHostElm[MONKEY_PATCH_KEY_NAME];
-         expect(Array.isArray(lViewData)).toBeTruthy();
-         expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lViewData);
-         expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lViewData);
-         expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lViewData);
+         const lView = childCompHostElm[MONKEY_PATCH_KEY_NAME];
+         expect(Array.isArray(lView)).toBeTruthy();
+         expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+         expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+         expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
 
          const childNodeContext = getContext(childCompHostElm) !;
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives).toBeFalsy();
-         assertMonkeyPatchValueIsLViewData(myDir1Instance);
-         assertMonkeyPatchValueIsLViewData(myDir2Instance);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance);
+         assertMonkeyPatchValueIsLView(myDir1Instance);
+         assertMonkeyPatchValueIsLView(myDir2Instance);
+         assertMonkeyPatchValueIsLView(childComponentInstance);
 
          expect(getContext(myDir1Instance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives !.length).toEqual(2);
-         assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
-         assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance);
+         assertMonkeyPatchValueIsLView(myDir1Instance, false);
+         assertMonkeyPatchValueIsLView(myDir2Instance, false);
+         assertMonkeyPatchValueIsLView(childComponentInstance);
 
          expect(getContext(myDir2Instance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives !.length).toEqual(2);
-         assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
-         assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance);
+         assertMonkeyPatchValueIsLView(myDir1Instance, false);
+         assertMonkeyPatchValueIsLView(myDir2Instance, false);
+         assertMonkeyPatchValueIsLView(childComponentInstance);
 
          expect(getContext(childComponentInstance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeTruthy();
          expect(childNodeContext.directives !.length).toEqual(2);
-         assertMonkeyPatchValueIsLViewData(myDir1Instance, false);
-         assertMonkeyPatchValueIsLViewData(myDir2Instance, false);
-         assertMonkeyPatchValueIsLViewData(childComponentInstance, false);
+         assertMonkeyPatchValueIsLView(myDir1Instance, false);
+         assertMonkeyPatchValueIsLView(myDir2Instance, false);
+         assertMonkeyPatchValueIsLView(childComponentInstance, false);
 
-         function assertMonkeyPatchValueIsLViewData(value: any, yesOrNo = true) {
+         function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
            expect(Array.isArray((value as any)[MONKEY_PATCH_KEY_NAME])).toBe(yesOrNo);
          }
        });
@@ -2560,16 +2560,16 @@ describe('render3 integration test', () => {
          const context = getContext(child) !;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-         const componentData = context.lViewData[context.nodeIndex];
+         const componentData = context.lView[context.nodeIndex];
          const component = componentData[CONTEXT];
          expect(component instanceof ChildComp).toBeTruthy();
-         expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lViewData);
+         expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
 
          const componentContext = getContext(component) !;
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
          expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
          expect(componentContext.native).toEqual(context.native);
-         expect(componentContext.lViewData).toEqual(context.lViewData);
+         expect(componentContext.lView).toEqual(context.lView);
        });
   });
 

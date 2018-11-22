@@ -21,7 +21,7 @@ import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
 
 
-// Below are constants for LViewData indices to help us look up LViewData members
+// Below are constants for LView indices to help us look up LView members
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
 export const TVIEW = 0;
@@ -42,11 +42,11 @@ export const TAIL = 14;
 export const CONTAINER_INDEX = 15;
 export const CONTENT_QUERIES = 16;
 export const DECLARATION_VIEW = 17;
-/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
+/** Size of LView's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 18;
 
 
-// This interface replaces the real LViewData interface if it is an arg or a
+// This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
 // the actual interface, which should be kept private.
 export interface OpaqueViewState {
@@ -55,16 +55,16 @@ export interface OpaqueViewState {
 
 
 /**
- * `LViewData` stores all of the information needed to process the instructions as
+ * `LView` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
- * own `LViewData`. When processing a particular view, we set the `viewData` to that
- * `LViewData`. When that view is done processing, the `viewData` is set back to
- * whatever the original `viewData` was before (the parent `LViewData`).
+ * own `LView`. When processing a particular view, we set the `viewData` to that
+ * `LView`. When that view is done processing, the `viewData` is set back to
+ * whatever the original `viewData` was before (the parent `LView`).
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface LViewData extends Array<any> {
+export interface LView extends Array<any> {
   /**
    * The static data for this view. We need a reference to this so we can easily walk up the
    * node tree in DI and get the TView.data array associated with a node (where the
@@ -77,30 +77,30 @@ export interface LViewData extends Array<any> {
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
-   * `LViewData`. Without this, the render method would have to keep a stack of
+   * `LView`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
    *
    * This is the "insertion" view for embedded views. This allows us to properly
    * destroy embedded views.
    */
-  [PARENT]: LViewData|null;
+  [PARENT]: LView|null;
 
   /**
    *
-   * The next sibling LViewData or LContainer.
+   * The next sibling LView or LContainer.
    *
    * Allows us to propagate between sibling view states that aren't in the same
    * container. Embedded views already have a node.next, but it is only set for
    * views in the same container. We need a way to link component views and views
    * across containers as well.
    */
-  [NEXT]: LViewData|LContainer|null;
+  [NEXT]: LView|LContainer|null;
 
   /** Queries active for this view - nodes from a view are reported to those queries. */
   [QUERIES]: LQueries|null;
 
   /**
-   * The host node for this LViewData instance, if this is a component view.
+   * The host node for this LView instance, if this is a component view.
    *
    * If this is an embedded view, HOST will be null.
    */
@@ -135,7 +135,7 @@ export interface LViewData extends Array<any> {
    * These change per LView instance, so they cannot be stored on TView. Instead,
    * TView.cleanup saves an index to the necessary context in this array.
    */
-  // TODO: flatten into LViewData[]
+  // TODO: flatten into LView[]
   [CLEANUP]: any[]|null;
 
   /**
@@ -160,12 +160,12 @@ export interface LViewData extends Array<any> {
   [SANITIZER]: Sanitizer|null;
 
   /**
-   * The last LViewData or LContainer beneath this LViewData in the hierarchy.
+   * The last LView or LContainer beneath this LView in the hierarchy.
    *
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  [TAIL]: LViewData|LContainer|null;
+  [TAIL]: LView|LContainer|null;
 
   /**
    * The index of the parent container's host node. Applicable only to embedded views that
@@ -191,7 +191,7 @@ export interface LViewData extends Array<any> {
    *
    * The template for a dynamically created view may be declared in a different view than
    * it is inserted. We already track the "insertion view" (view where the template was
-   * inserted) in LViewData[PARENT], but we also need access to the "declaration view"
+   * inserted) in LView[PARENT], but we also need access to the "declaration view"
    * (view where the template was declared). Otherwise, we wouldn't be able to call the
    * view's template function with the proper contexts. Context should be inherited from
    * the declaration view tree, not the insertion view tree.
@@ -208,10 +208,10 @@ export interface LViewData extends Array<any> {
    * template function during change detection, we need the declaration view to get inherited
    * context.
    */
-  [DECLARATION_VIEW]: LViewData|null;
+  [DECLARATION_VIEW]: LView|null;
 }
 
-/** Flags associated with an LView (saved in LViewData[FLAGS]) */
+/** Flags associated with an LView (saved in LView[FLAGS]) */
 export const enum LViewFlags {
   /**
    * Whether or not the view is in creationMode.
@@ -265,10 +265,10 @@ export interface TView {
   readonly id: number;
 
   /**
-   * This is a blueprint used to generate LViewData instances for this TView. Copying this
-   * blueprint is faster than creating a new LViewData from scratch.
+   * This is a blueprint used to generate LView instances for this TView. Copying this
+   * blueprint is faster than creating a new LView from scratch.
    */
-  blueprint: LViewData;
+  blueprint: LView;
 
   /**
    * The template function used to refresh the view of dynamically created views
@@ -313,9 +313,9 @@ export interface TView {
   bindingStartIndex: number;
 
   /**
-   * The index where the "expando" section of `LViewData` begins. The expando
+   * The index where the "expando" section of `LView` begins. The expando
    * section contains injectors, directive instances, and host binding values.
-   * Unlike the "consts" and "vars" sections of `LViewData`, the length of this
+   * Unlike the "consts" and "vars" sections of `LView`, the length of this
    * section cannot be calculated at compile-time because directives are matched
    * at runtime to preserve locality.
    *
