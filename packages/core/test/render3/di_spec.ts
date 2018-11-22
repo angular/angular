@@ -1751,11 +1751,11 @@ describe('di', () => {
     let myDirectiveInstance !: MyDirective | null;
 
     class MyDirective {
-      exists = 'wrong' as string | undefined;
-      myDirective = 'wrong' as string | undefined;
+      exists = 'wrong' as string | null;
+      myDirective = 'wrong' as string | null;
       constructor(
-          @Attribute('exist') existAttrValue: string|undefined,
-          @Attribute('myDirective') myDirectiveAttrValue: string|undefined) {
+          @Attribute('exist') existAttrValue: string|null,
+          @Attribute('myDirective') myDirectiveAttrValue: string|null) {
         this.exists = existAttrValue;
         this.myDirective = myDirectiveAttrValue;
       }
@@ -1771,8 +1771,8 @@ describe('di', () => {
     beforeEach(() => myDirectiveInstance = null);
 
     it('should inject attribute', () => {
-      let exist = 'wrong' as string | undefined;
-      let nonExist = 'wrong' as string | undefined;
+      let exist = 'wrong' as string | null;
+      let nonExist = 'wrong' as string | null;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1784,7 +1784,7 @@ describe('di', () => {
 
       new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toBeNull();
     });
 
     // https://stackblitz.com/edit/angular-scawyi?file=src%2Fapp%2Fapp.component.ts
@@ -1831,8 +1831,8 @@ describe('di', () => {
 
     // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
     it('should not inject attributes representing bindings and outputs', () => {
-      let exist = 'wrong' as string | undefined;
-      let nonExist = 'wrong' as string | undefined;
+      let exist = 'wrong' as string | null;
+      let nonExist = 'wrong' as string | null;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1844,12 +1844,12 @@ describe('di', () => {
 
       new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toBeNull();
     });
 
     it('should not accidentally inject attributes representing bindings and outputs', () => {
-      let exist = 'wrong' as string | undefined;
-      let nonExist = 'wrong' as string | undefined;
+      let exist = 'wrong' as string | null;
+      let nonExist = 'wrong' as string | null;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1863,7 +1863,7 @@ describe('di', () => {
 
       new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toBeNull();
     });
   });
 
