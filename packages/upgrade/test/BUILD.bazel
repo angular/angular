@@ -23,9 +23,7 @@ ts_web_test_suite(
     static_files = [
         "//:angularjs_scripts",
     ],
-    tags = [
-        "fixme-ivy-aot",
-    ],
+    tags = [],
     deps = [
         ":test_lib",
     ],
