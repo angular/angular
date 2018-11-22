@@ -16,15 +16,14 @@ import {RouterTestingModule} from '@angular/router/testing';
 describe('Integration', () => {
 
   describe('routerLinkActive', () => {
-    fixmeIvy('FW-662: Components without selector are not supported') &&
-        it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
-             @Component({selector: 'simple', template: 'simple'})
-             class SimpleCmp {
-             }
+    it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
+         @Component({selector: 'simple', template: 'simple'})
+         class SimpleCmp {
+         }
 
-             @Component({
-               selector: 'some-root',
-               template: `
+         @Component({
+           selector: 'some-root',
+           template: `
         <div *ngIf="show">
           <ng-container *ngTemplateOutlet="tpl"></ng-container>
         </div>
@@ -32,37 +31,36 @@ describe('Integration', () => {
         <ng-template #tpl>
           <a routerLink="/simple" routerLinkActive="active"></a>
         </ng-template>`
-             })
-             class MyCmp {
-               show: boolean = false;
-             }
+         })
+         class MyCmp {
+           show: boolean = false;
+         }
 
-             @NgModule({
-               imports: [CommonModule, RouterTestingModule],
-               declarations: [MyCmp, SimpleCmp],
-               entryComponents: [SimpleCmp],
-             })
-             class MyModule {
-             }
+         @NgModule({
+           imports: [CommonModule, RouterTestingModule],
+           declarations: [MyCmp, SimpleCmp],
+           entryComponents: [SimpleCmp],
+         })
+         class MyModule {
+         }
 
-             TestBed.configureTestingModule({imports: [MyModule]});
+         TestBed.configureTestingModule({imports: [MyModule]});
 
-             const router: Router = TestBed.get(Router);
-             const fixture = createRoot(router, MyCmp);
-             router.resetConfig([{path: 'simple', component: SimpleCmp}]);
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, MyCmp);
+         router.resetConfig([{path: 'simple', component: SimpleCmp}]);
 
-             router.navigateByUrl('/simple');
-             advance(fixture);
+         router.navigateByUrl('/simple');
+         advance(fixture);
 
-             const instance = fixture.componentInstance;
-             instance.show = true;
-             expect(() => advance(fixture)).not.toThrow();
-           }));
+         const instance = fixture.componentInstance;
+         instance.show = true;
+         expect(() => advance(fixture)).not.toThrow();
+       }));
 
-    fixmeIvy('FW-662: Components without selector are not supported') &&
-        it('should set isActive right after looking at its children -- #18983', fakeAsync(() => {
-             @Component({
-               template: `
+    it('should set isActive right after looking at its children -- #18983', fakeAsync(() => {
+         @Component({
+           template: `
           <div #rla="routerLinkActive" routerLinkActive>
             isActive: {{rla.isActive}}
             
@@ -73,43 +71,43 @@ describe('Integration', () => {
             <ng-container #container></ng-container>
           </div>
         `
-             })
-             class ComponentWithRouterLink {
-               // TODO(issue/24571): remove '!'.
-               @ViewChild(TemplateRef) templateRef !: TemplateRef<any>;
-               // TODO(issue/24571): remove '!'.
-               @ViewChild('container', {read: ViewContainerRef}) container !: ViewContainerRef;
+         })
+         class ComponentWithRouterLink {
+           // TODO(issue/24571): remove '!'.
+           @ViewChild(TemplateRef) templateRef !: TemplateRef<any>;
+           // TODO(issue/24571): remove '!'.
+           @ViewChild('container', {read: ViewContainerRef}) container !: ViewContainerRef;
 
-               addLink() {
-                 this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
-               }
+           addLink() {
+             this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+           }
 
-               removeLink() { this.container.clear(); }
-             }
+           removeLink() { this.container.clear(); }
+         }
 
-             @Component({template: 'simple'})
-             class SimpleCmp {
-             }
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
 
-             TestBed.configureTestingModule({
-               imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
-               declarations: [ComponentWithRouterLink, SimpleCmp]
-             });
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           declarations: [ComponentWithRouterLink, SimpleCmp]
+         });
 
-             const router: Router = TestBed.get(Router);
-             const fixture = createRoot(router, ComponentWithRouterLink);
-             router.navigateByUrl('/simple');
-             advance(fixture);
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, ComponentWithRouterLink);
+         router.navigateByUrl('/simple');
+         advance(fixture);
 
-             fixture.componentInstance.addLink();
-             fixture.detectChanges();
+         fixture.componentInstance.addLink();
+         fixture.detectChanges();
 
-             fixture.componentInstance.removeLink();
-             advance(fixture);
-             advance(fixture);
+         fixture.componentInstance.removeLink();
+         advance(fixture);
+         advance(fixture);
 
-             expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
-           }));
+         expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
+       }));
 
   });
 

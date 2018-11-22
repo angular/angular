@@ -20,9 +20,11 @@ import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
+import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   R3ResolvedDependencyType = R3ResolvedDependencyType as any;
+  private elementSchemaRegistry = new DomElementSchemaRegistry();
 
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3PipeMetadataFacade):
       any {
@@ -118,6 +120,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
         {
           ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
           ...convertDirectiveFacadeToMetadata(facade),
+          selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
           template,
           viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
           wrapDirectivesAndPipesInClosure: false,

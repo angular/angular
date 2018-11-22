@@ -46,7 +46,7 @@ function baseDirectiveFields(
   definitionMap.set('type', meta.type);
 
   // e.g. `selectors: [['', 'someDir', '']]`
-  definitionMap.set('selectors', createDirectiveSelector(meta.selector !));
+  definitionMap.set('selectors', createDirectiveSelector(meta.selector));
 
 
   // e.g. `factory: () => new MyApp(directiveInject(ElementRef))`
@@ -494,7 +494,7 @@ function createQueryDefinition(
 }
 
 // Turn a directive selector into an R3-compatible selector for directive def
-function createDirectiveSelector(selector: string): o.Expression {
+function createDirectiveSelector(selector: string | null): o.Expression {
   return asLiteral(core.parseSelectorToR3Selector(selector));
 }
 

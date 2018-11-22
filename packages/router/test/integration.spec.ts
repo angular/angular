@@ -477,37 +477,36 @@ describe('Integration', () => {
            expect(fixture.nativeElement).toHaveText('[simple]');
          }));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-      it('should update location when navigating', fakeAsync(() => {
-           @Component({template: `record`})
-           class RecordLocationCmp {
-             private storedPath: string;
-             constructor(loc: Location) { this.storedPath = loc.path(); }
-           }
+  it('should update location when navigating', fakeAsync(() => {
+       @Component({template: `record`})
+       class RecordLocationCmp {
+         private storedPath: string;
+         constructor(loc: Location) { this.storedPath = loc.path(); }
+       }
 
-           @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
-           class TestModule {
-           }
+       @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
+       class TestModule {
+       }
 
-           TestBed.configureTestingModule({imports: [TestModule]});
+       TestBed.configureTestingModule({imports: [TestModule]});
 
-           const router = TestBed.get(Router);
-           const location = TestBed.get(Location);
-           const fixture = createRoot(router, RootCmp);
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
+       const fixture = createRoot(router, RootCmp);
 
-           router.resetConfig([{path: 'record/:id', component: RecordLocationCmp}]);
+       router.resetConfig([{path: 'record/:id', component: RecordLocationCmp}]);
 
-           router.navigateByUrl('/record/22');
-           advance(fixture);
+       router.navigateByUrl('/record/22');
+       advance(fixture);
 
-           const c = fixture.debugElement.children[1].componentInstance;
-           expect(location.path()).toEqual('/record/22');
-           expect(c.storedPath).toEqual('/record/22');
+       const c = fixture.debugElement.children[1].componentInstance;
+       expect(location.path()).toEqual('/record/22');
+       expect(c.storedPath).toEqual('/record/22');
 
-           router.navigateByUrl('/record/33');
-           advance(fixture);
-           expect(location.path()).toEqual('/record/33');
-         }));
+       router.navigateByUrl('/record/33');
+       advance(fixture);
+       expect(location.path()).toEqual('/record/33');
+     }));
 
   fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
       it('should skip location update when using NavigationExtras.skipLocationChange with navigateByUrl',
@@ -673,27 +672,26 @@ describe('Integration', () => {
            ]);
          })));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-      it('should update the location when the matched route does not change',
-         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-           const fixture = createRoot(router, RootCmp);
+  it('should update the location when the matched route does not change',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, RootCmp);
 
-           router.resetConfig([{path: '**', component: CollectParamsCmp}]);
+       router.resetConfig([{path: '**', component: CollectParamsCmp}]);
 
-           router.navigateByUrl('/one/two');
-           advance(fixture);
-           const cmp = fixture.debugElement.children[1].componentInstance;
-           expect(location.path()).toEqual('/one/two');
-           expect(fixture.nativeElement).toHaveText('collect-params');
+       router.navigateByUrl('/one/two');
+       advance(fixture);
+       const cmp = fixture.debugElement.children[1].componentInstance;
+       expect(location.path()).toEqual('/one/two');
+       expect(fixture.nativeElement).toHaveText('collect-params');
 
-           expect(cmp.recordedUrls()).toEqual(['one/two']);
+       expect(cmp.recordedUrls()).toEqual(['one/two']);
 
-           router.navigateByUrl('/three/four');
-           advance(fixture);
-           expect(location.path()).toEqual('/three/four');
-           expect(fixture.nativeElement).toHaveText('collect-params');
-           expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
-         })));
+       router.navigateByUrl('/three/four');
+       advance(fixture);
+       expect(location.path()).toEqual('/three/four');
+       expect(fixture.nativeElement).toHaveText('collect-params');
+       expect(cmp.recordedUrls()).toEqual(['one/two', 'three/four']);
+     })));
 
   describe('should reset location if a navigation by location is successful', () => {
     beforeEach(() => {
@@ -835,18 +833,17 @@ describe('Integration', () => {
            expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
          })));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-      it('should ignore null and undefined query params',
-         fakeAsync(inject([Router], (router: Router) => {
-           const fixture = createRoot(router, RootCmp);
+  it('should ignore null and undefined query params',
+     fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
 
-           router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
+       router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
 
-           router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined}});
-           advance(fixture);
-           const cmp = fixture.debugElement.children[1].componentInstance;
-           expect(cmp.recordedParams).toEqual([{name: '1'}]);
-         })));
+       router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined}});
+       advance(fixture);
+       const cmp = fixture.debugElement.children[1].componentInstance;
+       expect(cmp.recordedParams).toEqual([{name: '1'}]);
+     })));
 
   it('should throw an error when one of the commands is null/undefined',
      fakeAsync(inject([Router], (router: Router) => {
@@ -859,7 +856,7 @@ describe('Integration', () => {
        ])).toThrowError(`The requested path contains undefined segment at index 0`);
      })));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
+  fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
       it('should push params only when they change',
          fakeAsync(inject([Router], (router: Router) => {
            const fixture = createRoot(router, RootCmp);
@@ -909,7 +906,7 @@ describe('Integration', () => {
            expect(fixture.nativeElement).toHaveText('simple');
          })));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
+  fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
       it('should cancel in-flight navigations', fakeAsync(inject([Router], (router: Router) => {
            const fixture = createRoot(router, RootCmp);
 
@@ -1308,22 +1305,21 @@ describe('Integration', () => {
            expect(cmp.deactivations[0] instanceof BlankCmp).toBe(true);
          }));
 
-  fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-      it('should update url and router state before activating components',
-         fakeAsync(inject([Router], (router: Router) => {
+  it('should update url and router state before activating components',
+     fakeAsync(inject([Router], (router: Router) => {
 
-           const fixture = createRoot(router, RootCmp);
+       const fixture = createRoot(router, RootCmp);
 
-           router.resetConfig([{path: 'cmp', component: ComponentRecordingRoutePathAndUrl}]);
+       router.resetConfig([{path: 'cmp', component: ComponentRecordingRoutePathAndUrl}]);
 
-           router.navigateByUrl('/cmp');
-           advance(fixture);
+       router.navigateByUrl('/cmp');
+       advance(fixture);
 
-           const cmp = fixture.debugElement.children[1].componentInstance;
+       const cmp = fixture.debugElement.children[1].componentInstance;
 
-           expect(cmp.url).toBe('/cmp');
-           expect(cmp.path.length).toEqual(2);
-         })));
+       expect(cmp.url).toBe('/cmp');
+       expect(cmp.path.length).toEqual(2);
+     })));
 
 
 
@@ -1345,47 +1341,45 @@ describe('Integration', () => {
       });
     });
 
-    fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-        it('should provide resolved data', fakeAsync(inject([Router], (router: Router) => {
-             const fixture = createRoot(router, RootCmpWithTwoOutlets);
+    it('should provide resolved data', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmpWithTwoOutlets);
 
-             router.resetConfig([{
-               path: 'parent/:id',
-               data: {one: 1},
-               resolve: {two: 'resolveTwo'},
-               children: [
-                 {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp},
-                 {
-                   path: '',
-                   data: {five: 5},
-                   resolve: {six: 'resolveSix'},
-                   component: RouteCmp,
-                   outlet: 'right'
-                 }
-               ]
-             }]);
+         router.resetConfig([{
+           path: 'parent/:id',
+           data: {one: 1},
+           resolve: {two: 'resolveTwo'},
+           children: [
+             {path: '', data: {three: 3}, resolve: {four: 'resolveFour'}, component: RouteCmp}, {
+               path: '',
+               data: {five: 5},
+               resolve: {six: 'resolveSix'},
+               component: RouteCmp,
+               outlet: 'right'
+             }
+           ]
+         }]);
 
-             router.navigateByUrl('/parent/1');
-             advance(fixture);
+         router.navigateByUrl('/parent/1');
+         advance(fixture);
 
-             const primaryCmp = fixture.debugElement.children[1].componentInstance;
-             const rightCmp = fixture.debugElement.children[3].componentInstance;
+         const primaryCmp = fixture.debugElement.children[1].componentInstance;
+         const rightCmp = fixture.debugElement.children[3].componentInstance;
 
-             expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
-             expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
+         expect(primaryCmp.route.snapshot.data).toEqual({one: 1, two: 2, three: 3, four: 4});
+         expect(rightCmp.route.snapshot.data).toEqual({one: 1, two: 2, five: 5, six: 6});
 
-             const primaryRecorded: any[] = [];
-             primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
+         const primaryRecorded: any[] = [];
+         primaryCmp.route.data.forEach((rec: any) => primaryRecorded.push(rec));
 
-             const rightRecorded: any[] = [];
-             rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
+         const rightRecorded: any[] = [];
+         rightCmp.route.data.forEach((rec: any) => rightRecorded.push(rec));
 
-             router.navigateByUrl('/parent/2');
-             advance(fixture);
+         router.navigateByUrl('/parent/2');
+         advance(fixture);
 
-             expect(primaryRecorded).toEqual([{one: 1, three: 3, two: 2, four: 4}]);
-             expect(rightRecorded).toEqual([{one: 1, five: 5, two: 2, six: 6}]);
-           })));
+         expect(primaryRecorded).toEqual([{one: 1, three: 3, two: 2, four: 4}]);
+         expect(rightRecorded).toEqual([{one: 1, five: 5, two: 2, six: 6}]);
+       })));
 
     it('should handle errors', fakeAsync(inject([Router], (router: Router) => {
          const fixture = createRoot(router, RootCmp);
@@ -1425,52 +1419,50 @@ describe('Integration', () => {
          expect(e).toEqual(null);
        })));
 
-    fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-        it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
-             const fixture = createRoot(router, RootCmp);
+    it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig([{
-               path: 'parent',
-               resolve: {two: 'resolveTwo'},
-               children: [
-                 {path: 'child1', component: CollectParamsCmp},
-                 {path: 'child2', component: CollectParamsCmp}
-               ]
-             }]);
+         router.resetConfig([{
+           path: 'parent',
+           resolve: {two: 'resolveTwo'},
+           children: [
+             {path: 'child1', component: CollectParamsCmp},
+             {path: 'child2', component: CollectParamsCmp}
+           ]
+         }]);
 
-             const e: any = null;
-             router.navigateByUrl('/parent/child1');
-             advance(fixture);
+         const e: any = null;
+         router.navigateByUrl('/parent/child1');
+         advance(fixture);
 
-             router.navigateByUrl('/parent/child2');
-             advance(fixture);
+         router.navigateByUrl('/parent/child2');
+         advance(fixture);
 
-             const cmp = fixture.debugElement.children[1].componentInstance;
-             expect(cmp.route.snapshot.data).toEqual({two: 2});
-           })));
+         const cmp = fixture.debugElement.children[1].componentInstance;
+         expect(cmp.route.snapshot.data).toEqual({two: 2});
+       })));
 
-    fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-        it('should rerun resolvers when the urls segments of a wildcard route change',
-           fakeAsync(inject([Router, Location], (router: Router) => {
-             const fixture = createRoot(router, RootCmp);
+    it('should rerun resolvers when the urls segments of a wildcard route change',
+       fakeAsync(inject([Router, Location], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig([{
-               path: '**',
-               component: CollectParamsCmp,
-               resolve: {numberOfUrlSegments: 'numberOfUrlSegments'}
-             }]);
+         router.resetConfig([{
+           path: '**',
+           component: CollectParamsCmp,
+           resolve: {numberOfUrlSegments: 'numberOfUrlSegments'}
+         }]);
 
-             router.navigateByUrl('/one/two');
-             advance(fixture);
-             const cmp = fixture.debugElement.children[1].componentInstance;
+         router.navigateByUrl('/one/two');
+         advance(fixture);
+         const cmp = fixture.debugElement.children[1].componentInstance;
 
-             expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 2});
+         expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 2});
 
-             router.navigateByUrl('/one/two/three');
-             advance(fixture);
+         router.navigateByUrl('/one/two/three');
+         advance(fixture);
 
-             expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
-           })));
+         expect(cmp.route.snapshot.data).toEqual({numberOfUrlSegments: 3});
+       })));
 
     describe('should run resolvers for the same route concurrently', () => {
       let log: string[];
@@ -1525,7 +1517,7 @@ describe('Integration', () => {
   });
 
   describe('router links', () => {
-    fixmeIvy('FW-???: ASSERTION ERROR: The provided value must be an instance of an HTMLElement') &&
+    fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
         it('should support skipping location update for anchor router links',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = TestBed.createComponent(RootCmp);
@@ -1775,31 +1767,30 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
            })));
 
-    fixmeIvy('FW-662: Components without selector are not supported') &&
-        it('should support top-level link', fakeAsync(inject([Router], (router: Router) => {
-             const fixture = createRoot(router, RelativeLinkInIfCmp);
-             advance(fixture);
+    it('should support top-level link', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RelativeLinkInIfCmp);
+         advance(fixture);
 
-             router.resetConfig(
-                 [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]);
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]);
 
-             router.navigateByUrl('/');
-             advance(fixture);
-             expect(fixture.nativeElement).toHaveText('');
-             const cmp = fixture.componentInstance;
+         router.navigateByUrl('/');
+         advance(fixture);
+         expect(fixture.nativeElement).toHaveText('');
+         const cmp = fixture.componentInstance;
 
-             cmp.show = true;
-             advance(fixture);
+         cmp.show = true;
+         advance(fixture);
 
-             expect(fixture.nativeElement).toHaveText('link');
-             const native = fixture.nativeElement.querySelector('a');
+         expect(fixture.nativeElement).toHaveText('link');
+         const native = fixture.nativeElement.querySelector('a');
 
-             expect(native.getAttribute('href')).toEqual('/simple');
-             native.click();
-             advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/simple');
+         native.click();
+         advance(fixture);
 
-             expect(fixture.nativeElement).toHaveText('linksimple');
-           })));
+         expect(fixture.nativeElement).toHaveText('linksimple');
+       })));
 
     fixmeIvy('FW-???: assertion failures') &&
         it('should support query params and fragments',
@@ -2201,152 +2192,146 @@ describe('Integration', () => {
           return fixture;
         }
 
-        fixmeIvy('FW-???: TypeError: Cannot read property \'data\' of undefined') &&
-            it('should rerun guards and resolvers when params change',
-               fakeAsync(inject([Router], (router: Router) => {
-                 const fixture = configureRouter(router, 'paramsChange');
 
-                 const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
-                 const recordedData: any[] = [];
-                 cmp.route.data.subscribe((data: any) => recordedData.push(data));
+        it('should rerun guards and resolvers when params change',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, 'paramsChange');
 
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
 
-                 router.navigateByUrl('/a;p=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(2);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
-                 router.navigateByUrl('/a;p=2?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
-               })));
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
-        fixmeIvy('FW-???: TypeError: Cannot read property \'data\' of undefined') &&
-            it('should rerun guards and resolvers when query params change',
-               fakeAsync(inject([Router], (router: Router) => {
-                 const fixture = configureRouter(router, 'paramsOrQueryParamsChange');
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
+           })));
 
-                 const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
-                 const recordedData: any[] = [];
-                 cmp.route.data.subscribe((data: any) => recordedData.push(data));
+        it('should rerun guards and resolvers when query params change',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, 'paramsOrQueryParamsChange');
 
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
 
-                 router.navigateByUrl('/a;p=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(2);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
-                 router.navigateByUrl('/a;p=2?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(4);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
-                 router.navigateByUrl('/a;p=2(right:b)?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(4);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
-               })));
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(4);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
 
-        fixmeIvy('FW-???: TypeError: Cannot read property \'data\' of undefined') &&
-            it('should always rerun guards and resolvers',
-               fakeAsync(inject([Router], (router: Router) => {
-                 const fixture = configureRouter(router, 'always');
+             router.navigateByUrl('/a;p=2(right:b)?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(4);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
+           })));
 
-                 const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
-                 const recordedData: any[] = [];
-                 cmp.route.data.subscribe((data: any) => recordedData.push(data));
+        it('should always rerun guards and resolvers',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, 'always');
 
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
 
-                 router.navigateByUrl('/a;p=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(2);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
 
-                 router.navigateByUrl('/a;p=2?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(4);
-                 expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
 
-                 router.navigateByUrl('/a;p=2(right:b)?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(5);
-                 expect(recordedData).toEqual([
-                   {data: 0}, {data: 1}, {data: 2}, {data: 3}, {data: 4}
-                 ]);
-               })));
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(4);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}]);
 
-        fixmeIvy('FW-???: TypeError: Cannot read property \'data\' of undefined') &&
-            it('should not rerun guards and resolvers',
-               fakeAsync(inject([Router], (router: Router) => {
-                 const fixture = configureRouter(router, 'pathParamsChange');
+             router.navigateByUrl('/a;p=2(right:b)?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(5);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}, {data: 4}]);
+           })));
 
-                 const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
-                 const recordedData: any[] = [];
-                 cmp.route.data.subscribe((data: any) => recordedData.push(data));
+        it('should not rerun guards and resolvers', fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, 'pathParamsChange');
 
-                 // First navigation has already run
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
 
-                 // Changing any optional params will not result in running guards or resolvers
-                 router.navigateByUrl('/a;p=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             // First navigation has already run
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             // Changing any optional params will not result in running guards or resolvers
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 router.navigateByUrl('/a;p=2(right:b)?q=1');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(1);
-                 expect(recordedData).toEqual([{data: 0}]);
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 // Change to new route with path param should run guards and resolvers
-                 router.navigateByUrl('/c/paramValue');
-                 advance(fixture);
+             router.navigateByUrl('/a;p=2(right:b)?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
 
-                 expect(guardRunCount).toEqual(2);
+             // Change to new route with path param should run guards and resolvers
+             router.navigateByUrl('/c/paramValue');
+             advance(fixture);
 
-                 // Modifying a path param should run guards and resolvers
-                 router.navigateByUrl('/c/paramValueChanged');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
+             expect(guardRunCount).toEqual(2);
 
-                 // Adding optional params should not cause guards/resolvers to run
-                 router.navigateByUrl('/c/paramValueChanged;p=1?q=2');
-                 advance(fixture);
-                 expect(guardRunCount).toEqual(3);
-               })));
+             // Modifying a path param should run guards and resolvers
+             router.navigateByUrl('/c/paramValueChanged');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+
+             // Adding optional params should not cause guards/resolvers to run
+             router.navigateByUrl('/c/paramValueChanged;p=1?q=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+           })));
       });
 
       describe('should wait for parent to complete', () => {
@@ -2497,46 +2482,45 @@ describe('Integration', () => {
                  expect(canceledStatus).toEqual(false);
                })));
 
-        fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-            it('works with componentless routes',
-               fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-                 const fixture = createRoot(router, RootCmp);
+        it('works with componentless routes',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
 
-                 router.resetConfig([
-                   {
-                     path: 'grandparent',
+             router.resetConfig([
+               {
+                 path: 'grandparent',
+                 canDeactivate: ['RecordingDeactivate'],
+                 children: [{
+                   path: 'parent',
+                   canDeactivate: ['RecordingDeactivate'],
+                   children: [{
+                     path: 'child',
                      canDeactivate: ['RecordingDeactivate'],
                      children: [{
-                       path: 'parent',
-                       canDeactivate: ['RecordingDeactivate'],
-                       children: [{
-                         path: 'child',
-                         canDeactivate: ['RecordingDeactivate'],
-                         children: [{
-                           path: 'simple',
-                           component: SimpleCmp,
-                           canDeactivate: ['RecordingDeactivate']
-                         }]
-                       }]
+                       path: 'simple',
+                       component: SimpleCmp,
+                       canDeactivate: ['RecordingDeactivate']
                      }]
-                   },
-                   {path: 'simple', component: SimpleCmp}
-                 ]);
+                   }]
+                 }]
+               },
+               {path: 'simple', component: SimpleCmp}
+             ]);
 
-                 router.navigateByUrl('/grandparent/parent/child/simple');
-                 advance(fixture);
-                 expect(location.path()).toEqual('/grandparent/parent/child/simple');
+             router.navigateByUrl('/grandparent/parent/child/simple');
+             advance(fixture);
+             expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
-                 router.navigateByUrl('/simple');
-                 advance(fixture);
+             router.navigateByUrl('/simple');
+             advance(fixture);
 
-                 const child = fixture.debugElement.children[1].componentInstance;
+             const child = fixture.debugElement.children[1].componentInstance;
 
-                 expect(log.map((a: any) => a.path)).toEqual([
-                   'simple', 'child', 'parent', 'grandparent'
-                 ]);
-                 expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
-               })));
+             expect(log.map((a: any) => a.path)).toEqual([
+               'simple', 'child', 'parent', 'grandparent'
+             ]);
+             expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
+           })));
 
         it('works with aux routes',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -2601,30 +2585,29 @@ describe('Integration', () => {
                })));
       });
 
-      fixmeIvy('FW-???: TypeError: Cannot read property \'componentInstance\' of undefined') &&
-          it('should not create a route state if navigation is canceled',
-             fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-               const fixture = createRoot(router, RootCmp);
+      it('should not create a route state if navigation is canceled',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = createRoot(router, RootCmp);
 
-               router.resetConfig([{
-                 path: 'main',
-                 component: TeamCmp,
-                 children: [
-                   {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
-                   {path: 'component2', component: SimpleCmp}
-                 ]
-               }]);
+           router.resetConfig([{
+             path: 'main',
+             component: TeamCmp,
+             children: [
+               {path: 'component1', component: SimpleCmp, canDeactivate: ['alwaysFalse']},
+               {path: 'component2', component: SimpleCmp}
+             ]
+           }]);
 
-               router.navigateByUrl('/main/component1');
-               advance(fixture);
+           router.navigateByUrl('/main/component1');
+           advance(fixture);
 
-               router.navigateByUrl('/main/component2');
-               advance(fixture);
+           router.navigateByUrl('/main/component2');
+           advance(fixture);
 
-               const teamCmp = fixture.debugElement.children[1].componentInstance;
-               expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
-               expect(location.path()).toEqual('/main/component1');
-             })));
+           const teamCmp = fixture.debugElement.children[1].componentInstance;
+           expect(teamCmp.route.firstChild.url.value[0].path).toEqual('component1');
+           expect(location.path()).toEqual('/main/component1');
+         })));
 
       it('should not run CanActivate when CanDeactivate returns false',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -3365,46 +3348,44 @@ describe('Integration', () => {
          expect(native.className).toEqual('active');
        })));
 
-
-    fixmeIvy('FW-662: Components without selector are not supported') &&
-        it('should expose an isActive property', fakeAsync(() => {
-             @Component({
-               template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
+    it('should expose an isActive property', fakeAsync(() => {
+         @Component({
+           template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
               <p>{{rla.isActive}}</p>
               <span *ngIf="rla.isActive"></span>
               <span [ngClass]="{'highlight': rla.isActive}"></span>
               <router-outlet></router-outlet>`
-             })
-             class ComponentWithRouterLink {
-             }
+         })
+         class ComponentWithRouterLink {
+         }
 
-             TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
-             const router: Router = TestBed.get(Router);
+         TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
+         const router: Router = TestBed.get(Router);
 
-             router.resetConfig([
-               {
-                 path: 'team',
-                 component: TeamCmp,
-               },
-               {
-                 path: 'otherteam',
-                 component: TeamCmp,
-               }
-             ]);
+         router.resetConfig([
+           {
+             path: 'team',
+             component: TeamCmp,
+           },
+           {
+             path: 'otherteam',
+             component: TeamCmp,
+           }
+         ]);
 
-             const fixture = TestBed.createComponent(ComponentWithRouterLink);
-             router.navigateByUrl('/team');
-             expect(() => advance(fixture)).not.toThrow();
-             advance(fixture);
+         const fixture = TestBed.createComponent(ComponentWithRouterLink);
+         router.navigateByUrl('/team');
+         expect(() => advance(fixture)).not.toThrow();
+         advance(fixture);
 
-             const paragraph = fixture.nativeElement.querySelector('p');
-             expect(paragraph.textContent).toEqual('true');
+         const paragraph = fixture.nativeElement.querySelector('p');
+         expect(paragraph.textContent).toEqual('true');
 
-             router.navigateByUrl('/otherteam');
-             advance(fixture);
-             advance(fixture);
-             expect(paragraph.textContent).toEqual('false');
-           }));
+         router.navigateByUrl('/otherteam');
+         advance(fixture);
+         advance(fixture);
+         expect(paragraph.textContent).toEqual('false');
+       }));
 
   });
 
