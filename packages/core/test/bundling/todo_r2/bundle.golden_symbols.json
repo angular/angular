@@ -138,6 +138,24 @@
     "name": "Compiler"
   },
   {
+    "name": "Compiler_compileModuleAndAllComponentsAsync"
+  },
+  {
+    "name": "Compiler_compileModuleAndAllComponentsSync"
+  },
+  {
+    "name": "Compiler_compileModuleAndAllComponentsSync__POST_R3__"
+  },
+  {
+    "name": "Compiler_compileModuleAsync"
+  },
+  {
+    "name": "Compiler_compileModuleSync"
+  },
+  {
+    "name": "Compiler_compileModuleSync__POST_R3__"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -208,6 +226,12 @@
   },
   {
     "name": "DateType"
+  },
+  {
+    "name": "DebugElement__POST_R3__"
+  },
+  {
+    "name": "DebugNode__POST_R3__"
   },
   {
     "name": "DecimalPipe"
@@ -442,6 +466,9 @@
   },
   {
     "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "ModuleWithComponentFactories"
   },
   {
     "name": "MulticastOperator"
@@ -696,6 +723,9 @@
     "name": "RENDERER"
   },
   {
+    "name": "RENDERER_FACTORY"
+  },
+  {
     "name": "RENDER_PARENT"
   },
   {
@@ -948,9 +978,6 @@
     "name": "ViewRef"
   },
   {
-    "name": "WRAP_RENDERER_FACTORY2"
-  },
-  {
     "name": "WrappedValue"
   },
   {
@@ -1134,6 +1161,9 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
+    "name": "_getViewData"
+  },
+  {
     "name": "_global"
   },
   {
@@ -1149,9 +1179,6 @@
     "name": "_localeFactory"
   },
   {
-    "name": "_nativeNodeToDebugNode"
-  },
-  {
     "name": "_ngProbeTokensToMap"
   },
   {
@@ -1159,6 +1186,9 @@
   },
   {
     "name": "_promiseStrategy"
+  },
+  {
+    "name": "_queryNodeChildrenR3"
   },
   {
     "name": "_randomChar"
@@ -1180,9 +1210,6 @@
   },
   {
     "name": "_testabilityGetter"
-  },
-  {
-    "name": "_throwError"
   },
   {
     "name": "addComponentLogic"
@@ -1479,6 +1506,9 @@
     "name": "directiveInject"
   },
   {
+    "name": "discoverLocalRefs"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -1563,6 +1593,12 @@
     "name": "findViaComponent"
   },
   {
+    "name": "findViaDirective"
+  },
+  {
+    "name": "findViaNativeElement"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
@@ -1644,6 +1680,12 @@
     "name": "getClosureSafeProperty"
   },
   {
+    "name": "getComponent"
+  },
+  {
+    "name": "getComponentAtNodeIndex"
+  },
+  {
     "name": "getComponentDef"
   },
   {
@@ -1656,6 +1698,9 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContext"
+  },
+  {
     "name": "getContextViewData"
   },
   {
@@ -1666,9 +1711,6 @@
   },
   {
     "name": "getCurrentQueries"
-  },
-  {
-    "name": "getCurrentSanitizer"
   },
   {
     "name": "getCurrentView"
@@ -1692,7 +1734,19 @@
     "name": "getDebugNode"
   },
   {
+    "name": "getDebugNode__POST_R3__"
+  },
+  {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
+  },
+  {
+    "name": "getDirectivesAtNodeIndex"
   },
   {
     "name": "getElementDepthCount"
@@ -1725,6 +1779,9 @@
     "name": "getInjectableDef"
   },
   {
+    "name": "getInjector"
+  },
+  {
     "name": "getInjectorDef"
   },
   {
@@ -1741,6 +1798,9 @@
   },
   {
     "name": "getLastDefinedValue"
+  },
+  {
+    "name": "getLocalRefs"
   },
   {
     "name": "getLocaleCurrencies"
@@ -2073,6 +2133,9 @@
     "name": "isComponentDef"
   },
   {
+    "name": "isComponentInstance"
+  },
+  {
     "name": "isContextDirty"
   },
   {
@@ -2089,6 +2152,12 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirectiveDefHack"
+  },
+  {
+    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -2193,6 +2262,9 @@
     "name": "listener"
   },
   {
+    "name": "loadContext"
+  },
+  {
     "name": "loadInternal"
   },
   {
@@ -2284,6 +2356,9 @@
   },
   {
     "name": "noopScope"
+  },
+  {
+    "name": "notImplemented"
   },
   {
     "name": "observable"
@@ -2529,9 +2604,6 @@
     "name": "setProp"
   },
   {
-    "name": "setRendererFactory"
-  },
-  {
     "name": "setRootDomAdapter"
   },
   {
@@ -2656,6 +2728,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "traverseNextElement"
   },
   {
     "name": "tryCatch"

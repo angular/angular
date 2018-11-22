@@ -940,24 +940,26 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getProperty(tc.nativeElement, 'id')).toEqual('newId');
       });
 
-      it('should not use template variables for expressions in hostProperties', () => {
-        @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
-        class DirectiveWithHostProps {
-          id = 'one';
-        }
+      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView') &&
+          it('should not use template variables for expressions in hostProperties', () => {
+            @Directive(
+                {selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+            class DirectiveWithHostProps {
+              id = 'one';
+            }
 
-        const fixture =
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
-                .overrideComponent(
-                    MyComp,
-                    {set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}})
-                .createComponent(MyComp);
-        fixture.detectChanges();
+            const fixture =
+                TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
+                    .overrideComponent(MyComp, {
+                      set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}
+                    })
+                    .createComponent(MyComp);
+            fixture.detectChanges();
 
-        const tc = fixture.debugElement.children[0];
-        expect(tc.properties['id']).toBe('one');
-        expect(tc.properties['title']).toBe(undefined);
-      });
+            const tc = fixture.debugElement.children[0];
+            expect(tc.properties['id']).toBe('one');
+            expect(tc.properties['title']).toBe(undefined);
+          });
 
       fixmeIvy('FW-725: Pipes in host bindings fail with a cryptic error') &&
           it('should not allow pipes in hostProperties', () => {
@@ -1113,7 +1115,7 @@ function declareTests(config?: {useJit: boolean}) {
                    .toHaveText('dynamic greet');
              }));
 
-          fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
               it('should create a component that has been freshly compiled', () => {
                 @Component({template: ''})
                 class RootComp {
@@ -1153,7 +1155,7 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(compRef.instance.someToken).toBe('someRootValue');
               });
 
-          fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
               it('should create a component with the passed NgModuleRef', () => {
                 @Component({template: ''})
                 class RootComp {
@@ -1194,7 +1196,7 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(compRef.instance.someToken).toBe('someValue');
               });
 
-          fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+          fixmeIvy('FW-707: TestBed: No LViewData in getParentInjectorLocation') &&
               it('should create a component with the NgModuleRef of the ComponentFactoryResolver',
                  () => {
                    @Component({template: ''})

@@ -168,6 +168,9 @@
     "name": "RENDERER"
   },
   {
+    "name": "RENDERER_FACTORY"
+  },
+  {
     "name": "RENDER_PARENT"
   },
   {
@@ -655,9 +658,6 @@
   },
   {
     "name": "getCurrentQueries"
-  },
-  {
-    "name": "getCurrentSanitizer"
   },
   {
     "name": "getCurrentView"
@@ -1162,9 +1162,6 @@
   },
   {
     "name": "setProp"
-  },
-  {
-    "name": "setRendererFactory"
   },
   {
     "name": "setStyle"

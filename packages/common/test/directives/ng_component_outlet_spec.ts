@@ -144,22 +144,21 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('projected foo');
      }));
 
-  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-      it('should resolve components from other modules, if supplied', async(() => {
-           const compiler = TestBed.get(Compiler) as Compiler;
-           let fixture = TestBed.createComponent(TestComponent);
+  it('should resolve components from other modules, if supplied', async(() => {
+       const compiler = TestBed.get(Compiler) as Compiler;
+       let fixture = TestBed.createComponent(TestComponent);
 
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('');
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('');
 
-           fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
-           fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
 
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('baz');
-         }));
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('baz');
+     }));
 
-  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+  fixmeIvy('FW-739: destroy on NgModuleRef is not being called') &&
       it('should clean up moduleRef, if supplied', async(() => {
            let destroyed = false;
            const compiler = TestBed.get(Compiler) as Compiler;
@@ -176,40 +175,38 @@ describe('insert/remove', () => {
            expect(moduleRef.destroy).toHaveBeenCalled();
          }));
 
-  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-      it('should not re-create moduleRef when it didn\'t actually change', async(() => {
-           const compiler = TestBed.get(Compiler) as Compiler;
-           const fixture = TestBed.createComponent(TestComponent);
+  it('should not re-create moduleRef when it didn\'t actually change', async(() => {
+       const compiler = TestBed.get(Compiler) as Compiler;
+       const fixture = TestBed.createComponent(TestComponent);
 
-           fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
-           fixture.componentInstance.currentComponent = Module2InjectedComponent;
-           fixture.detectChanges();
-           expect(fixture.nativeElement).toHaveText('baz');
-           const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.detectChanges();
+       expect(fixture.nativeElement).toHaveText('baz');
+       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
 
-           fixture.componentInstance.currentComponent = Module2InjectedComponent2;
-           fixture.detectChanges();
+       fixture.componentInstance.currentComponent = Module2InjectedComponent2;
+       fixture.detectChanges();
 
-           expect(fixture.nativeElement).toHaveText('baz2');
-           expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
-         }));
+       expect(fixture.nativeElement).toHaveText('baz2');
+       expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
+     }));
 
-  fixmeIvy('FW-561: Runtime compiler is not loaded') &&
-      it('should re-create moduleRef when changed', async(() => {
-           const compiler = TestBed.get(Compiler) as Compiler;
-           const fixture = TestBed.createComponent(TestComponent);
-           fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
-           fixture.componentInstance.currentComponent = Module2InjectedComponent;
-           fixture.detectChanges();
+  it('should re-create moduleRef when changed', async(() => {
+       const compiler = TestBed.get(Compiler) as Compiler;
+       const fixture = TestBed.createComponent(TestComponent);
+       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.detectChanges();
 
-           expect(fixture.nativeElement).toHaveText('baz');
+       expect(fixture.nativeElement).toHaveText('baz');
 
-           fixture.componentInstance.module = compiler.compileModuleSync(TestModule3);
-           fixture.componentInstance.currentComponent = Module3InjectedComponent;
-           fixture.detectChanges();
+       fixture.componentInstance.module = compiler.compileModuleSync(TestModule3);
+       fixture.componentInstance.currentComponent = Module3InjectedComponent;
+       fixture.detectChanges();
 
-           expect(fixture.nativeElement).toHaveText('bat');
-         }));
+       expect(fixture.nativeElement).toHaveText('bat');
+     }));
 });
 
 const TEST_TOKEN = new InjectionToken('TestToken');
