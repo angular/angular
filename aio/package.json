@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "node ../tools/yarn/check-yarn.js",
-    "postinstall": "node tools/cli-patches/patch.js && uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
+    "postinstall": "node tools/cli-patches/patch.js",
     "aio-use-local": "node tools/ng-packages-installer overwrite . --debug",
     "aio-use-npm": "node tools/ng-packages-installer restore .",
     "aio-check-local": "node tools/ng-packages-installer check .",
@@ -25,7 +25,7 @@
     "e2e": "ng e2e --no-webdriver-update",
     "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",
-    "postsetup": "yarn boilerplate:add && yarn build-ie-polyfills && yarn extract-cli-command-docs && yarn docs",
+    "postsetup": "yarn ~~build-ie-polyfills && yarn ~~minify-lunr && yarn boilerplate:add && yarn extract-cli-command-docs && yarn docs",
     "presetup-local": "yarn presetup",
     "setup-local": "yarn aio-use-local && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
@@ -61,13 +61,14 @@
     "generate-stackblitz": "node ./tools/stackblitz-builder/generateStackblitz",
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "build-404-page": "node scripts/build-404-page",
-    "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
     "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build",
     "post~~build": "yarn build-404-page",
-    "~~http-server": "http-server"
+    "~~build-ie-polyfills": "webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
+    "~~http-server": "http-server",
+    "~~minify-lunr": "uglifyjs node_modules/lunr/lunr.js -c -m -o src/generated/lunr.min.js --source-map"
   },
   "engines": {
     "node": ">=10.9.0 <11.0.0",
