@@ -9,7 +9,8 @@
 import {Location} from '@angular/common';
 import {Compiler, Injector, isDevMode, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, defer, EMPTY, Observable, of, Subject, Subscription} from 'rxjs';
-import {catchError, filter, finalize, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, concatMap, filter, finalize, first, map, switchMap, tap} from 'rxjs/operators';
+import {RecognizeAllStrategy, RecognizeFirstStrategy} from '../src/recognize';
 
 import {QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
@@ -392,6 +393,13 @@ export class Router {
    */
   relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
 
+
+  /**
+   * Enables the router to continue looking for a viable route
+   * when the first matching route is unavailable due to guard checks
+   */
+  cascade: true|false = false;
+
   /**
    * Creates the router service.
    */
@@ -498,7 +506,7 @@ export class Router {
                              // ApplyRedirects
                              applyRedirects(
                                  this.ngModule.injector, this.configLoader, this.urlSerializer,
-                                 this.config),
+                                 this.config, this.cascade),
 
                              // Update the currentNavigation
                              tap(t => {
@@ -507,12 +515,12 @@ export class Router {
                                  finalUrl: t.urlAfterRedirects
                                };
                              }),
-
-                             // Recognize
                              recognize(
                                  this.rootComponentType, this.config,
                                  (url) => this.serializeUrl(url), this.paramsInheritanceStrategy,
-                                 this.relativeLinkResolution),
+                                 this.relativeLinkResolution,
+                                 this.cascade ? new RecognizeAllStrategy() :
+                                                new RecognizeFirstStrategy()),
 
                              // Update URL if in `eager` update mode
                              tap(t => {
@@ -528,10 +536,12 @@ export class Router {
 
                              // Fire RoutesRecognized
                              tap(t => {
-                               const routesRecognized = new RoutesRecognized(
-                                   t.id, this.serializeUrl(t.extractedUrl),
-                                   this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
-                               eventsSubject.next(routesRecognized);
+                               if (t.targetSnapshot !== null) {
+                                 const routesRecognized = new RoutesRecognized(
+                                     t.id, this.serializeUrl(t.extractedUrl),
+                                     this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                                 eventsSubject.next(routesRecognized);
+                               }
                              }));
                        } else {
                          const processPreviousUrl = urlTransition && this.rawUrlTree &&
@@ -566,68 +576,77 @@ export class Router {
                          }
                        }
                      }),
-
-                     // Before Preactivation
-                     switchTap(t => {
-                       const {
-                         targetSnapshot,
-                         id: navigationId,
-                         extractedUrl: appliedUrlTree,
-                         rawUrl: rawUrlTree,
-                         extras: {skipLocationChange, replaceUrl}
-                       } = t;
-                       return this.hooks.beforePreactivation(targetSnapshot!, {
-                         navigationId,
-                         appliedUrlTree,
-                         rawUrlTree,
-                         skipLocationChange: !!skipLocationChange,
-                         replaceUrl: !!replaceUrl,
-                       });
-                     }),
-
-                     // --- GUARDS ---
-                     tap(t => {
-                       const guardsStart = new GuardsCheckStart(
-                           t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
-                       this.triggerEvent(guardsStart);
-                     }),
-
-                     map(t => ({
-                           ...t,
-                           guards: getAllRouteGuards(
-                               t.targetSnapshot!, t.currentSnapshot, this.rootContexts)
-                         })),
-
-                     checkGuards(this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
-                     tap(t => {
-                       if (isUrlTree(t.guardsResult)) {
-                         const error: Error&{url?: UrlTree} = navigationCancelingError(
-                             `Redirecting to "${this.serializeUrl(t.guardsResult)}"`);
-                         error.url = t.guardsResult;
-                         throw error;
+                     concatMap(t => {
+                       if (t.targetSnapshot === null) {  // default 'no route recognized'
+                         return of(t);
                        }
-                     }),
 
-                     tap(t => {
-                       const guardsEnd = new GuardsCheckEnd(
-                           t.id, this.serializeUrl(t.extractedUrl),
-                           this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
-                           !!t.guardsResult);
-                       this.triggerEvent(guardsEnd);
-                     }),
+                       return of(t).pipe(
+                           // Before Preactivation
+                           switchTap(t => {
+                             const {
+                               targetSnapshot,
+                               id: navigationId,
+                               extractedUrl: appliedUrlTree,
+                               rawUrl: rawUrlTree,
+                               extras: {skipLocationChange, replaceUrl}
+                             } = t;
+                             return this.hooks.beforePreactivation(targetSnapshot!, {
+                               navigationId,
+                               appliedUrlTree,
+                               rawUrlTree,
+                               skipLocationChange: !!skipLocationChange,
+                               replaceUrl: !!replaceUrl,
+                             });
+                           }),
 
-                     filter(t => {
-                       if (!t.guardsResult) {
-                         this.resetUrlToCurrentUrlTree();
-                         const navCancel =
-                             new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), '');
-                         eventsSubject.next(navCancel);
-                         t.resolve(false);
-                         return false;
-                       }
-                       return true;
+                           // --- GUARDS ---
+                           tap(t => {
+                             const guardsStart = new GuardsCheckStart(
+                                 t.id, this.serializeUrl(t.extractedUrl),
+                                 this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
+                             this.triggerEvent(guardsStart);
+                           }),
+
+                           map(t => ({
+                                 ...t,
+                                 guards: getAllRouteGuards(
+                                     t.targetSnapshot!, t.currentSnapshot, this.rootContexts)
+                               })),
+
+                           checkGuards(
+                               this.ngModule.injector, (evt: Event) => this.triggerEvent(evt)),
+                           tap(t => {
+                             if (isUrlTree(t.guardsResult)) {
+                               const error: Error&{url?: UrlTree} = navigationCancelingError(
+                                   `Redirecting to "${this.serializeUrl(t.guardsResult)}"`);
+                               error.url = t.guardsResult;
+                               throw error;
+                             }
+                           }),
+
+                           tap(t => {
+                             const guardsEnd = new GuardsCheckEnd(
+                                 t.id, this.serializeUrl(t.extractedUrl),
+                                 this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
+                                 !!t.guardsResult);
+                             this.triggerEvent(guardsEnd);
+                           }));
                      }),
+                     first(
+                         t => {
+                           if (t.targetSnapshot === null) {
+                             this.resetUrlToCurrentUrlTree();
+                             const navCancel =
+                                 new NavigationCancel(t.id, this.serializeUrl(t.extractedUrl), '');
+                             eventsSubject.next(navCancel);
+                             t.resolve(false);
+                             return false;
+                           }
+                           return t.guardsResult === true && t.targetSnapshot !== null;
+                         },
+                         {guardsResult: false, targetSnapshot: null} as NavigationTransition),
+                     filter(t => t.guardsResult !== false && t.targetSnapshot !== null),
 
                      // --- RESOLVE ---
                      switchTap(t => {
@@ -676,7 +695,7 @@ export class Router {
                        return ({...t, targetRouterState});
                      }),
 
-                     /* Once here, we are about to activate syncronously. The assumption is this
+                     /* Once here, we are about to activate synchronously. The assumption is this
                         will succeed, and user code may read from the Router service. Therefore
                         before activation, we need to update router properties storing the current
                         URL and the RouterState, as well as updated the browser URL. All this should

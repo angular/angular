@@ -12,7 +12,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanActivateChild, CanDeactivate, CanLoad, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, of, Subscription} from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
@@ -2099,6 +2099,44 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(location.path()).toEqual('/team/22');
+       })));
+
+    it('should work with many empty path redirects',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([
+           {
+             path: '',
+             children: [
+               {
+                 path: '',
+                 pathMatch: 'full',
+                 redirectTo: 'myservice',
+               },
+               {
+                 path: ':service',
+                 children: [
+                   {
+                     path: '',
+                     pathMatch: 'full',
+                     redirectTo: 'prod',
+                   },
+                   {
+                     path: ':environment',
+                     component: BlankCmp,
+                   }
+                 ]
+               }
+             ]
+           },
+           {path: '**', redirectTo: '/'},
+         ]);
+
+         router.navigateByUrl('/');
+         advance(fixture);
+
+         expect(location.path()).toEqual('/myservice/prod');
        })));
 
     it('should update Navigation object after redirects are applied',
@@ -4964,6 +5002,424 @@ describe('Testing router options', () => {
     it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
          expect(router.malformedUriErrorHandler).toBe(malformedUriErrorHandler);
        })));
+  });
+
+  describe('guarded route flow', () => {
+    @Component({selector: 'default', template: 'default'})
+    class DefaultComponent {
+      constructor(private route: ActivatedRoute) {
+        expect(route.toString()).toContain('**');
+      }
+    }
+
+    it('should support multiple outlets correctly', fakeAsync(() => {
+         @Component({
+           template:
+               '<router-outlet #routerOutlet="outlet"></router-outlet><router-outlet name="popup"></router-outlet>'
+         })
+         class MultiOutletComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'admin'})
+         class AdminComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'admin-dashboard'})
+         class AdminDashboardComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'manage-crises'})
+         class ManageCrisesComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'manage-heroes'})
+         class ManageHeroesComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+
+         @Component({template: 'compose-component'})
+         class ComposeComponent {
+           constructor(private route: ActivatedRoute) {
+             expect(route.toString()).toContain('compose');
+           }
+         }
+         @Component({template: 'crisis-list'})
+         class CrisisListComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'crisis-center'})
+         class CrisisCenterComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'crisis-home-component'})
+         class CrisisCenterHomeComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+         @Component({template: 'crisis-detail'})
+         class CrisisDetailComponent {
+           constructor(private route: ActivatedRoute) {}
+         }
+
+         TestBed.configureTestingModule(
+             {
+               declarations: [
+                 ComposeComponent, DefaultComponent, MultiOutletComponent, AdminComponent,
+                 AdminDashboardComponent, ManageCrisesComponent, ManageHeroesComponent,
+                 CrisisListComponent, CrisisCenterComponent, CrisisCenterHomeComponent,
+                 CrisisDetailComponent
+               ],
+               imports:
+                   [RouterTestingModule.withRoutes(
+                       [
+                         {path: 'compose', component: ComposeComponent, outlet: 'popup'}, {
+                           path: 'admin',
+                           component: AdminComponent,
+                           children: [{
+                             path: '',
+                             children: [
+                               {path: 'crises', component: ManageCrisesComponent},
+                               {path: 'heroes', component: ManageHeroesComponent},
+                               {path: '', component: AdminDashboardComponent}
+                             ]
+                           }]
+                         },
+                         {
+                           path: 'crisis-center',
+                           children: [{
+                             path: '',
+                             component: CrisisCenterComponent,
+                             children: [{
+                               path: '',
+                               component: CrisisListComponent,
+                               children: [
+                                 {
+                                   path: ':id',
+                                   component: CrisisDetailComponent,
+                                 },
+                                 {path: '', component: CrisisCenterHomeComponent}
+                               ]
+                             }]
+                           }],
+                         },
+                         {path: '', redirectTo: '/superheroes', pathMatch: 'full'},
+                         {path: '**', component: DefaultComponent}
+                       ],
+                       {cascade: true})],
+               providers: []
+             });
+
+         inject(
+             [Router, ActivatedRoute, Location, NgModuleFactoryLoader],
+             (router: Router, route: ActivatedRoute, location: Location,
+              loader: SpyNgModuleFactoryLoader) => {
+               const fixture = createRoot(router, MultiOutletComponent);
+
+               router.navigateByUrl('/crisis-center(popup:compose)');
+               advance(fixture);
+
+               expect(fixture.nativeElement).toHaveText('crisis-centercompose-component');
+               expect(location.path()).toEqual('/crisis-center(popup:compose)');
+             })();
+       }));
+
+    it('should fall-through to a different route when a route guard prevents navigation',
+       fakeAsync(() => {
+         @Component({template: 'accessible'})
+         class AccessibleComponent {
+           constructor(private route: ActivatedRoute) {
+             expect(route.toString()).toContain(':allow_access');
+           }
+         }
+         @Component({template: 'my-user'})
+         class UserComponent {
+           constructor(private route: ActivatedRoute) {
+             expect(route.toString()).toContain(':user');
+           }
+         }
+
+         @Component({template: 'my-org'})
+         class OrgComponent {
+           constructor(private route: ActivatedRoute) {
+             {}
+           }
+         }
+
+         @Component({template: 'my-org-settings'})
+         class OrgSettingsComponent {
+           constructor(private route: ActivatedRoute) {
+             expect((route.parent || {}).toString() + route.toString()).toContain('settings');
+           }
+         }
+
+         @Component({template: 'my-org-settings-page'})
+         class OrgSettingsPageComponent {
+           constructor(private route: ActivatedRoute) {
+             expect((route.parent || {}).toString() + route.toString()).toContain('settings/:page');
+           }
+         }
+
+         @Component({template: 'my-org-settings-advanced'})
+         class OrgSettingsAdvancedComponent {
+           constructor(private route: ActivatedRoute) {
+             expect((route.parent || {}).toString() + route.toString())
+                 .toContain('settings/:advanced');
+           }
+         }
+
+         @Component({template: `<router-outlet></router-outlet>`})
+         class OrgRouterComponent {
+         }
+
+
+         class AllowActivationAllowLoading implements CanActivate, CanActivateChild, CanLoad {
+           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return true;
+           }
+           canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return true;
+           }
+           canLoad(route: any): boolean {
+             return true;
+           }
+         }
+
+         class PreventActivationAllowLoading implements CanActivate, CanActivateChild, CanLoad {
+           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return false;
+           }
+           canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return false;
+           }
+           canLoad(route: any): boolean {
+             return true;
+           }
+         }
+
+         class PreventActivationPreventLoading implements CanActivate, CanActivateChild, CanLoad {
+           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return false;
+           }
+           canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return false;
+           }
+           canLoad(route: any): boolean {
+             return false;
+           }
+         }
+
+         class AllowActivationPreventLoading implements CanActivate, CanActivateChild, CanLoad {
+           canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return true;
+           }
+           canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+             return true;
+           }
+           canLoad(route: any): boolean {
+             return false;
+           }
+         }
+
+
+         TestBed.configureTestingModule({
+           declarations: [
+             RootCmp, AccessibleComponent, DefaultComponent, OrgComponent, OrgSettingsComponent,
+             OrgSettingsPageComponent, OrgSettingsAdvancedComponent, OrgRouterComponent,
+             UserComponent
+           ],
+           imports: [
+             RouterTestingModule.withRoutes(
+                 [
+                   {path: '', redirectTo: '/default/component', pathMatch: 'full'},
+                   // try a series of defaults
+                   {
+                     path: ':prevent_access',
+                     pathMatch: 'full',
+                     component: AccessibleComponent,
+                     canActivate: ['PreventActivationPreventLoading']
+                   },
+                   {
+                     path: 'admin',
+                     loadChildren: 'lazy',
+                     canActivate: ['AllowActivationAllowLoading']
+                   },
+                   {
+                     path: ':allow_loading',
+                     component: AccessibleComponent,
+                     canActivate: ['PreventActivationAllowLoading']
+                   },
+                   {
+                     path: ':prevent_activation',
+                     component: AccessibleComponent,
+                     canActivate: ['PreventActivationAllowLoading']
+                   },
+                   {
+                     path: ':org',
+                     canActivate: ['canActivateOrg'],
+                     canActivateChild: ['canActivateOrgChildren'],
+                     children: [
+                       {path: '', pathMatch: 'full', component: OrgComponent},
+                       {path: 'settings', component: OrgSettingsComponent}, {
+                         path: 'settings/:page',
+                         pathMatch: 'full',
+                         component: OrgSettingsPageComponent,
+                         canActivate: ['canActivateOrgSettingsPage']
+                       },
+                       {
+                         path: 'settings/:advanced',
+                         pathMatch: 'prefix',
+                         component: OrgSettingsAdvancedComponent,
+                         canActivate: ['canActivateOrgSettingsAdvanced']
+                       }
+                     ]
+                   },
+                   {path: ':user', component: UserComponent, canActivate: ['canActivateUser']},
+                   {
+                     path: ':allow_access',
+                     pathMatch: 'full',
+                     component: AccessibleComponent,
+                     canActivate: ['AllowActivationAllowLoading']
+                   },
+                   {path: '**', component: DefaultComponent},
+                 ],
+                 {cascade: true}),
+           ],
+           providers: [
+             {provide: 'AllowActivationAllowLoading', useClass: AllowActivationAllowLoading},
+             {provide: 'PreventActivationAllowLoading', useClass: PreventActivationAllowLoading}, {
+               provide: 'PreventActivationPreventLoading',
+               useClass: PreventActivationPreventLoading
+             },
+             {provide: 'AllowActivationPreventLoading', useClass: AllowActivationPreventLoading}, {
+               provide: 'canActivateUser',
+               useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+                 return ((route.paramMap.get('user') || '').indexOf('@valid-user') >= 0);
+               }
+             },
+             {
+               provide: 'canActivateOrg',
+               useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+                 return ((route.paramMap.get('org') || '').indexOf('@valid-org') >= 0);
+               }
+             },
+             {
+               provide: 'canActivateOrgChildren',
+               useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+                 return ((route.paramMap.get('org') || '').indexOf('@valid-org') >= 0)
+                     // for nested router-outlet
+                     || ((((route.parent || {}).paramMap || {get: () => {}}).get('org') ||
+                          '').indexOf('@valid-org') >= 0);
+               }
+             },
+             {
+               provide: 'canActivateOrgSettingsPage',
+               useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+                 return (
+                     (route.paramMap.get('page') || '').indexOf('valid-org-settings-page') >= 0);
+               }
+             },
+             {
+               provide: 'canActivateOrgSettingsAdvanced',
+               useValue: (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+                 return (
+                     (route.paramMap.get('advanced') ||
+                      '').indexOf('valid-org-settings-advanced') >= 0);
+               }
+             }
+           ]
+         });
+         inject(
+             [Router, ActivatedRoute, Location, NgModuleFactoryLoader],
+             (router: Router, route: ActivatedRoute, location: Location,
+              loader: SpyNgModuleFactoryLoader) => {
+               @Component({selector: 'admin', template: '<router-outlet></router-outlet>-admin'})
+               class AdminComponent {
+                 constructor(private route: ActivatedRoute) {}
+               }
+
+               @Component({template: 'lazy-loaded'})
+               class LazyLoadedComponent {
+                 constructor(private route: ActivatedRoute) {}
+               }
+
+               @Component({template: 'lazy-loaded-2'})
+               class LazyLoadedComponent2 {
+                 constructor(private route: ActivatedRoute) {}
+               }
+
+               @NgModule({
+                 declarations: [AdminComponent, LazyLoadedComponent, LazyLoadedComponent2],
+                 imports: [RouterModule.forChild([
+                   {
+                     path: '',
+                     component: AdminComponent,
+                     children: [{
+                       path: 'lazy',
+                       pathMatch: 'full',
+                       component: LazyLoadedComponent,
+                     }]
+
+                   },
+                   {path: 'p1', component: LazyLoadedComponent2}
+                 ])]
+               })
+               class LazyLoadedModule {
+               }
+
+               loader.stubbedModules = {lazy: LazyLoadedModule};
+               const fixture = createRoot(router, RootCmp);
+
+               router.navigateByUrl('/admin/lazy');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('lazy-loaded-admin');
+
+               router.navigateByUrl('admin/p1');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('lazy-loaded-2');
+
+               router.navigateByUrl('/var/test/far');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('default');
+
+               router.navigateByUrl('/var');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('accessible');
+
+               router.navigateByUrl('/@valid-user');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('my-user');
+
+               router.navigateByUrl('/@valid-org');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('my-org');
+
+               router.navigateByUrl('/@valid-org/settings');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('my-org-settings');
+
+               router.navigateByUrl('/@valid-org/settings/valid-org-settings-page');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('my-org-settings-page');
+
+               router.navigateByUrl('/@valid-org/settings/valid-org-settings-advanced');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('my-org-settings-advanced');
+
+               // guarded invalid org variable route (404 situation)
+               router.navigateByUrl('/@invalid-org/valid-org-settings-advanced');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('default');
+
+               // guarded invalid org sub-variable route (404 situation)
+               router.navigateByUrl('/@valid-org/invalid-org-settings-advanced');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('default');
+
+               // trial 404 situation
+               router.navigateByUrl('/@valid-org/valid-org-settings-page/does-not-exist');
+               advance(fixture);
+               expect(fixture.nativeElement).toHaveText('default');
+             })();
+       }));
   });
 });
 

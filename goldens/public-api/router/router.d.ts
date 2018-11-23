@@ -110,6 +110,7 @@ export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoad
 
 export declare interface ExtraOptions {
     anchorScrolling?: 'disabled' | 'enabled';
+    cascade?: true | false | 'legacy' | 'cascade';
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
@@ -323,6 +324,7 @@ export declare class RouteConfigLoadStart {
 }
 
 export declare class Router {
+    cascade: true | false;
     config: Routes;
     errorHandler: ErrorHandler;
     readonly events: Observable<Event>;

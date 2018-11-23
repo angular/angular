@@ -18,10 +18,11 @@ import {UrlSerializer} from '../url_tree';
 
 export function applyRedirects(
     moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
-    config: Routes): MonoTypeOperatorFunction<NavigationTransition> {
+    config: Routes, cascade: boolean = false): MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
     return source.pipe(switchMap(
-        t => applyRedirectsFn(moduleInjector, configLoader, urlSerializer, t.extractedUrl, config)
+        t => applyRedirectsFn(
+                 moduleInjector, configLoader, urlSerializer, t.extractedUrl, config, cascade)
                  .pipe(map(urlAfterRedirects => ({...t, urlAfterRedirects})))));
   };
 }

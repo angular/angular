@@ -8,7 +8,7 @@
 
 import {Injector, NgModuleRef} from '@angular/core';
 import {EmptyError, from, Observable, Observer, of} from 'rxjs';
-import {catchError, concatAll, every, first, map, mergeMap} from 'rxjs/operators';
+import {catchError, concatAll, every, first, last, map, mergeMap} from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {CanLoadFn} from './interfaces';
@@ -60,8 +60,9 @@ function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
  */
 export function applyRedirects(
     moduleInjector: Injector, configLoader: RouterConfigLoader, urlSerializer: UrlSerializer,
-    urlTree: UrlTree, config: Routes): Observable<UrlTree> {
-  return new ApplyRedirects(moduleInjector, configLoader, urlSerializer, urlTree, config).apply();
+    urlTree: UrlTree, config: Routes, cascade: boolean = false): Observable<UrlTree> {
+  return new ApplyRedirects(moduleInjector, configLoader, urlSerializer, urlTree, config, cascade)
+      .apply();
 }
 
 class ApplyRedirects {
@@ -70,7 +71,8 @@ class ApplyRedirects {
 
   constructor(
       moduleInjector: Injector, private configLoader: RouterConfigLoader,
-      private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes) {
+      private urlSerializer: UrlSerializer, private urlTree: UrlTree, private config: Routes,
+      private cascade: boolean = false) {
     this.ngModule = moduleInjector.get(NgModuleRef);
   }
 
@@ -147,7 +149,7 @@ class ApplyRedirects {
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[],
       segments: UrlSegment[], outlet: string,
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    return of(...routes).pipe(
+    let route$ = of(...routes).pipe(
         map((r: any) => {
           const expanded$ = this.expandSegmentAgainstRoute(
               ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
@@ -160,15 +162,23 @@ class ApplyRedirects {
             throw e;
           }));
         }),
-        concatAll(), first((s: any) => !!s), catchError((e: any, _: any) => {
-          if (e instanceof EmptyError || e.name === 'EmptyError') {
-            if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
-              return of(new UrlSegmentGroup([], {}));
-            }
-            throw new NoMatch(segmentGroup);
-          }
-          throw e;
-        }));
+        concatAll());
+
+    if (this.cascade) {
+      // all matching lazy-loadable routes (loadChildren) must be expanded
+      const first$: any = route$.pipe(first((s: any) => !!s));
+      route$ = route$.pipe(last((s: any) => !!s), mergeMap(() => first$, 1));
+    }
+
+    return route$.pipe(first((s: any) => !!s), catchError((e: any, _: any) => {
+                         if (e instanceof EmptyError || e.name === 'EmptyError') {
+                           if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
+                             return of(new UrlSegmentGroup([], {}));
+                           }
+                           throw new NoMatch(segmentGroup);
+                         }
+                         throw e;
+                       }));
   }
 
   private noLeftoversInUrl(segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string):

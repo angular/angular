@@ -7,7 +7,7 @@
  */
 
 import {Type} from '@angular/core';
-import {Observable, Observer, of} from 'rxjs';
+import {from, Observable, Observer, of} from 'rxjs';
 
 import {Data, ResolveData, Route, Routes} from './config';
 import {ActivatedRouteSnapshot, inheritedParamsDataResolve, ParamsInheritanceStrategy, RouterStateSnapshot} from './router_state';
@@ -18,13 +18,104 @@ import {TreeNode} from './utils/tree';
 
 class NoMatch {}
 
+/**
+ * @description
+ *
+ * Signature for implementing a route matching algorithm.
+ *
+ * @internal
+ */
+export interface IRecognizeStrategy {
+  /**
+   * Indicate whether an outlet/route should be visited or skipped
+   * based on the implemented strategy and previous occurance of visits.
+   */
+  visit(outlet: string, route: Route): boolean;
+
+  /**
+   * Signal when no additional routes/outlets were visited since
+   * the last iteration.
+   */
+  hasNewVisits(): boolean;
+}
+
+/**
+ * @description
+ *
+ * A helper class utilized by recognize() to iteratively track by outlet which routes
+ * have already been visited in a prior iteration in order to identify all matching routes.
+ *
+ * Tracks by outlet & route in order to match all possible routes including
+ * 'route-x(outlet:route-y)', '**', and others which can be used if guards block
+ * higher priority routes.
+ *
+ * @internal
+ */
+export class RecognizeAllStrategy implements IRecognizeStrategy {
+  private visited: {[outlet: string]: Route[]} = {[PRIMARY_OUTLET]: []};
+  private newVisits: number = 0;
+
+  /**
+   * Determine if a route should be evaulated by recognize() for
+   * the an outlet and route. Returns `true` if the route has not
+   * been previously evaulated for the given `outlet`
+   *
+   * @internal
+   */
+  public visit(outlet: string, route: Route): boolean {
+    const set = (this.visited[outlet] = this.visited[outlet] || []);
+    if (set.indexOf(route) !== -1) {
+      return !this.visitedAllChildren(outlet, route);
+    }
+    set.push(route);
+    this.newVisits++;
+    return true;
+  }
+
+  private visitedAllChildren(outlet: string, route: Route): boolean {
+    if (this.visited[outlet].indexOf(route) === -1) return false;
+    return getChildConfig(route).every(childRoute => this.visitedAllChildren(outlet, childRoute));
+  }
+
+  /**
+   * Returns `true` if new routes have been visited since the last call
+   * to this method.
+   *
+   * @internal
+   */
+  public hasNewVisits(): boolean {
+    const newVisits: number = this.newVisits;
+    this.newVisits = 0;
+    return newVisits > 0;
+  }
+}
+
+/**
+ * @description
+ *
+ * A helper class utilized by recognize() to locate only the first match. This
+ * is the default behavior and is backwards compatible.
+ *
+ * @internal
+ */
+export class RecognizeFirstStrategy implements IRecognizeStrategy {
+  public visit(outlet: string, route: Route) {
+    return true;
+  }
+  public hasNewVisits() {
+    return false;
+  }
+}
+
 export function recognize(
     rootComponentType: Type<any>|null, config: Routes, urlTree: UrlTree, url: string,
     paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
-    relativeLinkResolution: 'legacy'|'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+    relativeLinkResolution: 'legacy'|'corrected' = 'legacy',
+    matchingStrategy: IRecognizeStrategy =
+        new RecognizeFirstStrategy()): Observable<RouterStateSnapshot> {
   return new Recognizer(
              rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
-             relativeLinkResolution)
+             relativeLinkResolution, matchingStrategy)
       .recognize();
 }
 
@@ -32,25 +123,35 @@ class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
       private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy,
-      private relativeLinkResolution: 'legacy'|'corrected') {}
+      private relativeLinkResolution: 'legacy'|'corrected',
+      private matchingStrategy: IRecognizeStrategy = new RecognizeFirstStrategy()) {}
+
 
   recognize(): Observable<RouterStateSnapshot> {
     try {
       const rootSegmentGroup =
           split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
 
-      const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
-
       const root = new ActivatedRouteSnapshot(
           [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
           this.urlTree.fragment!, {}, PRIMARY_OUTLET, this.rootComponentType, null,
           this.urlTree.root, -1, {});
 
-      const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
-      const routeState = new RouterStateSnapshot(this.url, rootNode);
-      this.inheritParamsAndData(routeState._root);
-      return of(routeState);
-
+      const recognizedRoutes: RouterStateSnapshot[] = [];
+      do {
+        try {
+          const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
+          const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
+          const routeState = new RouterStateSnapshot(this.url, rootNode);
+          this.inheritParamsAndData(routeState._root);
+          recognizedRoutes.push(routeState);
+        } catch (e) {
+          if (!(e instanceof NoMatch)) {
+            throw e;
+          }
+        }
+      } while (this.matchingStrategy.hasNewVisits());
+      return from(recognizedRoutes);
     } catch (e) {
       return new Observable<RouterStateSnapshot>(
           (obs: Observer<RouterStateSnapshot>) => obs.error(e));
@@ -72,7 +173,6 @@ class Recognizer {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(config, segmentGroup);
     }
-
     return this.processSegment(config, segmentGroup, segmentGroup.segments, outlet);
   }
 
@@ -90,6 +190,9 @@ class Recognizer {
       outlet: string): TreeNode<ActivatedRouteSnapshot>[] {
     for (const r of config) {
       try {
+        if (!this.matchingStrategy.visit(outlet, r)) {
+          continue;
+        }
         return this.processSegmentAgainstRoute(r, segmentGroup, segments, outlet);
       } catch (e) {
         if (!(e instanceof NoMatch)) throw e;
@@ -168,8 +271,8 @@ function getChildConfig(route: Route): Route[] {
     return route.children;
   }
 
-  if (route.loadChildren) {
-    return route._loadedConfig!.routes;
+  if (route.loadChildren && route._loadedConfig) {
+    return route._loadedConfig.routes;
   }
 
   return [];
