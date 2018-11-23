@@ -4,8 +4,7 @@
       "uncompressed": {
         "runtime": 3881,
         "main": 499953,
-        "polyfills": 53926,
-        "prettify": 14917
+        "polyfills": 53926
       }
     }
   }
