@@ -6,7 +6,7 @@
 var SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 
 // NOTE: This needs to be kept in sync with `ngsw-config.json`.
-importScripts('/assets/js/lunr.min.js');
+importScripts('/generated/lunr.min.js');
 
 var index;
 var pages /* : SearchInfo */ = {};
