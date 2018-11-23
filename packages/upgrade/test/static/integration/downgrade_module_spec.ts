@@ -363,7 +363,7 @@ withEachNg1Version(() => {
                        'wrapper',
                        downgradeComponent({component: WrapperComponent, propagateDigest}));
 
-           // Important: `ng-if` makes `<zonetest>` render asynchronously.
+           // Important: `ng-if` makes `<test>` render asynchronously.
            const element = html('<wrapper><test ng-if="showNg2"></test></wrapper>');
            const $injector = angular.bootstrap(element, [ng1Module.name]);
            const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
@@ -388,7 +388,7 @@ withEachNg1Version(() => {
            @Component(
                {selector: 'ng2', template: '{{ count }}<button (click)="increment()"></button>'})
            class Ng2Component {
-             count = 0;
+             private count = 0;
              increment() { ++this.count; }
            }
 
@@ -462,7 +462,7 @@ withEachNg1Version(() => {
                        'wrapper',
                        downgradeComponent({component: WrapperComponent, propagateDigest}));
 
-           // Important: `ng-if` makes `<zonetest>` render asynchronously.
+           // Important: `ng-if` makes `<test>` render asynchronously.
            const element = html('<wrapper><test ng-if="showNg2"></test></wrapper>');
            const $injector = angular.bootstrap(element, [ng1Module.name]);
            const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
