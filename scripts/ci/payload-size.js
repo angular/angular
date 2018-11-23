@@ -21,7 +21,14 @@ for (const compressionType in limitSizes) {
       const expectedSize = limitPerFile[filename];
       const actualSize = currentSizes[`${compressionType}/${filename}`];
 
-      if (Math.abs(actualSize - expectedSize) > expectedSize / 100) {
+      if (actualSize === undefined) {
+        failed = true;
+        // An expected compression type/file combination is missing. Maybe the file was renamed or
+        // removed. Report it as an error, so the user updates the corresponding limit file.
+        console.log(
+            `Commit ${commit} ${compressionType} ${filename} meassurement is missing. ` +
+            'Maybe the file was renamed or removed.');
+      } else if (Math.abs(actualSize - expectedSize) > expectedSize / 100) {
         failed = true;
         // We must also catch when the size is significantly lower than the payload limit, so
         // we are forced to update the expected payload number when the payload size reduces.
