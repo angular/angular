@@ -47,10 +47,8 @@ export interface KeyValue<K, V> {
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
-  // TODO(issue/24571): remove '!'.
   private differ !: KeyValueDiffer<any, any>;
-  // TODO(issue/24571): remove '!'.
-  private keyValues !: Array<KeyValue<any, any>>;
+  private keyValues: Array<KeyValue<any, any>> = [];
 
   transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
   transform<V>(
