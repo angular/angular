@@ -1055,7 +1055,7 @@ The default route should redirect to the `HeroListComponent` _only_ when the _en
 Remember to restore the redirect to `pathMatch = 'full'`.
 
 Learn more in Victor Savkin's
-[post on redirects](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+[post on redirects](http://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 
 
 </div>
