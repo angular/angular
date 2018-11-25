@@ -19,9 +19,9 @@ import {translateStatement, translateType} from '../../../ngtsc/translator';
 import {NgccImportManager} from './ngcc_import_manager';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
-import {BundleInfo} from '../packages/bundle';
 import {IMPORT_PREFIX} from '../constants';
 import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 interface SourceMapInfo {
   source: string;
@@ -56,28 +56,33 @@ interface DtsClassInfo {
  */
 export abstract class Renderer {
   constructor(
-      protected host: NgccReflectionHost, protected bundle: BundleInfo,
-      protected sourcePath: string, protected targetPath: string, protected transformDts: boolean) {
-  }
+      protected host: NgccReflectionHost, protected isCore: boolean,
+      protected bundle: EntryPointBundle, protected sourcePath: string,
+      protected targetPath: string) {}
 
-  renderProgram(
-      program: ts.Program, decorationAnalyses: DecorationAnalyses,
-      switchMarkerAnalyses: SwitchMarkerAnalyses): FileInfo[] {
+  renderProgram(decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses):
+      FileInfo[] {
     const renderedFiles: FileInfo[] = [];
 
     // Transform the source files.
-    program.getSourceFiles().map(sourceFile => {
+    this.bundle.src.program.getSourceFiles().map(sourceFile => {
       const compiledFile = decorationAnalyses.get(sourceFile);
       const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
 
-      if (compiledFile || switchMarkerAnalysis) {
+      if (compiledFile || switchMarkerAnalysis || sourceFile === this.bundle.src.file) {
         renderedFiles.push(...this.renderFile(sourceFile, compiledFile, switchMarkerAnalysis));
       }
     });
 
-    if (this.transformDts) {
-      // Transform the .d.ts files
+    // Transform the .d.ts files
+    if (this.bundle.dts) {
       const dtsFiles = this.getTypingsFilesToRender(decorationAnalyses);
+
+      // If the dts entry-point is not already there (it did not have compiled classes)
+      // then add it now, to ensure it gets its extra exports rendered.
+      if (!dtsFiles.has(this.bundle.dts.file)) {
+        dtsFiles.set(this.bundle.dts.file, []);
+      }
       dtsFiles.forEach((classes, file) => renderedFiles.push(...this.renderDtsFile(file, classes)));
     }
 
@@ -101,8 +106,7 @@ export abstract class Renderer {
     }
 
     if (compiledFile) {
-      const importManager =
-          new NgccImportManager(this.bundle.isFlat, this.bundle.isCore, IMPORT_PREFIX);
+      const importManager = new NgccImportManager(this.bundle.isFlat, this.isCore, IMPORT_PREFIX);
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
 
       compiledFile.compiledClasses.forEach(clazz => {
@@ -118,9 +122,9 @@ export abstract class Renderer {
 
       this.addImports(
           outputText, importManager.getAllImports(
-                          compiledFile.sourceFile.fileName, this.bundle.rewriteCoreImportsTo));
+                          compiledFile.sourceFile.fileName, this.bundle.src.r3SymbolsFile));
 
-      // TODO: remove contructor param metadata and property decorators (we need info from the
+      // TODO: remove constructor param metadata and property decorators (we need info from the
       // handlers to do this)
       this.removeDecorators(outputText, decoratorsToRemove);
     }
@@ -131,7 +135,7 @@ export abstract class Renderer {
   renderDtsFile(dtsFile: ts.SourceFile, dtsClasses: DtsClassInfo[]): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
-    const importManager = new NgccImportManager(false, this.bundle.isCore, IMPORT_PREFIX);
+    const importManager = new NgccImportManager(false, this.isCore, IMPORT_PREFIX);
 
     dtsClasses.forEach(dtsClass => {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
@@ -143,8 +147,7 @@ export abstract class Renderer {
     });
 
     this.addImports(
-        outputText,
-        importManager.getAllImports(dtsFile.fileName, this.bundle.rewriteCoreDtsImportsTo));
+        outputText, importManager.getAllImports(dtsFile.fileName, this.bundle.dts !.r3SymbolsFile));
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
   }
@@ -335,6 +338,10 @@ export function renderDefinitions(
                        .join('\n'))
           .join('\n');
   return definitions;
+}
+
+export function stripExtension(filePath: string): string {
+  return filePath.replace(/\.(js|d\.ts$)/, '');
 }
 
 /**

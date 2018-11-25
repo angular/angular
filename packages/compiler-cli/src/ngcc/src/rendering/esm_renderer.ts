@@ -9,14 +9,14 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {CompiledClass} from '../analysis/decoration_analyzer';
-import {BundleInfo} from '../packages/bundle';
-import {Renderer} from './renderer';
+import {Renderer, stripExtension} from './renderer';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 export class EsmRenderer extends Renderer {
   constructor(
-      host: NgccReflectionHost, bundle: BundleInfo, sourcePath: string, targetPath: string,
-      transformDts: boolean) {
-    super(host, bundle, sourcePath, targetPath, transformDts);
+      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle, sourcePath: string,
+      targetPath: string) {
+    super(host, isCore, bundle, sourcePath, targetPath);
   }
 
   /**

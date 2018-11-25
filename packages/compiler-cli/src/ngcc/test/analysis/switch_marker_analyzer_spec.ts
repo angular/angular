@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
-import {makeProgram} from '../helpers/utils';
+import {makeTestProgram} from '../helpers/utils';
 
 const TEST_PROGRAM = [
   {
@@ -46,7 +46,7 @@ const TEST_PROGRAM = [
 describe('SwitchMarkerAnalyzer', () => {
   describe('analyzeProgram()', () => {
     it('should check for switchable markers in all the files of the program', () => {
-      const program = makeProgram(...TEST_PROGRAM);
+      const program = makeTestProgram(...TEST_PROGRAM);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const analyzer = new SwitchMarkerAnalyzer(host);
       const analysis = analyzer.analyzeProgram(program);

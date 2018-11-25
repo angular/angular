@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, resolve} from 'canonical-path';
-import {existsSync, lstatSync, readdirSync, writeFileSync} from 'fs';
+import {dirname} from 'canonical-path';
+import {existsSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
-import * as ts from 'typescript';
 
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
@@ -21,8 +20,8 @@ import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, writeMarkerFile} from './build_marker';
-import {BundleInfo, createBundleInfo} from './bundle';
-import {EntryPoint, EntryPointFormat} from './entry_point';
+import {EntryPoint} from './entry_point';
+import {EntryPointBundle} from './entry_point_bundle';
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -32,9 +31,11 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
  * parsed to identify the decorated exported classes that need to be analyzed and compiled by one or
  * more `DecoratorHandler` objects.
  *
- * Each entry point to a package is identified by a `SourceFile` that can be parsed and analyzed to
+ * Each entry point to a package is identified by a `package.json` which contains properties that
+ * indicate what formatted bundles are accessible via this end-point.
+ *
+ * Each bundle is identified by a root `SourceFile` that can be parsed and analyzed to
  * identify classes that need to be transformed; and then finally rendered and written to disk.
- * The actual file which needs to be transformed depends upon the package format.
  *
  * Along with the source files, the corresponding source maps (either inline or external) and
  * `.d.ts` files are transformed accordingly.
@@ -46,126 +47,71 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
 export class Transformer {
   constructor(private sourcePath: string, private targetPath: string) {}
 
-  transform(entryPoint: EntryPoint, format: EntryPointFormat, transformDts: boolean): void {
-    if (checkMarkerFile(entryPoint, format)) {
-      console.warn(`Skipping ${entryPoint.name} : ${format} (already built).`);
+  /**
+   * Transform the source (and typings) files of a bundle.
+   * @param bundle the bundle to transform.
+   */
+  transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
+    if (checkMarkerFile(entryPoint, bundle.format)) {
+      console.warn(`Skipping ${entryPoint.name} : ${bundle.format} (already built).`);
       return;
     }
 
-    const entryPointFilePath = entryPoint[format];
-    if (!entryPointFilePath) {
-      console.warn(
-          `Skipping ${entryPoint.name} : ${format} (no entry point file for this format).`);
-      return;
-    }
+    console.warn(`Compiling ${entryPoint.name} - ${bundle.format}`);
 
-    console.warn(`Compiling ${entryPoint.name} - ${format}`);
-
-    const options: ts.CompilerOptions = {
-      allowJs: true,
-      maxNodeModuleJsDepth: Infinity,
-      rootDir: entryPoint.path,
-    };
-
-    // Create the TS program and necessary helpers.
-    // TODO : create a custom compiler host that reads from .bak files if available.
-    const host = ts.createCompilerHost(options);
-    const rootDirs = this.getRootDirs(host, options);
-    const isCore = entryPoint.name === '@angular/core';
-    const r3SymbolsPath =
-        isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath), 'r3_symbols.js') : null;
-    const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
-    const packageProgram = ts.createProgram(rootPaths, options, host);
-    const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
-
-    // Create the program for processing DTS files if enabled for this format.
-    const dtsFilePath = entryPoint.typings;
-    let dtsProgram: ts.Program|null = null;
-    let r3SymbolsDtsFile: ts.SourceFile|null = null;
-    if (transformDts) {
-      console.time(`${entryPoint.name} (dtsMapper creation)`);
-      const r3SymbolsDtsPath =
-          isCore ? this.findR3SymbolsPath(dirname(dtsFilePath), 'r3_symbols.d.ts') : null;
-      const rootDtsPaths = r3SymbolsDtsPath ? [dtsFilePath, r3SymbolsDtsPath] : [dtsFilePath];
-
-      dtsProgram = ts.createProgram(rootDtsPaths, options, host);
-      r3SymbolsDtsFile = r3SymbolsDtsPath && dtsProgram.getSourceFile(r3SymbolsDtsPath) || null;
-      console.timeEnd(`${entryPoint.name} (dtsMapper creation)`);
-    }
-
-    const bundle = createBundleInfo(isCore, r3SymbolsFile, r3SymbolsDtsFile);
-    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsFilePath, dtsProgram);
+    const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
     const {decorationAnalyses, switchMarkerAnalyses} =
-        this.analyzeProgram(packageProgram, reflectionHost, rootDirs, isCore);
+        this.analyzeProgram(reflectionHost, isCore, bundle);
 
-    console.time(`${entryPoint.name} (rendering)`);
     // Transform the source files and source maps.
-    const renderer = this.getRenderer(format, packageProgram, reflectionHost, bundle, transformDts);
-    const renderedFiles =
-        renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
-    console.timeEnd(`${entryPoint.name} (rendering)`);
+    const renderer = this.getRenderer(reflectionHost, isCore, bundle);
+    const renderedFiles = renderer.renderProgram(decorationAnalyses, switchMarkerAnalyses);
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
 
     // Write the built-with-ngcc marker
-    writeMarkerFile(entryPoint, format);
+    writeMarkerFile(entryPoint, bundle.format);
   }
 
-  getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions) {
-    if (options.rootDirs !== undefined) {
-      return options.rootDirs;
-    } else if (options.rootDir !== undefined) {
-      return [options.rootDir];
-    } else {
-      return [host.getCurrentDirectory()];
-    }
-  }
-
-  getHost(
-      isCore: boolean, format: string, program: ts.Program, dtsFilePath: string,
-      dtsProgram: ts.Program|null): NgccReflectionHost {
-    switch (format) {
+  getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
+    const typeChecker = bundle.src.program.getTypeChecker();
+    switch (bundle.format) {
       case 'esm2015':
       case 'fesm2015':
-        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsFilePath, dtsProgram);
+        return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(isCore, program.getTypeChecker());
+        return new Esm5ReflectionHost(isCore, typeChecker);
       default:
-        throw new Error(`Relection host for "${format}" not yet implemented.`);
+        throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  getRenderer(
-      format: string, program: ts.Program, host: NgccReflectionHost, bundle: BundleInfo,
-      transformDts: boolean): Renderer {
-    switch (format) {
+  getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
+    switch (bundle.format) {
       case 'esm2015':
       case 'fesm2015':
-        return new EsmRenderer(host, bundle, this.sourcePath, this.targetPath, transformDts);
+        return new EsmRenderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       case 'esm5':
       case 'fesm5':
-        return new Esm5Renderer(host, bundle, this.sourcePath, this.targetPath, transformDts);
+        return new Esm5Renderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       default:
-        throw new Error(`Renderer for "${format}" not yet implemented.`);
+        throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  analyzeProgram(
-      program: ts.Program, reflectionHost: NgccReflectionHost, rootDirs: string[],
-      isCore: boolean) {
-    const typeChecker = bundle.program.getTypeChecker();
+  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
+    const typeChecker = bundle.src.program.getTypeChecker();
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
-    const decorationAnalyzer =
-        new DecorationAnalyzer(typeChecker, reflectionHost, referencesRegistry, rootDirs, isCore);
+    const decorationAnalyzer = new DecorationAnalyzer(
+        typeChecker, reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
     const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
-    return {
-      decorationAnalyses: decorationAnalyzer.analyzeProgram(program),
-      switchMarkerAnalyses: switchMarkerAnalyzer.analyzeProgram(program),
-    };
+    const decorationAnalyses = decorationAnalyzer.analyzeProgram(bundle.src.program);
+    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
+    return {decorationAnalyses, switchMarkerAnalyses};
   }
 
   writeFile(file: FileInfo): void {
@@ -175,33 +121,5 @@ export class Transformer {
       mv(file.path, backPath);
     }
     writeFileSync(file.path, file.contents, 'utf8');
-  }
-
-  findR3SymbolsPath(directory: string, fileName: string): string|null {
-    const r3SymbolsFilePath = resolve(directory, fileName);
-    if (existsSync(r3SymbolsFilePath)) {
-      return r3SymbolsFilePath;
-    }
-
-    const subDirectories =
-        readdirSync(directory)
-            // Not interested in hidden files
-            .filter(p => !p.startsWith('.'))
-            // Ignore node_modules
-            .filter(p => p !== 'node_modules')
-            // Only interested in directories (and only those that are not symlinks)
-            .filter(p => {
-              const stat = lstatSync(resolve(directory, p));
-              return stat.isDirectory() && !stat.isSymbolicLink();
-            });
-
-    for (const subDirectory of subDirectories) {
-      const r3SymbolsFilePath = this.findR3SymbolsPath(resolve(directory, subDirectory), fileName);
-      if (r3SymbolsFilePath) {
-        return r3SymbolsFilePath;
-      }
-    }
-
-    return null;
   }
 }
