@@ -7,7 +7,13 @@ import { Observable } from 'rxjs';
 const locations = new Observable((observer) => {
   // Get the next and error callbacks. These will be passed in when
   // the consumer subscribes.
-  const {next, error} = observer;
+  let {next, error} = observer;
+  
+  // Guarantee the direction of this to ensure the smooth execution of the code
+  // TypeError: null is not an object (evaluating 'this.isStopped')
+  next.bind(observer);
+  error.bind(observer);
+  
   let watchId;
 
   // Simple geolocation API check provides values to publish
