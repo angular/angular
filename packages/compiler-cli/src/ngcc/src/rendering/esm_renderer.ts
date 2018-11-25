@@ -14,8 +14,8 @@ import {Renderer} from './renderer';
 
 export class EsmRenderer extends Renderer {
   constructor(
-      protected host: NgccReflectionHost, protected bundle: BundleInfo,
-      protected sourcePath: string, protected targetPath: string, transformDts: boolean) {
+      host: NgccReflectionHost, bundle: BundleInfo, sourcePath: string, targetPath: string,
+      transformDts: boolean) {
     super(host, bundle, sourcePath, targetPath, transformDts);
   }
 
