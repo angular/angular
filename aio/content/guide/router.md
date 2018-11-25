@@ -1336,45 +1336,73 @@ Replace the contents of each component with the sample HTML below.
 
 </code-tabs>
 
+<!--
 ### Register Router and Routes
+-->
+### 라우터와 라우팅 규칙 등록하기
 
+<!--
 In order to use the Router, you must first register the `RouterModule` from the `@angular/router` package. Define an array of routes, `appRoutes`, and pass them to the `RouterModule.forRoot()` method. It returns a module, containing the configured `Router` service provider, plus other providers that the routing library requires. Once the application is bootstrapped, the `Router` performs the initial navigation based on the current browser URL.
+-->
+라우터를 사용하려면 먼저 `@angular/router` 패키지에 있는 `RouterModule`을 등록해야 합니다. `RouterModule.forRoot()` 메소드에 라우팅 규칙을 정의한 배열을 전달하면 이 라우팅 규칙이 적용된 `Router` 서비스 프로바이더와 라우팅에 필요한 프로바이더가 모두 포함된 모듈이 반환됩니다. 그리고 애플리케이션이 부트스트랩되고 나면 `Router`가 현재 브라우저 URL에 해당하는 주소로 초기 네비게이션을 실행합니다.
 
 <div class="alert is-important">
 
+  <!--
   **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forroot) guide.
+  -->
+  **참고:** `RouterModule.forRoot()` 메소드는 애플리케이션 전역에 사용하는 프로바이더를 등록하는 패턴 중 하나입니다. 애플리케이션 전역 프로바이더에 대해서 더 알아보려면 [싱글턴 서비스](guide/singleton-services#forroot) 문서를 참고하세요.
 
 </div>
 
+<!--
 <code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (first-config)" region="first-config">
+-->
+<code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (첫번째 설정)" region="first-config">
 
 </code-example>
 
 <div class="alert is-helpful">
 
+<!--
 Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations. As the application grows, you'll want to [refactor the routing configuration](#refactor-the-routing-configuration-into-a-routing-module) into a separate file and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose of routing in feature modules.
+-->
+이렇게 설정된 `RouterModule`을 `AppModule`에 로드하면 간단한 네비게이션 설정은 끝납니다. 애플리케이션이 점점 복잡해질수록 라우팅 규칙은 **[라우팅 모듈 (Routing module)](#routing-module)**로 [리팩토링](#refactor-the-routing-configuration-into-a-routing-module)해야 할 수도 있습니다. 라우팅 모듈은 기능 모듈에서 라우팅을 담당하는 코드를 따로 모아 만든 서비스 모듈을 의미합니다.
 
 </div>
 
+<!--
 Registering the `RouterModule.forRoot()` in the `AppModule` imports makes the `Router` service available everywhere in the application.
+-->
+`Appmodule`에 `RouterModule.forRoot()`를 등록하면 애플리케이션 전역에서 `Router` 서비스를 사용할 수 있습니다.
 
 {@a shell}
 
-
+<!--
 ### Add the Router Outlet
+-->
+### 라우팅 영역 추가하기
 
+<!--
 The root `AppComponent` is the application shell. It has a title, a navigation bar with two links, and a router outlet where the router swaps components on and off the page. Here's what you get:
-
+-->
+애플리케이션 가장 밖에 있는 껍데기는 `AppComponent` 입니다. 이 컴포넌트에는 애플리케이션 이름과 네비게이션 바, 라우팅 영역이 존재하며, 브라우저 주소가 변경되면서 표시되는 컴포넌트는 이 라우팅 영역에 표시됩니다. 다음 그림에서 빨간 사각형으로 표시된 영역이 라우팅 영역입니다:
 
 <figure>
   <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
 </figure>
 
+<!--
 The router outlet serves as a placeholder when the routed components will be rendered below it.
+-->
+라우팅 영역은 라우팅 대상이 되는 컴포넌트가 표시될 위치를 지정하는 용도로 사용합니다. 라우팅 대상 컴포넌트는 라우팅 영역 바로 아래 추가됩니다.
 
 {@a shell-template}
 
+<!--
 The corresponding component template looks like this:
+-->
+지금까지 설명한 대로 템플릿을 구성하면 다음과 같이 구성할 수 있습니다:
 
 <code-example path="router/src/app/app.component.1.html" linenums="false" header="src/app/app.component.html">
 
@@ -1461,50 +1489,84 @@ The browser address bar continues to point to the invalid URL.
 
 {@a redirect}
 
+<!--
 ### Set up redirects
+-->
+### 리다이렉트 설정하기
 
+<!--
 When the application launches, the initial URL in the browser bar is something like:
+-->
+애플리케이션이 실행되면 브라우저의 주소 표시줄은 다음과 같이 시작합니다:
 
 <code-example>
   localhost:4200
 </code-example>
 
+<!--
 That doesn't match any of the concrete configured routes which means
 the router falls through to the wildcard route and displays the `PageNotFoundComponent`.
+-->
+하지만 이 주소는 지금까지 설정된 라우팅 규칙 중 아무 것에도 해당되지 않기 때문에 마지막 라우팅 규칙으로 넘어가며 화면에 `PageNotFoundComponent`가 표시됩니다.
 
+<!--
 The application needs a **default route** to a valid page.
 The default page for this app is the list of heroes.
 The app should navigate there as if the user clicked the "Heroes" link or pasted `localhost:4200/heroes` into the address bar.
+-->
+하지만 이 동작 대신 애플리케이션에 **기본 페이지로 가는** 라우팅 규칙을 추가하려고 합니다.
+그리고 애플리케이션의 기본 페이지는 히어로의 목록을 표시하는 화면으로 하려고 합니다.
+기본 라우팅 규칙이 추가되면 사용자가 화면에서 "Heroes" 링크를 클릭하거나 주소표시줄에 `localhost:4200/heroes`를 입력한 것과 같은 페이지로 이동할 것입니다.
 
+<!--
 The preferred solution is to add a `redirect` route that translates the initial relative URL (`''`)
 to the desired default path (`/heroes`). The browser address bar shows `.../heroes` as if you'd navigated there directly.
+-->
+가장 좋은 방법은 애플리케이션의 최상위 URL(`''`)로 접속할 때 기본 주소(`/heroes`)로 이동하도록 `redirect` 라우팅 규칙을 추가하는 것입니다. 이 라우팅 규칙을 적용하면 사용자가 직접 `.../heroes`로 이동한 것과 같은 효과를 냅니다.
 
+<!--
 Add the default route somewhere _above_ the wildcard route.
 It's just above the wildcard route in the following excerpt showing the complete `appRoutes` for this milestone.
-
+-->
+기본 라우팅 규칙은 와일드카드 라우팅 규칙보다 _위쪽에_ 추가해야 합니다.
+그래서 아래 예제에서는 와일드카드 라우팅 규칙 바로 위에 기본 라우팅 규칙을 추가했습니다.
 
 <code-example path="router/src/app/app-routing.module.1.ts" linenums="false" header="src/app/app-routing.module.ts (appRoutes)" region="appRoutes">
 </code-example>
 
-
+<!--
 A redirect route requires a `pathMatch` property to tell the router how to match a URL to the path of a route.
 The router throws an error if you don't.
 In this app, the router should select the route to the `HeroListComponent` only when the *entire URL* matches `''`,
 so set the `pathMatch` value to `'full'`.
-
+-->
+리다이렉트 라우팅 규칙을 사용하려면 브라우저의 URL이 라우팅 규칙과 매칭되는 방법을 지정하기 위해 `pathMatch` 프로퍼티를 함께 사용해야 합니다.
+이 프로퍼티가 지정되지 않는다면 에러가 발생할 것입니다.
+이 예제에서는 *전체 URL*이 정확하게 `''`일 때만 `HeroListComponent`로 라우팅하기 위해 `pathMatch`의 값을 `'full'`로 지정했습니다.
 
 <div class="alert is-helpful">
 
-
+<!--
 Technically, `pathMatch = 'full'` results in a route hit when the *remaining*, unmatched segments of the URL match `''`.
 In this example, the redirect is in a top level route so the *remaining* URL and the *entire* URL are the same thing.
+-->
+좀 더 자세하게 설명하면, `pathMatch = 'full'`를 지정하면 해당 라우팅 계층의 URL 세그먼트가 `''`에 해당하는 라우팅 규칙이 추가되는 것입니다.
+그리고 이 예제에서 리다이렉트 라우팅 규칙이 적용된 것은 최상위 계층이기 때문에 *전체* URL과 해당 계층의 URL 세그먼트는 `''`로 같습니다.
 
+<!--
 The other possible `pathMatch` value is `'prefix'` which tells the router
 to match the redirect route when the *remaining* URL ***begins*** with the redirect route's _prefix_ path.
+-->
+`pathMatch`에는 다른 값을 지정할 수도 있습니다. 해당 라우팅 계층에서 ***특정 문자열로 시작하는*** 주소일 때 리다이렉트하도록 `'prefix'` 옵션을 설정할 수도 있습니다.
 
+<!--
 Don't do that here.
 If the `pathMatch` value were `'prefix'`, _every_ URL would match `''`.
+-->
+이 예제에서는 이 방법을 사용하지 않았습니다.
+이 예제에서 `pathMatch`에 `'prefix'`를 사용하면 _모든_ URL이 `''`와 매칭됩니다.
 
+<!--
 Try setting it to `'prefix'` then click the `Go to sidekicks` button.
 Remember that's a bad URL and you should see the "Page not found" page.
 Instead, you're still on the "Heroes" page.
@@ -1512,22 +1574,40 @@ Enter a bad URL in the browser address bar.
 You're instantly re-routed to `/heroes`.
 _Every_ URL, good or bad, that falls through to _this_ route definition
 will be a match.
+-->
+`Go to sidekicks` 버튼을 눌렀을 때 `'prefix'`를 사용하도록 수정해 보세요.
+지금까지 설정한 라우팅 규칙에서 어떤 주소에 해당하는 라우팅 규칙이 없으면  "Page not found" 페이지가 표시됩니다.
+하지만 `'prefix'`를 사용한 코드에서 해당 버튼을 클릭해도 여전히 "Heroes" 페이지가 표시됩니다.
+그리고 브라우저 주소표시줄에 유효하지 않은 URL을 입력해보세요.
+이 경우에도 `/heroes` 페이지로 이동합니다.
+유효하거나 유효하지 않은 것과 관계없이 _모든_ URL은 이 라우팅 규칙에 매칭됩니다.
 
+<!--
 The default route should redirect to the `HeroListComponent` _only_ when the _entire_ url is  `''`.
 Remember to restore the redirect to `pathMatch = 'full'`.
 
 Learn more in Victor Savkin's
 [post on redirects](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+-->
+그래서 기본 라우팅 규칙은 _반드시_ _전체_ URL이 `''`일 때만 적용되어야 합니다.
+코드를 `pathMatch = 'full'`로 다시 수정하는 것을 잊지 마세요.
 
+리다이렉트에 대한 내용은 Victor Savkin이 작성한 [블로그 글](http://victorsavkin.com/post/146722301646/angular-router-empty-paths-componentless-routes)에서 자세하게 확인할 수 있습니다.
 
 </div>
 
-
+<!--
 ### Basics wrap up
+-->
+### 기본내용 정리
 
+<!--
 You've got a very basic navigating app, one that can switch between two views
 when the user clicks a link.
+-->
+지금까지 애플리케이션에 네비게이션을 적용하는 방법 중 기본 내용에 대해 알아봤습니다. 이제 사용자가 링크를 클릭하면 서로 다른 뷰를 전환할 수 있습니다.
 
+<!--
 You've learned how to do the following:
 
 * Load the router library.
@@ -1537,8 +1617,21 @@ You've learned how to do the following:
 * Set the router to compose HTML5 browser URLs.
 * handle invalid routes with a `wildcard` route.
 * navigate to the default route when the app launches with an empty path.
+-->
+지금까지 이런 내용에 대해 알아봤습니다:
 
+* 라우터 라이브러리를 로드하는 방법
+* 앱 컴포넌트 템플릿에 앵커 태그를 추가하고 `routerLink`와 `routerLinkActive` 디렉티브를 적용하는 방법
+* 라우팅 대상 컴포넌트를 화면에 표시하기 위해 `router-outlet`을 추가하는 방법
+* `RouterModule.forRoot()` 메소드로 라우팅 모듈을 등록하는 방법
+* HTML5 브라우저 URL 형식으로 라우터를 정의하는 방법
+* `wildcard` 라우팅 규칙으로 유효하지 않은 주소를 처리하는 방법
+* 애플리케이션이 처음 실행되고 주소표시줄이 비어있을 때 기본 페이지로 이동하는 라우팅 규칙을 정의하는 방법
+
+<!--
 The starter app's structure looks like this:
+-->
+이 상태에서 애플리케이션 구조는 다음과 같습니다:
 
 <div class='filetree'>
 
@@ -1687,8 +1780,10 @@ The starter app's structure looks like this:
 </div>
 
 
-
+<!--
 Here are the files discussed in this milestone.
+-->
+그리고 이 섹션에서 다뤘던 파일들의 내용은 이렇습니다.
 
 
 <code-tabs>
