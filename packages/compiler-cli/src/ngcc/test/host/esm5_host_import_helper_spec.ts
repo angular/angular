@@ -136,7 +136,6 @@ describe('Esm5ReflectionHost [import helper style]', () => {
         });
 
         it('should use `getImportOfIdentifier()` to retrieve import info', () => {
-          const mockImportInfo = {} as Import;
           const spy = spyOn(Esm5ReflectionHost.prototype, 'getImportOfIdentifier')
                           .and.callFake(
                               (identifier: ts.Identifier) => identifier.getText() === 'Directive' ?
