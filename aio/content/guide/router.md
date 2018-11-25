@@ -238,20 +238,33 @@ If you need to see what events are happening during the navigation lifecycle, th
 -->
 ### 라우팅 영역 (Router outlet)
 
+<!--
 The `RouterOutlet` is a directive from the router library that is used like a component. 
 It acts as a placeholder that marks the spot in the template where the router should 
 display the components for that outlet.
+-->
+`RouterOutlet`은 라우터가 제공하는 디렉티브이며, 이 디렉티브는 컴포넌트처럼 사용합니다.
+이 디렉티브는 라우터에 의해 컴포넌트가 화면에 표시될 때 이 컴포넌트가 표시될 위치를 지정하는 용도로 사용합니다.
 
-
+<!--
 <code-example language="html">
   &lt;router-outlet>&lt;/router-outlet>
-  &lt;!-- Routed components go here -->
+  &lt;!-- Routed components go here --&gt;
+
+</code-example>
+-->
+<code-example language="html">
+  &lt;router-outlet>&lt;/router-outlet>
+  &lt;!-- 라우팅 대상이 된 컴포넌트는 여기에 추가됩니다. --&gt;
 
 </code-example>
 
+<!--
 Given the configuration above, when the browser URL for this application becomes `/heroes`,
 the router matches that URL to the route path `/heroes` and displays the `HeroListComponent`
 as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
+-->
+이제 브라우저의 URL이 `/heroes`가 되면 이 주소에 매칭되는 컴포넌트인 `HeroListComponent`가 화면에 표시되는데, 이 컴포넌트는 호스트 컴포넌트 템플릿의 `RouterOutlet` 엘리먼트 바로 뒤에 표시됩니다.
 
 {@a basics-router-links}
 {@a router-link}
@@ -299,30 +312,41 @@ The router resolves that array into a complete URL.
 
 {@a router-link-active}
 
-
+<!--
 ### Active router links
+-->
+### 활성화된 라우터 링크 (Active router links)
 
+<!--
 The `RouterLinkActive` directive toggles css classes for active `RouterLink` bindings based on the current `RouterState`.
+-->
+`RouterLinkActive` 디렉티브는 현재 `RouterState`에 해당하는 `RouterLink`에 css 클래스를 지정합니다.
 
 <!--
 On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 -->
-On each anchor tag, you see a [property binding](guide/template-syntax#프로퍼티-바인딩) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+각 앵커 태그에는 `routerLinkActive="..."`와 같이 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)된 `RouterLinkActive` 디렉티브가 존재합니다.
 
+<!--
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
 that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 
 directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component 
 property that returns such a string. 
+-->
+이 템플릿 표현식의 등호(=) 오른쪽에는 공백으로 구분하는 CSS 클래스를 지정하는데, 이 링크가 활성화되면 해당 클래스가 지정되고 링크가 비활성화되면 해당 클래스가 제거됩니다.
+그래서 `RouterLinkActive` 디렉티브에는 `[routerLinkActive]="'active fluffy'"`와 같은 문자열을 지정하거나 컴포넌트에서 문자열을 반환하는 프로퍼티를 지정할 수 있습니다.
 
+<!--
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
-
+-->
+라우팅 규칙은 트리 구조로 구성되기 떄문에 부모 컴포넌트의 라우터 링크와 자식 컴포넌트의 라우터 링크가 동시에 활성화될 수도 있습니다. 이 동작을 변경하려면 `[routerLinkActiveOptions]`에 `{ exact: true }`를 바인딩하면 됩니다. 그러면 현재 URL과 정확히 매칭되는 `RouterLink`만 활성화 됩니다.
 
 {@a basics-router-state}
 
 <!--
 ### Router state
 -->
-### 라우터 스테이트
+### 라우터 스테이트 (Router state)
 
 <!--
 After the end of each successful navigation lifecycle, the router builds a tree of `ActivatedRoute` objects
@@ -578,8 +602,11 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
       [lazy loads](#asynchronous-routing) a route configuration.
+      -->
+      라우터가 라우팅 규칙을 [지연 로딩](#asynchronous-routing)하기 전에 발생하는 [이벤트](api/router/RouteConfigLoadStart)입니다.
 
     </td>
   </tr>
@@ -590,7 +617,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
+      -->
+      지연 로딩되는 라우팅 규칙이 모두 로딩된 후에 발생하는 [이벤트](api/router/RouteConfigLoadEnd)입니다.
 
     </td>
   </tr>
@@ -615,7 +645,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/GuardsCheckStart) triggered when the Router begins the Guards phase of routing.
+      -->
+      라우터 가드가 실행되기 전에 발생하는 [이벤트](api/router/GuardsCheckStart)입니다.
 
     </td>
   </tr>
@@ -626,7 +659,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children.
+      -->
+      라우터가 자식 라우팅 규칙을 활성화하기 전에 발생하는 [이벤트](api/router/ChildActivationStart)입니다.
 
     </td>
   </tr>
@@ -637,7 +673,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ActivationStart) triggered when the Router begins activating a route.
+      -->
+      라우터가 라우팅 규칙을 활성화하기 전에 발생하는 [이벤트](api/router/ActivationStart)입니다.
 
     </td>
   </tr>
@@ -648,7 +687,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/GuardsCheckEnd) triggered when the Router finishes the Guards phase of routing successfully.
+      -->
+      라우터 가드가 실행되고 라우팅이 실제로 동작하려고 할 때 발생하는 [이벤트](api/router/GuardsCheckEnd) 입니다.
 
     </td>
   </tr>
@@ -659,7 +701,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ResolveStart) triggered when the Router begins the Resolve phase of routing.
+      -->
+      라우터가 라우팅 규칙을 분석하기 시작할 때 발생하는 [이벤트](api/router/ResolveStart)입니다.
 
     </td>
   </tr>
@@ -670,7 +715,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ResolveEnd) triggered when the Router finishes the Resolve phase of routing successfuly.
+      -->
+      라우터가 라우팅 규칙을 분석하고 난 후에 발생하는 [이벤트](api/router/ResolveEnd)입니다.
 
     </td>
   </tr>
@@ -681,7 +729,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children.
+      -->
+      라우터가 자식 라우팅 규칙을 활성화 한 후에 발생하는 [이벤트](api/router/ChildActivationEnd)입니다.
 
     </td>
   </tr>
@@ -747,13 +798,19 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/Scroll) that represents a scrolling event.
+      -->
+      스크롤 이벤트가 발생했을 때 발생하는 [이벤트](api/router/Scroll)입니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 These events are logged to the console when the `enableTracing` option is enabled also. For an example of filtering router navigation events, visit the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
+-->
+라우팅 규칙을 설정할 때 `enableTracing` 옵션을 활성화하면 이 이벤트들이 발생하는 것을 콘솔로 확인할 수 있습니다. 이 중에서 원하는 네비게이션 이벤트만 확인하려면 [Angular에서 옵저버블 활용하기](guide/observables-in-angular) 문서의 [Router](guide/observables-in-angular#router) 섹션을 참고하세요.
 
 {@a basics-summary}
 
@@ -1198,13 +1255,19 @@ Begin with a simple version of the app that navigates between two empty views.
 
 {@a import}
 
+<!--
 Generate a sample application to follow the walkthrough.
+-->
+다음 명령을 실행해서 새로운 애플리케이션을 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng new angular-router-sample
 </code-example>
 
+<!--
 ### Define Routes
+-->
+### 라우팅 규칙 정의하기
 
 <!--
 A router must be configured with a list of route definitions.
@@ -1242,8 +1305,11 @@ browser's address location and history with the URL for that path.
 -->
 * 애플리케이션에서 `/crisis-center`로 네비게이션하는 코드가 실행되면, 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시하며, 브라우저의 주소 표시줄을 새로운 주소로 변경하고, 히스토리 방문 기록에도 추가합니다.
 
+<!--
 The first configuration defines an array of two routes with simple paths leading to the
 `CrisisListComponent` and `HeroListComponent`. Generate the `CrisisList` and `HeroList` components.
+-->
+이렇게 설정하려면 어떤 주소에 `CrisisListComponent`나 `HeroListComponent`를 연결하는 라우팅 규칙을 정의해야 합니다. 먼저 `CrisisList` 컴포넌트와 `HeroList` 컴포넌트를 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate component crisis-list
@@ -1253,7 +1319,10 @@ The first configuration defines an array of two routes with simple paths leading
   ng generate component hero-list
 </code-example>
 
+<!--
 Replace the contents of each component with the sample HTML below.
+-->
+그리고 각 컴포넌트 템플릿의 내용을 다음과 같이 수정합니다.
 
 <code-tabs>
 
