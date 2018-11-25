@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import {dirname, relative} from 'canonical-path';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
 import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDeclaration} from '../host/ngcc_host';
 import {CompiledClass} from '../analysis/decoration_analyzer';
+import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {Renderer, stripExtension} from './renderer';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
 
@@ -25,6 +27,19 @@ export class EsmRenderer extends Renderer {
   addImports(output: MagicString, imports: {name: string; as: string;}[]): void {
     // The imports get inserted at the very top of the file.
     imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
+  }
+
+  addExports(output: MagicString, entryPointBasePath: string, exports: {
+    identifier: string,
+    from: string
+  }[]): void {
+    exports.forEach(e => {
+      const basePath = stripExtension(e.from);
+      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+      const exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
+      const exportStr = `\nexport {${e.identifier}}${exportFrom};`;
+      output.append(exportStr);
+    });
   }
 
   addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {

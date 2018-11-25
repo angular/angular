@@ -11,6 +11,7 @@ import {mkdir, mv} from 'shelljs';
 
 import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
+import {PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
@@ -62,12 +63,13 @@ export class Transformer {
     const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
-    const {decorationAnalyses, switchMarkerAnalyses} =
+    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses} =
         this.analyzeProgram(reflectionHost, isCore, bundle);
 
     // Transform the source files and source maps.
     const renderer = this.getRenderer(reflectionHost, isCore, bundle);
-    const renderedFiles = renderer.renderProgram(decorationAnalyses, switchMarkerAnalyses);
+    const renderedFiles = renderer.renderProgram(
+        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
@@ -109,9 +111,13 @@ export class Transformer {
     const decorationAnalyzer = new DecorationAnalyzer(
         typeChecker, reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
     const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    const privateDeclarationsAnalyzer =
+        new PrivateDeclarationsAnalyzer(reflectionHost, referencesRegistry);
     const decorationAnalyses = decorationAnalyzer.analyzeProgram(bundle.src.program);
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
-    return {decorationAnalyses, switchMarkerAnalyses};
+    const privateDeclarationsAnalyses =
+        privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
+    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses};
   }
 
   writeFile(file: FileInfo): void {

@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {dirname} from 'canonical-path';
-import * as ts from 'typescript';
 import MagicString from 'magic-string';
-
-import {makeTestEntryPointBundle} from '../helpers/utils';
+import * as ts from 'typescript';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderer} from '../../src/rendering/esm_renderer';
+import {makeTestEntryPointBundle} from '../helpers/utils';
 
 function setup(file: {name: string, contents: string}) {
   const dir = dirname(file.name);
@@ -122,6 +121,24 @@ import * as i1 from '@angular/common';
     });
   });
 
+  describe('addExports', () => {
+    it('should insert the given exports at the end of the source file', () => {
+      const {renderer} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
+        {from: '/some/a.js', identifier: 'ComponentA1'},
+        {from: '/some/a.js', identifier: 'ComponentA2'},
+        {from: '/some/foo/b.js', identifier: 'ComponentB'},
+        {from: PROGRAM.name, identifier: 'TopLevelComponent'},
+      ]);
+      expect(output.toString()).toContain(`
+// Some other content
+export {ComponentA1} from './a';
+export {ComponentA2} from './a';
+export {ComponentB} from './foo/b';
+export {TopLevelComponent};`);
+    });
+  });
 
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
