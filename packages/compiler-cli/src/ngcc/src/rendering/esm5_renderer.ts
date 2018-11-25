@@ -14,8 +14,8 @@ import {EsmRenderer} from './esm_renderer';
 
 export class Esm5Renderer extends EsmRenderer {
   constructor(
-      protected host: NgccReflectionHost, protected bundle: BundleInfo,
-      protected sourcePath: string, protected targetPath: string, transformDts: boolean) {
+      host: NgccReflectionHost, bundle: BundleInfo, sourcePath: string, targetPath: string,
+      transformDts: boolean) {
     super(host, bundle, sourcePath, targetPath, transformDts);
   }
 
