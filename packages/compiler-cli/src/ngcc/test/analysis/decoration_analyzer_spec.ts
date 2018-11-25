@@ -13,7 +13,7 @@ import {DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decorat
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 
-import {makeProgram} from '../helpers/utils';
+import {makeTestProgram} from '../helpers/utils';
 
 const TEST_PROGRAM = {
   name: 'test.js',
@@ -84,7 +84,7 @@ describe('DecorationAnalyzer', () => {
     let result: DecorationAnalyses;
 
     beforeEach(() => {
-      program = makeProgram(TEST_PROGRAM);
+      program = makeTestProgram(TEST_PROGRAM);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const referencesRegistry = new NgccReferencesRegistry(host);
       const analyzer =
@@ -127,7 +127,7 @@ describe('DecorationAnalyzer', () => {
       // is not yet solved.
       it('should analyze an internally imported component, which is not publicly exported from the entry-point',
          () => {
-           const program = makeProgram(...INTERNAL_COMPONENT_PROGRAM);
+           const program = makeTestProgram(...INTERNAL_COMPONENT_PROGRAM);
            const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
            const referencesRegistry = new NgccReferencesRegistry(host);
            const analyzer = new DecorationAnalyzer(
@@ -144,7 +144,7 @@ describe('DecorationAnalyzer', () => {
          });
 
       it('should analyze an internally defined component, which is not exported at all', () => {
-        const program = makeProgram(...INTERNAL_COMPONENT_PROGRAM);
+        const program = makeTestProgram(...INTERNAL_COMPONENT_PROGRAM);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const referencesRegistry = new NgccReferencesRegistry(host);
         const analyzer =
