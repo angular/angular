@@ -5,29 +5,37 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import * as ts from 'typescript';
+import {dirname} from 'canonical-path';
 import MagicString from 'magic-string';
-import {makeProgram, getDeclaration} from '../helpers/utils';
+import * as ts from 'typescript';
+
+import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {createBundleInfo} from '../../src/packages/bundle';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
 
 function setup(file: {name: string, contents: string}) {
-  const program = makeProgram(file);
-  const sourceFile = program.getSourceFile(file.name) !;
-  const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+  const dir = dirname(file.name);
+  const bundle = makeTestEntryPointBundle('esm5', [file]);
+  const typeChecker = bundle.src.program.getTypeChecker();
+  const host = new Esm5ReflectionHost(false, typeChecker);
+  const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
-      new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const bundle = createBundleInfo(false, null, null);
-  const renderer = new Esm5Renderer(host, bundle, '', '', false);
-  return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
+      new DecorationAnalyzer(typeChecker, host, referencesRegistry, [''], false)
+          .analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+  const renderer = new Esm5Renderer(host, false, bundle, dir, dir);
+  return {
+    host,
+    program: bundle.src.program,
+    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses
+  };
 }
 
 const PROGRAM = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 /* A copyright notice */
 import {Directive} from '@angular/core';
@@ -86,7 +94,7 @@ export {A, B, C, NoIife, BadIife};`
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 import * as tslib_1 from "tslib";
 /* A copyright notice */

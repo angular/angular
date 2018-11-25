@@ -7,30 +7,35 @@
  */
 import {dirname} from 'canonical-path';
 import * as ts from 'typescript';
-
 import MagicString from 'magic-string';
-import {makeProgram} from '../helpers/utils';
+
+import {makeTestEntryPointBundle} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
-import {createBundleInfo} from '../../src/packages/bundle';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {EsmRenderer} from '../../src/rendering/esm_renderer';
 
-function setup(file: {name: string, contents: string}, transformDts: boolean = false) {
+function setup(file: {name: string, contents: string}) {
   const dir = dirname(file.name);
-  const program = makeProgram(file);
-  const sourceFile = program.getSourceFile(file.name) !;
-  const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+  const bundle = makeTestEntryPointBundle('esm2015', [file]) !;
+  const typeChecker = bundle.src.program.getTypeChecker();
+  const host = new Esm2015ReflectionHost(false, typeChecker);
+  const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
-      new DecorationAnalyzer(program.getTypeChecker(), host, [''], false).analyzeProgram(program);
-  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(program);
-  const bundle = createBundleInfo(false, null, null);
-  const renderer = new EsmRenderer(host, bundle, dir, dir, false);
-  return {host, program, sourceFile, renderer, decorationAnalyses, switchMarkerAnalyses};
+      new DecorationAnalyzer(typeChecker, host, referencesRegistry, [''], false)
+          .analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
+  const renderer = new EsmRenderer(host, false, bundle, dir, dir);
+  return {
+    host,
+    program: bundle.src.program,
+    sourceFile: bundle.src.file, renderer, decorationAnalyses, switchMarkerAnalyses
+  };
 }
 
 const PROGRAM = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 /* A copyright notice */
 import {Directive} from '@angular/core';
@@ -65,7 +70,7 @@ function compileNgModuleFactory__POST_R3__(injector, options, moduleType) {
 };
 
 const PROGRAM_DECORATE_HELPER = {
-  name: 'some/file.js',
+  name: '/some/file.js',
   contents: `
 import * as tslib_1 from "tslib";
 var D_1;

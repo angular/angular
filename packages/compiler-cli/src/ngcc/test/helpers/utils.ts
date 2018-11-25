@@ -6,12 +6,48 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {makeProgram as _makeProgram} from '../../../ngtsc/testing/in_memory_typescript';
+
+import {makeProgram} from '../../../ngtsc/testing/in_memory_typescript';
+import {BundleProgram} from '../../src/packages/bundle_program';
+import {EntryPointFormat} from '../../src/packages/entry_point';
+import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 export {getDeclaration} from '../../../ngtsc/testing/in_memory_typescript';
 
-export function makeProgram(...files: {name: string, contents: string}[]): ts.Program {
-  return _makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false})
+
+/**
+ *
+ * @param format The format of the bundle.
+ * @param files The source files to include in the bundle.
+ * @param dtsFiles The typings files to include the bundle.
+ */
+export function makeTestEntryPointBundle(
+    format: EntryPointFormat, files: {name: string, contents: string, isRoot?: boolean}[],
+    dtsFiles?: {name: string, contents: string, isRoot?: boolean}[]): EntryPointBundle {
+  const src = makeTestBundleProgram(files);
+  const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
+  const isFlat = src.r3SymbolsFile === null;
+  return {format, rootDirs: ['/'], src, dts, isFlat};
+}
+
+/**
+ * Create a bundle program for testing.
+ * @param files The source files of the bundle program.
+ */
+export function makeTestBundleProgram(files: {name: string, contents: string}[]): BundleProgram {
+  const program = makeTestProgram(...files);
+  const path = files[0].name;
+  const file = program.getSourceFile(path) !;
+  const r3SymbolsInfo = files.find(file => file.name.indexOf('r3_symbols') !== -1) || null;
+  const r3SymbolsPath = r3SymbolsInfo && r3SymbolsInfo.name;
+  const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
+  return {program, path, file, r3SymbolsPath, r3SymbolsFile};
+}
+
+
+export function makeTestProgram(
+    ...files: {name: string, contents: string, isRoot?: boolean | undefined}[]): ts.Program {
+  return makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false})
       .program;
 }
 

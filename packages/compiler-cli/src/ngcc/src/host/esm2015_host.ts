@@ -10,7 +10,8 @@ import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {findAll, getNameText, getOriginalSymbol, isDefined} from '../utils';
+import {BundleProgram} from '../packages/bundle_program';
+import {findAll, getNameText, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
 import {NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
@@ -49,13 +50,9 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
   protected dtsClassMap: Map<string, ts.ClassDeclaration>|null;
-  constructor(
-      protected isCore: boolean, checker: ts.TypeChecker, dtsRootFileName?: string,
-      dtsProgram?: ts.Program|null) {
+  constructor(protected isCore: boolean, checker: ts.TypeChecker, dts?: BundleProgram|null) {
     super(checker);
-    this.dtsClassMap = (dtsRootFileName && dtsProgram) ?
-        this.computeDtsClassMap(dtsRootFileName, dtsProgram) :
-        null;
+    this.dtsClassMap = dts && this.computeDtsClassMap(dts.path, dts.program) || null;
   }
 
   /**
