@@ -848,7 +848,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Get the parmeter type and decorators for a class where the information is stored on
+   * Get the parameter type and decorators for a class where the information is stored on
    * in calls to `__decorate` helpers.
    *
    * Reflect over the helpers to find the decorators and types about each of
@@ -973,7 +973,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Test whether a decorator was imported from `@angular/core`.
    *
    * Is the decorator:
-   * * externally imported from `@angulare/core`?
+   * * externally imported from `@angular/core`?
    * * the current hosted program is actually `@angular/core` and
    *   - relatively internally imported; or
    *   - not imported, from the current file.
