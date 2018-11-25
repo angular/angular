@@ -76,5 +76,26 @@ export class ChildrenOutletContexts {
     return context;
   }
 
-  getContext(childName: string): OutletContext|null { return this.contexts.get(childName) || null; }
+  getContext(childName: string): OutletContext|null 
+  {
+    /*
+      This method will recursively follow the "primary" RouterOutlet looking for an outlet named "childName".
+      It returns the first matching outlet found (ie: the closest to the root).
+      
+      Original behaviour was to only look at the first level (direct content of "this.contexts"). Because of that named router-outlets would
+      only work if they're introduced through the bootstraped component (AppComponent?).
+    */
+
+    const direct = this.contexts.get(childName);
+    if (direct) {
+      return direct;
+    } else {
+      const primary = this.contexts.get('primary');
+      if (primary) {
+        return primary.children.getContext(childName) || null;
+      } else {
+        return null;
+      }
+    }
+  }
 }
