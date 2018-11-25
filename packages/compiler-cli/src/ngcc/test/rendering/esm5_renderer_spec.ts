@@ -8,13 +8,12 @@
 import {dirname} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
-
-import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Esm5Renderer} from '../../src/rendering/esm5_renderer';
+import {makeTestEntryPointBundle, getDeclaration} from '../helpers/utils';
 
 function setup(file: {name: string, contents: string}) {
   const dir = dirname(file.name);
@@ -159,6 +158,24 @@ import * as i1 from '@angular/common';
     });
   });
 
+  describe('addExports', () => {
+    it('should insert the given exports at the end of the source file', () => {
+      const {renderer} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
+        {from: '/some/a.js', identifier: 'ComponentA1'},
+        {from: '/some/a.js', identifier: 'ComponentA2'},
+        {from: '/some/foo/b.js', identifier: 'ComponentB'},
+        {from: PROGRAM.name, identifier: 'TopLevelComponent'},
+      ]);
+      expect(output.toString()).toContain(`
+export {A, B, C, NoIife, BadIife};
+export {ComponentA1} from './a';
+export {ComponentA2} from './a';
+export {ComponentB} from './foo/b';
+export {TopLevelComponent};`);
+    });
+  });
 
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
