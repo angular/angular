@@ -18,6 +18,9 @@
     "name": "Inject"
   },
   {
+    "name": "InjectFlags"
+  },
+  {
     "name": "InjectionToken"
   },
   {
