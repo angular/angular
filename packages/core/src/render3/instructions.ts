@@ -62,7 +62,6 @@ const enum BindingDirection {
  */
 export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | null) {
   const tView = getTView();
-  const parentFirstTemplatePass = getFirstTemplatePass();
 
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = false;
@@ -91,7 +90,7 @@ export function refreshDescendantViews(viewData: LViewData, rf: RenderFlags | nu
     setHostBindings(tView, viewData);
   }
 
-  refreshChildComponents(tView.components, parentFirstTemplatePass, rf);
+  refreshChildComponents(tView.components, rf);
 }
 
 
@@ -147,11 +146,10 @@ function refreshContentQueries(tView: TView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(
-    components: number[] | null, parentFirstTemplatePass: boolean, rf: RenderFlags | null): void {
+function refreshChildComponents(components: number[] | null, rf: RenderFlags | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
-      componentRefresh(components[i], parentFirstTemplatePass, rf);
+      componentRefresh(components[i], rf);
     }
   }
 }
@@ -2068,16 +2066,16 @@ export function embeddedViewEnd(): void {
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
  * @param adjustedElementIndex  Element index in LViewData[] (adjusted for HEADER_OFFSET)
+ * @param rf  The render flags that should be used to process this template
  */
-export function componentRefresh<T>(
-    adjustedElementIndex: number, parentFirstTemplatePass: boolean, rf: RenderFlags | null): void {
+export function componentRefresh<T>(adjustedElementIndex: number, rf: RenderFlags | null): void {
   ngDevMode && assertDataInRange(adjustedElementIndex);
   const hostView = getComponentViewByIndex(adjustedElementIndex, getViewData());
   ngDevMode && assertNodeType(getTView().data[adjustedElementIndex] as TNode, TNodeType.Element);
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    parentFirstTemplatePass && syncViewWithBlueprint(hostView);
+    syncViewWithBlueprint(hostView);
     detectChangesInternal(hostView, hostView[CONTEXT], rf);
   }
 }

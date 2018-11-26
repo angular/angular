@@ -8,13 +8,13 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, element, templateRefExtractor} from '../../src/render3/index';
 import {bind, template, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {getCurrentView, restoreView} from '../../src/render3/state';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
-import {ComponentFixture} from './render_util';
+import {ComponentFixture, createDirective, getDirectiveOnNode} from './render_util';
 
 describe('@angular/common integration', () => {
 
@@ -131,6 +131,75 @@ describe('@angular/common integration', () => {
           .toEqual('<ul><li>0 of 3: first</li><li>1 of 3: middle</li><li>2 of 3: second</li></ul>');
     });
 
+    it('should instantiate directives inside directives properly in an ngFor', () => {
+      let dirs: any[] = [];
+
+      const Dir = createDirective('dir');
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          factory: () => new Comp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: Comp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['dir', '']);
+              { text(1, 'comp text'); }
+              elementEnd();
+              // testing only
+              dirs.push(getDirectiveOnNode(0));
+            }
+          },
+          directives: [Dir]
+        });
+      }
+
+      function ngForTemplate(rf: RenderFlags, ctx: NgForOfContext<string>) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'comp');
+        }
+      }
+
+      /** <comp *ngFor="let row of rows"></comp> */
+      class MyApp {
+        rows: string[] = ['first', 'second'];
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          consts: 1,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              template(0, ngForTemplate, 1, 0, undefined, ['ngForOf', '']);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'ngForOf', bind(ctx.rows));
+            }
+          },
+          directives: () => [NgForOf, Comp, Dir]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual(
+              '<comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp>');
+      expect(dirs.length).toBe(2);
+      expect(dirs[0] instanceof Dir).toBe(true);
+      expect(dirs[1] instanceof Dir).toBe(true);
+
+      fixture.component.rows.push('third');
+      fixture.update();
+      expect(dirs.length).toBe(3);
+      expect(dirs[2] instanceof Dir).toBe(true);
+      expect(fixture.html)
+          .toEqual(
+              '<comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp>');
+    });
 
     it('should retain parent view listeners when the NgFor destroy views', () => {
 
