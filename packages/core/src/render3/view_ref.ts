@@ -59,7 +59,9 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   destroy(): void {
-    if (this._viewContainerRef && viewAttached(this._view)) {
+    if (this._appRef) {
+      this._appRef.detachView(this);
+    } else if (this._viewContainerRef && viewAttached(this._view)) {
       this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
       this._viewContainerRef = null;
     }
