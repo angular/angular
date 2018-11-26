@@ -87,6 +87,9 @@
     "name": "INJECTOR_SIZE"
   },
   {
+    "name": "InjectFlags"
+  },
+  {
     "name": "IterableChangeRecord_"
   },
   {
