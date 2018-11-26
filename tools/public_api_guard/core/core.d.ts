@@ -347,7 +347,7 @@ export interface InjectDecorator {
     new (token: any): Inject;
 }
 
-export declare const enum InjectFlags {
+export declare enum InjectFlags {
     Default = 0,
     Host = 1,
     Self = 2,

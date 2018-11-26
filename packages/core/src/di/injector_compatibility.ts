@@ -19,7 +19,9 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
  *
  * @publicApi
  */
-export const enum InjectFlags {
+export enum InjectFlags {
+  // TODO(alxhub): make this 'const' when ngc no longer writes exports of it into ngfactory files.
+
   Default = 0b0000,
 
   /**
