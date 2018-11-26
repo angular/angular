@@ -20,6 +20,7 @@ import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, Serv
 import {fixmeIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {ivyEnabled} from '../../core/src/ivy_switch';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -536,7 +537,7 @@ class HiddenModule {
         called = false;
         // We use `window` and `document` directly in some parts of render3 for ivy
         // Only set it to undefined for legacy
-        if (fixmeIvy()) {
+        if (!ivyEnabled) {
           (global as any)['window'] = undefined;
           (global as any)['document'] = undefined;
         }
