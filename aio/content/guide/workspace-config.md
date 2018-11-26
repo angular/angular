@@ -5,11 +5,14 @@ Path values given in the configuration are relative to the root workspace folder
 
 ## Overall JSON structure
 
-At the top level of `angular.json`, a few properties configure the workspace, and a `projects` section contains the remaining per-project configuration options.
+At the top level of `angular.json`, a few properties configure the workspace, and a `projects` section contains the remaining per-project configuration options. CLI defaults set at the workspace level can be overridden by defaults set at the project level, and defaults set at the project level can be overridden on the command line.
+
+The following properties, at the top level of the file, configure the workspace.
 
 * `version`: The configuration-file version.
 * `newProjectRoot`: Path where new projects are created. Absolute or relative to the workspace folder.
 * `defaultProject`: Default project name to use in commands, where not provided as an argument. When you use `ng new` to create a new app in a new workspace, that app is the default project for the workspace until you change it here.
+* `schematics` : A set of [schematics](guide/glossary#schematic) that customize the `ng generate` sub-command option defaults for this workspace. See [Generation schematics](#schematics) below.
 * `projects` : Contains a subsection for each project (library, app, e2e test app) in the workspace, with the per-project configuration options.
 
 The initial app that you create with `ng new app_name` is listed under "projects", along with its corresponding end-to-end test app:
@@ -56,14 +59,35 @@ The following top-level configuration properties are available for each project,
 | `sourceRoot`    | The root folder for this project's source files. |
 | `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot. Both an app and its e2e test app are of type "application".|
 | `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an app or feature area. |
-| `schematics`    | An object containing configuration defaults that customize the CLI command behavior for this project. See [Schematics Overview](guide/schematics). |
-| `architect`     | An object containing configuration defaults for Architect builder targets for this project. |
+| `schematics`    | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See [Generation schematics](#schematics) below.  |
+| `architect`     | Configuration defaults for Architect builder targets for this project. |
+
+{@a schematics}
+## Generation schematics
+
+Angular generation [schematics](guide/glossary#schematic) are instructions for modifying a project by adding files or modifying existing files.
+Individual schematics for the default Angular CLI `ng generate` sub-commands are collected in the package `@angular`.
+Specify the schematic name for a subcommand in the format `schematic-package:schematic-name`;
+for example, the schematic for generating a component is `@angular:component`.
+
+The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/schematics/angular/application/schema.json).
+The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
+
+The fields given in the schema correspond to the allowed argument values and defaults for the CLI sub-command options.
+You can update your workspace schema file to set a different default for a sub-command option.
+
+{@a architect}
 
 ## Project tool configuration options
 
-Architect is the tool that the CLI uses to perform complex tasks such as compilation and test running, according to provided configurations. The `architect` section contains a set of Architect *targets*. Many of the targets correspond to the CLI commands that run them. Some additional predefined targets can be run using the `ng run` command, and you can define your own targets.
+Architect is the tool that the CLI uses to perform complex tasks, such as compilation and test running, according to provided configurations.
+The `architect` section of `angular.json` contains a set of Architect *targets*.
+Many of the targets correspond to the CLI commands that run them.
+Some additional predefined targets can be run using the `ng run` command, and you can define your own targets.
 
-Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs. In addition, each target has an `options` section that configure default options for the target, and a `configurations` section that names and specifies alternative configurations for the target. See the example in [Build target](#build-target) below.
+Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs.
+In addition, each target has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
+See the example in [Build target](#build-target) below.
 
 <code-example format="." language="json" linenums="false">
       "architect": {
@@ -78,7 +102,8 @@ Each target object specifies the `builder` for that target, which is the npm pac
       }
 </code-example>
 
-* The `architect/build` section configures defaults for options of the `ng build` command. See [Build target](#build-target) below for more information.
+* The `architect/build` section configures defaults for options of the `ng build` command.
+See [Build target](#build-target) below for more information.
 
 * The `architect/serve` section overrides build defaults and supplies additional serve defaults for the `ng serve` command.  In addition to the options available for the `ng build` command, it adds options related to serving the app.
 
@@ -106,8 +131,26 @@ The `architect/build` section configures defaults for options of the `ng build` 
 | PROPERTY | DESCRIPTION |
 | :-------------- | :---------------------------- |
 | `builder`       | The npm package for the build tool used to create this target. The default is `@angular-devkit/build-angular:browser`, which uses the [webpack](https://webpack.js.org/) package bundler. |
-| `options`       | This section contains defaults for build options, used when no named alternative configuration is specified. See [Default build options](#build-props) below. |
+| `options`       | This section contains default build target options, used when no named alternative configuration is specified. See [Default build targets](#default-build-targets) below. |
 | `configurations`| This section defines and names alternative configurations for different intended destinations. It contains a section for each named configuration, which sets the default options for that intended environment. See [Alternate build configurations](#build-configs) below. |
+
+{@a default-build-targets}
+
+### Default build targets
+
+Angular defines default builders for use with the Architect tool and `ng run` command.
+The default builders provide implementations that use a particular tool to perform a complex operation.
+
+The JSON schemas that the define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/7.0.x/packages/angular/cli/lib/config/schema.json) package. The schemas configure options for the following Architect build targets:
+
+* app-shell
+* browser
+* dev-server
+* extract-i18n
+* karma
+* protractor
+* server
+* tslint
 
 {@a build-configs}
 
