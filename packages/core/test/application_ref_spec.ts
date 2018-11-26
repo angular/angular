@@ -25,7 +25,7 @@ class SomeComponent {
 }
 
 {
-  fixmeIvy('unknown') && describe('bootstrap', () => {
+  describe('bootstrap', () => {
     let mockConsole: MockConsole;
 
     beforeEach(() => { mockConsole = new MockConsole(); });
@@ -74,66 +74,68 @@ class SomeComponent {
       return MyModule;
     }
 
-    it('should bootstrap a component from a child module',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+    fixmeIvy('unknown') &&
+        it('should bootstrap a component from a child module',
+           async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+             @Component({
+               selector: 'bootstrap-app',
+               template: '',
+             })
+             class SomeComponent {
+             }
 
-         @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+             @NgModule({
+               providers: [{provide: 'hello', useValue: 'component'}],
+               declarations: [SomeComponent],
+               entryComponents: [SomeComponent],
+             })
+             class SomeModule {
+             }
 
-         createRootEl();
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-         const component = app.bootstrap(cmpFactory);
+             createRootEl();
+             const modFactory = compiler.compileModuleSync(SomeModule);
+             const module = modFactory.create(TestBed);
+             const cmpFactory =
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+             const component = app.bootstrap(cmpFactory);
 
-         // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
-       })));
+             // The component should see the child module providers
+             expect(component.injector.get('hello')).toEqual('component');
+           })));
 
-    it('should bootstrap a component with a custom selector',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+    fixmeIvy('unknown') &&
+        it('should bootstrap a component with a custom selector',
+           async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+             @Component({
+               selector: 'bootstrap-app',
+               template: '',
+             })
+             class SomeComponent {
+             }
 
-         @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+             @NgModule({
+               providers: [{provide: 'hello', useValue: 'component'}],
+               declarations: [SomeComponent],
+               entryComponents: [SomeComponent],
+             })
+             class SomeModule {
+             }
 
-         createRootEl('custom-selector');
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-         const component = app.bootstrap(cmpFactory, 'custom-selector');
+             createRootEl('custom-selector');
+             const modFactory = compiler.compileModuleSync(SomeModule);
+             const module = modFactory.create(TestBed);
+             const cmpFactory =
+                 module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+             const component = app.bootstrap(cmpFactory, 'custom-selector');
 
-         // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
-       })));
+             // The component should see the child module providers
+             expect(component.injector.get('hello')).toEqual('component');
+           })));
 
     describe('ApplicationRef', () => {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
 
-      it('should throw when reentering tick', () => {
+      fixmeIvy('unknown') && it('should throw when reentering tick', () => {
         @Component({template: '{{reenter()}}'})
         class ReenteringComponent {
           reenterCount = 1;
@@ -174,28 +176,31 @@ class SomeComponent {
           });
         });
 
-        it('should be called when a component is bootstrapped',
-           inject([ApplicationRef], (ref: ApplicationRef) => {
-             createRootEl();
-             const compRef = ref.bootstrap(SomeComponent);
-             expect(capturedCompRefs).toEqual([compRef]);
-           }));
+        fixmeIvy('unknown') && it('should be called when a component is bootstrapped',
+                                  inject([ApplicationRef], (ref: ApplicationRef) => {
+                                    createRootEl();
+                                    const compRef = ref.bootstrap(SomeComponent);
+                                    expect(capturedCompRefs).toEqual([compRef]);
+                                  }));
       });
 
       describe('bootstrap', () => {
-        it('should throw if an APP_INITIIALIZER is not yet resolved',
-           withModule(
-               {
-                 providers: [
-                   {provide: APP_INITIALIZER, useValue: () => new Promise(() => {}), multi: true}
-                 ]
-               },
-               inject([ApplicationRef], (ref: ApplicationRef) => {
-                 createRootEl();
-                 expect(() => ref.bootstrap(SomeComponent))
-                     .toThrowError(
-                         'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
-               })));
+        fixmeIvy('unknown') &&
+            it('should throw if an APP_INITIIALIZER is not yet resolved',
+               withModule(
+                   {
+                     providers: [{
+                       provide: APP_INITIALIZER,
+                       useValue: () => new Promise(() => {}),
+                       multi: true
+                     }]
+                   },
+                   inject([ApplicationRef], (ref: ApplicationRef) => {
+                     createRootEl();
+                     expect(() => ref.bootstrap(SomeComponent))
+                         .toThrowError(
+                             'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+                   })));
       });
     });
 
@@ -206,99 +211,112 @@ class SomeComponent {
         defaultPlatform = _platform;
       }));
 
-      it('should wait for asynchronous app initializers', async(() => {
-           let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
-           let initializerDone = false;
-           setTimeout(() => {
-             resolve(true);
-             initializerDone = true;
-           }, 1);
+      fixmeIvy('unknown') &&
+          it('should wait for asynchronous app initializers', async(() => {
+               let resolve: (result: any) => void;
+               const promise: Promise<any> = new Promise((res) => { resolve = res; });
+               let initializerDone = false;
+               setTimeout(() => {
+                 resolve(true);
+                 initializerDone = true;
+               }, 1);
 
-           defaultPlatform
-               .bootstrapModule(
-                   createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
-               .then(_ => { expect(initializerDone).toBe(true); });
-         }));
+               defaultPlatform
+                   .bootstrapModule(createModule(
+                       [{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]))
+                   .then(_ => { expect(initializerDone).toBe(true); });
+             }));
 
-      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
-           defaultPlatform
-               .bootstrapModule(createModule(
-                   [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]))
-               .then(() => expect(false).toBe(true), (e) => {
-                 expect(e).toBe('Test');
-                 // Error rethrown will be seen by the exception handler since it's after
-                 // construction.
-                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
+             async(() => {
+               defaultPlatform
+                   .bootstrapModule(createModule([
+                     {provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}
+                   ]))
+                   .then(() => expect(false).toBe(true), (e) => {
+                     expect(e).toBe('Test');
+                     // Error rethrown will be seen by the exception handler since it's after
+                     // construction.
+                     expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
+                   });
+             }));
 
-      it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         async(() => {
-           defaultPlatform
-               .bootstrapModule(createModule([
-                 {provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}
-               ]))
-               .then(() => expect(false).toBe(true), (e) => {
-                 expect(e).toBe('Test');
-                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
+             async(() => {
+               defaultPlatform
+                   .bootstrapModule(createModule([{
+                     provide: APP_INITIALIZER,
+                     useValue: () => Promise.reject('Test'),
+                     multi: true
+                   }]))
+                   .then(() => expect(false).toBe(true), (e) => {
+                     expect(e).toBe('Test');
+                     expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
+                   });
+             }));
 
-      it('should throw useful error when ApplicationRef is not configured', async(() => {
-           @NgModule()
-           class EmptyModule {
-           }
+      fixmeIvy('unknown') &&
+          it('should throw useful error when ApplicationRef is not configured', async(() => {
+               @NgModule()
+               class EmptyModule {
+               }
 
-           return defaultPlatform.bootstrapModule(EmptyModule)
-               .then(() => fail('expecting error'), (error) => {
-                 expect(error.message)
-                     .toEqual('No ErrorHandler. Is platform module (BrowserModule) included?');
-               });
-         }));
+               return defaultPlatform.bootstrapModule(EmptyModule)
+                   .then(() => fail('expecting error'), (error) => {
+                     expect(error.message)
+                         .toEqual('No ErrorHandler. Is platform module (BrowserModule) included?');
+                   });
+             }));
 
-      it('should call the `ngDoBootstrap` method with `ApplicationRef` on the main module',
-         async(() => {
-           const ngDoBootstrap = jasmine.createSpy('ngDoBootstrap');
-           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: ngDoBootstrap}))
-               .then((moduleRef) => {
-                 const appRef = moduleRef.injector.get(ApplicationRef);
-                 expect(ngDoBootstrap).toHaveBeenCalledWith(appRef);
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should call the `ngDoBootstrap` method with `ApplicationRef` on the main module',
+             async(() => {
+               const ngDoBootstrap = jasmine.createSpy('ngDoBootstrap');
+               defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: ngDoBootstrap}))
+                   .then((moduleRef) => {
+                     const appRef = moduleRef.injector.get(ApplicationRef);
+                     expect(ngDoBootstrap).toHaveBeenCalledWith(appRef);
+                   });
+             }));
 
-      it('should auto bootstrap components listed in @NgModule.bootstrap', async(() => {
-           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
-               .then((moduleRef) => {
-                 const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-                 expect(appRef.componentTypes).toEqual([SomeComponent]);
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should auto bootstrap components listed in @NgModule.bootstrap', async(() => {
+               defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+                   .then((moduleRef) => {
+                     const appRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
+                     expect(appRef.componentTypes).toEqual([SomeComponent]);
+                   });
+             }));
 
-      it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
-         async(() => {
-           defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
-               .then(() => expect(false).toBe(true), (e) => {
-                 const expectedErrMsg =
-                     `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
-                 expect(e.message).toEqual(expectedErrMsg);
-                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should error if neither `ngDoBootstrap` nor @NgModule.bootstrap was specified',
+             async(() => {
+               defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
+                   .then(() => expect(false).toBe(true), (e) => {
+                     const expectedErrMsg =
+                         `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
+                     expect(e.message).toEqual(expectedErrMsg);
+                     expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
+                   });
+             }));
 
-      it('should add bootstrapped module into platform modules list', async(() => {
-           defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
-               .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
-         }));
+      fixmeIvy('unknown') &&
+          it('should add bootstrapped module into platform modules list', async(() => {
+               defaultPlatform.bootstrapModule(createModule({bootstrap: [SomeComponent]}))
+                   .then(module => expect((<any>defaultPlatform)._modules).toContain(module));
+             }));
 
-      it('should bootstrap with NoopNgZone', async(() => {
-           defaultPlatform
-               .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
-               .then((module) => {
-                 const ngZone = module.injector.get(NgZone);
-                 expect(ngZone instanceof NoopNgZone).toBe(true);
-               });
-         }));
+      fixmeIvy('unknown') &&
+          it('should bootstrap with NoopNgZone', async(() => {
+               defaultPlatform
+                   .bootstrapModule(createModule({bootstrap: [SomeComponent]}), {ngZone: 'noop'})
+                   .then((module) => {
+                     const ngZone = module.injector.get(NgZone);
+                     expect(ngZone instanceof NoopNgZone).toBe(true);
+                   });
+             }));
     });
 
     describe('bootstrapModuleFactory', () => {
@@ -307,47 +325,58 @@ class SomeComponent {
         createRootEl();
         defaultPlatform = _platform;
       }));
-      it('should wait for asynchronous app initializers', async(() => {
-           let resolve: (result: any) => void;
-           const promise: Promise<any> = new Promise((res) => { resolve = res; });
-           let initializerDone = false;
-           setTimeout(() => {
-             resolve(true);
-             initializerDone = true;
-           }, 1);
+      fixmeIvy('unknown') &&
+          it('should wait for asynchronous app initializers', async(() => {
+               let resolve: (result: any) => void;
+               const promise: Promise<any> = new Promise((res) => { resolve = res; });
+               let initializerDone = false;
+               setTimeout(() => {
+                 resolve(true);
+                 initializerDone = true;
+               }, 1);
 
-           const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(
-               createModule([{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
-           defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
-             expect(initializerDone).toBe(true);
-           });
-         }));
-
-      it('should rethrow sync errors even if the exceptionHandler is not rethrowing', async(() => {
-           const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}]));
-           expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
-           // Error rethrown will be seen by the exception handler since it's after
-           // construction.
-           expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
-         }));
-
-      it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
-         async(() => {
-           const compilerFactory: CompilerFactory =
-               defaultPlatform.injector.get(CompilerFactory, null);
-           const moduleFactory = compilerFactory.createCompiler().compileModuleSync(createModule(
-               [{provide: APP_INITIALIZER, useValue: () => Promise.reject('Test'), multi: true}]));
-           defaultPlatform.bootstrapModuleFactory(moduleFactory)
-               .then(() => expect(false).toBe(true), (e) => {
-                 expect(e).toBe('Test');
-                 expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
+               const compilerFactory: CompilerFactory =
+                   defaultPlatform.injector.get(CompilerFactory, null);
+               const moduleFactory =
+                   compilerFactory.createCompiler().compileModuleSync(createModule(
+                       [{provide: APP_INITIALIZER, useValue: () => promise, multi: true}]));
+               defaultPlatform.bootstrapModuleFactory(moduleFactory).then(_ => {
+                 expect(initializerDone).toBe(true);
                });
-         }));
+             }));
+
+      fixmeIvy('unknown') &&
+          it('should rethrow sync errors even if the exceptionHandler is not rethrowing',
+             async(() => {
+               const compilerFactory: CompilerFactory =
+                   defaultPlatform.injector.get(CompilerFactory, null);
+               const moduleFactory =
+                   compilerFactory.createCompiler().compileModuleSync(createModule([
+                     {provide: APP_INITIALIZER, useValue: () => { throw 'Test'; }, multi: true}
+                   ]));
+               expect(() => defaultPlatform.bootstrapModuleFactory(moduleFactory)).toThrow('Test');
+               // Error rethrown will be seen by the exception handler since it's after
+               // construction.
+               expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
+             }));
+
+      fixmeIvy('unknown') &&
+          it('should rethrow promise errors even if the exceptionHandler is not rethrowing',
+             async(() => {
+               const compilerFactory: CompilerFactory =
+                   defaultPlatform.injector.get(CompilerFactory, null);
+               const moduleFactory =
+                   compilerFactory.createCompiler().compileModuleSync(createModule([{
+                     provide: APP_INITIALIZER,
+                     useValue: () => Promise.reject('Test'),
+                     multi: true
+                   }]));
+               defaultPlatform.bootstrapModuleFactory(moduleFactory)
+                   .then(() => expect(false).toBe(true), (e) => {
+                     expect(e).toBe('Test');
+                     expect(mockConsole.res[0].join('#')).toEqual('ERROR#Test');
+                   });
+             }));
     });
 
     describe('attachView / detachView', () => {
@@ -427,28 +456,29 @@ class SomeComponent {
         expect(appRef.viewCount).toBe(0);
       });
 
-      it('should not allow to attach a view to both, a view container and the ApplicationRef',
-         () => {
-           const comp = TestBed.createComponent(MyComp);
-           let hostView = comp.componentRef.hostView;
-           const containerComp = TestBed.createComponent(ContainerComp);
-           containerComp.detectChanges();
-           const vc = containerComp.componentInstance.vc;
-           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+      fixmeIvy('unknown') &&
+          it('should not allow to attach a view to both, a view container and the ApplicationRef',
+             () => {
+               const comp = TestBed.createComponent(MyComp);
+               let hostView = comp.componentRef.hostView;
+               const containerComp = TestBed.createComponent(ContainerComp);
+               containerComp.detectChanges();
+               const vc = containerComp.componentInstance.vc;
+               const appRef: ApplicationRef = TestBed.get(ApplicationRef);
 
-           vc.insert(hostView);
-           expect(() => appRef.attachView(hostView))
-               .toThrowError('This view is already attached to a ViewContainer!');
-           hostView = vc.detach(0) !;
+               vc.insert(hostView);
+               expect(() => appRef.attachView(hostView))
+                   .toThrowError('This view is already attached to a ViewContainer!');
+               hostView = vc.detach(0) !;
 
-           appRef.attachView(hostView);
-           expect(() => vc.insert(hostView))
-               .toThrowError('This view is already attached directly to the ApplicationRef!');
-         });
+               appRef.attachView(hostView);
+               expect(() => vc.insert(hostView))
+                   .toThrowError('This view is already attached directly to the ApplicationRef!');
+             });
     });
   });
 
-  fixmeIvy('unknown') && describe('AppRef', () => {
+  describe('AppRef', () => {
     @Component({selector: 'sync-comp', template: `<span>{{text}}</span>`})
     class SyncComp {
       text: string = '1';
@@ -535,20 +565,22 @@ class SomeComponent {
       });
     }
 
-    it('isStable should fire on synchronous component loading',
-       async(() => { expectStableTexts(SyncComp, ['1']); }));
+    fixmeIvy('unknown') && it('isStable should fire on synchronous component loading',
+                              async(() => { expectStableTexts(SyncComp, ['1']); }));
 
-    it('isStable should fire after a microtask on init is completed',
-       async(() => { expectStableTexts(MicroTaskComp, ['11']); }));
+    fixmeIvy('unknown') && it('isStable should fire after a microtask on init is completed',
+                              async(() => { expectStableTexts(MicroTaskComp, ['11']); }));
 
-    it('isStable should fire after a macrotask on init is completed',
-       async(() => { expectStableTexts(MacroTaskComp, ['11']); }));
+    fixmeIvy('unknown') && it('isStable should fire after a macrotask on init is completed',
+                              async(() => { expectStableTexts(MacroTaskComp, ['11']); }));
 
-    it('isStable should fire only after chain of micro and macrotasks on init are completed',
-       async(() => { expectStableTexts(MicroMacroTaskComp, ['111']); }));
+    fixmeIvy('unknown') &&
+        it('isStable should fire only after chain of micro and macrotasks on init are completed',
+           async(() => { expectStableTexts(MicroMacroTaskComp, ['111']); }));
 
-    it('isStable should fire only after chain of macro and microtasks on init are completed',
-       async(() => { expectStableTexts(MacroMicroTaskComp, ['111']); }));
+    fixmeIvy('unknown') &&
+        it('isStable should fire only after chain of macro and microtasks on init are completed',
+           async(() => { expectStableTexts(MacroMicroTaskComp, ['111']); }));
 
     describe('unstable', () => {
       let unstableCalled = false;
@@ -569,19 +601,19 @@ class SomeComponent {
         });
       }
 
-      it('should be fired after app becomes unstable', async(() => {
-           const fixture = TestBed.createComponent(ClickComp);
-           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
-           const zone: NgZone = TestBed.get(NgZone);
-           appRef.attachView(fixture.componentRef.hostView);
-           zone.run(() => appRef.tick());
+      fixmeIvy('unknown') && it('should be fired after app becomes unstable', async(() => {
+                                  const fixture = TestBed.createComponent(ClickComp);
+                                  const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+                                  const zone: NgZone = TestBed.get(NgZone);
+                                  appRef.attachView(fixture.componentRef.hostView);
+                                  zone.run(() => appRef.tick());
 
-           fixture.whenStable().then(() => {
-             expectUnstable(appRef);
-             const element = fixture.debugElement.children[0];
-             dispatchEvent(element.nativeElement, 'click');
-           });
-         }));
+                                  fixture.whenStable().then(() => {
+                                    expectUnstable(appRef);
+                                    const element = fixture.debugElement.children[0];
+                                    dispatchEvent(element.nativeElement, 'click');
+                                  });
+                                }));
     });
   });
 }
