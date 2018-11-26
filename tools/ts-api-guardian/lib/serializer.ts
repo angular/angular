@@ -115,7 +115,7 @@ class ResolvedDeclarationEmitter {
       throw new Error(`Source file "${this.fileName}" not found`);
     }
 
-    let output = '';
+    let output: string[] = [];
 
     const resolvedSymbols = this.getResolvedSymbols(sourceFile);
     // Sort all symbols so that the output is more deterministic
@@ -126,42 +126,19 @@ class ResolvedDeclarationEmitter {
         continue;
       }
 
-      let decl: ts.Node|undefined =
-          symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-      if (!decl) {
+      const typeDecl = symbol.declarations && symbol.declarations[0];
+      const valDecl = symbol.valueDeclaration;
+      if (!typeDecl && !valDecl) {
         this.diagnostics.push({
           type: 'warn',
           message: `${sourceFile.fileName}: error: No declaration found for symbol "${symbol.name}"`
         });
         continue;
       }
-
-      // The declaration node may not be a complete statement, e.g. for var/const
-      // symbols. We need to find the complete export statement by traversing
-      // upwards.
-      while (!hasModifier(decl, ts.SyntaxKind.ExportKeyword) && decl.parent) {
-        decl = decl.parent;
-      }
-
-      if (hasModifier(decl, ts.SyntaxKind.ExportKeyword)) {
-        // Make an empty line between two exports
-        if (output) {
-          output += '\n';
-        }
-
-        const jsdocComment = this.processJsDocTags(decl, this.options.exportTags);
-        if (jsdocComment) {
-          output += jsdocComment + '\n';
-        }
-
-        output += stripEmptyLines(this.emitNode(decl)) + '\n';
-      } else {
-        // This may happen for symbols re-exported from external modules.
-        this.diagnostics.push({
-          type: 'warn',
-          message:
-              createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
-        });
+      typeDecl && this.emitDeclaration(symbol, typeDecl, output);
+      if (valDecl && typeDecl.kind === ts.SyntaxKind.InterfaceDeclaration) {
+        // Only generate value declarations in case of interfaces.
+        valDecl && this.emitDeclaration(symbol, valDecl, output);
       }
     }
 
@@ -173,7 +150,36 @@ class ResolvedDeclarationEmitter {
       }
     }
 
-    return output;
+    return output.join('');
+  }
+
+  emitDeclaration(symbol: ts.Symbol, decl: ts.Node, output: string[]) {
+    // The declaration node may not be a complete statement, e.g. for var/const
+    // symbols. We need to find the complete export statement by traversing
+    // upwards.
+    while (!hasModifier(decl, ts.SyntaxKind.ExportKeyword) && decl.parent) {
+      decl = decl.parent;
+    }
+
+    if (hasModifier(decl, ts.SyntaxKind.ExportKeyword)) {
+      // Make an empty line between two exports
+      if (output.length) {
+        output.push('\n');
+      }
+
+      const jsdocComment = this.processJsDocTags(decl, this.options.exportTags);
+      if (jsdocComment) {
+        output.push(jsdocComment + '\n');
+      }
+
+      output.push(stripEmptyLines(this.emitNode(decl)) + '\n');
+    } else {
+      // This may happen for symbols re-exported from external modules.
+      this.diagnostics.push({
+        type: 'warn',
+        message: createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
+      });
+    }
   }
 
   private isExportPatternStripped(symbolName: string): boolean {

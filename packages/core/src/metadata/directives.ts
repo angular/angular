@@ -77,23 +77,31 @@ export interface DirectiveDecorator {
   new (obj: Directive): Directive;
 }
 
+/**
+ * Directive decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
 export interface Directive {
   /**
-   * The CSS selector that triggers the instantiation of a directive.
+   * The CSS selector that identifies this directive in a template
+   * and triggers instantiation of the directive.
    *
    * Declare as one of the following:
    *
-   * - `element-name`: select by element name.
-   * - `.class`: select by class name.
-   * - `[attribute]`: select by attribute name.
-   * - `[attribute=value]`: select by attribute name and value.
-   * - `:not(sub_selector)`: select only if the element does not match the `sub_selector`.
-   * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
+   * - `element-name`: Select by element name.
+   * - `.class`: Select by class name.
+   * - `[attribute]`: Select by attribute name.
+   * - `[attribute=value]`: Select by attribute name and value.
+   * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
+   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
    *
-   * Angular only allows directives to trigger on CSS selectors that do not cross element
-   * boundaries. For example, consider a directive with an `input[type=text]` selector.
-   * For the following HTML, the directive is instantiated only on the
-   * `<input type="text">` element.
+   * Angular only allows directives to apply on CSS selectors that do not cross
+   * element boundaries.
+   *
+   * For the following template HTML, a directive with an `input[type=text]` selector,
+   * would be instantiated only on the `<input type="text">` element.
    *
    * ```html
    * <form>
@@ -176,8 +184,9 @@ export interface Directive {
   outputs?: string[];
 
   /**
-   * A set of injection tokens that allow the DI system to
-   * provide a dependency to this directive or component.
+   * Configures the [injector](guide/glossary#injector) of this
+   * directive or component with a [token](guide/glossary#di-token)
+   * that maps to a [provider](guide/glossary#provider) of a dependency.
    */
   providers?: Provider[];
 
@@ -248,62 +257,6 @@ export interface Directive {
   queries?: {[key: string]: any};
 
   /**
-   * If true, this directive/component will be skipped by the AOT compiler and so will always be
-   * compiled using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
-   */
-  jit?: true;
-}
-
-/**
- * Directive decorator and metadata.
- *
- * @Annotation
- */
-export interface Directive {
-  /**
-   * The CSS selector that identifies this directive in a template
-   * and triggers instantiation of the directive.
-   *
-   * Declare as one of the following:
-   *
-   * - `element-name`: Select by element name.
-   * - `.class`: Select by class name.
-   * - `[attribute]`: Select by attribute name.
-   * - `[attribute=value]`: Select by attribute name and value.
-   * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
-   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
-   *
-   * Angular only allows directives to apply on CSS selectors that do not cross
-   * element boundaries.
-   *
-   * For the following template HTML, a directive with an `input[type=text]` selector,
-   * would be instantiated only on the `<input type="text">` element.
-   *
-   * ```html
-   * <form>
-   *   <input type="text">
-   *   <input type="radio">
-   * <form>
-   * ```
-   *
-   */
-  selector?: string;
-
-  /**
-   * The set of event-bound output properties.
-   * When an output property emits an event, an event handler attached
-   * to that event in the template is invoked.
-   *
-   * Each output property maps a `directiveProperty` to a `bindingProperty`:
-   * - `directiveProperty` specifies the component property that emits events.
-   * - `bindingProperty` specifies the HTML attribute the event handler is attached to.
-   *
-   */
-  outputs?: string[];
-
-  /**
    * Maps class properties to host element bindings for properties,
    * attributes, and events, using a set of key-value pairs.
    *
@@ -328,27 +281,12 @@ export interface Directive {
   host?: {[key: string]: string};
 
   /**
-   * Configures the [injector](guide/glossary#injector) of this
-   * directive or component with a [token](guide/glossary#di-token)
-   * that maps to a [provider](guide/glossary#provider) of a dependency.
-   */
-  providers?: Provider[];
-
-  /**
-   * The name or names that can be used in the template to assign this directive to a variable.
-   * For multiple names, use a comma-separated string.
+   * If true, this directive/component will be skipped by the AOT compiler and so will always be
+   * compiled using JIT.
    *
+   * This exists to support future Ivy work and has no effect currently.
    */
-  exportAs?: string;
-
-  /**
-   * Configures the queries that will be injected into the directive.
-   *
-   * Content queries are set before the `ngAfterContentInit` callback is called.
-   * View queries are set before the `ngAfterViewInit` callback is called.
-   *
-   */
-  queries?: {[key: string]: any};
+  jit?: true;
 }
 
 /**
@@ -512,6 +450,8 @@ export interface ComponentDecorator {
 
 /**
  * Supplies configuration metadata for an Angular component.
+ *
+ * @publicApi
  */
 export interface Component extends Directive {
   /**
@@ -645,6 +585,8 @@ export interface PipeDecorator {
 
 /**
  * Type of the Pipe metadata.
+ *
+ * @publicApi
  */
 export interface Pipe {
   /**
@@ -704,7 +646,7 @@ export interface InputDecorator {
 /**
  * Type of metadata for an `Input` property.
  *
- *
+ * @publicApi
  */
 export interface Input {
   /**
@@ -824,6 +766,8 @@ export interface OutputDecorator {
 
 /**
  * Type of the Output metadata.
+ *
+ * @publicApi
  */
 export interface Output { bindingPropertyName?: string; }
 
@@ -879,6 +823,7 @@ export interface HostBindingDecorator {
 /**
  * Type of the HostBinding metadata.
  *
+ * @publicApi
  */
 export interface HostBinding { hostPropertyName?: string; }
 
@@ -902,6 +847,8 @@ export interface HostListenerDecorator {
 
 /**
  * Type of the HostListener metadata.
+ *
+ * @publicApi
  */
 export interface HostListener {
   /**

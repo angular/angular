@@ -45,6 +45,12 @@ describe('integration test: public api', () => {
         'test/fixtures/classes_and_interfaces_expected.d.ts');
   });
 
+  it('should include value and type', () => {
+    check(
+        'test/fixtures/exports_type_and_value.d.ts',
+        'test/fixtures/exports_type_and_value_expected.d.ts');
+  });
+
   it('should include members reexported classes', () => {
     check(
         'test/fixtures/reexported_classes.d.ts', 'test/fixtures/reexported_classes_expected.d.ts');
