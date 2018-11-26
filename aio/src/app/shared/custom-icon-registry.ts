@@ -20,13 +20,18 @@ import { DomSanitizer } from '@angular/platform-browser';
  */
 export const SVG_ICONS = new InjectionToken<Array<SvgIconInfo>>('SvgIcons');
 export interface SvgIconInfo {
+  namespace?: string;
   name: string;
   svgSource: string;
 }
 
 interface SvgIconMap {
-  [iconName: string]: SVGElement;
+  [namespace: string]: {
+    [iconName: string]: SVGElement;
+  };
 }
+
+const DEFAULT_NS = '$$default';
 
 /**
  * A custom replacement for Angular Material's `MdIconRegistry`, which allows
@@ -34,7 +39,7 @@ interface SvgIconMap {
  */
 @Injectable()
 export class CustomIconRegistry extends MatIconRegistry {
-  private preloadedSvgElements: SvgIconMap = {};
+  private preloadedSvgElements: SvgIconMap = {[DEFAULT_NS]: {}};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Optional() @Inject(DOCUMENT) document,
               @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
@@ -43,18 +48,24 @@ export class CustomIconRegistry extends MatIconRegistry {
   }
 
   getNamedSvgIcon(iconName: string, namespace?: string) {
-    if (this.preloadedSvgElements[iconName]) {
-      return of(this.preloadedSvgElements[iconName].cloneNode(true) as SVGElement);
-    }
-    return super.getNamedSvgIcon(iconName, namespace);
+    const nsIconMap = this.preloadedSvgElements[namespace || DEFAULT_NS];
+    const preloadedElement = nsIconMap && nsIconMap[iconName];
+
+    return preloadedElement
+        ? of(preloadedElement.cloneNode(true) as SVGElement)
+        : super.getNamedSvgIcon(iconName, namespace);
   }
 
   private loadSvgElements(svgIcons: SvgIconInfo[]) {
     const div = document.createElement('DIV');
     svgIcons.forEach(icon => {
+      const ns = icon.namespace || DEFAULT_NS;
+      const nsIconMap = this.preloadedSvgElements[ns] || (this.preloadedSvgElements[ns] = {});
+
       // SECURITY: the source for the SVG icons is provided in code by trusted developers
       div.innerHTML = icon.svgSource;
-      this.preloadedSvgElements[icon.name] = div.querySelector('svg')!;
+
+      nsIconMap[icon.name] = div.querySelector('svg')!;
     });
   }
 }
