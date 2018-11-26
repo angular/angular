@@ -3,7 +3,7 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -17,14 +17,14 @@
     parse5 "^5.0.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
-    canonical-path "0.0.2"
+    canonical-path "1.0.0"
     chokidar "^1.4.2"
     convert-source-map "^1.5.1"
     dependency-graph "^0.7.2"
@@ -33,25 +33,26 @@
     reflect-metadata "^0.1.2"
     shelljs "^0.8.1"
     source-map "^0.6.1"
+    tslib "^1.9.0"
     yargs "9.0.1"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/http@file:../../dist/packages-dist/http":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -65,17 +66,17 @@
     parse5 "^5.0.0"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "7.1.0-beta.1"
+  version "7.1.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -533,10 +534,10 @@ camelcase@^4.1.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
   integrity sha1-1UVjW+HjPFQmScaRc+Xeas+uNN0=
 
-canonical-path@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/canonical-path/-/canonical-path-0.0.2.tgz#e31eb937a8c93ee2a01df1839794721902874574"
-  integrity sha1-4x65N6jJPuKgHfGDl5RyGQKHRXQ=
+canonical-path@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/canonical-path/-/canonical-path-1.0.0.tgz#fcb470c23958def85081856be7a86e904f180d1d"
+  integrity sha512-feylzsbDxi1gPZ1IjystzIQZagYYLvfKrSuygUCgf7z6x790VEzze5QEkdSV1U58RA7Hi0+v6fv4K54atOzATg==
 
 caseless@~0.12.0:
   version "0.12.0"
