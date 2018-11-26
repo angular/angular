@@ -23,7 +23,7 @@ yarn bazel test //packages/compiler-cli/src/ngcc/test
 
 ## Integration Testing
 
-There are tests that check the behaviour of the overall executable:
+There are tests that check the behavior of the overall executable:
 
 ```bash
 yarn bazel test //packages/compiler-cli/test/ngcc
