@@ -106,6 +106,50 @@ describe('component', () => {
 
   });
 
+  it('should instantiate components at high indices', () => {
+
+    // {{ name }}
+    class Comp {
+      // @Input
+      name = '';
+
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selectors: [['comp']],
+        factory: () => new Comp(),
+        consts: 1,
+        vars: 1,
+        template: (rf: RenderFlags, ctx: Comp) => {
+          if (rf & RenderFlags.Create) {
+            text(0);
+          }
+          if (rf & RenderFlags.Update) {
+            textBinding(0, bind(ctx.name));
+          }
+        },
+        inputs: {name: 'name'}
+      });
+    }
+
+    // Artificially inflating the slot IDs of this app component to mimic an app
+    // with a very large view
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(4097, 'comp');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(4097, 'name', bind(ctx.name));
+      }
+    }, 4098, 1, [Comp]);
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<comp></comp>');
+
+    fixture.component.name = 'some name';
+    fixture.update();
+    expect(fixture.html).toEqual('<comp>some name</comp>');
+  });
+
 });
 
 describe('component with a container', () => {

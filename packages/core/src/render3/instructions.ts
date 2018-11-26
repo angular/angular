@@ -1451,7 +1451,7 @@ function resolveDirectives(
  */
 function instantiateAllDirectives(tView: TView, viewData: LViewData, previousOrParentTNode: TNode) {
   const start = previousOrParentTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
-  const end = start + previousOrParentTNode.flags & TNodeFlags.DirectiveCountMask;
+  const end = start + (previousOrParentTNode.flags & TNodeFlags.DirectiveCountMask);
   if (!getFirstTemplatePass() && start < end) {
     getOrCreateNodeInjectorForNode(
         previousOrParentTNode as TElementNode | TContainerNode | TElementContainerNode, viewData);
