@@ -2398,7 +2398,7 @@ So when you call `createComponent()`, the `TestBed` compiles implicitly.
 
 That's not a problem when the source code is in memory.
 But the `BannerComponent` requires external files
-that the compile must read from the file system,
+that the compiler must read from the file system,
 an inherently _asynchronous_ operation.
 
 If the `TestBed` were allowed to continue, the tests would run and fail mysteriously
