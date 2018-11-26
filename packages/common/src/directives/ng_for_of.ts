@@ -36,13 +36,16 @@ export class NgForOfContext<T> {
  * The `ngFor` is generally used in the shorthand form `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
- * 
- * The following exmaple shows the shorthand syntax with some options, contained in an `<li>` element.
+ *
+ * The following exmaple shows the shorthand syntax with some options,
+ * contained in an `<li>` element.
  *
  * `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
  *
- * The shorthand form expands into a long form that uses the `ngForOf` selector on an `<ng-template>` element.
- * The content of the `<ng-template>` element is the <li> element that held the short-form directive.
+ * The shorthand form expands into a long form that uses the `ngForOf` selector
+ * on an `<ng-template>` element.
+ * The content of the `<ng-template>` element is the <li> element that held the
+ * short-form directive.
  *
  * Here is the expanded version of the short-form example.
  *
@@ -58,7 +61,7 @@ export class NgForOfContext<T> {
  * For simplicity, Angular allows only one structural directive on an element.
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
- * 
+ *
  * For futher discussion, see [Structural
  * Directives](guide/structural-directives#one-structural-directive-per-host-element).
  *
