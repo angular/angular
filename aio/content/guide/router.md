@@ -1367,7 +1367,7 @@ In order to use the Router, you must first register the `RouterModule` from the 
 <!--
 Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations. As the application grows, you'll want to [refactor the routing configuration](#refactor-the-routing-configuration-into-a-routing-module) into a separate file and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose of routing in feature modules.
 -->
-이렇게 설정된 `RouterModule`을 `AppModule`에 로드하면 간단한 네비게이션 설정은 끝납니다. 애플리케이션이 점점 복잡해질수록 라우팅 규칙은 **[라우팅 모듈 (Routing module)](#routing-module)**로 [리팩토링](#refactor-the-routing-configuration-into-a-routing-module)해야 할 수도 있습니다. 라우팅 모듈은 기능 모듈에서 라우팅을 담당하는 코드를 따로 모아 만든 서비스 모듈을 의미합니다.
+이렇게 설정된 `RouterModule`을 `AppModule`에 로드하면 간단한 네비게이션 설정은 끝납니다. 애플리케이션이 점점 복잡해질수록 라우팅 규칙은 **[라우팅 모듈 (Routing module)](#routing-module)**로 [리팩토링](#라우터-설정을-라우팅-모듈-로-옮기기)해야 할 수도 있습니다. 라우팅 모듈은 기능 모듈에서 라우팅을 담당하는 코드를 따로 모아 만든 서비스 모듈을 의미합니다.
 
 </div>
 
@@ -1817,30 +1817,55 @@ Here are the files discussed in this milestone.
 
 {@a routing-module}
 
+<!--
 ## Milestone 2: *Routing module*
+-->
+## 2단계: *라우팅 모듈 (Routing module)*
 
+<!--
 In the initial route configuration, you provided a simple setup with two routes used
 to configure the application for routing. This is perfectly fine for simple routing.
 As the application grows and you make use of more `Router` features, such as guards,
 resolvers, and child routing, you'll naturally want to refactor the routing configuration into its own file.
 We recommend moving the routing information into a special-purpose module called a *Routing Module*.
+-->
+초기 버전의 라우터 설정에는 간단한 라우팅 규칙 2개가 정의되어 있습니다. 라우팅 규칙이 간단하다면 이런 방식으로 정의해도 아무 문제 없습니다. 하지만 애플리케이션이 점점 커지면 `Router`의 기능을 좀 더 많이 사용하게 되고, 가드나 리졸버, 자식 라우팅과 같은 기능을 도입하게 되면 라우팅 설정을 개별 파일로 리팩토링하는 것이 더 편할 수 있습니다.
+Angular 코어 팀은 라우팅과 관련된 설정을 따로 모아 특별한 용도의 모듈인 *라우팅 모듈* 로 정의하는 것을 권장합니다.
 
+<!--
 The **Routing Module** has several characteristics:
 
 * Separates routing concerns from other application concerns.
 * Provides a module to replace or remove when testing the application.
 * Provides a well-known location for routing service providers including guards and resolvers.
 * Does **not** declare components.
+-->
+**라우팅 모듈**은 다음과 같은 특징이 있습니다:
+
+* 애플리케이션 로직과 라우팅 로직을 분리하기 위해 존재합니다.
+* 애플리케이션을 테스트할 때 라우팅 모듈을 다른 설정으로 대체하거나 제거한 채로 실행할 수 있습니다.
+* 라우터 가드나 리졸버에 대한 프로바이더를 제공합니다.
+* 라우팅 모듈에는 컴포넌트를 정의하지 **않습니다**.
 
 {@a integrate-routing}
 
+<!--
 ### Integrate routing with your app
+-->
+### 라우팅 규칙 정리하기
 
+<!--
 The sample routing application does not include routing by default.
 When you use the [Angular CLI](cli) to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
 When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
+-->
+애플리케이션을 새로 만들면 라우팅 설정이 존재하지 않는 것이 기본 값입니다.
+그런데 애플리케이션을 [Angular CLI](cli)로 생성하면서 `--routing` 옵션을 사용하면 라우팅 모듈을 함께 생성할 수 있습니다.
+이 옵션은 [`ng new`](cli/new) 명령으로 새로운 프로젝트를 생성하거나 [`ng generate app`](cli/generate)로 새로운 애플리케이션을 생성할 떄 사용할 수 있습니다. 그러면 Angular CLI가 `@angular/router` npm 패키지를 로드하는 `app-routing.module.ts` 파일을 생성합니다.
+라우팅 모듈은 프로젝트와 애플리케이션에 존재하는 모든 NgModule에 적용할 수 있습니다.
 
+<!--
 For example, the following command generates an NgModule that can use routing.
 
 ```sh
@@ -1849,18 +1874,33 @@ ng generate module my-module --routing
 
 This creates a separate file named `my-module-routing.module.ts` to store the NgModule's routes.
 The file includes an empty `Routes` object that you can fill with routes to different components and NgModules.
+-->
+NgModule을 만들면서 라우팅 모듈을 함께 생성하려면 다음 명령을 실행하면 됩니다.
+
+```sh
+ng generate module my-module --routing
+```
+
+그러면 NgModule이 생성되면서 이 모듈의 라우팅 설정을 담당하는 `my-module-routing.module.ts` 파일이 생성됩니다.
+이 파일에는 비어있는 `Routes` 객체가 정의되어 있으며, 이 객체로 라우팅 규칙을 설정할 수 있습니다.
 
 {@a routing-refactor}
 
-
+<!--
 ### Refactor the routing configuration into a _routing module_
+-->
+### 라우터 설정을 _라우팅 모듈_ 로 옮기기
 
+<!--
 Create an `AppRouting` module in the `/app` folder to contain the routing configuration.
+-->
+`/app` 폴더에 `AppRouting` 모듈을 생성하려면 다음 명령을 실행하면 됩니다.
 
 <code-example language="none" class="code-shell">
   ng generate module app-routing --module app --flat
 </code-example>
 
+<!--
 Import the `CrisisListComponent`, `HeroListComponent`, and `PageNotFoundCompponent` symbols
 just like you did in the `app.module.ts`. Then move the `Router` imports
 and routing configuration, including `RouterModule.forRoot`, into this routing module.
@@ -1869,13 +1909,23 @@ Re-export the Angular `RouterModule` by adding it to the module `exports` array.
 By re-exporting the `RouterModule` here the components declared in `AppModule` will have access to router directives such as `RouterLink` and `RouterOutlet`.
 
 After these steps, the file should look like this.
+-->
+그리고 나면 `app.module.ts` 파일에 작성했던 것처럼 `CrisisListComponent`, `HeroListComponent`, `PageNotFoundComponent` 심볼을 로드해서 라우팅 규칙을 등록하면 됩니다. `app.module.ts` 파일에 설정했던 `Router` 설정이 라우팅 모듈로 옮겨가기 때문에 `RouterModule.forRoot` 메소드를 사용하는 부분도 라우팅 모듈로 옮기면 됩니다.
+
+라우팅 모듈에서는 Angular에서 제공하는 `RouterModule`을 모듈의 `exports` 배열에 등록해서 모듈 외부로 공개해야 합니다.
+그러면 `AppModule` 범위에서도 `RouterLink`나 `RouterOutlet`과 같은 라우터 관련 디렉티브를 사용할 수 있습니다.
+
+이 과정을 마치고 나면 라우팅 모듈이 다음과 같이 구성될 것입니다.
 
 <code-example path="router/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts">
 
 </code-example>
 
+<!--
 Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in 
 the `imports` array.
+-->
+그 다음에는 `app.module.ts` 파일을 숮성합니다. 이전에 `imports` 배열에 등록했던 `RouterModule.forRoot`를 제거하고 라우팅 모듈을 로드합니다.
 
 <code-example path="router/src/app/app.module.2.ts" header="src/app/app.module.ts">
 
@@ -1886,41 +1936,66 @@ the `imports` array.
 <div class="alert is-helpful">
 
 
-
+<!--
 Later in this guide you will create [multiple routing modules](#heroes-functionality) and discover that
 you must import those routing modules [in the correct order](#routing-module-order).
-
+-->
+이 가이드 문서를 따라가다보면 [라우팅 모듈을 여러개](#heroes-functionality) 만들게 될 것입니다. 이 때 라우팅 모듈은 [올바른 순서로](#routing-module-order) 로드되어야 합니다.
 
 </div>
 
 
-
+<!--
 The application continues to work just the same, and you can use `AppRoutingModule` as
 the central place to maintain future routing configuration.
+-->
+이렇게 수정해도 애플리케이션은 이전과 똑같이 동작합니다. `AppRoutingModule`은 애플리케이션 전체 라우팅 설정 중에서도 가장 기초적인 부분을 담당할 것입니다.
 
 
 {@a why-routing-module}
 
-
+<!--
 ### Do you need a _Routing Module_?
+-->
+### _라우팅 모듈_ 이 꼭 필요한가요?
 
+<!--
 The _Routing Module_ *replaces* the routing configuration in the root or feature module.
 _Either_ configure routes in the Routing Module _or_ within the module itself but not in both.
+-->
+_라우팅 모듈_ 은 애플리케이션 최상위 모듈이나 기능 모듈에 있는 라우팅 설정을 *대체하는* 용도로 사용합니다.
+사실 라우팅 규칙은 라우팅 모듈에 있거나 기능 모듈 안에 있어도 상관없지만, 양쪽 모두에 있는 경우는 피하는 것이 좋습니다.
 
+<!--
 The Routing Module is a design choice whose value is most obvious when the configuration is complex
 and includes specialized guard and resolver services.
 It can seem like overkill when the actual configuration is dead simple.
+-->
+라우팅 규칙에 가드와 리졸버를 사용해서 규칙 전체가 복잡해졌을 때 이 로직을 따로 분리해서 모듈을 단순하게 유지하는 것이 라우팅 모듈을 사용하는 이유입니다.
+그래서 라우팅 규칙이 복잡하지 않다면 굳이 라우팅 모듈을 사용할 필요는 없습니다.
 
+<!--
 Some developers skip the Routing Module (for example, `AppRoutingModule`) when the configuration is simple and
 merge the routing configuration directly into the companion module (for example, `AppModule`).
 
 Choose one pattern or the other and follow that pattern consistently.
+-->
+어떤 개발자들은 라우팅 규칙이 그리 복잡하지 않을 때 라우팅 모듈(ex. `AppRoutingModule`)을 생략하고 관련 모듈(ex. `AppModule`)에 라우팅 규칙을 바로 선언하는 것을 선호하기도 합니다.
 
+라우팅 모듈을 사용하거나 사용하지 않는 것 자체는 중요하지 않습니다. 일관된 패턴으로 코드를 작성하는 것이 중요합니다.
+
+<!--
 Most developers should always implement a Routing Module for the sake of consistency.
 It keeps the code clean when configuration becomes complex.
 It makes testing the feature module easier.
 Its existence calls attention to the fact that a module is routed.
 It is where developers expect to find and expand routing configuration.
+-->
+그런데 라우팅 모듈을 도입하는 방식으로 코드의 일관성을 유지하는 개발자들이 더 많은 것으로 보입니다. 그리고 라우팅 모듈을 도입했을 때 얻는 장점도 많습니다.
+라우팅 모듈을 도입하면 라우팅 설정의 복잡도와 관계없이 모듈의 코드는 간결하게 유지할 수 있습니다.
+기능 모듈을 테스트하기도 더 편해집니다.
+모듈에서는 라우팅 된 이후의 로직만 신경쓰면 됩니다.
+라우팅 규칙이 정의된 파일을 쉽게 찾을 수 있으며, 확장하기도 편합니다.
 
 {@a heroes-feature}
 
