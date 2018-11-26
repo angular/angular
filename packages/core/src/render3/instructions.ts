@@ -1220,7 +1220,7 @@ export function elementStyleProp(
     return hackImplementationOfElementStyleProp(
         index, styleIndex, value, suffix, directive);  // supported in next PR
   let valueToAdd: string|null = null;
-  if (value) {
+  if (value !== null) {
     if (suffix) {
       // when a suffix is applied then it will bypass
       // sanitization entirely (b/c a new string is created)

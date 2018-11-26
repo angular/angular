@@ -1459,6 +1459,10 @@ describe('render3 integration test', () => {
         fixture.update();
         expect(fixture.html).toEqual('<span style="font-size: 200px;"></span>');
 
+        fixture.component.time = 0;
+        fixture.update();
+        expect(fixture.html).toEqual('<span style="font-size: 0px;"></span>');
+
         fixture.component.time = null;
         fixture.update();
         expect(fixture.html).toEqual('<span></span>');
