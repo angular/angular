@@ -127,6 +127,8 @@ export interface NgModuleDecorator {
 
 /**
  * Type of the NgModule metadata.
+ *
+ * @publicApi
  */
 export interface NgModule {
   /**

@@ -20,6 +20,9 @@ const UNDEFINED = new Object();
 
 let _nextRootElementId = 0;
 
+/**
+ * @publicApi
+ */
 export interface TestBed {
   platform: PlatformRef;
 
@@ -35,16 +38,12 @@ export interface TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @publicApi
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @publicApi
    */
   resetTestEnvironment(): void;
 
@@ -119,8 +118,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @publicApi
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
@@ -132,8 +129,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @publicApi
    */
   static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
 
@@ -291,8 +286,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @publicApi
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
@@ -308,8 +301,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @publicApi
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();

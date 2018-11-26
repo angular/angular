@@ -47,6 +47,10 @@ export declare function asNativeElements(debugEls: DebugElement[]): any;
 
 export declare function assertPlatform(requiredToken: any): PlatformRef;
 
+export interface Attribute {
+    attributeName?: string;
+}
+
 export declare const Attribute: AttributeDecorator;
 
 export declare enum ChangeDetectionStrategy {
@@ -95,6 +99,21 @@ export declare type CompilerOptions = {
     preserveWhitespaces?: boolean;
 };
 
+export interface Component extends Directive {
+    animations?: any[];
+    changeDetection?: ChangeDetectionStrategy;
+    encapsulation?: ViewEncapsulation;
+    entryComponents?: Array<Type<any> | any[]>;
+    interpolation?: [string, string];
+    moduleId?: string;
+    preserveWhitespaces?: boolean;
+    styleUrls?: string[];
+    styles?: string[];
+    template?: string;
+    templateUrl?: string;
+    viewProviders?: Provider[];
+}
+
 export declare const Component: ComponentDecorator;
 
 export interface ComponentDecorator {
@@ -137,7 +156,7 @@ export interface ConstructorSansProvider {
     deps?: any[];
 }
 
-export declare const ContentChild: ContentChildDecorator;
+export declare type ContentChild = Query;
 
 export interface ContentChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -148,7 +167,7 @@ export interface ContentChildDecorator {
     }): ContentChild;
 }
 
-export declare const ContentChildren: ContentChildrenDecorator;
+export declare type ContentChildren = Query;
 
 export interface ContentChildrenDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -242,6 +261,21 @@ export declare function defineInjector(options: {
 
 export declare function destroyPlatform(): void;
 
+export interface Directive {
+    exportAs?: string;
+    host?: {
+        [key: string]: string;
+    };
+    inputs?: string[];
+    jit?: true;
+    outputs?: string[];
+    providers?: Provider[];
+    queries?: {
+        [key: string]: any;
+    };
+    selector?: string;
+}
+
 export declare const Directive: DirectiveDecorator;
 
 export interface DirectiveDecorator {
@@ -307,7 +341,14 @@ export interface GetTestability {
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability | null;
 }
 
+export interface Host {
+}
+
 export declare const Host: HostDecorator;
+
+export interface HostBinding {
+    hostPropertyName?: string;
+}
 
 export declare const HostBinding: HostBindingDecorator;
 
@@ -316,12 +357,25 @@ export interface HostDecorator {
     new (): Host;
 }
 
+export interface HostListener {
+    args?: string[];
+    eventName?: string;
+}
+
 export declare const HostListener: HostListenerDecorator;
 
 export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
+export interface Inject {
+    token: any;
+}
+
 export declare const Inject: InjectDecorator;
+
+export interface Injectable {
+    providedIn?: Type<any> | 'root' | null;
+}
 
 export declare const Injectable: InjectableDecorator;
 
@@ -383,6 +437,10 @@ export declare const INJECTOR: InjectionToken<Injector>;
 
 export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;
+}
+
+export interface Input {
+    bindingPropertyName?: string;
 }
 
 export declare const Input: InputDecorator;
@@ -480,6 +538,18 @@ export interface ModuleWithProviders<T = any /** TODO(alxhub): remove default wh
 
 export declare type NgIterable<T> = Array<T> | Iterable<T>;
 
+export interface NgModule {
+    bootstrap?: Array<Type<any> | any[]>;
+    declarations?: Array<Type<any> | any[]>;
+    entryComponents?: Array<Type<any> | any[]>;
+    exports?: Array<Type<any> | any[]>;
+    id?: string;
+    imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+    jit?: true;
+    providers?: Provider[];
+    schemas?: Array<SchemaMetadata | any[]>;
+}
+
 export declare const NgModule: NgModuleDecorator;
 
 export declare abstract class NgModuleFactory<T> {
@@ -539,6 +609,9 @@ export interface OnInit {
     ngOnInit(): void;
 }
 
+export interface Optional {
+}
+
 export declare const Optional: OptionalDecorator;
 
 export interface OptionalDecorator {
@@ -546,9 +619,18 @@ export interface OptionalDecorator {
     new (): Optional;
 }
 
+export interface Output {
+    bindingPropertyName?: string;
+}
+
 export declare const Output: OutputDecorator;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
+
+export interface Pipe {
+    name: string;
+    pure?: boolean;
+}
 
 export declare const Pipe: PipeDecorator;
 
@@ -576,6 +658,14 @@ export interface Predicate<T> {
 }
 
 export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
+
+export interface Query {
+    descendants: boolean;
+    first: boolean;
+    isViewQuery: boolean;
+    read: any;
+    selector: any;
+}
 
 export declare abstract class Query {
 }
@@ -742,6 +832,9 @@ export declare enum SecurityContext {
     RESOURCE_URL = 5
 }
 
+export interface Self {
+}
+
 export declare const Self: SelfDecorator;
 
 export interface SelfDecorator {
@@ -761,6 +854,9 @@ export declare class SimpleChange {
 
 export interface SimpleChanges {
     [propName: string]: SimpleChange;
+}
+
+export interface SkipSelf {
 }
 
 export declare const SkipSelf: SkipSelfDecorator;
@@ -841,7 +937,7 @@ export declare class Version {
 
 export declare const VERSION: Version;
 
-export declare const ViewChild: ViewChildDecorator;
+export declare type ViewChild = Query;
 
 export interface ViewChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -852,7 +948,7 @@ export interface ViewChildDecorator {
     }): ViewChild;
 }
 
-export declare const ViewChildren: ViewChildrenDecorator;
+export declare type ViewChildren = Query;
 
 export interface ViewChildrenDecorator {
     (selector: Type<any> | Function | string, opts?: {

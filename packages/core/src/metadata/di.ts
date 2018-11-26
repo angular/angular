@@ -50,7 +50,7 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForE
 /**
  * Type of the Attribute decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface AttributeDecorator {
   /**
@@ -99,6 +99,8 @@ export interface AttributeDecorator {
 
 /**
  * Type of the Attribute metadata.
+ *
+ * @publicApi
  */
 export interface Attribute { attributeName?: string; }
 
@@ -113,6 +115,8 @@ export const Attribute: AttributeDecorator =
 
 /**
  * Type of the Query metadata.
+ *
+ * @publicApi
  */
 export interface Query {
   descendants: boolean;
@@ -181,6 +185,7 @@ export interface ContentChildrenDecorator {
  *
  *
  * @Annotation
+ * @publicApi
  */
 export type ContentChildren = Query;
 
@@ -237,7 +242,7 @@ export interface ContentChildDecorator {
  *
  * @see `ContentChild`.
  *
- *
+ * @publicApi
  */
 export type ContentChild = Query;
 
@@ -246,6 +251,7 @@ export type ContentChild = Query;
  *
  *
  * @Annotation
+ *
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
@@ -293,6 +299,8 @@ export interface ViewChildrenDecorator {
 
 /**
  * Type of the ViewChildren metadata.
+ *
+ * @publicApi
  */
 export type ViewChildren = Query;
 
@@ -359,6 +367,8 @@ export interface ViewChildDecorator {
 
 /**
  * Type of the ViewChild metadata.
+ *
+ * @publicApi
  */
 export type ViewChild = Query;
 
