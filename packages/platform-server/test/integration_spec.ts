@@ -580,7 +580,7 @@ class HiddenModule {
            });
          })));
 
-      fixmeIvy('to investigate') &&
+      fixmeIvy('FW-672: SVG xlink:href is sanitized to :xlink:href (extra ":")') &&
           it('works with SVG elements', async(() => {
                renderModule(SVGServerModule, {document: doc}).then(output => {
                  expect(output).toBe(
@@ -590,7 +590,8 @@ class HiddenModule {
                });
              }));
 
-      fixmeIvy('to investigate') &&
+      fixmeIvy(
+          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
           it('works with animation', async(() => {
                renderModule(AnimationServerModule, {document: doc}).then(output => {
                  expect(output).toContain('Works!');
