@@ -20,6 +20,14 @@ load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
 
 rules_angular_dependencies()
 
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+
+rules_typescript_dependencies()
+
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+
+rules_nodejs_dependencies()
+
 http_archive(
     name = "io_bazel_rules_sass",
     sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",

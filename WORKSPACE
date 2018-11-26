@@ -21,6 +21,14 @@ rules_angular_dependencies()
 # These are the dependencies only for us
 rules_angular_dev_dependencies()
 
+# Install transitive deps of rules_typescript
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+rules_typescript_dependencies()
+
+# Install transitive deps of rules_nodejs
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+rules_nodejs_dependencies()
+
 #
 # Point Bazel to WORKSPACEs that live in subdirectories
 #

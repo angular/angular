@@ -7,8 +7,6 @@
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load(":rules_nodejs_package.bzl", "rules_nodejs_dependencies")
-load(":rules_typescript_package.bzl", "rules_typescript_dependencies")
 
 def rules_angular_dependencies():
     """
@@ -21,7 +19,6 @@ def rules_angular_dependencies():
     #
     # Download Bazel toolchain dependencies as needed by build actions
     #
-    # TODO(gmagolan): updated to next tagged rules_typescript release
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
@@ -47,9 +44,6 @@ def rules_angular_dependencies():
             "https://github.com/bazelbuild/bazel-toolchains/archive/5124557861ebf4c0b67f98180bff1f8551e0b421.tar.gz",
         ],
     )
-
-    rules_typescript_dependencies()
-    rules_nodejs_dependencies()
 
 def rules_angular_dev_dependencies():
     """
