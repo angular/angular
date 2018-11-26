@@ -265,6 +265,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     this.destroyCbs !.forEach(fn => fn());
     this.destroyCbs = null;
+    this.hostView.destroy();
   }
   onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
