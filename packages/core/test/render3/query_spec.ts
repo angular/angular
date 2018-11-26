@@ -562,13 +562,13 @@ describe('query', () => {
       });
 
       /**
-       * BREAKING CHANGE: this tests asserts different behaviour as compared to Renderer2 when it
+       * BREAKING CHANGE: this tests asserts different behavior as compared to Renderer2 when it
        * comes to descendants: false option and <ng-container>.
        *
-       * Previous behaviour: queries with descendants: false would descend into <ng-container>.
-       * New behaviour: queries with descendants: false would NOT descend into <ng-container>.
+       * Previous behavior: queries with descendants: false would descend into <ng-container>.
+       * New behavior: queries with descendants: false would NOT descend into <ng-container>.
        *
-       * Reasoning: the Renderer2 behaviour is inconsistent and hard to explain to users when it
+       * Reasoning: the Renderer2 behavior is inconsistent and hard to explain to users when it
        * comes to descendants: false interpretation (see
        * https://github.com/angular/angular/issues/14769#issuecomment-356609267) so we are changing
        * it in ngIvy.
