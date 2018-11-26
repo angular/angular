@@ -231,9 +231,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "firstTemplatePass"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -262,9 +259,6 @@
   },
   {
     "name": "getFirstParentNative"
-  },
-  {
-    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementContainer"

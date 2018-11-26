@@ -783,9 +783,6 @@
     "name": "findViaComponent"
   },
   {
-    "name": "firstTemplatePass"
-  },
-  {
     "name": "flattenUnsubscriptionErrors"
   },
   {
@@ -859,9 +856,6 @@
   },
   {
     "name": "getFirstParentNative"
-  },
-  {
-    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementContainer"
