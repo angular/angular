@@ -14,7 +14,7 @@ import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 export class Esm5Renderer extends EsmRenderer {
   constructor(
-      protected host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle,
+      host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle,
       sourcePath: string, targetPath: string) {
     super(host, isCore, bundle, sourcePath, targetPath);
   }
