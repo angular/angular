@@ -201,7 +201,7 @@ export class RippleRenderer {
       this._containerRect = null;
     }
 
-    // For ripples that are not active anymore, don't re-un the fade-out animation.
+    // For ripples that are not active anymore, don't re-run the fade-out animation.
     if (!wasActive) {
       return;
     }
