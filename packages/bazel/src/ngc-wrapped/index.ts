@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -21,9 +21,6 @@ const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
 
 const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
 
-// TODO(alexeagle): probably not needed, see
-// https://github.com/bazelbuild/rules_typescript/issues/28
-const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
@@ -58,7 +55,6 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
-    allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     compilerOpts,
     tsHost,
@@ -84,9 +80,8 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
-  allowNonHermeticReads: boolean,
+export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
+                         inputs, expectedOuts, gatherDiagnostics}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -104,7 +99,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
+    fileLoader = new CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     const inputKeys = Object.keys(inputs);
@@ -186,8 +181,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
-      generatedFileModuleResolver);
+      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
 
   // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
   if (isInIvyMode) {
@@ -209,16 +203,20 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     // compilationTargetSrc.
     // However we still want to give it an AMD module name for devmode.
     // We can't easily tell which file is the synthetic one, so we build up the path we expect
-    // it to have
-    // and compare against that.
+    // it to have and compare against that.
     if (fileName ===
         path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
       return true;
-    // Also handle the case when angular is built from source as an external repository
-    if (fileName ===
-        path.join(
-            compilerOpts.baseUrl, 'external/angular', bazelOpts.package,
-            compilerOpts.flatModuleOutFile + '.ts'))
+    // Also handle the case the target is in an external repository.
+    // Pull the workspace name from the target which is formatted as `@wksp//package:target`
+    // if it the target is from an external workspace. If the target is from the local
+    // workspace then it will be formatted as `//package:target`.
+    const targetWorkspace = bazelOpts.target.split('/')[0].replace(/^@/, '');
+    if (targetWorkspace &&
+        fileName ===
+            path.join(
+                compilerOpts.baseUrl, 'external', targetWorkspace, bazelOpts.package,
+                compilerOpts.flatModuleOutFile + '.ts'))
       return true;
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
   };
@@ -291,10 +289,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
           program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
-            afterTs: [
-              ...(customTransformers.after || []),
-              fixUmdModuleDeclarations((sf: ts.SourceFile) => bazelHost.amdModuleName(sf)),
-            ],
+            afterTs: customTransformers.after,
           });
 
   if (!gatherDiagnostics) {

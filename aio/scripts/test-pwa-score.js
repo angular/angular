@@ -11,21 +11,28 @@
  */
 
 // Imports
+const chromeLauncher = require('chrome-launcher');
 const lighthouse = require('lighthouse');
-const chromeLauncher = require('lighthouse/chrome-launcher');
 const printer = require('lighthouse/lighthouse-cli/printer');
-const config = require('lighthouse/lighthouse-core/config/default.js');
+const config = require('lighthouse/lighthouse-core/config/default-config.js');
+const logger = require('lighthouse-logger');
 
 // Constants
 const CHROME_LAUNCH_OPTS = {};
+const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
 const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
 
-// Specify the path and flags for Chrome on Travis
+// Specify the path and flags for Chrome on Travis.
 if (process.env.TRAVIS) {
   process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
   CHROME_LAUNCH_OPTS.chromeFlags = ['--no-sandbox'];
+}
+
+// Be less verbose on CI.
+if (process.env.CI) {
+  LIGHTHOUSE_FLAGS.logLevel = 'error';
 }
 
 // Run
@@ -42,18 +49,20 @@ function _main(args) {
     skipHttpsAudits(config);
   }
 
-  launchChromeAndRunLighthouse(url, {}, config).
+  logger.setLevel(LIGHTHOUSE_FLAGS.logLevel);
+
+  launchChromeAndRunLighthouse(url, LIGHTHOUSE_FLAGS, config).
     then(results => processResults(results, logFile)).
     then(score => evaluateScore(minScore, score)).
     catch(onError);
 }
 
 function evaluateScore(expectedScore, actualScore) {
-  console.log('Lighthouse PWA score:');
-  console.log(`  - Expected: ${expectedScore} / 100 (or higher)`);
-  console.log(`  - Actual:   ${actualScore} / 100`);
+  console.log('\nLighthouse PWA score:');
+  console.log(`  - Expected: ${expectedScore.toFixed(0).padStart(3)} / 100 (or higher)`);
+  console.log(`  - Actual:   ${actualScore.toFixed(0).padStart(3)} / 100\n`);
 
-  if (actualScore < expectedScore) {
+  if (isNaN(actualScore) || (actualScore < expectedScore)) {
     throw new Error(`PWA score is too low. (${actualScore} < ${expectedScore})`);
   }
 }
@@ -87,20 +96,30 @@ function parseInput(args) {
 }
 
 function processResults(results, logFile) {
-  let promise = Promise.resolve();
+  const categories = results.lhr.categories;
+  const report = results.report;
 
-  if (logFile) {
-    console.log(`Saving results in '${logFile}'...`);
-    console.log(`(LightHouse viewer: ${VIEWER_URL})`);
+  return Promise.resolve().
+    then(() => {
+      if (logFile) {
+        console.log(`Saving results in '${logFile}'...`);
+        console.log(`(LightHouse viewer: ${VIEWER_URL})`);
 
-    // Remove the artifacts, which are not necessary for the report.
-    // (Saves ~1,500,000 lines of formatted JSON output \o/)
-    results.artifacts = undefined;
+        return printer.write(report, printer.OutputMode.json, logFile);
+      }
+    }).
+    then(() => {
+      const categoryData = Object.keys(categories).map(name => categories[name]);
+      const maxTitleLen = Math.max(...categoryData.map(({title}) => title.length));
 
-    promise = printer.write(results, 'json', logFile);
-  }
-
-  return promise.then(() => Math.round(results.score));
+      console.log('\nAudit scores:');
+      categoryData.forEach(({title, score}) => {
+        const paddedTitle = `${title}:`.padEnd(maxTitleLen + 1);
+        const paddedScore = (score * 100).toFixed(0).padStart(3);
+        console.log(`  - ${paddedTitle} ${paddedScore} / 100`);
+      });
+    }).
+    then(() => categories.pwa.score * 100);
 }
 
 function skipHttpsAudits(config) {

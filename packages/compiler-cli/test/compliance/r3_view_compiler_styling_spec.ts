@@ -94,7 +94,13 @@ describe('compiler compliance: styling', () => {
            }
          };
 
-         const template = 'div.cool { color: blue; }", ":host.nice p { color: gold; }';
+         const template = `
+         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+           …
+           styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
+           encapsulation: 1
+         })
+         `;
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
@@ -128,12 +134,14 @@ describe('compiler compliance: styling', () => {
           factory:function MyComponent_Factory(t){
             return new (t || MyComponent)();
           },
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
-          animations: [{name: "foo123"}, {name: "trigger123"}]
+          encapsulation: 2,
+          data: {
+            animations: [{name: 'foo123'}, {name: 'trigger123'}]
+          }
         });
       `;
 
@@ -168,12 +176,14 @@ describe('compiler compliance: styling', () => {
           factory:function MyComponent_Factory(t){
             return new (t || MyComponent)();
           },
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
           template:  function MyComponent_Template(rf, $ctx$) {
           },
-          animations: []
+          encapsulation: 2,
+          data: {
+            animations: []
+          }
         });
       `;
 
@@ -219,7 +229,8 @@ describe('compiler compliance: styling', () => {
             if (rf & 2) {
               $r3$.ɵelementAttribute(0, "@foo", $r3$.ɵbind(ctx.exp));
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 
@@ -304,7 +315,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -315,12 +325,13 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵelementStylingMap(0, null, $ctx$.myStyleExp);
-                  $r3$.ɵelementStylingProp(0, 1, $ctx$.myWidth);
-                  $r3$.ɵelementStylingProp(0, 2, $ctx$.myHeight);
+                  $r3$.ɵelementStyleProp(0, 1, $ctx$.myWidth);
+                  $r3$.ɵelementStyleProp(0, 2, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
 
@@ -363,7 +374,6 @@ describe('compiler compliance: styling', () => {
             factory: function MyComponent_Factory(t) {
               return new (t || MyComponent)();
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 0,
             template:  function MyComponent_Template(rf, ctx) {
@@ -373,16 +383,58 @@ describe('compiler compliance: styling', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵelementStylingProp(0, 0, ctx.myImage);
+                $r3$.ɵelementStyleProp(0, 0, ctx.myImage);
                 $r3$.ɵelementStylingApply(0);
               }
-            }
+            },
+            encapsulation: 2
           });
         `;
 
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+
+    it('should support [style.foo.suffix] style bindings with a suffix', () => {
+
+      const files = {
+        app: {
+          'spec.ts': `
+             import {Component, NgModule} from '@angular/core';
+
+             @Component({
+               selector: 'my-component',
+               template: \`<div [style.font-size.px]="12">\`
+             })
+             export class MyComponent {
+             }
+
+             @NgModule({declarations: [MyComponent]})
+             export class MyModule {}
+         `
+        }
+      };
+
+      const template = `
+          const $e0_styles$= ["font-size"];
+          …
+          template:  function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling(null, _c0);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStyleProp(0, 0, 12, "px");
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+     `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+
+    });
   });
 
   describe('[class]', () => {
@@ -461,7 +513,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -477,7 +528,8 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("banana"));
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
 
@@ -518,7 +570,6 @@ describe('compiler compliance: styling', () => {
               factory:function MyComponent_Factory(t){
                 return new (t || MyComponent)();
               },
-              features: [$r3$.ɵPublicFeature],
               consts: 1,
               vars: 2,
               template:  function MyComponent_Template(rf, $ctx$) {
@@ -531,9 +582,341 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("round"));
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("height:100px"), $r3$.ɵsanitizeStyle);
                 }
-              }
+              },
+              encapsulation: 2
             });
         `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+  });
+
+  describe('[style] mixed with [class]', () => {
+    it('should combine [style] and [class] bindings into a single instruction', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`<div [style]="myStyleExp" [class]="myClassExp"></div>\`
+                })
+                export class MyComponent {
+                  myStyleExp = [{color:'red'}, {color:'blue', duration:1000}]
+                  myClassExp = 'foo bar apple';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $ctx$.myClassExp, $ctx$.myStyleExp);
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should stamp out pipe definitions in the creation block if used by styling bindings',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`<div [style]="myStyleExp | stylePipe" [class]="myClassExp | classPipe"></div>\`
+                })
+                export class MyComponent {
+                  myStyleExp = [{color:'red'}, {color:'blue', duration:1000}]
+                  myClassExp = 'foo bar apple';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵpipe(1, "classPipe");
+              $r3$.ɵpipe(2, "stylePipe");
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $r3$.ɵpipeBind1(1, 0, $ctx$.myClassExp), $r3$.ɵpipeBind1(2, 2, $ctx$.myStyleExp));
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should properly offset multiple style pipe references for styling bindings', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`
+                    <div [class]="{}"
+                         [class.foo]="fooExp | pipe:2000"
+                         [style]="myStyleExp | pipe:1000"
+                         [style.bar]="barExp | pipe:3000"
+                         [style.baz]="bazExp | pipe:4000">
+                         {{ item }}</div>\`
+                })
+                export class MyComponent {
+                  myStyleExp = {};
+                  fooExp = 'foo';
+                  barExp = 'bar';
+                  bazExp = 'baz';
+                  items = [1,2,3];
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          template: function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling($e0_styling$, $e1_styling$, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵpipe(1, "pipe");
+              $r3$.ɵpipe(2, "pipe");
+              $r3$.ɵpipe(3, "pipe");
+              $r3$.ɵpipe(4, "pipe");
+              $r3$.ɵtext(5);
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $e2_styling$, $r3$.ɵpipeBind2(1, 1, $ctx$.myStyleExp, 1000));
+              $r3$.ɵelementStyleProp(0, 0, $r3$.ɵpipeBind2(2, 4, $ctx$.barExp, 3000));
+              $r3$.ɵelementStyleProp(0, 1, $r3$.ɵpipeBind2(3, 7, $ctx$.bazExp, 4000));
+              $r3$.ɵelementClassProp(0, 0, $r3$.ɵpipeBind2(4, 10, $ctx$.fooExp, 2000));
+              $r3$.ɵelementStylingApply(0);
+              $r3$.ɵtextBinding(5, $r3$.ɵinterpolation1(" ", $ctx$.item, ""));
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+  });
+
+  describe('@Component host styles/classes', () => {
+    it('should generate style/class instructions for a host component creation definition', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule, HostBinding} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: '',
+                  host: {
+                    'style': 'width:200px; height:500px',
+                    'class': 'foo baz'
+                  }
+                })
+                export class MyComponent {
+                  @HostBinding('style')
+                  myStyle = {width:'100px'};
+
+                  @HostBinding('class')
+                  myClass = {bar:false};
+
+                  @HostBinding('style.color')
+                  myColorProp = 'red';
+
+                  @HostBinding('class.foo')
+                  myFooClass = 'red';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          const _c0 = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
+          const _c1 = ["width", "height", "color", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
+          …
+          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
+              $r3$.ɵelementStyleProp(elIndex, 2, ctx.myColorProp, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate style/class instructions for multiple host binding definitions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule, HostBinding} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: '',
+                  host: {
+                    '[style.height.pt]': 'myHeightProp',
+                    '[class.bar]': 'myBarClass'
+                  }
+                })
+                export class MyComponent {
+                  myHeightProp = 20;
+                  myBarClass = true;
+
+                  @HostBinding('style')
+                  myStyle = {};
+
+                  @HostBinding('style.width')
+                  myWidthProp = '500px';
+
+                  @HostBinding('class.foo')
+                  myFooClass = true;
+
+                  @HostBinding('class')
+                  myClasses = {a:true, b:true};
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+          const _c0 = ["bar", "foo"];
+          const _c1 = ["height", "width"];
+          …
+          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(elIndex, ctx.myClasses, ctx.myStyle, ctx);
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myHeightProp, "pt", ctx);
+              $r3$.ɵelementStyleProp(elIndex, 1, ctx.myWidthProp, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myBarClass, ctx);
+              $r3$.ɵelementClassProp(elIndex, 1, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
+          }
+          `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate styling instructions for multiple directives that contain host binding definitions',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Directive, Component, NgModule, HostBinding} from '@angular/core';
+
+                @Directive({selector: '[myWidthDir]'})
+                export class WidthDirective {
+                  @HostBinding('style.width')
+                  myWidth = 200;
+
+                  @HostBinding('class.foo')
+                  myFooClass = true;
+                }
+
+                @Directive({selector: '[myHeightDir]'})
+                export class HeightDirective {
+                  @HostBinding('style.height')
+                  myHeight = 200;
+
+                  @HostBinding('class.bar')
+                  myBarClass = true;
+                }
+
+                @Component({
+                  selector: 'my-component',
+                  template: '
+                    <div myWidthDir myHeightDir></div>
+                  ',
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+          const _c0 = ["foo"];
+          const _c1 = ["width"];
+          const _c2 = ["bar"];
+          const _c3 = ["height"];
+          …
+          function WidthDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c0, _c1, null, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
+          }
+          …
+          function HeightDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementStyling(_c2, _c3, null, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myHeight, null, ctx);
+              $r3$.ɵelementClassProp(elIndex, 0, ctx.myBarClass, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
+          }
+          …
+          `;
 
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');

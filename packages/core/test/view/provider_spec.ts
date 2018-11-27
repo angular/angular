@@ -13,6 +13,7 @@ import {TestBed, withModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
   describe(`View Providers`, () => {
@@ -113,7 +114,7 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
         expect(debugCtx.nodeIndex).toBe(1);
       });
 
-      describe('deps', () => {
+      fixmeIvy('unknown') && describe('deps', () => {
         class Dep {}
 
         it('should inject deps from the same element', () => {

@@ -7,18 +7,20 @@
  */
 
 import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
-import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
+import {PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {fixmeIvy} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
+import {ivyEnabled} from '../../core/src/ivy_switch';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -533,8 +535,12 @@ class HiddenModule {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
         doc = '<html><head></head><body><app></app></body></html>';
         called = false;
-        (global as any)['window'] = undefined;
-        (global as any)['document'] = undefined;
+        // We use `window` and `document` directly in some parts of render3 for ivy
+        // Only set it to undefined for legacy
+        if (!ivyEnabled) {
+          (global as any)['window'] = undefined;
+          (global as any)['document'] = undefined;
+        }
       });
       afterEach(() => { expect(called).toBe(true); });
 
@@ -574,25 +580,28 @@ class HiddenModule {
            });
          })));
 
-      it('works with SVG elements', async(() => {
-           renderModule(SVGServerModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
-             called = true;
-           });
-         }));
+      fixmeIvy('FW-672: SVG xlink:href is sanitized to :xlink:href (extra ":")') &&
+          it('works with SVG elements', async(() => {
+               renderModule(SVGServerModule, {document: doc}).then(output => {
+                 expect(output).toBe(
+                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                     '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+                 called = true;
+               });
+             }));
 
-      it('works with animation', async(() => {
-           renderModule(AnimationServerModule, {document: doc}).then(output => {
-             expect(output).toContain('Works!');
-             expect(output).toContain('ng-trigger-myAnimation');
-             expect(output).toContain('opacity:1;');
-             expect(output).toContain('transform:translate3d(0 , 0 , 0);');
-             expect(output).toContain('font-weight:bold;');
-             called = true;
-           });
-         }));
+      fixmeIvy(
+          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
+          it('works with animation', async(() => {
+               renderModule(AnimationServerModule, {document: doc}).then(output => {
+                 expect(output).toContain('Works!');
+                 expect(output).toContain('ng-trigger-myAnimation');
+                 expect(output).toContain('opacity:1;');
+                 expect(output).toContain('transform:translate3d(0 , 0 , 0);');
+                 expect(output).toContain('font-weight:bold;');
+                 called = true;
+               });
+             }));
 
       it('should handle ViewEncapsulation.Native', async(() => {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
@@ -682,6 +691,7 @@ class HiddenModule {
              expect(ref.injector.get(Http) instanceof Http).toBeTruthy();
            });
          }));
+
       it('can make Http requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -702,6 +712,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -721,6 +732,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('works when HttpModule is included before ServerModule', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -740,6 +752,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('works when HttpModule is included after ServerModule', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -759,6 +772,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('throws when given a relative URL', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -770,6 +784,7 @@ class HiddenModule {
            });
          }));
     });
+
     describe('HttpClient', () => {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
@@ -778,6 +793,7 @@ class HiddenModule {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
+
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -793,6 +809,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
@@ -809,6 +826,7 @@ class HiddenModule {
              });
            });
          }));
+
       it('can use HttpInterceptor that injects HttpClient', () => {
         const platform =
             platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);

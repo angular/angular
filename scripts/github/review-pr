@@ -45,7 +45,13 @@ async function main(args) {
   shell.echo(`Fetching pull request #${prNumber} with ${prNumber} SHA(s) into branch range: pr/${prNumber}_base..pr/${prNumber}_top`);
   shell.exec(`git fetch -f git@github.com:angular/angular.git pull/${prNumber}/head:pr/${prNumber}_top`);
 
+  shell.exec(`git branch -f pr/${prNumber}_bottom pr/${prNumber}_top~${prShaCount - 1}`);
   shell.exec(`git branch -f pr/${prNumber}_base pr/${prNumber}_top~${prShaCount}`);
+
+  // Create aliases
+  shell.exec(`git branch -f pr/TOP pr/${prNumber}_top`);
+  shell.exec(`git branch -f pr/BASE pr/${prNumber}_base`);
+  shell.exec(`git branch -f pr/BOTTOM pr/${prNumber}_bottom`);
 
   shell.echo(`======================================================================================`);
   shell.exec(`git log --oneline --color pr/${prNumber}_base..pr/${prNumber}_top`);

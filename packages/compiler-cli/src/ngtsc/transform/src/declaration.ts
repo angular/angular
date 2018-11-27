@@ -8,8 +8,9 @@
 
 import * as ts from 'typescript';
 
+import {ImportManager, translateType} from '../../translator';
+
 import {CompileResult} from './api';
-import {ImportManager, translateType} from './translator';
 
 
 

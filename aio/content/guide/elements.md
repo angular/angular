@@ -107,7 +107,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Firefox</td>
-  <td> Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true. Planned to be enabled by default in version 60/61.</td>
+  <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
 </tr>
 <tr>
   <td>Edge</td>
@@ -119,7 +119,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 
 In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's `tsconfig.json`. As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
 
-Use the [Angular CLI](https://cli.angular.io/) to automatically set up your project with the correct polyfill: `ng add @angular/elements --name=*your_project_name*`.
+Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill: `ng add @angular/elements --name=*your_project_name*`.
 - For more information about polyfills, see [polyfill documentation](https://www.webcomponents.org/polyfills).
 
 - For more information about Angular browser support, see [Browser Support](guide/browser-support).
@@ -142,19 +142,19 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
 <code-tabs>
 
-  <code-pane title="popup.component.ts" path="elements/src/app/popup.component.ts">
+  <code-pane header="popup.component.ts" path="elements/src/app/popup.component.ts">
 
   </code-pane>
 
-  <code-pane title="popup.service.ts" path="elements/src/app/popup.service.ts">
+  <code-pane header="popup.service.ts" path="elements/src/app/popup.service.ts">
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="elements/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="elements/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="app.component.ts" path="elements/src/app/app.component.ts">
+  <code-pane header="app.component.ts" path="elements/src/app/app.component.ts">
 
   </code-pane>
 </code-tabs>

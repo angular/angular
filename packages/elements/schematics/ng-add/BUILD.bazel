@@ -13,13 +13,14 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
     ],
 )
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         [
             "index_spec.ts",
@@ -29,6 +30,7 @@ ts_library(
         ":ng-add",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -39,5 +41,6 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//packages/elements/schematics:collection",
+        "@ngdeps//@schematics/angular",
     ],
 )

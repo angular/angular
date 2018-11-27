@@ -57,6 +57,8 @@ enum TranslationType {
  *   If not specified, host system settings are used.
  *
  * See {@link DatePipe} for more details.
+ *
+ * @publicApi
  */
 export function formatDate(
     value: string | number | Date, format: string, locale: string, timezone?: string): string {

@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 
-import {DoCheck, Input, TemplateRef, ViewContainerRef, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
-import {getRenderedText} from '../../src/render3/component';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
-import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
-import {createRendererType2} from '../../src/view/index';
+import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
@@ -106,6 +104,50 @@ describe('component', () => {
       expect(fixture.html).toEqual('injector');
     });
 
+  });
+
+  it('should instantiate components at high indices', () => {
+
+    // {{ name }}
+    class Comp {
+      // @Input
+      name = '';
+
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selectors: [['comp']],
+        factory: () => new Comp(),
+        consts: 1,
+        vars: 1,
+        template: (rf: RenderFlags, ctx: Comp) => {
+          if (rf & RenderFlags.Create) {
+            text(0);
+          }
+          if (rf & RenderFlags.Update) {
+            textBinding(0, bind(ctx.name));
+          }
+        },
+        inputs: {name: 'name'}
+      });
+    }
+
+    // Artificially inflating the slot IDs of this app component to mimic an app
+    // with a very large view
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(4097, 'comp');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(4097, 'name', bind(ctx.name));
+      }
+    }, 4098, 1, [Comp]);
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<comp></comp>');
+
+    fixture.component.name = 'some name';
+    fixture.update();
+    expect(fixture.html).toEqual('<comp>some name</comp>');
   });
 
 });
@@ -386,7 +428,7 @@ describe('recursive components', () => {
     });
   }
 
-  (TreeComponent.ngComponentDef as ComponentDefInternal<TreeComponent>).directiveDefs =
+  (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
       () => [TreeComponent.ngComponentDef];
 
   /**
@@ -446,7 +488,7 @@ describe('recursive components', () => {
     }
   }
 
-  (NgIfTree.ngComponentDef as ComponentDefInternal<NgIfTree>).directiveDefs =
+  (NgIfTree.ngComponentDef as ComponentDef<NgIfTree>).directiveDefs =
       () => [NgIfTree.ngComponentDef, NgIf.ngDirectiveDef];
 
   function _buildTree(currDepth: number): TreeNode {

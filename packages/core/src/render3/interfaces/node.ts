@@ -6,19 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StylingContext} from '../styling';
-
-import {LContainer} from './container';
-import {LInjector} from './injector';
-import {LQueries} from './query';
-import {RComment, RElement, RText} from './renderer';
+import {StylingContext} from './styling';
 import {LViewData, TView} from './view';
-
 
 
 /**
  * TNodeType corresponds to the TNode.type property. It contains information
- * on how to map a particular set of bits in LNode.flags to the node type.
+ * on how to map a particular set of bits in TNode.flags to the node type.
  */
 export const enum TNodeType {
   Container = 0b000,
@@ -27,6 +21,7 @@ export const enum TNodeType {
   Element = 0b011,
   ViewOrElement = 0b010,
   ElementContainer = 0b100,
+  IcuContainer = 0b101,
 }
 
 /**
@@ -45,104 +40,25 @@ export const enum TNodeFlags {
   /** This bit is set if the node has any content queries */
   hasContentQuery = 0b00000000000000000100000000000000,
 
+  /** This bit is set if the node has any directives that contain [class properties */
+  hasClassInput = 0b00000000000000001000000000000000,
+
   /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 15,
+  DirectiveStartingIndexShift = 16,
 }
 
 /**
- * LNode is an internal data structure which is used for the incremental DOM algorithm.
- * The "L" stands for "Logical" to differentiate between `RNodes` (actual rendered DOM
- * node) and our logical representation of DOM nodes, `LNodes`.
- *
- * The data structure is optimized for speed and size.
- *
- * In order to be fast, all subtypes of `LNode` should have the same shape.
- * Because size of the `LNode` matters, many fields have multiple roles depending
- * on the `LNode` subtype.
- *
- * See: https://en.wikipedia.org/wiki/Inline_caching#Monomorphic_inline_caching
- *
- * NOTE: This is a private data structure and should not be exported by any of the
- * instructions.
+ * Corresponds to the TNode.providerIndexes property.
  */
-export interface LNode {
-  /**
-   * The associated DOM node. Storing this allows us to:
-   *  - append children to their element parents in the DOM (e.g. `parent.native.appendChild(...)`)
-   *  - retrieve the sibling elements of text nodes whose creation / insertion has been delayed
-   */
-  readonly native: RComment|RElement|RText|null;
+export const enum TNodeProviderIndexes {
+  /** The index of the first provider on this node is encoded on the least significant bits */
+  ProvidersStartIndexMask = 0b00000000000000001111111111111111,
 
-  /**
-   * If regular LElementNode, LTextNode, and LProjectionNode then `data` will be null.
-   * If LElementNode with component, then `data` contains LViewData.
-   * If LViewNode, then `data` contains the LViewData.
-   * If LContainerNode, then `data` contains LContainer.
-   */
-  readonly data: LViewData|LContainer|null;
-
-  /** The injector associated with this node. Necessary for DI. */
-  nodeInjector: LInjector|null;
-
-  /**
-   * A pointer to an LContainerNode created by directives requesting ViewContainerRef
-   */
-  // TODO(kara): Remove when removing LNodes
-  dynamicLContainerNode: LContainerNode|null;
+  /** The count of view providers from the component on this node is encoded on the 16 most
+     significant bits */
+  CptViewProvidersCountShift = 16,
+  CptViewProvidersCountShifter = 0b00000000000000010000000000000000,
 }
-
-
-/** LNode representing an element. */
-export interface LElementNode extends LNode {
-  /** The DOM element associated with this node. */
-  readonly native: RElement;
-
-  /** If Component then data has LView (light DOM) */
-  readonly data: LViewData|null;
-}
-
-/** LNode representing <ng-container>. */
-export interface LElementContainerNode extends LNode {
-  /** The DOM comment associated with this node. */
-  readonly native: RComment;
-  readonly data: null;
-}
-
-/** LNode representing a #text node. */
-export interface LTextNode extends LNode {
-  /** The text node associated with this node. */
-  native: RText;
-  readonly data: null;
-  dynamicLContainerNode: null;
-}
-
-/** Abstract node which contains root nodes of a view. */
-export interface LViewNode extends LNode {
-  readonly native: null;
-  readonly data: LViewData;
-  dynamicLContainerNode: null;
-}
-
-/** Abstract node container which contains other views. */
-export interface LContainerNode extends LNode {
-  /*
-   * This comment node is appended to the container's parent element to mark where
-   * in the DOM the container's child views should be added.
-   *
-   * If the container is a root node of a view, this comment will not be appended
-   * until the parent view is processed.
-   */
-  native: RComment;
-  readonly data: LContainer;
-}
-
-
-export interface LProjectionNode extends LNode {
-  readonly native: null;
-  readonly data: null;
-  dynamicLContainerNode: null;
-}
-
 /**
  * A set of marker values to be used in the attributes arrays. Those markers indicate that some
  * items are not regular attributes and the processing should be adapted accordingly.
@@ -172,7 +88,7 @@ export const enum AttributeMarker {
 export type TAttributes = (string | AttributeMarker)[];
 
 /**
- * LNode binding data (flyweight) for a particular node that is shared between all templates
+ * Binding data (flyweight) for a particular node that is shared between all templates
  * of a specific type.
  *
  * If a property is:
@@ -187,14 +103,29 @@ export interface TNode {
   type: TNodeType;
 
   /**
-   * Index of the TNode in TView.data and corresponding LNode in LView.data.
+   * Index of the TNode in TView.data and corresponding native element in LViewData.
    *
-   * This is necessary to get from any TNode to its corresponding LNode when
+   * This is necessary to get from any TNode to its corresponding native element when
    * traversing the node tree.
    *
    * If index is -1, this is a dynamically created container node or embedded view node.
    */
   index: number;
+
+  /**
+   * The index of the closest injector in this node's LViewData.
+   *
+   * If the index === -1, there is no injector on this node or any ancestor node in this view.
+   *
+   * If the index !== -1, it is the index of this node's injector OR the index of a parent injector
+   * in the same view. We pass the parent injector index down the node tree of a view so it's
+   * possible to find the parent injector without walking a potentially deep node tree. Injector
+   * indices are not set across view boundaries because there could be multiple component hosts.
+   *
+   * If tNode.injectorIndex === tNode.parent.injectorIndex, then the index belongs to a parent
+   * injector.
+   */
+  injectorIndex: number;
 
   /**
    * This number stores two values using its bits:
@@ -206,6 +137,14 @@ export interface TNode {
    * with a node without searching the whole directives array.
    */
   flags: TNodeFlags;
+
+  /**
+   * This number stores two values using its bits:
+   *
+   * - the index of the first provider on that node (first 16 bits)
+   * - the count of view providers from the component on this node (last 16 bits)
+   */
+  providerIndexes: TNodeProviderIndexes;
 
   /** The tag name associated with this node. */
   tagName: string|null;
@@ -267,7 +206,7 @@ export interface TNode {
   /**
    * The TView or TViews attached to this node.
    *
-   * If this TNode corresponds to an LContainerNode with inline views, the container will
+   * If this TNode corresponds to an LContainer with inline views, the container will
    * need to store separate static data for each of its view blocks (TView[]). Otherwise,
    * nodes in inline views with the same index as nodes in their parent views will overwrite
    * each other, as they are in the same template.
@@ -279,10 +218,10 @@ export interface TNode {
    *   [{tagName: 'div', attrs: ...}, null],     // V(0) TView
    *   [{tagName: 'button', attrs ...}, null]    // V(1) TView
    *
-   * If this TNode corresponds to an LContainerNode with a template (e.g. structural
+   * If this TNode corresponds to an LContainer with a template (e.g. structural
    * directive), the template's TView will be stored here.
    *
-   * If this TNode corresponds to an LElementNode, tViews will be null .
+   * If this TNode corresponds to an element, tViews will be null .
    */
   tViews: TView|TView[]|null;
 
@@ -317,12 +256,7 @@ export interface TNode {
   parent: TElementNode|TContainerNode|null;
 
   /**
-   * A pointer to a TContainerNode created by directives requesting ViewContainerRef
-   */
-  dynamicContainerNode: TNode|null;
-
-  /**
-   * If this node is part of an i18n block, it indicates whether this container is part of the DOM
+   * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
    * If this node is not part of an i18n block, this field is null.
    */
   detached: boolean|null;
@@ -367,7 +301,7 @@ export interface TNode {
   projection: (TNode|null)[]|number|null;
 }
 
-/** Static data for an LElementNode  */
+/** Static data for an element  */
 export interface TElementNode extends TNode {
   /** Index in the data[] array */
   index: number;
@@ -388,7 +322,7 @@ export interface TElementNode extends TNode {
   projection: (TNode|null)[]|null;
 }
 
-/** Static data for an LTextNode  */
+/** Static data for a text node */
 export interface TTextNode extends TNode {
   /** Index in the data[] array */
   index: number;
@@ -403,7 +337,7 @@ export interface TTextNode extends TNode {
   projection: null;
 }
 
-/** Static data for an LContainerNode */
+/** Static data for an LContainer */
 export interface TContainerNode extends TNode {
   /**
    * Index in the data[] array.
@@ -425,8 +359,7 @@ export interface TContainerNode extends TNode {
   projection: null;
 }
 
-
-/** Static data for an LElementContainerNode */
+/** Static data for an <ng-container> */
 export interface TElementContainerNode extends TNode {
   /** Index in the LViewData[] array. */
   index: number;
@@ -436,7 +369,22 @@ export interface TElementContainerNode extends TNode {
   projection: null;
 }
 
-/** Static data for an LViewNode  */
+/** Static data for an ICU expression */
+export interface TIcuContainerNode extends TNode {
+  /** Index in the LViewData[] array. */
+  index: number;
+  child: TElementNode|TTextNode|null;
+  parent: TElementNode|TElementContainerNode|null;
+  tViews: null;
+  projection: null;
+  /**
+   * Indicates the current active case for an ICU expression.
+   * It is null when there is no active case.
+   */
+  activeCaseIndex: number|null;
+}
+
+/** Static data for a view  */
 export interface TViewNode extends TNode {
   /** If -1, it's a dynamically created view. Otherwise, it is the view block ID. */
   index: number;

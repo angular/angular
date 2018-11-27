@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Output} from '../../src/core';
-import {EMPTY} from '../../src/render3/definition';
-import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
-import {ComponentDefInternal, DirectiveDefInternal, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
+import {Inject, InjectionToken} from '../../src/core';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
+
+import {ComponentFixture, createComponent} from './render_util';
 
 describe('InheritDefinitionFeature', () => {
   it('should inherit lifecycle hooks', () => {
@@ -36,7 +36,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const finalDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const finalDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
 
     expect(finalDef.onInit).toBe(SuperDirective.prototype.ngOnInit);
@@ -75,7 +75,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       foo: 'superFoo',
@@ -118,7 +118,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.outputs).toEqual({
       foo: 'superFoo',
@@ -152,7 +152,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       testIn: 'testIn',
@@ -216,7 +216,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = Class1.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = Class1.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.inputs).toEqual({
       input1: 'input1',
@@ -288,7 +288,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = Class1.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = Class1.ngDirectiveDef as DirectiveDef<any>;
 
     expect(subDef.outputs).toEqual({
       alias1: 'output1',
@@ -300,36 +300,63 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should compose hostBindings', () => {
-    const log: Array<[string, number, number]> = [];
+    let subDir !: SubDirective;
 
     class SuperDirective {
+      id = 'my-id';
+
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
-        hostBindings: (directiveIndex: number, elementIndex: number) => {
-          log.push(['super', directiveIndex, elementIndex]);
+        hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'id', bind(ctx.id));
+          }
         },
+        hostVars: 1,
         factory: () => new SuperDirective(),
       });
     }
 
     class SubDirective extends SuperDirective {
+      title = 'my-title';
+
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
-        hostBindings: (directiveIndex: number, elementIndex: number) => {
-          log.push(['sub', directiveIndex, elementIndex]);
+        hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'title', bind(ctx.title));
+          }
         },
-        factory: () => new SubDirective(),
+        hostVars: 1,
+        factory: () => subDir = new SubDirective(),
         features: [InheritDefinitionFeature]
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
 
-    subDef.hostBindings !(1, 2);
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['subDir', '']);
+      }
+    }, 1, 0, [SubDirective]);
 
-    expect(log).toEqual([['super', 1, 2], ['sub', 1, 2]]);
+    const fixture = new ComponentFixture(App);
+    const divEl = fixture.hostElement.querySelector('div') as HTMLElement;
+
+    expect(divEl.id).toEqual('my-id');
+    expect(divEl.title).toEqual('my-title');
+
+    subDir.title = 'new-title';
+    fixture.update();
+    expect(divEl.id).toEqual('my-id');
+    expect(divEl.title).toEqual('new-title');
+
+    subDir.id = 'new-id';
+    fixture.update();
+    expect(divEl.id).toEqual('new-id');
+    expect(divEl.title).toEqual('new-title');
   });
 
   it('should compose viewQuery', () => {
@@ -364,7 +391,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubComponent.ngComponentDef as ComponentDefInternal<any>;
+    const subDef = SubComponent.ngComponentDef as ComponentDef<any>;
 
     const context = {foo: 'bar'};
 
@@ -395,9 +422,9 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
-    subDef.contentQueries !();
+    subDef.contentQueries !(0);
 
     expect(log).toEqual(['super', 'sub']);
   });
@@ -428,7 +455,7 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
     subDef.contentQueriesRefresh !(1, 2);
 
@@ -457,50 +484,90 @@ describe('InheritDefinitionFeature', () => {
     }).toThrowError('Directives cannot inherit Components');
   });
 
-  it('should run inherited features', () => {
-    const log: any[] = [];
+  it('should inherit ngOnChanges', () => {
+    const log: string[] = [];
+    let subDir !: SubDirective;
 
+    class SuperDirective {
+      someInput = '';
+
+      ngOnChanges() { log.push('on changes!'); }
+
+      static ngDirectiveDef = defineDirective({
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        factory: () => new SuperDirective(),
+        features: [NgOnChangesFeature],
+        inputs: {someInput: 'someInput'}
+      });
+    }
+
+    class SubDirective extends SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        factory: () => subDir = new SubDirective(),
+        features: [InheritDefinitionFeature],
+      });
+    }
+
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['subDir', '']);
+      }
+    }, 1, 0, [SubDirective]);
+
+    const fixture = new ComponentFixture(App);
+    expect(log).toEqual(['on changes!']);
+  });
+
+  it('should NOT inherit providers', () => {
+    let otherDir !: OtherDirective;
+
+    const SOME_DIRS = new InjectionToken('someDirs');
+
+    // providers: [{ provide: SOME_DIRS, useClass: SuperDirective, multi: true }]
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         factory: () => new SuperDirective(),
-        features: [
-          (arg: any) => { log.push('super1', arg); },
-          (arg: any) => { log.push('super2', arg); },
-        ]
+        features: [ProvidersFeature([{provide: SOME_DIRS, useClass: SuperDirective, multi: true}])],
       });
     }
 
+    // providers: [{ provide: SOME_DIRS, useClass: SubDirective, multi: true }]
     class SubDirective extends SuperDirective {
-      @Output()
-      baz = new EventEmitter();
-
-      @Output()
-      qux = new EventEmitter();
-
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature, (arg: any) => { log.push('sub1', arg); }]
+        features: [
+          ProvidersFeature([{provide: SOME_DIRS, useClass: SubDirective, multi: true}]),
+          InheritDefinitionFeature
+        ],
       });
     }
 
-    const superDef = SuperDirective.ngDirectiveDef as DirectiveDefInternal<any>;
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+    class OtherDirective {
+      constructor(@Inject(SOME_DIRS) public dirs: any) {}
 
-    expect(log).toEqual([
-      'super1',
-      superDef,
-      'super2',
-      superDef,
-      'super1',
-      subDef,
-      'super2',
-      subDef,
-      'sub1',
-      subDef,
-    ]);
+      static ngDirectiveDef = defineDirective({
+        type: OtherDirective,
+        selectors: [['', 'otherDir', '']],
+        factory: () => otherDir = new OtherDirective(directiveInject(SOME_DIRS)),
+      });
+    }
+
+    /** <div otherDir subDir></div> */
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['otherDir', '', 'subDir', '']);
+      }
+    }, 1, 0, [OtherDirective, SubDirective, SuperDirective]);
+
+    const fixture = new ComponentFixture(App);
+    expect(otherDir.dirs.length).toEqual(1);
+    expect(otherDir.dirs[0] instanceof SubDirective).toBe(true);
   });
 });

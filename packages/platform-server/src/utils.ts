@@ -75,7 +75,7 @@ the server-rendered app can be properly bootstrapped into a client app.`);
  * Do not use this in a production server environment. Use pre-compiled {@link NgModuleFactory} with
  * {@link renderModuleFactory} instead.
  *
- * @experimental
+ * @publicApi
  */
 export function renderModule<T>(
     module: Type<T>, options: {document?: string, url?: string, extraProviders?: StaticProvider[]}):
@@ -91,7 +91,7 @@ export function renderModule<T>(
  * `url` is the URL for the current render request.
  * `extraProviders` are the platform level providers for the current render request.
  *
- * @experimental
+ * @publicApi
  */
 export function renderModuleFactory<T>(
     moduleFactory: NgModuleFactory<T>,

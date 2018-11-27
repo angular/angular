@@ -80,7 +80,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('class PublicExport');
+    expect(keywordsDoc.data[0].titleWords).toEqual('class publicexport');
   });
 
   it('should add heading words to the search terms', () => {
@@ -128,6 +128,46 @@ describe('generateKeywords processor', () => {
     );
   });
 
+  it('should add inherited member doc properties to the search terms', () => {
+    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const parentClass =       {
+      docType: 'class',
+      name: 'ParentClass',
+      members: [
+        { name: 'parentMember1' },
+      ],
+      statics: [
+        { name: 'parentMember2' },
+      ],
+    };
+    const parentInterface = {
+      docType: 'interface',
+      name: 'ParentInterface',
+      members: [
+        { name: 'parentMember3' },
+      ]
+    };
+
+    const childClass = {
+      docType: 'class',
+      name: 'Child',
+      members: [
+        { name: 'childMember1' }
+      ],
+      statics: [
+        { name: 'childMember2' }
+      ],
+      extendsClauses: [{ doc: parentClass }],
+      implementsClauses: [{ doc: parentInterface }]
+    };
+    const docs = [childClass, parentClass, parentInterface];
+    processor.$process(docs);
+    const keywordsDoc = docs[docs.length - 1];
+    expect(keywordsDoc.data[0].members.split(' ').sort().join(' ')).toEqual(
+      'childmember1 childmember2 parentmember1 parentmember2 parentmember3'
+    );
+  });
+
   it('should process terms prefixed with "ng" to include the term stripped of "ng"', () => {
     const processor = processorFactory(mockLogger, mockReadFilesProcessor);
     const docs = [
@@ -141,7 +181,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('ngController Controller');
+    expect(keywordsDoc.data[0].titleWords).toEqual('ngcontroller controller');
     expect(keywordsDoc.data[0].headingWords).toEqual('model ngmodel');
     expect(keywordsDoc.data[0].keywords).toContain('class');
     expect(keywordsDoc.data[0].keywords).toContain('ngclass');
@@ -163,10 +203,11 @@ describe('generateKeywords processor', () => {
       [{
         'title':'SomeClass',
         'type':'class',
-        'titleWords':'SomeClass',
+        'titleWords':'someclass',
         'headingWords':'heading some someclass',
         'keywords':'api class documentation for is someclass the',
-        'members':''
+        'members':'',
+        'deprecated': false,
       }]
     );
   });

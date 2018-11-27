@@ -8,10 +8,12 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
 import {NG_BASE_DEF} from '../render3/fields';
+import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
+import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {noop} from '../util/noop';
 import {fillProperties} from '../util/property';
 
 import {ViewEncapsulation} from './view';
@@ -20,6 +22,7 @@ import {ViewEncapsulation} from './view';
 
 /**
  * Type of the Directive decorator / constructor function.
+ * @publicApi
  */
 export interface DirectiveDecorator {
   /**
@@ -133,6 +136,7 @@ export interface Directive {
    *   id: string;
    *
    * ```
+   *
    */
   inputs?: string[];
 
@@ -167,6 +171,7 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   outputs?: string[];
 
@@ -198,6 +203,7 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   exportAs?: string;
 
@@ -347,14 +353,17 @@ export interface Directive {
 
 /**
  * Type of the Directive metadata.
+ *
+ * @publicApi
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => R3_COMPILE_DIRECTIVE(type, meta));
+    (type: Type<any>, meta: Directive) => SWITCH_COMPILE_DIRECTIVE(type, meta));
 
 /**
  * Component decorator interface
  *
+ * @publicApi
  */
 export interface ComponentDecorator {
   /**
@@ -430,6 +439,67 @@ export interface ComponentDecorator {
    *
    * ```
    *
+   * ### Preserving whitespace
+   *
+   * Removing whitespace can greatly reduce AOT-generated code size and speed up view creation.
+   * As of Angular 6, the default for `preserveWhitespaces` is false (whitespace is removed).
+   * To change the default setting for all components in your application, set
+   * the `preserveWhitespaces` option of the AOT compiler.
+   *
+   * By default, the AOT compiler removes whitespace characters as follows:
+   * * Trims all whitespaces at the beginning and the end of a template.
+   * * Removes whitespace-only text nodes. For example,
+   *
+   * ```
+   * <button>Action 1</button>  <button>Action 2</button>
+   * ```
+   *
+   * becomes:
+   *
+   * ```
+   * <button>Action 1</button><button>Action 2</button>
+   * ```
+   *
+   * * Replaces a series of whitespace characters in text nodes with a single space.
+   * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
+   * * Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
+   * where whitespace characters are significant.
+   *
+   * Note that these transformations can influence DOM nodes layout, although impact
+   * should be minimal.
+   *
+   * You can override the default behavior to preserve whitespace characters
+   * in certain fragments of a template. For example, you can exclude an entire
+   * DOM sub-tree by using the `ngPreserveWhitespaces` attribute:
+   *
+   * ```html
+   * <div ngPreserveWhitespaces>
+   *     whitespaces are preserved here
+   *     <span>    and here </span>
+   * </div>
+   * ```
+   *
+   * You can force a single space to be preserved in a text node by using `&ngsp;`,
+   * which is replaced with a space character by Angular's template
+   * compiler:
+   *
+   * ```html
+   * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+   * <!-->compiled to be equivalent to:</>
+   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * Note that sequences of `&ngsp;` are still collapsed to just one space character when
+   * the `preserveWhitespaces` option is set to `false`.
+   *
+   * ```html
+   * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+   * <!-->compiled to be equivalent to:</>
+   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * To preserve sequences of whitespace characters, use the
+   * `ngPreserveWhitespaces` attribute.
    *
    * @Annotation
    */
@@ -547,97 +617,18 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
- * @usageNotes
- *
- * ### Using animations
- *
- * The following snippet shows an animation trigger in a component's
- * metadata. The trigger is attached to an element in the component's
- * template, using "@_trigger_name_", and a state expression that is evaluated
- * at run time to determine whether the animation should start.
- *
- * ```typescript
- * @Component({
- *   selector: 'animation-cmp',
- *   templateUrl: 'animation-cmp.html',
- *   animations: [
- *     trigger('myTriggerName', [
- *       state('on', style({ opacity: 1 }),
- *       state('off', style({ opacity: 0 }),
- *       transition('on => off', [
- *         animate("1s")
- *       ])
- *     ])
- *   ]
- * })
- * ```
- *
- * ```html
- * <!-- animation-cmp.html -->
- * <div @myTriggerName="expression">...</div>
- * ```
- *
- * ### Preserving whitespace
- *
- * Removing whitespace can greatly reduce AOT-generated code size, and speed up view creation.
- * As of Angular 6, default for `preserveWhitespaces` is false (whitespace is removed).
- * To change the default setting for all components in your application, set
- * the `preserveWhitespaces` option of the AOT compiler.
- *
- * Current implementation removes whitespace characters as follows:
- * - Trims all whitespaces at the beginning and the end of a template.
- * - Removes whitespace-only text nodes. For example,
- * `<button>Action 1</button>  <button>Action 2</button>` becomes
- * `<button>Action 1</button><button>Action 2</button>`.
- * - Replaces a series of whitespace characters in text nodes with a single space.
- * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
- * - Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
- * where whitespace characters are significant.
- *
- * Note that these transformations can influence DOM nodes layout, although impact
- * should be minimal.
- *
- * You can override the default behavior to preserve whitespace characters
- * in certain fragments of a template. For example, you can exclude an entire
- * DOM sub-tree by using the `ngPreserveWhitespaces` attribute:
- *
- * ```html
- * <div ngPreserveWhitespaces>
- *     whitespaces are preserved here
- *     <span>    and here </span>
- * </div>
- * ```
- *
- * You can force a single space to be preserved in a text node by using `&ngsp;`,
- * which is replaced with a space character by Angular's template
- * compiler:
- *
- * ```html
- * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
- * <!-->compiled to be equivalent to:</>
- *  <a>Spaces</a> <a>between</a> <a>links.</a>
- * ```
- *
- * Note that sequences of `&ngsp;` are still collapsed to just one space character when
- * the `preserveWhitespaces` option is set to `false`.
- *
- * ```html
- * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
- * <!-->compiled to be equivalent to:</>
- *  <a>Spaces</a> <a>between</a> <a>links.</a>
- * ```
- *
- * To preserve sequences of whitespace characters, use the
- * `ngPreserveWhitespaces` attribute.
- *
  * @Annotation
+ * @publicApi
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined, (type: Type<any>, meta: Component) => R3_COMPILE_COMPONENT(type, meta));
+    Directive, undefined,
+    (type: Type<any>, meta: Component) => SWITCH_COMPILE_COMPONENT(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface PipeDecorator {
   /**
@@ -676,17 +667,16 @@ export interface Pipe {
 }
 
 /**
- *
- *
  * @Annotation
+ * @publicApi
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => R3_COMPILE_PIPE(type, meta));
+    (type: Type<any>, meta: Pipe) => SWITCH_COMPILE_PIPE(type, meta));
 
 
 /**
- *
+ * @publicApi
  */
 export interface InputDecorator {
   /**
@@ -760,6 +750,7 @@ export interface Input {
    *
    * class App {}
    * ```
+   *
    */
   bindingPropertyName?: string;
 }
@@ -799,8 +790,8 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
     };
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const Input: InputDecorator = makePropDecorator(
     'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
@@ -808,6 +799,8 @@ export const Input: InputDecorator = makePropDecorator(
 
 /**
  * Type of the Output decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface OutputDecorator {
   /**
@@ -835,8 +828,8 @@ export interface OutputDecorator {
 export interface Output { bindingPropertyName?: string; }
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
@@ -846,6 +839,8 @@ export const Output: OutputDecorator = makePropDecorator(
 
 /**
  * Type of the HostBinding decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostBindingDecorator {
   /**
@@ -875,6 +870,7 @@ export interface HostBindingDecorator {
    *   prop;
    * }
    * ```
+   *
    */
   (hostPropertyName?: string): any;
   new (hostPropertyName?: string): any;
@@ -887,8 +883,8 @@ export interface HostBindingDecorator {
 export interface HostBinding { hostPropertyName?: string; }
 
 /**
- *
  * @Annotation
+ * @publicApi
  */
 export const HostBinding: HostBindingDecorator =
     makePropDecorator('HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
@@ -896,6 +892,8 @@ export const HostBinding: HostBindingDecorator =
 
 /**
  * Type of the HostListener decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface HostListenerDecorator {
   (eventName: string, args?: string[]): any;
@@ -946,6 +944,21 @@ export interface HostListener {
  * ```
  *
  * @Annotation
+ * @publicApi
  */
 export const HostListener: HostListenerDecorator =
     makePropDecorator('HostListener', (eventName?: string, args?: string[]) => ({eventName, args}));
+
+
+
+export const SWITCH_COMPILE_COMPONENT__POST_R3__ = render3CompileComponent;
+export const SWITCH_COMPILE_DIRECTIVE__POST_R3__ = render3CompileDirective;
+export const SWITCH_COMPILE_PIPE__POST_R3__ = render3CompilePipe;
+
+const SWITCH_COMPILE_COMPONENT__PRE_R3__ = noop;
+const SWITCH_COMPILE_DIRECTIVE__PRE_R3__ = noop;
+const SWITCH_COMPILE_PIPE__PRE_R3__ = noop;
+
+const SWITCH_COMPILE_COMPONENT: typeof render3CompileComponent = SWITCH_COMPILE_COMPONENT__PRE_R3__;
+const SWITCH_COMPILE_DIRECTIVE: typeof render3CompileDirective = SWITCH_COMPILE_DIRECTIVE__PRE_R3__;
+const SWITCH_COMPILE_PIPE: typeof render3CompilePipe = SWITCH_COMPILE_PIPE__PRE_R3__;

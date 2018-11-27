@@ -8,7 +8,7 @@ This guide explains how to specify metadata and apply available compiler options
 
 <div class="alert is-helpful"
 
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
+  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
 
 </div>
 
@@ -21,7 +21,7 @@ Angular offers two ways to compile your application:
 1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
 1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
 
-JIT compilation is the default when you run the _build-only_ or the _build-and-serve-locally_ CLI commands:
+JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands: 
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -30,7 +30,7 @@ JIT compilation is the default when you run the _build-only_ or the _build-and-s
 
 {@a compile}
 
-For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-and-serve-locally_ CLI commands:
+For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
 
 <code-example language="sh" class="code-shell">
   ng build --aot
@@ -41,7 +41,7 @@ For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-
 
 The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
 
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki) for details, especially the [`build` topic](https://github.com/angular/angular-cli/wiki/build).
+See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
 
 </div>
 
@@ -1241,7 +1241,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   ### Non-null type assertion operator
 
   Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator)
-  to suppress the `Object is possibly 'undefined'` error when it is incovienent to use
+  to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use
   `*ngIf` or when some constraint in the component ensures that the expression is always
   non-null when the binding expression is interpolated.
 
@@ -1366,7 +1366,7 @@ for example, the content of annotations (such as a component's template), which 
 emits to the `.js` file but not to the `.d.ts` file.
 
 This option should be set to `true` if you are using TypeScript's `--outFile` option, because the metadata files
-are not valid for this style of TypeScript output. It is not recommeded to use `--outFile` with
+are not valid for this style of TypeScript output. It is not recommended to use `--outFile` with
 Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
 
 This option can also be set to `true` when using factory summaries because the factory summaries
@@ -1461,7 +1461,7 @@ JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
 ### *annotationsAs*
 
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
-annotations and decorators are unnaffected. Default is `static fields`.
+annotations and decorators are unaffected. Default is `static fields`.
 
 <style>
   td, th {vertical-align: top}

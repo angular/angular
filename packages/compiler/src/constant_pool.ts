@@ -11,15 +11,7 @@ import {OutputContext, error} from './util';
 
 const CONSTANT_PREFIX = '_c';
 
-// Closure variables holding messages must be named `MSG_[A-Z0-9]+`
-const TRANSLATION_PREFIX = 'MSG_';
-
 export const enum DefinitionKind {Injector, Directive, Component, Pipe}
-
-/**
- * Closure uses `goog.getMsg(message)` to lookup translations
- */
-const GOOG_GET_MSG = 'goog.getMsg';
 
 /**
  * Context to use when producing a key.
@@ -77,7 +69,6 @@ class FixupExpression extends o.Expression {
  */
 export class ConstantPool {
   statements: o.Statement[] = [];
-  private translations = new Map<string, o.Expression>();
   private literals = new Map<string, FixupExpression>();
   private literalFactories = new Map<string, o.Expression>();
   private injectorDefinitions = new Map<any, FixupExpression>();
@@ -111,41 +102,6 @@ export class ConstantPool {
     }
 
     return fixup;
-  }
-
-  // Generates closure specific code for translation.
-  //
-  // ```
-  // /**
-  //  * @desc description?
-  //  * @meaning meaning?
-  //  */
-  // const MSG_XYZ = goog.getMsg('message');
-  // ```
-  getTranslation(message: string, meta: {description?: string, meaning?: string}, suffix: string):
-      o.Expression {
-    // The identity of an i18n message depends on the message and its meaning
-    const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
-
-    const exp = this.translations.get(key);
-
-    if (exp) {
-      return exp;
-    }
-
-    const docStmt = i18nMetaToDocStmt(meta);
-    if (docStmt) {
-      this.statements.push(docStmt);
-    }
-
-    // Call closure to get the translation
-    const variable = o.variable(this.freshTranslationName(suffix));
-    const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
-    const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
-    this.statements.push(msgStmt);
-
-    this.translations.set(key, variable);
-    return variable;
   }
 
   getDefinition(type: any, kind: DefinitionKind, ctx: OutputContext, forceShared: boolean = false):
@@ -258,10 +214,6 @@ export class ConstantPool {
 
   private freshName(): string { return this.uniqueName(CONSTANT_PREFIX); }
 
-  private freshTranslationName(suffix: string): string {
-    return this.uniqueName(TRANSLATION_PREFIX + suffix).toUpperCase();
-  }
-
   private keyOf(expression: o.Expression) {
     return expression.visitExpression(new KeyVisitor(), KEY_CONTEXT);
   }
@@ -328,21 +280,4 @@ function invalid<T>(arg: o.Expression | o.Statement): never {
 
 function isVariable(e: o.Expression): e is o.ReadVarExpr {
   return e instanceof o.ReadVarExpr;
-}
-
-// Converts i18n meta informations for a message (description, meaning) to a JsDoc statement
-// formatted as expected by the Closure compiler.
-function i18nMetaToDocStmt(meta: {description?: string, id?: string, meaning?: string}):
-    o.JSDocCommentStmt|null {
-  const tags: o.JSDocTag[] = [];
-
-  if (meta.description) {
-    tags.push({tagName: o.JSDocTagName.Desc, text: meta.description});
-  }
-
-  if (meta.meaning) {
-    tags.push({tagName: o.JSDocTagName.Meaning, text: meta.meaning});
-  }
-
-  return tags.length == 0 ? null : new o.JSDocCommentStmt(tags);
 }

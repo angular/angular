@@ -11,11 +11,11 @@ import {Renderer2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 
-import {getLElementNode} from './context_discovery';
-import * as di from './di';
-import {_getViewData} from './instructions';
-import {LElementNode} from './interfaces/node';
-import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {getComponent, getInjector, getLocalRefs, loadContext} from './discovery_utils';
+import {DirectiveDef} from './interfaces/definition';
+import {TNode, TNodeFlags} from './interfaces/node';
+import {TVIEW} from './interfaces/view';
+
 
 /**
  * Adapts the DebugRendererFactory2 to create a DebugRenderer2 specific for IVY.
@@ -25,7 +25,7 @@ import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
 export class Render3DebugRendererFactory2 extends DebugRendererFactory2 {
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
     const renderer = super.createRenderer(element, renderData) as DebugRenderer2;
-    renderer.debugContextFactory = () => new Render3DebugContext(_getViewData());
+    renderer.debugContextFactory = (nativeElement: any) => new Render3DebugContext(nativeElement);
     return renderer;
   }
 }
@@ -36,81 +36,46 @@ export class Render3DebugRendererFactory2 extends DebugRendererFactory2 {
  * Used in tests to retrieve information those nodes.
  */
 class Render3DebugContext implements DebugContext {
-  readonly nodeIndex: number|null;
+  constructor(private _nativeNode: any) {}
 
-  constructor(private viewData: LViewData) {
-    // The LNode will be created next and appended to viewData
-    this.nodeIndex = viewData ? viewData.length : null;
-  }
+  get nodeIndex(): number|null { return loadContext(this._nativeNode).nodeIndex; }
 
-  get view(): any { return this.viewData; }
+  get view(): any { return loadContext(this._nativeNode).lViewData; }
 
-  get injector(): Injector {
-    if (this.nodeIndex !== null) {
-      const lElementNode: LElementNode = this.view[this.nodeIndex];
-      const nodeInjector = lElementNode.nodeInjector;
+  get injector(): Injector { return getInjector(this._nativeNode); }
 
-      if (nodeInjector) {
-        return new di.NodeInjector(nodeInjector);
-      }
-    }
-    return Injector.NULL;
-  }
+  get component(): any { return getComponent(this._nativeNode); }
 
-  get component(): any {
-    // TODO(vicb): why/when
-    if (this.nodeIndex === null) {
-      return null;
-    }
-
-    const tView = this.view[TVIEW];
-    const components: number[]|null = tView.components;
-
-    return (components && components.indexOf(this.nodeIndex) == -1) ?
-        null :
-        this.view[this.nodeIndex].data[CONTEXT];
-  }
-
-  // TODO(vicb): add view providers when supported
   get providerTokens(): any[] {
-    const matchedDirectives: any[] = [];
+    const lDebugCtx = loadContext(this._nativeNode);
+    const lViewData = lDebugCtx.lViewData;
+    const tNode = lViewData[TVIEW].data[lDebugCtx.nodeIndex] as TNode;
+    const directivesCount = tNode.flags & TNodeFlags.DirectiveCountMask;
 
-    // TODO(vicb): why/when
-    if (this.nodeIndex === null) {
-      return matchedDirectives;
+    if (directivesCount > 0) {
+      const directiveIdxStart = tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+      const directiveIdxEnd = directiveIdxStart + directivesCount;
+      const viewDirectiveDefs = this.view[TVIEW].data;
+      const directiveDefs =
+          viewDirectiveDefs.slice(directiveIdxStart, directiveIdxEnd) as DirectiveDef<any>[];
+
+      return directiveDefs.map(directiveDef => directiveDef.type);
     }
 
-    const directives = this.view[DIRECTIVES];
-
-    if (directives) {
-      const currentNode = this.view[this.nodeIndex];
-      for (let dirIndex = 0; dirIndex < directives.length; dirIndex++) {
-        const directive = directives[dirIndex];
-        if (getLElementNode(directive) === currentNode) {
-          matchedDirectives.push(directive.constructor);
-        }
-      }
-    }
-    return matchedDirectives;
+    return [];
   }
 
-  get references(): {[key: string]: any} {
-    // TODO(vicb): implement retrieving references
-    throw new Error('Not implemented yet in ivy');
-  }
+  get references(): {[key: string]: any} { return getLocalRefs(this._nativeNode); }
 
-  get context(): any {
-    if (this.nodeIndex === null) {
-      return null;
-    }
-    const lNode = this.view[this.nodeIndex];
-    return lNode.view[CONTEXT];
-  }
+  // TODO(pk): check previous implementation and re-implement
+  get context(): any { throw new Error('Not implemented in ivy'); }
 
+  // TODO(pk): check previous implementation and re-implement
   get componentRenderElement(): any { throw new Error('Not implemented in ivy'); }
 
+  // TODO(pk): check previous implementation and re-implement
   get renderNode(): any { throw new Error('Not implemented in ivy'); }
 
-  // TODO(vicb): check previous implementation
+  // TODO(pk): check previous implementation and re-implement
   logError(console: Console, ...values: any[]): void { console.error(...values); }
 }

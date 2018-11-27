@@ -11,12 +11,12 @@ For example index `123` may point to a component instance in the `LViewData` but
 
 The layout is as such:
 
-| Section    | `LViewData`                                   | `TView.data`
-| ---------- | --------------------------------------------- | --------------------------------------------------
-| `HEADER`   | contextual data                               |  mostly `null`
-| `CONSTS`   | DOM, pipe, and local ref instances            |
-| `VARS`     | binding values                                |  property names
-| `EXPANDO`  | host bindings; directive instances; providers | host prop names; directive tokens; provider tokens
+| Section    | `LViewData`                                                  | `TView.data`
+| ---------- | ------------------------------------------------------------ | --------------------------------------------------
+| `HEADER`   | contextual data                                              |  mostly `null`
+| `CONSTS`   | DOM, pipe, and local ref instances                           |
+| `VARS`     | binding values                                               |  property names
+| `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
 
 
 ## `HEADER`
@@ -128,8 +128,6 @@ NOTE:
 
 ## `EXPANDO`
 
-*TODO*: This section is to be implemented.
-
 `EXPANDO` contains information on data which size is not known at compile time.
 Examples include:
 - `Component`/`Directives` since we don't know at compile time which directives will match.
@@ -203,7 +201,7 @@ The `EXPANDO` section needs additional information for information stored in `TV
 
 | Index | `TView.expandoInstructions`         | Meaning
 | ----: | ---------------------------:        | -------
-| 0     | -10                                 | Negative numbers signifies pointers to elements. In this case 10 (`<child>`)
+| 0     | -10                                 | Negative numbers signify pointers to elements. In this case 10 (`<child>`)
 | 1     | 2                                   | Injector size. Number of values to skip to get to Host Bindings.
 | 2     | Child.ngComponentDef.hostBindings   | The function to call. (Only when `hostVars` is not `0`)
 | 3     | Child.ngComponentDef.hostVars       | Number of host bindings to process. (Only when `hostVars` is not `0`)
@@ -215,9 +213,9 @@ The reason for this layout is to make the host binding update efficient using th
 let currentDirectiveIndex = -1;
 let currentElementIndex = -1;
 // This is global state which is used internally by hostBindings to know where the offset is
-let bindingRootIndex = tView.expandoStart;
-for(var i = 0; i < tview.expandoInstructions.length; i++) {
-  let instruction = tview.expandoInstructions[i];
+let bindingRootIndex = tView.expandoStartIndex;
+for(var i = 0; i < tView.expandoInstructions.length; i++) {
+  let instruction = tView.expandoInstructions[i];
   if (typeof instruction === 'number') {
     // Numbers are used to update the indices.
     if (instruction < 0) {
@@ -382,17 +380,19 @@ NOTE:
 An interesting thing about these objects is that they are not memoized `injector.get(ElementRef) !== injector.get(ElementRef)`.
 This could be considered a bug, it means that we don't have to allocate storage space for them.
 
+We should treat these special objects like any other token. `directiveInject()` already reads a special `NG_ELEMENT_ID`
+property set on directives to locate their bit in the bloom filter. We can set this same property on special objects, 
+but point to a factory function rather than an element ID number. When we check that property in `directiveInject()` 
+and see that it's a function, we know to invoke the factory function directly instead of searching the node tree.
+
 ```typescript
-@Injectable({
-  provideIn: '__node__' as any // Special token not available to the developer
-  useFactory: injectElementRef // existing function which generates ElementRef
-})
 class ElementRef {
   ...
+  static __NG_ELEMENT_ID__ = () => injectElementRef();
 }
 ```
 
-Consequence of the above is that `injector.get(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
+Consequence of the above is that `directiveInject(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
 
 # `EXPANDO` and Injecting the `Injector`.
 
@@ -421,10 +421,7 @@ function inject(token: any): any {
   let injectableDef;
   if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
     const provideIn = injectableDef.provideIn;
-    if (provideIn === '__node__') {
-      // if it is a special object just call its factory
-      return injectableDef.useFactory();
-    } else if (provideIn === '__node_injector__') {
+   if (provideIn === '__node_injector__') {
       // if we are injecting `Injector` than create a wrapper object around the inject but which 
       // is bound to the current node.
       return createInjector();

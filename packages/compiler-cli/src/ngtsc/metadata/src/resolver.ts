@@ -17,7 +17,7 @@ import * as ts from 'typescript';
 
 import {ClassMemberKind, ReflectionHost} from '../../host';
 
-const TS_DTS_JS_EXTENSION = /(\.d)?\.ts|\.js$/;
+const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 
 /**
  * Represents a value which cannot be determined statically.
@@ -183,10 +183,10 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
  * An `AbsoluteReference` can be resolved to an `Expression`, and if that expression is an import
  * the module specifier will be an absolute module name, not a relative path.
  */
-export class AbsoluteReference extends Reference {
+export class AbsoluteReference<T extends ts.Node> extends Reference<T> {
   private identifiers: ts.Identifier[] = [];
   constructor(
-      node: ts.Node, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
+      node: T, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
       readonly symbolName: string) {
     super(node);
   }
@@ -454,8 +454,9 @@ class StaticInterpreter {
   }
 
   private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
-    if (node.initializer !== undefined) {
-      return this.visitExpression(node.initializer, context);
+    const value = this.host.getVariableValue(node);
+    if (value !== null) {
+      return this.visitExpression(value, context);
     } else if (isVariableDeclarationDeclared(node)) {
       return this.getReference(node, context);
     } else {

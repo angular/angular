@@ -10,7 +10,7 @@ import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType,
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
+import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
 import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
@@ -64,44 +64,19 @@ export function getConstructorDependencies(
           ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
           `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
-    if (ts.isIdentifier(tokenExpr)) {
-      const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
-      if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
-        switch (importedSymbol.name) {
-          case 'ChangeDetectorRef':
-            resolved = R3ResolvedDependencyType.ChangeDetectorRef;
-            break;
-          case 'ElementRef':
-            resolved = R3ResolvedDependencyType.ElementRef;
-            break;
-          case 'Injector':
-            resolved = R3ResolvedDependencyType.Injector;
-            break;
-          case 'TemplateRef':
-            resolved = R3ResolvedDependencyType.TemplateRef;
-            break;
-          case 'ViewContainerRef':
-            resolved = R3ResolvedDependencyType.ViewContainerRef;
-            break;
-          case 'Renderer2':
-            resolved = R3ResolvedDependencyType.Renderer2;
-            break;
-          default:
-            // Leave as a Token or Attribute.
-        }
-      }
-    }
     const token = new WrappedNodeExpr(tokenExpr);
     useType.push({token, optional, self, skipSelf, host, resolved});
   });
   return useType;
 }
 
-export function toR3Reference(ref: Reference, context: ts.SourceFile): R3Reference {
-  const value = ref.toExpression(context, ImportMode.UseExistingImport);
-  const type = ref.toExpression(context, ImportMode.ForceNewImport);
+export function toR3Reference(
+    valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
+    typeContext: ts.SourceFile): R3Reference {
+  const value = valueRef.toExpression(valueContext, ImportMode.UseExistingImport);
+  const type = typeRef.toExpression(typeContext, ImportMode.ForceNewImport);
   if (value === null || type === null) {
-    throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
+    throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
   return {value, type};
 }
@@ -187,4 +162,21 @@ export function forwardRefResolver(
     return null;
   }
   return expandForwardRef(args[0]);
+}
+
+export function extractDirectiveGuards(node: ts.Declaration, reflector: ReflectionHost): {
+  ngTemplateGuards: string[],
+  hasNgTemplateContextGuard: boolean,
+} {
+  const methods = nodeStaticMethodNames(node, reflector);
+  const ngTemplateGuards = methods.filter(method => method.startsWith('ngTemplateGuard_'))
+                               .map(method => method.split('_', 2)[1]);
+  const hasNgTemplateContextGuard = methods.some(name => name === 'ngTemplateContextGuard');
+  return {hasNgTemplateContextGuard, ngTemplateGuards};
+}
+
+function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost): string[] {
+  return reflector.getMembersOfClass(node)
+      .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
+      .map(member => member.name);
 }

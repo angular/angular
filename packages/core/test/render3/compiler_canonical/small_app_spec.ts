@@ -74,8 +74,8 @@ class ToDoAppComponent {
   static ngComponentDef = r3.defineComponent({
     type: ToDoAppComponent,
     selectors: [['todo-app']],
-    factory: function ToDoAppComponent_Factory() {
-      return new ToDoAppComponent(r3.directiveInject(AppState));
+    factory: function ToDoAppComponent_Factory(t) {
+      return new (t || ToDoAppComponent)(r3.directiveInject(AppState));
     },
     consts: 6,
     vars: 1,
@@ -100,15 +100,16 @@ class ToDoAppComponent {
 }
 
 // NON-NORMATIVE
-(ToDoAppComponent.ngComponentDef as r3.ComponentDefInternal<any>).directiveDefs = () =>
-    [ToDoItemComponent.ngComponentDef, (NgForOf as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
+(ToDoAppComponent.ngComponentDef as r3.ComponentDef<any>).directiveDefs = () =>
+    [ToDoItemComponent.ngComponentDef,
+     (NgForOf as unknown as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
 // /NON-NORMATIVE
 
 @Component({
   selector: 'todo',
   template: `
     <div [class.done]="todo.done">
-      <input type="checkbox" [value]="todo.done" (click)="onCheckboxClick()"></input>
+      <input type="checkbox" [value]="todo.done" (click)="onCheckboxClick()">
       <span>{{todo.text}}</span>
       <button (click)="onArchiveClick()">archive</button>
     </div>
@@ -134,7 +135,7 @@ class ToDoItemComponent {
   static ngComponentDef = r3.defineComponent({
     type: ToDoItemComponent,
     selectors: [['todo']],
-    factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
+    factory: function ToDoItemComponent_Factory(t) { return new (t || ToDoItemComponent)(); },
     consts: 6,
     vars: 2,
     template: function ToDoItemComponent_Template(rf: $RenderFlags$, ctx: ToDoItemComponent) {
@@ -173,7 +174,7 @@ const e1_attrs = ['type', 'checkbox'];
 class ToDoAppModule {
   // NORMATIVE
   static ngInjectorDef = defineInjector({
-    factory: () => new ToDoAppModule(),
+    factory: function ToDoAppModule_Factory() { return new ToDoAppModule(); },
     providers: [AppState],
   });
   // /NORMATIVE

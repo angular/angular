@@ -8,7 +8,8 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {InjectFlags, Injector} from '../di/injector';
+import {Injector} from '../di/injector';
+import {InjectFlags} from '../di/injector_compatibility';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
@@ -433,7 +434,7 @@ class RendererAdapter implements RendererV1 {
     this.delegate.setProperty(renderElement, propertyName, propertyValue);
   }
 
-  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue: string):
+  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue?: string):
       void {
     const [ns, name] = splitNamespace(namespaceAndName);
     if (attributeValue != null) {
@@ -453,7 +454,7 @@ class RendererAdapter implements RendererV1 {
     }
   }
 
-  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
+  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue?: string): void {
     if (styleValue != null) {
       this.delegate.setStyle(renderElement, styleName, styleValue);
     } else {

@@ -30,6 +30,6 @@
  *
  * Invoking `{{ 'ok' | repeat:3 }}` in a template produces `okokok`.
  *
- *
+ * @publicApi
  */
 export interface PipeTransform { transform(value: any, ...args: any[]): any; }

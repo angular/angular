@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_sui
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
@@ -28,5 +28,6 @@ ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
+        "@ngdeps//karma",
     ],
 )

@@ -604,13 +604,13 @@ describe('ng program', () => {
     it('should work on windows with normalized paths', () => {
       const mapper =
           createSrcToOutPathMapper('c:/tmp/out', 'c:/tmp/a/x.ts', 'c:/tmp/out/a/x.js', path.win32);
-      expect(mapper('c:/tmp/b/y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+      expect(mapper('c:/tmp/b/y.js')).toBe('c:/tmp/out/b/y.js');
     });
 
     it('should work on windows with non-normalized paths', () => {
       const mapper = createSrcToOutPathMapper(
           'c:\\tmp\\out', 'c:\\tmp\\a\\x.ts', 'c:\\tmp\\out\\a\\x.js', path.win32);
-      expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+      expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:/tmp/out/b/y.js');
     });
   });
 

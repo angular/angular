@@ -5,6 +5,10 @@ package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 ng_module(
     name = "empty",
     srcs = ["empty.ts"],
+    tags = ["fixme-ivy-aot"],
     tsconfig = ":tsconfig.json",
-    deps = ["//packages/core"],
+    deps = [
+        "//packages/core",
+        "@ngdeps//@types",
+    ],
 )

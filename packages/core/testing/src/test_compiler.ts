@@ -17,7 +17,7 @@ function unimplemented(): any {
 /**
  * Special interface to the compiler only used by testing
  *
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class TestingCompiler extends Compiler {
@@ -57,7 +57,7 @@ export class TestingCompiler extends Compiler {
 /**
  * A factory for creating a Compiler
  *
- * @experimental
+ * @publicApi
  */
 export abstract class TestingCompilerFactory {
   abstract createTestingCompiler(options?: CompilerOptions[]): TestingCompiler;

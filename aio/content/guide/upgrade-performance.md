@@ -222,13 +222,13 @@ instructions in the [Setup](guide/setup) guide, selectively copying code from th
 You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
 
-<code-example title="system.config.js">
+<code-example header="system.config.js">
 '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
 </code-example>
 
 Next, create an `app.module.ts` file and add the following `NgModule` class:
 
-<code-example title="app.module.ts">
+<code-example header="app.module.ts">
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -257,7 +257,7 @@ declaration on its `NgModule` decorator.
 
 You can now link the AngularJS and Angular modules together using `downgradeModule()`.
 
-<code-example title="app.module.ts">
+<code-example header="app.module.ts">
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { downgradeModule } from '@angular/upgrade/static';
 
@@ -281,22 +281,28 @@ The differences between `downgradeModule()` and `UpgradeModule` end here. The re
 `upgrade/static` APIs and concepts work in the exact same way for both types of hybrid apps.
 See [Upgrading from AngularJS](guide/upgrade) to learn about:
 
-- [Using Angular Components from AngularJS Code](guide/upgrade#using-angular-components-from-angularjs-code).
+- [Using Angular Components from AngularJS Code](guide/upgrade#using-angular-components-from-angularjs-code).<br />
+  _NOTE: If you are downgrading multiple modules, you need to specify the name of the downgraded
+  module each component belongs to, when calling `downgradeComponent()`._
 - [Using AngularJS Component Directives from Angular Code](guide/upgrade#using-angularjs-component-directives-from-angular-code).
 - [Projecting AngularJS Content into Angular Components](guide/upgrade#projecting-angularjs-content-into-angular-components).
 - [Transcluding Angular Content into AngularJS Component Directives](guide/upgrade#transcluding-angular-content-into-angularjs-component-directives).
 - [Making AngularJS Dependencies Injectable to Angular](guide/upgrade#making-angularjs-dependencies-injectable-to-angular).
-- [Making Angular Dependencies Injectable to AngularJS](guide/upgrade#making-angular-dependencies-injectable-to-angularjs).
+- [Making Angular Dependencies Injectable to AngularJS](guide/upgrade#making-angular-dependencies-injectable-to-angularjs).<br />
+  _NOTE: If you are downgrading multiple modules, you need to specify the name of the downgraded
+  module each injectable belongs to, when calling `downgradeInjectable()`._
 
 <div class="alert is-important">
 
   While it is possible to downgrade injectables, downgraded injectables will not be available until
-  the Angular module is instantiated. In order to be safe, you need to ensure that the downgraded
-  injectables are not used anywhere _outside_ the part of the app that is controlled by Angular.
+  the Angular module that provides them is instantiated. In order to be safe, you need to ensure
+  that the downgraded injectables are not used anywhere _outside_ the part of the app where it is
+  guaranteed that their module has been instantiated.
 
   For example, it is _OK_ to use a downgraded service in an upgraded component that is only used
-  from Angular components, but it is _not OK_ to use it in an AngularJS component that may be used
-  independently of Angular.
+  from a downgraded Angular component provided by the same Angular module as the injectable, but it
+  is _not OK_ to use it in an AngularJS component that may be used independently of Angular or use
+  it in a downgraded Angular component from a different module.
 
 </div>
 
@@ -314,7 +320,7 @@ An easy way to copy them is to add each to the `copy-dist-files.js`file.
 You also need to pass the generated `MainAngularModuleFactory` to `downgradeModule()` instead of the
 custom bootstrap function:
 
-<code-example title="app/main-aot.ts">
+<code-example header="app/main-aot.ts">
 import { downgradeModule } from '@angular/upgrade/static';
 import { MainAngularModuleNgFactory } from '../aot/app/app.module.ngfactory';
 

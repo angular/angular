@@ -16,7 +16,7 @@ Define a `HEROES` constant as an array of ten heroes and export it.
 The file should look like this.
 
 <code-example path="toh-pt2/src/app/mock-heroes.ts" linenums="false"
-title="src/app/mock-heroes.ts">
+header="src/app/mock-heroes.ts">
 </code-example>
 
 ## Displaying heroes
@@ -25,12 +25,12 @@ You're about to display the list of heroes at the top of the `HeroesComponent`.
 
 Open the `HeroesComponent` class file and import the mock `HEROES`.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" title="src/app/heroes/heroes.component.ts (import HEROES)">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" header="src/app/heroes/heroes.component.ts (import HEROES)">
 </code-example>
 
-Add a `heroes` property to the class that exposes these heroes for binding.
+In the same file (`HeroesComponent` class), define a component property called `heroes` to expose `HEROES` array for binding.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="heroes">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="component">
 </code-example>
 
 ### List heroes with _*ngFor_
@@ -44,7 +44,7 @@ Open the `HeroesComponent` template file and make the following changes:
 
 Make it look like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" title="heroes.component.html (heroes template)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)" linenums="false">
 </code-example>
 
 Now change the `<li>` to this:
@@ -94,7 +94,7 @@ When the CLI generated the `HeroesComponent`, it created an empty `heroes.compon
 and pointed to it in `@Component.styleUrls` like this.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="metadata"
- title="src/app/heroes/heroes.component.ts (@Component)">
+ header="src/app/heroes/heroes.component.ts (@Component)">
 </code-example>
 
 Open the `heroes.component.css` file and paste in the private CSS styles for the `HeroesComponent`.
@@ -119,7 +119,7 @@ and update the hero detail.
 
 Add a click event binding to the `<li>` like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" title="heroes.component.html (template excerpt)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)" linenums="false">
 </code-example>
 
 This is an example of Angular's [event binding](guide/template-syntax#event-binding) syntax.
@@ -139,7 +139,7 @@ There is no _selected hero_ when the application starts.
 Add the following `onSelect()` method, which assigns the clicked hero from the template
 to the component's `selectedHero`.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" title="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
 </code-example>
 
 ### Update the details template
@@ -147,7 +147,7 @@ to the component's `selectedHero`.
 The template still refers to the component's old `hero` property which no longer exists. 
 Rename `hero` to `selectedHero`.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" title="heroes.component.html (selected hero details)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)" linenums="false">
 </code-example>
 
 ### Hide empty details with _*ngIf_
@@ -183,7 +183,7 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 
 </div>
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" title="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
 </code-example>
 
 After the browser refreshes, the list of names reappears.
@@ -217,14 +217,14 @@ Just add `[class.some-css-class]="some-condition"` to the element you want to st
 
 Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" title="heroes.component.html (toggle the 'selected' CSS class)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)" linenums="false">
 </code-example>
 
 When the current row hero is the same as the `selectedHero`, Angular adds the `selected` CSS class. When the two heroes are different, Angular removes the class.
 
 The finished `<li>` looks like this:
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" title="heroes.component.html (list item hero)" linenums="false">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)" linenums="false">
 
 </code-example>
 
@@ -237,14 +237,15 @@ Your app should look like this <live-example></live-example>.
 Here are the code files discussed on this page, including the `HeroesComponent` styles.
 
 <code-tabs>
-  <code-pane title="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
+  <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.html" path="toh-pt2/src/app/heroes/heroes.component.html">
+  <code-pane header="src/app/heroes/heroes.component.html" path="toh-pt2/src/app/heroes/heroes.component.html">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component.css" path="toh-pt2/src/app/heroes/heroes.component.css">
+  <code-pane header="src/app/heroes/heroes.component.css" path="toh-pt2/src/app/heroes/heroes.component.css">
   </code-pane>
+
 </code-tabs>
 
 ## Summary

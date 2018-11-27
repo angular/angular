@@ -1,20 +1,22 @@
-import { browser, element, by } from 'protractor';
+import { browser, element, ExpectedConditions as EC, by } from 'protractor';
 
 browser.waitForAngularEnabled(false);
 describe('Element E2E Tests', function () {
   describe('Hello World Elements', () => {
-    it('should display: Hello world!', function () {
-      browser.get('hello-world.html');
-      const helloWorldEl = element(by.css('hello-world-el'));
+    const helloWorldEl = element(by.css('hello-world-el'));
+
+    beforeEach(() => browser.get('hello-world.html'));
+
+    it('should display "Hello World!"', function () {
       expect(helloWorldEl.getText()).toEqual('Hello World!');
     });
 
-    it('should display: Hello Foo! via name attribute', function () {
-      browser.get('hello-world.html');
-      const helloWorldEl = element(by.css('hello-world-el'));
+    it('should display "Hello Foo!" via name attribute', function () {
       const input = element(by.css('input[type=text]'));
-      input.sendKeys('F', 'o', 'o');
-      expect(helloWorldEl.getText()).toEqual('Hello Foo!');
+      input.sendKeys('Foo');
+
+      // Make tests less flaky on CI by waiting up to 5s for the element text to be updated.
+      browser.wait(EC.textToBePresentInElement(helloWorldEl, 'Hello Foo!'), 5000);
     });
   });
 });

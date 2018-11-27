@@ -6,37 +6,37 @@
 
 <p>No linenums at code-tabs level</p>
 <code-tabs >
-  <code-pane title='TS code file' language='ts'>
+  <code-pane header='TS code file' language='ts'>
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane title='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane title='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
 <p>linenums=true at code-tabs level</p>
 <code-tabs linenums='true'>
-  <code-pane title='TS code file' language='ts'>
+  <code-pane header='TS code file' language='ts'>
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane title='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane title='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header='HTML content file' language='html'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
 <p>No linenums at code-tabs level; linenums=true for HTML pane</p>
 <code-tabs >
-  <code-pane title='TS code file' language='ts'>
+  <code-pane header='TS code file' language='ts'>
   class {
     foo(param: string) {}
   }
   </code-pane>
-  <code-pane title='HTML content file' language='html' linenums='true'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
-  <code-pane title='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
+  <code-pane header='HTML content file' language='html' linenums='true'>&lt;h1&gt;Heading&lt;/h1&gt;</code-pane>
+  <code-pane header='JSON data file' language='json' class='avoid'>{ "key": "value" }</code-pane>
 </code-tabs>
 <p></p>
 
@@ -66,7 +66,7 @@
 </code-example>
 
 <p>Header on this one.</p>
-<code-example title="hero-details.component.ts (excerpt)">
+<code-example header="hero-details.component.ts (excerpt)">
   &lt;hero-details <em>nghost-pmm-5&gt;
     &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
     &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
@@ -76,7 +76,7 @@
 </code-example>
 
 <p>An "avoid" header on this one.</p>
-<code-example class="avoid" title="hero-details.component.ts (Avoid)">
+<code-example class="avoid" header="hero-details.component.ts (Avoid)">
   &lt;hero-details <em>nghost-pmm-5&gt;
     &lt;h2 </em>ngcontent-pmm-5&gt;Mister Fantastic&lt;/h2&gt;
     &lt;hero-team <em>ngcontent-pmm-5 </em>nghost-pmm-6&gt;
@@ -120,3 +120,20 @@ Try this <live-example></live-example>.
 <live-example embedded name="testy" stackblitz="super-stackblitz"></live-example>
 
 <p>More text follows ...</p>
+
+<p>Getting Started Widgets</p>
+
+<p>Interpolation</p>
+<aio-gs-interpolation></aio-gs-interpolation>
+
+<p>Property Binding</p>
+<aio-gs-property-binding></aio-gs-property-binding>
+
+<p>Event Binding</p>
+<aio-gs-event-binding></aio-gs-event-binding>
+
+<p>NgIf</p>
+<aio-gs-ng-if></aio-gs-ng-if>
+
+<p>NgFor</p>
+<aio-gs-ng-for></aio-gs-ng-for>

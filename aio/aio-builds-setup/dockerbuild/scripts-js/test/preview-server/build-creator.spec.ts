@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shell from 'shelljs';
 import {SHORT_SHA_LEN} from '../../lib/common/constants';
+import {Logger} from '../../lib/common/utils';
 import {BuildCreator} from '../../lib/preview-server/build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/preview-server/build-events';
 import {PreviewServerError} from '../../lib/preview-server/preview-error';
@@ -491,7 +492,7 @@ describe('BuildCreator', () => {
     beforeEach(() => {
       cpExecCbs = [];
 
-      consoleWarnSpy = spyOn(console, 'warn');
+      consoleWarnSpy = spyOn(Logger.prototype, 'warn');
       shellChmodSpy = spyOn(shell, 'chmod');
       shellRmSpy = spyOn(shell, 'rm');
       cpExecSpy = spyOn(cp, 'exec').and.callFake((_: string, cb: (...args: any[]) => void) => cpExecCbs.push(cb));
@@ -513,8 +514,7 @@ describe('BuildCreator', () => {
 
     it('should log (as a warning) any stderr output if extracting succeeded', done => {
       (bc as any).extractArchive('foo', 'bar').
-        then(() => expect(consoleWarnSpy)
-          .toHaveBeenCalledWith(jasmine.any(String), 'BuildCreator:        ', 'This is stderr')).
+        then(() => expect(consoleWarnSpy).toHaveBeenCalledWith('This is stderr')).
         then(done);
 
       cpExecCbs[0](null, 'This is stdout', 'This is stderr');

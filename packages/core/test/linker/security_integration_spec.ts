@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {fixmeIvy} from '@angular/private/testing';
 
 {
-  describe('jit', () => { declareTests({useJit: true}); });
-
-  describe('no jit', () => { declareTests({useJit: false}); });
+  if (ivyEnabled) {
+    fixmeIvy('unknown') && describe('ivy', () => { declareTests(); });
+  } else {
+    describe('jit', () => { declareTests({useJit: true}); });
+    describe('no jit', () => { declareTests({useJit: false}); });
+  }
 }
 
 @Component({selector: 'my-comp', template: ''})
@@ -28,11 +32,11 @@ class OnPrefixDir {
   @Input() onclick: any;
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('security integration tests', function() {
 
     beforeEach(() => {
-      TestBed.configureCompiler({useJit: useJit}).configureTestingModule({
+      TestBed.configureCompiler({...config}).configureTestingModule({
         declarations: [
           SecuredComponent,
           OnPrefixDir,
@@ -239,7 +243,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha evil()');
+        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();

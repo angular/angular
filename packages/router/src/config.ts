@@ -37,12 +37,20 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
  *   info.
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
- *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
- *    will also run when query params change. And when set to `always`, they will run every time.
+ *    when the matrix parameters of the route change. Options include:
+ *    - `paramsChange` (default) - Run guards and resolvers when path or matrix params change. This
+ *      mode ignores query param changes.
+ *    - `paramsOrQueryParamsChange` - Guards and resolvers will run when any parameters change. This
+ *      includes path, matrix, and query params.
+ *    - `pathParamsChange` Run guards and resolvers path or any path params change. This mode is
+ *      useful if you want to ignore changes to all optional parameters such as query *and* matrix
+ *      params.
+ *    - `always` - Run guards and resolvers on every navigation.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
  *
+ * @usageNotes
  * ### Simple Configuration
  *
  * ```
@@ -252,6 +260,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
+ * @publicApi
  */
 export type Routes = Route[];
 
@@ -261,7 +270,7 @@ export type Routes = Route[];
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -285,7 +294,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -297,6 +306,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type Data = {
   [name: string]: any
@@ -309,6 +319,7 @@ export type Data = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type ResolveData = {
   [name: string]: any
@@ -321,6 +332,7 @@ export type ResolveData = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -332,6 +344,7 @@ export type LoadChildrenCallback = () =>
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -351,13 +364,15 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * The type of `runGuardsAndResolvers`.
  *
  * See `Routes` for more details.
- * @experimental
+ * @publicApi
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers =
+    'pathParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export interface Route {
   path?: string;

@@ -15,10 +15,12 @@ import {nocollapseHack} from '../transformers/nocollapse_hack';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
-import {FactoryGenerator, FactoryInfo, GeneratedFactoryHostWrapper, generatedFactoryTransform} from './factories';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
+import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, SummaryGenerator, generatedFactoryTransform} from './shims';
+import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
+import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
@@ -49,13 +51,16 @@ export class NgtscProgram implements api.Program {
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
-    const shouldGenerateFactories = options.allowEmptyCodegenFiles || false;
+    const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
     let rootFiles = [...rootNames];
-    if (shouldGenerateFactories) {
-      const generator = new FactoryGenerator();
-      const factoryFileMap = generator.computeFactoryFileMap(rootNames);
-      rootFiles.push(...Array.from(factoryFileMap.keys()));
+    if (shouldGenerateShims) {
+      // Summary generation.
+      const summaryGenerator = SummaryGenerator.forRootFiles(rootNames);
+
+      // Factory generation.
+      const factoryGenerator = FactoryGenerator.forRootFiles(rootNames);
+      const factoryFileMap = factoryGenerator.factoryFileMap;
       this.factoryToSourceInfo = new Map<string, FactoryInfo>();
       this.sourceToFactorySymbols = new Map<string, Set<string>>();
       factoryFileMap.forEach((sourceFilePath, factoryPath) => {
@@ -63,7 +68,10 @@ export class NgtscProgram implements api.Program {
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
         this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
-      this.host = new GeneratedFactoryHostWrapper(host, generator, factoryFileMap);
+
+      const factoryFileNames = Array.from(factoryFileMap.keys());
+      rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
+      this.host = new GeneratedShimsHostWrapper(host, [summaryGenerator, factoryGenerator]);
     }
 
     this.tsProgram =
@@ -103,7 +111,13 @@ export class NgtscProgram implements api.Program {
       fileName?: string|undefined, cancellationToken?: ts.CancellationToken|
                                    undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
     const compilation = this.ensureAnalyzed();
-    return compilation.diagnostics;
+    const diagnostics = [...compilation.diagnostics];
+    if (!!this.options.fullTemplateTypeCheck) {
+      const ctx = new TypeCheckContext();
+      compilation.typeCheck(ctx);
+      diagnostics.push(...this.compileTypeCheckProgram(ctx));
+    }
+    return diagnostics;
   }
 
   async loadNgStructureAsync(): Promise<void> {
@@ -170,6 +184,9 @@ export class NgtscProgram implements api.Program {
     if (this.factoryToSourceInfo !== null) {
       transforms.push(generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
     }
+    if (this.isCore) {
+      transforms.push(ivySwitchTransform);
+    }
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
     const emitResult = emitCallback({
       program: this.tsProgram,
@@ -181,6 +198,17 @@ export class NgtscProgram implements api.Program {
       },
     });
     return emitResult;
+  }
+
+  private compileTypeCheckProgram(ctx: TypeCheckContext): ReadonlyArray<ts.Diagnostic> {
+    const host = new TypeCheckProgramHost(this.tsProgram, this.host, ctx);
+    const auxProgram = ts.createProgram({
+      host,
+      rootNames: this.tsProgram.getRootFileNames(),
+      oldProgram: this.tsProgram,
+      options: this.options,
+    });
+    return auxProgram.getSemanticDiagnostics();
   }
 
   private makeCompilation(): IvyCompilation {

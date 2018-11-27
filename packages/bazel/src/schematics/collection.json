@@ -1,0 +1,12 @@
+{
+    "name": "@angular/bazel",
+    "version": "0.1",
+    "schematics": {
+      "bazel-workspace": {
+        "factory": "./bazel-workspace",
+        "schema": "./bazel-workspace/schema.json",
+        "description": "Setup Bazel workspace",
+        "hidden": true
+      }
+    }
+  }

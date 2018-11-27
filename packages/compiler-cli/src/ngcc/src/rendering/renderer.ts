@@ -9,38 +9,24 @@ import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} fro
 import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
 import {readFileSync, statSync} from 'fs';
 import MagicString from 'magic-string';
-import {basename, dirname} from 'canonical-path';
+import {basename, dirname, relative, resolve} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
-import {ImportManager, translateStatement} from '../../../ngtsc/transform';
-import {AnalyzedClass, AnalyzedFile} from '../analyzer';
+import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
+import {translateStatement, translateType} from '../../../ngtsc/translator';
+import {NgccImportManager} from './ngcc_import_manager';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
+import {BundleInfo} from '../packages/bundle';
 import {IMPORT_PREFIX} from '../constants';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
 
 interface SourceMapInfo {
   source: string;
   map: SourceMapConverter|null;
   isInline: boolean;
-}
-
-/**
- * The results of rendering an analyzed file.
- */
-export interface RenderResult {
-  /**
-   * The file that has been rendered.
-   */
-  file: AnalyzedFile;
-  /**
-   * The rendered source file.
-   */
-  source: FileInfo;
-  /**
-   * The rendered source map file.
-   */
-  map: FileInfo|null;
 }
 
 /**
@@ -57,6 +43,11 @@ export interface FileInfo {
   contents: string;
 }
 
+interface DtsClassInfo {
+  dtsDeclaration: ts.Declaration;
+  compilation: CompileResult[];
+}
+
 /**
  * A base-class for rendering an `AnalyzedFile`.
  *
@@ -64,50 +55,110 @@ export interface FileInfo {
  * implement the `addImports`, `addDefinitions` and `removeDecorators` abstract methods.
  */
 export abstract class Renderer {
-  constructor(protected host: NgccReflectionHost) {}
+  constructor(
+      protected host: NgccReflectionHost, protected bundle: BundleInfo,
+      protected sourcePath: string, protected targetPath: string, protected transformDts: boolean) {
+  }
+
+  renderProgram(
+      program: ts.Program, decorationAnalyses: DecorationAnalyses,
+      switchMarkerAnalyses: SwitchMarkerAnalyses): FileInfo[] {
+    const renderedFiles: FileInfo[] = [];
+
+    // Transform the source files.
+    program.getSourceFiles().map(sourceFile => {
+      const compiledFile = decorationAnalyses.get(sourceFile);
+      const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
+
+      if (compiledFile || switchMarkerAnalysis) {
+        renderedFiles.push(...this.renderFile(sourceFile, compiledFile, switchMarkerAnalysis));
+      }
+    });
+
+    if (this.transformDts) {
+      // Transform the .d.ts files
+      const dtsFiles = this.getTypingsFilesToRender(decorationAnalyses);
+      dtsFiles.forEach((classes, file) => renderedFiles.push(...this.renderDtsFile(file, classes)));
+    }
+
+    return renderedFiles;
+  }
 
   /**
    * Render the source code and source-map for an Analyzed file.
-   * @param file The analyzed file to render.
+   * @param compiledFile The analyzed file to render.
    * @param targetPath The absolute path where the rendered file will be written.
    */
-  renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
-    const importManager = new ImportManager(false, IMPORT_PREFIX);
-    const input = this.extractSourceMap(file.sourceFile);
-
+  renderFile(
+      sourceFile: ts.SourceFile, compiledFile: CompiledFile|undefined,
+      switchMarkerAnalysis: SwitchMarkerAnalysis|undefined): FileInfo[] {
+    const input = this.extractSourceMap(sourceFile);
     const outputText = new MagicString(input.source);
-    const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
 
-    file.analyzedClasses.forEach(clazz => {
-      const renderedDefinition = renderDefinitions(file.sourceFile, clazz, importManager);
-      this.addDefinitions(outputText, clazz, renderedDefinition);
-      this.trackDecorators(clazz.decorators, decoratorsToRemove);
+    if (switchMarkerAnalysis) {
+      this.rewriteSwitchableDeclarations(
+          outputText, switchMarkerAnalysis.sourceFile, switchMarkerAnalysis.declarations);
+    }
+
+    if (compiledFile) {
+      const importManager =
+          new NgccImportManager(this.bundle.isFlat, this.bundle.isCore, IMPORT_PREFIX);
+      const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+
+      compiledFile.compiledClasses.forEach(clazz => {
+        const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
+        this.addDefinitions(outputText, clazz, renderedDefinition);
+        this.trackDecorators(clazz.decorators, decoratorsToRemove);
+      });
+
+      this.addConstants(
+          outputText,
+          renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
+          compiledFile.sourceFile);
+
+      this.addImports(
+          outputText, importManager.getAllImports(
+                          compiledFile.sourceFile.fileName, this.bundle.rewriteCoreImportsTo));
+
+      // TODO: remove contructor param metadata and property decorators (we need info from the
+      // handlers to do this)
+      this.removeDecorators(outputText, decoratorsToRemove);
+    }
+
+    return this.renderSourceAndMap(sourceFile, input, outputText);
+  }
+
+  renderDtsFile(dtsFile: ts.SourceFile, dtsClasses: DtsClassInfo[]): FileInfo[] {
+    const input = this.extractSourceMap(dtsFile);
+    const outputText = new MagicString(input.source);
+    const importManager = new NgccImportManager(false, this.bundle.isCore, IMPORT_PREFIX);
+
+    dtsClasses.forEach(dtsClass => {
+      const endOfClass = dtsClass.dtsDeclaration.getEnd();
+      dtsClass.compilation.forEach(declaration => {
+        const type = translateType(declaration.type, importManager);
+        const newStatement = `    static ${declaration.name}: ${type};\n`;
+        outputText.appendRight(endOfClass - 1, newStatement);
+      });
     });
 
-    this.addConstants(
-        outputText, renderConstantPool(file.sourceFile, file.constantPool, importManager),
-        file.sourceFile);
+    this.addImports(
+        outputText,
+        importManager.getAllImports(dtsFile.fileName, this.bundle.rewriteCoreDtsImportsTo));
 
-    this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
-
-    // TODO: remove contructor param metadata and property decorators (we need info from the
-    // handlers to do this)
-    this.removeDecorators(outputText, decoratorsToRemove);
-
-    this.rewriteSwitchableDeclarations(outputText, file.sourceFile);
-
-    return this.renderSourceAndMap(file, input, outputText, targetPath);
+    return this.renderSourceAndMap(dtsFile, input, outputText);
   }
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
   protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
   protected abstract addDefinitions(
-      output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
+      output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
       output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
   protected abstract rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile): void;
+      outputText: MagicString, sourceFile: ts.SourceFile,
+      declarations: SwitchableVariableDeclaration[]): void;
 
   /**
    * Add the decorator nodes that are to be removed to a map
@@ -174,11 +225,11 @@ export abstract class Renderer {
    * with an appropriate source-map comment pointing to the merged source-map.
    */
   protected renderSourceAndMap(
-      file: AnalyzedFile, input: SourceMapInfo, output: MagicString,
-      outputPath: string): RenderResult {
+      sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileInfo[] {
+    const outputPath = resolve(this.targetPath, relative(this.sourcePath, sourceFile.fileName));
     const outputMapPath = `${outputPath}.map`;
     const outputMap = output.generateMap({
-      source: file.sourceFile.fileName,
+      source: sourceFile.fileName,
       includeContent: true,
       // hires: true // TODO: This results in accurate but huge sourcemaps. Instead we should fix
       // the merge algorithm.
@@ -190,22 +241,34 @@ export abstract class Renderer {
     const mergedMap =
         mergeSourceMaps(input.map && input.map.toObject(), JSON.parse(outputMap.toString()));
 
+    const result: FileInfo[] = [];
     if (input.isInline) {
-      return {
-        file,
-        source: {path: outputPath, contents: `${output.toString()}\n${mergedMap.toComment()}`},
-        map: null
-      };
+      result.push({path: outputPath, contents: `${output.toString()}\n${mergedMap.toComment()}`});
     } else {
-      return {
-        file,
-        source: {
-          path: outputPath,
-          contents: `${output.toString()}\n${generateMapFileComment(outputMapPath)}`
-        },
-        map: {path: outputMapPath, contents: mergedMap.toJSON()}
-      };
+      result.push({
+        path: outputPath,
+        contents: `${output.toString()}\n${generateMapFileComment(outputMapPath)}`
+      });
+      result.push({path: outputMapPath, contents: mergedMap.toJSON()});
     }
+    return result;
+  }
+
+  protected getTypingsFilesToRender(analyses: DecorationAnalyses):
+      Map<ts.SourceFile, DtsClassInfo[]> {
+    const dtsMap = new Map<ts.SourceFile, DtsClassInfo[]>();
+    analyses.forEach(compiledFile => {
+      compiledFile.compiledClasses.forEach(compiledClass => {
+        const dtsDeclaration = this.host.getDtsDeclarationOfClass(compiledClass.declaration);
+        if (dtsDeclaration) {
+          const dtsFile = dtsDeclaration.getSourceFile();
+          const classes = dtsMap.get(dtsFile) || [];
+          classes.push({dtsDeclaration, compilation: compiledClass.compilation});
+          dtsMap.set(dtsFile, classes);
+        }
+      });
+    });
+    return dtsMap;
   }
 }
 
@@ -241,7 +304,7 @@ export function mergeSourceMaps(
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
   return constantPool.statements.map(stmt => translateStatement(stmt, imports))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
@@ -257,11 +320,11 @@ export function renderConstantPool(
  * @param imports An object that tracks the imports that are needed by the rendered definitions.
  */
 export function renderDefinitions(
-    sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
-  const name = (analyzedClass.declaration as ts.NamedDeclaration).name !;
+  const name = (compiledClass.declaration as ts.NamedDeclaration).name !;
   const definitions =
-      analyzedClass.compilation
+      compiledClass.compilation
           .map(
               c => c.statements.map(statement => translateStatement(statement, imports))
                        .concat(translateStatement(

@@ -15,28 +15,7 @@ if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
 fi
 
 # No build needed for bazel or aio docs tests
-if [[ ${CI_MODE:-} == "bazel" || ${CI_MODE:-} == "docs_test" ]]; then
-  exit 0;
-fi
-
-# Build angular.io, then exit (no Angular build required)
-if [[ ${CI_MODE:-} == "aio" ]]; then
-  travisFoldStart "build.aio"
-  (
-    cd "`dirname $0`/../../aio"
-    yarn build
-  )
-  travisFoldEnd "build.aio"
-  exit 0;
-fi
-
-# Build the Angular packages then exit (no further build required)
-if [[ ${CI_MODE:-} == "aio_e2e" || ${CI_MODE:-} == "aio_tools_test" ]]; then
-  travisFoldStart "build.$CI_MODE"
-  (
-    ./build.sh
-  )
-  travisFoldEnd "build.$CI_MODE"
+if [[ ${CI_MODE:-} == "bazel" ]]; then
   exit 0;
 fi
 

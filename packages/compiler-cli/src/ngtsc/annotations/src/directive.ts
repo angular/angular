@@ -6,20 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
+import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
-import {Reference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
+import {extractDirectiveGuards, getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
-export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata, Decorator> {
+export interface DirectiveHandlerData {
+  meta: R3DirectiveMetadata;
+  metadataStmt: Statement|null;
+}
+export class DirectiveDecoratorHandler implements
+    DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
@@ -32,7 +38,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
         decorator => decorator.name === 'Directive' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3DirectiveMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
     const directiveResult =
         extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
@@ -40,19 +46,43 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
-      this.scopeRegistry.registerSelector(node, analysis.selector);
+      let ref = new ResolvedReference(node, node.name !);
+      this.scopeRegistry.registerDirective(node, {
+        ref,
+        directive: ref,
+        name: node.name !.text,
+        selector: analysis.selector,
+        exportAs: analysis.exportAs,
+        inputs: analysis.inputs,
+        outputs: analysis.outputs,
+        queries: analysis.queries.map(query => query.propertyName),
+        isComponent: false, ...extractDirectiveGuards(node, this.reflector),
+      });
     }
 
-    return {analysis};
+    if (analysis === undefined) {
+      return {};
+    }
+
+    return {
+      analysis: {
+        meta: analysis,
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
+      }
+    };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3DirectiveMetadata, pool: ConstantPool):
+  compile(node: ts.ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
       CompileResult {
-    const res = compileDirectiveFromMetadata(analysis, pool, makeBindingParser());
+    const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngDirectiveDef',
       initializer: res.expression,
-      statements: res.statements,
+      statements: statements,
       type: res.type,
     };
   }
@@ -63,7 +93,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
  */
 export function extractDirectiveMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker,
-    reflector: ReflectionHost, isCore: boolean): {
+    reflector: ReflectionHost, isCore: boolean, defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   decoratedElements: ClassMember[],
@@ -99,12 +129,14 @@ export function extractDirectiveMetadata(
   // fields.
   const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', reflector, checker);
   const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), reflector, checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), reflector, checker,
+      resolveInput);
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', reflector, checker);
   const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), reflector, checker);
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), reflector, checker,
+      resolveOutput) as{[field: string]: string};
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
       filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
@@ -122,7 +154,7 @@ export function extractDirectiveMetadata(
   }
 
   // Parse the selector.
-  let selector = '';
+  let selector = defaultSelector;
   if (directive.has('selector')) {
     const expr = directive.get('selector') !;
     const resolved = staticallyResolve(expr, reflector, checker);
@@ -134,6 +166,9 @@ export function extractDirectiveMetadata(
   }
 
   const host = extractHostBindings(directive, decoratedElements, reflector, checker, coreModule);
+
+  const providers: Expression|null =
+      directive.has('providers') ? new WrappedNodeExpr(directive.get('providers') !) : null;
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
   const usesOnChanges = members.some(
@@ -165,7 +200,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
-    typeSourceSpan: null !, usesInheritance, exportAs,
+    typeSourceSpan: null !, usesInheritance, exportAs, providers
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -316,7 +351,9 @@ function parseFieldToPropertyMapping(
  */
 function parseDecoratedFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
-    checker: ts.TypeChecker): {[field: string]: string} {
+    checker: ts.TypeChecker,
+    mapValueResolver: (publicName: string, internalName: string) =>
+        string | [string, string]): {[field: string]: string | [string, string]} {
   return fields.reduce(
       (results, field) => {
         const fieldName = field.member.name;
@@ -330,7 +367,7 @@ function parseDecoratedFields(
             if (typeof property !== 'string') {
               throw new Error(`Decorator argument must resolve to a string`);
             }
-            results[fieldName] = property;
+            results[fieldName] = mapValueResolver(property, fieldName);
           } else {
             // Too many arguments.
             throw new Error(
@@ -339,7 +376,15 @@ function parseDecoratedFields(
         });
         return results;
       },
-      {} as{[field: string]: string});
+      {} as{[field: string]: string | [string, string]});
+}
+
+function resolveInput(publicName: string, internalName: string): [string, string] {
+  return [publicName, internalName];
+}
+
+function resolveOutput(publicName: string, internalName: string) {
+  return publicName;
 }
 
 export function queriesFromFields(

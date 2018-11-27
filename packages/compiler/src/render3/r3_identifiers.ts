@@ -35,15 +35,17 @@ export class Identifiers {
 
   static elementClassProp: o.ExternalReference = {name: 'ɵelementClassProp', moduleName: CORE};
 
-  static elementContainerStart: o.ExternalReference = {name: 'ɵEC', moduleName: CORE};
+  static elementContainerStart:
+      o.ExternalReference = {name: 'ɵelementContainerStart', moduleName: CORE};
 
-  static elementContainerEnd: o.ExternalReference = {name: 'ɵeC', moduleName: CORE};
+  static elementContainerEnd:
+      o.ExternalReference = {name: 'ɵelementContainerEnd', moduleName: CORE};
 
   static elementStyling: o.ExternalReference = {name: 'ɵelementStyling', moduleName: CORE};
 
   static elementStylingMap: o.ExternalReference = {name: 'ɵelementStylingMap', moduleName: CORE};
 
-  static elementStyleProp: o.ExternalReference = {name: 'ɵelementStylingProp', moduleName: CORE};
+  static elementStyleProp: o.ExternalReference = {name: 'ɵelementStyleProp', moduleName: CORE};
 
   static elementStylingApply:
       o.ExternalReference = {name: 'ɵelementStylingApply', moduleName: CORE};
@@ -59,6 +61,10 @@ export class Identifiers {
   static textBinding: o.ExternalReference = {name: 'ɵtextBinding', moduleName: CORE};
 
   static bind: o.ExternalReference = {name: 'ɵbind', moduleName: CORE};
+
+  static enableBindings: o.ExternalReference = {name: 'ɵenableBindings', moduleName: CORE};
+
+  static disableBindings: o.ExternalReference = {name: 'ɵdisableBindings', moduleName: CORE};
 
   static getCurrentView: o.ExternalReference = {name: 'ɵgetCurrentView', moduleName: CORE};
 
@@ -91,8 +97,15 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵpipeBindV', moduleName: CORE};
 
+  static i18n: o.ExternalReference = {name: 'ɵi18n', moduleName: CORE};
+  static i18nAttributes: o.ExternalReference = {name: 'ɵi18nAttributes', moduleName: CORE};
+  static i18nExp: o.ExternalReference = {name: 'ɵi18nExp', moduleName: CORE};
+  static i18nStart: o.ExternalReference = {name: 'ɵi18nStart', moduleName: CORE};
+  static i18nEnd: o.ExternalReference = {name: 'ɵi18nEnd', moduleName: CORE};
+  static i18nApply: o.ExternalReference = {name: 'ɵi18nApply', moduleName: CORE};
+  static i18nPostprocess: o.ExternalReference = {name: 'ɵi18nPostprocess', moduleName: CORE};
+
   static load: o.ExternalReference = {name: 'ɵload', moduleName: CORE};
-  static loadDirective: o.ExternalReference = {name: 'ɵloadDirective', moduleName: CORE};
   static loadQueryList: o.ExternalReference = {name: 'ɵloadQueryList', moduleName: CORE};
 
   static pipe: o.ExternalReference = {name: 'ɵpipe', moduleName: CORE};
@@ -105,18 +118,6 @@ export class Identifiers {
   static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
 
   static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
-
-  static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
-
-  static injectTemplateRef: o.ExternalReference = {name: 'ɵinjectTemplateRef', moduleName: CORE};
-
-  static injectViewContainerRef:
-      o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
-
-  static injectChangeDetectorRef:
-      o.ExternalReference = {name: 'ɵinjectChangeDetectorRef', moduleName: CORE};
-
-  static injectRenderer2: o.ExternalReference = {name: 'ɵinjectRenderer2', moduleName: CORE};
 
   static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
@@ -132,8 +133,8 @@ export class Identifiers {
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
-  static ComponentDef: o.ExternalReference = {
-    name: 'ɵComponentDef',
+  static ComponentDefWithMeta: o.ExternalReference = {
+    name: 'ɵComponentDefWithMeta',
     moduleName: CORE,
   };
 
@@ -142,8 +143,8 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static DirectiveDef: o.ExternalReference = {
-    name: 'ɵDirectiveDef',
+  static DirectiveDefWithMeta: o.ExternalReference = {
+    name: 'ɵDirectiveDefWithMeta',
     moduleName: CORE,
   };
 
@@ -157,14 +158,14 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static NgModuleDef: o.ExternalReference = {
-    name: 'ɵNgModuleDef',
+  static NgModuleDefWithMeta: o.ExternalReference = {
+    name: 'ɵNgModuleDefWithMeta',
     moduleName: CORE,
   };
 
   static defineNgModule: o.ExternalReference = {name: 'ɵdefineNgModule', moduleName: CORE};
 
-  static PipeDef: o.ExternalReference = {name: 'ɵPipeDef', moduleName: CORE};
+  static PipeDefWithMeta: o.ExternalReference = {name: 'ɵPipeDefWithMeta', moduleName: CORE};
 
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
@@ -178,7 +179,7 @@ export class Identifiers {
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
 
-  static PublicFeature: o.ExternalReference = {name: 'ɵPublicFeature', moduleName: CORE};
+  static ProvidersFeature: o.ExternalReference = {name: 'ɵProvidersFeature', moduleName: CORE};
 
   static listener: o.ExternalReference = {name: 'ɵlistener', moduleName: CORE};
 

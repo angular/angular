@@ -79,6 +79,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   private skippedWaiting = true;
 
   private selfMessageQueue: any[] = [];
+  autoAdvanceTime = false;
   // TODO(issue/24571): remove '!'.
   unregistered !: boolean;
   readonly notifications: {title: string, options: Object}[] = [];
@@ -227,8 +228,17 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     return event.ready;
   }
 
+  handleClick(notification: Object, action?: string): Promise<void> {
+    if (!this.eventHandlers.has('notificationclick')) {
+      throw new Error('No notificationclick handler registered');
+    }
+    const event = new MockNotificationEvent(notification, action);
+    this.eventHandlers.get('notificationclick') !.call(this, event);
+    return event.ready;
+  }
+
   timeout(ms: number): Promise<void> {
-    return new Promise(resolve => {
+    const promise = new Promise<void>(resolve => {
       this.timers.push({
         at: this.time + ms,
         duration: ms,
@@ -236,6 +246,12 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         fired: false,
       });
     });
+
+    if (this.autoAdvanceTime) {
+      this.advance(ms);
+    }
+
+    return promise;
   }
 
   advance(by: number): void {
@@ -332,6 +348,10 @@ class MockPushEvent extends MockExtendableEvent {
   data = {
     json: () => this._data,
   };
+}
+class MockNotificationEvent extends MockExtendableEvent {
+  constructor(private _notification: any, readonly action?: string) { super(); }
+  readonly notification = {...this._notification, close: () => undefined};
 }
 
 class MockInstallEvent extends MockExtendableEvent {}

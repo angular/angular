@@ -14,7 +14,7 @@ export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/cha
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
 export {InjectableDef as ɵInjectableDef, InjectorDef as ɵInjectorDef, getInjectableDef as ɵgetInjectableDef} from './di/defs';
-export {inject as ɵinject, setCurrentInjector as ɵsetCurrentInjector} from './di/injector';
+export {inject as ɵinject, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
 export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';

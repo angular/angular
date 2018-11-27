@@ -87,10 +87,10 @@ groups:
       files:
         include:
           - "WORKSPACE"
+          - ".bazel*"
           - "*.bazel"
           - "*.bzl"
           - "packages/bazel/*"
-          - "tools/bazel.rc"
           - "/docs/BAZEL.md"
     users:
       - alexeagle #primary
@@ -108,9 +108,9 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/bazel.rc"
-          - "tools/public_api_guard/*"
           - "aio/*"
+          - "packages/core/test/bundling/*"
+          - "tools/public_api_guard/*"
     users:
       - IgorMinar #primary
       - alexeagle
@@ -277,6 +277,9 @@ groups:
         - "aio/content/guide/forms.md"
         - "aio/content/examples/forms/*"
         - "aio/content/images/guide/forms/*"
+        - "aio/content/guide/forms-overview.md"
+        - "aio/content/examples/forms-overview/*"
+        - "aio/content/images/guide/forms-overview/*"
         - "aio/content/guide/form-validation.md"
         - "aio/content/examples/form-validation/*"
         - "aio/content/images/guide/form-validation/*"

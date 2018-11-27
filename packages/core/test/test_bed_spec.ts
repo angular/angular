@@ -10,6 +10,7 @@ import {Component, Inject, InjectionToken, NgModule, Optional} from '@angular/co
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -43,8 +44,12 @@ export class GreetingModule {
 export class SimpleCmp {
 }
 
+@Component({selector: 'with-refs-cmp', template: '<div #firstDiv></div>'})
+export class WithRefsCmp {
+}
+
 @NgModule({
-  declarations: [HelloWorld, SimpleCmp],
+  declarations: [HelloWorld, SimpleCmp, WithRefsCmp],
   imports: [GreetingModule],
   providers: [
     {provide: NAME, useValue: 'World!'},
@@ -94,11 +99,27 @@ describe('TestBed', () => {
     expect(greetingByCss.nativeElement).toHaveText('Hello TestBed!');
   });
 
-
   it('should give access to the node injector', () => {
+    const fixture = TestBed.createComponent(HelloWorld);
+    fixture.detectChanges();
+    const injector = fixture.debugElement.query(By.css('greeting-cmp')).injector;
+
+    // from the node injector
+    const greetingCmp = injector.get(GreetingCmp);
+    expect(greetingCmp.constructor).toBe(GreetingCmp);
+
+    // from the node injector (inherited from a parent node)
+    const helloWorldCmp = injector.get(HelloWorld);
+    expect(fixture.componentInstance).toBe(helloWorldCmp);
+
+    const nameInjected = injector.get(NAME);
+    expect(nameInjected).toEqual('World!');
+  });
+
+  fixmeIvy('unknown') && it('should give access to the node injector for root node', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
-    const injector = hello.debugElement.query(By.css('greeting-cmp')).injector;
+    const injector = hello.debugElement.injector;
 
     // from the node injector
     const helloInjected = injector.get(HelloWorld);
@@ -109,6 +130,13 @@ describe('TestBed', () => {
     expect(nameInjected).toEqual('World!');
   });
 
+  it('should give access to local refs on a node', () => {
+    const withRefsCmp = TestBed.createComponent(WithRefsCmp);
+    const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'));
+    // assert that a native element is referenced by a local ref
+    expect(firstDivDebugEl.references.firstDiv.tagName.toLowerCase()).toBe('div');
+  });
+
   it('should give the ability to query by directive', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
@@ -116,7 +144,6 @@ describe('TestBed', () => {
     const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp));
     expect(greetingByDirective.componentInstance).toBeAnInstanceOf(GreetingCmp);
   });
-
 
   it('allow to override a template', () => {
     // use original template when there is no override

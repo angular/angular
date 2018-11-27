@@ -1078,7 +1078,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                });
              });
            }));
-
       });
 
     });

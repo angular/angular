@@ -39,10 +39,11 @@
       <tr>
         <td>
           <a href="{$ item.path $}">
-            <code-example language="ts" hideCopy="true" linenums="false" class="no-box">{$ item.name | escape $}</code-example>
+            <code-example language="ts" hideCopy="true" linenums="false" class="no-box{% if item.deprecated !== undefined %} deprecated-api-item{% endif %}">{$ item.name | escape $}</code-example>
           </a>
         </td>
         <td>
+          {% if item.deprecated !== undefined %}{$ ('**Deprecated:** ' + item.deprecated) | marked $}{% endif %}
           {$ item.shortDescription | marked $}
         </td>
       </tr>

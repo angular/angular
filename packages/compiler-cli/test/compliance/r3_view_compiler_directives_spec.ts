@@ -42,14 +42,14 @@ describe('compiler compliance: directives', () => {
                 type: MyComponent, 
                 selectors: [["my-component"]], 
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, 
-                features: [$r3$.ɵPublicFeature], 
                 consts: 1, 
                 vars: 0, 
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {
                         $r3$.ɵelement(0, "div");
                     }
-                }
+                },
+                encapsulation: 2
             });
         `;
 
@@ -88,14 +88,14 @@ describe('compiler compliance: directives', () => {
                 type: MyComponent, 
                 selectors: [["my-component"]], 
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }, 
-                features: [$r3$.ɵPublicFeature], 
                 consts: 1, 
                 vars: 0, 
                 template: function MyComponent_Template(rf, ctx) {
                     if (rf & 1) {
                         $r3$.ɵelement(0, "div");
                     }
-                }
+                },
+                encapsulation: 2
             });
         `;
 
@@ -143,7 +143,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -191,7 +192,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -235,7 +237,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 
@@ -285,7 +288,8 @@ describe('compiler compliance: directives', () => {
                         }
                     },
                     …
-                    directives: [SomeDirective]
+                    directives: [SomeDirective],
+                    encapsulation: 2
                 });
             `;
 

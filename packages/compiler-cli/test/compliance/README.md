@@ -1,3 +1,5 @@
 Tests in this directory should be run with:
 
-bazel test --define=compile=local  packages/compiler-cli/test/compliance:compliance
+```
+yarn bazel test --define=compile=aot  packages/compiler-cli/test/compliance:compliance
+```

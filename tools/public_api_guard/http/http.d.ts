@@ -97,8 +97,8 @@ export declare class JsonpModule {
 
 /** @deprecated */
 export declare class QueryEncoder {
-    encodeKey(k: string): string;
-    encodeValue(v: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
 }
 
 /** @deprecated */

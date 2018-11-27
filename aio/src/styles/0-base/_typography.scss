@@ -123,7 +123,7 @@ td {
   padding: 8px 30px;
   letter-spacing: 0.30px;
 
-  p {
+  p:first-child, p:last-child {
     margin: 0;
   }
 }
@@ -133,17 +133,6 @@ th {
   font-weight: 500;
   padding: 13px 32px;
   text-align: left;
-}
-
-p > code, li > code, td > code, th > code {
-  font-family: $code-font;
-  font-size: 85%;
-  color: $darkgray;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 2px 0;
-  background-color: $backgroundgray;
-  border-radius: 4px;
 }
 
 code {

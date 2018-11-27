@@ -36,8 +36,8 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<p>Hello <br> World</p>');
     });
 
-    it('supports namespaced elements',
-       () => { expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('abc'); });
+    it('supports removal of namespaced elements',
+       () => { expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('a'); });
 
     it('supports namespaced attributes', () => {
       expect(_sanitizeHtml(defaultDoc, '<a xlink:href="something">t</a>'))
@@ -85,15 +85,37 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<p alt="% &amp; &#34; !">Hello</p>');  // NB: quote encoded as ASCII &#34;.
     });
 
-    describe('should strip dangerous elements', () => {
+    describe('should strip dangerous elements and its content', () => {
       const dangerousTags = [
-        'frameset', 'form', 'param', 'object', 'embed', 'textarea', 'input', 'button', 'option',
-        'select', 'script', 'style', 'link', 'base', 'basefont'
+        'form',
+        'object',
+        'textarea',
+        'button',
+        'option',
+        'select',
+        'script',
+        'style',
       ];
 
       for (const tag of dangerousTags) {
         it(`${tag}`,
-           () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
+           () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual(''); });
+      }
+      const dangerousSelfClosingTags = [
+        'frameset',
+        'embed',
+        'input',
+        'param',
+        'base',
+        'basefont',
+        'param',
+        'link',
+      ];
+
+      for (const tag of dangerousSelfClosingTags) {
+        it(`${tag}`, () => {
+          expect(_sanitizeHtml(defaultDoc, `before<${tag}>After`)).toEqual('beforeAfter');
+        });
       }
 
       it(`swallows frame entirely`, () => {
@@ -109,6 +131,14 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           expect(_sanitizeHtml(defaultDoc, `<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
         });
       }
+    });
+
+    it('ignores content of style elements', () => {
+      expect(_sanitizeHtml(defaultDoc, '<style><!-- foobar --></style><div>hi</div>'))
+          .toEqual('<div>hi</div>');
+      expect(_sanitizeHtml(defaultDoc, '<style><!-- foobar --></style>')).toEqual('');
+      expect(_sanitizeHtml(defaultDoc, '<style>\<\!-- something--\>hi</style>')).toEqual('');
+      expect(logMsgs.join('\n')).toMatch(/sanitizing HTML stripped some content/);
     });
 
     it('should not enter an infinite loop on clobbered elements', () => {
@@ -154,9 +184,9 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
              .toEqual(
                  isDOMParserAvailable() ?
                      // PlatformBrowser output
-                     '<p>&lt;img src=&#34;<img src="x"></p>' :
+                     '<p><img src="x"></p>' :
                      // PlatformServer output
-                     '<p><img src="&lt;/style&gt;&lt;img src=x onerror=alert(1)//"></p>');
+                     '');
        });
 
     if (browserDetection.isWebkit) {

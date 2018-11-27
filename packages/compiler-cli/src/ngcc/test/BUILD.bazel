@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
@@ -13,6 +13,11 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
+        "@ngdeps//@types/convert-source-map",
+        "@ngdeps//@types/mock-fs",
+        "@ngdeps//canonical-path",
+        "@ngdeps//magic-string",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -22,5 +27,7 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
+        "@ngdeps//canonical-path",
+        "@ngdeps//convert-source-map",
     ],
 )

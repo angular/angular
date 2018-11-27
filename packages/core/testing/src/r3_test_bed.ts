@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injector, NgModule, Pipe, PlatformRef, Provider, RendererFactory2, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDefInternal as NgModuleDefInternal, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3DebugRendererFactory2 as Render3DebugRendererFactory2, ɵRender3NgModuleRef as NgModuleRef, ɵWRAP_RENDERER_FACTORY2 as WRAP_RENDERER_FACTORY2, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+import {Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, RendererFactory2, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3DebugRendererFactory2 as Render3DebugRendererFactory2, ɵRender3NgModuleRef as NgModuleRef, ɵWRAP_RENDERER_FACTORY2 as WRAP_RENDERER_FACTORY2, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
 import {TestBed} from './test_bed';
-import {ComponentFixtureAutoDetect, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 
 let _nextRootElementId = 0;
 
@@ -38,7 +38,7 @@ export class TestBedRender3 implements Injector, TestBed {
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
    *
-   * @experimental
+   * @publicApi
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed {
@@ -50,7 +50,7 @@ export class TestBedRender3 implements Injector, TestBed {
   /**
    * Reset the providers for the test injector.
    *
-   * @experimental
+   * @publicApi
    */
   static resetTestEnvironment(): void { _getTestBedRender3().resetTestEnvironment(); }
 
@@ -198,7 +198,7 @@ export class TestBedRender3 implements Injector, TestBed {
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
    *
-   * @experimental
+   * @publicApi
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
@@ -212,7 +212,7 @@ export class TestBedRender3 implements Injector, TestBed {
   /**
    * Reset the providers for the test injector.
    *
-   * @experimental
+   * @publicApi
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();
@@ -251,7 +251,13 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
-    throw new Error('the Render3 compiler is not configurable !');
+    if (config.useJit != null) {
+      throw new Error('the Render3 compiler JiT mode is not configurable !');
+    }
+
+    if (config.providers) {
+      this._providerOverrides.push(...config.providers);
+    }
   }
 
   configureTestingModule(moduleDef: TestModuleMetadata): void {
@@ -270,9 +276,10 @@ export class TestBedRender3 implements Injector, TestBed {
     }
   }
 
-  // TODO(vicb): implement
   compileComponents(): Promise<any> {
-    throw new Error('Render3TestBed.compileComponents is not implemented yet');
+    // assume for now that components don't use templateUrl / stylesUrl to unblock further testing
+    // TODO(pk): plug into the ivy's resource fetching pipeline
+    return Promise.resolve();
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
@@ -356,11 +363,16 @@ export class TestBedRender3 implements Injector, TestBed {
           `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ngComponentDef' field`);
     }
 
-    const componentFactory = new ComponentFactory(componentDef);
-    const componentRef =
-        componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef);
+    const noNgZone: boolean = this.get(ComponentFixtureNoNgZone, false);
     const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const fixture = new ComponentFixture<any>(componentRef, null, autoDetect);
+    const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
+    const componentFactory = new ComponentFactory(componentDef);
+    const initComponent = () => {
+      const componentRef =
+          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this._moduleRef);
+      return new ComponentFixture<any>(componentRef, ngZone, autoDetect);
+    };
+    const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
     this._activeFixtures.push(fixture);
     return fixture;
   }
@@ -423,7 +435,9 @@ export class TestBedRender3 implements Injector, TestBed {
     class RootScopeModule {
     }
 
-    const providers = [...this._providers, ...this._providerOverrides];
+    const ngZone = new NgZone({enableLongStackTrace: true});
+    const providers =
+        [{provide: NgZone, useValue: ngZone}, ...this._providers, ...this._providerOverrides];
 
     const declarations = this._declarations;
     const imports = [RootScopeModule, this.ngModule, this._imports];
@@ -557,7 +571,7 @@ function transitiveScopesFor<T>(
       // Components, Directives, NgModules, and Pipes can all be exported.
       ngComponentDef?: any;
       ngDirectiveDef?: any;
-      ngModuleDef?: NgModuleDefInternal<E>;
+      ngModuleDef?: NgModuleDef<E>;
       ngPipeDef?: any;
     };
 
@@ -598,6 +612,6 @@ function flatten<T>(values: any[]): T[] {
   return out;
 }
 
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDefInternal<T>} {
-  return (value as{ngModuleDef?: NgModuleDefInternal<T>}).ngModuleDef !== undefined;
+function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {
+  return (value as{ngModuleDef?: NgModuleDef<T>}).ngModuleDef !== undefined;
 }

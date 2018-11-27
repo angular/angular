@@ -37,6 +37,17 @@ export function main(
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
+export function mainDiagnosticsForTest(
+    args: string[], config?: NgcParsedConfiguration): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+  let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
+      config || readNgcCommandLineAndConfiguration(args);
+  if (configErrors.length) {
+    return configErrors;
+  }
+  const {diagnostics: compileDiags} = performCompilation(
+      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+  return compileDiags;
+}
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
   const transformDecorators = options.enableIvy !== 'ngtsc' && options.enableIvy !== 'tsc' &&

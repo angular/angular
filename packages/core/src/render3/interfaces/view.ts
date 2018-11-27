@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
-
+import {Type} from '../../type';
 import {LContainer} from './container';
-import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
-import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
+import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
+import {I18nUpdateOpCodes, TI18n} from './i18n';
+import {TElementNode, TNode, TViewNode} from './node';
+import {PlayerHandler} from './player';
 import {LQueries} from './query';
-import {Renderer3} from './renderer';
+import {RElement, Renderer3} from './renderer';
+import {StylingContext} from './styling';
+
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 17;
@@ -23,13 +28,13 @@ export const HEADER_OFFSET = 17;
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
 export const TVIEW = 0;
-export const PARENT = 1;
-export const NEXT = 2;
-export const QUERIES = 3;
-export const FLAGS = 4;
-export const HOST_NODE = 5;
-export const BINDING_INDEX = 6;
-export const DIRECTIVES = 7;
+export const FLAGS = 1;
+export const PARENT = 2;
+export const NEXT = 3;
+export const QUERIES = 4;
+export const HOST = 5;
+export const HOST_NODE = 6;
+export const BINDING_INDEX = 7;
 export const CLEANUP = 8;
 export const CONTEXT = 9;
 export const INJECTOR = 10;
@@ -64,7 +69,10 @@ export interface LViewData extends Array<any> {
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
    */
-  [TVIEW]: TView;
+  readonly[TVIEW]: TView;
+
+  /** Flags for this view. See LViewFlags for more info. */
+  [FLAGS]: LViewFlags;
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
@@ -90,8 +98,12 @@ export interface LViewData extends Array<any> {
   /** Queries active for this view - nodes from a view are reported to those queries. */
   [QUERIES]: LQueries|null;
 
-  /** Flags for this view. See LViewFlags for more info. */
-  [FLAGS]: LViewFlags;
+  /**
+   * The host node for this LViewData instance, if this is a component view.
+   *
+   * If this is an embedded view, HOST will be null.
+   */
+  [HOST]: RElement|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
@@ -115,15 +127,6 @@ export interface LViewData extends Array<any> {
   [BINDING_INDEX]: number;
 
   /**
-   * An array of directive instances in the current view.
-   *
-   * These must be stored separately from LNodes because their presence is
-   * unknown at compile-time and thus space cannot be reserved in data[].
-   */
-  // TODO: flatten into LViewData[]
-  [DIRECTIVES]: any[]|null;
-
-  /**
    * When a view is destroyed, listeners need to be released and outputs need to be
    * unsubscribed. This context array stores both listener functions wrapped with
    * their context and output subscription instances for a particular view.
@@ -144,7 +147,7 @@ export interface LViewData extends Array<any> {
   [CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  [INJECTOR]: Injector|null;
+  readonly[INJECTOR]: Injector|null;
 
   /** Renderer to be used for this view. */
   [RENDERER]: Renderer3;
@@ -294,7 +297,7 @@ export interface TView {
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
 
-  /** Static data equivalent of LView.data[]. Contains TNodes. */
+  /** Static data equivalent of LView.data[]. Contains TNodes, PipeDefInternal or TI18n. */
   data: TData;
 
   /**
@@ -306,11 +309,16 @@ export interface TView {
   bindingStartIndex: number;
 
   /**
-   * The index at which the data array begins to store host bindings for components
-   * or directives in its template. Saving this value ensures that we can set the
-   * binding root and binding index correctly before checking host bindings.
+   * The index where the "expando" section of `LViewData` begins. The expando
+   * section contains injectors, directive instances, and host binding values.
+   * Unlike the "consts" and "vars" sections of `LViewData`, the length of this
+   * section cannot be calculated at compile-time because directives are matched
+   * at runtime to preserve locality.
+   *
+   * We store this start index so we know where to start checking host bindings
+   * in `setHostBindings`.
    */
-  hostBindingStartIndex: number;
+  expandoStartIndex: number;
 
   /**
    * Index of the host node of the first LView or LContainer beneath this LView in
@@ -330,31 +338,11 @@ export interface TView {
   firstChild: TNode|null;
 
   /**
-   * Selector matches for a node are temporarily cached on the TView so the
-   * DI system can eagerly instantiate directives on the same node if they are
-   * created out of order. They are overwritten after each node.
+   * Set of instructions used to process host bindings efficiently.
    *
-   * <div dirA dirB></div>
-   *
-   * e.g. DirA injects DirB, but DirA is created first. DI should instantiate
-   * DirB when it finds that it's on the same node, but not yet created.
-   *
-   * Even indices: Directive defs
-   * Odd indices:
-   *   - Null if the associated directive hasn't been instantiated yet
-   *   - Directive index, if associated directive has been created
-   *   - String, temporary 'CIRCULAR' token set while dependencies are being resolved
+   * See VIEW_DATA.md for more information.
    */
-  currentMatches: CurrentMatchesList|null;
-
-  /**
-   * Directive and component defs that have already been matched to nodes on
-   * this view.
-   *
-   * Defs are stored at the same index in TView.directives[] as their instances
-   * are stored in LView.directives[]. This simplifies lookup in DI.
-   */
-  directives: DirectiveDefList|null;
+  expandoInstructions: (number|HostBindingsFunction<any>)[]|null;
 
   /**
    * Full registry of directives and components that may be found in this view.
@@ -479,18 +467,6 @@ export interface TView {
   components: number[]|null;
 
   /**
-   * A list of indices for child directives that have host bindings.
-   *
-   * Even indices: Directive indices
-   * Odd indices: Element indices
-   *
-   * Element indices are NOT adjusted for LViewData header offset because
-   * they will be fed into instructions that expect the raw index (e.g. elementProperty)
-   */
-  hostBindings: number[]|null;
-
-
-  /**
    * A list of indices for child directives that have content queries.
    *
    * Even indices: Directive indices
@@ -498,6 +474,9 @@ export interface TView {
    */
   contentQueries: number[]|null;
 }
+
+export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}
+
 
 /**
  * RootContext contains information which is shared for all components which
@@ -522,6 +501,16 @@ export interface RootContext {
    * {@link renderComponent}.
    */
   components: {}[];
+
+  /**
+   * The player flushing handler to kick off all animations
+   */
+  playerHandler: PlayerHandler|null;
+
+  /**
+   * What render-related operations to run once a scheduler has been set
+   */
+  flags: RootContextFlags;
 }
 
 /**
@@ -536,14 +525,17 @@ export type HookData = (number | (() => void))[];
  * Static data that corresponds to the instance-specific data array on an LView.
  *
  * Each node's static data is stored in tData at the same index that it's stored
- * in the data array. Each pipe's definition is stored here at the same index
- * as its pipe instance in the data array. Any nodes that do not have static
- * data store a null value in tData to avoid a sparse array.
+ * in the data array.  Any nodes that do not have static data store a null value in
+ * tData to avoid a sparse array.
+ *
+ * Each pipe's definition is stored here at the same index as its pipe instance in
+ * the data array.
+ *
+ * Injector bloom filters are also stored here.
  */
-export type TData = (TNode | PipeDefInternal<any>| null)[];
-
-/** Type for TView.currentMatches */
-export type CurrentMatchesList = [DirectiveDefInternal<any>, (string | number | null)];
+export type TData =
+    (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
+     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
