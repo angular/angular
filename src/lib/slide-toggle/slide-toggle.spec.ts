@@ -249,6 +249,12 @@ describe('MatSlideToggle without forms', () => {
       expect(inputElement.hasAttribute('aria-labelledby')).toBeFalsy();
     });
 
+    it('should set the `for` attribute to the id of the input element', () => {
+      expect(labelElement.getAttribute('for')).toBeTruthy();
+      expect(inputElement.getAttribute('id')).toBeTruthy();
+      expect(labelElement.getAttribute('for')).toBe(inputElement.getAttribute('id'));
+    });
+
     it('should emit the new values properly', fakeAsync(() => {
       labelElement.click();
       fixture.detectChanges();

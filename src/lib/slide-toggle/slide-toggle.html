@@ -1,5 +1,4 @@
-<label class="mat-slide-toggle-label" #label>
-
+<label [attr.for]="inputId" class="mat-slide-toggle-label" #label>
   <div #toggleBar class="mat-slide-toggle-bar"
        [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
 
