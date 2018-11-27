@@ -45,7 +45,7 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
     message: `What's the type of the new release?`,
     choices: versionChoices,
   }, {
-    type: 'prompt',
+    type: 'confirm',
     name: 'isPrerelease',
     message: 'Should this be a pre-release?',
     // Prompt whether this should a pre-release if the current release is not a pre-release

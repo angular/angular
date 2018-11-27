@@ -17,7 +17,6 @@ createPackageBuildTasks(momentAdapterPackage);
 
 import './tasks/aot';
 import './tasks/breaking-changes';
-import './tasks/changelog';
 import './tasks/ci';
 import './tasks/clean';
 import './tasks/default';

@@ -2,10 +2,14 @@ import {bold, cyan, green, italic, red, yellow} from 'chalk';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';
+import {promptAndGenerateChangelog} from './changelog';
 import {GitClient} from './git/git-client';
 import {promptForNewVersion} from './prompt/new-version-prompt';
 import {parseVersionName, Version} from './version-name/parse-version';
 import {getExpectedPublishBranch} from './version-name/publish-branch';
+
+/** Default filename for the changelog. */
+const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
 
 /**
  * Class that can be instantiated in order to stage a new release. The tasks requires user
@@ -92,13 +96,15 @@ class StageReleaseTask {
 
     console.log(green(`  ✓   Updated the version to "${bold(newVersionName)}" inside of the ` +
       `${italic('package.json')}`));
+    console.log();
 
-    // TODO(devversion): run changelog script w/prompts in the future.
-    // For now, we just let users make modifications and stage the changes.
+    await promptAndGenerateChangelog(join(this.projectDir, CHANGELOG_FILE_NAME));
 
-    console.log(yellow(`  ⚠   Please generate the ${bold('CHANGELOG')} for the new version. ` +
-      `You can also make other unrelated modifications. After the changes have been made, ` +
-      `just continue here.`));
+    console.log();
+    console.log(green(`  ✓   Updated the changelog in ` +
+      `"${bold(CHANGELOG_FILE_NAME)}"`));
+    console.log(yellow(`  ⚠   You can also make other unrelated modifications. After the ` +
+      `changes have been made, just continue here.`));
     console.log();
 
     const {shouldContinue} = await prompt<{shouldContinue: boolean}>({
@@ -166,19 +172,7 @@ class StageReleaseTask {
 }
 
 /** Entry-point for the release staging script. */
-async function main() {
-  const projectDir = process.argv.slice(2)[0];
-
-  if (!projectDir) {
-    console.error(red(`You specified no project directory. Cannot run stage release script.`));
-    console.error(red(`Usage: bazel run //tools/release:stage-release <project-directory>`));
-    process.exit(1);
-  }
-
-  return new StageReleaseTask(projectDir).run();
-}
-
 if (require.main === module) {
-  main();
+  new StageReleaseTask(join(__dirname, '../../')).run();
 }
 
