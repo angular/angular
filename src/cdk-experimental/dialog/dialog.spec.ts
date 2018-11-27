@@ -632,6 +632,29 @@ describe('Dialog', () => {
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(0);
   }));
 
+  it('should complete the various lifecycle streams on destroy', fakeAsync(() => {
+    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    let beforeOpenedComplete = jasmine.createSpy('before opened complete spy');
+    let afterOpenedComplete = jasmine.createSpy('after opened complete spy');
+    let beforeClosedComplete = jasmine.createSpy('before closed complete spy');
+    let afterClosedComplete = jasmine.createSpy('after closed complete spy');
+
+    viewContainerFixture.detectChanges();
+    dialogRef.beforeOpened().subscribe({complete: beforeOpenedComplete});
+    dialogRef.afterOpened().subscribe({complete: afterOpenedComplete});
+    dialogRef.beforeClosed().subscribe({complete: beforeClosedComplete});
+    dialogRef.afterClosed().subscribe({complete: afterClosedComplete});
+
+    dialogRef.close('Charmander');
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(beforeOpenedComplete).toHaveBeenCalled();
+    expect(afterOpenedComplete).toHaveBeenCalled();
+    expect(beforeClosedComplete).toHaveBeenCalled();
+    expect(afterClosedComplete).toHaveBeenCalled();
+  }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {

@@ -133,11 +133,13 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
       if (event.toState === 'enter') {
         this._autoFocusFirstTabbableElement();
         this._afterEnter.next();
+        this._afterEnter.complete();
       }
 
       if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
         this._returnFocusAfterDialog();
         this._afterExit.next();
+        this._afterExit.complete();
       }
     });
   }
@@ -178,9 +180,11 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   _onAnimationStart(event: AnimationEvent) {
     if (event.toState === 'enter') {
       this._beforeEnter.next();
+      this._beforeEnter.complete();
     }
     if (event.fromState === 'enter' && (event.toState === 'void' || event.toState === 'exit')) {
       this._beforeExit.next();
+      this._beforeExit.complete();
     }
   }
 
