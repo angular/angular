@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools/markdown-to-html:index.bzl", "markdown_to_html")
+load("//tools:defaults.bzl", "markdown_to_html")
 
 markdown_to_html(
   name = "guides",

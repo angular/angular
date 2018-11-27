@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ts_library", "jasmine_node_test")
+load("//tools:defaults.bzl", "ng_module", "ts_library", "jasmine_node_test", "markdown_to_html")
 
 ng_module(
   name = "collections",
@@ -25,4 +25,9 @@ ts_library(
 jasmine_node_test(
   name = "unit_tests",
   deps = [":collections_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":collections.md"],
 )

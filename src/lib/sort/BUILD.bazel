@@ -1,7 +1,8 @@
 package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
 
 ng_module(
   name = "sort",
@@ -48,4 +49,9 @@ ng_test_library(
 ng_web_test_suite(
   name = "unit_tests",
   deps = [":sort_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":sort.md"],
 )

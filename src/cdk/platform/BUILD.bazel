@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "markdown_to_html")
 
 ng_module(
   name = "platform",
@@ -10,4 +10,9 @@ ng_module(
     "@angular//packages/common",
     "@angular//packages/core",
   ]
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":platform.md"],
 )

@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "markdown_to_html")
 
 ng_module(
   name = "stepper",
@@ -17,4 +17,9 @@ ng_module(
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
   ],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":stepper.md"],
 )

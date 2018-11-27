@@ -2,7 +2,8 @@ package(default_visibility=["//visibility:public"])
 
 load("@io_bazel_rules_sass//:defs.bzl", "sass_library", "sass_binary")
 load("//:packages.bzl", "MATERIAL_SCSS_LIBS")
-load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite",
+  "markdown_to_html")
 
 exports_files(["theming/_theming.scss"])
 
@@ -113,4 +114,9 @@ ng_test_library(
 ng_web_test_suite(
   name = "unit_tests",
   deps = [":core_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = ["ripple/ripple.md"],
 )

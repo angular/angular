@@ -4,10 +4,14 @@ load("@angular//:index.bzl", _ng_module = "ng_module")
 load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library",
   _ts_web_test_suite = "ts_web_test_suite")
+load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
 _DEFAULT_TS_TYPINGS = "@matdeps//typescript:typescript__typings"
+
+# Re-exports to simplify build file load statements
+markdown_to_html = _markdown_to_html
 
 def _getDefaultTsConfig(testonly):
   if testonly:

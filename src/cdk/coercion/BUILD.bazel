@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "jasmine_node_test")
+load("//tools:defaults.bzl", "ts_library", "jasmine_node_test", "markdown_to_html")
 
 ts_library(
   name = "coercion",
@@ -21,4 +21,9 @@ ts_library(
 jasmine_node_test(
   name = "unit_tests",
   deps = [":coercion_test_sources"],
+)
+
+markdown_to_html(
+  name = "overview",
+  srcs = [":coercion.md"],
 )

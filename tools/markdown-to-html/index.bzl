@@ -1,4 +1,12 @@
 """
+  Gets a path relative to the specified label. This is achieved by just removing the label
+  package path from the specified path. e.g. the path is "guides/test/my-text.md" and the
+  label package is "guides/". The expected path would be "test/my-text.md".
+"""
+def _relative_to_label(label, short_path):
+  return short_path[len(label.package) + 1:]
+
+"""
   Implementation of the "markdown_to_html" rule. The implementation runs the transform
   executable in order to create the outputs for the specified source files.
 """
@@ -7,18 +15,25 @@ def _markdown_to_html(ctx):
   args = ctx.actions.args()
   expected_outputs = [];
 
+  # Do nothing if there are no input files. Bazel will throw if we schedule an action
+  # that returns no outputs.
+  if not input_files:
+    return None
+
   # Add the bazel bin directory to the command arguments. The script needs to know about
   # the output directory because the input files are not in the same location as the bazel
   # bin directory.
   args.add(ctx.bin_dir.path)
 
   for input_file in input_files:
-    # Remove the extension from the input file path. Note that we should not use `.replace`
+    # Determine the input file path relatively to the current package path. This is necessary
+    # because we want to preserve directories for the input files and `declare_file` expects a
+    # path that is relative to the current package. Also note that we should not use `.replace`
     # here because the extension can be also in upper case.
-    basename = input_file.basename[:-len(".md")]
+    relative_basepath = _relative_to_label(ctx.label, input_file.short_path)[:-len(".md")]
 
     # For each input file "xxx.md", we want to write an output file "xxx.html"
-    expected_outputs += [ctx.actions.declare_file("%s.html" % basename)]
+    expected_outputs += [ctx.actions.declare_file("%s.html" % relative_basepath)]
 
     # Add the input file to the command line arguments that will be passed to the
     # transform-markdown executable.
