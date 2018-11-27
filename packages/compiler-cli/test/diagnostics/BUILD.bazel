@@ -38,7 +38,9 @@ jasmine_node_test(
         "//packages/core:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests pertain to typechecking in the old ngc compiler. The Ivy ngtsc
+        # compiler has its own typechecking implementation and tests.
+        "no-ivy-aot",
     ],
     deps = [
         ":check_types_lib",
@@ -71,7 +73,9 @@ jasmine_node_test(
         "//packages/forms:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests pertain to diagnostics in the old ngc compiler. The Ivy ngtsc
+        # compiler has its own tests for diagnostics.
+        "no-ivy-aot",
     ],
     deps = [
         ":expression_diagnostics_lib",
