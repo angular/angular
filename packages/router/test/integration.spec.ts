@@ -9,7 +9,7 @@
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, OnDestroy, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, flush, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
@@ -2482,45 +2482,46 @@ describe('Integration', () => {
                  expect(canceledStatus).toEqual(false);
                })));
 
-        it('works with componentless routes',
-           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
+        fixmeIvy('unknown') &&
+            it('works with componentless routes',
+               fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+                 const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig([
-               {
-                 path: 'grandparent',
-                 canDeactivate: ['RecordingDeactivate'],
-                 children: [{
-                   path: 'parent',
-                   canDeactivate: ['RecordingDeactivate'],
-                   children: [{
-                     path: 'child',
+                 router.resetConfig([
+                   {
+                     path: 'grandparent',
                      canDeactivate: ['RecordingDeactivate'],
                      children: [{
-                       path: 'simple',
-                       component: SimpleCmp,
-                       canDeactivate: ['RecordingDeactivate']
+                       path: 'parent',
+                       canDeactivate: ['RecordingDeactivate'],
+                       children: [{
+                         path: 'child',
+                         canDeactivate: ['RecordingDeactivate'],
+                         children: [{
+                           path: 'simple',
+                           component: SimpleCmp,
+                           canDeactivate: ['RecordingDeactivate']
+                         }]
+                       }]
                      }]
-                   }]
-                 }]
-               },
-               {path: 'simple', component: SimpleCmp}
-             ]);
+                   },
+                   {path: 'simple', component: SimpleCmp}
+                 ]);
 
-             router.navigateByUrl('/grandparent/parent/child/simple');
-             advance(fixture);
-             expect(location.path()).toEqual('/grandparent/parent/child/simple');
+                 router.navigateByUrl('/grandparent/parent/child/simple');
+                 advance(fixture);
+                 expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
-             router.navigateByUrl('/simple');
-             advance(fixture);
+                 router.navigateByUrl('/simple');
+                 advance(fixture);
 
-             const child = fixture.debugElement.children[1].componentInstance;
+                 const child = fixture.debugElement.children[1].componentInstance;
 
-             expect(log.map((a: any) => a.path)).toEqual([
-               'simple', 'child', 'parent', 'grandparent'
-             ]);
-             expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
-           })));
+                 expect(log.map((a: any) => a.path)).toEqual([
+                   'simple', 'child', 'parent', 'grandparent'
+                 ]);
+                 expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
+               })));
 
         it('works with aux routes',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -3775,36 +3776,36 @@ describe('Integration', () => {
 
     fixmeIvy('unknown') &&
         it('should allow componentless named outlet to render children',
-            fakeAsync(inject(
-                [Router, NgModuleFactoryLoader],
-                (router: Router, loader: SpyNgModuleFactoryLoader) => {
+           fakeAsync(inject(
+               [Router, NgModuleFactoryLoader],
+               (router: Router, loader: SpyNgModuleFactoryLoader) => {
 
-                  const fixture = createRoot(router, RootCmp);
+                 const fixture = createRoot(router, RootCmp);
 
-                  router.resetConfig([{
-                    path: 'team/:id',
-                    component: TeamCmp,
-                    children: [
-                      {path: 'user/:name', component: UserCmp},
-                      {
-                        path: 'simple',
-                        outlet: 'right',
-                        children: [{path: '', component: SimpleCmp}]
-                      },
-                    ]
-                  }]);
+                 router.resetConfig([{
+                   path: 'team/:id',
+                   component: TeamCmp,
+                   children: [
+                     {path: 'user/:name', component: UserCmp},
+                     {
+                       path: 'simple',
+                       outlet: 'right',
+                       children: [{path: '', component: SimpleCmp}]
+                     },
+                   ]
+                 }]);
 
 
-                  router.navigateByUrl('/team/22/user/john');
-                  advance(fixture);
+                 router.navigateByUrl('/team/22/user/john');
+                 advance(fixture);
 
-                  expect(fixture.nativeElement).toHaveText('team 22 [ user john, right:  ]');
+                 expect(fixture.nativeElement).toHaveText('team 22 [ user john, right:  ]');
 
-                  router.navigateByUrl('/team/22/(user/john//right:simple)');
-                  advance(fixture);
+                 router.navigateByUrl('/team/22/(user/john//right:simple)');
+                 advance(fixture);
 
-                  expect(fixture.nativeElement).toHaveText('team 22 [ user john, right: simple ]');
-                })));
+                 expect(fixture.nativeElement).toHaveText('team 22 [ user john, right: simple ]');
+               })));
 
     describe('should use the injector of the lazily-loaded configuration', () => {
       class LazyLoadedServiceDefinedInModule {}
