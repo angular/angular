@@ -2,8 +2,8 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime": 3881,
-        "main": 502188,
+        "runtime": 3799,
+        "main": 501972,
         "polyfills": 53926
       }
     }
