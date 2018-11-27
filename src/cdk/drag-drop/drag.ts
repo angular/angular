@@ -491,6 +491,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       // Preserve the previous `transform` value, if there was one.
       this._rootElement.style.transform = this._initialTransform ?
           this._initialTransform + ' ' + transform : transform;
+
+      // Apply transform as attribute if dragging and svg element to work for IE
+      if (typeof SVGElement !== 'undefined' && this._rootElement instanceof SVGElement) {
+        const appliedTransform = `translate(${activeTransform.x} ${activeTransform.y})`;
+        this._rootElement.setAttribute('transform', appliedTransform);
+      }
     }
 
     // Since this event gets fired for every pixel while dragging, we only

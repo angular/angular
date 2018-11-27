@@ -66,6 +66,16 @@ describe('CdkDrag', () => {
         expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
       }));
 
+      it('should drag an SVG element freely to a particular position', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggableSvg);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        expect(dragElement.getAttribute('transform')).toBeFalsy();
+        dragElementViaMouse(fixture, dragElement, 50, 100);
+        expect(dragElement.getAttribute('transform')).toBe('translate(50 100)');
+      }));
+
       it('should drag an element freely to a particular position when the page is scrolled',
         fakeAsync(() => {
           const fixture = createComponent(StandaloneDraggable);
@@ -2227,6 +2237,19 @@ class StandaloneDraggable {
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
   startedSpy = jasmine.createSpy('started spy');
   endedSpy = jasmine.createSpy('ended spy');
+}
+
+@Component({
+  template: `
+    <svg><g
+      cdkDrag
+      #dragElement>
+      <circle fill="red" r="50" cx="50" cy="50"/>
+    </g></svg>
+  `
+})
+class StandaloneDraggableSvg {
+  @ViewChild('dragElement') dragElement: ElementRef<SVGElement>;
 }
 
 @Component({
