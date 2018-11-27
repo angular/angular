@@ -229,7 +229,7 @@ ivyEnabled && describe('render3 jit', () => {
     const cmpDef = (Cmp as any).ngComponentDef as ComponentDef<Cmp>;
 
     expect(cmpDef.hostBindings).toBeDefined();
-    expect(cmpDef.hostBindings !.length).toBe(3);
+    expect(cmpDef.hostBindings !.length).toBe(4);
   });
 
   it('should compile @Pipes without errors', () => {
