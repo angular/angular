@@ -50,10 +50,13 @@ $mat-chip-remove-font-size: 18px;
     &.mat-chip-disabled {
       opacity: 0.4;
     }
+
+    &::after {
+      background: map_get($foreground, base);
+    }
   }
 
   .mat-chip.mat-standard-chip.mat-chip-selected {
-
     &.mat-primary {
       @include mat-chips-theme-color($primary);
     }

@@ -57,7 +57,6 @@ $mat-chip-remove-size: 18px;
   &::after {
     @include mat-fill;
     border-radius: inherit;
-    background-color: black;
     opacity: 0;
     content: '';
     pointer-events: none;
