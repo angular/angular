@@ -265,6 +265,9 @@ export function createContainerRef(
       }
 
       move(viewRef: viewEngine_ViewRef, newIndex: number): viewEngine_ViewRef {
+        if (viewRef.destroyed) {
+          throw new Error('Cannot move a destroyed View in a ViewContainer!');
+        }
         const index = this.indexOf(viewRef);
         this.detach(index);
         this.insert(viewRef, this._adjustIndex(newIndex));

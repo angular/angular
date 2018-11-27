@@ -995,17 +995,18 @@ function declareTests(config?: {useJit: boolean}) {
         expect(dir.receivedArgs).toEqual(['one', undefined]);
       });
 
-      fixmeIvy('unknown') && it('should not allow pipes in hostListeners', () => {
-        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
-        class DirectiveWithHostListener {
-        }
+      fixmeIvy('FW-742: Pipes in host listeners should throw a descriptive error') &&
+          it('should not allow pipes in hostListeners', () => {
+            @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
+            class DirectiveWithHostListener {
+            }
 
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
-        const template = '<div host-listener></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        expect(() => TestBed.createComponent(MyComp))
-            .toThrowError(/Cannot have a pipe in an action expression/);
-      });
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
+            const template = '<div host-listener></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            expect(() => TestBed.createComponent(MyComp))
+                .toThrowError(/Cannot have a pipe in an action expression/);
+          });
 
 
 
@@ -1238,37 +1239,35 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         describe('.insert', () => {
-          fixmeIvy('unknown') &&
-              it('should throw with destroyed views', async(() => {
-                   const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                                       .createComponent(MyComp);
-                   const tc = fixture.debugElement.children[0].children[0];
-                   const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-                   const ref = dynamicVp.create();
-                   fixture.detectChanges();
+          it('should throw with destroyed views', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               const ref = dynamicVp.create();
+               fixture.detectChanges();
 
-                   ref.destroy();
-                   expect(() => {
-                     dynamicVp.insert(ref.hostView);
-                   }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
-                 }));
+               ref.destroy();
+               expect(() => {
+                 dynamicVp.insert(ref.hostView);
+               }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
+             }));
         });
 
         describe('.move', () => {
-          fixmeIvy('unknown') &&
-              it('should throw with destroyed views', async(() => {
-                   const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-                                       .createComponent(MyComp);
-                   const tc = fixture.debugElement.children[0].children[0];
-                   const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
-                   const ref = dynamicVp.create();
-                   fixture.detectChanges();
+          it('should throw with destroyed views', async(() => {
+               const fixture = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+                                   .createComponent(MyComp);
+               const tc = fixture.debugElement.children[0].children[0];
+               const dynamicVp: DynamicViewport = tc.injector.get(DynamicViewport);
+               const ref = dynamicVp.create();
+               fixture.detectChanges();
 
-                   ref.destroy();
-                   expect(() => {
-                     dynamicVp.move(ref.hostView, 1);
-                   }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
-                 }));
+               ref.destroy();
+               expect(() => {
+                 dynamicVp.move(ref.hostView, 1);
+               }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
+             }));
         });
 
       });
