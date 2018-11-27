@@ -4,7 +4,17 @@ import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/Functio
 import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/InterfaceExportDoc';
 import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
 import * as path from 'path';
+import {computeApiDocumentUrl} from '../common/compute-api-url';
 import {CategorizedClassDoc} from '../common/dgeni-definitions';
+
+export interface ModuleInfo {
+  /** Name of the module (e.g. toolbar, drag-drop, ripple) */
+  name: string;
+  /** Name of the package that contains this entry point. */
+  packageName: string;
+  /** Name of the entry-point that contains this module. */
+  entryPointName: string;
+}
 
 /** Document type for an entry-point. */
 export class EntryPointDoc {
@@ -75,13 +85,17 @@ export class EntryPointGrouper implements Processor {
     const entryPoints = new Map<string, EntryPointDoc>();
 
     docs.forEach(doc => {
-      const documentInfo = getDocumentPackageInfo(doc);
+      const moduleInfo = getModulePackageInfo(doc);
 
-      const packageName = documentInfo.packageName;
-      const packageDisplayName = documentInfo.packageName === 'cdk' ? 'CDK' : 'Material';
+      const packageName = moduleInfo.packageName;
+      const packageDisplayName = packageName === 'cdk' ? 'CDK' : 'Material';
 
-      const moduleImportPath = `@angular/${packageName}/${documentInfo.entryPointName}`;
-      const entryPointName = packageName + '-' + documentInfo.name;
+      const moduleImportPath = `@angular/${packageName}/${moduleInfo.entryPointName}`;
+      const entryPointName = packageName + '-' + moduleInfo.name;
+
+      // Compute a public URL that refers to the document. This is helpful if we want to
+      // make references to other API documents. e.g. showing the extended class.
+      doc.publicUrl = computeApiDocumentUrl(doc, moduleInfo);
 
       // Get the entry-point for this doc, or, if one does not exist, create it.
       let entryPoint;
@@ -92,7 +106,7 @@ export class EntryPointGrouper implements Processor {
         entryPoints.set(entryPointName, entryPoint);
       }
 
-      entryPoint.displayName = documentInfo.name;
+      entryPoint.displayName = moduleInfo.name;
       entryPoint.moduleImportPath = moduleImportPath;
       entryPoint.packageName = packageName;
       entryPoint.packageDisplayName = packageDisplayName;
@@ -121,8 +135,8 @@ export class EntryPointGrouper implements Processor {
   }
 }
 
-/** Resolves package information for the given Dgeni document. */
-function getDocumentPackageInfo(doc: Document) {
+/** Resolves module package information of the given Dgeni document. */
+function getModulePackageInfo(doc: Document): ModuleInfo {
   // Full path to the file for this doc.
   const basePath = doc.fileInfo.basePath;
   const filePath = doc.fileInfo.filePath;
@@ -130,17 +144,20 @@ function getDocumentPackageInfo(doc: Document) {
   // All of the component documentation is under either `src/lib` or `src/cdk`.
   // We group the docs up by the directory immediately under that root.
   const pathSegments = path.relative(basePath, filePath).split(path.sep);
-  let groupName = pathSegments[1];
+
+  // The module name is usually the entry-point (e.g. slide-toggle, toolbar), but this is not
+  // guaranteed because we can also export a module from lib/core. e.g. the ripple module.
+  let moduleName = pathSegments[1];
 
   // The ripples are technically part of the `@angular/material/core` entry-point, but we
   // want to show the ripple API separately in the docs. In order to archive this, we treat
-  // the ripple folder as its own entry-point.
+  // the ripple folder as its own module.
   if (pathSegments[1] === 'core' && pathSegments[2] === 'ripple') {
-    groupName = 'ripple';
+    moduleName = 'ripple';
   }
 
   return {
-    name: groupName,
+    name: moduleName,
     packageName: pathSegments[0] === 'lib' ? 'material' : pathSegments[0],
     entryPointName: pathSegments[1],
   };

@@ -46,9 +46,7 @@ function configureTestBed() {
     var testing = providers[1];
     var testingBrowser = providers[2];
 
-    console.log('----------');
     console.log('Running tests using Angular version: ' + core.VERSION.full);
-    console.log('----------');
 
     var testBed = testing.TestBed.initTestEnvironment(
       testingBrowser.BrowserDynamicTestingModule,

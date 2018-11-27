@@ -6,7 +6,9 @@
   {% if class.extendedDoc %}
   <span class="docs-api-class-extends-clauses">
     <span class="docs-api-class-extends-label">extends</span>
-    <span class="docs-api-class-extends-type">{$ class.extendedDoc.name $}</span>
+    <a href="{$ class.extendedDoc.publicUrl $}" class="docs-api-class-extends-type">
+      {$ class.extendedDoc.name $}
+    </a>
   </span>
   {% endif %}
 </h4>
