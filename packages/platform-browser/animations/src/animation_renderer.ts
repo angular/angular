@@ -100,7 +100,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this._cdRecurDepth--;
 
     // this is to prevent animations from running twice when an inner
-    // component does CD when a parent component insted has inserted it
+    // component does CD when a parent component instead has inserted it
     if (this._cdRecurDepth == 0) {
       this._zone.runOutsideAngular(() => {
         this._scheduleCountTask();
