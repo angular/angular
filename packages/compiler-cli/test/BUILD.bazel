@@ -43,7 +43,9 @@ jasmine_node_test(
         "//packages/core:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
+        # tool will likely work differently.
+        "no-ivy-aot",
     ],
     deps = [
         ":extract_i18n_lib",
@@ -80,7 +82,9 @@ jasmine_node_test(
         "//packages/router:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
+        # own tests under //packages/compiler-cli/test/ngtsc.
+        "no-ivy-aot",
     ],
     deps = [
         ":ngc_lib",
@@ -102,6 +106,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/private/testing",
         "@ngdeps//typescript",
     ],
 )
