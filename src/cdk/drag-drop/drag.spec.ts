@@ -26,6 +26,7 @@ import {CdkDragDrop} from './drag-events';
 import {moveItemInArray} from './drag-utils';
 import {CdkDropList} from './drop-list';
 import {CdkDragHandle} from './drag-handle';
+import {CdkDropListGroup} from './drop-list-group';
 
 const ITEM_HEIGHT = 25;
 const ITEM_WIDTH = 75;
@@ -2218,6 +2219,14 @@ describe('CdkDrag', () => {
         expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
     }));
 
+    it('should not add child drop lists to the same group as their parents', fakeAsync(() => {
+      const fixture = createComponent(NestedDropListGroups);
+      const component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(Array.from(component.group._items)).toEqual([component.listOne, component.listTwo]);
+    }));
+
   });
 
 });
@@ -2602,6 +2611,25 @@ class ConnectedDropZonesWithSingleItems {
 
   droppedSpy = jasmine.createSpy('dropped spy');
 }
+
+@Component({
+  template: `
+    <div cdkDropListGroup #group="cdkDropListGroup">
+      <div cdkDropList #listOne="cdkDropList">
+        <div cdkDropList #listThree="cdkDropList"></div>
+        <div cdkDropList #listFour="cdkDropList"></div>
+      </div>
+
+      <div cdkDropList #listTwo="cdkDropList"></div>
+    </div>
+  `
+})
+class NestedDropListGroups {
+  @ViewChild('group') group: CdkDropListGroup<CdkDropList>;
+  @ViewChild('listOne') listOne: CdkDropList;
+  @ViewChild('listTwo') listTwo: CdkDropList;
+}
+
 
 /**
  * Component that passes through whatever content is projected into it.

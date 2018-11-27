@@ -20,6 +20,7 @@ import {
   Optional,
   Directive,
   ChangeDetectorRef,
+  SkipSelf,
 } from '@angular/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
@@ -81,6 +82,8 @@ interface ListPositionCacheEntry {
   selector: '[cdkDropList], cdk-drop-list',
   exportAs: 'cdkDropList',
   providers: [
+    // Prevent child drop lists from picking up the same group as their parent.
+    {provide: CdkDropListGroup, useValue: undefined},
     {provide: CDK_DROP_LIST_CONTAINER, useExisting: CdkDropList},
   ],
   host: {
@@ -157,7 +160,7 @@ export class CdkDropList<T = any> implements OnInit, OnDestroy {
     private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() private _dir?: Directionality,
-    @Optional() private _group?: CdkDropListGroup<CdkDropList>) {}
+    @Optional() @SkipSelf() private _group?: CdkDropListGroup<CdkDropList>) {}
 
   ngOnInit() {
     this._dragDropRegistry.registerDropContainer(this);

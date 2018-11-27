@@ -15,7 +15,8 @@ import {Directive, OnDestroy} from '@angular/core';
  * from `cdkDropList`.
  */
 @Directive({
-  selector: '[cdkDropListGroup]'
+  selector: '[cdkDropListGroup]',
+  exportAs: 'cdkDropListGroup',
 })
 export class CdkDropListGroup<T> implements OnDestroy {
   /** Drop lists registered inside the group. */
