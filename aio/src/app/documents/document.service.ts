@@ -15,13 +15,13 @@ export const FETCHING_ERROR_ID = 'fetching-error';
 
 export const CONTENT_URL_PREFIX = 'generated/';
 export const DOC_CONTENT_URL_PREFIX = CONTENT_URL_PREFIX + 'docs/';
-const FETCHING_ERROR_CONTENTS = `
+const FETCHING_ERROR_CONTENTS = (path: string) => `
   <div class="nf-container l-flex-wrap flex-center">
     <div class="nf-icon material-icons">error_outline</div>
     <div class="nf-response l-flex-wrap">
       <h1 class="no-toc">Request for document failed.</h1>
       <p>
-        We are unable to retrieve the "<current-location></current-location>" page at this time.
+        We are unable to retrieve the "${path}" page at this time.
         Please check your connection and try again later.
       </p>
     </div>
@@ -46,7 +46,7 @@ export class DocumentService {
   private getDocument(url: string) {
     const id = url || 'index';
     this.logger.log('getting document', id);
-    if ( !this.cache.has(id)) {
+    if (!this.cache.has(id)) {
       this.cache.set(id, this.fetchDocument(id));
     }
     return this.cache.get(id)!;
@@ -93,7 +93,7 @@ export class DocumentService {
     this.cache.delete(id);
     return of({
       id: FETCHING_ERROR_ID,
-      contents: FETCHING_ERROR_CONTENTS
+      contents: FETCHING_ERROR_CONTENTS(id),
     });
   }
 }
