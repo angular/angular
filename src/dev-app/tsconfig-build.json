@@ -41,6 +41,7 @@
   "files": [
     "./typings.d.ts",
     "./dev-app-module.ts",
+    "./system-rxjs-operators.ts",
     "./system-config.ts",
     "./main.ts"
   ]

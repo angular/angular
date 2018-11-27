@@ -13,7 +13,7 @@ sass_generate_binaries("dev_app_scss", glob(["**/*.scss"], exclude = ["theme.scs
 
 ng_module(
   name = "dev-app",
-  srcs = glob(["**/*.ts"], exclude = ["system-config.ts"]),
+  srcs = glob(["**/*.ts"], exclude = ["system-config.ts", "system-rxjs-operators.ts"]),
   assets = glob(["**/*.html"]) + [":dev_app_scss", ":theme"],
   deps = [
     "@angular//packages/common",

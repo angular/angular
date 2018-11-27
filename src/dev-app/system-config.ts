@@ -15,10 +15,12 @@ System.config({
     'node:*': 'node_modules/*'
   },
   map: {
-    'rxjs': 'node:rxjs',
     'main': 'main.js',
     'tslib': 'node:tslib/tslib.js',
     'moment': 'node:moment/min/moment-with-locales.min.js',
+
+    'rxjs': 'node_modules/rxjs/bundles/rxjs.umd.min.js',
+    'rxjs/operators': 'system-rxjs-operators.js',
 
     // Angular specific mappings.
     '@angular/core': 'node:@angular/core/bundles/core.umd.js',
@@ -102,10 +104,6 @@ System.config({
     '@angular/material/tree': 'dist/packages/material/tree/index.js',
   },
   packages: {
-    // Thirdparty barrels.
-    'rxjs': {main: 'index'},
-    'rxjs/operators': {main: 'index'},
-
     // Set the default extension for the root package, because otherwise the dev-app can't
     // be built within the production mode. Due to missing file extensions.
     '.': {
