@@ -23,7 +23,6 @@ ts_web_test_suite(
     static_files = [
         "//:angularjs_scripts",
     ],
-    tags = [],
     deps = [
         ":test_lib",
     ],
