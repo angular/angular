@@ -21,6 +21,7 @@ export {CssSelectorList} from './interfaces/projection';
 
 // clang-format off
 export {
+  allocHostVars,
   bind,
   interpolation1,
   interpolation2,

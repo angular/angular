@@ -76,7 +76,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
             superHostBindings(rf, ctx, elementIndex);
             prevHostBindings(rf, ctx, elementIndex);
           };
-          (definition as any).hostVars += superDef.hostVars;
         } else {
           definition.hostBindings = superHostBindings;
         }

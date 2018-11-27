@@ -16,7 +16,6 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
-import {noop} from '../util/noop';
 
 import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
@@ -38,13 +37,12 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
-
 
 
 /**
@@ -125,10 +123,12 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         setBindingRoot(bindingRootIndex);
       } else {
         // If it's not a number, it's a host binding function that needs to be executed.
-        viewData[BINDING_INDEX] = bindingRootIndex;
-        instruction(
-            RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
-            currentElementIndex);
+        if (instruction !== null) {
+          viewData[BINDING_INDEX] = bindingRootIndex;
+          instruction(
+              RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
+              currentElementIndex);
+        }
         currentDirectiveIndex++;
       }
     }
@@ -613,6 +613,7 @@ function createDirectivesAndLocals(
         previousOrParentTNode, localRefs || null);
   }
   instantiateAllDirectives(tView, viewData, previousOrParentTNode);
+  invokeDirectivesHostBindings(tView, viewData, previousOrParentTNode);
   saveResolvedLocalsInData(viewData, previousOrParentTNode, localRefExtractor);
 }
 
@@ -1415,7 +1416,6 @@ function resolveDirectives(
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
   ngDevMode && assertEqual(getFirstTemplatePass(), true, 'should run on first template pass only');
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
-  let totalHostVars = 0;
   if (directives) {
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
@@ -1435,7 +1435,6 @@ function resolveDirectives(
       const directiveDefIdx = tView.data.length;
       baseResolveDirective(tView, viewData, def, def.factory);
 
-      totalHostVars += def.hostVars;
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
       // Init hooks are queued now so ngOnInit is called in host components before
@@ -1444,7 +1443,6 @@ function resolveDirectives(
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
-  prefillHostVars(tView, viewData, totalHostVars);
 }
 
 /**
@@ -1465,6 +1463,31 @@ function instantiateAllDirectives(tView: TView, viewData: LView, previousOrParen
     const directive =
         getNodeInjectable(tView.data, viewData !, i, previousOrParentTNode as TElementNode);
     postProcessDirective(viewData, directive, def, i);
+  }
+}
+
+function invokeDirectivesHostBindings(tView: TView, viewData: LView, previousOrParentTNode: TNode) {
+  const start = previousOrParentTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+  const end = start + (previousOrParentTNode.flags & TNodeFlags.DirectiveCountMask);
+  const expando = tView.expandoInstructions !;
+  const firstTemplatePass = getFirstTemplatePass();
+  for (let i = start; i < end; i++) {
+    const def = tView.data[i] as DirectiveDef<any>;
+    const directive = viewData[i];
+    if (def.hostBindings) {
+      const previousExpandoLength = expando.length;
+      setCurrentDirectiveDef(def);
+      def.hostBindings !(RenderFlags.Create, directive, previousOrParentTNode.index);
+      setCurrentDirectiveDef(null);
+      // `hostBindings` function may or may not contain `allocHostVars` call
+      // (e.g. it may not if it only contains host listeners), so we need to check whether
+      // `expandoInstructions` has changed and if not - we push `null` to keep indices in sync
+      if (previousExpandoLength === expando.length && firstTemplatePass) {
+        expando.push(null);
+      }
+    } else if (firstTemplatePass) {
+      expando.push(null);
+    }
   }
 }
 
@@ -1492,7 +1515,9 @@ export function generateExpandoInstructionBlock(
 * after directives are matched (so all directives are saved, then bindings).
 * Because we are updating the blueprint, we only need to do this once.
 */
-export function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
+function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
+  ngDevMode &&
+      assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);
     tView.blueprint.push(NO_CHANGE);
@@ -1533,10 +1558,6 @@ function postProcessBaseDirective<T>(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent(getIsParent());
-
-  if (def.hostBindings) {
-    def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
-  }
 
   attachPatchData(directive, lView);
   if (native) {
@@ -1594,13 +1615,21 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
   (tView.components || (tView.components = [])).push(previousOrParentTNode.index);
 }
 
-/** Stores index of directive and host element so it will be queued for binding refresh during CD.
+/**
+ * Stores host binding fn and number of host vars so it will be queued for binding refresh during
+ * CD.
 */
-function queueHostBindingForCheck(tView: TView, def: DirectiveDef<any>| ComponentDef<any>): void {
+function queueHostBindingForCheck(
+    tView: TView, def: DirectiveDef<any>| ComponentDef<any>, hostVars: number): void {
   ngDevMode &&
       assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
-  tView.expandoInstructions !.push(def.hostBindings || noop);
-  if (def.hostVars) tView.expandoInstructions !.push(def.hostVars);
+  const expando = tView.expandoInstructions !;
+  // check whether a given `hostBindings` function already exists in expandoInstructions,
+  // which can happen in case directive definition was extended from base definition (as a part of
+  // the `InheritDefinitionFeature` logic)
+  if (expando.length < 2 || expando[expando.length - 2] !== def.hostBindings) {
+    expando.push(def.hostBindings !, hostVars);
+  }
 }
 
 /** Caches local names and their matching directive indices for query and template lookups. */
@@ -1661,8 +1690,6 @@ function baseResolveDirective<T>(
   const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);
-
-  queueHostBindingForCheck(tView, def);
 }
 
 function addComponentLogic<T>(
@@ -2493,6 +2520,19 @@ export function markDirty<T>(component: T) {
 export function bind<T>(value: T): T|NO_CHANGE {
   const lView = getLView();
   return bindingUpdated(lView, lView[BINDING_INDEX]++, value) ? value : NO_CHANGE;
+}
+
+/**
+ * Allocates the necessary amount of slots for host vars.
+ *
+ * @param count Amount of vars to be allocated
+ */
+export function allocHostVars(count: number): void {
+  if (!getFirstTemplatePass()) return;
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  queueHostBindingForCheck(tView, getCurrentDirectiveDef() !, count);
+  prefillHostVars(tView, lView, count);
 }
 
 /**
