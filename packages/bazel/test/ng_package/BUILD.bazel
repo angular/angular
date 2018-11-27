@@ -12,6 +12,7 @@ ts_library(
     srcs = ["core_package.spec.ts"],
     deps = [
         "//packages:types",
+        "//packages/private/testing",
         "@ngdeps//@types/shelljs",
     ],
 )
@@ -23,9 +24,6 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "@ngdeps//@types/shelljs",
         "@ngdeps//shelljs",
-    ],
-    tags = [
-        "fixme-ivy-aot",
     ],
 )
 
