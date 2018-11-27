@@ -128,7 +128,7 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         viewData[BINDING_INDEX] = bindingRootIndex;
         instruction(
             RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
-            currentElementIndex);
+            currentDirectiveIndex, currentElementIndex);
         currentDirectiveIndex++;
       }
     }
@@ -1415,7 +1415,6 @@ function resolveDirectives(
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
   ngDevMode && assertEqual(getFirstTemplatePass(), true, 'should run on first template pass only');
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
-  let totalHostVars = 0;
   if (directives) {
     initNodeFlags(tNode, tView.data.length, directives.length);
     // When the same token is provided by several directives on the same node, some rules apply in
@@ -1435,7 +1434,6 @@ function resolveDirectives(
       const directiveDefIdx = tView.data.length;
       baseResolveDirective(tView, viewData, def, def.factory);
 
-      totalHostVars += def.hostVars;
       saveNameToExportMap(tView.data !.length - 1, def, exportsMap);
 
       // Init hooks are queued now so ngOnInit is called in host components before
@@ -1444,7 +1442,6 @@ function resolveDirectives(
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
-  prefillHostVars(tView, viewData, totalHostVars);
 }
 
 /**
@@ -1453,10 +1450,12 @@ function resolveDirectives(
 function instantiateAllDirectives(tView: TView, viewData: LView, previousOrParentTNode: TNode) {
   const start = previousOrParentTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
   const end = start + (previousOrParentTNode.flags & TNodeFlags.DirectiveCountMask);
-  if (!getFirstTemplatePass() && start < end) {
+  const firstTemplatePass = getFirstTemplatePass();
+  if (!firstTemplatePass && start < end) {
     getOrCreateNodeInjectorForNode(
         previousOrParentTNode as TElementNode | TContainerNode | TElementContainerNode, viewData);
   }
+  const directives: [DirectiveDef<any>, any][] = [];
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     if (isComponentDef(def)) {
@@ -1465,6 +1464,16 @@ function instantiateAllDirectives(tView: TView, viewData: LView, previousOrParen
     const directive =
         getNodeInjectable(tView.data, viewData !, i, previousOrParentTNode as TElementNode);
     postProcessDirective(viewData, directive, def, i);
+    directives.push([def, directive]);
+  }
+  // invoke hostBindings functions
+  for (let i = 0; i < directives.length; i++) {
+    const [def, directive] = directives[i];
+    if (def.hostBindings) {
+      def.hostBindings !(RenderFlags.Create, directive, start + i, previousOrParentTNode.index);
+    } else if (firstTemplatePass) {
+      tView.expandoInstructions !.push(noop);
+    }
   }
 }
 
@@ -1492,7 +1501,7 @@ export function generateExpandoInstructionBlock(
 * after directives are matched (so all directives are saved, then bindings).
 * Because we are updating the blueprint, we only need to do this once.
 */
-export function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
+function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);
     tView.blueprint.push(NO_CHANGE);
@@ -1533,10 +1542,6 @@ function postProcessBaseDirective<T>(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent(getIsParent());
-
-  if (def.hostBindings) {
-    def.hostBindings(RenderFlags.Create, directive, previousOrParentTNode.index);
-  }
 
   attachPatchData(directive, lView);
   if (native) {
@@ -1594,13 +1599,23 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
   (tView.components || (tView.components = [])).push(previousOrParentTNode.index);
 }
 
-/** Stores index of directive and host element so it will be queued for binding refresh during CD.
+/**
+ * Stores host binding fn and number of host vars so it will be queued for binding refresh during
+ * CD.
 */
-function queueHostBindingForCheck(tView: TView, def: DirectiveDef<any>| ComponentDef<any>): void {
+function queueHostBindingForCheck(
+    tView: TView, def: DirectiveDef<any>| ComponentDef<any>, hostVars: number): void {
   ngDevMode &&
       assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
-  tView.expandoInstructions !.push(def.hostBindings || noop);
-  if (def.hostVars) tView.expandoInstructions !.push(def.hostVars);
+  const expando = tView.expandoInstructions !;
+  // check whether a given `hostBindings` function already exists in expandoInstructions,
+  // which can happen in case directive definition was extended from base definition (as a part of
+  // the `InheritDefinitionFeature` logic)
+  if (expando.length < 2 ||
+      !(typeof expando[expando.length - 1] === 'number' &&
+        expando[expando.length - 2] === def.hostBindings)) {
+    expando.push(def.hostBindings !, hostVars);
+  }
 }
 
 /** Caches local names and their matching directive indices for query and template lookups. */
@@ -1661,8 +1676,6 @@ function baseResolveDirective<T>(
   const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);
-
-  queueHostBindingForCheck(tView, def);
 }
 
 function addComponentLogic<T>(
@@ -2496,10 +2509,27 @@ export function bind<T>(value: T): T|NO_CHANGE {
 }
 
 /**
+ * Allocates the necessary amount of slots for host vars.
+ *
+ * @param count Amount of vars to be allocated
+ * @param dirIndex Respective directive index
+ */
+export function allocHostVars(count: number, directiveIndex: number): void {
+  if (!getFirstTemplatePass()) return;
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  const directiveDef = tView.data[directiveIndex] as DirectiveDef<any>;
+  queueHostBindingForCheck(tView, directiveDef, count);
+  prefillHostVars(tView, lView, count);
+}
+
+/**
  * Create interpolation bindings with a variable number of expressions.
  *
- * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used instead.
- * Those are faster because there is no need to create an array of expressions and iterate over it.
+ * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used
+ * instead.
+ * Those are faster because there is no need to create an array of expressions and iterate over
+ * it.
  *
  * `values`:
  * - has static text at even indexes,

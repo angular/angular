@@ -10,7 +10,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject} from '../../src/render3/instructions';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {NO_CHANGE} from '../../src/render3/tokens';
@@ -446,13 +446,16 @@ describe('render3 integration test', () => {
             }
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
-          hostVars: 1,
-          hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
-            if (rf & RenderFlags.Update) {
-              // host bindings
-              elementProperty(elementIndex, 'title', bind(ctx.title));
-            }
-          }
+          hostBindings: function(rf: RenderFlags, ctx: any, dirIndex: number, elementIndex: number):
+              void {
+                if (rf & RenderFlags.Create) {
+                  allocHostVars(1, dirIndex);
+                }
+                if (rf & RenderFlags.Update) {
+                  // host bindings
+                  elementProperty(elementIndex, 'title', bind(ctx.title));
+                }
+              }
         });
       }
 
@@ -1379,9 +1382,11 @@ describe('render3 integration test', () => {
             factory: function HostBindingDir_Factory() {
               return hostBindingDir = new HostBindingDir();
             },
-            hostVars: 1,
             hostBindings: function HostBindingDir_HostBindings(
-                rf: RenderFlags, ctx: any, elIndex: number) {
+                rf: RenderFlags, ctx: any, dirIndex: number, elIndex: number) {
+              if (rf & RenderFlags.Create) {
+                allocHostVars(1, dirIndex);
+              }
               if (rf & RenderFlags.Update) {
                 elementAttribute(elIndex, 'aria-label', bind(ctx.label));
               }

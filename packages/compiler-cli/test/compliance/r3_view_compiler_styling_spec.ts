@@ -771,8 +771,9 @@ describe('compiler compliance: styling', () => {
           const _c0 = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
           const _c1 = ["width", "height", "color", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
           …
-          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, ctx, dirIndex, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(4, dirIndex);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -829,8 +830,9 @@ describe('compiler compliance: styling', () => {
           const _c0 = ["bar", "foo"];
           const _c1 = ["height", "width"];
           …
-          hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function MyComponent_HostBindings(rf, ctx, dirIndex, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(6, dirIndex);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -894,8 +896,9 @@ describe('compiler compliance: styling', () => {
           const _c2 = ["bar"];
           const _c3 = ["height"];
           …
-          function WidthDirective_HostBindings(rf, ctx, elIndex) {
+          function WidthDirective_HostBindings(rf, ctx, dirIndex, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(2, dirIndex);
               $r3$.ɵelementStyling(_c0, _c1, null, ctx);
             }
             if (rf & 2) {
@@ -905,8 +908,9 @@ describe('compiler compliance: styling', () => {
             }
           }
           …
-          function HeightDirective_HostBindings(rf, ctx, elIndex) {
+          function HeightDirective_HostBindings(rf, ctx, dirIndex, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(2, dirIndex);
               $r3$.ɵelementStyling(_c2, _c3, null, ctx);
             }
             if (rf & 2) {

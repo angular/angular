@@ -62,10 +62,11 @@ function baseDirectiveFields(
 
   definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
 
-  // Initialize hostVars to number of bound host properties (interpolations illegal)
-  let hostVars = Object.keys(meta.host.properties).length;
+  // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
+  const hostVarsCount = Object.keys(meta.host.properties).length;
 
   const elVarExp = o.variable('elIndex');
+  const dirVarExp = o.variable('dirIndex');
   const contextVarExp = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
 
@@ -92,20 +93,11 @@ function baseDirectiveFields(
   // e.g. `attributes: ['role', 'listbox']`
   definitionMap.set('attributes', createHostAttributesArray(allOtherAttributes));
 
-  // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
+  // e.g. `hostBindings: (rf, ctx, dirIndex, elIndex) => { ... }
   definitionMap.set(
       'hostBindings', createHostBindingsFunction(
-                          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool,
-                          (slots: number) => {
-                            const originalSlots = hostVars;
-                            hostVars += slots;
-                            return originalSlots;
-                          }));
-
-  if (hostVars) {
-    // e.g. `hostVars: 2
-    definitionMap.set('hostVars', o.literal(hostVars));
-  }
+                          meta, elVarExp, dirVarExp, contextVarExp, styleBuilder, bindingParser,
+                          constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
@@ -642,14 +634,14 @@ function createViewQueriesFunction(
 
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
-    meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
-    styleBuilder: StylingBuilder, bindingParser: BindingParser, constantPool: ConstantPool,
-    allocatePureFunctionSlots: (slots: number) => number): o.Expression|null {
+    meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, dirVarExp: o.ReadVarExpr,
+    bindingContext: o.ReadVarExpr, styleBuilder: StylingBuilder, bindingParser: BindingParser,
+    constantPool: ConstantPool, hostVarsCount: number): o.Expression|null {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
+  let totalHostVarsCount = hostVarsCount;
   const hostBindingSourceSpan = meta.typeSourceSpan;
-
   const directiveSummary = metadataAsSummary(meta);
 
   // Calculate host event bindings
@@ -669,9 +661,13 @@ function createHostBindingsFunction(
   };
 
   if (bindings) {
+    const hostVarsCountFn = (numSlots: number): number => {
+      totalHostVarsCount += numSlots;
+      return hostVarsCount;
+    };
     const valueConverter = new ValueConverter(
         constantPool,
-        /* new nodes are illegal here */ () => error('Unexpected node'), allocatePureFunctionSlots,
+        /* new nodes are illegal here */ () => error('Unexpected node'), hostVarsCountFn,
         /* pipes are illegal here */ () => error('Unexpected pipe'));
 
     for (const binding of bindings) {
@@ -715,6 +711,11 @@ function createHostBindingsFunction(
     }
   }
 
+  if (totalHostVarsCount) {
+    createStatements.unshift(
+        o.importExpr(R3.allocHostVars).callFn([o.literal(totalHostVarsCount), dirVarExp]).toStmt());
+  }
+
   if (createStatements.length > 0 || updateStatements.length > 0) {
     const hostBindingsFnName = meta.name ? `${meta.name}_HostBindings` : null;
     const statements: o.Statement[] = [];
@@ -727,7 +728,7 @@ function createHostBindingsFunction(
     return o.fn(
         [
           new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
-          new o.FnParam(elVarExp.name !, o.NUMBER_TYPE)
+          new o.FnParam(dirVarExp.name !, null), new o.FnParam(elVarExp.name !, o.NUMBER_TYPE)
         ],
         statements, o.INFERRED_TYPE, null, hostBindingsFnName);
   }

@@ -472,7 +472,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     const hostBindingsFn = `
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function FooCmp_HostBindings(rf, ctx, dirIndex, elIndex) {
         if (rf & 1) {
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event.target); });
           i0.ɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onScroll(); });
@@ -510,8 +510,9 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     const hostBindingsFn = `
-      hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function FooCmp_HostBindings(rf, ctx, dirIndex, elIndex) {
         if (rf & 1) {
+          i0.ɵallocHostVars(3, dirIndex);
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
           i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
           i0.ɵelementStyling(_c0, null, null, ctx);
@@ -544,7 +545,7 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     const hostBindingsFn = `
-      hostBindings: function Dir_HostBindings(rf, ctx, elIndex) {
+      hostBindings: function Dir_HostBindings(rf, ctx, dirIndex, elIndex) {
         if (rf & 1) {
           i0.ɵlistener("change", function Dir_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg); });
         }

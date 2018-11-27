@@ -46,6 +46,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵnamespaceSVG': r3.namespaceSVG,
   'ɵenableBindings': r3.enableBindings,
   'ɵdisableBindings': r3.disableBindings,
+  'ɵallocHostVars': r3.allocHostVars,
   'ɵelementStart': r3.elementStart,
   'ɵelementEnd': r3.elementEnd,
   'ɵelement': r3.element,

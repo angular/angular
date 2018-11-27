@@ -145,12 +145,14 @@ describe('compiler compliance: bindings', () => {
           type: HostBindingDir,
           selectors: [["", "hostBindingDir", ""]],
           factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
-          hostBindings: function HostBindingDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostBindingDir_HostBindings(rf, ctx, dirIndex, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵallocHostVars(1, dirIndex);
+            }
             if (rf & 2) {
               $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.dirId));
             }
-          },
-          hostVars: 1
+          }
         });
       `;
 
@@ -190,12 +192,14 @@ describe('compiler compliance: bindings', () => {
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
           factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
-          hostBindings: function HostBindingComp_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostBindingComp_HostBindings(rf, ctx, dirIndex, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵallocHostVars(3, dirIndex);
+            }
             if (rf & 2) {
               $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, ctx.id)));
             }
           },
-          hostVars: 3,
           consts: 0,
           vars: 0,
           template: function HostBindingComp_Template(rf, ctx) {},
@@ -236,12 +240,14 @@ describe('compiler compliance: bindings', () => {
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
-          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, dirIndex, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵallocHostVars(1, dirIndex);
+            }
             if (rf & 2) {
               $r3$.ɵelementAttribute(elIndex, "required", $r3$.ɵbind(ctx.required));
             }
-          },
-          hostVars: 1
+          }
         });
       `;
 
