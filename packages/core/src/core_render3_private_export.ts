@@ -85,6 +85,7 @@ export {
   reference as ɵreference,
   enableBindings as ɵenableBindings,
   disableBindings as ɵdisableBindings,
+  allocHostVars as ɵallocHostVars,
   elementAttribute as ɵelementAttribute,
   elementContainerStart as ɵelementContainerStart,
   elementContainerEnd as ɵelementContainerEnd,

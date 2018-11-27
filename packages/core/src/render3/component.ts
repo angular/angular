@@ -17,13 +17,13 @@ import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, prefillHostVars, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
-import {ComponentDef, ComponentType} from './interfaces/definition';
+import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {enterView, leaveView, resetComponentState} from './state';
+import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
 
 
@@ -195,7 +195,13 @@ export function createRootComponent<T>(
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
 
-  if (tView.firstTemplatePass) prefillHostVars(tView, rootView, componentDef.hostVars);
+  if (tView.firstTemplatePass && componentDef.hostBindings) {
+    const rootTNode = getPreviousOrParentTNode();
+    setCurrentDirectiveDef(componentDef);
+    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index);
+    setCurrentDirectiveDef(null);
+  }
+
   return component;
 }
 

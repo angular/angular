@@ -2106,6 +2106,9 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeDirectivesHostBindings"
+  },
+  {
     "name": "isArray"
   },
   {
@@ -2334,9 +2337,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop"
-  },
-  {
     "name": "noop$1"
   },
   {
@@ -2400,9 +2400,6 @@
     "name": "postProcessDirective"
   },
   {
-    "name": "prefillHostVars"
-  },
-  {
     "name": "prepareInitialFlag"
   },
   {
@@ -2425,9 +2422,6 @@
   },
   {
     "name": "queueDestroyHooks"
-  },
-  {
-    "name": "queueHostBindingForCheck"
   },
   {
     "name": "queueInitHooks"
@@ -2545,6 +2539,9 @@
   },
   {
     "name": "setContextPlayersDirty"
+  },
+  {
+    "name": "setCurrentDirectiveDef"
   },
   {
     "name": "setCurrentInjector"

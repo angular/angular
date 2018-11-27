@@ -7,7 +7,7 @@
  */
 
 import {Inject, InjectionToken} from '../../src/core';
-import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
 
 import {ComponentFixture, createComponent} from './render_util';
 
@@ -309,11 +309,13 @@ describe('InheritDefinitionFeature', () => {
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
           if (rf & RenderFlags.Update) {
             elementProperty(elementIndex, 'id', bind(ctx.id));
           }
         },
-        hostVars: 1,
         factory: () => new SuperDirective(),
       });
     }
@@ -325,11 +327,13 @@ describe('InheritDefinitionFeature', () => {
         type: SubDirective,
         selectors: [['', 'subDir', '']],
         hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
           if (rf & RenderFlags.Update) {
             elementProperty(elementIndex, 'title', bind(ctx.title));
           }
         },
-        hostVars: 1,
         factory: () => subDir = new SubDirective(),
         features: [InheritDefinitionFeature]
       });

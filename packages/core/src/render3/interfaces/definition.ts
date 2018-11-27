@@ -136,14 +136,6 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /** Refreshes content queries associated with directives in a given view */
   contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
 
-  /**
-   * The number of host bindings (including pure fn bindings) in this directive/component.
-   *
-   * Used to calculate the length of the LView array for the *parent* component
-   * of this directive/component.
-   */
-  readonly hostVars: number;
-
   /** Refreshes host bindings on the associated directive. */
   hostBindings: HostBindingsFunction<T>|null;
 

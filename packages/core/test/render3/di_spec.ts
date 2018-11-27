@@ -13,7 +13,7 @@ import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
 import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {getNativeByIndex} from '../../src/render3/util';
@@ -654,8 +654,10 @@ describe('di', () => {
             type: HostBindingDir,
             selectors: [['', 'hostBindingDir', '']],
             factory: () => hostBindingDir = new HostBindingDir(),
-            hostVars: 1,
             hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+              if (rf & RenderFlags.Create) {
+                allocHostVars(1);
+              }
               if (rf & RenderFlags.Update) {
                 elementProperty(elementIndex, 'id', bind(ctx.id));
               }

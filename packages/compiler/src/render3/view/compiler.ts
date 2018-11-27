@@ -62,8 +62,8 @@ function baseDirectiveFields(
 
   definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
 
-  // Initialize hostVars to number of bound host properties (interpolations illegal)
-  let hostVars = Object.keys(meta.host.properties).length;
+  // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
+  const hostVarsCount = Object.keys(meta.host.properties).length;
 
   const elVarExp = o.variable('elIndex');
   const contextVarExp = o.variable(CONTEXT_NAME);
@@ -94,18 +94,9 @@ function baseDirectiveFields(
 
   // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
-      'hostBindings', createHostBindingsFunction(
-                          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool,
-                          (slots: number) => {
-                            const originalSlots = hostVars;
-                            hostVars += slots;
-                            return originalSlots;
-                          }));
-
-  if (hostVars) {
-    // e.g. `hostVars: 2
-    definitionMap.set('hostVars', o.literal(hostVars));
-  }
+      'hostBindings',
+      createHostBindingsFunction(
+          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
@@ -645,12 +636,12 @@ function createViewQueriesFunction(
 function createHostBindingsFunction(
     meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
     styleBuilder: StylingBuilder, bindingParser: BindingParser, constantPool: ConstantPool,
-    allocatePureFunctionSlots: (slots: number) => number): o.Expression|null {
+    hostVarsCount: number): o.Expression|null {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
+  let totalHostVarsCount = hostVarsCount;
   const hostBindingSourceSpan = meta.typeSourceSpan;
-
   const directiveSummary = metadataAsSummary(meta);
 
   // Calculate host event bindings
@@ -670,9 +661,13 @@ function createHostBindingsFunction(
   };
 
   if (bindings) {
+    const hostVarsCountFn = (numSlots: number): number => {
+      totalHostVarsCount += numSlots;
+      return hostVarsCount;
+    };
     const valueConverter = new ValueConverter(
         constantPool,
-        /* new nodes are illegal here */ () => error('Unexpected node'), allocatePureFunctionSlots,
+        /* new nodes are illegal here */ () => error('Unexpected node'), hostVarsCountFn,
         /* pipes are illegal here */ () => error('Unexpected pipe'));
 
     for (const binding of bindings) {
@@ -714,6 +709,11 @@ function createHostBindingsFunction(
         updateStatements.push(updateStmt);
       });
     }
+  }
+
+  if (totalHostVarsCount) {
+    createStatements.unshift(
+        o.importExpr(R3.allocHostVars).callFn([o.literal(totalHostVarsCount)]).toStmt());
   }
 
   if (createStatements.length > 0 || updateStatements.length > 0) {

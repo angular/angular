@@ -773,6 +773,7 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(4);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -831,6 +832,7 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(6);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -896,6 +898,7 @@ describe('compiler compliance: styling', () => {
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(2);
               $r3$.ɵelementStyling(_c0, _c1, null, ctx);
             }
             if (rf & 2) {
@@ -907,6 +910,7 @@ describe('compiler compliance: styling', () => {
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
+              $r3$.ɵallocHostVars(2);
               $r3$.ɵelementStyling(_c2, _c3, null, ctx);
             }
             if (rf & 2) {

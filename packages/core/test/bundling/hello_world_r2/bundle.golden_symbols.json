@@ -1143,9 +1143,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop"
-  },
-  {
     "name": "noop$1"
   },
   {
@@ -1185,9 +1182,6 @@
     "name": "postProcessBaseDirective"
   },
   {
-    "name": "prefillHostVars"
-  },
-  {
     "name": "projectionNodeStack"
   },
   {
@@ -1207,9 +1201,6 @@
   },
   {
     "name": "queueDestroyHooks"
-  },
-  {
-    "name": "queueHostBindingForCheck"
   },
   {
     "name": "queueInitHooks"
@@ -1291,6 +1282,9 @@
   },
   {
     "name": "setCheckNoChangesMode"
+  },
+  {
+    "name": "setCurrentDirectiveDef"
   },
   {
     "name": "setCurrentInjector"
