@@ -385,6 +385,30 @@ describe('MatMenu', () => {
     expect(role).toBe('menu', 'Expected panel to have the "menu" role.');
   });
 
+  it('should set the "menuitem" role on the items by default', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-menu-item'));
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every(item => item.getAttribute('role') === 'menuitem')).toBe(true);
+  });
+
+  it('should be able to set an alternate role on the menu items', () => {
+    const fixture = createComponent(MenuWithCheckboxItems);
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const items = Array.from(overlayContainerElement.querySelectorAll('.mat-menu-item'));
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every(item => item.getAttribute('role') === 'menuitemcheckbox')).toBe(true);
+  });
+
   it('should not throw an error on destroy', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     expect(fixture.destroy.bind(fixture)).not.toThrow();
@@ -2099,4 +2123,19 @@ class DynamicPanelMenu {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild('one') firstMenu: MatMenu;
   @ViewChild('two') secondMenu: MatMenu;
+}
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu">Toggle menu</button>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item role="menuitemcheckbox" aria-checked="true">Checked</button>
+      <button mat-menu-item role="menuitemcheckbox" aria-checked="false">Not checked</button>
+    </mat-menu>
+  `
+})
+class MenuWithCheckboxItems {
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
 }

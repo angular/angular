@@ -15,6 +15,7 @@ import {
   ViewEncapsulation,
   Inject,
   Optional,
+  Input,
 } from '@angular/core';
 import {
   CanDisable, CanDisableCtor,
@@ -42,7 +43,7 @@ export const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & type
   exportAs: 'matMenuItem',
   inputs: ['disabled', 'disableRipple'],
   host: {
-    'role': 'menuitem',
+    '[attr.role]': 'role',
     'class': 'mat-menu-item',
     '[class.mat-menu-item-highlighted]': '_highlighted',
     '[class.mat-menu-item-submenu-trigger]': '_triggersSubmenu',
@@ -58,6 +59,9 @@ export const _MatMenuItemMixinBase: CanDisableRippleCtor & CanDisableCtor & type
 })
 export class MatMenuItem extends _MatMenuItemMixinBase
     implements FocusableOption, CanDisable, CanDisableRipple, OnDestroy {
+
+  /** ARIA role for the menu item. */
+  @Input() role: 'menuitem' | 'menuitemradio' | 'menuitemcheckbox' = 'menuitem';
 
   private _document: Document;
 
