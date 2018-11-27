@@ -1,3 +1,4 @@
+import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
@@ -10,11 +11,10 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
+import {TestGestureConfig} from '@angular/material/testing';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {BidiModule, Direction} from '@angular/cdk/bidi';
-import {TestGestureConfig} from '../slider/test-gesture-config';
-import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
+import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 
 describe('MatSlideToggle without forms', () => {
   let gestureConfig: TestGestureConfig;

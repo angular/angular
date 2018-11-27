@@ -11,18 +11,18 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
+  createMouseEvent,
+  dispatchEvent,
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
-  createMouseEvent,
-  dispatchEvent,
 } from '@angular/cdk/testing';
-import {Component, DebugElement, ViewChild, Type} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
+import {Component, DebugElement, Type, ViewChild} from '@angular/core';
+import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {TestGestureConfig} from '@angular/material/testing';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {MatSlider, MatSliderModule} from './index';
-import {TestGestureConfig} from './test-gesture-config';
 
 describe('MatSlider', () => {
   let gestureConfig: TestGestureConfig;

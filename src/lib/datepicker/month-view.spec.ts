@@ -8,17 +8,17 @@ import {
   PAGE_DOWN,
   PAGE_UP,
   RIGHT_ARROW,
-  UP_ARROW,
   SPACE,
+  UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {DEC, FEB, JAN, MAR, MatNativeDateModule, NOV} from '@angular/material/core';
+import {MatNativeDateModule} from '@angular/material/core';
+import {DEC, FEB, JAN, MAR, NOV} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendarBody} from './calendar-body';
 import {MatMonthView} from './month-view';
-
 
 describe('MatMonthView', () => {
   let dir: {value: Direction};

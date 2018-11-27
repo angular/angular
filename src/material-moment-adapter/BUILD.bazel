@@ -11,7 +11,8 @@ ng_module(
   deps = [
     "@angular//packages/core",
     "@matdeps//moment",
-    "//src/lib/core"
+    "//src/lib/core",
+    "//src/lib/testing",
   ],
   # Explicitly specify the tsconfig that is also used by Gulp. We need to explicitly use this
   # tsconfig because in order to import Moment with TypeScript, we need some special options

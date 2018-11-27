@@ -102,10 +102,11 @@ ng_test_library(
   deps = [
     "@angular//packages/platform-browser",
     "@angular//packages/platform-browser/animations",
+    "//src/cdk/keycodes",
     "//src/cdk/platform",
     "//src/cdk/testing",
-    "//src/cdk/keycodes",
-    "//src/lib/core",
+    "//src/lib/testing",
+    ":core",
   ]
 )
 

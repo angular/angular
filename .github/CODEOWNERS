@@ -33,6 +33,7 @@
 /src/lib/stepper/**                                @mmalerba
 /src/lib/table/**                                  @andrewseguin
 /src/lib/tabs/**                                   @andrewseguin
+/src/lib/testing/**                                @jelbourn
 /src/lib/toolbar/**                                @devversion
 /src/lib/tooltip/**                                @andrewseguin
 /src/lib/tree/**                                   @jelbourn @andrewseguin
@@ -52,7 +53,6 @@
 /src/lib/core/selection/**                         @jelbourn
 /src/lib/core/selection/pseudo*/**                 @crisbeto @jelbourn
 /src/lib/core/style/**                             @jelbourn
-/src/lib/core/testing/**                           @jelbourn
 /src/lib/core/theming/**                           @jelbourn
 /src/lib/core/typography/**                        @crisbeto
 /src/lib/core/util/**                              @jelbourn

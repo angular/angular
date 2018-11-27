@@ -1,7 +1,8 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {DEC, FEB, JAN, MatNativeDateModule} from '@angular/material/core';
+import {MatNativeDateModule} from '@angular/material/core';
+import {DEC, FEB, JAN} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
 import {MatCalendar} from './calendar';
 import {MatDatepickerIntl} from './datepicker-intl';

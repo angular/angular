@@ -47,6 +47,7 @@ ng_test_library(
     "//src/cdk/bidi",
     "//src/cdk/keycodes",
     "//src/cdk/testing",
+    "//src/lib/testing",
     ":slider",
   ]
 )

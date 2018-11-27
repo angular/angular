@@ -46,8 +46,7 @@ ng_test_library(
     "//src/cdk/bidi",
     "//src/cdk/observers",
     "//src/cdk/testing",
-    # TODO(devversion): move gesture test config out of slider.
-    "//src/lib/slider",
+    "//src/lib/testing",
     ":slide-toggle",
   ]
 )
