@@ -70,7 +70,7 @@ export class MatChipListChange {
 
 
 /**
- * A material design chips component (named ChipList for it's similarity to the List component).
+ * A material design chips component (named ChipList for its similarity to the List component).
  */
 @Component({
   moduleId: module.id,
