@@ -10,5 +10,4 @@ export * from './inline-resources';
 export * from './gulp/build-tasks-gulp';
 export * from './gulp/build-scss-pipeline';
 export * from './gulp/sequence-task';
-export * from './gulp/trigger-livereload';
 export * from './gulp/watch-files';

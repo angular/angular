@@ -1,10 +1,13 @@
 import {task} from 'gulp';
-import {buildConfig, sequenceTask, triggerLivereload, watchFiles} from 'material2-build-tools';
+import {buildConfig, sequenceTask, watchFiles} from 'material2-build-tools';
 import {join} from 'path';
-import {copyTask, execNodeTask, ngcBuildTask, serverTask} from '../util/task_helpers';
-
-// There are no type definitions available for these imports.
-const gulpConnect = require('gulp-connect');
+import {
+  copyTask,
+  execNodeTask,
+  getActiveBrowserSyncInstance,
+  ngcBuildTask,
+  serverTask
+} from '../util/task_helpers';
 
 const {outputDir, packagesDir, projectDir} = buildConfig;
 
@@ -39,7 +42,7 @@ task('e2e:watch', sequenceTask(
 /** Watches the e2e app and tests for changes and triggers a test rerun on change. */
 task(':e2e:watch', () => {
   watchFiles([join(appDir, '**/*.+(html|ts|css)'), join(e2eTestDir, '**/*.+(html|ts)')],
-      [':e2e:rerun'], false);
+      [':e2e:rerun']);
 });
 
 /** Updates the e2e app and runs the protractor tests. */
@@ -52,7 +55,7 @@ task(':e2e:rerun', sequenceTask(
 
 /** Triggers a reload of the e2e app. */
 task(':e2e:reload', () => {
-  return triggerLivereload();
+  return getActiveBrowserSyncInstance().reload();
 });
 
 /** Task that builds the e2e-app in AOT mode. */
@@ -76,8 +79,8 @@ task('e2e-app:copy-index-html', copyTask(join(appDir, 'index.html'), outDir));
 task('e2e-app:build-ts', ngcBuildTask(tsconfigPath));
 
 task(':watch:e2eapp', () => {
-  watchFiles(join(appDir, '**/*.ts'), ['e2e-app:build'], false);
-  watchFiles(join(appDir, '**/*.html'), ['e2e-app:copy-assets'], false);
+  watchFiles(join(appDir, '**/*.ts'), ['e2e-app:build']);
+  watchFiles(join(appDir, '**/*.html'), ['e2e-app:copy-assets']);
 });
 
 /** Ensures that protractor and webdriver are set up to run. */
@@ -90,7 +93,7 @@ task(':test:protractor:setup', execNodeTask(
 task(':test:protractor', execNodeTask('protractor', [PROTRACTOR_CONFIG_PATH]));
 
 /** Starts up the e2e app server and rewrites the HTTP requests to properly work with AOT. */
-task(':serve:e2eapp', serverTask(outDir, false, [
+task(':serve:e2eapp', serverTask(outDir, [
   // Rewrite each request for .ngfactory files which are outside of the e2e-app to the **actual**
   // path. This is necessary because NGC cannot generate factory files for the node modules
   // and release output. If we work around it by adding multiple root directories, the directory
@@ -108,7 +111,7 @@ task(':serve:e2eapp', serverTask(outDir, false, [
 ]));
 
 /** Terminates the e2e app server */
-task(':serve:e2eapp:stop', gulpConnect.serverClose);
+task(':serve:e2eapp:stop', () => getActiveBrowserSyncInstance().exit());
 
 /** Builds and serves the e2e app. */
 task('serve:e2eapp', sequenceTask('e2e-app:build', ':serve:e2eapp'));

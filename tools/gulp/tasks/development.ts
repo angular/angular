@@ -7,7 +7,6 @@ import {
   copyFiles,
   inlineResourcesForDirectory,
   sequenceTask,
-  watchFiles,
 } from 'material2-build-tools';
 import {
   cdkPackage,
@@ -17,6 +16,7 @@ import {
   momentAdapterPackage,
   examplesPackage,
 } from '../packages';
+import {watchFilesAndReload} from '../util/watch-files-reload';
 
 // These imports don't have any typings provided.
 const firebaseTools = require('firebase-tools');
@@ -56,7 +56,7 @@ task(':build:devapp:assets', copyTask(assetsGlob, outDir));
 task(':build:devapp:scss', () => buildScssPipeline(appDir).pipe(dest(outDir)));
 task(':build:devapp:inline-resources', () => inlineResourcesForDirectory(outDir));
 
-task(':serve:devapp', serverTask(outDir, true));
+task(':serve:devapp', serverTask(outDir));
 
 task('build:devapp', sequenceTask(
   'cdk:build-no-bundles',
@@ -123,40 +123,41 @@ task('deploy:devapp', ['stage-deploy:devapp'], () => {
  */
 
 task(':watch:devapp', () => {
-  watchFiles(join(appDir, '**/*.ts'), [':build:devapp:ts']);
-  watchFiles(join(appDir, '**/*.scss'), [':watch:devapp:rebuild-scss']);
-  watchFiles(join(appDir, '**/*.html'), [':watch:devapp:rebuild-html']);
+  watchFilesAndReload(join(appDir, '**/*.ts'), [':build:devapp:ts']);
+  watchFilesAndReload(join(appDir, '**/*.scss'), [':watch:devapp:rebuild-scss']);
+  watchFilesAndReload(join(appDir, '**/*.html'), [':watch:devapp:rebuild-html']);
 
   // Custom watchers for all packages that are used inside of the dev-app. This is necessary
   // because we only want to build the changed package (using the build-no-bundles task).
 
   // CDK package watchers.
-  watchFiles(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
+  watchFilesAndReload(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
 
   const materialCoreThemingGlob = join(materialPackage.sourceDir, '**/core/theming/**/*.scss');
 
   // Material package watchers.
-  watchFiles([
+  watchFilesAndReload([
     join(materialPackage.sourceDir, '**/!(*-theme.scss)'), `!${materialCoreThemingGlob}`
   ], ['material:build-no-bundles']);
-  watchFiles([
+  watchFilesAndReload([
     join(materialPackage.sourceDir, '**/*-theme.scss'), materialCoreThemingGlob
   ], [':build:devapp:scss']);
 
   // Moment adapter package watchers
-  watchFiles(join(momentAdapterPackage.sourceDir, '**/*'),
+  watchFilesAndReload(join(momentAdapterPackage.sourceDir, '**/*'),
     ['material-moment-adapter:build-no-bundles']);
 
   // Material experimental package watchers
-  watchFiles(join(materialExperimentalPackage.sourceDir, '**/*'),
+  watchFilesAndReload(join(materialExperimentalPackage.sourceDir, '**/*'),
     ['material-experimental:build-no-bundles']);
 
   // CDK experimental package watchers
-  watchFiles(join(cdkExperimentalPackage.sourceDir, '**/*'),
+  watchFilesAndReload(join(cdkExperimentalPackage.sourceDir, '**/*'),
     ['cdk-experimental:build-no-bundles']);
 
   // Example package watchers.
-  watchFiles(join(examplesPackage.sourceDir, '**/*'), ['material-examples:build-no-bundles']);
+  watchFilesAndReload(join(examplesPackage.sourceDir, '**/*'),
+    ['material-examples:build-no-bundles']);
 });
 
 // Note that we need to rebuild the TS here, because the resource inlining

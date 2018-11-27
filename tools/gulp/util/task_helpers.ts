@@ -1,18 +1,21 @@
+import {BrowserSyncInstance, create as createBrowserSyncInstance} from 'browser-sync';
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
-import * as path from 'path';
 import {buildConfig} from 'material2-build-tools';
+import * as path from 'path';
 
-// Those imports lack typings.
+// This import lacks type definitions.
 const gulpClean = require('gulp-clean');
-const gulpConnect = require('gulp-connect');
 
 // There are no type definitions available for these imports.
 const resolveBin = require('resolve-bin');
 const httpRewrite = require('http-rewrite-middleware');
 
 const {projectDir} = buildConfig;
+
+/** Currently active browsersync instance. */
+let activeBrowserSyncInstance: BrowserSyncInstance;
 
 /** If the string passed in is a glob, returns it, otherwise append '**\/*' to it. */
 function _globify(maybeGlob: string, suffix = '**/*') {
@@ -125,9 +128,7 @@ export function cleanTask(glob: string) {
  * Create a task that serves a given directory in the project.
  * The server rewrites all node_module/ or dist/ requests to the correct directory.
  */
-export function serverTask(packagePath: string, livereload = true,
-                           rewrites?: {from: string, to: string}[]) {
-
+export function serverTask(packagePath: string, rewrites?: {from: string, to: string}[]) {
   // The http-rewrite-middleware only supports relative paths as rewrite destinations.
   const relativePath = path.relative(projectDir, packagePath);
   const defaultHttpRewrites = [
@@ -143,14 +144,24 @@ export function serverTask(packagePath: string, livereload = true,
   ];
 
   return () => {
-    gulpConnect.server({
-      root: projectDir,
-      livereload: livereload,
+    if (activeBrowserSyncInstance) {
+      throw new Error('Cannot setup BrowserSync because there is already an instance running.');
+    }
+
+    activeBrowserSyncInstance = createBrowserSyncInstance();
+    activeBrowserSyncInstance.init({
+      server: projectDir,
       port: 4200,
-      host: '0.0.0.0',
-      middleware: () => {
-        return [httpRewrite.getMiddleware(rewrites || defaultHttpRewrites)];
-      }
+      middleware: httpRewrite.getMiddleware(rewrites || defaultHttpRewrites),
     });
   };
+}
+
+/** Gets the currently active browsersync instance */
+export function getActiveBrowserSyncInstance(): BrowserSyncInstance {
+  if (!activeBrowserSyncInstance) {
+    throw new Error('Cannot return Browsersync instance because there is no instance running.');
+  }
+
+  return activeBrowserSyncInstance;
 }
