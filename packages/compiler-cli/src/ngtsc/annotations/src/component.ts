@@ -39,7 +39,7 @@ export class ComponentDecoratorHandler implements
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
-      private defaultPreserveWhitespaces: boolean = false) {}
+      private defaultPreserveWhitespaces: boolean) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
