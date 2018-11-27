@@ -16,10 +16,10 @@ ng_module(
   ],
 )
 
-# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
-filegroup(
-  name = "grid_list_scss_partials",
+sass_library(
+  name = "grid_list_scss_lib",
   srcs = glob(["**/_*.scss"]),
+  deps = ["//src/lib/core:core_scss_lib"],
 )
 
 sass_binary(
@@ -27,12 +27,6 @@ sass_binary(
   src = "grid-list.scss",
   deps = ["//src/lib/core:core_scss_lib"],
 )
-
-sass_library(
-  name = "theme",
-  srcs = glob(["**/*-theme.scss"]),
-)
-
 
 ng_test_library(
   name = "grid_list_test_sources",

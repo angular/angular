@@ -18,28 +18,20 @@ ng_module(
   ],
 )
 
-# TODO(jelbourn): remove this when sass_library acts like a filegroup
-filegroup(
-  name = "button_scss_partials",
-  srcs = glob(["**/_*.scss"]),
-)
-
-# Library of all button scss partials.
 sass_library(
   name = "button_scss_lib",
-  srcs = [":button_scss_partials"],
+  srcs = glob(["**/_*.scss"]),
   deps = ["//src/lib/core:core_scss_lib"],
 )
 
 sass_binary(
   name = "button_scss",
   src = "button.scss",
-  deps = [":button_scss_lib"],
-)
-
-sass_library(
-  name = "theme",
-  srcs = glob(["**/*-theme.scss"]),
+  deps = [
+    "//src/cdk/a11y:a11y_scss_lib",
+    "//src/lib/core:core_scss_lib",
+    ":button_scss_lib"
+  ],
 )
 
 ng_test_library(

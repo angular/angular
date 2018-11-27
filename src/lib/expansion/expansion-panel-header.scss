@@ -1,4 +1,3 @@
-
 .mat-expansion-panel-header {
   display: flex;
   flex-direction: row;
@@ -12,7 +11,7 @@
   }
 
   &.mat-expanded:focus,
-  &.mat-expanded:hover, {
+  &.mat-expanded:hover {
     background: inherit;
   }
 

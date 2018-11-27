@@ -2,14 +2,13 @@
 @import '../core/theming/theming';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
-@import 'form-field-fill-theme.scss';
-@import 'form-field-legacy-theme.scss';
-@import 'form-field-outline-theme.scss';
-@import 'form-field-standard-theme.scss';
 
+@import './form-field-fill-theme.scss';
+@import './form-field-legacy-theme.scss';
+@import './form-field-outline-theme.scss';
+@import './form-field-standard-theme.scss';
 
 // Theme styles that apply to all appearances of the form-field.
-
 @mixin mat-form-field-theme($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);

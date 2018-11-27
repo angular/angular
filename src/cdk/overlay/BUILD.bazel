@@ -21,15 +21,9 @@ ng_module(
   ],
 )
 
-# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
-filegroup(
-  name = "overlay_scss_partials",
-  srcs = glob(["**/_*.scss"]),
-)
-
 sass_library(
   name = "overlay_scss_lib",
-  srcs = [":overlay_scss_partials"],
+  srcs = glob(["**/_*.scss"]),
 )
 
 sass_binary(

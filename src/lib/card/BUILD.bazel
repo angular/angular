@@ -14,19 +14,17 @@ ng_module(
   ],
 )
 
-# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
-filegroup(
-  name = "card_scss_partials",
+sass_library(
+  name = "card_scss_lib",
   srcs = glob(["**/_*.scss"]),
+  deps = ["//src/lib/core:core_scss_lib"],
 )
 
 sass_binary(
   name = "card_scss",
   src = "card.scss",
-  deps = ["//src/lib/core:core_scss_lib"],
-)
-
-sass_library(
-  name = "theme",
-  srcs = glob(["**/*-theme.scss"]),
+  deps = [
+    "//src/cdk/a11y:a11y_scss_lib",
+    "//src/lib/core:core_scss_lib",
+  ],
 )

@@ -1,0 +1,12 @@
+// This mixin provides the correct offset for an inset divider based on the
+// size of the parent class (e.g. avatar vs icon)
+@mixin mat-inset-divider-offset($offset, $padding) {
+  $mat-inset-divider-offset: #{(2 * $padding) + $offset};
+  margin-left: $mat-inset-divider-offset;
+  width: calc(100% - #{$mat-inset-divider-offset});
+
+  [dir='rtl'] & {
+    margin-left: auto;
+    margin-right: $mat-inset-divider-offset;
+  }
+}

@@ -2,9 +2,9 @@ package(default_visibility=["//visibility:public"])
 
 load("@angular//:index.bzl", "ng_package")
 load("//tools:sass_bundle.bzl", "sass_bundle")
-load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "ROLLUP_GLOBALS",
-    "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//tools:defaults.bzl", "ng_module")
+load("//:packages.bzl", "MATERIAL_PACKAGES", "MATERIAL_TARGETS", "MATERIAL_SCSS_LIBS",
+    "ROLLUP_GLOBALS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 # Root "@angular/material" entry-point.
 ng_module(
@@ -16,15 +16,11 @@ ng_module(
 
 sass_bundle(
   name = "theming_bundle",
-  # Use the filegroup rules for these sass partials directly because sass_library doesn't
-  # act like a filegroup.
   srcs = [
-    "//src/cdk/a11y:a11y_scss_partials",
-    "//src/cdk/overlay:overlay_scss_partials",
-    "//src/cdk/text-field:text_field_scss_partials",
-  ] + [
-    "//src/lib/%s:%s_scss_partials" % (p, p.replace('-', '_')) for p in MATERIAL_PACKAGES
-  ],
+    "//src/cdk/a11y:a11y_scss_lib",
+    "//src/cdk/overlay:overlay_scss_lib",
+    "//src/cdk/text-field:text_field_scss_lib",
+  ] + MATERIAL_SCSS_LIBS,
   entry_point = '//src/lib/core:theming/_all-theme.scss',
   output_name = "_theming.scss",
 )
