@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {fixmeIvy} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -13,7 +14,10 @@ import {setup} from './test_support';
 
 describe('ngc_wrapped', () => {
 
-  it('should work', () => {
+  // fixmeIvy placeholder to prevent jasmine from erroring out because there are no specs
+  it('should be removed once the fixmeIvy below is resolved', () => {});
+
+  fixmeIvy('FW-741: ngtsc breaks tsc module resolution') && it('should work', () => {
     const {read, write, runOneBuild, writeConfig, shouldExist, basePath} = setup();
 
     write('some_project/index.ts', `

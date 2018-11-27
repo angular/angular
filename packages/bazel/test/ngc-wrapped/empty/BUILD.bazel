@@ -5,7 +5,7 @@ package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 ng_module(
     name = "empty",
     srcs = ["empty.ts"],
-    tags = ["fixme-ivy-aot"],
+    tags = ["fixme-ivy-aot"],  # FW-741: ngtsc breaks tsc module resolution
     tsconfig = ":tsconfig.json",
     deps = [
         "//packages/core",
