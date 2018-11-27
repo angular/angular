@@ -572,8 +572,8 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
    */
   private _watchDrawerToggle(drawer: MatDrawer): void {
     drawer._animationStarted.pipe(
+      filter((event: AnimationEvent) => event.fromState !== event.toState),
       takeUntil(this._drawers.changes),
-      filter((event: AnimationEvent) => event.fromState !== event.toState)
     )
     .subscribe((event: AnimationEvent) => {
       // Set the transition class on the container so that the animations occur. This should not

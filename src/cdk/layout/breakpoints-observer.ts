@@ -116,9 +116,9 @@ export class BreakpointObserver implements OnDestroy {
       },
       () => mql.removeListener(queryListener))
       .pipe(
-        takeUntil(this._destroySubject),
         startWith(mql),
-        map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches}))
+        map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches})),
+        takeUntil(this._destroySubject)
       );
 
     // Add the MediaQueryList to the set of queries.
