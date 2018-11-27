@@ -15,6 +15,15 @@
       background-color: mat-color($background, hover);
     }
 
+    // On touch devices the :hover state will linger on the element after a tap.
+    // Reset it via `@media` after the declaration, because the media query isn't
+    // supported by all browsers yet.
+    @media (hover: none) {
+      &:hover {
+        background: none;
+      }
+    }
+
     .mat-step-label,
     .mat-step-optional {
       // TODO(josephperrott): Update to using a corrected disabled-text contrast
