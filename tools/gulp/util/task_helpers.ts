@@ -153,6 +153,14 @@ export function serverTask(packagePath: string, rewrites?: {from: string, to: st
       server: projectDir,
       port: 4200,
       middleware: httpRewrite.getMiddleware(rewrites || defaultHttpRewrites),
+      notify: false,
+
+      // Options which are disabled by default. We don't want to enable ghostMode by default
+      // because it can throw-off change detection due to the event listeners syncing events
+      // between browsers. Also opening the browser is not always desired because in some cases
+      // developers just want to serve the app, and open the browser on a different device.
+      ghostMode: process.argv.includes('--ghostMode'),
+      open: process.argv.includes('--open'),
     });
   };
 }
