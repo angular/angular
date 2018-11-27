@@ -671,6 +671,11 @@ describe('MatInput without forms', () => {
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
 
+  it('should not throw if a native select does not have options', fakeAsync(() => {
+    const fixture = createComponent(MatInputSelectWithoutOptions);
+    expect(() => fixture.detectChanges()).not.toThrow();
+  }));
+
   it('should never float the label when floatLabel is set to false', fakeAsync(() => {
     let fixture = createComponent(MatInputWithDynamicLabel);
 
@@ -1932,6 +1937,15 @@ class MatInputSelectWithInnerHtml {}
     </mat-form-field>`
 })
 class MatInputWithCustomAccessor {}
+
+@Component({
+  template: `
+    <mat-form-field>
+      <select matNativeControl>
+      </select>
+    </mat-form-field>`
+})
+class MatInputSelectWithoutOptions {}
 
 
 /** Custom component that never has a value. Used for testing the `MAT_INPUT_VALUE_ACCESSOR`. */

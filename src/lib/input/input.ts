@@ -383,9 +383,10 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
       // a non-empty display value. For a `<select multiple>`, the label *always* floats to avoid
       // overlapping the label with the options.
       const selectElement = this._elementRef.nativeElement as HTMLSelectElement;
+      const firstOption: HTMLOptionElement | undefined = selectElement.options[0];
 
-      return selectElement.multiple || !this.empty || !!selectElement.options[0].label ||
-          this.focused;
+      return selectElement.multiple || !this.empty || this.focused ||
+          !!(firstOption && firstOption.label);
     } else {
       return this.focused || !this.empty;
     }
@@ -395,7 +396,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  setDescribedByIds(ids: string[]) { this._ariaDescribedby = ids.join(' '); }
+  setDescribedByIds(ids: string[]) {
+    this._ariaDescribedby = ids.join(' ');
+  }
 
   /**
    * Implemented as part of MatFormFieldControl.
