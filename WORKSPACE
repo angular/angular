@@ -5,22 +5,22 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.15.3.zip",
-  strip_prefix = "rules_nodejs-0.15.3",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.1.zip",
+  strip_prefix = "rules_nodejs-0.16.1",
 )
 
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/8ea1a55cf5cf8be84ddfeefc0940769b80da792f.zip",
-  strip_prefix = "rules_typescript-8ea1a55cf5cf8be84ddfeefc0940769b80da792f",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.21.0.zip",
+  strip_prefix = "rules_typescript-0.21.0",
 )
 
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  url = "https://github.com/angular/angular/archive/7.0.4.zip",
-  strip_prefix = "angular-7.0.4",
+  url = "https://github.com/angular/angular/archive/7.1.0.zip",
+  strip_prefix = "angular-7.1.0",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.
@@ -69,7 +69,8 @@ check_bazel_version("0.18.0")
 node_repositories(
   # For deterministic builds, specify explicit NodeJS and Yarn versions.
   node_version = "10.10.0",
-  yarn_version = "1.9.4",
+  # Use latest yarn version to support integrity field (added in yarn 1.10)
+  yarn_version = "1.12.1",
 )
 
 # @npm is temporarily needed to build @rxjs from source since its ts_library

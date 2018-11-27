@@ -1,7 +1,6 @@
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {getFileContent} from '@schematics/angular/utility/test';
-import {createTestApp} from '../testing';
+import {createTestApp, getFileContent} from '../testing';
 
 describe('CDK ng-add', () => {
   let runner: SchematicTestRunner;

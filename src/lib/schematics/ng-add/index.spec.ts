@@ -8,9 +8,8 @@ import {
   getProjectStyleFile,
   getProjectTargetOptions,
 } from '@angular/cdk/schematics';
-import {createTestApp} from '@angular/cdk/schematics/testing';
+import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getFileContent} from '@schematics/angular/utility/test';
 import {getIndexHtmlPath} from './fonts/project-index-html';
 
 describe('ng-add schematic', () => {

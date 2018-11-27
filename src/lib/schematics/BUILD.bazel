@@ -43,7 +43,7 @@ npm_package(
 jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
-  data = [":node_loader_workaround", ":schematics_assets", ":schematics_test_cases"],
+  data = [":schematics_assets", ":schematics_test_cases"],
 )
 
 ts_library(
@@ -68,18 +68,5 @@ filegroup(
     "ng-update/test-cases/**/*_input.ts",
     "ng-update/test-cases/**/*_expected_output.ts"
   ]),
-  testonly = True,
-)
-
-# Filegroup that references a text file which comes alphabetically before the
-# "cdk/schematics/index.js" file. This is necessary because on Windows in order to support absolute
-# paths, the NodeJS rules resolve the actual workspace root by looking for the first entry that
-# refers to the Bazel "USER_WORKSPACE" in the MANIFEST file. Since it's alphabetically ordered, and
-# the CDK comes always before the Material schematics, we need to make sure that it doesn't resolve
-# to the CDK bazel output which has been built as dependency.
-# See more: https://github.com/bazelbuild/rules_nodejs/issues/352
-filegroup(
-  name = "node_loader_workaround",
-  srcs = ["//src/cdk/schematics:#bazel_workaround.txt"],
   testonly = True,
 )

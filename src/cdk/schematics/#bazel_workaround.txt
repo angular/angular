@@ -1,3 +1,0 @@
-WORKAROUND
-
-https://github.com/bazelbuild/rules_nodejs/issues/352

@@ -1,7 +1,6 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {Schema} from './schema';
-import {getFileContent} from '@schematics/angular/utility/test';
-import {createTestApp} from '@angular/cdk/schematics/testing';
+import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
 
 describe('material-nav-schematic', () => {
   let runner: SchematicTestRunner;

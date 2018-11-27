@@ -1,6 +1,5 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {createTestApp} from '../../testing';
-import {getFileContent} from '@schematics/angular/utility/test';
+import {createTestApp, getFileContent} from '../../testing';
 import {Schema} from './schema';
 
 describe('CDK drag-drop schematic', () => {

@@ -4,9 +4,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
-# TODO(devversion): remove when https://github.com/bazelbuild/rules_nodejs/issues/352 is fixed
-exports_files(["#bazel_workaround.txt"])
-
 filegroup(
   name = "schematics_assets",
   srcs = glob(["**/files/**/*", "**/*.json"]),
