@@ -38,6 +38,7 @@ ts_library(
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
         "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/testing",
@@ -75,7 +76,8 @@ jasmine_node_test(
         "//packages/core:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
     ],
     deps = [
         ":test_lib",
@@ -90,7 +92,8 @@ jasmine_node_test(
 ts_web_test_suite(
     name = "test_web",
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
     ],
     deps = [
         ":test_lib",
