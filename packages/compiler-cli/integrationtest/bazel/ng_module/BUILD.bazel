@@ -11,7 +11,9 @@ ng_module(
     ng_xi18n = "//packages/bazel/src/ngc-wrapped:xi18n",
     node_modules = "@ngdeps//typescript:typescript__typings",
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as this test is specific to the flat module indexing of metadata.json files that
+        # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
+        "no-ivy-aot",
     ],
     deps = [
         "//packages/core",
@@ -34,6 +36,8 @@ jasmine_node_test(
     srcs = ["spec.js"],
     data = [":flat_module_index"],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as this test is specific to the flat module indexing of metadata.json files that
+        # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
+        "no-ivy-aot",
     ],
 )

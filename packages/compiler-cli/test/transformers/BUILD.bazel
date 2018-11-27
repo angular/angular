@@ -26,7 +26,9 @@ jasmine_node_test(
         "//packages/router:npm_package",
     ],
     tags = [
-        "fixme-ivy-aot",
+        # Disabled as these tests pertain to the old compiler and not ngtsc, which doesn't use any
+        # of these transformer utilities.
+        "no-ivy-aot",
     ],
     deps = [
         ":test_lib",
