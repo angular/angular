@@ -26,7 +26,7 @@ function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
   const quotePlaceholder = '◬';
   const exampleList = parsedData.reduce((result, data) => {
     return result.concat(data.component).concat(data.additionalComponents);
-  }, [] as string[]).join(',');
+  }, [] as string[]);
 
   const exampleComponents = parsedData.reduce((result, data) => {
     result[data.id] = {
@@ -44,8 +44,8 @@ function inlineExampleModuleTemplate(parsedData: ExampleMetadata[]): string {
 
   return fs.readFileSync(require.resolve('./example-module.template'), 'utf8')
     .replace('${exampleImports}', exampleImports)
-    .replace('${exampleComponents}', JSON.stringify(exampleComponents))
-    .replace('${exampleList}', `[${exampleList}]`)
+    .replace('${exampleComponents}', JSON.stringify(exampleComponents, null, 2))
+    .replace('${exampleList}', `[\n  ${exampleList.join(',\n  ')}\n]`)
     .replace(new RegExp(`"${quotePlaceholder}|${quotePlaceholder}"`, 'g'), '');
 }
 
