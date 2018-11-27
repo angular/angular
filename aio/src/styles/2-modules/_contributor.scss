@@ -70,7 +70,7 @@ aio-contributor {
     @media (hover) { opacity: 0; }
     border-radius: 50%;
 
-    [mat-button] {
+    .info-item {
       color: $white;
       font-size: 14px;
       font-weight: 500;
@@ -85,8 +85,14 @@ aio-contributor {
         min-width: 20px;
         width: 20px;
 
-        .fa-2x {
-          font-size: 20px;
+        mat-icon {
+          height: 20px;
+          width: 20px;
+
+          &.link-icon {
+            margin-top: -7px;
+            transform: rotateZ(45deg);
+          }
         }
       }
     }
