@@ -14,7 +14,7 @@ To set up the Angular service worker in your project, use the CLI command `ng ad
 with setting up the necessary support files.
 
 ```sh
-ng add @angular/pwa --project *project-name* 
+ng add @angular/pwa@v6-lts --project *project-name* 
 ```
 
 The above command completes the following actions:
