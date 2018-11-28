@@ -1393,28 +1393,14 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string,
-    options: {i18nUseExternalIds?: boolean, preserveWhitespaces?: boolean},
-    relativeContextFilePath: string): {
-  errors?: ParseError[],
-  nodes: t.Node[],
-  hasNgContent: boolean,
-  ngContentSelectors: string[],
-  relativeContextFilePath: string,
-  i18nUseExternalIds: boolean
-} {
+    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean}):
+    {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, true);
-  const i18nUseExternalIds = options.i18nUseExternalIds !== false;
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {
-      errors: parseResult.errors,
-      nodes: [],
-      hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath, i18nUseExternalIds
-    };
+    return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -1439,15 +1425,10 @@ export function parseTemplate(
   const {nodes, hasNgContent, ngContentSelectors, errors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {
-      errors,
-      nodes: [],
-      hasNgContent: false,
-      ngContentSelectors: [], relativeContextFilePath, i18nUseExternalIds
-    };
+    return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }
 
-  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath, i18nUseExternalIds};
+  return {nodes, hasNgContent, ngContentSelectors};
 }
 
 /**

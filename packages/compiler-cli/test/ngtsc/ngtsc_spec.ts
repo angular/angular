@@ -553,6 +553,26 @@ describe('ngtsc behavioral tests', () => {
     expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
+  it('should use proper default value for preserveWhitespaces config param', () => {
+    env.tsconfig();  // default is `false`
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        preserveWhitespaces: false,
+        template: \`
+          <div>
+            Template with whitespaces
+          </div>
+        \`
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('text(1, " Template with whitespaces ");');
+  });
+
   it('should take preserveWhitespaces config option into account', () => {
     env.tsconfig({preserveWhitespaces: true});
     env.write(`test.ts`, `
@@ -591,6 +611,36 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
     const jsContents = env.getContents('test.js');
     expect(jsContents).toContain('text(1, " Template with whitespaces ");');
+  });
+
+  it('should use proper default value for i18nUseExternalIds config param', () => {
+    env.tsconfig();  // default is `true`
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        template: '<div i18n>Some text</div>'
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i18n(1, MSG_EXTERNAL_8321000940098097247);');
+  });
+
+  it('should take i18nUseExternalIds config option into account', () => {
+    env.tsconfig({i18nUseExternalIds: false});
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        template: '<div i18n>Some text</div>'
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i18n(1, MSG_TEST_TS_0);');
   });
 
   it('should correctly recognize local symbols', () => {
