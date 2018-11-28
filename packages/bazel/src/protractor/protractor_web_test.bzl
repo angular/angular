@@ -346,4 +346,3 @@ def protractor_web_test_suite(
         timeout = timeout,
         visibility = visibility,
     )
-    
