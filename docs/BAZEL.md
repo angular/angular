@@ -165,8 +165,23 @@ Of course, non-hermeticity in an action can cause problems.
 At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
 For this reason, we are careful to implement our Bazel rules to depend only on their inputs.
 
-Currently we only use remote caching on CircleCI.
-We could enable it for developer builds as well, which would make initial builds much faster for developers by fetching already-built artifacts from the cache.
+Currently we only use remote caching on CircleCI and we let Angular core developers enable remote caching to speed up their builds.
+
+### Remote cache in development
+
+To enable remote caching for your build:
+
+1. Go to the service accounts for the ["internal" project](https://console.cloud.google.com/iam-admin/serviceaccounts?project=internal-200822)
+1. Select "Angular local dev", click on "Edit", scroll to the bottom, and click "Create key"
+1. When the pop-up shows, select "JSON" for "Key type" and click "Create"
+1. Save the key in a secure location
+1. Create a file called `.bazelrc.user` in the root directory of the workspace, and add the following content:
+
+```
+build --config=angular-team --google_credentials=[ABSOLUTE_PATH_TO_SERVICE_KEY]
+```
+
+### Remote cache for Circle CI
 
 This feature is experimental, and developed by the CircleCI team with guidance from Angular.
 Contact Alex Eagle with questions.
