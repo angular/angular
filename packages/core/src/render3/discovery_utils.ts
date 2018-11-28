@@ -8,10 +8,12 @@
 import {Injector} from '../di/injector';
 
 import {assertDefined} from './assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getContext, getDirectivesAtNodeIndex} from './context_discovery';
+import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
 import {LContext} from './interfaces/context';
-import {TElementNode} from './interfaces/node';
-import {CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
+import {DirectiveDef} from './interfaces/definition';
+import {INJECTOR_BLOOM_PARENT_SIZE} from './interfaces/injector';
+import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
+import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 import {readPatchedLView, stringify} from './util';
 import {NodeInjector} from './view_engine_compatibility';
 
@@ -20,7 +22,7 @@ import {NodeInjector} from './view_engine_compatibility';
  * Returns the component instance associated with a given DOM host element.
  * Elements which don't represent components return `null`.
  *
- * @param element Host DOM element from which the component should be retrieved for.
+ * @param element Host DOM element from which the component should be retrieved.
  *
  * ```
  * <my-app>
@@ -37,15 +39,38 @@ import {NodeInjector} from './view_engine_compatibility';
  * @publicApi
  */
 export function getComponent<T = {}>(element: Element): T|null {
-  if (!(element instanceof Node)) throw new Error('Expecting instance of DOM Node');
-
-  const context = loadContext(element) !;
+  const context = loadLContextFromNode(element);
 
   if (context.component === undefined) {
     context.component = getComponentAtNodeIndex(context.nodeIndex, context.lView);
   }
 
   return context.component as T;
+}
+
+/**
+ * Returns the component instance associated with a given DOM host element.
+ * Elements which don't represent components return `null`.
+ *
+ * @param element Host DOM element from which the component should be retrieved.
+ *
+ * ```
+ * <my-app>
+ *   #VIEW
+ *     <div>
+ *       <child-comp></child-comp>
+ *     </div>
+ * </mp-app>
+ *
+ * expect(getComponent(<child-comp>) instanceof ChildComponent).toBeTruthy();
+ * expect(getComponent(<my-app>) instanceof MyApp).toBeTruthy();
+ * ```
+ *
+ * @publicApi
+ */
+export function getContext<T = {}>(element: Element): T|null {
+  const context = loadLContextFromNode(element) !;
+  return context.lView[CONTEXT] as T;
 }
 
 /**
@@ -69,7 +94,7 @@ export function getComponent<T = {}>(element: Element): T|null {
  * @publicApi
  */
 export function getViewComponent<T = {}>(element: Element | {}): T|null {
-  const context = loadContext(element) !;
+  const context = loadLContext(element) !;
   let lView: LView = context.lView;
   while (lView[PARENT] && lView[HOST] === null) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
@@ -87,8 +112,8 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
  *
  */
 export function getRootContext(target: LView | {}): RootContext {
-  const lView = Array.isArray(target) ? target : loadContext(target) !.lView;
-  const rootLView = getRootView(lView);
+  const lViewData = Array.isArray(target) ? target : loadLContext(target) !.lView;
+  const rootLView = getRootView(lViewData);
   return rootLView[CONTEXT] as RootContext;
 }
 
@@ -113,10 +138,38 @@ export function getRootComponents(target: {}): any[] {
  * @publicApi
  */
 export function getInjector(target: {}): Injector {
-  const context = loadContext(target);
+  const context = loadLContext(target);
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
-
   return new NodeInjector(tNode, context.lView);
+}
+
+/**
+ * Retrieve a set of injection tokens at a given DOM node.
+ *
+ * @param element Element for which the injection tokens should be retrieved.
+ * @publicApi
+ */
+export function getInjectionTokens(element: Element): any[] {
+  const context = loadLContext(element, false);
+  if (!context) return [];
+  const lView = context.lView;
+  const tView = lView[TVIEW];
+  const tNode = tView.data[context.nodeIndex] as TNode;
+  const providerTokens: any[] = [];
+  const startIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+  const endIndex = tNode.directiveEnd;
+  for (let i = startIndex; i < endIndex; i++) {
+    let value = tView.data[i];
+    if (isDirectiveDefHack(value)) {
+      // The fact that we sometimes store Type and sometimes DirectiveDef in this location is a
+      // design flaw.  We should always store same type so that we can be monomorphic. The issue
+      // is that for Components/Directives we store the def instead the type. The correct behavior
+      // is that we should always be storing injectable type in this location.
+      value = value.type;
+    }
+    providerTokens.push(value);
+  }
+  return providerTokens;
 }
 
 /**
@@ -127,7 +180,7 @@ export function getInjector(target: {}): Injector {
  * @publicApi
  */
 export function getDirectives(target: {}): Array<{}> {
-  const context = loadContext(target) !;
+  const context = loadLContext(target) !;
 
   if (context.directives === undefined) {
     context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
@@ -141,10 +194,10 @@ export function getDirectives(target: {}): Array<{}> {
  * Throws if a given target doesn't have associated LContext.
  *
  */
-export function loadContext(target: {}): LContext;
-export function loadContext(target: {}, throwOnNotFound: false): LContext|null;
-export function loadContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
-  const context = getContext(target);
+export function loadLContext(target: {}): LContext;
+export function loadLContext(target: {}, throwOnNotFound: false): LContext|null;
+export function loadLContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
+  const context = getLContext(target);
   if (!context && throwOnNotFound) {
     throw new Error(
         ngDevMode ? `Unable to find context associated with ${stringify(target)}` :
@@ -185,7 +238,7 @@ export function getRootView(componentOrView: LView | {}): LView {
  * @publicApi
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
-  const context = loadContext(target) !;
+  const context = loadLContext(target) !;
 
   if (context.localRefs === undefined) {
     context.localRefs = discoverLocalRefs(context.lView, context.nodeIndex);
@@ -205,7 +258,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @publicApi
  */
 export function getHostElement<T>(directive: T): Element {
-  return getContext(directive) !.native as never as Element;
+  return getLContext(directive) !.native as never as Element;
 }
 
 /**
@@ -221,4 +274,89 @@ export function getHostElement<T>(directive: T): Element {
 export function getRenderedText(component: any): string {
   const hostElement = getHostElement(component);
   return hostElement.textContent || '';
+}
+
+export function loadLContextFromNode(node: Node): LContext {
+  if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Node');
+  return loadLContext(node) !;
+}
+
+export interface Listener {
+  name: string;
+  element: Element;
+  callback: (value: any) => any;
+  useCapture: boolean|null;
+}
+
+export function isBrowserEvents(listener: Listener): boolean {
+  // Browser events are those which don't have `useCapture` as boolean.
+  return typeof listener.useCapture === 'boolean';
+}
+
+
+/**
+ * Retrieves a list of DOM listeners.
+ *
+ * ```
+ * <my-app>
+ *   #VIEW
+ *     <div (click)="doSomething()">
+ *     </div>
+ * </mp-app>
+ *
+ * expect(getListeners(<div>)).toEqual({
+ *   name: 'click',
+ *   element: <div>,
+ *   callback: () => doSomething(),
+ *   useCapture: false
+ * });
+ * ```
+ *
+ * @param element Element for which the DOM listeners should be retrieved.
+ * @publicApi
+ */
+export function getListeners(element: Element): Listener[] {
+  const lContext = loadLContextFromNode(element);
+  const lView = lContext.lView;
+  const tView = lView[TVIEW];
+  const lCleanup = lView[CLEANUP];
+  const tCleanup = tView.cleanup;
+  const listeners: Listener[] = [];
+  if (tCleanup && lCleanup) {
+    for (let i = 0; i < tCleanup.length;) {
+      const firstParam = tCleanup[i++];
+      const secondParam = tCleanup[i++];
+      if (typeof firstParam === 'string') {
+        const name: string = firstParam;
+        const listenerElement: Element = lView[secondParam];
+        const callback: (value: any) => any = lCleanup[tCleanup[i++]];
+        const useCaptureOrIndx = tCleanup[i++];
+        // if useCaptureOrIndx is boolean then report it as is.
+        // if useCaptureOrIndx is positive number then it in unsubscribe method
+        // if useCaptureOrIndx is negative number then it is a Subscription
+        const useCapture = typeof useCaptureOrIndx === 'boolean' ?
+            useCaptureOrIndx :
+            (useCaptureOrIndx >= 0 ? false : null);
+        if (element == listenerElement) {
+          listeners.push({element, name, callback, useCapture});
+        }
+      }
+    }
+  }
+  listeners.sort(sortListeners);
+  return listeners;
+}
+
+function sortListeners(a: Listener, b: Listener) {
+  if (a.name == b.name) return 0;
+  return a.name < b.name ? -1 : 1;
+}
+
+/**
+ * This function should not exist because it is megamorphic and only mostly correct.
+ *
+ * See call site for more info.
+ */
+function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
+  return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
 }

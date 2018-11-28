@@ -21,7 +21,7 @@ import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
-import {getContext} from '../../src/render3/context_discovery';
+import {getLContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 
@@ -2041,14 +2041,14 @@ describe('render3 integration test', () => {
       fixture.update();
 
       const section = fixture.hostElement.querySelector('section') !;
-      const sectionContext = getContext(section) !;
+      const sectionContext = getLContext(section) !;
       const sectionLView = sectionContext.lView !;
       expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
       expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
       expect(sectionContext.native).toBe(section);
 
       const div = fixture.hostElement.querySelector('div') !;
-      const divContext = getContext(div) !;
+      const divContext = getLContext(div) !;
       const divLView = divContext.lView !;
       expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
       expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
@@ -2080,7 +2080,7 @@ describe('render3 integration test', () => {
       const result1 = section[MONKEY_PATCH_KEY_NAME];
       expect(Array.isArray(result1)).toBeTruthy();
 
-      const context = getContext(section) !;
+      const context = getLContext(section) !;
       const result2 = section[MONKEY_PATCH_KEY_NAME];
       expect(Array.isArray(result2)).toBeFalsy();
 
@@ -2116,7 +2116,7 @@ describe('render3 integration test', () => {
          const p = fixture.hostElement.querySelector('p') !as any;
          expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
 
-         const pContext = getContext(p) !;
+         const pContext = getLContext(p) !;
          expect(pContext.native).toBe(p);
          expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
        });
@@ -2154,7 +2154,7 @@ describe('render3 integration test', () => {
          expect(Array.isArray(elementResult)).toBeTruthy();
          expect(elementResult[StylingIndex.ElementPosition]).toBe(section);
 
-         const context = getContext(section) !;
+         const context = getLContext(section) !;
          const result2 = section[MONKEY_PATCH_KEY_NAME];
          expect(Array.isArray(result2)).toBeFalsy();
 
@@ -2248,9 +2248,9 @@ describe('render3 integration test', () => {
          expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
          expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-         const parentContext = getContext(section) !;
-         const shadowContext = getContext(header) !;
-         const projectedContext = getContext(p) !;
+         const parentContext = getLContext(section) !;
+         const shadowContext = getLContext(header) !;
+         const projectedContext = getLContext(p) !;
 
          const parentComponentData = parentContext.lView;
          const shadowComponentData = shadowContext.lView;
@@ -2263,12 +2263,12 @@ describe('render3 integration test', () => {
     it('should return `null` when an element context is retrieved that isn\'t situated in Angular',
        () => {
          const elm1 = document.createElement('div');
-         const context1 = getContext(elm1);
+         const context1 = getLContext(elm1);
          expect(context1).toBeFalsy();
 
          const elm2 = document.createElement('div');
          document.body.appendChild(elm2);
-         const context2 = getContext(elm2);
+         const context2 = getLContext(elm2);
          expect(context2).toBeFalsy();
        });
 
@@ -2296,7 +2296,7 @@ describe('render3 integration test', () => {
          const manuallyCreatedElement = document.createElement('div');
          section.appendChild(manuallyCreatedElement);
 
-         const context = getContext(manuallyCreatedElement);
+         const context = getLContext(manuallyCreatedElement);
          expect(context).toBeFalsy();
        });
 
@@ -2324,11 +2324,11 @@ describe('render3 integration test', () => {
       const hostLView = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
       expect(hostLView).toBe(componentLView);
 
-      const context1 = getContext(hostElm) !;
+      const context1 = getLContext(hostElm) !;
       expect(context1.lView).toBe(hostLView);
       expect(context1.native).toEqual(hostElm);
 
-      const context2 = getContext(component) !;
+      const context2 = getLContext(component) !;
       expect(context2).toBe(context1);
       expect(context2.lView).toBe(hostLView);
       expect(context2.native).toEqual(hostElm);
@@ -2387,7 +2387,7 @@ describe('render3 integration test', () => {
          const hostElm = fixture.hostElement;
          const div1 = hostElm.querySelector('div:first-child') !as any;
          const div2 = hostElm.querySelector('div:last-child') !as any;
-         const context = getContext(hostElm) !;
+         const context = getLContext(hostElm) !;
          const componentView = context.lView[context.nodeIndex];
 
          expect(componentView).toContain(myDir1Instance);
@@ -2398,9 +2398,9 @@ describe('render3 integration test', () => {
          expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
          expect(Array.isArray((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
 
-         const d1Context = getContext(myDir1Instance) !;
-         const d2Context = getContext(myDir2Instance) !;
-         const d3Context = getContext(myDir3Instance) !;
+         const d1Context = getLContext(myDir1Instance) !;
+         const d2Context = getLContext(myDir2Instance) !;
+         const d3Context = getLContext(myDir3Instance) !;
 
          expect(d1Context.lView).toEqual(componentView);
          expect(d2Context.lView).toEqual(componentView);
@@ -2487,28 +2487,28 @@ describe('render3 integration test', () => {
          expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
          expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
 
-         const childNodeContext = getContext(childCompHostElm) !;
+         const childNodeContext = getLContext(childCompHostElm) !;
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives).toBeFalsy();
          assertMonkeyPatchValueIsLView(myDir1Instance);
          assertMonkeyPatchValueIsLView(myDir2Instance);
          assertMonkeyPatchValueIsLView(childComponentInstance);
 
-         expect(getContext(myDir1Instance)).toBe(childNodeContext);
+         expect(getLContext(myDir1Instance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives !.length).toEqual(2);
          assertMonkeyPatchValueIsLView(myDir1Instance, false);
          assertMonkeyPatchValueIsLView(myDir2Instance, false);
          assertMonkeyPatchValueIsLView(childComponentInstance);
 
-         expect(getContext(myDir2Instance)).toBe(childNodeContext);
+         expect(getLContext(myDir2Instance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeFalsy();
          expect(childNodeContext.directives !.length).toEqual(2);
          assertMonkeyPatchValueIsLView(myDir1Instance, false);
          assertMonkeyPatchValueIsLView(myDir2Instance, false);
          assertMonkeyPatchValueIsLView(childComponentInstance);
 
-         expect(getContext(childComponentInstance)).toBe(childNodeContext);
+         expect(getLContext(childComponentInstance)).toBe(childNodeContext);
          expect(childNodeContext.component).toBeTruthy();
          expect(childNodeContext.directives !.length).toEqual(2);
          assertMonkeyPatchValueIsLView(myDir1Instance, false);
@@ -2565,7 +2565,7 @@ describe('render3 integration test', () => {
          const child = host.querySelector('child-comp') as any;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
-         const context = getContext(child) !;
+         const context = getLContext(child) !;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
          const componentData = context.lView[context.nodeIndex];
@@ -2573,7 +2573,7 @@ describe('render3 integration test', () => {
          expect(component instanceof ChildComp).toBeTruthy();
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
 
-         const componentContext = getContext(component) !;
+         const componentContext = getLContext(component) !;
          expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
          expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
          expect(componentContext.native).toEqual(context.native);

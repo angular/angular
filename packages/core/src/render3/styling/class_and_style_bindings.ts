@@ -668,7 +668,7 @@ function isDirty(context: StylingContext, index: number): boolean {
   return ((context[adjustedIndex] as number) & StylingFlags.Dirty) == StylingFlags.Dirty;
 }
 
-function isClassBased(context: StylingContext, index: number): boolean {
+export function isClassBased(context: StylingContext, index: number): boolean {
   const adjustedIndex =
       index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
   return ((context[adjustedIndex] as number) & StylingFlags.Class) == StylingFlags.Class;
@@ -776,11 +776,11 @@ function getPointers(context: StylingContext, index: number): number {
   return context[adjustedIndex] as number;
 }
 
-function getValue(context: StylingContext, index: number): string|boolean|null {
+export function getValue(context: StylingContext, index: number): string|boolean|null {
   return context[index + StylingIndex.ValueOffset] as string | boolean | null;
 }
 
-function getProp(context: StylingContext, index: number): string {
+export function getProp(context: StylingContext, index: number): string {
   return context[index + StylingIndex.PropertyOffset] as string;
 }
 

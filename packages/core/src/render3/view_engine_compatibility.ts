@@ -355,7 +355,7 @@ export function injectChangeDetectorRef(): ViewEngine_ChangeDetectorRef {
 export function createViewRef(
     hostTNode: TNode, hostView: LView, context: any): ViewEngine_ChangeDetectorRef {
   if (isComponent(hostTNode)) {
-    const componentIndex = hostTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+    const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, context, componentIndex);
   } else if (hostTNode.type === TNodeType.Element) {

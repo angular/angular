@@ -7,7 +7,7 @@
  */
 import './ng_dev_mode';
 
-import {getContext} from './context_discovery';
+import {getLContext} from './context_discovery';
 import {getRootContext} from './discovery_utils';
 import {scheduleTick} from './instructions';
 import {ComponentInstance, DirectiveInstance, Player} from './interfaces/player';
@@ -29,7 +29,7 @@ import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayer
  */
 export function addPlayer(
     ref: ComponentInstance | DirectiveInstance | HTMLElement, player: Player): void {
-  const context = getContext(ref);
+  const context = getLContext(ref);
   if (!context) {
     ngDevMode && throwInvalidRefError();
     return;
@@ -54,13 +54,13 @@ export function addPlayer(
  * @publicApi
  */
 export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElement): Player[] {
-  const context = getContext(ref);
+  const context = getLContext(ref);
   if (!context) {
     ngDevMode && throwInvalidRefError();
     return [];
   }
 
-  const stylingContext = getStylingContext(context.nodeIndex - HEADER_OFFSET, context.lView);
+  const stylingContext = getStylingContext(context.nodeIndex, context.lView);
   const playerContext = stylingContext ? getPlayerContext(stylingContext) : null;
   return playerContext ? getPlayersInternal(playerContext) : [];
 }

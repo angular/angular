@@ -28,23 +28,17 @@ export const enum TNodeType {
  * Corresponds to the TNode.flags property.
  */
 export const enum TNodeFlags {
-  /** The number of directives on this node is encoded on the least significant bits */
-  DirectiveCountMask = 0b00000000000000000000111111111111,
-
   /** This bit is set if the node is a component */
-  isComponent = 0b00000000000000000001000000000000,
+  isComponent = 0b0001,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b00000000000000000010000000000000,
+  isProjected = 0b0010,
 
   /** This bit is set if the node has any content queries */
-  hasContentQuery = 0b00000000000000000100000000000000,
+  hasContentQuery = 0b0100,
 
   /** This bit is set if the node has any directives that contain [class properties */
-  hasClassInput = 0b00000000000000001000000000000000,
-
-  /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 16,
+  hasClassInput = 0b1000,
 }
 
 /**
@@ -128,13 +122,17 @@ export interface TNode {
   injectorIndex: number;
 
   /**
-   * This number stores two values using its bits:
-   *
-   * - the number of directives on that node (first 12 bits)
-   * - the starting index of the node's directives in the directives array (last 20 bits).
-   *
-   * These two values are necessary so DI can effectively search the directives associated
-   * with a node without searching the whole directives array.
+   * Stores starting index of the directives.
+   */
+  directiveStart: number;
+
+  /**
+   * Stores final exclusive index of the directives.
+   */
+  directiveEnd: number;
+
+  /**
+   * Stores if Node isComponent, isProjected, hasContentQuery and hasClassInput
    */
   flags: TNodeFlags;
 
@@ -144,6 +142,7 @@ export interface TNode {
    * - the index of the first provider on that node (first 16 bits)
    * - the count of view providers from the component on this node (last 16 bits)
    */
+  // TODO(misko): break this into actual vars.
   providerIndexes: TNodeProviderIndexes;
 
   /** The tag name associated with this node. */

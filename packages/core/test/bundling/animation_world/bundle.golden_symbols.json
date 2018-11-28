@@ -84,7 +84,7 @@
     "name": "INJECTOR"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "InjectFlags"
@@ -417,9 +417,6 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput"
-  },
-  {
     "name": "createRootComponent"
   },
   {
@@ -606,19 +603,10 @@
     "name": "getContainerRenderParent"
   },
   {
-    "name": "getContext"
-  },
-  {
     "name": "getCreationMode"
   },
   {
     "name": "getDirectiveDef"
-  },
-  {
-    "name": "getDirectiveEndIndex"
-  },
-  {
-    "name": "getDirectiveStartIndex"
   },
   {
     "name": "getDirectivesAtNodeIndex"
@@ -655,6 +643,9 @@
   },
   {
     "name": "getLContainer"
+  },
+  {
+    "name": "getLContext"
   },
   {
     "name": "getLView"
@@ -924,7 +915,7 @@
     "name": "listener"
   },
   {
-    "name": "loadContext"
+    "name": "loadLContext"
   },
   {
     "name": "locateDirectiveOrProvider"
@@ -1147,9 +1138,6 @@
   },
   {
     "name": "storeCleanupFn"
-  },
-  {
-    "name": "storeCleanupWithContext"
   },
   {
     "name": "stringify"

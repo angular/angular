@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {createRootContext} from '../../../src/render3/component';
-import {getContext} from '../../../src/render3/context_discovery';
+import {getLContext} from '../../../src/render3/context_discovery';
 import {defineComponent} from '../../../src/render3/index';
 import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
@@ -2264,7 +2264,7 @@ describe('style and class based bindings', () => {
          fixture.update();
 
          const target = fixture.hostElement.querySelector('div') !as any;
-         const elementContext = getContext(target) !;
+         const elementContext = getLContext(target) !;
          const context = elementContext.lView[elementContext.nodeIndex] as StylingContext;
 
          expect(players.length).toEqual(4);

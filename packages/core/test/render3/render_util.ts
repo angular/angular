@@ -21,7 +21,7 @@ import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from 
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
 import {SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
-import {getContext, getDirectivesAtNodeIndex, isComponentInstance} from '../../src/render3/context_discovery';
+import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
@@ -266,7 +266,7 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
 export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = false): string {
   let element: any;
   if (isComponentInstance(componentOrElement)) {
-    const context = getContext(componentOrElement);
+    const context = getLContext(componentOrElement);
     element = context ? context.native : null;
   } else {
     element = componentOrElement;
