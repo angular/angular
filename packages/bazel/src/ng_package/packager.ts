@@ -253,6 +253,12 @@ function main(args: string[]): number {
       const outputPath = path.join(dir, ...path.basename(file).split('__'));
       shx.mkdir('-p', path.dirname(outputPath));
       shx.mv(path.join(dir, path.basename(file)), outputPath);
+
+      // if we are renaming the .js file, we'll also need to update the sourceMappingURL in the file
+      if (file.endsWith('.js')) {
+        shx.chmod('+w', outputPath);
+        shx.sed('-i', `${path.basename(file)}.map`, `${path.basename(outputPath)}.map`, outputPath);
+      }
     }
   }
 
