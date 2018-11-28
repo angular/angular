@@ -15,12 +15,12 @@ import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {browserDetection, dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ClientMessageBrokerFactory} from '../../../src/web_workers/shared/client_message_broker';
-import {RenderStore} from '../../../src/web_workers/shared/render_store';
-import {Serializer} from '../../../src/web_workers/shared/serializer';
-import {ServiceMessageBrokerFactory} from '../../../src/web_workers/shared/service_message_broker';
-import {MessageBasedRenderer2} from '../../../src/web_workers/ui/renderer';
-import {WebWorkerRendererFactory2} from '../../../src/web_workers/worker/renderer';
+import {ClientMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
+import {RenderStore} from '@angular/platform-webworker/src/web_workers/shared/render_store';
+import {Serializer} from '@angular/platform-webworker/src/web_workers/shared/serializer';
+import {ServiceMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/service_message_broker';
+import {MessageBasedRenderer2} from '@angular/platform-webworker/src/web_workers/ui/renderer';
+import {WebWorkerRendererFactory2} from '@angular/platform-webworker/src/web_workers/worker/renderer';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
 let lastCreatedRenderer: Renderer2;
