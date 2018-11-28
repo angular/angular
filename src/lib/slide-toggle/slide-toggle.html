@@ -38,6 +38,8 @@
   </div>
 
   <span class="mat-slide-toggle-content" #labelContent (cdkObserveContent)="_onLabelTextChange()">
+    <!-- Add an invisible span so JAWS can read the label -->
+    <span style="display:none">&nbsp;</span>
     <ng-content></ng-content>
   </span>
 </label>
