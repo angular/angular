@@ -36,7 +36,7 @@ def _protractor_web_test_impl(ctx):
 
     specs = [
         expand_path_into_runfiles(ctx, f.short_path)
-        for f in files
+        for f in files.to_list()
     ]
 
     configuration_sources = []
@@ -346,3 +346,4 @@ def protractor_web_test_suite(
         timeout = timeout,
         visibility = visibility,
     )
+    
