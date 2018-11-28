@@ -74,15 +74,13 @@ export class ComponentDecoratorHandler implements
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
 
-    // @Component inherits @Directive, so begin by extracting the @Directive metadata and
-    // building
+    // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.checker, this.reflector, this.isCore,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
-      // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In
-      // this
+      // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
       // that no analysis was produced.
       return {};
@@ -149,8 +147,7 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // If the component has a selector, it should be registered with the `SelectorScopeRegistry`
-    // so
+    // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
       const ref = new ResolvedReference(node, node.name !);
@@ -236,16 +233,13 @@ export class ComponentDecoratorHandler implements
 
   compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
       CompileResult {
-    // Check whether this component was registered with an NgModule. If so, it should be
-    // compiled
+    // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeRegistry.lookupCompilationScope(node);
     let metadata = analysis.meta;
     if (scope !== null) {
-      // Replace the empty components and directives from the analyze() step with a fully
-      // expanded
-      // scope. This is possible now because during compile() the whole compilation unit has
-      // been
+      // Replace the empty components and directives from the analyze() step with a fully expanded
+      // scope. This is possible now because during compile() the whole compilation unit has been
       // fully analyzed.
       const {pipes, containsForwardDecls} = scope;
       const directives = new Map<string, Expression>();
