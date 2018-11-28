@@ -7,11 +7,13 @@
  */
 
 import {Injector} from '../di';
-import {DirectiveDef} from '../render3';
 import {assertDomNode} from '../render3/assert';
-import {getComponent, getInjector, getLocalRefs, loadContext} from '../render3/discovery_utils';
-import {TNode, TNodeFlags} from '../render3/interfaces/node';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
+import {TNode} from '../render3/interfaces/node';
+import {StylingIndex} from '../render3/interfaces/styling';
 import {TVIEW} from '../render3/interfaces/view';
+import {getProp, getValue, isClassBased} from '../render3/styling/class_and_style_bindings';
+import {getStylingContext} from '../render3/styling/util';
 import {DebugContext} from '../view/index';
 
 export class EventListener {
@@ -204,7 +206,7 @@ class DebugNode__POST_R3__ implements DebugNode {
   constructor(nativeNode: Node) { this.nativeNode = nativeNode; }
 
   get parent(): DebugElement|null {
-    const parent = this.nativeNode.parentNode as HTMLElement;
+    const parent = this.nativeNode.parentNode as Element;
     return parent ? new DebugElement__POST_R3__(parent) : null;
   }
 
@@ -212,46 +214,17 @@ class DebugNode__POST_R3__ implements DebugNode {
 
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
-    return nativeElement && getComponent(nativeElement as HTMLElement);
+    return nativeElement && getComponent(nativeElement as Element);
   }
-  get context(): any {
-    // https://angular-team.atlassian.net/browse/FW-719
-    throw notImplemented();
-  }
+  get context(): any { return getContext(this.nativeNode as Element); }
 
   get listeners(): EventListener[] {
-    // TODO: add real implementation;
-    // https://angular-team.atlassian.net/browse/FW-719
-    return [];
+    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
   }
 
   get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
 
-  get providerTokens(): any[] {
-    // TODO move to discoverable utils
-    const context = loadContext(this.nativeNode as HTMLElement, false) !;
-    if (!context) return [];
-    const lView = context.lView;
-    const tView = lView[TVIEW];
-    const tNode = tView.data[context.nodeIndex] as TNode;
-    const providerTokens: any[] = [];
-    const nodeFlags = tNode.flags;
-    const startIndex = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
-    const directiveCount = nodeFlags & TNodeFlags.DirectiveCountMask;
-    const endIndex = startIndex + directiveCount;
-    for (let i = startIndex; i < endIndex; i++) {
-      let value = tView.data[i];
-      if (isDirectiveDefHack(value)) {
-        // The fact that we sometimes store Type and sometimes DirectiveDef in this location is a
-        // design flaw.  We should always store same type so that we can be monomorphic. The issue
-        // is that for Components/Directives we store the def instead the type. The correct behavior
-        // is that we should always be storing injectable type in this location.
-        value = value.type;
-      }
-      providerTokens.push(value);
-    }
-    return providerTokens;
-  }
+  get providerTokens(): any[] { return getInjectionTokens(this.nativeNode as Element); }
 }
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
@@ -264,10 +237,10 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
-  get name(): string { return (this.nativeElement as HTMLElement).nodeName; }
+  get name(): string { return this.nativeElement !.nodeName; }
 
   get properties(): {[key: string]: any;} {
-    const context = loadContext(this.nativeNode) !;
+    const context = loadLContext(this.nativeNode) !;
     const lView = context.lView;
     const tView = lView[TVIEW];
     const tNode = tView.data[context.nodeIndex] as TNode;
@@ -278,18 +251,77 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   get attributes(): {[key: string]: string | null;} {
-    // https://angular-team.atlassian.net/browse/FW-719
-    throw notImplemented();
+    const attributes: {[key: string]: string | null;} = {};
+    const element = this.nativeElement;
+    if (element) {
+      const eAttrs = element.attributes;
+      for (let i = 0; i < eAttrs.length; i++) {
+        const attr = eAttrs[i];
+        attributes[attr.name] = attr.value;
+      }
+    }
+    return attributes;
   }
 
   get classes(): {[key: string]: boolean;} {
-    // https://angular-team.atlassian.net/browse/FW-719
-    throw notImplemented();
+    const classes: {[key: string]: boolean;} = {};
+    const element = this.nativeElement;
+    if (element) {
+      const lContext = loadLContextFromNode(element);
+      const lNode = lContext.lView[lContext.nodeIndex];
+      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      if (stylingContext) {
+        for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
+             i += StylingIndex.Size) {
+          if (isClassBased(lNode, i)) {
+            const className = getProp(lNode, i);
+            const value = getValue(lNode, i);
+            if (typeof value == 'boolean') {
+              // we want to ignore `null` since those don't overwrite the values.
+              classes[className] = value;
+            }
+          }
+        }
+      } else {
+        // Fallback, just read DOM.
+        const eClasses = element.classList;
+        for (let i = 0; i < eClasses.length; i++) {
+          classes[eClasses[i]] = true;
+        }
+      }
+    }
+    return classes;
   }
 
   get styles(): {[key: string]: string | null;} {
-    // https://angular-team.atlassian.net/browse/FW-719
-    throw notImplemented();
+    const styles: {[key: string]: string | null;} = {};
+    const element = this.nativeElement;
+    if (element) {
+      const lContext = loadLContextFromNode(element);
+      const lNode = lContext.lView[lContext.nodeIndex];
+      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      if (stylingContext) {
+        for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
+             i += StylingIndex.Size) {
+          if (!isClassBased(lNode, i)) {
+            const styleName = getProp(lNode, i);
+            const value = getValue(lNode, i) as string | null;
+            if (value !== null) {
+              // we want to ignore `null` since those don't overwrite the values.
+              styles[styleName] = value;
+            }
+          }
+        }
+      } else {
+        // Fallback, just read DOM.
+        const eStyles = (element as HTMLElement).style;
+        for (let i = 0; i < eStyles.length; i++) {
+          const name = eStyles.item(i);
+          styles[name] = eStyles.getPropertyValue(name);
+        }
+      }
+    }
+    return styles;
   }
 
   get childNodes(): DebugNode[] {
@@ -332,22 +364,12 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   triggerEventHandler(eventName: string, eventObj: any): void {
-    // This is a hack implementation. The correct implementation would bypass the DOM and `TNode`
-    // information to invoke the listeners directly.
-    // https://angular-team.atlassian.net/browse/FW-719
-    const event = document.createEvent('MouseEvent');
-    event.initEvent(eventName, true, true);
-    (this.nativeElement as HTMLElement).dispatchEvent(event);
+    this.listeners.forEach((listener) => {
+      if (listener.name === eventName) {
+        listener.callback(eventObj);
+      }
+    });
   }
-}
-
-/**
- * This function should not exist because it is megamorphic and only mostly correct.
- *
- * See call site for more info.
- */
-function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
-  return obj.type !== undefined && obj.template !== undefined && obj.declaredInputs !== undefined;
 }
 
 function _queryNodeChildrenR3(

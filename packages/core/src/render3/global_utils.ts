@@ -8,7 +8,7 @@
 import {global} from '../util';
 
 import {assertDefined} from './assert';
-import {getComponent, getDirectives, getHostElement, getInjector, getPlayers, getRootComponents, getViewComponent, markDirty} from './global_utils_api';
+import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getPlayers, getRootComponents, getViewComponent, markDirty} from './global_utils_api';
 
 
 
@@ -41,6 +41,8 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
     publishGlobalUtil('getComponent', getComponent);
+    publishGlobalUtil('getContext', getContext);
+    publishGlobalUtil('getListeners', getListeners);
     publishGlobalUtil('getViewComponent', getViewComponent);
     publishGlobalUtil('getHostElement', getHostElement);
     publishGlobalUtil('getInjector', getInjector);

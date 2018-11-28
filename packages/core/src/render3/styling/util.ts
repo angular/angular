@@ -8,7 +8,7 @@
 import '../ng_dev_mode';
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {getContext} from '../context_discovery';
+import {getLContext} from '../context_discovery';
 import {ACTIVE_INDEX, LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
@@ -60,7 +60,7 @@ export function allocStylingContext(
  * @param viewData The view to search for the styling context
  */
 export function getStylingContext(index: number, viewData: LView): StylingContext {
-  let storageIndex = index + HEADER_OFFSET;
+  let storageIndex = index;
   let slotValue: LContainer|LView|StylingContext|RElement = viewData[storageIndex];
   let wrapper: LContainer|LView|StylingContext = viewData;
 
@@ -73,7 +73,7 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
     return wrapper as StylingContext;
   } else {
     // This is an LView or an LContainer
-    const stylingTemplate = getTNode(index, viewData).stylingTemplate;
+    const stylingTemplate = getTNode(index - HEADER_OFFSET, viewData).stylingTemplate;
 
     if (wrapper !== viewData) {
       storageIndex = HOST;
@@ -85,9 +85,10 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
   }
 }
 
-function isStylingContext(value: LView | LContainer | StylingContext) {
+export function isStylingContext(value: any): value is StylingContext {
   // Not an LView or an LContainer
-  return typeof value[FLAGS] !== 'number' && typeof value[ACTIVE_INDEX] !== 'number';
+  return Array.isArray(value) && typeof value[FLAGS] !== 'number' &&
+      typeof value[ACTIVE_INDEX] !== 'number';
 }
 
 export function addPlayerInternal(
@@ -152,14 +153,14 @@ export function getPlayersInternal(playerContext: PlayerContext): Player[] {
 
 export function getOrCreatePlayerContext(target: {}, context?: LContext | null): PlayerContext|
     null {
-  context = context || getContext(target) !;
+  context = context || getLContext(target) !;
   if (!context) {
     ngDevMode && throwInvalidRefError();
     return null;
   }
 
   const {lView, nodeIndex} = context;
-  const stylingContext = getStylingContext(nodeIndex - HEADER_OFFSET, lView);
+  const stylingContext = getStylingContext(nodeIndex, lView);
   return getPlayerContext(stylingContext) || allocPlayerContext(stylingContext);
 }
 

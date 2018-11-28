@@ -75,12 +75,11 @@ function resolveProvider(
     let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
     let providerFactory: () => any = providerToFactory(provider);
 
-    const previousOrParentTNode = getPreviousOrParentTNode();
-    const beginIndex =
-        previousOrParentTNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
-    const endIndex = previousOrParentTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+    const tNode = getPreviousOrParentTNode();
+    const beginIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+    const endIndex = tNode.directiveStart;
     const cptViewProvidersCount =
-        previousOrParentTNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
+        tNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
 
     if (isTypeProvider(provider) || !provider.multi) {
       // Single provider case: the factory is created and pushed immediately
@@ -91,14 +90,13 @@ function resolveProvider(
       if (existingFactoryIndex == -1) {
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
-                previousOrParentTNode as TElementNode | TContainerNode | TElementContainerNode,
-                lView),
+                tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
             lView, token);
         tInjectables.push(token);
-        previousOrParentTNode.flags += 1 << TNodeFlags.DirectiveStartingIndexShift;
+        tNode.directiveStart++;
+        tNode.directiveEnd++;
         if (isViewProvider) {
-          previousOrParentTNode.providerIndexes +=
-              TNodeProviderIndexes.CptViewProvidersCountShifter;
+          tNode.providerIndexes += TNodeProviderIndexes.CptViewProvidersCountShifter;
         }
         lInjectablesBlueprint.push(factory);
         lView.push(factory);
@@ -142,8 +140,7 @@ function resolveProvider(
         // Cases 1.a and 2.a
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
-                previousOrParentTNode as TElementNode | TContainerNode | TElementContainerNode,
-                lView),
+                tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
             lView, token);
         const factory = multiFactory(
             isViewProvider ? multiViewProvidersFactoryResolver : multiProvidersFactoryResolver,
@@ -152,10 +149,10 @@ function resolveProvider(
           lInjectablesBlueprint[existingViewProvidersFactoryIndex].providerFactory = factory;
         }
         tInjectables.push(token);
-        previousOrParentTNode.flags += 1 << TNodeFlags.DirectiveStartingIndexShift;
+        tNode.directiveStart++;
+        tNode.directiveEnd++;
         if (isViewProvider) {
-          previousOrParentTNode.providerIndexes +=
-              TNodeProviderIndexes.CptViewProvidersCountShifter;
+          tNode.providerIndexes += TNodeProviderIndexes.CptViewProvidersCountShifter;
         }
         lInjectablesBlueprint.push(factory);
         lView.push(factory);

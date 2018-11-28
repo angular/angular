@@ -381,7 +381,7 @@
     "name": "INJECTOR$1"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "INSPECT_GLOBAL_NAME"
@@ -1380,9 +1380,6 @@
     "name": "createNodeAtIndex"
   },
   {
-    "name": "createOutput"
-  },
-  {
     "name": "createPlatform"
   },
   {
@@ -1737,12 +1734,6 @@
     "name": "getDirectiveDef"
   },
   {
-    "name": "getDirectiveEndIndex"
-  },
-  {
-    "name": "getDirectiveStartIndex"
-  },
-  {
     "name": "getDirectivesAtNodeIndex"
   },
   {
@@ -1776,6 +1767,9 @@
     "name": "getInjectableDef"
   },
   {
+    "name": "getInjectionTokens"
+  },
+  {
     "name": "getInjector"
   },
   {
@@ -1791,6 +1785,9 @@
     "name": "getLContainer"
   },
   {
+    "name": "getLContext"
+  },
+  {
     "name": "getLView"
   },
   {
@@ -1798,6 +1795,9 @@
   },
   {
     "name": "getLastDefinedValue"
+  },
+  {
+    "name": "getListeners"
   },
   {
     "name": "getLocalRefs"
@@ -2121,6 +2121,12 @@
     "name": "isBlackListedEvent"
   },
   {
+    "name": "isBrowserEvents"
+  },
+  {
+    "name": "isClassBased"
+  },
+  {
     "name": "isComponent"
   },
   {
@@ -2256,10 +2262,13 @@
     "name": "listener"
   },
   {
-    "name": "loadContext"
+    "name": "loadInternal"
   },
   {
-    "name": "loadInternal"
+    "name": "loadLContext"
+  },
+  {
+    "name": "loadLContextFromNode"
   },
   {
     "name": "localeEn"
@@ -2347,9 +2356,6 @@
   },
   {
     "name": "noopScope"
-  },
-  {
-    "name": "notImplemented"
   },
   {
     "name": "observable"
@@ -2622,6 +2628,9 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "sortListeners"
+  },
+  {
     "name": "staticError"
   },
   {
@@ -2632,9 +2641,6 @@
   },
   {
     "name": "storeCleanupFn"
-  },
-  {
-    "name": "storeCleanupWithContext"
   },
   {
     "name": "strToNumber"

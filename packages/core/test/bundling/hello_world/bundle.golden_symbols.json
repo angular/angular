@@ -51,7 +51,7 @@
     "name": "INJECTOR"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"

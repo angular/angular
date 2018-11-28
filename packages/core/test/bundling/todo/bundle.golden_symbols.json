@@ -72,7 +72,7 @@
     "name": "INJECTOR"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "InjectFlags"
@@ -472,9 +472,6 @@
   },
   {
     "name": "createNodeAtIndex"
-  },
-  {
-    "name": "createOutput"
   },
   {
     "name": "createRootComponent"
@@ -1168,9 +1165,6 @@
   },
   {
     "name": "storeCleanupFn"
-  },
-  {
-    "name": "storeCleanupWithContext"
   },
   {
     "name": "stringify"

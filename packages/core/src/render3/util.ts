@@ -8,7 +8,7 @@
 
 import {global} from '../util';
 
-import {assertDataInRange, assertDefined} from './assert';
+import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -100,6 +100,8 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RElement|RText|
 }
 
 export function getTNode(index: number, view: LView): TNode {
+  ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
+  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 
@@ -157,6 +159,7 @@ export function getRootContext(viewOrComponent: LView | {}): RootContext {
  * a component, directive or a DOM node).
  */
 export function readPatchedData(target: any): LView|LContext|null {
+  ngDevMode && assertDefined(target, 'Target expected');
   return target[MONKEY_PATCH_KEY_NAME];
 }
 
