@@ -41,6 +41,7 @@ export interface CdkDragConfig {
 export interface CdkDragDrop<T, O = T> {
     container: CdkDropListContainer<T>;
     currentIndex: number;
+    isPointerOverContainer: boolean;
     item: CdkDrag;
     previousContainer: CdkDropListContainer<O>;
     previousIndex: number;
@@ -119,13 +120,13 @@ export declare class CdkDropList<T = any> implements OnInit, OnDestroy {
     orientation: 'horizontal' | 'vertical';
     sorted: EventEmitter<CdkDragSortEvent<T>>;
     constructor(element: ElementRef<HTMLElement>, _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined);
-    _canReturnItem(x: number, y: number): boolean;
     _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropList | null;
+    _isOverContainer(x: number, y: number): boolean;
     _sortItem(item: CdkDrag, pointerX: number, pointerY: number, pointerDelta: {
         x: number;
         y: number;
     }): void;
-    drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList): void;
+    drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropList, isPointerOverContainer: boolean): void;
     enter(item: CdkDrag, pointerX: number, pointerY: number): void;
     exit(item: CdkDrag): void;
     getItemIndex(item: CdkDrag): number;
@@ -142,13 +143,13 @@ export interface CdkDropListContainer<T = any> {
     id: string;
     lockAxis: 'x' | 'y';
     orientation: 'horizontal' | 'vertical';
-    _canReturnItem(x: number, y: number): boolean;
     _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropListContainer | null;
+    _isOverContainer(x: number, y: number): boolean;
     _sortItem(item: CdkDrag, pointerX: number, pointerY: number, delta: {
         x: number;
         y: number;
     }): void;
-    drop(item: CdkDrag, currentIndex: number, previousContainer?: CdkDropListContainer): void;
+    drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropListContainer, isPointerOverContainer: boolean): void;
     enter(item: CdkDrag, pointerX: number, pointerY: number): void;
     exit(item: CdkDrag): void;
     getItemIndex(item: CdkDrag): number;

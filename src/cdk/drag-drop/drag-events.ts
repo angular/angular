@@ -53,6 +53,8 @@ export interface CdkDragDrop<T, O = T> {
   container: CdkDropListContainer<T>;
   /** Container from which the item was picked up. Can be the same as the `container`. */
   previousContainer: CdkDropListContainer<O>;
+  /** Whether the user's pointer was over the container when the item was dropped. */
+  isPointerOverContainer: boolean;
 }
 
 /** Event emitted as the user is dragging a draggable item. */

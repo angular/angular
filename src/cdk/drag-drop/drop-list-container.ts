@@ -37,8 +37,11 @@ export interface CdkDropListContainer<T = any> {
    * @param item Item being dropped into the container.
    * @param currentIndex Index at which the item should be inserted.
    * @param previousContainer Container from which the item got dragged in.
+   * @param isPointerOverContainer Whether the user's pointer was over the
+   *    container when the item was dropped.
    */
-  drop(item: CdkDrag, currentIndex: number, previousContainer?: CdkDropListContainer): void;
+  drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropListContainer,
+        isPointerOverContainer: boolean): void;
 
   /**
    * Emits an event to indicate that the user moved an item into the container.
@@ -63,7 +66,7 @@ export interface CdkDropListContainer<T = any> {
   _draggables: QueryList<CdkDrag>;
   _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number):
       CdkDropListContainer | null;
-  _canReturnItem(x: number, y: number): boolean;
+  _isOverContainer(x: number, y: number): boolean;
 }
 
 /**

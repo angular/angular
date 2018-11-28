@@ -776,11 +776,53 @@ describe('CdkDrag', () => {
         currentIndex: 2,
         item: firstItem,
         container: fixture.componentInstance.dropInstance,
-        previousContainer: fixture.componentInstance.dropInstance
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: true
       });
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
           .toEqual(['One', 'Two', 'Zero', 'Three']);
+    }));
+
+    it('should expose whether an item was dropped over a container', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.left + 1, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event: CdkDragDrop<any> =
+          fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event.isPointerOverContainer).toBe(true);
+    }));
+
+    it('should expose whether an item was dropped outside of a container', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const containerRect = fixture.componentInstance.dropInstance.element
+          .nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          containerRect.right + 10, containerRect.bottom + 10);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event: CdkDragDrop<any> =
+          fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event.isPointerOverContainer).toBe(false);
     }));
 
     it('should dispatch the `sorted` event as an item is being sorted', fakeAsync(() => {
@@ -841,7 +883,8 @@ describe('CdkDrag', () => {
         currentIndex: 0,
         item: firstItem,
         container: fixture.componentInstance.dropInstance,
-        previousContainer: fixture.componentInstance.dropInstance
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: false
       });
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
@@ -898,7 +941,8 @@ describe('CdkDrag', () => {
         currentIndex: 2,
         item: firstItem,
         container: fixture.componentInstance.dropInstance,
-        previousContainer: fixture.componentInstance.dropInstance
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: true
       });
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
@@ -937,7 +981,8 @@ describe('CdkDrag', () => {
         currentIndex: 2,
         item: firstItem,
         container: fixture.componentInstance.dropInstance,
-        previousContainer: fixture.componentInstance.dropInstance
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: true
       });
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
@@ -972,7 +1017,8 @@ describe('CdkDrag', () => {
         currentIndex: 0,
         item: firstItem,
         container: fixture.componentInstance.dropInstance,
-        previousContainer: fixture.componentInstance.dropInstance
+        previousContainer: fixture.componentInstance.dropInstance,
+        isPointerOverContainer: false
       });
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
@@ -1808,7 +1854,8 @@ describe('CdkDrag', () => {
           currentIndex: 3,
           item,
           container: fixture.componentInstance.dropInstances.toArray()[1],
-          previousContainer: fixture.componentInstance.dropInstances.first
+          previousContainer: fixture.componentInstance.dropInstances.first,
+          isPointerOverContainer: true
         });
       }));
 
@@ -1909,7 +1956,8 @@ describe('CdkDrag', () => {
         currentIndex: 3,
         item: groups[0][1],
         container: dropInstances[1],
-        previousContainer: dropInstances[0]
+        previousContainer: dropInstances[0],
+        isPointerOverContainer: true
       });
     }));
 
@@ -1938,7 +1986,8 @@ describe('CdkDrag', () => {
           currentIndex: 1,
           item: groups[0][1],
           container: dropInstances[0],
-          previousContainer: dropInstances[0]
+          previousContainer: dropInstances[0],
+          isPointerOverContainer: false
         });
       }));
 
@@ -1967,7 +2016,8 @@ describe('CdkDrag', () => {
           currentIndex: 1,
           item: groups[0][1],
           container: dropInstances[0],
-          previousContainer: dropInstances[0]
+          previousContainer: dropInstances[0],
+          isPointerOverContainer: false
         });
       }));
 
@@ -2089,7 +2139,8 @@ describe('CdkDrag', () => {
         currentIndex: 3,
         item: groups[0][1],
         container: dropInstances[1],
-        previousContainer: dropInstances[0]
+        previousContainer: dropInstances[0],
+        isPointerOverContainer: true
       });
     }));
 
@@ -2114,7 +2165,8 @@ describe('CdkDrag', () => {
         currentIndex: 3,
         item: groups[0][1],
         container: dropInstances[1],
-        previousContainer: dropInstances[0]
+        previousContainer: dropInstances[0],
+        isPointerOverContainer: true
       });
     }));
 
@@ -2144,7 +2196,8 @@ describe('CdkDrag', () => {
         currentIndex: 3,
         item: groups[0][1],
         container: dropInstances[1],
-        previousContainer: dropInstances[0]
+        previousContainer: dropInstances[0],
+        isPointerOverContainer: true
       });
     }));
 
@@ -2178,7 +2231,8 @@ describe('CdkDrag', () => {
         currentIndex: 0,
         item,
         container: fixture.componentInstance.dropInstances.toArray()[1],
-        previousContainer: fixture.componentInstance.dropInstances.first
+        previousContainer: fixture.componentInstance.dropInstances.first,
+        isPointerOverContainer: true
       });
 
       expect(dropContainers[0].contains(item.element.nativeElement)).toBe(true,
@@ -2667,7 +2721,7 @@ function dragElementViaMouse(fixture: ComponentFixture<any>,
   dispatchMouseEvent(document, 'mousemove', x, y);
   fixture.detectChanges();
 
-  dispatchMouseEvent(document, 'mouseup');
+  dispatchMouseEvent(document, 'mouseup', x, y);
   fixture.detectChanges();
 }
 
@@ -2706,7 +2760,7 @@ function dragElementViaTouch(fixture: ComponentFixture<any>,
   dispatchTouchEvent(document, 'touchmove', x, y);
   fixture.detectChanges();
 
-  dispatchTouchEvent(document, 'touchend');
+  dispatchTouchEvent(document, 'touchend', x, y);
   fixture.detectChanges();
 }
 
