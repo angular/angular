@@ -8,12 +8,12 @@
 
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {NgswCommChannel} from '@angular/service-worker/src/low_level';
+import {RegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
+import {SwPush} from '@angular/service-worker/src/push';
+import {SwUpdate} from '@angular/service-worker/src/update';
+import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
 
-import {NgswCommChannel} from '../src/low_level';
-import {RegistrationOptions, ngswCommChannelFactory} from '../src/module';
-import {SwPush} from '../src/push';
-import {SwUpdate} from '../src/update';
-import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '../testing/mock';
 import {async_fit, async_it} from './async';
 
 {
