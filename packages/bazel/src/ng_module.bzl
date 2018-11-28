@@ -158,7 +158,7 @@ def _expected_outs(ctx):
 
         if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
             basename = short_path[len(package_prefix):-len(".ts")]
-            if include_ng_files and (len(factory_basename_set) == 0 or basename in factory_basename_set):
+            if include_ng_files and (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
                 devmode_js = [
                     ".ngfactory.js",
                     ".ngsummary.js",
