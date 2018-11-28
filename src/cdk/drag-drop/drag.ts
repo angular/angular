@@ -866,7 +866,9 @@ interface Point {
  * @param y Desired position of the element along the Y axis.
  */
 function getTransform(x: number, y: number): string {
-  return `translate3d(${x}px, ${y}px, 0)`;
+  // Round the transforms since some browsers will
+  // blur the elements, for sub-pixel transforms.
+  return `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
 }
 
 /** Creates a deep clone of an element. */

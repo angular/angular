@@ -504,6 +504,7 @@ describe('CdkDrag', () => {
       expect(dragElement.style.touchAction)
         .not.toEqual('none', 'should not disable touchAction on when there is a drag handle');
     });
+
     it('should be able to reset a freely-dragged item to its initial position', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();
@@ -556,7 +557,17 @@ describe('CdkDrag', () => {
         expect(fixture.componentInstance.endedSpy).toHaveBeenCalledTimes(1);
       }));
 
-    });
+    it('should round the transform value', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 13.37, 37);
+      expect(dragElement.style.transform).toBe('translate3d(13px, 37px, 0px)');
+    }));
+
+  });
 
   describe('draggable with a handle', () => {
     it('should not be able to drag the entire element if it has a handle', fakeAsync(() => {
