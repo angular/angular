@@ -393,30 +393,32 @@ export function getOrCreateInjectable<T>(
 const NOT_FOUND = {};
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, injectorView: LView, token: Type<T>| InjectionToken<T>,
+    injectorIndex: number, lView: LView, token: Type<T>| InjectionToken<T>,
     previousTView: TView | null) {
-  const currentTView = injectorView[TVIEW];
+  const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
-  // First, we step through providers
-  let canAccessViewProviders = false;
-  // We need to determine if view providers can be accessed by the starting element.
-  // It happens in 2 cases:
-  // 1) On the initial element injector , if we are instantiating a token which can see the
-  // viewProviders of the component of that element. Such token are:
-  // - the component itself (but not other directives)
-  // - viewProviders tokens of the component (but not providers tokens)
-  // 2) Upper in the element injector tree, if the starting element is actually in the view of
-  // the current element. To determine this, we track the transition of view during the climb,
-  // and check the host node of the current view to identify component views.
-  if (previousTView == null && isComponent(tNode) && includeViewProviders ||
-      previousTView != null && previousTView != currentTView &&
-          (currentTView.node == null || currentTView.node.type === TNodeType.Element)) {
-    canAccessViewProviders = true;
-  }
-  const injectableIdx =
-      locateDirectiveOrProvider(tNode, injectorView, token, canAccessViewProviders);
+  // First, we need to determine if view providers can be accessed by the starting element.
+  // There are two possibities
+  const canAccessViewProviders = previousTView == null ?
+      // 1) This is the first invocation `previousTView == null` which means that we are at the
+      // `TNode` of where injector is starting to look. In such a case the only time we are allowed
+      // to look into the ViewProviders is if:
+      // - we are on a component
+      // - AND the injector set `includeViewProviders` to true (implying that the token can see
+      // ViewProviders because it is the Component or a Service which itself was declared in
+      // ViewProviders)
+      (isComponent(tNode) && includeViewProviders) :
+      // 2) `previousTView != null` which means that we are now walking across the parent nodes.
+      // In such a case we are only allowed to look into the ViewProviders if:
+      // - We just crossed from child View to Parent View `previousTView != currentTView`
+      // - AND the parent TNode is an Element.
+      // This means that we just came from the Component's View and therefore are allowed to see
+      // into the ViewProviders.
+      (previousTView != currentTView && (tNode.type === TNodeType.Element));
+
+  const injectableIdx = locateDirectiveOrProvider(tNode, lView, token, canAccessViewProviders);
   if (injectableIdx !== null) {
-    return getNodeInjectable(currentTView.data, injectorView, injectableIdx, tNode as TElementNode);
+    return getNodeInjectable(currentTView.data, lView, injectableIdx, tNode as TElementNode);
   } else {
     return NOT_FOUND;
   }
@@ -439,17 +441,17 @@ export function locateDirectiveOrProvider<T>(
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
-  const startInjectables = nodeProviderIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
-  const startDirectives = nodeFlags >> TNodeFlags.DirectiveStartingIndexShift;
+  const injectablesStart = nodeProviderIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
+  const directivesStart = tNode.directiveStart;
+  const directiveEnd = tNode.directiveEnd;
   const cptViewProvidersCount =
       nodeProviderIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
   const startingIndex =
-      canAccessViewProviders ? startInjectables : startInjectables + cptViewProvidersCount;
-  const directiveCount = nodeFlags & TNodeFlags.DirectiveCountMask;
-  for (let i = startingIndex; i < startDirectives + directiveCount; i++) {
+      canAccessViewProviders ? injectablesStart : injectablesStart + cptViewProvidersCount;
+  for (let i = startingIndex; i < directiveEnd; i++) {
     const providerTokenOrDef = tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>;
-    if (i < startDirectives && token === providerTokenOrDef ||
-        i >= startDirectives && (providerTokenOrDef as DirectiveDef<any>).type === token) {
+    if (i < directivesStart && token === providerTokenOrDef ||
+        i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
       return i;
     }
   }

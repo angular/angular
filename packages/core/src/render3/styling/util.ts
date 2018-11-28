@@ -8,7 +8,7 @@
 import '../ng_dev_mode';
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {getContext} from '../context_discovery';
+import {getLContext} from '../context_discovery';
 import {ACTIVE_INDEX, LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
@@ -85,9 +85,10 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
   }
 }
 
-function isStylingContext(value: LView | LContainer | StylingContext) {
-  // Not an LView or an LContainer
-  return typeof value[FLAGS] !== 'number' && typeof value[ACTIVE_INDEX] !== 'number';
+export function isStylingContext(value: any): value is StylingContext {
+  // Not an LViewData or an LContainer
+  return Array.isArray(value) && typeof value[FLAGS] !== 'number' &&
+      typeof value[ACTIVE_INDEX] !== 'number';
 }
 
 export function addPlayerInternal(
@@ -152,7 +153,7 @@ export function getPlayersInternal(playerContext: PlayerContext): Player[] {
 
 export function getOrCreatePlayerContext(target: {}, context?: LContext | null): PlayerContext|
     null {
-  context = context || getContext(target) !;
+  context = context || getLContext(target) !;
   if (!context) {
     ngDevMode && throwInvalidRefError();
     return null;

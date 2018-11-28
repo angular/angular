@@ -36,7 +36,7 @@ import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatched
  *
  * @param target Component, Directive or DOM Node.
  */
-export function getContext(target: any): LContext|null {
+export function getLContext(target: any): LContext|null {
   let mpValue = readPatchedData(target);
   if (mpValue) {
     // only when it's an array is it considered an LView instance
@@ -250,8 +250,8 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
   // list of directives for the instance.
   let tNode = lView[TVIEW].firstChild;
   while (tNode) {
-    const directiveIndexStart = getDirectiveStartIndex(tNode);
-    const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
+    const directiveIndexStart = tNode.directiveStart;
+    const directiveIndexEnd = tNode.directiveEnd;
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
       if (lView[i] === directiveInstance) {
         return tNode.index;
@@ -273,16 +273,16 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
 export function getDirectivesAtNodeIndex(
     nodeIndex: number, lView: LView, includeComponents: boolean): any[]|null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
-  let directiveStartIndex = getDirectiveStartIndex(tNode);
+  let directiveStartIndex = tNode.directiveStart;
   if (directiveStartIndex == 0) return EMPTY_ARRAY;
-  const directiveEndIndex = getDirectiveEndIndex(tNode, directiveStartIndex);
+  const directiveEndIndex = tNode.directiveEnd;
   if (!includeComponents && tNode.flags & TNodeFlags.isComponent) directiveStartIndex++;
   return lView.slice(directiveStartIndex, directiveEndIndex);
 }
 
 export function getComponentAtNodeIndex(nodeIndex: number, lView: LView): {}|null {
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
-  let directiveStartIndex = getDirectiveStartIndex(tNode);
+  let directiveStartIndex = tNode.directiveStart;
   return tNode.flags & TNodeFlags.isComponent ? lView[directiveStartIndex] : null;
 }
 
@@ -304,19 +304,4 @@ export function discoverLocalRefs(lView: LView, nodeIndex: number): {[key: strin
   }
 
   return null;
-}
-
-function getDirectiveStartIndex(tNode: TNode): number {
-  // the tNode instances store a flag value which then has a
-  // pointer which tells the starting index of where all the
-  // active directives are in the master directive array
-  return tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
-}
-
-function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
-  // The end value is also a part of the same flag
-  // (see `TNodeFlags` to see how the flag bit shifting
-  // values are used).
-  const count = tNode.flags & TNodeFlags.DirectiveCountMask;
-  return count ? (startIndex + count) : -1;
 }

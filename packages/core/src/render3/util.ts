@@ -157,6 +157,7 @@ export function getRootContext(viewOrComponent: LView | {}): RootContext {
  * a component, directive or a DOM node).
  */
 export function readPatchedData(target: any): LView|LContext|null {
+  ngDevMode && assertDefined(target, 'Target expected');
   return target[MONKEY_PATCH_KEY_NAME];
 }
 

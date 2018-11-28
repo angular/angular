@@ -7,7 +7,7 @@
  */
 import {ɵmarkDirty as markDirty} from '@angular/core';
 
-import {getComponent, getDirectives, getHostElement, getInjector, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
+import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
 import {getPlayers} from '../../src/render3/players';
 import {global} from '../../src/util';
@@ -27,6 +27,10 @@ describe('global utils', () => {
     beforeEach(() => publishDefaultGlobalUtils());
 
     it('should publish getComponent', () => { assertPublished('getComponent', getComponent); });
+
+    it('should publish getContext', () => { assertPublished('getContext', getContext); });
+
+    it('should publish getListeners', () => { assertPublished('getListeners', getListeners); });
 
     it('should publish getViewComponent',
        () => { assertPublished('getViewComponent', getViewComponent); });

@@ -14,7 +14,7 @@ import {LView, TData} from './view';
 
 export const TNODE = 8;
 export const PARENT_INJECTOR = 8;
-export const INJECTOR_SIZE = 9;
+export const INJECTOR_BLOOM_PARENT_SIZE = 9;
 
 /**
  * Represents a relative location of parent injector.

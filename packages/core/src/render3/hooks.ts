@@ -8,8 +8,9 @@
 
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
-import {TNodeFlags} from './interfaces/node';
+import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
+
 
 
 /**
@@ -42,16 +43,12 @@ export function queueInitHooks(
  * Loops through the directives on a node and queues all their hooks except ngOnInit
  * and ngDoCheck, which are queued separately in directiveCreate.
  */
-export function queueLifecycleHooks(flags: number, tView: TView): void {
+export function queueLifecycleHooks(tView: TView, tNode: TNode): void {
   if (tView.firstTemplatePass) {
-    const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
-    const count = flags & TNodeFlags.DirectiveCountMask;
-    const end = start + count;
-
     // It's necessary to loop through the directives at elementEnd() (rather than processing in
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
-    for (let i = start; i < end; i++) {
+    for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
       const def = tView.data[i] as DirectiveDef<any>;
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);

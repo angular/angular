@@ -5,18 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ReferenceFilter} from '@angular/compiler';
 import {createInjector} from '@angular/core';
 
 import {StaticInjector} from '../../src/di/injector';
-import {getComponent, getDirectives, getInjector, getLocalRefs, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
+import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
 import {ProvidersFeature, RenderFlags, defineComponent, defineDirective, getHostElement} from '../../src/render3/index';
 
-import {container, element, elementEnd, elementStart, elementStyling, elementStylingApply, template, bind, elementProperty, text, textBinding, markDirty} from '../../src/render3/instructions';
+import {element, elementEnd, elementStart, elementStyling, elementStylingApply, template, bind, elementProperty, text, textBinding, markDirty, listener} from '../../src/render3/instructions';
 
 import {ComponentFixture} from './render_util';
 import {NgIf} from './common_with_def';
-import {getRootContext} from '@angular/core/src/render3/util';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -27,8 +25,10 @@ describe('discovery utils', () => {
   let span: NodeListOf<Element>;
   let div: NodeListOf<Element>;
   let p: NodeListOf<Element>;
+  let log: any[];
 
   beforeEach(() => {
+    log = [];
     myApp = [];
     dirA = [];
     childComponent = [];
@@ -46,7 +46,7 @@ describe('discovery utils', () => {
    * ```
    * <my-app>
    *   <#VIEW>
-   *     <span>{{text}}</span>
+   *     <span (click)=" log.push($event) ">{{text}}</span>
    *     <div dirA #div #foo="dirA"></div>
    *     <child>
    *       <#VIEW>
@@ -110,6 +110,7 @@ describe('discovery utils', () => {
       template: (rf: RenderFlags, ctx: MyApp) => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
+          listener('click', $event => log.push($event));
           text(1);
           elementEnd();
           element(2, 'div', ['dirA', ''], ['div', '', 'foo', 'dirA']);
@@ -143,6 +144,18 @@ describe('discovery utils', () => {
       expect(getComponent<MyApp>(fixture.hostElement)).toEqual(myApp[0]);
       expect(getComponent<Child>(child[0])).toEqual(childComponent[0]);
       expect(getComponent<Child>(child[1])).toEqual(childComponent[1]);
+    });
+  });
+
+  describe('getContext', () => {
+    it('should throw when called on non-element', () => {
+      expect(() => getContext(dirA[0] as any)).toThrowError(/Expecting instance of DOM Node/);
+      expect(() => getContext(dirA[1] as any)).toThrowError(/Expecting instance of DOM Node/);
+    });
+    it('should return context from element', () => {
+      expect(getContext<MyApp>(child[0])).toEqual(myApp[0]);
+      expect(getContext<{$implicit: boolean}>(child[2]) !.$implicit).toEqual(true);
+      expect(getContext<Child>(p[0])).toEqual(childComponent[0]);
     });
   });
 
@@ -217,7 +230,7 @@ describe('discovery utils', () => {
     });
   });
 
-  describe('localRefs', () => {
+  describe('getLocalRefs', () => {
     it('should retrieve empty map', () => {
       expect(getLocalRefs(fixture.hostElement)).toEqual({});
       expect(getLocalRefs(myApp[0])).toEqual({});
@@ -246,6 +259,30 @@ describe('discovery utils', () => {
       expect(getRootComponents(child[1])).toEqual(rootComponents);
       expect(getRootComponents(div[0])).toEqual(rootComponents);
       expect(getRootComponents(p[0])).toEqual(rootComponents);
+    });
+  });
+
+  describe('getListeners', () => {
+    it('should return no listeners', () => {
+      expect(getListeners(fixture.hostElement)).toEqual([]);
+      expect(getListeners(child[0])).toEqual([]);
+    });
+    it('should return the listeners', () => {
+      const listeners = getListeners(span[0]);
+      expect(listeners.length).toEqual(1);
+      expect(listeners[0].name).toEqual('click');
+      expect(listeners[0].element).toEqual(span[0]);
+      expect(listeners[0].useCapture).toEqual(false);
+      listeners[0].callback('CLICKED');
+      expect(log).toEqual(['CLICKED']);
+    });
+  });
+
+  describe('getInjectionTokens', () => {
+    it('should retrieve tokens', () => {
+      expect(getInjectionTokens(fixture.hostElement)).toEqual([MyApp]);
+      expect(getInjectionTokens(child[0])).toEqual([String, Child]);
+      expect(getInjectionTokens(child[1])).toEqual([String, Child, DirectiveA]);
     });
   });
 
