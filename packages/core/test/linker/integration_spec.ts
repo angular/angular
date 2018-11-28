@@ -28,15 +28,12 @@ import {stringify} from '../../src/util';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
-{
-  if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+if (ivyEnabled) {
+  describe('ivy', () => { declareTests(); });
+} else {
+  describe('jit', () => { declareTests({useJit: true}); });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
-
 
 function declareTests(config?: {useJit: boolean}) {
   describe('integration tests', function() {
@@ -227,19 +224,18 @@ function declareTests(config?: {useJit: boolean}) {
         expect(nativeEl).not.toHaveCssClass('initial');
       });
 
-      fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work') &&
-          it('should consume binding to htmlFor using for alias', () => {
-            const template = '<label [for]="ctxProp"></label>';
-            const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
-                                .overrideComponent(MyComp, {set: {template}})
-                                .createComponent(MyComp);
+      it('should consume binding to htmlFor using for alias', () => {
+        const template = '<label [for]="ctxProp"></label>';
+        const fixture = TestBed.configureTestingModule({declarations: [MyComp]})
+                            .overrideComponent(MyComp, {set: {template}})
+                            .createComponent(MyComp);
 
-            const nativeEl = fixture.debugElement.children[0].nativeElement;
-            fixture.debugElement.componentInstance.ctxProp = 'foo';
-            fixture.detectChanges();
+        const nativeEl = fixture.debugElement.children[0].nativeElement;
+        fixture.debugElement.componentInstance.ctxProp = 'foo';
+        fixture.detectChanges();
 
-            expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
-          });
+        expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
+      });
 
       fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work') &&
           it('should consume directive watch expression change.', () => {
@@ -856,48 +852,52 @@ function declareTests(config?: {useJit: boolean}) {
            dir.triggerChange('two');
          }));
 
-      fixmeIvy('unknown') && it('should support render events', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
-        const template = '<div listener></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
+      fixmeIvy(
+          'FW-743: Registering events on global objects (document, window, body) is not supported') &&
+          it('should support render events', () => {
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
+            const template = '<div listener></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            const fixture = TestBed.createComponent(MyComp);
 
-        const tc = fixture.debugElement.children[0];
-        const listener = tc.injector.get(DirectiveListeningDomEvent);
+            const tc = fixture.debugElement.children[0];
+            const listener = tc.injector.get(DirectiveListeningDomEvent);
 
-        dispatchEvent(tc.nativeElement, 'domEvent');
+            dispatchEvent(tc.nativeElement, 'domEvent');
 
-        expect(listener.eventTypes).toEqual([
-          'domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent'
-        ]);
+            expect(listener.eventTypes).toEqual([
+              'domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent'
+            ]);
 
-        fixture.destroy();
-        listener.eventTypes = [];
-        dispatchEvent(tc.nativeElement, 'domEvent');
-        expect(listener.eventTypes).toEqual([]);
-      });
+            fixture.destroy();
+            listener.eventTypes = [];
+            dispatchEvent(tc.nativeElement, 'domEvent');
+            expect(listener.eventTypes).toEqual([]);
+          });
 
-      fixmeIvy('unknown') && it('should support render global events', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
-        const template = '<div listener></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
-        const doc = TestBed.get(DOCUMENT);
+      fixmeIvy(
+          'FW-743: Registering events on global objects (document, window, body) is not supported') &&
+          it('should support render global events', () => {
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
+            const template = '<div listener></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            const fixture = TestBed.createComponent(MyComp);
+            const doc = TestBed.get(DOCUMENT);
 
-        const tc = fixture.debugElement.children[0];
-        const listener = tc.injector.get(DirectiveListeningDomEvent);
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
-        expect(listener.eventTypes).toEqual(['window_domEvent']);
+            const tc = fixture.debugElement.children[0];
+            const listener = tc.injector.get(DirectiveListeningDomEvent);
+            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+            expect(listener.eventTypes).toEqual(['window_domEvent']);
 
-        listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
-        expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
+            listener.eventTypes = [];
+            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
+            expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
-        fixture.destroy();
-        listener.eventTypes = [];
-        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
-        expect(listener.eventTypes).toEqual([]);
-      });
+            fixture.destroy();
+            listener.eventTypes = [];
+            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
+            expect(listener.eventTypes).toEqual([]);
+          });
 
       it('should support updating host element via hostAttributes on root elements', () => {
         @Component({host: {'role': 'button'}, template: ''})
@@ -1034,7 +1034,8 @@ function declareTests(config?: {useJit: boolean}) {
         });
       }
 
-      fixmeIvy('unknown') &&
+      fixmeIvy(
+          'FW-743: Registering events on global objects (document, window, body) is not supported') &&
           it('should support render global events from multiple directives', () => {
             TestBed.configureTestingModule({
               declarations: [MyComp, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
@@ -1457,37 +1458,35 @@ function declareTests(config?: {useJit: boolean}) {
                     `Directive ${stringify(SomeDirective)} has no selector, please add it!`);
           });
 
-      fixmeIvy('FW-662: Components without selector are not supported') &&
-          it('should use a default element name for components without selectors', () => {
-            let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined !;
+      it('should use a default element name for components without selectors', () => {
+        let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined !;
 
-            @Component({template: '----'})
-            class NoSelectorComponent {
-            }
+        @Component({template: '----'})
+        class NoSelectorComponent {
+        }
 
-            @Component(
-                {selector: 'some-comp', template: '', entryComponents: [NoSelectorComponent]})
-            class SomeComponent {
-              constructor(componentFactoryResolver: ComponentFactoryResolver) {
-                // grab its own component factory
-                noSelectorComponentFactory =
-                    componentFactoryResolver.resolveComponentFactory(NoSelectorComponent) !;
-              }
-            }
+        @Component({selector: 'some-comp', template: '', entryComponents: [NoSelectorComponent]})
+        class SomeComponent {
+          constructor(componentFactoryResolver: ComponentFactoryResolver) {
+            // grab its own component factory
+            noSelectorComponentFactory =
+                componentFactoryResolver.resolveComponentFactory(NoSelectorComponent) !;
+          }
+        }
 
-            TestBed.configureTestingModule({declarations: [SomeComponent, NoSelectorComponent]});
+        TestBed.configureTestingModule({declarations: [SomeComponent, NoSelectorComponent]});
 
-            // get the factory
-            TestBed.createComponent(SomeComponent);
+        // get the factory
+        TestBed.createComponent(SomeComponent);
 
-            expect(noSelectorComponentFactory.selector).toBe('ng-component');
+        expect(noSelectorComponentFactory.selector).toBe('ng-component');
 
-            expect(getDOM()
-                       .nodeName(
-                           noSelectorComponentFactory.create(Injector.NULL).location.nativeElement)
-                       .toLowerCase())
-                .toEqual('ng-component');
-          });
+        expect(
+            getDOM()
+                .nodeName(noSelectorComponentFactory.create(Injector.NULL).location.nativeElement)
+                .toLowerCase())
+            .toEqual('ng-component');
+      });
     });
 
     describe('error handling', () => {
@@ -1699,15 +1698,13 @@ function declareTests(config?: {useJit: boolean}) {
                 .toContain('ng-reflect-dir-prop="hello"');
           });
 
-      fixmeIvy('FW-664: ng-reflect-* is not supported') &&
-          it(`should work with prop names containing '$'`, () => {
-            TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
-            const fixture = TestBed.createComponent(ParentCmp);
-            fixture.detectChanges();
+      it(`should work with prop names containing '$'`, () => {
+        TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
+        const fixture = TestBed.createComponent(ParentCmp);
+        fixture.detectChanges();
 
-            expect(getDOM().getInnerHTML(fixture.nativeElement))
-                .toContain('ng-reflect-test_="hello"');
-          });
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test_="hello"');
+      });
 
       fixmeIvy('FW-664: ng-reflect-* is not supported') &&
           it('should reflect property values on template comments', () => {
@@ -1725,16 +1722,15 @@ function declareTests(config?: {useJit: boolean}) {
                 .toContain('"ng\-reflect\-ng\-if"\: "true"');
           });
 
-      fixmeIvy('FW-664: ng-reflect-* is not supported') &&
-          it('should indicate when toString() throws', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-            const template = '<div my-dir [elprop]="toStringThrow"></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      fixmeIvy('unknown') && it('should indicate when toString() throws', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        const template = '<div my-dir [elprop]="toStringThrow"></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.detectChanges();
-            expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
-          });
+        fixture.detectChanges();
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
+      });
     });
 
     describe('property decorators', () => {
