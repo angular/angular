@@ -1999,21 +1999,38 @@ It is where developers expect to find and expand routing configuration.
 
 {@a heroes-feature}
 
+<!--
 ## Milestone 3: Heroes feature
+-->
+## 3단계: 히어로 기능 모듈
 
+<!--
 You've seen how to navigate using the `RouterLink` directive.
 Now you'll learn the following:
 
 * Organize the app and routes into *feature areas* using modules.
 * Navigate imperatively from one component to another.
 * Pass required and optional information in route parameters.
+-->
+지금까지 `RouterLink` 디렉티브를 사용해서 네비게이션하는 방법에 대해 알아봤습니다.
+이번에는 다음 내용에 대해 알아봅시다:
 
+* 애플리케이션 로직과 라우팅 규칙을 *기능 단위*의 모듈로 재구축합니다.
+* 화면에 표시된 컴포넌트를 전환할 수 있는 방법에 대해 알아봅니다.
+* 라우팅 인자에 필수 항목과 옵션 항목을 전달하는 방법에 대해 알아봅니다.
+
+<!--
 This example recreates the heroes feature in the "Services" episode of the
 [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"),
 and you'll be copying much of the code
 from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
 Here's how the user will experience this version of the app:
+-->
+지금부터 살펴볼 예제 프로젝트는 [히어로들의 여정](tutorial/toh-pt4 "Tour of Heroes: Services") 튜토리얼 중 "서비스" 에피소드에서 다뤘던 예제입니다.
+코드를 직접 작성해보려면 <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>에서 코드를 다운받으세요.
+
+이 섹션에서 다루는 앱은 다음과 같이 동작합니다:
 
 
 <figure>
@@ -2021,7 +2038,7 @@ Here's how the user will experience this version of the app:
 </figure>
 
 
-
+<!--
 A typical application has multiple *feature areas*,
 each dedicated to a particular business purpose.
 
@@ -2031,33 +2048,61 @@ Most developers prefer to put each feature area in its own folder.
 
 You are about to break up the app into different *feature modules*, each with its own concerns.
 Then you'll import into the main module and navigate among them.
+-->
+일반적으로 애플리케이션에는 여러 *기능 단위*가 존재하며, 각각은 특정 업무용으로 사용딥니다.
 
+그런데 단순하게 `src/app/` 폴더에 파일을 하나씩 추가하는 것은 실제 운영할 애플리케이션에 어울리지 않는 방식이고, 유지보수를 어렵게 만드는 일이기도 합니다.
+그래서 대다수의 개발자들은 새로 추가되는 기능이 그 기능과 관련된 것들과 함께 있는 것을 선호합니다.
+
+이제 이 관점에 맞게 애플리케이션을 쪼개서 여러 *기능 모듈*로 나눌 것입니다.
+그리고 이 기능 모듈들을 메인 모듈에 로드하고 브라우저에서 네비게이션하는 방식으로 활용할 것입니다.
 
 {@a heroes-functionality}
 
-
+<!--
 ### Add heroes functionality
+-->
+### 히어로 모듈 추가하기
 
+<!--
 Follow these steps:
+-->
+다음 순서대로 진행합니다:
 
+<!--
 * Create a `HeroesModule` with routing in the heroes folder and register it with the root `AppModule`. This is where you'll be implementing the *hero management*.
+-->
+* `HeroesModule`을 라우팅 모듈과 함께 `heroes` 폴더에 생성하고 이 모듈을 `AppModule`에 등록합니다. *히어로 관리 기능*은 이 모듈에 구현할 것입니다.
 
 <code-example language="none" class="code-shell">
   ng generate module heroes/heroes --module app --flat --routing
 </code-example>
 
+<!--
 * Move the placeholder `hero-list` folder that's in the `app` into the `heroes` folder.
 * Copy the contents of the `heroes/heroes.component.html` from
   the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example> into the `hero-list.component.html` template.
 
   * Relabel the `<h2>` to `<h2>HEROES</h2>`.
   * Delete the `<app-hero-detail>` component at the bottom of the template.
+-->
+* `app` 폴더에 있는 `hero-list` 폴더를 `heroes` 폴더 안으로 옮깁니다.
+* <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" 튜토리얼</live-example>의 `heroes/heroes.component.html` 파일에 있는 내용을 `hero-list.component.html` 템플릿 안으로 복사합니다.
+  * `<h2>` 태그의 내용을 `<h2>HEROES</tj2>`로 수정합니다.
+  * 템플릿 아래쪽에 있는 `<app-hero-detail>` 컴포넌트를 제거합니다.
 
+<!--
 * Copy the contents of the `heroes/heroes.component.css` from the live example into the `hero-list.component.css` file.
 * Copy the contents of the `heroes/heroes.component.ts` from the live example into the `hero-list.component.ts` file.
 
   * Change the component class name to `HeroListComponent`.
   * Change the `selector` to `app-hero-list`.
+-->
+* `hero-list.component.css` 파일에 있는 내용을 `heroes/heroes.component.css`로 복사합니다.
+* `hero-list.component.ts` 파일에 있는 내용을 `heroes/heroes.component.ts`로 복사합니다.
+
+  * 컴포넌트 클래스 이름을 `HeroListComponent`로 변경합니다.
+  * 컴포넌트 `selector`를 `app-hero-list`로 변경합니다.
   
 <div class="alert is-helpful">
 
