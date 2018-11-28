@@ -178,6 +178,75 @@ Contact Alex Eagle with questions.
 1. Bazel must be configured to connect to the proxy on a local port. This configuration lives in `.circleci/bazel.rc` and is enabled because we overwrite the system Bazel settings in /etc/bazel.bazelrc with this file.
 1. Each `bazel` command in `.circleci/config.yml` picks up and uses the caching flags.
 
+## Diagnosing slow builds
+
+If a build seems slow you can use Bazel to diagnose where time is spent.
+
+The first step is to generate a profile of the build using the `--profile filename_name.profile` flag.
+```
+yarn bazel build //packages/compiler --profile filename_name.profile
+```
+
+This will generate a `filename_name.profile` that you can then analyse using [analyze-profile](https://docs.bazel.build/versions/master/user-manual.html#analyze-profile) command.
+
+## Using the console profile report
+
+You can obtain a simple report directly in the console by running:
+```
+yarn bazel analyze-profile filename_name.profile
+```
+
+This will show the phase summary, individual phase information and critical path.
+
+You can also list all individual tasks and the time they took using `--task_tree`. 
+```
+yarn bazel analyze-profile filename_name.profile --task_tree ".*"
+```
+
+To show all tasks that take longer than a certain threshold, use the `--task_tree_threshold` flag.
+The default behaviour is to use a 50ms threshold.
+```
+yarn bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
+```
+
+`--task_tree` takes a regexp as argument that filters by the text shown after the time taken.
+
+Compiling TypeScript shows as:
+```
+70569 ACTION_EXECUTE (10974.826 ms) Compiling TypeScript (devmode) //packages/compiler:compiler []
+```
+
+To filter all tasks by TypeScript compilations that took more than 5 seconds, use:
+
+```
+yarn bazel analyze-profile filename_name.profile --task_tree "Compiling TypeScript" --task_tree_threshold 5000
+```
+
+### Using the HTML profile report
+
+A more comprehensive way to visualize the profile information is through the HTML report:
+
+```
+yarn bazel analyze-profile filename_name.profile --html --html_details --html_histograms
+```
+
+This will generate a `filename_name.profile.html` file that you can open in your browser.
+
+On the upper right corner that is a small table of contents with links to three areas: Tasks, Legend and Statistics.
+
+In the Tasks section you will find a graph of where time is spent. Legend shows what the colors in the Tasks graph mean.
+Hovering over the background will show what phase that is, while hovering over bars will show more details about that specific action.
+
+The Statistics section shows how long each phase took and how time was spent in that phase.
+Usually the longest one is the execution phase, which also includes critical path information.
+
+Also in the Statistics section are the Skylark statistic, split in User-Defined and Builtin function execution time.
+You can click the "self" header twice to order the table by functions where the most time (in ms) is spent.
+
+When diagnosing slow builds you should focus on the top time spenders across all phases and functions.
+Usually there is a single item (or multiple items of the same kind) where the overwhelming majority of time is spent.
+
+
 ## Known issues
 
 ### Webstorm
