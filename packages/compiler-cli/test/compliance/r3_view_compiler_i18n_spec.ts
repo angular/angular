@@ -1146,6 +1146,43 @@ describe('i18n support in the view compiler', () => {
 
       verify(input, output);
     });
+
+    it('should not be generated in case we have styling instructions', () => {
+      const input = `
+        <span i18n class="myClass">Text #1</span>
+        <span i18n style="padding: 10px;">Text #2</span>
+      `;
+
+      const output = String.raw `
+        const $_c1$ = ["myClass", 1, "myClass", true];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:5295701706185791735]
+         */
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("Text #1");
+        const $_c3$ = ["padding", 1, "padding", "10px"];
+        /**
+         * @desc [BACKUP_MESSAGE_ID:4722270221386399294]
+         */
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("Text #2");
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "span");
+            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵelementStyling($_c1$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(2, "span");
+            $r3$.ɵi18nStart(3, $MSG_APP_SPEC_TS_2$);
+            $r3$.ɵelementStyling(null, $_c3$);
+            $r3$.ɵi18nEnd();
+            $r3$.ɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
   });
 
   describe('ng-container and ng-template', () => {
