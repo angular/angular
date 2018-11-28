@@ -91,22 +91,21 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('bar');
      }));
 
-  fixmeIvy('FW-642: ASSERTION ERROR: Slot should have been initialized to NO_CHANGE') &&
-      it('should use the injector, if one supplied', async(() => {
-           let fixture = TestBed.createComponent(TestComponent);
+  it('should use the injector, if one supplied', async(() => {
+       let fixture = TestBed.createComponent(TestComponent);
 
-           const uniqueValue = {};
-           fixture.componentInstance.currentComponent = InjectedComponent;
-           fixture.componentInstance.injector = Injector.create(
-               [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
+       const uniqueValue = {};
+       fixture.componentInstance.currentComponent = InjectedComponent;
+       fixture.componentInstance.injector = Injector.create(
+           [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
-           fixture.detectChanges();
-           let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
-           expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-           expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
-           expect(cmpRef.instance.testToken).toBe(uniqueValue);
+       fixture.detectChanges();
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
+       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(cmpRef.instance.testToken).toBe(uniqueValue);
 
-         }));
+     }));
 
   it('should resolve a with injector', async(() => {
        let fixture = TestBed.createComponent(TestComponent);
