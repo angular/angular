@@ -1,3 +1,14 @@
+<a name="7.2.0-beta.0"></a>
+# [7.2.0-beta.0](https://github.com/angular/angular/compare/7.1.0...7.2.0-beta.0) (2018-11-28)
+
+
+### Bug Fixes
+
+* **common:** expose request url in network error ([#27143](https://github.com/angular/angular/issues/27143)) ([1db53da](https://github.com/angular/angular/commit/1db53da)), closes [#27029](https://github.com/angular/angular/issues/27029)
+* **upgrade:** don't rely upon the runtime to resolve forward refs ([#27132](https://github.com/angular/angular/issues/27132)) ([a4462c2](https://github.com/angular/angular/commit/a4462c2))
+
+
+
 <a name="7.1.1"></a>
 ## [7.1.1](https://github.com/angular/angular/compare/7.1.0...7.1.1) (2018-11-28)
 
