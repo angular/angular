@@ -3,13 +3,13 @@ import { SwUpdate } from '@angular/service-worker';
 
 
 // #docregion sw-check-update
-import { interval } from 'rxjs';
+import { timer } from 'rxjs';
 
 @Injectable()
 export class CheckForUpdateService {
 
   constructor(updates: SwUpdate) {
-    interval(6 * 60 * 60).subscribe(() => updates.checkForUpdate());
+    timer(1000, 1000 * 60 * 60).subscribe(() => updates.checkForUpdate());
   }
 }
 // #enddocregion sw-check-update
