@@ -1,3 +1,11 @@
+# Load any settings specific to the current user
+try-import .bazelrc.user
+################################
+# Settings for Angular team members only
+################################
+# To enable this feature check the "Remote caching" section in docs/BAZEL.md.
+build:angular-team --remote_http_cache=https://storage.googleapis.com/angular-team-cache
+
 ###############################
 # Typescript / Angular / Sass #
 ###############################
