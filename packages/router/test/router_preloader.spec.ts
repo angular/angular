@@ -61,7 +61,7 @@ describe('RouterPreloader', () => {
     });
 
 
-    fixmeIvy('unknown') &&
+    fixmeIvy('unknown') &&  // Error: NgModuleRef._parent is undefined
         it('should work',
            fakeAsync(inject(
                [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef],
@@ -129,7 +129,7 @@ describe('RouterPreloader', () => {
       });
     });
 
-    fixmeIvy('FW-???: Cannot read property \'declarations\' of undefined') &&
+    fixmeIvy('unknown') &&  // Error: NgModuleRef._parent is undefined
         it('should work',
            fakeAsync(inject(
                [NgModuleFactoryLoader, RouterPreloader, Router, NgModuleRef, Compiler],
