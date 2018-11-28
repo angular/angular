@@ -535,8 +535,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const createSelfClosingInstruction = !stylingBuilder.hasBindingsOrInitialValues &&
         !isNgContainer && element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
 
-    const createSelfClosingI18nInstruction =
-        !createSelfClosingInstruction && hasTextChildrenOnly(element.children);
+    const createSelfClosingI18nInstruction = !createSelfClosingInstruction &&
+        !stylingBuilder.hasBindingsOrInitialValues && hasTextChildrenOnly(element.children);
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
