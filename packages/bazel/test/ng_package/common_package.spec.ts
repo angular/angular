@@ -70,6 +70,26 @@ describe('@angular/common ng_package', () => {
     expect(shx.ls('-R', 'fesm2015').stdout.split('\n').filter(n => !!n).sort()).toEqual(expected);
   });
 
+  it('should have the correct source map paths', () => {
+    expect(shx.grep('sourceMappingURL', 'fesm5/common.js'))
+        .toMatch('//# sourceMappingURL=common.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/common.js'))
+        .toMatch('//# sourceMappingURL=common.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm5/http.js'))
+        .toMatch('//# sourceMappingURL=http.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/http.js'))
+        .toMatch('//# sourceMappingURL=http.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm5/http/testing.js'))
+        .toMatch('//# sourceMappingURL=testing.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/http/testing.js'))
+        .toMatch('//# sourceMappingURL=testing.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm5/testing.js'))
+        .toMatch('//# sourceMappingURL=testing.js.map');
+    expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
+        .toMatch('//# sourceMappingURL=testing.js.map');
+  });
+
+
   describe('should have module resolution properties in the package.json file for', () => {
     // https://github.com/angular/common-builds/blob/master/package.json
     it('/', () => {
