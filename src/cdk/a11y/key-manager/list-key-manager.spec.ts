@@ -664,6 +664,30 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBe(itemList.items[1]);
       }));
 
+      it('should not move focus if a modifier, that is not allowed, is pressed', fakeAsync(() => {
+        const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+        Object.defineProperty(tEvent, 'ctrlKey', {get: () => true});
+
+        expect(keyManager.activeItem).toBeFalsy();
+
+        keyManager.onKeydown(tEvent); // types "t"
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBeFalsy();
+      }));
+
+      it('should always allow the shift key', fakeAsync(() => {
+        const tEvent = createKeyboardEvent('keydown', 84, undefined, 't');
+        Object.defineProperty(tEvent, 'shiftKey', {get: () => true});
+
+        expect(keyManager.activeItem).toBeFalsy();
+
+        keyManager.onKeydown(tEvent); // types "t"
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBeTruthy();
+      }));
+
       it('should focus the first item that starts with sequence of letters', fakeAsync(() => {
         keyManager.onKeydown(createKeyboardEvent('keydown', 84, undefined, 't')); // types "t"
         keyManager.onKeydown(createKeyboardEvent('keydown', 72, undefined, 'h')); // types "h"

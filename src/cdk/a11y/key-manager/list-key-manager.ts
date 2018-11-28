@@ -18,6 +18,7 @@ import {
   Z,
   ZERO,
   NINE,
+  hasModifierKey,
 } from '@angular/cdk/keycodes';
 import {debounceTime, filter, map, tap} from 'rxjs/operators';
 
@@ -244,12 +245,14 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
         }
 
       default:
-        // Attempt to use the `event.key` which also maps it to the user's keyboard language,
-        // otherwise fall back to resolving alphanumeric characters via the keyCode.
-        if (event.key && event.key.length === 1) {
-          this._letterKeyStream.next(event.key.toLocaleUpperCase());
-        } else if ((keyCode >= A && keyCode <= Z) || (keyCode >= ZERO && keyCode <= NINE)) {
-          this._letterKeyStream.next(String.fromCharCode(keyCode));
+      if (isModifierAllowed || hasModifierKey(event, 'shiftKey')) {
+          // Attempt to use the `event.key` which also maps it to the user's keyboard language,
+          // otherwise fall back to resolving alphanumeric characters via the keyCode.
+          if (event.key && event.key.length === 1) {
+            this._letterKeyStream.next(event.key.toLocaleUpperCase());
+          } else if ((keyCode >= A && keyCode <= Z) || (keyCode >= ZERO && keyCode <= NINE)) {
+            this._letterKeyStream.next(String.fromCharCode(keyCode));
+          }
         }
 
         // Note that we return here, in order to avoid preventing
