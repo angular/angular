@@ -578,6 +578,7 @@ describe('Integration', () => {
            expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
          })));
 
+  fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
       it('should eagerly update URL after redirects are applied with urlUpdateStrategy="eagar"',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
            const fixture = TestBed.createComponent(RootCmp);

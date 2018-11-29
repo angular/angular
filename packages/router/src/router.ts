@@ -415,7 +415,7 @@ export class Router {
 
                       // Update URL if in `eager` update mode
                       tap(t => this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange &&
-                          this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id)),
+                              this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id)),
 
                       // Fire RoutesRecognized
                       tap(t => {
