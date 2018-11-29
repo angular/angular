@@ -145,6 +145,18 @@ export interface NavigationExtras {
    * ```
    */
   replaceUrl?: boolean;
+  /**
+   * State passed to any navigation. This value will be accessible through the `extras` object
+   * returned from `router.getCurrentTransition()` while a navigation is executing. Once a
+   * navigation completes, this value will be written to `history.state` when the `location.go`
+   * or `location.replaceState` method is called before activating of this route. Note that
+   * `history.state` will not pass an object equality test because the `navigationId` will be
+   * added to the state before being written.
+   *
+   * While `history.state` can accept any type of value, because the router adds the `navigationId`
+   * on each navigation, the `state` must always be an object.
+   */
+  state?: {[k: string]: any};
 }
 
 /**
@@ -541,7 +553,7 @@ export class Router {
               }),
 
               // --- AFTER PREACTIVATION ---
-              switchTap(t => {
+              switchTap((t: NavigationTransition) => {
                 const {
                   targetSnapshot,
                   id: navigationId,
@@ -558,7 +570,7 @@ export class Router {
                 });
               }),
 
-              map(t => {
+              map((t: NavigationTransition) => {
                 const targetRouterState = createRouterState(
                     this.routeReuseStrategy, t.targetSnapshot !, t.currentRouterState);
                 return ({...t, targetRouterState});
@@ -569,14 +581,14 @@ export class Router {
                  activation, we need to update router properties storing the current URL and the
                  RouterState, as well as updated the browser URL. All this should happen *before*
                  activating. */
-              tap(t => {
+              tap((t: NavigationTransition) => {
                 this.currentUrlTree = t.urlAfterRedirects;
                 this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, t.rawUrl);
 
                 (this as{routerState: RouterState}).routerState = t.targetRouterState !;
 
                 if (this.urlUpdateStrategy === 'deferred' && !t.extras.skipLocationChange) {
-                  this.setBrowserUrl(this.rawUrlTree, !!t.extras.replaceUrl, t.id);
+                  this.setBrowserUrl(this.rawUrlTree, !!t.extras.replaceUrl, t.id, t.extras.state);
                 }
               }),
 
@@ -684,8 +696,9 @@ export class Router {
         // Navigations coming from Angular router have a navigationId state property. When this
         // exists, restore the state.
         const state = change.state && change.state.navigationId ? change.state : null;
-        setTimeout(
-            () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 0);
+        setTimeout(() => {
+          this.scheduleNavigation(rawUrlTree, source, state, null, {replaceUrl: true});
+        }, 0);
       });
     }
   }
@@ -836,7 +849,7 @@ export class Router {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
+    return this.scheduleNavigation(mergedTree, 'imperative', null, extras.state || null, extras);
   }
 
   /**
@@ -862,6 +875,11 @@ export class Router {
    * The first parameter of `navigate()` is a delta to be applied to the current URL
    * or the one provided in the `relativeTo` property of the second parameter (the
    * `NavigationExtras`).
+   *
+   * In order to affect this browser's `history.state` entry, the `state`
+   * parameter can be passed. This must be an object because the router
+   * will add the `navigationId` property to this object before creating
+   * the new history item.
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
@@ -918,7 +936,7 @@ export class Router {
 
   private scheduleNavigation(
       rawUrl: UrlTree, source: NavigationTrigger, restoredState: {navigationId: number}|null,
-      extras: NavigationExtras): Promise<boolean> {
+      futureState: {[key: string]: any}|null, extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.getTransition();
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
@@ -967,12 +985,14 @@ export class Router {
     return promise.catch((e: any) => { return Promise.reject(e); });
   }
 
-  private setBrowserUrl(url: UrlTree, replaceUrl: boolean, id: number) {
+  private setBrowserUrl(
+      url: UrlTree, replaceUrl: boolean, id: number, state?: {[key: string]: any}) {
     const path = this.urlSerializer.serialize(url);
+    state = state || {};
     if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
-      this.location.replaceState(path, '', {navigationId: id});
+      this.location.replaceState(path, '', {...state, navigationId: id});
     } else {
-      this.location.go(path, '', {navigationId: id});
+      this.location.go(path, '', {...state, navigationId: id});
     }
   }
 
