@@ -11,7 +11,7 @@ import {defineInjectable, inject} from '@angular/core';
 import {DOCUMENT} from './dom_tokens';
 
 /**
- * Manages the scroll position.
+ * Base class for managing the scroll position.
  *
  * @publicApi
  */
@@ -24,25 +24,27 @@ export abstract class ViewportScroller {
 
   /**
    * Configures the top offset used when scrolling to an anchor.
+   * @param offset A position in screen coordinates (a tuple with x and y values)
+   * or a function that returns the top offset position.
    *
-   * When given a tuple with two number, the service will always use the numbers.
-   * When given a function, the service will invoke the function every time it restores scroll
-   * position.
    */
   abstract setOffset(offset: [number, number]|(() => [number, number])): void;
 
   /**
-   * Returns the current scroll position.
+   * Retrieves the current scroll position.
+   * @returns A position in screen coordinates (a tuple with x and y values).
    */
   abstract getScrollPosition(): [number, number];
 
   /**
    * Sets the scroll position.
+   * @param position A position in screen coordinates (a tuple with x and y values).
    */
   abstract scrollToPosition(position: [number, number]): void;
 
   /**
-   * Scrolls to the provided anchor.
+   * Scrolls to an anchor element.
+   * @param The ID of the anchor element.
    */
   abstract scrollToAnchor(anchor: string): void;
 
@@ -55,7 +57,7 @@ export abstract class ViewportScroller {
 }
 
 /**
- * Manages the scroll position.
+ * Manages the scroll position for a browser window.
  */
 export class BrowserViewportScroller implements ViewportScroller {
   private offset: () => [number, number] = () => [0, 0];
@@ -64,10 +66,11 @@ export class BrowserViewportScroller implements ViewportScroller {
 
   /**
    * Configures the top offset used when scrolling to an anchor.
+   * When restoring scroll position, the service uses the given
+   * offset position value or invokes the given function.
+   * @param offset A position for the offset in screen coordinates, or
+   * a function that returns the offset position.
    *
-   * * When given a number, the service will always use the number.
-   * * When given a function, the service will invoke the function every time it restores scroll
-   * position.
    */
   setOffset(offset: [number, number]|(() => [number, number])): void {
     if (Array.isArray(offset)) {
@@ -78,7 +81,8 @@ export class BrowserViewportScroller implements ViewportScroller {
   }
 
   /**
-   * Returns the current scroll position.
+   * Retrieves the current scroll position.
+   * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
     if (this.supportScrollRestoration()) {
@@ -90,6 +94,7 @@ export class BrowserViewportScroller implements ViewportScroller {
 
   /**
    * Sets the scroll position.
+   * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
     if (this.supportScrollRestoration()) {
@@ -98,7 +103,8 @@ export class BrowserViewportScroller implements ViewportScroller {
   }
 
   /**
-   * Scrolls to the provided anchor.
+   * Scrolls to an anchor element.
+   * @param The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
     if (this.supportScrollRestoration()) {

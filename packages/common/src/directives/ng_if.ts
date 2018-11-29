@@ -35,6 +35,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * ```
  *
  * Shorthand form with "then" and "else" blocks:
+ * 
  * ```
  * <div *ngIf="condition; then thenBlock else elseBlock"></div>
  * <ng-template #thenBlock>Content to render when condition is true.</ng-template>
@@ -42,6 +43,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * ```
  *
  * Form with storing the value locally:
+ *
  * ```
  * <div *ngIf="condition as value; else elseBlock">{{value}}</div>
  * <ng-template #elseBlock>Content to render when value is null.</ng-template>
