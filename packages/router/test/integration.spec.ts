@@ -579,6 +579,41 @@ describe('Integration', () => {
          })));
 
   fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
+      it('should eagerly update URL after redirects are applied with urlUpdateStrategy="eagar"',
+         fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+           const fixture = TestBed.createComponent(RootCmp);
+           advance(fixture);
+
+           router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+           router.navigateByUrl('/team/22');
+           advance(fixture);
+           expect(location.path()).toEqual('/team/22');
+
+           expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+           router.urlUpdateStrategy = 'eager';
+
+           let urlAtNavStart = '';
+           let urlAtRoutesRecognized = '';
+           router.events.subscribe(e => {
+             if (e instanceof NavigationStart) {
+               urlAtNavStart = location.path();
+             }
+             if (e instanceof RoutesRecognized) {
+               urlAtRoutesRecognized = location.path();
+             }
+           });
+
+           router.navigateByUrl('/team/33');
+
+           advance(fixture);
+           expect(urlAtNavStart).toBe('/team/22');
+           expect(urlAtRoutesRecognized).toBe('/team/33');
+           expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+         })));
+
+  fixmeIvy('FW-???: Error: ExpressionChangedAfterItHasBeenCheckedError') &&
       it('should navigate back and forward',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
            const fixture = createRoot(router, RootCmp);

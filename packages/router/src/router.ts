@@ -389,9 +389,6 @@ export class Router {
 
                 if (processCurrentUrl) {
                   return of (t).pipe(
-                      // Update URL if in `eager` update mode
-                      tap(t => this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange &&
-                              this.setBrowserUrl(t.rawUrl, !!t.extras.replaceUrl, t.id)),
                       // Fire NavigationStart event
                       switchMap(t => {
                         const transition = this.transitions.getValue();
@@ -415,6 +412,10 @@ export class Router {
                       recognize(
                           this.rootComponentType, this.config, (url) => this.serializeUrl(url),
                           this.paramsInheritanceStrategy, this.relativeLinkResolution),
+
+                      // Update URL if in `eager` update mode
+                      tap(t => this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange &&
+                              this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id)),
 
                       // Fire RoutesRecognized
                       tap(t => {
