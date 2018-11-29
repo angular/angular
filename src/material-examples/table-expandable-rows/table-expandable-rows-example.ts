@@ -19,7 +19,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 export class TableExpandableRowsExample {
   dataSource = ELEMENT_DATA;
   columnsToDisplay = ['name', 'weight', 'symbol', 'position'];
-  expandedElement: PeriodicElement;
+  expandedElement: PeriodicElement | null;
 }
 
 export interface PeriodicElement {
