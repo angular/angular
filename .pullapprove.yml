@@ -98,6 +98,7 @@ groups:
       - IgorMinar #fallback
       - mhevery
       - vikerman #fallback
+      - kara
 
   build-and-ci:
     conditions:
@@ -234,6 +235,7 @@ groups:
       - mhevery
       - IgorMinar #fallback
       - jenniferfell #docs only
+      - kara
 
   compiler-cli/ngtools:
     conditions:
@@ -243,6 +245,7 @@ groups:
       - hansl
       - filipesilva #fallback
       - IgorMinar #fallback
+      - kara
 
   compiler-cli:
     conditions:
@@ -257,6 +260,7 @@ groups:
       - alxhub
       - IgorMinar #fallback
       - mhevery #fallback
+      - kara
 
   common:
     conditions:
@@ -269,6 +273,7 @@ groups:
       - pkozlowski-opensource #primary
       - IgorMinar #fallback
       - mhevery #fallback
+      - kara
 
   forms:
     conditions:
@@ -334,6 +339,7 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
+      - kara
 
   testing:
     conditions:
@@ -367,6 +373,7 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
+      - kara
 
   platform-browser:
     conditions:
@@ -376,6 +383,7 @@ groups:
       - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
+      - kara
 
   platform-server:
     conditions:
@@ -398,6 +406,7 @@ groups:
       - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
+      - kara
 
   service-worker:
     conditions:
@@ -431,6 +440,7 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
+      - kara
 
   benchpress:
     conditions:
