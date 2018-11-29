@@ -149,6 +149,16 @@ export declare type LoadChildren = string | LoadChildrenCallback;
 
 export declare type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>>;
 
+export declare type Navigation = {
+    id: number;
+    initialUrl: string | UrlTree;
+    extractedUrl: UrlTree;
+    finalUrl?: UrlTree;
+    trigger: 'imperative' | 'popstate' | 'hashchange';
+    extras: NavigationExtras;
+    previousNavigation: Navigation | null;
+};
+
 export declare class NavigationCancel extends RouterEvent {
     reason: string;
     constructor(
@@ -185,11 +195,15 @@ export interface NavigationExtras {
     relativeTo?: ActivatedRoute | null;
     replaceUrl?: boolean;
     skipLocationChange?: boolean;
+    state?: {
+        [k: string]: any;
+    };
 }
 
 export declare class NavigationStart extends RouterEvent {
     navigationTrigger?: 'imperative' | 'popstate' | 'hashchange';
     restoredState?: {
+        [k: string]: any;
         navigationId: number;
     } | null;
     constructor(
@@ -197,6 +211,7 @@ export declare class NavigationStart extends RouterEvent {
     url: string,
     navigationTrigger?: 'imperative' | 'popstate' | 'hashchange',
     restoredState?: {
+        [k: string]: any;
         navigationId: number;
     } | null);
     toString(): string;
@@ -316,6 +331,7 @@ export declare class Router {
     constructor(rootComponentType: Type<any> | null, urlSerializer: UrlSerializer, rootContexts: ChildrenOutletContexts, location: Location, injector: Injector, loader: NgModuleFactoryLoader, compiler: Compiler, config: Routes);
     createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
+    getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     isActive(url: string | UrlTree, exact: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
@@ -358,6 +374,9 @@ export declare class RouterLink {
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
+    state?: {
+        [k: string]: any;
+    };
     readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
     onClick(): boolean;
@@ -389,6 +408,9 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     replaceUrl: boolean;
     routerLink: any[] | string;
     skipLocationChange: boolean;
+    state?: {
+        [k: string]: any;
+    };
     target: string;
     readonly urlTree: UrlTree;
     constructor(router: Router, route: ActivatedRoute, locationStrategy: LocationStrategy);
