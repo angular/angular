@@ -285,6 +285,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         bound[key] = o.literal(prop.value);
       } else {
         const value = prop.value.visit(this._valueConverter);
+        this.allocateBindingSlots(value);
         if (value instanceof Interpolation) {
           const {strings, expressions} = value;
           const {id, bindings} = this.i18n !;
@@ -563,6 +564,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             i18nAttrArgs.push(o.literal(attr.name), this.i18nTranslate(message));
           } else {
             const converted = attr.value.visit(this._valueConverter);
+            this.allocateBindingSlots(converted);
             if (converted instanceof Interpolation) {
               const placeholders = assembleBoundTextPlaceholders(message);
               const params = placeholdersToParams(placeholders);
@@ -752,6 +754,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitBoundText(text: t.BoundText) {
     if (this.i18n) {
       const value = text.value.visit(this._valueConverter);
+      this.allocateBindingSlots(value);
       if (value instanceof Interpolation) {
         this.i18n.appendBoundText(text.i18n !);
         this.i18nAppendBindings(value.expressions);
