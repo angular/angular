@@ -1,6 +1,5 @@
-import {MarkedOptions, Renderer} from 'marked';
+import {Renderer} from 'marked';
 import {basename, extname} from 'path';
-import {highlightCodeBlock} from './highlight-code-block';
 
 /** Regular expression that matches whitespace. */
 const whitespaceRegex = /\W+/g;
@@ -13,10 +12,6 @@ const exampleCommentRegex = /<!--\W*example\(([^)]+)\)\W*-->/g;
  * files that can be used in the Angular Material docs.
  */
 export class DocsMarkdownRenderer extends Renderer {
-
-  constructor(options?: MarkedOptions) {
-    super({highlight: highlightCodeBlock, baseUrl: 'material.angular.io/', ...options});
-  }
 
   /**
    * Transforms a markdown heading into the corresponding HTML output. In our case, we

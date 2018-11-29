@@ -4,9 +4,10 @@
  */
 
 import {readFileSync, writeFileSync} from 'fs';
-import {join} from 'path';
-import {DocsMarkdownRenderer} from './docs-marked-renderer';
 import * as marked from 'marked';
+import {join} from 'path';
+import {highlightCodeBlock} from '../highlight-files/highlight-code-block';
+import {DocsMarkdownRenderer} from './docs-marked-renderer';
 
 // Regular expression that matches the markdown extension of a given path.
 const markdownExtension = /.md$/;
@@ -15,7 +16,7 @@ const markdownExtension = /.md$/;
 const markdownRenderer = new DocsMarkdownRenderer();
 
 // Setup our custom docs renderer by default.
-marked.setOptions({renderer: markdownRenderer});
+marked.setOptions({renderer: markdownRenderer, highlight: highlightCodeBlock});
 
 if (require.main === module) {
   // The script expects the bazel-bin path as first argument. All remaining arguments will be

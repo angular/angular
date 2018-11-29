@@ -8,7 +8,8 @@ ts_library(
   srcs = glob(["**/*.ts"]),
   deps = [
     "@matdeps//@types/node",
-    "@matdeps//@types/marked"
+    "@matdeps//@types/marked",
+    "//tools/highlight-files:sources",
   ],
   tsconfig = ":tsconfig.json",
 )

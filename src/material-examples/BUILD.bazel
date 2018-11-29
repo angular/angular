@@ -3,6 +3,7 @@ package(default_visibility=["//visibility:public"])
 load("@angular//:index.bzl", "ng_package")
 load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module")
+load("//tools/highlight-files:index.bzl", "highlight_files")
 
 ng_module(
   name = "examples",
@@ -19,6 +20,11 @@ ng_module(
   # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig
   # because in order to import Moment with TypeScript, some specific options need to be set.
   tsconfig = ":tsconfig-build.json",
+)
+
+highlight_files(
+  name = "highlighted-files",
+  srcs = glob(["*/*.html", "*/*.css", "*/*.ts"])
 )
 
 ng_package(
