@@ -52,7 +52,7 @@ export class PrivateDeclarationsAnalyzer {
     return Array.from(privateDeclarations.keys()).map(id => {
       const from = id.getSourceFile().fileName;
       const declaration = privateDeclarations.get(id) !;
-      const dtsDeclaration = this.host.getDtsDeclarationOfClass(declaration.node);
+      const dtsDeclaration = this.host.getDtsDeclaration(declaration.node);
       const dtsFrom = dtsDeclaration && dtsDeclaration.getSourceFile().fileName;
       return {identifier: id.text, from, dtsFrom};
     });
