@@ -10,7 +10,6 @@ import {Injectable, NgZone, OnDestroy, Inject} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {Subject} from 'rxjs';
-import {toggleNativeDragInteractions} from './drag-styling';
 
 /** Event options that can be used to bind an active, capturing event. */
 const activeCapturingEventOptions = normalizePassiveListenerOptions({
@@ -123,10 +122,6 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
       const moveEvent = isTouchEvent ? 'touchmove' : 'mousemove';
       const upEvent = isTouchEvent ? 'touchend' : 'mouseup';
 
-      // We need to disable the native interactions on the entire body, because
-      // the user can start marking text if they drag too far in Safari.
-      toggleNativeDragInteractions(this._document.body, false);
-
       // We explicitly bind __active__ listeners here, because newer browsers will default to
       // passive ones for `mousemove` and `touchmove`. The events need to be active, because we
       // use `preventDefault` to prevent the page from scrolling while the user is dragging.
@@ -163,7 +158,6 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
 
     if (this._activeDragInstances.size === 0) {
       this._clearGlobalListeners();
-      toggleNativeDragInteractions(this._document.body, true);
     }
   }
 
