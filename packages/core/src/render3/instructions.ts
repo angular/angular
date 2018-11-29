@@ -45,7 +45,6 @@ import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
 
 
-
 /**
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
@@ -1516,6 +1515,8 @@ export function generateExpandoInstructionBlock(
 * Because we are updating the blueprint, we only need to do this once.
 */
 function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
+  ngDevMode &&
+      assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);
     tView.blueprint.push(NO_CHANGE);
@@ -1625,9 +1626,7 @@ function queueHostBindingForCheck(
   // check whether a given `hostBindings` function already exists in expandoInstructions,
   // which can happen in case directive definition was extended from base definition (as a part of
   // the `InheritDefinitionFeature` logic)
-  if (expando.length < 2 ||
-      !(typeof expando[expando.length - 1] === 'number' &&
-        expando[expando.length - 2] === def.hostBindings)) {
+  if (expando.length < 2 || expando[expando.length - 2] !== def.hostBindings) {
     expando.push(def.hostBindings !, hostVars);
   }
 }

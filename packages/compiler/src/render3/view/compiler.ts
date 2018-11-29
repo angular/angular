@@ -92,7 +92,7 @@ function baseDirectiveFields(
   // e.g. `attributes: ['role', 'listbox']`
   definitionMap.set('attributes', createHostAttributesArray(allOtherAttributes));
 
-  // e.g. `hostBindings: (rf, ctx, dirIndex, elIndex) => { ... }
+  // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
       'hostBindings',
       createHostBindingsFunction(
