@@ -77,7 +77,7 @@ const resolvedPromise = Promise.resolve(null);
  * 
  * ### Using ngModel on a standalone control
  *
- * The following examples shows a simple standalone control using `ngModel`:
+ * The following examples show a simple standalone control using `ngModel`:
  *
  * {@example forms/ts/simpleNgModel/simple_ng_model_example.ts region='Component'}
  *
@@ -172,7 +172,7 @@ export class NgModel extends NgControl implements OnChanges,
    *
    * **name**: An alternative to setting the name attribute on the form control element. See
    * the [example](api/forms/NgModel#using-ngmodel-on-a-standalone-control) for using `NgModel`
-   * as a stanaldone control.
+   * as a standalone control.
    *
    * **standalone**: When set to true, the `ngModel` will not register itself with its parent form,
    * and acts as if it's not in the form. Defaults to false.
@@ -242,7 +242,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               /**
                * @description
-               * The top-level directive for this conrol if present, otherwise null.
+               * The top-level directive for this control if present, otherwise null.
                */
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 

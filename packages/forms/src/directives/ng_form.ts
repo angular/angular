@@ -126,7 +126,7 @@ export class NgForm extends ControlContainer implements Form,
    * @description
    * Tracks options for the `NgForm` instance.
    *
-   * **updateOn**: Sets as the default `updateOn` value for all child `NgModels` below it
+   * **updateOn**: Sets the default `updateOn` value for all child `NgModels` below it
    * unless explicitly set by a child `NgModel` using `ngModelOptions`). Defaults to 'change'.
    * Possible values: `'change'` | `'blur'` | `'submit'`.
    *
