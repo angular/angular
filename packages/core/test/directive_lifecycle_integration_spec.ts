@@ -13,7 +13,7 @@ import {Log} from '@angular/core/testing/src/testing_internal';
 import {fixmeIvy} from '@angular/private/testing';
 
 {
-  fixmeIvy('unknown') && describe('directive lifecycle integration spec', () => {
+  describe('directive lifecycle integration spec', () => {
     let log: Log;
 
     beforeEach(() => {
@@ -31,22 +31,23 @@ import {fixmeIvy} from '@angular/private/testing';
 
     beforeEach(inject([Log], (_log: any) => { log = _log; }));
 
-    it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
-       () => {
-         const fixture = TestBed.createComponent(MyComp5);
-         fixture.detectChanges();
+    fixmeIvy('unknown') &&
+        it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
+           () => {
+             const fixture = TestBed.createComponent(MyComp5);
+             fixture.detectChanges();
 
-         expect(log.result())
-             .toEqual(
-                 'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
-                 'ngAfterViewInit; ngAfterViewChecked');
+             expect(log.result())
+                 .toEqual(
+                     'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
+                     'ngAfterViewInit; ngAfterViewChecked');
 
-         log.clear();
-         fixture.detectChanges();
+             log.clear();
+             fixture.detectChanges();
 
-         expect(log.result())
-             .toEqual('ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
-       });
+             expect(log.result())
+                 .toEqual('ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
+           });
   });
 }
 
