@@ -1698,7 +1698,7 @@ describe('Integration', () => {
     it('should not change existing href if routerLink is null', fakeAsync(() => {
          @Component({
            selector: 'someRoot',
-           template: `<router-outlet></router-outlet><a href="/home" routerLink="null">Link</a>`
+           template: `<router-outlet></router-outlet><a href="/home" [routerLink]="null">Link</a>`
          })
          class RootCmpWithLink {
          }
@@ -1720,7 +1720,7 @@ describe('Integration', () => {
     it('should set missing href to current location if routerLink is null', fakeAsync(() => {
          @Component({
            selector: 'someRoot',
-           template: `<router-outlet></router-outlet><a routerLink="null">Link</a>`
+           template: `<router-outlet></router-outlet><a [routerLink]="null">Link</a>`
          })
          class RootCmpWithLink {
          }
