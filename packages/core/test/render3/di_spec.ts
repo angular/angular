@@ -654,9 +654,9 @@ describe('di', () => {
             type: HostBindingDir,
             selectors: [['', 'hostBindingDir', '']],
             factory: () => hostBindingDir = new HostBindingDir(),
-            hostBindings: (rf: RenderFlags, ctx: any, dirIndex: number, elementIndex: number) => {
+            hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
               if (rf & RenderFlags.Create) {
-                allocHostVars(1, dirIndex);
+                allocHostVars(1);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(elementIndex, 'id', bind(ctx.id));

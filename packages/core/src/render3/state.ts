@@ -8,6 +8,7 @@
 
 import {assertDefined} from './assert';
 import {executeHooks} from './hooks';
+import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW} from './interfaces/view';
@@ -32,6 +33,17 @@ export function increaseElementDepthCount() {
 
 export function decreaseElementDepthCount() {
   elementDepthCount--;
+}
+
+let currentDirectiveDef: DirectiveDef<any>|ComponentDef<any>|null = null;
+
+export function getCurrentDirectiveDef(): DirectiveDef<any>|ComponentDef<any>|null {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return currentDirectiveDef;
+}
+
+export function setCurrentDirectiveDef(def: DirectiveDef<any>| ComponentDef<any>| null): void {
+  currentDirectiveDef = def;
 }
 
 /**

@@ -446,16 +446,15 @@ describe('render3 integration test', () => {
             }
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
-          hostBindings: function(rf: RenderFlags, ctx: any, dirIndex: number, elementIndex: number):
-              void {
-                if (rf & RenderFlags.Create) {
-                  allocHostVars(1, dirIndex);
-                }
-                if (rf & RenderFlags.Update) {
-                  // host bindings
-                  elementProperty(elementIndex, 'title', bind(ctx.title));
-                }
-              }
+          hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
+            if (rf & RenderFlags.Create) {
+              allocHostVars(1);
+            }
+            if (rf & RenderFlags.Update) {
+              // host bindings
+              elementProperty(elementIndex, 'title', bind(ctx.title));
+            }
+          }
         });
       }
 
@@ -1383,9 +1382,9 @@ describe('render3 integration test', () => {
               return hostBindingDir = new HostBindingDir();
             },
             hostBindings: function HostBindingDir_HostBindings(
-                rf: RenderFlags, ctx: any, dirIndex: number, elIndex: number) {
+                rf: RenderFlags, ctx: any, elIndex: number) {
               if (rf & RenderFlags.Create) {
-                allocHostVars(1, dirIndex);
+                allocHostVars(1);
               }
               if (rf & RenderFlags.Update) {
                 elementAttribute(elIndex, 'aria-label', bind(ctx.label));

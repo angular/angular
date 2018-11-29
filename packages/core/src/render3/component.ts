@@ -23,7 +23,7 @@ import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState} from './state';
+import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
 
 
@@ -197,8 +197,9 @@ export function createRootComponent<T>(
 
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const rootTNode = getPreviousOrParentTNode();
-    const dirIndex = rootView.length - 1;
-    componentDef.hostBindings(RenderFlags.Create, component, dirIndex, rootTNode.index);
+    setCurrentDirectiveDef(componentDef);
+    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index);
+    setCurrentDirectiveDef(null);
   }
 
   return component;

@@ -72,11 +72,10 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       const superHostBindings = superDef.hostBindings;
       if (superHostBindings) {
         if (prevHostBindings) {
-          definition.hostBindings =
-              (rf: RenderFlags, ctx: any, dirIndex: number, elementIndex: number) => {
-                superHostBindings(rf, ctx, dirIndex, elementIndex);
-                prevHostBindings(rf, ctx, dirIndex, elementIndex);
-              };
+          definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
+            superHostBindings(rf, ctx, elementIndex);
+            prevHostBindings(rf, ctx, elementIndex);
+          };
         } else {
           definition.hostBindings = superHostBindings;
         }
