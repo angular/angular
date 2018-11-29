@@ -13,15 +13,17 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
 
 {
-  fixmeIvy('unknown') && describe('forwardRef integration', function() {
+  describe('forwardRef integration', function() {
     beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
 
-    it('should instantiate components which are declared using forwardRef', () => {
-      const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
-      a.detectChanges();
-      expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-      expect(TestBed.get(ModuleFrame)).toBeDefined();
-    });
+    fixmeIvy('unknown') &&
+        it('should instantiate components which are declared using forwardRef', () => {
+          const a =
+              TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+          a.detectChanges();
+          expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+          expect(TestBed.get(ModuleFrame)).toBeDefined();
+        });
   });
 }
 

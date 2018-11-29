@@ -169,7 +169,7 @@ class TestApp {
 }
 
 {
-  fixmeIvy('unknown') && describe('debug element', () => {
+  describe('debug element', () => {
     let fixture: ComponentFixture<any>;
 
     beforeEach(async(() => {
@@ -192,13 +192,13 @@ class TestApp {
       });
     }));
 
-    it('should list all child nodes', () => {
+    fixmeIvy('unknown') && it('should list all child nodes', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
       expect(fixture.debugElement.childNodes.length).toEqual(3);
     });
 
-    it('should list all component child elements', () => {
+    fixmeIvy('unknown') && it('should list all component child elements', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
       const childEls = fixture.debugElement.children;
@@ -225,7 +225,7 @@ class TestApp {
       expect(getDOM().hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
     });
 
-    it('should list conditional component child elements', () => {
+    fixmeIvy('unknown') && it('should list conditional component child elements', () => {
       fixture = TestBed.createComponent(ConditionalParentComp);
       fixture.detectChanges();
 
@@ -246,7 +246,7 @@ class TestApp {
       expect(conditionalContentComp.children.length).toEqual(1);
     });
 
-    it('should list child elements within viewports', () => {
+    fixmeIvy('unknown') && it('should list child elements within viewports', () => {
       fixture = TestBed.createComponent(UsingFor);
       fixture.detectChanges();
 
@@ -259,7 +259,7 @@ class TestApp {
       expect(list.children.length).toEqual(3);
     });
 
-    it('should list element attributes', () => {
+    fixmeIvy('unknown') && it('should list element attributes', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
       const bankElem = fixture.debugElement.children[0];
@@ -268,7 +268,7 @@ class TestApp {
       expect(bankElem.attributes['account']).toEqual('4747');
     });
 
-    it('should list element classes', () => {
+    fixmeIvy('unknown') && it('should list element classes', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
       const bankElem = fixture.debugElement.children[0];
@@ -277,7 +277,7 @@ class TestApp {
       expect(bankElem.classes['open']).toBe(false);
     });
 
-    it('should list element styles', () => {
+    fixmeIvy('unknown') && it('should list element styles', () => {
       fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
       const bankElem = fixture.debugElement.children[0];
@@ -286,7 +286,7 @@ class TestApp {
       expect(bankElem.styles['color']).toEqual('red');
     });
 
-    it('should query child elements by css', () => {
+    fixmeIvy('unknown') && it('should query child elements by css', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
@@ -296,7 +296,7 @@ class TestApp {
       expect(getDOM().hasClass(childTestEls[0].nativeElement, 'child-comp-class')).toBe(true);
     });
 
-    it('should query child elements by directive', () => {
+    fixmeIvy('unknown') && it('should query child elements by directive', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
@@ -309,21 +309,21 @@ class TestApp {
       expect(getDOM().hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
     });
 
-    it('should list providerTokens', () => {
+    fixmeIvy('unknown') && it('should list providerTokens', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
       expect(fixture.debugElement.providerTokens).toContain(Logger);
     });
 
-    it('should list locals', () => {
+    fixmeIvy('unknown') && it('should list locals', () => {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
       expect(fixture.debugElement.children[0].references !['alice']).toBeAnInstanceOf(MyDir);
     });
 
-    it('should allow injecting from the element injector', () => {
+    fixmeIvy('unknown') && it('should allow injecting from the element injector', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
 
@@ -332,7 +332,7 @@ class TestApp {
       ]);
     });
 
-    it('should list event listeners', () => {
+    fixmeIvy('unknown') && it('should list event listeners', () => {
       fixture = TestBed.createComponent(EventsComp);
       fixture.detectChanges();
 
@@ -341,7 +341,7 @@ class TestApp {
 
     });
 
-    it('should trigger event handlers', () => {
+    fixmeIvy('unknown') && it('should trigger event handlers', () => {
       fixture = TestBed.createComponent(EventsComp);
       fixture.detectChanges();
 
