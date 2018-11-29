@@ -5,26 +5,17 @@
 
 import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
-
-// These types lack type definitions.
-const marked = require('marked');
-const highlightJs = require('highlight.js');
+import {DocsMarkdownRenderer} from './docs-marked-renderer';
+import * as marked from 'marked';
 
 // Regular expression that matches the markdown extension of a given path.
 const markdownExtension = /.md$/;
 
-// Setup the default options for converting markdown to HTML.
-marked.setOptions({
-  // Implement a highlight function that converts the code block into a highlighted
-  // HTML snippet that uses HighlightJS.
-  highlight: (code: string, language: string): string => {
-    if (language) {
-      return highlightJs.highlight(
-          language.toLowerCase() === 'ts' ? 'typescript' : language, code).value;
-    }
-    return code;
-  }
-});
+// Custom markdown renderer for transforming markdown files for the docs.
+const markdownRenderer = new DocsMarkdownRenderer();
+
+// Setup our custom docs renderer by default.
+marked.setOptions({renderer: markdownRenderer});
 
 if (require.main === module) {
   // The script expects the bazel-bin path as first argument. All remaining arguments will be
@@ -35,6 +26,8 @@ if (require.main === module) {
   // Bazel bin directory.
   inputFiles.forEach(inputPath => {
     const outputPath = join(bazelBinPath, inputPath.replace(markdownExtension, '.html'));
-    writeFileSync(outputPath, marked(readFileSync(inputPath, 'utf8')));
+    const htmlOutput = markdownRenderer.finalizeOutput(marked(readFileSync(inputPath, 'utf8')));
+
+    writeFileSync(outputPath, htmlOutput);
   });
 }

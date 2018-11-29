@@ -5,8 +5,11 @@ load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
   name = "transform-markdown",
-  srcs = [":transform-markdown.ts"],
-  deps = ["@matdeps//@types/node"],
+  srcs = glob(["**/*.ts"]),
+  deps = [
+    "@matdeps//@types/node",
+    "@matdeps//@types/marked"
+  ],
   tsconfig = ":tsconfig.json",
 )
 
