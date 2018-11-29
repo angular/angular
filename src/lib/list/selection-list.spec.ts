@@ -196,6 +196,26 @@ describe('MatSelectionList without forms', () => {
       expect(ENTER_EVENT.defaultPrevented).toBe(true);
     });
 
+    it('should not be able to toggle an item when pressing a modifier key', () => {
+      const testListItem = listOptions[1].nativeElement as HTMLElement;
+      const selectList =
+          selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
+
+      expect(selectList.selected.length).toBe(0);
+
+      [ENTER, SPACE].forEach(key => {
+        const event = createKeyboardEvent('keydown', key, testListItem);
+        Object.defineProperty(event, 'ctrlKey', { get: () => true });
+
+        dispatchFakeEvent(testListItem, 'focus');
+        selectionList.componentInstance._keydown(event);
+        fixture.detectChanges();
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      expect(selectList.selected.length).toBe(0);
+    });
+
     it('should not be able to toggle a disabled option using SPACE', () => {
       const testListItem = listOptions[1].nativeElement as HTMLElement;
       const selectionModel = selectionList.componentInstance.selectedOptions;
@@ -332,6 +352,20 @@ describe('MatSelectionList without forms', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it('should not change focus when pressing HOME with a modifier key', () => {
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      const event = createKeyboardEvent('keydown', HOME);
+      Object.defineProperty(event, 'shiftKey', { get: () => true });
+
+      dispatchEvent(selectionList.nativeElement, event);
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(-1);
+      expect(event.defaultPrevented).toBe(false);
+    });
+
     it('should focus the last item when pressing END', () => {
       const manager = selectionList.componentInstance._keyManager;
       expect(manager.activeItemIndex).toBe(-1);
@@ -341,6 +375,20 @@ describe('MatSelectionList without forms', () => {
 
       expect(manager.activeItemIndex).toBe(3);
       expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should not change focus when pressing END with a modifier key', () => {
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      const event = createKeyboardEvent('keydown', END);
+      Object.defineProperty(event, 'shiftKey', { get: () => true });
+
+      dispatchEvent(selectionList.nativeElement, event);
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(-1);
+      expect(event.defaultPrevented).toBe(false);
     });
 
     it('should select all items using ctrl + a', () => {
