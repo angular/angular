@@ -1688,7 +1688,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('logging property updates', () => {
-      fixmeIvy('FW-664: ng-reflect-* is not supported')
+      fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work')
           .it('should reflect property values as attributes', () => {
             TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
             const template = '<div>' +
@@ -1712,21 +1712,19 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('ng-reflect-test_="hello"');
       });
 
-      fixmeIvy('FW-664: ng-reflect-* is not supported')
-          .it('should reflect property values on template comments', () => {
-            const fixture =
-                TestBed.configureTestingModule({declarations: [MyComp]})
-                    .overrideComponent(
-                        MyComp,
-                        {set: {template: '<ng-template [ngIf]="ctxBoolProp"></ng-template>'}})
-                    .createComponent(MyComp);
+      it('should reflect property values on template comments', () => {
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp]})
+                .overrideComponent(
+                    MyComp, {set: {template: '<ng-template [ngIf]="ctxBoolProp"></ng-template>'}})
+                .createComponent(MyComp);
 
-            fixture.componentInstance.ctxBoolProp = true;
-            fixture.detectChanges();
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
 
-            expect(getDOM().getInnerHTML(fixture.nativeElement))
-                .toContain('"ng\-reflect\-ng\-if"\: "true"');
-          });
+        expect(getDOM().getInnerHTML(fixture.nativeElement))
+            .toContain('"ng\-reflect\-ng\-if"\: "true"');
+      });
 
       // also affected by FW-587: Inputs with aliases in component decorators don't work
       fixmeIvy('FW-664: ng-reflect-* is not supported')

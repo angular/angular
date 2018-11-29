@@ -16,7 +16,6 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
-
 import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
@@ -30,7 +29,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingIndex} from './interfaces/styling';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
@@ -957,8 +956,10 @@ export function elementProperty<T>(
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
-    if (ngDevMode && tNode.type === TNodeType.Element) {
-      setNgReflectProperties(lView, element as RElement, propName, value);
+    if (ngDevMode) {
+      if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
+        setNgReflectProperties(lView, element, tNode.type, propName, value);
+      }
     }
   } else if (tNode.type === TNodeType.Element) {
     const renderer = lView[RENDERER];
@@ -1031,12 +1032,23 @@ function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: a
   }
 }
 
-function setNgReflectProperties(lView: LView, element: RElement, propName: string, value: any) {
+function setNgReflectProperties(
+    lView: LView, element: RElement | RComment, type: TNodeType, propName: string, value: any) {
   const renderer = lView[RENDERER];
   const attrName = normalizeDebugBindingName(propName);
   const debugValue = normalizeDebugBindingValue(value);
-  isProceduralRenderer(renderer) ? renderer.setAttribute(element, attrName, debugValue) :
-                                   element.setAttribute(attrName, debugValue);
+  if (type === TNodeType.Element) {
+    isProceduralRenderer(renderer) ?
+        renderer.setAttribute((element as RElement), attrName, debugValue) :
+        (element as RElement).setAttribute(attrName, debugValue);
+  } else if (value !== undefined) {
+    const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    if (isProceduralRenderer(renderer)) {
+      renderer.setValue((element as RComment), value);
+    } else {
+      (element as RComment).textContent = value;
+    }
+  }
 }
 
 /**

@@ -131,16 +131,15 @@ let lastCreatedRenderer: Renderer2;
               checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
             });
 
-    fixmeIvy('#FW-664 ng-reflect-* is not supported')
-        .it('should update any template comment property/attributes', () => {
-          const fixture =
-              TestBed.overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp"></ng-container>')
-                  .createComponent(MyComp2);
-          fixture.componentInstance.ctxBoolProp = true;
-          fixture.detectChanges();
-          const el = getRenderElement(fixture.nativeElement);
-          expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
-        });
+    it('should update any template comment property/attributes', () => {
+      const fixture =
+          TestBed.overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp"></ng-container>')
+              .createComponent(MyComp2);
+      fixture.componentInstance.ctxBoolProp = true;
+      fixture.detectChanges();
+      const el = getRenderElement(fixture.nativeElement);
+      expect(getDOM().getInnerHTML(el)).toContain('"ng-reflect-ng-if": "true"');
+    });
 
     it('should add and remove fragments', () => {
       const fixture =

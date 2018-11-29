@@ -83,7 +83,7 @@ export interface ProceduralRenderer3 {
       flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   setProperty(el: RElement, name: string, value: any): void;
-  setValue(node: RText, value: string): void;
+  setValue(node: RText|RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
   listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void;
@@ -152,7 +152,7 @@ export interface RDomTokenList {
 
 export interface RText extends RNode { textContent: string|null; }
 
-export interface RComment extends RNode {}
+export interface RComment extends RNode { textContent: string|null; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

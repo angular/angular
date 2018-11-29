@@ -273,16 +273,19 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
   }
 
   if (element) {
-    let html = stringifyElement(element)
-                   .replace(/^<div host="">(.*)<\/div>$/, '$1')
-                   .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
-                   .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
-                   .replace(' style=""', '')
-                   .replace(/<!--container-->/g, '')
-                   .replace(/<!--ng-container-->/g, '');
+    let html = stringifyElement(element);
+
     if (!keepNgReflect) {
-      html = html.replace(/\sng-reflect-\S*="[^"]*"/g, '');
+      html = html.replace(/\sng-reflect-\S*="[^"]*"/g, '')
+                 .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
     }
+
+    html = html.replace(/^<div host="">(.*)<\/div>$/, '$1')
+               .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
+               .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
+               .replace(' style=""', '')
+               .replace(/<!--container-->/g, '')
+               .replace(/<!--ng-container-->/g, '');
     return html;
   } else {
     return '';
