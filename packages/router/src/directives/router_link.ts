@@ -87,14 +87,14 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * And later the value can be read from the router through `router.getCurrentTransition.
+ * And later the value can be read from the router through `router.getCurrentNavigation.
  * For example, to capture the `tracingId` above during the `NavigationStart` event:
  *
  * ```
  * // Get NavigationStart events
  * router.events.pipe(filter(e => e instanceof NavigationStart)).subscribe(e => {
- *   const transition = router.getCurrentTransition();
- *   tracingService.trace({id: transition.extras.state});
+ *   const navigation = router.getCurrentNavigation();
+ *   tracingService.trace({id: navigation.extras.state.tracingId});
  * });
  * ```
  *

@@ -147,7 +147,7 @@ export interface NavigationExtras {
   replaceUrl?: boolean;
   /**
    * State passed to any navigation. This value will be accessible through the `extras` object
-   * returned from `router.getCurrentTransition()` while a navigation is executing. Once a
+   * returned from `router.getCurrentNavigation()` while a navigation is executing. Once a
    * navigation completes, this value will be written to `history.state` when the `location.go`
    * or `location.replaceState` method is called before activating of this route. Note that
    * `history.state` will not pass an object equality test because the `navigationId` will be
@@ -181,6 +181,57 @@ function defaultMalformedUriErrorHandler(
   return urlSerializer.parse('/');
 }
 
+export type RestoredState = {
+  [k: string]: any; navigationId: number;
+};
+
+/**
+ * @description
+ *
+ * Information about any given navigation. This information can be gotten from the router at
+ * any time using the `router.getCurrentNavigation()` method.
+ *
+ * @publicApi
+ */
+export type Navigation = {
+  /**
+   * The ID of the current navigation.
+   */
+  id: number;
+  /**
+   * Target URL passed into the {@link Router#navigateByUrl} call before navigation. This is
+   * the value before the router has parsed or applied redirects to it.
+   */
+  initialUrl: string | UrlTree;
+  /**
+   * The initial target URL after being parsed with {@link UrlSerializer.extract()}.
+   */
+  extractedUrl: UrlTree;
+  /**
+   * Extracted URL after redirects have been applied. This URL may not be available immediately,
+   * therefore this property can be `undefined`. It is guaranteed to be set after the
+   * {@link RoutesRecognized} event fires.
+   */
+  finalUrl?: UrlTree;
+  /**
+   * Identifies the trigger of the navigation.
+   *
+   * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
+   * * 'popstate'--triggered by a popstate event
+   * * 'hashchange'--triggered by a hashchange event
+   */
+  trigger: 'imperative' | 'popstate' | 'hashchange';
+  /**
+   * The NavigationExtras used in this navigation. See {@link NavigationExtras} for more info.
+   */
+  extras: NavigationExtras;
+  /**
+   * Previously successful Navigation object. Only a single previous Navigation is available,
+   * therefore this previous Navigation will always have a `null` value for `previousNavigation`.
+   */
+  previousNavigation: Navigation | null;
+};
+
 export type NavigationTransition = {
   id: number,
   currentUrlTree: UrlTree,
@@ -193,7 +244,7 @@ export type NavigationTransition = {
   reject: any,
   promise: Promise<boolean>,
   source: NavigationTrigger,
-  restoredState: {navigationId: number} | null,
+  restoredState: RestoredState | null,
   currentSnapshot: RouterStateSnapshot,
   targetSnapshot: RouterStateSnapshot | null,
   currentRouterState: RouterState,
@@ -242,6 +293,8 @@ export class Router {
   private rawUrlTree: UrlTree;
   private readonly transitions: BehaviorSubject<NavigationTransition>;
   private navigations: Observable<NavigationTransition>;
+  private lastSuccessfulNavigation: Navigation|null = null;
+  private currentNavigation: Navigation|null = null;
 
   // TODO(issue/24571): remove '!'.
   private locationSubscription !: Subscription;
@@ -387,6 +440,20 @@ export class Router {
               ...t, extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl)
             } as NavigationTransition)),
 
+        // Store the Navigation object
+        tap(t => {
+          this.currentNavigation = {
+            id: t.id,
+            initialUrl: t.currentRawUrl,
+            extractedUrl: t.extractedUrl,
+            trigger: t.source,
+            extras: t.extras,
+            previousNavigation: this.lastSuccessfulNavigation ?
+                {...this.lastSuccessfulNavigation, previousNavigation: null} :
+                null
+          };
+        }),
+
         // Using switchMap so we cancel executing navigations when a new one comes in
         switchMap(t => {
           let completed = false;
@@ -420,6 +487,15 @@ export class Router {
                       applyRedirects(
                           this.ngModule.injector, this.configLoader, this.urlSerializer,
                           this.config),
+
+                      // Update the currentNavigation
+                      tap(t => {
+                        this.currentNavigation = {
+                          ...this.currentNavigation !,
+                          finalUrl: t.urlAfterRedirects
+                        };
+                      }),
+
                       // Recognize
                       recognize(
                           this.rootComponentType, this.config, (url) => this.serializeUrl(url),
@@ -617,6 +693,10 @@ export class Router {
                   eventsSubject.next(navCancel);
                   t.resolve(false);
                 }
+                // currentNavigation should always be reset to null here. If navigation was
+                // successful, lastSuccessfulTransition will have already been set. Therefore we
+                // can safely set currentNavigation to null here.
+                this.currentNavigation = null;
               }),
               catchError((e) => {
                 errored = true;
@@ -696,15 +776,17 @@ export class Router {
         // Navigations coming from Angular router have a navigationId state property. When this
         // exists, restore the state.
         const state = change.state && change.state.navigationId ? change.state : null;
-        setTimeout(() => {
-          this.scheduleNavigation(rawUrlTree, source, state, null, {replaceUrl: true});
-        }, 0);
+        setTimeout(
+            () => { this.scheduleNavigation(rawUrlTree, source, state, {replaceUrl: true}); }, 0);
       });
     }
   }
 
   /** The current url */
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
+
+  /** The current Navigation object if one exists */
+  getCurrentNavigation(): Navigation|null { return this.currentNavigation; }
 
   /** @internal */
   triggerEvent(event: Event): void { (this.events as Subject<Event>).next(event); }
@@ -849,7 +931,7 @@ export class Router {
     const urlTree = isUrlTree(url) ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
-    return this.scheduleNavigation(mergedTree, 'imperative', null, extras.state || null, extras);
+    return this.scheduleNavigation(mergedTree, 'imperative', null, extras);
   }
 
   /**
@@ -929,14 +1011,16 @@ export class Router {
           (this.events as Subject<Event>)
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
+          this.lastSuccessfulNavigation = this.currentNavigation;
+          this.currentNavigation = null;
           t.resolve(true);
         },
         e => { this.console.warn(`Unhandled Navigation Error: `); });
   }
 
   private scheduleNavigation(
-      rawUrl: UrlTree, source: NavigationTrigger, restoredState: {navigationId: number}|null,
-      futureState: {[key: string]: any}|null, extras: NavigationExtras): Promise<boolean> {
+      rawUrl: UrlTree, source: NavigationTrigger, restoredState: RestoredState|null,
+      extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.getTransition();
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
@@ -990,6 +1074,7 @@ export class Router {
     const path = this.urlSerializer.serialize(url);
     state = state || {};
     if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+      // TODO(jasonaden): Remove first `navigationId` and rely on `ng` namespace.
       this.location.replaceState(path, '', {...state, navigationId: id});
     } else {
       this.location.go(path, '', {...state, navigationId: id});
