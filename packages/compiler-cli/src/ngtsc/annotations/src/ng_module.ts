@@ -109,7 +109,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
-    const typeNode = this.reflector.getDtsDeclarationOfClass(node);
+    const typeNode = this.reflector.getDtsDeclaration(node);
     if (typeNode !== null) {
       typeContext = typeNode.getSourceFile();
     }
@@ -183,8 +183,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       return toR3Reference(valueRef, valueRef, valueContext, valueContext);
     } else {
       let typeRef = valueRef;
-      let typeNode = this.reflector.getDtsDeclarationOfClass(typeRef.node);
-      if (typeNode !== null) {
+      let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
+      if (typeNode !== null && ts.isClassDeclaration(typeNode)) {
         typeRef = new ResolvedReference(typeNode, typeNode.name !);
       }
       return toR3Reference(valueRef, typeRef, valueContext, typeContext);

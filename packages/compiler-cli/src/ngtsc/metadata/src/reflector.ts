@@ -188,7 +188,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return declaration.initializer || null;
   }
 
-  getDtsDeclarationOfClass(_: ts.Declaration): ts.ClassDeclaration|null { return null; }
+  getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.

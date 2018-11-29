@@ -307,7 +307,7 @@ export abstract class Renderer {
     const dtsMap = new Map<ts.SourceFile, DtsClassInfo[]>();
     analyses.forEach(compiledFile => {
       compiledFile.compiledClasses.forEach(compiledClass => {
-        const dtsDeclaration = this.host.getDtsDeclarationOfClass(compiledClass.declaration);
+        const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
         if (dtsDeclaration) {
           const dtsFile = dtsDeclaration.getSourceFile();
           const classes = dtsMap.get(dtsFile) || [];

@@ -453,6 +453,7 @@ const TYPINGS_SRC_FILES = [
   },
   {name: '/src/class1.js', contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
   {name: '/src/class2.js', contents: 'export class Class2 {}'},
+  {name: '/src/func1.js', contents: 'export function mooFn() {}'},
   {name: '/src/internal.js', contents: 'export class InternalClass {}\nexport class Class2 {}'},
   {name: '/src/missing-class.js', contents: 'export class MissingClass2 {}'}, {
     name: '/src/flat-file.js',
@@ -476,6 +477,7 @@ const TYPINGS_DTS_FILES = [
     contents:
         `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
   },
+  {name: '/typings/func1.d.ts', contents: 'export declare function mooFn(): void;'},
   {
     name: '/typings/internal.d.ts',
     contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
@@ -1286,8 +1288,18 @@ describe('Fesm2015ReflectionHost', () => {
       const class1 = getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+      const dtsDeclaration = host.getDtsDeclaration(class1);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+    });
+
+    it('should find the dts declaration for exported functions', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const mooFn = getDeclaration(srcProgram, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dtsProgram);
+
+      const dtsDeclaration = host.getDtsDeclaration(mooFn);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
     });
 
     it('should return null if there is no matching class in the matching dts file', () => {
@@ -1297,7 +1309,7 @@ describe('Fesm2015ReflectionHost', () => {
           getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
 
     it('should return null if there is no matching dts file', () => {
@@ -1307,7 +1319,7 @@ describe('Fesm2015ReflectionHost', () => {
           srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
 
     it('should find the dts file that contains a matching class declaration, even if the source files do not match',
@@ -1318,7 +1330,7 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+         const dtsDeclaration = host.getDtsDeclaration(class1);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
        });
 
@@ -1329,7 +1341,7 @@ describe('Fesm2015ReflectionHost', () => {
           getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      const dtsDeclaration = host.getDtsDeclarationOfClass(class3);
+      const dtsDeclaration = host.getDtsDeclaration(class3);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
     });
 
@@ -1341,7 +1353,7 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/internal.js', 'InternalClass', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const dtsDeclaration = host.getDtsDeclarationOfClass(internalClass);
+         const dtsDeclaration = host.getDtsDeclaration(internalClass);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
        });
 
@@ -1355,10 +1367,10 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const class2DtsDeclaration = host.getDtsDeclarationOfClass(class2);
+         const class2DtsDeclaration = host.getDtsDeclaration(class2);
          expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
 
-         const internalClass2DtsDeclaration = host.getDtsDeclarationOfClass(internalClass2);
+         const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
          expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
              .toEqual('/typings/class2.d.ts');
        });
