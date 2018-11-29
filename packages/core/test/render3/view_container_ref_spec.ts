@@ -1564,7 +1564,7 @@ describe('ViewContainerRef', () => {
     });
   });
 
-  fixmeIvy(`Hooks don't run`) && describe('life cycle hooks', () => {
+  describe('life cycle hooks', () => {
 
     // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
     const log: string[] = [];
@@ -1608,206 +1608,216 @@ describe('ViewContainerRef', () => {
       });
     }
 
-    it('should call all hooks in correct order when creating with createEmbeddedView', () => {
-      function SomeComponent_Template_0(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          element(0, 'hooks');
-        }
-        if (rf & RenderFlags.Update) {
-          elementProperty(0, 'name', bind('C'));
-        }
-      }
+    fixmeIvy(`Hooks don't run`) &&
+        it('should call all hooks in correct order when creating with createEmbeddedView', () => {
+          function SomeComponent_Template_0(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'hooks');
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'name', bind('C'));
+            }
+          }
 
-      @Component({
-        template: `
+          @Component({
+            template: `
           <ng-template #foo>
             <hooks [name]="'C'"></hooks>
           </ng-template>
           <hooks vcref [tplRef]="foo" [name]="'A'"></hooks>
           <hooks [name]="'B'"></hooks>
         `
-      })
-      class SomeComponent {
-        static ngComponentDef = defineComponent({
-          type: SomeComponent,
-          selectors: [['some-comp']],
-          factory: () => new SomeComponent(),
-          consts: 4,
-          vars: 3,
-          template: (rf: RenderFlags, cmp: SomeComponent) => {
-            if (rf & RenderFlags.Create) {
-              template(
-                  0, SomeComponent_Template_0, 1, 1, null, [], ['foo', ''], templateRefExtractor);
-              element(2, 'hooks', ['vcref', '']);
-              element(3, 'hooks');
-            }
-            if (rf & RenderFlags.Update) {
-              const tplRef = reference(1);
-              elementProperty(2, 'tplRef', bind(tplRef));
-              elementProperty(2, 'name', bind('A'));
-              elementProperty(3, 'name', bind('B'));
-            }
-          },
-          directives: [ComponentWithHooks, DirectiveWithVCRef]
+          })
+          class SomeComponent {
+            static ngComponentDef = defineComponent({
+              type: SomeComponent,
+              selectors: [['some-comp']],
+              factory: () => new SomeComponent(),
+              consts: 4,
+              vars: 3,
+              template: (rf: RenderFlags, cmp: SomeComponent) => {
+                if (rf & RenderFlags.Create) {
+                  template(
+                      0, SomeComponent_Template_0, 1, 1, null, [], ['foo', ''],
+                      templateRefExtractor);
+                  element(2, 'hooks', ['vcref', '']);
+                  element(3, 'hooks');
+                }
+                if (rf & RenderFlags.Update) {
+                  const tplRef = reference(1);
+                  elementProperty(2, 'tplRef', bind(tplRef));
+                  elementProperty(2, 'name', bind('A'));
+                  elementProperty(3, 'name', bind('B'));
+                }
+              },
+              directives: [ComponentWithHooks, DirectiveWithVCRef]
+            });
+          }
+
+          log.length = 0;
+
+          const fixture = new ComponentFixture(SomeComponent);
+          expect(log).toEqual([
+            'onChanges-A', 'onInit-A', 'doCheck-A', 'onChanges-B', 'onInit-B', 'doCheck-B',
+            'afterContentInit-A', 'afterContentChecked-A', 'afterContentInit-B',
+            'afterContentChecked-B', 'afterViewInit-A', 'afterViewChecked-A', 'afterViewInit-B',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+            'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          directiveInstance !.vcref.createEmbeddedView(
+              directiveInstance !.tplRef, fixture.component);
+          expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
+          expect(log).toEqual([]);
+
+          log.length = 0;
+          fixture.update();
+          expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>C</hooks><hooks>B</hooks>');
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'onChanges-C', 'onInit-C', 'doCheck-C', 'afterContentInit-C',
+            'afterContentChecked-C', 'afterViewInit-C', 'afterViewChecked-C',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          const viewRef = directiveInstance !.vcref.detach(0);
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+            'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          directiveInstance !.vcref.insert(viewRef !);
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          directiveInstance !.vcref.remove(0);
+          fixture.update();
+          expect(log).toEqual([
+            'onDestroy-C', 'doCheck-A', 'doCheck-B', 'afterContentChecked-A',
+            'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
         });
-      }
 
-      log.length = 0;
-
-      const fixture = new ComponentFixture(SomeComponent);
-      expect(log).toEqual([
-        'onChanges-A', 'onInit-A', 'doCheck-A', 'onChanges-B', 'onInit-B', 'doCheck-B',
-        'afterContentInit-A', 'afterContentChecked-A', 'afterContentInit-B',
-        'afterContentChecked-B', 'afterViewInit-A', 'afterViewChecked-A', 'afterViewInit-B',
-        'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
-      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
-      expect(log).toEqual([]);
-
-      log.length = 0;
-      fixture.update();
-      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>C</hooks><hooks>B</hooks>');
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'onChanges-C', 'onInit-C', 'doCheck-C', 'afterContentInit-C',
-        'afterContentChecked-C', 'afterViewInit-C', 'afterViewChecked-C', 'afterContentChecked-A',
-        'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
-        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      const viewRef = directiveInstance !.vcref.detach(0);
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      directiveInstance !.vcref.insert(viewRef !);
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
-        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      directiveInstance !.vcref.remove(0);
-      fixture.update();
-      expect(log).toEqual([
-        'onDestroy-C', 'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-    });
-
-    it('should call all hooks in correct order when creating with createComponent', () => {
-      @Component({
-        template: `
+    fixmeIvy(`Hooks don't run`) &&
+        it('should call all hooks in correct order when creating with createComponent', () => {
+          @Component({
+            template: `
           <hooks vcref [name]="'A'"></hooks>
           <hooks [name]="'B'"></hooks>
         `
-      })
-      class SomeComponent {
-        static ngComponentDef = defineComponent({
-          type: SomeComponent,
-          encapsulation: ViewEncapsulation.None,
-          selectors: [['some-comp']],
-          factory: () => new SomeComponent(),
-          consts: 2,
-          vars: 2,
-          template: (rf: RenderFlags, cmp: SomeComponent) => {
-            if (rf & RenderFlags.Create) {
-              element(0, 'hooks', ['vcref', '']);
-              element(1, 'hooks');
-            }
-            if (rf & RenderFlags.Update) {
-              elementProperty(0, 'name', bind('A'));
-              elementProperty(1, 'name', bind('B'));
-            }
-          },
-          directives: [ComponentWithHooks, DirectiveWithVCRef]
+          })
+          class SomeComponent {
+            static ngComponentDef = defineComponent({
+              type: SomeComponent,
+              encapsulation: ViewEncapsulation.None,
+              selectors: [['some-comp']],
+              factory: () => new SomeComponent(),
+              consts: 2,
+              vars: 2,
+              template: (rf: RenderFlags, cmp: SomeComponent) => {
+                if (rf & RenderFlags.Create) {
+                  element(0, 'hooks', ['vcref', '']);
+                  element(1, 'hooks');
+                }
+                if (rf & RenderFlags.Update) {
+                  elementProperty(0, 'name', bind('A'));
+                  elementProperty(1, 'name', bind('B'));
+                }
+              },
+              directives: [ComponentWithHooks, DirectiveWithVCRef]
+            });
+          }
+
+          log.length = 0;
+
+          const fixture = new ComponentFixture(SomeComponent);
+          expect(log).toEqual([
+            'onChanges-A', 'onInit-A', 'doCheck-A', 'onChanges-B', 'onInit-B', 'doCheck-B',
+            'afterContentInit-A', 'afterContentChecked-A', 'afterContentInit-B',
+            'afterContentChecked-B', 'afterViewInit-A', 'afterViewChecked-A', 'afterViewInit-B',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+            'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          const componentRef = directiveInstance !.vcref.createComponent(
+              directiveInstance !.cfr.resolveComponentFactory(ComponentWithHooks));
+          expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
+          expect(log).toEqual([]);
+
+          componentRef.instance.name = 'D';
+          log.length = 0;
+          fixture.update();
+          expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>D</hooks><hooks>B</hooks>');
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'onChanges-D', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
+            'afterContentChecked-D', 'afterViewInit-D', 'afterViewChecked-D',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'doCheck-D', 'afterContentChecked-D', 'afterViewChecked-D',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          const viewRef = directiveInstance !.vcref.detach(0);
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+            'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          directiveInstance !.vcref.insert(viewRef !);
+          fixture.update();
+          expect(log).toEqual([
+            'doCheck-A', 'doCheck-B', 'doCheck-D', 'afterContentChecked-D', 'afterViewChecked-D',
+            'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A',
+            'afterViewChecked-B'
+          ]);
+
+          log.length = 0;
+          directiveInstance !.vcref.remove(0);
+          fixture.update();
+          expect(log).toEqual([
+            'onDestroy-D', 'doCheck-A', 'doCheck-B', 'afterContentChecked-A',
+            'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+          ]);
         });
-      }
-
-      log.length = 0;
-
-      const fixture = new ComponentFixture(SomeComponent);
-      expect(log).toEqual([
-        'onChanges-A', 'onInit-A', 'doCheck-A', 'onChanges-B', 'onInit-B', 'doCheck-B',
-        'afterContentInit-A', 'afterContentChecked-A', 'afterContentInit-B',
-        'afterContentChecked-B', 'afterViewInit-A', 'afterViewChecked-A', 'afterViewInit-B',
-        'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      const componentRef = directiveInstance !.vcref.createComponent(
-          directiveInstance !.cfr.resolveComponentFactory(ComponentWithHooks));
-      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
-      expect(log).toEqual([]);
-
-      componentRef.instance.name = 'D';
-      log.length = 0;
-      fixture.update();
-      expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>D</hooks><hooks>B</hooks>');
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'onChanges-D', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
-        'afterContentChecked-D', 'afterViewInit-D', 'afterViewChecked-D', 'afterContentChecked-A',
-        'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'doCheck-D', 'afterContentChecked-D', 'afterViewChecked-D',
-        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      const viewRef = directiveInstance !.vcref.detach(0);
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      directiveInstance !.vcref.insert(viewRef !);
-      fixture.update();
-      expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'doCheck-D', 'afterContentChecked-D', 'afterViewChecked-D',
-        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-
-      log.length = 0;
-      directiveInstance !.vcref.remove(0);
-      fixture.update();
-      expect(log).toEqual([
-        'onDestroy-D', 'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
-        'afterViewChecked-A', 'afterViewChecked-B'
-      ]);
-    });
   });
 
   describe('host bindings', () => {

@@ -114,10 +114,10 @@ import {fixmeIvy} from '@angular/private/testing';
         expect(debugCtx.nodeIndex).toBe(1);
       });
 
-      fixmeIvy('unknown') && describe('deps', () => {
+      describe('deps', () => {
         class Dep {}
 
-        it('should inject deps from the same element', () => {
+        fixmeIvy('unknown') && it('should inject deps from the same element', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(0, NodeFlags.None, null, null, 2, 'span'),
             directiveDef(1, NodeFlags.None, null, 0, Dep, []),
@@ -127,7 +127,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        it('should inject deps from a parent element', () => {
+        fixmeIvy('unknown') && it('should inject deps from a parent element', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(0, NodeFlags.None, null, null, 3, 'span'),
             directiveDef(1, NodeFlags.None, null, 0, Dep, []),
@@ -138,7 +138,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        it('should not inject deps from sibling root elements', () => {
+        fixmeIvy('unknown') && it('should not inject deps from sibling root elements', () => {
           const rootElNodes = [
             elementDef(0, NodeFlags.None, null, null, 1, 'span'),
             directiveDef(1, NodeFlags.None, null, 0, Dep, []),
@@ -167,7 +167,7 @@ import {fixmeIvy} from '@angular/private/testing';
                   '    NullInjectorError: No provider for Dep!');
         });
 
-        it('should inject from a parent element in a parent view', () => {
+        fixmeIvy('unknown') && it('should inject from a parent element in a parent view', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(
                 0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
@@ -181,7 +181,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        it('should throw for missing dependencies', () => {
+        fixmeIvy('unknown') && it('should throw for missing dependencies', () => {
           expect(() => createAndGetRootNodes(compViewDef([
                    elementDef(0, NodeFlags.None, null, null, 1, 'span'),
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
@@ -192,7 +192,7 @@ import {fixmeIvy} from '@angular/private/testing';
                   '    NullInjectorError: No provider for nonExistingDep!');
         });
 
-        it('should use null for optional missing dependencies', () => {
+        fixmeIvy('unknown') && it('should use null for optional missing dependencies', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(0, NodeFlags.None, null, null, 1, 'span'),
             directiveDef(
@@ -202,7 +202,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep).toBe(null);
         });
 
-        it('should skip the current element when using SkipSelf', () => {
+        fixmeIvy('unknown') && it('should skip the current element when using SkipSelf', () => {
           createAndGetRootNodes(compViewDef([
             elementDef(0, NodeFlags.None, null, null, 4, 'span'),
             providerDef(NodeFlags.TypeValueProvider, null, 'someToken', 'someParentValue', []),
@@ -214,18 +214,19 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep).toBe('someParentValue');
         });
 
-        it('should ask the root injector',
-           withModule({providers: [{provide: 'rootDep', useValue: 'rootValue'}]}, () => {
-             createAndGetRootNodes(compViewDef([
-               elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-               directiveDef(1, NodeFlags.None, null, 0, SomeService, ['rootDep'])
-             ]));
+        fixmeIvy('unknown') &&
+            it('should ask the root injector',
+               withModule({providers: [{provide: 'rootDep', useValue: 'rootValue'}]}, () => {
+                 createAndGetRootNodes(compViewDef([
+                   elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+                   directiveDef(1, NodeFlags.None, null, 0, SomeService, ['rootDep'])
+                 ]));
 
-             expect(instance.dep).toBe('rootValue');
-           }));
+                 expect(instance.dep).toBe('rootValue');
+               }));
 
         describe('builtin tokens', () => {
-          it('should inject ViewContainerRef', () => {
+          fixmeIvy('unknown') && it('should inject ViewContainerRef', () => {
             createAndGetRootNodes(compViewDef([
               anchorDef(NodeFlags.EmbeddedViews, null, null, 1),
               directiveDef(1, NodeFlags.None, null, 0, SomeService, [ViewContainerRef]),
@@ -234,7 +235,7 @@ import {fixmeIvy} from '@angular/private/testing';
             expect(instance.dep.createEmbeddedView).toBeTruthy();
           });
 
-          it('should inject TemplateRef', () => {
+          fixmeIvy('unknown') && it('should inject TemplateRef', () => {
             createAndGetRootNodes(compViewDef([
               anchorDef(NodeFlags.None, null, null, 1, null, compViewDefFactory([anchorDef(
                                                                  NodeFlags.None, null, null, 0)])),
@@ -244,7 +245,7 @@ import {fixmeIvy} from '@angular/private/testing';
             expect(instance.dep.createEmbeddedView).toBeTruthy();
           });
 
-          it('should inject ElementRef', () => {
+          fixmeIvy('unknown') && it('should inject ElementRef', () => {
             const {view} = createAndGetRootNodes(compViewDef([
               elementDef(0, NodeFlags.None, null, null, 1, 'span'),
               directiveDef(1, NodeFlags.None, null, 0, SomeService, [ElementRef]),
@@ -253,7 +254,7 @@ import {fixmeIvy} from '@angular/private/testing';
             expect(instance.dep.nativeElement).toBe(asElementData(view, 0).renderElement);
           });
 
-          it('should inject Injector', () => {
+          fixmeIvy('unknown') && it('should inject Injector', () => {
             const {view} = createAndGetRootNodes(compViewDef([
               elementDef(0, NodeFlags.None, null, null, 1, 'span'),
               directiveDef(1, NodeFlags.None, null, 0, SomeService, [Injector]),
@@ -262,30 +263,32 @@ import {fixmeIvy} from '@angular/private/testing';
             expect(instance.dep.get(SomeService)).toBe(instance);
           });
 
-          it('should inject ChangeDetectorRef for non component providers', () => {
-            const {view} = createAndGetRootNodes(compViewDef([
-              elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-              directiveDef(1, NodeFlags.None, null, 0, SomeService, [ChangeDetectorRef])
-            ]));
+          fixmeIvy('unknown') &&
+              it('should inject ChangeDetectorRef for non component providers', () => {
+                const {view} = createAndGetRootNodes(compViewDef([
+                  elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+                  directiveDef(1, NodeFlags.None, null, 0, SomeService, [ChangeDetectorRef])
+                ]));
 
-            expect(instance.dep._view).toBe(view);
-          });
+                expect(instance.dep._view).toBe(view);
+              });
 
-          it('should inject ChangeDetectorRef for component providers', () => {
-            const {view, rootNodes} = createAndGetRootNodes(compViewDef([
-              elementDef(
-                  0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
-                  () => compViewDef([
-                    elementDef(0, NodeFlags.None, null, null, 0, 'span'),
-                  ])),
-              directiveDef(1, NodeFlags.Component, null, 0, SomeService, [ChangeDetectorRef]),
-            ]));
+          fixmeIvy('unknown') &&
+              it('should inject ChangeDetectorRef for component providers', () => {
+                const {view, rootNodes} = createAndGetRootNodes(compViewDef([
+                  elementDef(
+                      0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
+                      () => compViewDef([
+                        elementDef(0, NodeFlags.None, null, null, 0, 'span'),
+                      ])),
+                  directiveDef(1, NodeFlags.Component, null, 0, SomeService, [ChangeDetectorRef]),
+                ]));
 
-            const compView = asElementData(view, 0).componentView;
-            expect(instance.dep._view).toBe(compView);
-          });
+                const compView = asElementData(view, 0).componentView;
+                expect(instance.dep._view).toBe(compView);
+              });
 
-          it('should inject RendererV1', () => {
+          fixmeIvy('unknown') && it('should inject RendererV1', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(
                   0, NodeFlags.None, null, null, 1, 'span', null, null, null, null,
@@ -296,7 +299,7 @@ import {fixmeIvy} from '@angular/private/testing';
             expect(instance.dep.createElement).toBeTruthy();
           });
 
-          it('should inject Renderer2', () => {
+          fixmeIvy('unknown') && it('should inject Renderer2', () => {
             createAndGetRootNodes(compViewDef([
               elementDef(
                   0, NodeFlags.None, null, null, 1, 'span', null, null, null, null,
