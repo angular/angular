@@ -265,6 +265,21 @@ jobs:
 
       - run: ./scripts/circleci/publish-snapshots.sh
 
+
+  # ----------------------------------------------------------------------------
+  # Job that runs the local browser tests against the Angular Github snapshots
+  # ----------------------------------------------------------------------------
+  snapshot_tests_local_browsers:
+    docker: *docker-firefox-image
+    resource_class: xlarge
+    steps:
+    - *checkout_code
+    - *restore_cache
+    - *yarn_install
+
+    - run: ./scripts/install-angular-snapshots.sh
+    - run: ./scripts/circleci/run-local-browser-tests.sh
+
 # ----------------------------------------------------------------------------------------
 # Workflow definitions. A workflow usually groups multiple jobs together. This is useful if
 # one job depends on another.
@@ -311,7 +326,10 @@ workflows:
   # This workflow runs various jobs against the Angular snapshot builds from Github.
   snapshot_tests:
     jobs:
-      - tests_local_browsers
+      # Note that we need additional jobs for the nightly snapshot tests because there is no
+      # easy way to detect whether a job runs inside of a cronjob or specific workflow.
+      # See: https://circleci.com/ideas/?idea=CCI-I-295
+      - snapshot_tests_local_browsers
     triggers:
       - schedule:
           cron: "0 0 * * *"
