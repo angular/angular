@@ -1697,39 +1697,39 @@ describe('Integration', () => {
 
     it('should not change existing href if routerLink is null', fakeAsync(() => {
          @Component({
-           selector: 'someRoot',
-           template: `<router-outlet></router-outlet><a href="/home" [routerLink]="null">Link</a>`
+           selector: 'someCmp',
+           template: `<router-outlet></router-outlet><a href="link" [routerLink]="null">Link</a>`
          })
-         class RootCmpWithLink {
+         class CmpWithLink {
          }
 
-         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
          const router: Router = TestBed.get(Router);
 
-         const fixture = createRoot(router, RootCmpWithLink);
+         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
 
          const native = fixture.nativeElement.querySelector('a');
-
-         advance(fixture);
-         expect(native.getAttribute('href')).toEqual('/home');
+         expect(native.getAttribute('href')).toEqual('link');
        }));
 
-    it('should set missing href to current location if routerLink is null', fakeAsync(() => {
+    it('should set href to current location if routerLink is null', fakeAsync(() => {
          @Component({
-           selector: 'someRoot',
+           selector: 'someCmp',
            template: `<router-outlet></router-outlet><a [routerLink]="null">Link</a>`
          })
-         class RootCmpWithLink {
+         class CmpWithLink {
          }
 
-         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
          const router: Router = TestBed.get(Router);
 
-         const fixture = createRoot(router, RootCmpWithLink);
-
+         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
          const native = fixture.nativeElement.querySelector('a');
 
+         router.navigateByUrl('/home');
          advance(fixture);
+
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 

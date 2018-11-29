@@ -267,8 +267,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    if (this.commands.length || !this.href ||
-        (typeof this.href === 'string' && !this.href.length)) {
+    if (this.commands.length || !this.href) {
       this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
     }
   }
