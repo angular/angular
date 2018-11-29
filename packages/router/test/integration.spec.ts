@@ -134,6 +134,31 @@ describe('Integration', () => {
          expect(event !.restoredState).toEqual(null);
        })));
 
+    it('should set history.state if passed using imperative navigation',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         router.resetConfig([
+           {path: '', component: SimpleCmp},
+           {path: 'simple', component: SimpleCmp},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+        //  let transition: NavigationTransitionx = null !;
+        //  router.events.subscribe(e => {
+        //    if (e instanceof NavigationStart) {
+        //      transition = router.getCurrentTransition();
+        //    }
+        //  });
+
+         router.navigateByUrl('/simple', {state: {foo: 'bar'}});
+         tick();
+
+         const history = (location as any)._history;
+         expect(history[history.length - 1].state.foo).toBe('bar');
+         expect(history[history.length - 1].state).toEqual({foo: 'bar', navigationId: history.length});
+        //  expect(transition.state).toBeDefined();
+        //  expect(transition.state).toEqual({foo: 'bar'});
+       })));
+
     it('should not pollute browser history when replaceUrl is set to true',
        fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
          router.resetConfig([
