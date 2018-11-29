@@ -91,6 +91,10 @@ jobs:
       - run: bazel build src/...
       - run: bazel test src/... tools/public_api_guard/...
 
+      # Note: We want to save the cache in this job because the workspace cache also
+      # includes the Bazel repository cache that will be updated in this job.
+      - *save_cache
+
   # ----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chrome Headless
   # ----------------------------------------------------------------
@@ -237,8 +241,6 @@ jobs:
       - store_artifacts:
           path: /tmp/cdk-umd-minified-bundles
           destination: /angular_material/cdk_release_output/
-
-      - *save_cache
 
   # ----------------------------------------
   # Job that publishes the build snapshots
