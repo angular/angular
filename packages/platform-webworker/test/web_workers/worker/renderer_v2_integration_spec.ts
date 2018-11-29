@@ -161,7 +161,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     if (getDOM().supportsDOMEvents()) {
-      it('should listen to events', () => {
+      fixmeIvy('#FW-750 - fixture.debugElement is null') && it('should listen to events', () => {
         const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                             .createComponent(MyComp2);
 
