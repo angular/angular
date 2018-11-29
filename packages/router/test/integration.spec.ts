@@ -1708,11 +1708,8 @@ describe('Integration', () => {
 
          const fixture = createRoot(router, RootCmpWithLink);
 
-         router.resetConfig([{path: 'home', component: SimpleCmp}]);
-
          const native = fixture.nativeElement.querySelector('a');
 
-         router.navigateByUrl('/');
          advance(fixture);
          expect(native.getAttribute('href')).toEqual('/home');
        }));
@@ -1730,11 +1727,8 @@ describe('Integration', () => {
 
          const fixture = createRoot(router, RootCmpWithLink);
 
-         router.resetConfig([{path: 'home', component: SimpleCmp}]);
-
          const native = fixture.nativeElement.querySelector('a');
 
-         router.navigateByUrl('/home');
          advance(fixture);
          expect(native.getAttribute('href')).toEqual('/home');
        }));
