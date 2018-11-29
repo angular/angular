@@ -1695,6 +1695,50 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 
+    it('should not change existing href if routerLink is null', fakeAsync(() => {
+         @Component({
+           selector: 'someRoot',
+           template: `<router-outlet></router-outlet><a href="/home" routerLink="null">Link</a>`
+         })
+         class RootCmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home');
+       }));
+
+    it('should set missing href to current location if routerLink is null', fakeAsync(() => {
+         @Component({
+           selector: 'someRoot',
+           template: `<router-outlet></router-outlet><a routerLink="null">Link</a>`
+         })
+         class RootCmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         const fixture = createRoot(router, RootCmpWithLink);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const native = fixture.nativeElement.querySelector('a');
+
+         router.navigateByUrl('/home');
+         advance(fixture);
+         expect(native.getAttribute('href')).toEqual('/home');
+       }));
+
     it('should not throw when commands is null', fakeAsync(() => {
          @Component({
            selector: 'someCmp',
@@ -4976,7 +5020,6 @@ class RootCmpWithNamedOutlet {
 class ThrowingCmp {
   constructor() { throw new Error('Throwing Cmp'); }
 }
-
 
 
 function advance(fixture: ComponentFixture<any>, millis?: number): void {
