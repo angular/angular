@@ -318,6 +318,8 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_6639222533406278123$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c3$ = ["title", $MSG_EXTERNAL_7566208596013750546$, "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$];
         …
+        consts: 5,
+        vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $_c0$);
@@ -377,9 +379,11 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 1,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 4, 2, null, $_c0$);
+            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 4, 3, null, $_c0$);
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx.items));
@@ -436,6 +440,8 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_6639222533406278123$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $_c3$ = ["title", $MSG_EXTERNAL_7566208596013750546$, "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$];
         …
+        consts: 5,
+        vars: 8,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $_c0$);
@@ -495,9 +501,11 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 1,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 4, 2, null, $_c0$);
+            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 4, 3, null, $_c0$);
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx.items));
@@ -621,6 +629,8 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         const $MSG_EXTERNAL_2817319788724342848$ = goog.getMsg("Some value: {$phA}", { "phA": "\uFFFD0\uFFFD" });
         …
+        consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -649,6 +659,8 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_609623417156596326$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         const $MSG_EXTERNAL_3998119318957372120$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
         …
+        consts: 7,
+        vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -710,6 +722,8 @@ describe('i18n support in the view compiler', () => {
         });
         const $MSG_EXTERNAL_5788821996131681377$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_5788821996131681377_RAW$);
         …
+        consts: 9,
+        vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -776,6 +790,8 @@ describe('i18n support in the view compiler', () => {
           "closeTagSpan": "\uFFFD/#7\uFFFD"
         });
         …
+        consts: 9,
+        vars: 7,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -854,11 +870,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1, " Some content ");
-            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 2, null, $_c0$);
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 4, null, $_c0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -902,11 +920,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelement(0, "img", $_c0$);
             $r3$.ɵtemplate(1, MyComponent_img_Template_1, 1, 0, null, $_c1$);
-            $r3$.ɵtemplate(2, MyComponent_img_Template_2, 2, 0, null, $_c1$);
+            $r3$.ɵtemplate(2, MyComponent_img_Template_2, 2, 1, null, $_c1$);
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
@@ -966,7 +986,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementStart(1, "div");
             $r3$.ɵelementStart(2, "div");
             $r3$.ɵpipe(3, "uppercase");
-            $r3$.ɵtemplate(4, MyComponent_div_div_Template_4, 3, 0, null, $_c1$);
+            $r3$.ɵtemplate(4, MyComponent_div_div_Template_4, 3, 2, null, $_c1$);
             $r3$.ɵelementEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
@@ -1010,12 +1030,14 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 4,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
-            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 3, null, $_c1$);
-            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 2, null, $_c1$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1221890473527419724$);
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 5, null, $_c1$);
+            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 4, null, $_c1$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -1057,9 +1079,11 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 1,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 3, 0, null, $_c0$);
+            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 3, 1, null, $_c0$);
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
@@ -1103,6 +1127,8 @@ describe('i18n support in the view compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
+        consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1192,6 +1218,8 @@ describe('i18n support in the view compiler', () => {
           "interpolation": "\uFFFD0\uFFFD"
         });
         …
+        consts: 3,
+        vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementContainerStart(0);
@@ -1229,9 +1257,11 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 1,
+        vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, Template_0, 2, 2);
+            $r3$.ɵtemplate(0, Template_0, 2, 3);
           }
         }
       `;
@@ -1268,11 +1298,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 5,
+        vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_EXTERNAL_702706566400598764$);
-            $r3$.ɵtemplate(2, Template_2, 2, 2);
+            $r3$.ɵtemplate(2, Template_2, 2, 3);
             $r3$.ɵelementContainerStart(3);
             $r3$.ɵpipe(4, "uppercase");
             $r3$.ɵelementContainerEnd();
@@ -1315,9 +1347,11 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, Template_0, 1, 0);
+            $r3$.ɵtemplate(0, Template_0, 1, 1);
             $r3$.ɵelementContainerStart(1);
             $r3$.ɵi18n(2, $MSG_EXTERNAL_8806993169187953163$);
             $r3$.ɵelementContainerEnd();
@@ -1361,7 +1395,7 @@ describe('i18n support in the view compiler', () => {
         function Template_2(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $MSG_EXTERNAL_2051477021417799640$, 2);
-            $r3$.ɵtemplate(1, Template_1, 1, 0);
+            $r3$.ɵtemplate(1, Template_1, 1, 1);
             $r3$.ɵi18nEnd();
           }
           if (rf & 2) {
@@ -1382,7 +1416,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $MSG_EXTERNAL_2051477021417799640$, 1);
             $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵtemplate(2, Template_2, 2, 0);
+            $r3$.ɵtemplate(2, Template_2, 2, 1);
             $r3$.ɵi18nEnd();
           }
           if (rf & 2) {
@@ -1392,11 +1426,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_EXTERNAL_2051477021417799640$);
-            $r3$.ɵtemplate(2, Template_2, 3, 2);
+            $r3$.ɵtemplate(2, Template_2, 3, 3);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -1432,12 +1468,14 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementContainerStart(0);
             $r3$.ɵi18n(1, $MSG_EXTERNAL_7842238767399919809$);
             $r3$.ɵelementContainerEnd();
-            $r3$.ɵtemplate(2, Template_2, 1, 0);
+            $r3$.ɵtemplate(2, Template_2, 1, 1);
           }
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
@@ -1535,6 +1573,8 @@ describe('i18n support in the view compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
+        consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1623,13 +1663,15 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 4,
+        vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18n(1, $MSG_EXTERNAL_7842238767399919809$);
             $r3$.ɵelementEnd();
-            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 2, 0, null, $_c0$);
-            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 0, null, $_c0$);
+            $r3$.ɵtemplate(2, MyComponent_div_Template_2, 2, 1, null, $_c0$);
+            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 2, null, $_c0$);
           }
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));
@@ -1672,9 +1714,11 @@ describe('i18n support in the view compiler', () => {
           "startItalicText": "\uFFFD#4\uFFFD",
           "closeItalicText": "\uFFFD/#4\uFFFD",
           "closeTagDiv": "\uFFFD/#3\uFFFD",
-          "icu": $MSG_APP_SPEC_TS_1$
+          "icu": $MSG_EXTERNAL_2417296354340576868$
         });
         …
+        consts: 5,
+        vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1710,6 +1754,8 @@ describe('i18n support in the view compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
+        consts: 2,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1749,6 +1795,8 @@ describe('i18n support in the view compiler', () => {
           "icu_1": $MSG_EXTERNAL_7068143081688428291$
         });
         …
+        consts: 2,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1815,12 +1863,14 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 4,
+        vars: 3,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "div");
-            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 2, 0, null, $_c3$);
+            $r3$.ɵtemplate(3, MyComponent_div_Template_3, 2, 1, null, $_c3$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -1857,6 +1907,8 @@ describe('i18n support in the view compiler', () => {
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
         …
+        consts: 2,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -1916,11 +1968,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 2,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1194472282609532229$);
-            $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 0, null, $_c2$);
+            $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 1, null, $_c2$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -1980,11 +2034,13 @@ describe('i18n support in the view compiler', () => {
           }
         }
         …
+        consts: 3,
+        vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7186042105600518133$);
-            $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 0, null, $_c0$);
+            $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 2, null, $_c2$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -2022,6 +2078,8 @@ describe('i18n support in the view compiler', () => {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
+        consts: 2,
+        vars: 4,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
