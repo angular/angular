@@ -321,7 +321,7 @@ export class ActivatedRouteSnapshot {
   }
 
   toString(): string {
-    const url = this.url.map(segment => segment.toString()).join('/');
+    const url = this.url ? this.url.map(segment => segment.toString()).join('/') : '';
     const matched = this.routeConfig ? this.routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
   }

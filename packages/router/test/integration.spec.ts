@@ -1804,6 +1804,42 @@ describe('Integration', () => {
          expect(native.getAttribute('href')).toEqual('/home');
        }));
 
+    it('should not change href if routerLink is null', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template: `<router-outlet></router-outlet><a href="link" [routerLink]="null">Link</a>`
+         })
+         class CmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
+
+         advance(fixture);
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.getAttribute('href')).toEqual('link');
+       }));
+
+    it('should set href to current location if routerLink is null', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template: `<router-outlet></router-outlet><a [routerLink]="null">Link</a>`
+         })
+         class CmpWithLink {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithLink]});
+         const router: Router = TestBed.get(Router);
+
+         let fixture: ComponentFixture<CmpWithLink> = createRoot(router, CmpWithLink);
+
+         advance(fixture);
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.getAttribute('href')).toEqual('/');
+       }));
+
     it('should not throw when commands is null', fakeAsync(() => {
          @Component({
            selector: 'someCmp',
@@ -5119,7 +5155,6 @@ class RootCmpWithNamedOutlet {
 class ThrowingCmp {
   constructor() { throw new Error('Throwing Cmp'); }
 }
-
 
 
 function advance(fixture: ComponentFixture<any>, millis?: number): void {
