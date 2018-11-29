@@ -378,22 +378,13 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop"
-  },
-  {
     "name": "onChangesWrapper"
   },
   {
     "name": "postProcessBaseDirective"
   },
   {
-    "name": "prefillHostVars"
-  },
-  {
     "name": "queueComponentIndexForCheck"
-  },
-  {
-    "name": "queueHostBindingForCheck"
   },
   {
     "name": "readElementValue"
@@ -430,6 +421,9 @@
   },
   {
     "name": "setBindingRoot"
+  },
+  {
+    "name": "setCurrentDirectiveDef"
   },
   {
     "name": "setFirstTemplatePass"
