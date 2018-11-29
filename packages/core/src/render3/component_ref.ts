@@ -115,15 +115,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     const isInternalRootView = rootSelectorOrNode === undefined;
 
-    let rendererFactory: RendererFactory3;
-    let sanitizer: Sanitizer|null = null;
+    const rootViewInjector =
+        ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
 
-    if (ngModule) {
-      rendererFactory = ngModule.injector.get(RendererFactory2) as RendererFactory3;
-      sanitizer = ngModule.injector.get(Sanitizer, null);
-    } else {
-      rendererFactory = domRendererFactory3;
-    }
+    const rendererFactory =
+        rootViewInjector.get(RendererFactory2, domRendererFactory3) as RendererFactory3;
+    const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const hostRNode = isInternalRootView ?
         elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
@@ -132,11 +129,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                                  LViewFlags.CheckAlways | LViewFlags.IsRoot;
     const rootContext: RootContext =
-        ngModule && !isInternalRootView ? ngModule.injector.get(ROOT_CONTEXT) : createRootContext();
+        !isInternalRootView ? rootViewInjector.get(ROOT_CONTEXT) : createRootContext();
 
     const renderer = rendererFactory.createRenderer(hostRNode, this.componentDef);
-    const rootViewInjector =
-        ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
 
     if (rootSelectorOrNode && hostRNode) {
       ngDevMode && ngDevMode.rendererSetAttribute++;
