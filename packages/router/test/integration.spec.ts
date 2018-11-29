@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, Subscription, of } from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
@@ -142,21 +142,22 @@ describe('Integration', () => {
          ]);
 
          const fixture = createRoot(router, RootCmp);
-        //  let transition: NavigationTransitionx = null !;
-        //  router.events.subscribe(e => {
-        //    if (e instanceof NavigationStart) {
-        //      transition = router.getCurrentTransition();
-        //    }
-        //  });
+         let navigation: Navigation = null !;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             navigation = router.getCurrentNavigation() !;
+           }
+         });
 
          router.navigateByUrl('/simple', {state: {foo: 'bar'}});
          tick();
 
          const history = (location as any)._history;
          expect(history[history.length - 1].state.foo).toBe('bar');
-         expect(history[history.length - 1].state).toEqual({foo: 'bar', navigationId: history.length});
-        //  expect(transition.state).toBeDefined();
-        //  expect(transition.state).toEqual({foo: 'bar'});
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
+         expect(navigation.extras.state).toBeDefined();
+         expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
 
     it('should not pollute browser history when replaceUrl is set to true',
@@ -1879,35 +1880,35 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/team/22/simple?q=1#f');
            })));
 
-        it('should support history state',
-           fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
-             const fixture = createRoot(router, RootCmp);
+    it('should support history state',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig([{
-               path: 'team/:id',
-               component: TeamCmp,
-               children: [
-                 {path: 'link', component: LinkWithState},
-                 {path: 'simple', component: SimpleCmp}
-               ]
-             }]);
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [
+             {path: 'link', component: LinkWithState}, {path: 'simple', component: SimpleCmp}
+           ]
+         }]);
 
-             router.navigateByUrl('/team/22/link');
-             advance(fixture);
+         router.navigateByUrl('/team/22/link');
+         advance(fixture);
 
-             const native = fixture.nativeElement.querySelector('a');
-             expect(native.getAttribute('href')).toEqual('/team/22/simple');
-             native.click();
-             advance(fixture);
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.getAttribute('href')).toEqual('/team/22/simple');
+         native.click();
+         advance(fixture);
 
-             expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+         expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
 
-             // Check the history entry
-             const history = (location as any)._history;
+         // Check the history entry
+         const history = (location as any)._history;
 
-             expect(history[history.length - 1].state.foo).toBe('bar');
-             expect(history[history.length - 1].state).toEqual({foo: 'bar', navigationId: history.length});
-           })));
+         expect(history[history.length - 1].state.foo).toBe('bar');
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
+       })));
   });
 
   describe('redirects', () => {
@@ -1922,6 +1923,33 @@ describe('Integration', () => {
          advance(fixture);
 
          expect(location.path()).toEqual('/team/22');
+       })));
+
+    it('should update Navigation object after redirects are applied',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+         let initialUrl, afterRedirectUrl;
+
+         router.resetConfig([
+           {path: 'old/team/:id', redirectTo: 'team/:id'}, {path: 'team/:id', component: TeamCmp}
+         ]);
+
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             const navigation = router.getCurrentNavigation();
+             initialUrl = navigation && navigation.finalUrl;
+           }
+           if (e instanceof RoutesRecognized) {
+             const navigation = router.getCurrentNavigation();
+             afterRedirectUrl = navigation && navigation.finalUrl;
+           }
+         });
+
+         router.navigateByUrl('old/team/22');
+         advance(fixture);
+
+         expect(initialUrl).toBeUndefined();
+         expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
        })));
 
     it('should not break the back button when trigger by location change',
