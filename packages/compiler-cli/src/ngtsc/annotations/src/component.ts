@@ -57,6 +57,7 @@ export class ComponentDecoratorHandler implements
   preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
     const meta = this._resolveLiteral(decorator);
     const component = reflectObjectLiteral(meta);
+    const promises: Promise<void>[] = [];
 
     if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
@@ -66,9 +67,27 @@ export class ComponentDecoratorHandler implements
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
       const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
-      return this.resourceLoader.preload(url);
+      const promise = this.resourceLoader.preload(url);
+      if (promise !== undefined) {
+        promises.push(promise);
+      }
     }
-    return undefined;
+
+    const styleUrls = this._extractStyleUrls(component);
+    if (this.resourceLoader.preload !== undefined && styleUrls !== null) {
+      for (const styleUrl of styleUrls) {
+        const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), styleUrl);
+        const promise = this.resourceLoader.preload(url);
+        if (promise !== undefined) {
+          promises.push(promise);
+        }
+      }
+    }
+    if (promises.length !== 0) {
+      return Promise.all(promises).then(() => undefined);
+    } else {
+      return undefined;
+    }
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
@@ -186,6 +205,14 @@ export class ComponentDecoratorHandler implements
       styles = parseFieldArrayValue(component, 'styles', this.reflector, this.checker);
     }
 
+    let styleUrls = this._extractStyleUrls(component);
+    if (styleUrls !== null) {
+      if (styles === null) {
+        styles = [];
+      }
+      styles.push(...styleUrls.map(styleUrl => this.resourceLoader.load(styleUrl)));
+    }
+
     let encapsulation: number = 0;
     if (component.has('encapsulation')) {
       encapsulation = parseInt(staticallyResolve(
@@ -281,5 +308,19 @@ export class ComponentDecoratorHandler implements
 
     this.literalCache.set(decorator, meta);
     return meta;
+  }
+
+  private _extractStyleUrls(component: Map<string, ts.Expression>): string[]|null {
+    if (!component.has('styleUrls')) {
+      return null;
+    }
+
+    const styleUrlsExpr = component.get('styleUrls') !;
+    const styleUrls = staticallyResolve(styleUrlsExpr, this.reflector, this.checker);
+    if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');
+    }
+    return styleUrls as string[];
   }
 }
