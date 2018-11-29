@@ -1,0 +1,55 @@
+<h1>Template reference variables</h1>
+
+<div>
+  <h2>Pass value to an event handler</h2>
+  <p>See console for output.</p>
+  <!-- #docregion ref-phone -->
+  <!-- #docregion ref-var -->
+  <input #phone placeholder="phone number" />
+  <!-- #enddocregion ref-var -->
+
+  <!-- lots of other elements -->
+
+  <!-- phone refers to the input element; pass its `value` to an event handler -->
+  <button (click)="callPhone(phone.value)">Call</button>
+  <!-- #enddocregion ref-phone -->
+</div>
+
+<div>
+  <!-- #docregion ref-fax -->
+  <input ref-fax placeholder="fax number" />
+  <button (click)="callFax(fax.value)">Fax</button>
+  <!-- #enddocregion ref-fax -->
+</div>
+
+<hr />
+
+<div>
+  <h2>Template reference variable with disabled button</h2>
+  <p>btn refers to the button element.</p>
+  <button
+    #btn
+    disabled
+    [innerHTML]="'disabled by attribute: ' + btn.disabled"
+  ></button>
+</div>
+
+<hr />
+
+<h2>Reference variables, forms, and NgForm</h2>
+<!-- #docregion ngForm -->
+<form #itemForm="ngForm" (ngSubmit)="onSubmit(itemForm)">
+  <label for="name"
+    >Name <input class="form-control" name="name" ngModel required />
+  </label>
+  <button type="submit">Submit</button>
+</form>
+
+<div [hidden]="!itemForm.form.valid">
+  <p>{{ submitMessage }}</p>
+</div>
+
+<!-- #enddocregion ngForm -->
+
+
+<p>JSON: {{ itemForm.form.value | json }}</p>
