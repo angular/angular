@@ -422,8 +422,8 @@
     "picture": "minko.jpg",
     "twitter": "mgechev",
     "website": "http://blog.mgechev.com",
-    "bio": "Software engineer who enjoys theoretical computer science and its practical applications. Author of the books 'Switching to Angular 2' and 'Getting Started with Angular', speaker and blogger. Working on tooling for Angular and TypeScript.",
-    "group": "GDE"
+    "bio": "Software engineer who enjoys theoretical computer science and its practical applications. Speaker, author of the book 'Switching to Angular', codelyzer, Guess.js, and the Go linter revive. Working for faster and more reliable software.",
+    "group": "Angular"
   },
 
   "uri": {
