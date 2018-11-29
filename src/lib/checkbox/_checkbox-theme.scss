@@ -9,6 +9,7 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
 
 
   // The color of the checkbox's checkmark / mixedmark.
@@ -22,7 +23,7 @@
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
 
   .mat-checkbox-frame {
-    border-color: mat-color(map-get($theme, foreground), secondary-text);
+    border-color: mat-color($foreground, secondary-text);
   }
 
   .mat-checkbox-checkmark {
@@ -73,7 +74,7 @@
     }
 
     .mat-checkbox-label {
-      color: $disabled-color;
+      color: mat-color($foreground, secondary-text);
     }
 
     @include cdk-high-contrast {
