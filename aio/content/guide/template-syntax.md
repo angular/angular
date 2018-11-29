@@ -1631,70 +1631,73 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 {@a template-reference-variable}
 
+{@a template-reference-variables--var-}
+
 {@a ref-vars}
 
 {@a ref-var}
 
-## Template reference variables ( <span class="syntax">#var</span> )
+## Template reference variables (`#var`)
 
 A **template reference variable** is often a reference to a DOM element within a template.
-It can also be a reference to an Angular component or directive or a
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
+It can also refer to a directive (which contains a component), an element, [TemplateRef](api/core/TemplateRef), or a <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components" title="MDN: Web Components">web component</a>.
+
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="template-reference-variables">template reference variables example</live-example>.
+
 
 Use the hash symbol (#) to declare a reference variable.
-The `#phone` declares a `phone` variable on an `<input>` element.
+The following reference variable, `#phone`, declares a `phone` variable on an `<input>` element.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-var" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You can refer to a template reference variable _anywhere_ in the template.
-The `phone` variable declared on this `<input>` is
-consumed in a `<button>` on the other side of the template
+You can refer to a template reference variable anywhere in the component's template.
+Here, a `<button>` further down the template refers to the `phone` variable.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-phone" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 <h3 class="no-toc">How a reference variable gets its value</h3>
 
-In most cases, Angular sets the reference variable's value to the element on which it was declared.
-In the previous example, `phone` refers to the _phone number_ `<input>` box.
-The phone button click handler passes the _input_ value to the component's `callPhone` method.
-But a directive can change that behavior and set the value to something else, such as itself.
-The `NgForm` directive does that.
+In most cases, Angular sets the reference variable's value to the element on which it is declared.
+In the previous example, `phone` refers to the phone number `<input>`.
+The button's click handler passes the `<input>` value to the component's `callPhone()` method.
 
-The following is a *simplified* version of the form example in the [Forms](guide/forms) guide.
+The `NgForm` directive can change that behavior and set the value to something else. In the following example, the template reference variable, `itemForm`, appears three times separated
+by HTML.
 
-<code-example path="template-syntax/src/app/hero-form.component.html" header="src/app/hero-form.component.html" linenums="false">
+<code-example path="template-reference-variables/src/app/app.component.html" region="ngForm" header="src/app/hero-form.component.html" linenums="false">
 </code-example>
 
-A template reference variable, `heroForm`, appears three times in this example, separated
-by a large amount of HTML.
-What is the value of `heroForm`?
+The reference value of itemForm, without the ngForm attribute value, would be
+the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
+There is, however, a difference between a Component and a Directive in that a `Component
+`will be referenced without specifying the attribute value, and a `Directive` will not
+change the implicit reference (that is, the element).
 
-If Angular hadn't taken it over when you imported the `FormsModule`,
-it would be the [HTMLFormElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement).
-The `heroForm` is actually a reference to an Angular [NgForm](api/forms/NgForm "API: NgForm")
+
+
+However, with `NgForm`, `itemForm` is a reference to the [NgForm](api/forms/NgForm "API: NgForm")
 directive with the ability to track the value and validity of every control in the form.
 
-The native `<form>` element doesn't have a `form` property.
-But the `NgForm` directive does, which explains how you can disable the submit button
-if the `heroForm.form.valid` is invalid and pass the entire form control tree
-to the parent component's `onSubmit` method.
+The native `<form>` element doesn't have a `form` property, but the `NgForm` directive does, which allows disabling the submit button
+if the `itemForm.form.valid` is invalid and passing the entire form control tree
+to the parent component's `onSubmit()` method.
 
-<h3 class="no-toc">Template reference variable warning notes</h3>
+<h3 class="no-toc">Template reference variable considerations</h3>
 
-A template _reference_ variable (`#phone`) is _not_ the same as a template _input_ variable (`let phone`)
-such as you might see in an [`*ngFor`](guide/template-syntax#template-input-variable).
-Learn the difference in the [_Structural Directives_](guide/structural-directives#template-input-variable) guide.
+A template _reference_ variable (`#phone`) is not the same as a template _input_ variable (`let phone`) such as in an [`*ngFor`](guide/template-syntax#template-input-variable).
+See [_Structural Directives_](guide/structural-directives#template-input-variable) for more information.
 
-The scope of a reference variable is the _entire template_.
-Do not define the same variable name more than once in the same template.
-The runtime value will be unpredictable.
+The scope of a reference variable is the entire template. So, don't define the same variable name more than once in the same template as the runtime value will be unpredictable.
+
+#### Alternative syntax
 
 You can use the `ref-` prefix alternative to `#`.
 This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
+
+<code-example path="template-reference-variables/src/app/app.component.html" region="ref-fax" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 
