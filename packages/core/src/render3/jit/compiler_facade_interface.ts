@@ -132,6 +132,7 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   styles: string[];
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;
+  interpolation?: [string, string];
 }
 
 export type ViewEncapsulation = number;

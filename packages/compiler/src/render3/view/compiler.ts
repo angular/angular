@@ -14,6 +14,7 @@ import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent} from '../../expression_parser/ast';
 import {LifecycleHooks} from '../../lifecycle_reflector';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -382,6 +383,7 @@ export function compileComponentFromRender2(
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
+    interpolation: DEFAULT_INTERPOLATION_CONFIG,
     animations: null,
     viewProviders:
         component.viewProviders.length > 0 ? new o.WrappedNodeExpr(component.viewProviders) : null,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, InterpolationConfig, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -158,9 +158,22 @@ export class ComponentDecoratorHandler implements
       }
     }, undefined) !;
 
+    let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
+    if (component.has('interpolation')) {
+      const expr = component.get('interpolation') !;
+      const value = staticallyResolve(expr, this.reflector, this.checker);
+      if (!Array.isArray(value) || value.length !== 2 ||
+          !value.every(element => typeof element === 'string')) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            'interpolation must be an array with 2 elements of string type');
+      }
+      interpolation = InterpolationConfig.fromArray(value as[string, string]);
+    }
+
     const template = parseTemplate(
         templateStr, `${node.getSourceFile().fileName}#${node.name!.text}/template.html`,
-        {preserveWhitespaces});
+        {preserveWhitespaces, interpolationConfig: interpolation});
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
@@ -230,6 +243,7 @@ export class ComponentDecoratorHandler implements
           template,
           viewQueries,
           encapsulation,
+          interpolation,
           styles: styles || [],
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -276,7 +290,8 @@ export class ComponentDecoratorHandler implements
       metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }
 
-    const res = compileComponentFromMetadata(metadata, pool, makeBindingParser());
+    const res =
+        compileComponentFromMetadata(metadata, pool, makeBindingParser(metadata.interpolation));
 
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {

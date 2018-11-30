@@ -17,7 +17,7 @@ import * as i18n from '../../i18n/i18n_ast';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config';
 import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
@@ -1396,11 +1396,13 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean}):
+    template: string, templateUrl: string,
+    options: {preserveWhitespaces?: boolean, interpolationConfig?: InterpolationConfig} = {}):
     {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
-  const bindingParser = makeBindingParser();
+  const {interpolationConfig, preserveWhitespaces} = options;
+  const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(template, templateUrl, true);
+  const parseResult = htmlParser.parse(template, templateUrl, true, interpolationConfig);
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
@@ -1412,17 +1414,18 @@ export function parseTemplate(
   // before we run whitespace removal process, because existing i18n
   // extraction process (ng xi18n) relies on a raw content to generate
   // message ids
-  const i18nConfig = {keepI18nAttrs: !options.preserveWhitespaces};
-  rootNodes = html.visitAll(new I18nMetaVisitor(i18nConfig), rootNodes);
+  rootNodes =
+      html.visitAll(new I18nMetaVisitor(interpolationConfig, !preserveWhitespaces), rootNodes);
 
-  if (!options.preserveWhitespaces) {
+  if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
 
     // run i18n meta visitor again in case we remove whitespaces, because
     // that might affect generated i18n message content. During this pass
     // i18n IDs generated at the first pass will be preserved, so we can mimic
     // existing extraction process (ng xi18n)
-    rootNodes = html.visitAll(new I18nMetaVisitor({keepI18nAttrs: false}), rootNodes);
+    rootNodes = html.visitAll(
+        new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
   }
 
   const {nodes, hasNgContent, ngContentSelectors, errors} =
@@ -1437,10 +1440,10 @@ export function parseTemplate(
 /**
  * Construct a `BindingParser` with a default configuration.
  */
-export function makeBindingParser(): BindingParser {
+export function makeBindingParser(
+    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
   return new BindingParser(
-      new Parser(new Lexer()), DEFAULT_INTERPOLATION_CONFIG, new DomElementSchemaRegistry(), null,
-      []);
+      new Parser(new Lexer()), interpolationConfig, new DomElementSchemaRegistry(), null, []);
 }
 
 function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityContext) {

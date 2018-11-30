@@ -7,6 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../../core';
+import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -184,7 +185,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    */
   viewProviders: o.Expression|null;
 
-
   /**
    * Path to the .ts file in which this template's generated code will be included, relative to
    * the compilation root. This will be used to generate identifiers that need to be globally
@@ -197,6 +197,11 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * (used by Closure Compiler's output of `goog.getMsg` for transition period)
    */
   i18nUseExternalIds: boolean;
+
+  /**
+   * Overrides the default interpolation start and end delimiters ({{ and }})
+   */
+  interpolation: InterpolationConfig;
 }
 
 /**

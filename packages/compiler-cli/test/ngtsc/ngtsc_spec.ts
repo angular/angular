@@ -683,6 +683,25 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('i18n(1, MSG_TEST_TS_0);');
   });
 
+  it('@Component\'s `interpolation` should override default interpolation config', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'cmp-with-custom-interpolation-a',
+        template: \`<div>{%text%}</div>\`,
+        interpolation: ['{%', '%}']
+      })
+      class ComponentWithCustomInterpolationA {
+        text = 'Custom Interpolation A';
+      }
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('interpolation1("", ctx.text, "")');
+  });
+
   it('should correctly recognize local symbols', () => {
     env.tsconfig();
     env.write('module.ts', `

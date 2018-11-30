@@ -11,6 +11,7 @@ import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, R3ComponentMeta
 import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {compileInjectable} from './injectable_compiler_2';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {Expression, LiteralExpr, WrappedNodeExpr} from './output/output_ast';
 import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 import {jitExpression} from './render3/r3_jit';
@@ -103,10 +104,13 @@ export class CompilerFacadeImpl implements CompilerFacade {
     // The ConstantPool is a requirement of the JIT'er.
     const constantPool = new ConstantPool();
 
+    const interpolationConfig = facade.interpolation ?
+        InterpolationConfig.fromArray(facade.interpolation) :
+        DEFAULT_INTERPOLATION_CONFIG;
     // Parse the template and check for errors.
-    const template = parseTemplate(facade.template, sourceMapUrl, {
-      preserveWhitespaces: facade.preserveWhitespaces || false,
-    });
+    const template = parseTemplate(
+        facade.template, sourceMapUrl,
+        {preserveWhitespaces: facade.preserveWhitespaces || false, interpolationConfig});
     if (template.errors !== undefined) {
       const errors = template.errors.map(err => err.toString()).join(', ');
       throw new Error(`Errors during JIT compilation of template for ${facade.name}: ${errors}`);
@@ -124,13 +128,14 @@ export class CompilerFacadeImpl implements CompilerFacade {
           wrapDirectivesAndPipesInClosure: false,
           styles: facade.styles || [],
           encapsulation: facade.encapsulation as any,
+          interpolation: interpolationConfig,
           animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
           viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
                                                         null,
           relativeContextFilePath: '',
           i18nUseExternalIds: true,
         },
-        constantPool, makeBindingParser());
+        constantPool, makeBindingParser(interpolationConfig));
     const preStatements = [...constantPool.statements, ...res.statements];
 
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
