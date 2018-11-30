@@ -467,7 +467,7 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/child/simple');
      })));
 
-  fixmeIvy('unknown') &&  // Error: 1 timer(s) still in the queue
+  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick') &&
       it('should work when an outlet is added/removed', fakeAsync(() => {
            @Component({
              selector: 'someRoot',
@@ -2582,7 +2582,7 @@ describe('Integration', () => {
                  expect(canceledStatus).toEqual(false);
                })));
 
-        fixmeIvy('unknown') &&  // Error: assertion error
+        fixmeIvy('FW-766: One router test is wrong') &&
             it('works with componentless routes',
                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
                  const fixture = createRoot(router, RootCmp);
@@ -3526,7 +3526,7 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
-    fixmeIvy('unknown') &&  // Error: timeout
+    fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens') &&
         it('should have 2 injector trees: module and element',
            fakeAsync(inject(
                [Router, Location, NgModuleFactoryLoader],
@@ -3654,7 +3654,8 @@ describe('Integration', () => {
            })));
 
     // https://github.com/angular/angular/issues/13870
-    fixmeIvy('unknown') &&  // Error: timeout
+    fixmeIvy(
+        'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components') &&
         it('should create a single instance of guards for lazy-loaded modules',
            fakeAsync(inject(
                [Router, Location, NgModuleFactoryLoader],
@@ -3954,7 +3955,8 @@ describe('Integration', () => {
         });
       });
 
-      fixmeIvy('unknown') &&  // Error: timeout
+      fixmeIvy(
+          'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components') &&
           it('should use the injector of the lazily-loaded configuration',
              fakeAsync(inject(
                  [Router, Location, NgModuleFactoryLoader],
@@ -4439,7 +4441,7 @@ describe('Integration', () => {
          expect(simpleCmp1).not.toBe(simpleCmp2);
        })));
 
-    fixmeIvy('unknown') &&  // Error: 1 timer(s) still in the queue
+    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick') &&
         it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
            fakeAsync(() => {
              @Component({
