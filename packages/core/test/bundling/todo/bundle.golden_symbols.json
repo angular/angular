@@ -990,9 +990,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "noop$1"
-  },
-  {
     "name": "onChangesWrapper"
   },
   {

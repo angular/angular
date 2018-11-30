@@ -359,18 +359,16 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        /**
-         * @desc [BACKUP_MESSAGE_ID:8977039798304050198] d
-         * @meaning m
-         */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("intro {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $_c1$ = ["title", $MSG_APP_SPEC_TS_0$];
+        const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $_c0$ = ["title", $MSG_EXTERNAL_8977039798304050198$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵpipe(1, "uppercase");
-            $r3$.ɵi18nAttributes(2, $_c1$);
+            $r3$.ɵi18nAttributes(2, $_c0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -689,15 +687,14 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        /**
-         * @desc [BACKUP_MESSAGE_ID:6749967533321674787]
-         */
-        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_6749967533321674787$ = goog.getMsg("{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_6749967533321674787$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -706,7 +703,7 @@ describe('i18n support in the view compiler', () => {
           }
         }
       `;
-      verify(input, output, {verbose: true, inputArgs: {interpolation: ['{%', '%}']}});
+      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
     });
 
     it('should handle i18n attributes with bindings in content', () => {
@@ -1753,18 +1750,15 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        /**
-         * @desc [BACKUP_MESSAGE_ID:2949673783721159566]
-         */
-        const $MSG_APP_SPEC_TS_0_RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
+        const $MSG_EXTERNAL_2949673783721159566$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0_RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_2949673783721159566$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2949673783721159566$$RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_2949673783721159566$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
