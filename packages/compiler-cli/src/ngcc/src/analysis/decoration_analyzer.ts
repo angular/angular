@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
@@ -46,7 +47,10 @@ export interface MatchingHandler<A, M> {
  * `ResourceLoader` which directly uses the filesystem to resolve resources synchronously.
  */
 export class FileResourceLoader implements ResourceLoader {
-  load(url: string): string { return fs.readFileSync(url, 'utf8'); }
+  load(url: string, containingFile: string): string {
+    url = path.resolve(path.dirname(containingFile), url);
+    return fs.readFileSync(url, 'utf8');
+  }
 }
 
 /**

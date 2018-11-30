@@ -48,9 +48,11 @@ export class NgtscProgram implements api.Program {
       this.rootDirs.push(host.getCurrentDirectory());
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
-    this.resourceLoader = host.readResource !== undefined ?
-        new HostResourceLoader(host.readResource.bind(host)) :
-        new FileResourceLoader();
+    this.resourceLoader =
+        host.readResource !== undefined && host.resourceNameToFileName !== undefined ?
+        new HostResourceLoader(
+            host.resourceNameToFileName.bind(host), host.readResource.bind(host)) :
+        new FileResourceLoader(host, this.options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
     let rootFiles = [...rootNames];
