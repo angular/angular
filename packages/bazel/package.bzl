@@ -23,8 +23,8 @@ def rules_angular_dependencies():
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/587b48ebbf9a86c4caabd9100f08ff933dcd43db.zip",
-        strip_prefix = "rules_nodejs-587b48ebbf9a86c4caabd9100f08ff933dcd43db",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/ee218e2a98b9f09ba07cecac8496a5918c47bc5d.zip",
+        strip_prefix = "rules_nodejs-ee218e2a98b9f09ba07cecac8496a5918c47bc5d",
     )
 
     _maybe(
