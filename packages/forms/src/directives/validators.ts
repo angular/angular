@@ -379,11 +379,6 @@ export const PATTERN_VALIDATOR: any = {
  * as the regex to validate Control value against.  Follows pattern attribute
  * semantics; i.e. regex must match entire Control value.
  *
- * Note: if a string type attribute value is used, the regex will be applied with the
- * unicode flag on supported browsers. If a unicode-regex is passed, it might break on
- * unsupported browser. In this case, the user should be responsible to handle the
- * browser compatibility.
- *
  * @usageNotes
  * ### Example
  *
