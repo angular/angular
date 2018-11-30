@@ -40,7 +40,7 @@ def _ls_rollup_bundle(ctx):
         root_dir = "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]),
         output_format = "amd",
     )
-    run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_umd)
+    run_rollup(ctx, depset(esm5_sources), rollup_config, ctx.outputs.build_umd)
     source_map = run_uglify(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
     return DefaultInfo(files = depset([ctx.outputs.build_umd, ctx.outputs.build_umd_min, source_map]))
 
