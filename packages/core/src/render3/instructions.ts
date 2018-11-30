@@ -958,7 +958,7 @@ export function elementProperty<T>(
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
-        setNgReflectProperties(lView, element, tNode.type, propName, value);
+        setNgReflectProperties(lView, element, tNode.type, dataValue, value);
       }
     }
   } else if (tNode.type === TNodeType.Element) {
@@ -1033,20 +1033,23 @@ function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: a
 }
 
 function setNgReflectProperties(
-    lView: LView, element: RElement | RComment, type: TNodeType, propName: string, value: any) {
-  const renderer = lView[RENDERER];
-  const attrName = normalizeDebugBindingName(propName);
-  const debugValue = normalizeDebugBindingValue(value);
-  if (type === TNodeType.Element) {
-    isProceduralRenderer(renderer) ?
-        renderer.setAttribute((element as RElement), attrName, debugValue) :
-        (element as RElement).setAttribute(attrName, debugValue);
-  } else if (value !== undefined) {
-    const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
-    if (isProceduralRenderer(renderer)) {
-      renderer.setValue((element as RComment), value);
-    } else {
-      (element as RComment).textContent = value;
+    lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
+    value: any) {
+  for (let i = 0; i < inputs.length; i += 2) {
+    const renderer = lView[RENDERER];
+    const attrName = normalizeDebugBindingName(inputs[i + 1] as string);
+    const debugValue = normalizeDebugBindingValue(value);
+    if (type === TNodeType.Element) {
+      isProceduralRenderer(renderer) ?
+          renderer.setAttribute((element as RElement), attrName, debugValue) :
+          (element as RElement).setAttribute(attrName, debugValue);
+    } else if (value !== undefined) {
+      const value = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+      if (isProceduralRenderer(renderer)) {
+        renderer.setValue((element as RComment), value);
+      } else {
+        (element as RComment).textContent = value;
+      }
     }
   }
 }
@@ -1054,8 +1057,8 @@ function setNgReflectProperties(
 /**
  * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param number tNodeFlags node flags
- * @param Direction direction whether to consider inputs or outputs
+ * @param tNodeFlags node flags
+ * @param direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
 function generatePropertyAliases(tNode: TNode, direction: BindingDirection): PropertyAliases|null {

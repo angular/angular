@@ -30,7 +30,7 @@ import {typeWithParameters} from '../util';
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
-import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, mapToExpression, temporaryAllocator} from './util';
+import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
 
