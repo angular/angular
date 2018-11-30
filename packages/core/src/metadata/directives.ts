@@ -482,8 +482,8 @@ export interface Component extends Directive {
   moduleId?: string;
 
   /**
-   * The URL of a template file for an Angular component. If provided,
-   * do not supply an inline template using `template`.
+   * The relative path or absolute URL of a template file for an Angular component.
+   * If provided, do not supply an inline template using `template`.
    *
    */
   templateUrl?: string;
@@ -496,7 +496,7 @@ export interface Component extends Directive {
   template?: string;
 
   /**
-   * One or more URLs for files containing CSS stylesheets to use
+   * One or more relative paths or absolute URLs for files containing CSS stylesheets to use
    * in this component.
    */
   styleUrls?: string[];
