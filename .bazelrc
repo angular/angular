@@ -30,10 +30,12 @@ test --nolegacy_external_runfiles
 
 ###############################
 # Release support             #
+# Turn on these settings with #
+#  --config=release           #
 ###############################
 
 # Releases should always be stamped with version control info
-build --workspace_status_command=./tools/bazel_stamp_vars.sh
+build:release --workspace_status_command=./tools/bazel_stamp_vars.sh
 
 ###############################
 # Output                      #

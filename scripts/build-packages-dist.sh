@@ -29,7 +29,8 @@ function buildTargetPackages() {
   echo "  mode: ${desc}"
   echo "##################################"
 
-  echo "$targets" | xargs ${bazelBin} build --define=compile=$compileMode
+  # Use --config=release so that snapshot builds get published with embedded version info
+  echo "$targets" | xargs ${bazelBin} build --config=release --define=compile=$compileMode
 
   [ -d "${basedir}/${destPath}" ] || mkdir -p $basedir/${destPath}
 
