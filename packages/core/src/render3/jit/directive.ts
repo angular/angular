@@ -61,6 +61,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           directives: [],
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
         ngComponentDef = compiler.compileComponent(

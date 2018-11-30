@@ -1295,27 +1295,26 @@ function declareTests(config?: {useJit: boolean}) {
         expect(needsAttribute.fooAttribute).toBeNull();
       });
 
-      fixmeIvy('FW-723: Custom interpolation markers are not supported') &&
-          it('should support custom interpolation', () => {
-            TestBed.configureTestingModule({
-              declarations: [
-                MyComp, ComponentWithCustomInterpolationA, ComponentWithCustomInterpolationB,
-                ComponentWithDefaultInterpolation
-              ]
-            });
-            const template = `<div>{{ctxProp}}</div>
+      it('should support custom interpolation', () => {
+        TestBed.configureTestingModule({
+          declarations: [
+            MyComp, ComponentWithCustomInterpolationA, ComponentWithCustomInterpolationB,
+            ComponentWithDefaultInterpolation
+          ]
+        });
+        const template = `<div>{{ctxProp}}</div>
 <cmp-with-custom-interpolation-a></cmp-with-custom-interpolation-a>
 <cmp-with-custom-interpolation-b></cmp-with-custom-interpolation-b>`;
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.componentInstance.ctxProp = 'Default Interpolation';
+        fixture.componentInstance.ctxProp = 'Default Interpolation';
 
-            fixture.detectChanges();
-            expect(fixture.nativeElement)
-                .toHaveText(
-                    'Default InterpolationCustom Interpolation ACustom Interpolation B (Default Interpolation)');
-          });
+        fixture.detectChanges();
+        expect(fixture.nativeElement)
+            .toHaveText(
+                'Default InterpolationCustom Interpolation ACustom Interpolation B (Default Interpolation)');
+      });
     });
 
     describe('dependency injection', () => {

@@ -8,7 +8,7 @@
 
 import {setup} from '@angular/compiler/test/aot/test_util';
 
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../compiler/src/compiler';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../compiler/src/compiler';
 import {decimalDigest} from '../../../compiler/src/i18n/digest';
 import {extractMessages} from '../../../compiler/src/i18n/extractor_merger';
 import {HtmlParser} from '../../../compiler/src/ml_parser/html_parser';
@@ -37,33 +37,35 @@ const extract = (from: string, regex: any, transformFn: (match: any[]) => any) =
 
 // verify that we extracted all the necessary translations
 // and their ids match the ones extracted via 'ng xi18n'
-const verifyTranslationIds = (source: string, output: string, exceptions = {}) => {
-  const parseResult = htmlParser.parse(source, 'path:://to/template', true);
-  const extractedIdToMsg = new Map<string, any>();
-  const extractedIds = new Set<string>();
-  const generatedIds = new Set<string>();
-  const msgs = extractMessages(parseResult.rootNodes, DEFAULT_INTERPOLATION_CONFIG, [], {});
-  msgs.messages.forEach(msg => {
-    const id = msg.id || decimalDigest(msg);
-    extractedIds.add(id);
-    extractedIdToMsg.set(id, msg);
-  });
-  const regexp = /const\s*MSG_EXTERNAL_(.+?)\s*=\s*goog\.getMsg/g;
-  const ids = extract(output, regexp, v => v[1]);
-  ids.forEach(id => { generatedIds.add(id.split('$$')[0]); });
-  const delta = diff(extractedIds, generatedIds);
-  if (delta.size) {
-    // check if we have ids in exception list
-    const outstanding = diff(delta, new Set(Object.keys(exceptions)));
-    if (outstanding.size) {
-      throw new Error(`
+const verifyTranslationIds =
+    (source: string, output: string, exceptions = {},
+     interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) => {
+      const parseResult = htmlParser.parse(source, 'path:://to/template', true);
+      const extractedIdToMsg = new Map<string, any>();
+      const extractedIds = new Set<string>();
+      const generatedIds = new Set<string>();
+      const msgs = extractMessages(parseResult.rootNodes, interpolationConfig, [], {});
+      msgs.messages.forEach(msg => {
+        const id = msg.id || decimalDigest(msg);
+        extractedIds.add(id);
+        extractedIdToMsg.set(id, msg);
+      });
+      const regexp = /const\s*MSG_EXTERNAL_(.+?)\s*=\s*goog\.getMsg/g;
+      const ids = extract(output, regexp, v => v[1]);
+      ids.forEach(id => { generatedIds.add(id.split('$$')[0]); });
+      const delta = diff(extractedIds, generatedIds);
+      if (delta.size) {
+        // check if we have ids in exception list
+        const outstanding = diff(delta, new Set(Object.keys(exceptions)));
+        if (outstanding.size) {
+          throw new Error(`
         Extracted and generated IDs don't match, delta:
         ${JSON.stringify(Array.from(delta))}
       `);
-    }
-  }
-  return true;
-};
+        }
+      }
+      return true;
+    };
 
 // verify that placeholders in translation string match
 // placeholders object defined as goog.getMsg function argument
@@ -99,6 +101,7 @@ const getAppFilesWithTemplate = (template: string, args: any = {}) => ({
       @Component({
         selector: 'my-component',
         ${args.preserveWhitespaces ? 'preserveWhitespaces: true,' : ''}
+        ${args.interpolation ? 'interpolation: ' + JSON.stringify(args.interpolation) + ', ' : ''}
         template: \`${template}\`
       })
       export class MyComponent {}
@@ -135,7 +138,11 @@ const verify = (input: string, output: string, extra: any = {}): void => {
   // invoke with translation names based on external ids
   result = compile(files, angularFiles, opts(true));
   maybePrint(result.source, extra.verbose);
-  expect(verifyTranslationIds(input, result.source, extra.exceptions)).toBe(true);
+  const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
+      InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
+      undefined;
+  expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
+      .toBe(true);
   expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
   expectEmit(result.source, output, 'Incorrect template');
 };
@@ -344,6 +351,33 @@ describe('i18n support in the view compiler', () => {
       `;
 
       verify(input, output);
+    });
+
+    it('should support interpolation with custom interpolation config', () => {
+      const input = `
+        <div i18n-title="m|d" title="intro {% valueA | uppercase %}"></div>
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $_c0$ = ["title", $MSG_EXTERNAL_8977039798304050198$];
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵpipe(1, "uppercase");
+            $r3$.ɵi18nAttributes(2, $_c0$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, ctx.valueA)));
+            $r3$.ɵi18nApply(2);
+          }
+        }
+      `;
+      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
     });
 
     it('should correctly bind to context in nested template', () => {
@@ -645,6 +679,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       verify(input, output);
+    });
+
+    it('should support interpolation with custom interpolation config', () => {
+      const input = `
+        <div i18n>{% valueA %}</div>
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_6749967533321674787$ = goog.getMsg("{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_6749967533321674787$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueA));
+            $r3$.ɵi18nApply(1);
+          }
+        }
+      `;
+      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
     });
 
     it('should handle i18n attributes with bindings in content', () => {
@@ -1683,6 +1742,33 @@ describe('i18n support in the view compiler', () => {
       `;
 
       verify(input, output);
+    });
+
+    it('should support interpolation with custom interpolation config', () => {
+      const input = `
+        <div i18n>{age, select, 10 {ten} 20 {twenty} other {{% other %}}}</div>
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_2949673783721159566$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {{$interpolation}}}", {
+          "interpolation": "\uFFFD1\uFFFD"
+        });
+        const $MSG_EXTERNAL_2949673783721159566$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2949673783721159566$$RAW$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_2949673783721159566$);
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.other));
+            $r3$.ɵi18nApply(1);
+          }
+        }
+      `;
+      verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
     });
 
     it('should handle icus with html', () => {

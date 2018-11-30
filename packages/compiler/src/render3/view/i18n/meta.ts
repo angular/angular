@@ -10,7 +10,7 @@ import {decimalDigest} from '../../../i18n/digest';
 import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../../ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../../../ml_parser/parser';
 
 import {I18N_ATTR, I18N_ATTR_PREFIX, I18nMeta, hasI18nAttrs, icuFromI18nMessage, metaFromI18nMessage, parseI18nMeta} from './util';
@@ -25,10 +25,14 @@ function setI18nRefs(html: html.Node & {i18n: i18n.AST}, i18n: i18n.Node) {
  * stored with other element's and attribute's information.
  */
 export class I18nMetaVisitor implements html.Visitor {
-  // i18n message generation factory
-  private _createI18nMessage = createI18nMessageFactory(DEFAULT_INTERPOLATION_CONFIG);
+  private _createI18nMessage: any;
 
-  constructor(private config: {keepI18nAttrs: boolean}) {}
+  constructor(
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+      private keepI18nAttrs: boolean = false) {
+    // i18n message generation factory
+    this._createI18nMessage = createI18nMessageFactory(interpolationConfig);
+  }
 
   private _generateI18nMessage(
       nodes: html.Node[], meta: string|i18n.AST = '',
@@ -81,7 +85,7 @@ export class I18nMetaVisitor implements html.Visitor {
         }
       }
 
-      if (!this.config.keepI18nAttrs) {
+      if (!this.keepI18nAttrs) {
         // update element's attributes,
         // keeping only non-i18n related ones
         element.attrs = attrs;
@@ -116,8 +120,12 @@ export class I18nMetaVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return expansionCase; }
 }
 
-export function processI18nMeta(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
+export function processI18nMeta(
+    htmlAstWithErrors: ParseTreeResult,
+    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
   return new ParseTreeResult(
-      html.visitAll(new I18nMetaVisitor({keepI18nAttrs: false}), htmlAstWithErrors.rootNodes),
+      html.visitAll(
+          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+          htmlAstWithErrors.rootNodes),
       htmlAstWithErrors.errors);
 }
