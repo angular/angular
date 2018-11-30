@@ -8,8 +8,8 @@
 
 import {ConstantPool} from '../../constant_pool';
 import * as o from '../../output/output_ast';
+import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
-
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
 
@@ -75,9 +75,13 @@ export function conditionallyCreateMapObjectLiteral(keys: {[key: string]: string
   return null;
 }
 
-export function mapToExpression(map: {[key: string]: any}, quoted = false): o.Expression {
-  return o.literalMap(
-      Object.getOwnPropertyNames(map).map(key => ({key, quoted, value: asLiteral(map[key])})));
+function mapToExpression(map: {[key: string]: any}): o.Expression {
+  return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
+    // canonical syntax: `dirProp: elProp`
+    // if there is no `:`, use dirProp = elProp
+    const parts = splitAtColon(key, [key, map[key]]);
+    return {key: parts[0], quoted: false, value: asLiteral(parts[1])};
+  }));
 }
 
 /**
