@@ -11,7 +11,6 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidatorFn, FormArray, FormControl, Validators} from '@angular/forms';
 import {normalizeAsyncValidator} from '@angular/forms/src/directives/normalize_validator';
 import {AsyncValidator, ValidationErrors, ValidatorFn} from '@angular/forms/src/directives/validators';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Observable, of , timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
@@ -274,13 +273,6 @@ import {first, map} from 'rxjs/operators';
 
       it('should not error on "undefined" pattern',
          () => expect(Validators.pattern(undefined !)(new FormControl('aaAA'))).toBeNull());
-
-      if (browserDetection.supportsRegExUnicodeFlag) {
-        it('should apply unicode flag to pattern when supported', () => {
-          expect(Validators.pattern('[\u{10000}-\u{10001}]')(new FormControl('\u{10000}')))
-              .toBeNull();
-        });
-      }
 
       it('should work with pattern string containing both boundary symbols',
          () => expect(Validators.pattern('^[aA]*$')(new FormControl('aaAA'))).toBeNull());
