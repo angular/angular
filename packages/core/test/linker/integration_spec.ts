@@ -238,44 +238,42 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
       });
 
-      fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work')
-          .it('should consume directive watch expression change.', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-            const template = '<span>' +
-                '<div my-dir [elprop]="ctxProp"></div>' +
-                '<div my-dir elprop="Hi there!"></div>' +
-                '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
-                '<div my-dir elprop="One more {{ctxProp}}"></div>' +
-                '</span>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should consume directive watch expression change.', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        const template = '<span>' +
+            '<div my-dir [elprop]="ctxProp"></div>' +
+            '<div my-dir elprop="Hi there!"></div>' +
+            '<div my-dir elprop="Hi {{\'there!\'}}"></div>' +
+            '<div my-dir elprop="One more {{ctxProp}}"></div>' +
+            '</span>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.componentInstance.ctxProp = 'Hello World!';
-            fixture.detectChanges();
+        fixture.componentInstance.ctxProp = 'Hello World!';
+        fixture.detectChanges();
 
-            const containerSpan = fixture.debugElement.children[0];
+        const containerSpan = fixture.debugElement.children[0];
 
-            expect(containerSpan.children[0].injector.get(MyDir).dirProp).toEqual('Hello World!');
-            expect(containerSpan.children[1].injector.get(MyDir).dirProp).toEqual('Hi there!');
-            expect(containerSpan.children[2].injector.get(MyDir).dirProp).toEqual('Hi there!');
-            expect(containerSpan.children[3].injector.get(MyDir).dirProp)
-                .toEqual('One more Hello World!');
-          });
+        expect(containerSpan.children[0].injector.get(MyDir).dirProp).toEqual('Hello World!');
+        expect(containerSpan.children[1].injector.get(MyDir).dirProp).toEqual('Hi there!');
+        expect(containerSpan.children[2].injector.get(MyDir).dirProp).toEqual('Hi there!');
+        expect(containerSpan.children[3].injector.get(MyDir).dirProp)
+            .toEqual('One more Hello World!');
+      });
 
       describe('pipes', () => {
-        fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work')
-            .it('should support pipes in bindings', () => {
-              TestBed.configureTestingModule({declarations: [MyComp, MyDir, DoublePipe]});
-              const template = '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
-              const fixture = TestBed.createComponent(MyComp);
+        it('should support pipes in bindings', () => {
+          TestBed.configureTestingModule({declarations: [MyComp, MyDir, DoublePipe]});
+          const template = '<div my-dir #dir="mydir" [elprop]="ctxProp | double"></div>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-              fixture.componentInstance.ctxProp = 'a';
-              fixture.detectChanges();
+          fixture.componentInstance.ctxProp = 'a';
+          fixture.detectChanges();
 
-              const dir = fixture.debugElement.children[0].references !['dir'];
-              expect(dir.dirProp).toEqual('aa');
-            });
+          const dir = fixture.debugElement.children[0].references !['dir'];
+          expect(dir.dirProp).toEqual('aa');
+        });
       });
 
       it('should support nested components.', () => {
@@ -290,21 +288,20 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       // GH issue 328 - https://github.com/angular/angular/issues/328
-      fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work')
-          .it('should support different directive types on a single node', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, ChildComp, MyDir]});
-            const template = '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should support different directive types on a single node', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, ChildComp, MyDir]});
+        const template = '<child-cmp my-dir [elprop]="ctxProp"></child-cmp>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.componentInstance.ctxProp = 'Hello World!';
-            fixture.detectChanges();
+        fixture.componentInstance.ctxProp = 'Hello World!';
+        fixture.detectChanges();
 
-            const tc = fixture.debugElement.children[0];
+        const tc = fixture.debugElement.children[0];
 
-            expect(tc.injector.get(MyDir).dirProp).toEqual('Hello World!');
-            expect(tc.injector.get(ChildComp).dirProp).toEqual(null);
-          });
+        expect(tc.injector.get(MyDir).dirProp).toEqual('Hello World!');
+        expect(tc.injector.get(ChildComp).dirProp).toEqual(null);
+      });
 
       it('should support directives where a binding attribute is not given', () => {
         TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
@@ -1688,21 +1685,20 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('logging property updates', () => {
-      fixmeIvy('FW-587: Inputs with aliases in component decorators don\'t work')
-          .it('should reflect property values as attributes', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-            const template = '<div>' +
-                '<div my-dir [elprop]="ctxProp"></div>' +
-                '</div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should reflect property values as attributes', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        const template = '<div>' +
+            '<div my-dir [elprop]="ctxProp"></div>' +
+            '</div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.componentInstance.ctxProp = 'hello';
-            fixture.detectChanges();
+        fixture.componentInstance.ctxProp = 'hello';
+        fixture.detectChanges();
 
-            expect(getDOM().getInnerHTML(fixture.nativeElement))
-                .toContain('ng-reflect-dir-prop="hello"');
-          });
+        expect(getDOM().getInnerHTML(fixture.nativeElement))
+            .toContain('ng-reflect-dir-prop="hello"');
+      });
 
       it(`should work with prop names containing '$'`, () => {
         TestBed.configureTestingModule({declarations: [ParentCmp, SomeCmpWithInput]});
@@ -1726,17 +1722,15 @@ function declareTests(config?: {useJit: boolean}) {
             .toContain('"ng\-reflect\-ng\-if"\: "true"');
       });
 
-      // also affected by FW-587: Inputs with aliases in component decorators don't work
-      fixmeIvy('FW-664: ng-reflect-* is not supported')
-          .it('should indicate when toString() throws', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-            const template = '<div my-dir [elprop]="toStringThrow"></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should indicate when toString() throws', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+        const template = '<div my-dir [elprop]="toStringThrow"></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.detectChanges();
-            expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
-          });
+        fixture.detectChanges();
+        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
+      });
     });
 
     describe('property decorators', () => {
