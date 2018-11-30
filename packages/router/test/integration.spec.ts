@@ -2219,6 +2219,18 @@ describe('Integration', () => {
               component: RouteCmp,
               canActivate: ['guard'],
               resolve: {data: 'resolver'}
+            },
+            {
+              path: 'd/:param',
+              component: WrapperCmp, runGuardsAndResolvers,
+              children: [
+                {
+                  path: 'e/:param',
+                  component: SimpleCmp,
+                  canActivate: ['guard'],
+                  resolve: {data: 'resolver'},
+                },
+              ]
             }
           ]);
 
@@ -2367,6 +2379,33 @@ describe('Integration', () => {
              advance(fixture);
              expect(guardRunCount).toEqual(3);
            })));
+
+        it('should rerun when a parent segment changes',
+            fakeAsync(inject([Router], (router: Router) => {
+              const fixture = configureRouter(router, 'pathParamsChange');
+
+              const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+              const recordedData: any[] = [];
+              cmp.route.data.subscribe((data: any) => recordedData.push(data));
+
+              // Land on an inital page
+              router.navigateByUrl('/d/1;dd=11/e/2;dd=22');
+              advance(fixture);
+
+              expect(guardRunCount).toEqual(2);
+
+              // Changes cause re-run on the config with the guard
+              router.navigateByUrl('/d/1;dd=11/e/3;ee=22');
+              advance(fixture);
+
+              expect(guardRunCount).toEqual(3);
+
+              // Changes to the parent also cause re-run
+              router.navigateByUrl('/d/2;dd=11/e/3;ee=22');
+              advance(fixture);
+
+              expect(guardRunCount).toEqual(4);
+            })));
       });
 
       describe('should wait for parent to complete', () => {
