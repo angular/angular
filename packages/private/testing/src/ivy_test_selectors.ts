@@ -63,8 +63,9 @@ export function fixmeIvy(reason: string): boolean {
  * obsoleteInIvy('some reason') && it(...);
  * ```
  */
-export const obsoleteInIvy = fixmeIvy;
-
+export function obsoleteInIvy(reason: string): boolean {
+  return !ivyEnabled;
+}
 
 /**
  * A function to conditionally skip the execution of tests that have intentionally
@@ -83,4 +84,6 @@ export const obsoleteInIvy = fixmeIvy;
  * modifiedInIvy('some reason') && it(...);
  * ```
  */
-export const modifiedInIvy = fixmeIvy;
+export function modifiedInIvy(reason: string): boolean {
+  return !ivyEnabled;
+}
