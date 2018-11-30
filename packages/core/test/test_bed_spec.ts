@@ -116,7 +116,7 @@ describe('TestBed', () => {
     expect(nameInjected).toEqual('World!');
   });
 
-  fixmeIvy('unknown') && it('should give access to the node injector for root node', () => {
+  it('should give access to the node injector for root node', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     const injector = hello.debugElement.injector;
