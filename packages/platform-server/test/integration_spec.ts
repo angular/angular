@@ -17,10 +17,9 @@ import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {ivyEnabled} from '../../core/src/ivy_switch';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
