@@ -106,6 +106,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     // Parse the template and check for errors.
     const template = parseTemplate(facade.template, sourceMapUrl, {
       preserveWhitespaces: facade.preserveWhitespaces || false,
+      interpolationConfig: facade.interpolation
     });
     if (template.errors !== undefined) {
       const errors = template.errors.map(err => err.toString()).join(', ');
@@ -131,7 +132,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
           relativeContextFilePath: '',
           i18nUseExternalIds: true,
         },
-        constantPool, makeBindingParser());
+        constantPool, makeBindingParser(facade.interpolation));
     const preStatements = [...constantPool.statements, ...res.statements];
 
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);

@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '@angular/compiler';
 
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
@@ -61,6 +62,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           directives: [],
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+          interpolation: metadata.interpolation ?
+              InterpolationConfig.fromArray(metadata.interpolation) :
+              DEFAULT_INTERPOLATION_CONFIG,
           viewProviders: metadata.viewProviders || null,
         };
         ngComponentDef = compiler.compileComponent(
