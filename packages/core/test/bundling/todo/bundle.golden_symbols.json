@@ -1110,9 +1110,6 @@
     "name": "setCurrentDirectiveDef"
   },
   {
-    "name": "setCurrentQueries"
-  },
-  {
     "name": "setDirty"
   },
   {
