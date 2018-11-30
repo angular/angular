@@ -123,8 +123,8 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         setBindingRoot(bindingRootIndex);
       } else {
         // If it's not a number, it's a host binding function that needs to be executed.
-        viewData[BINDING_INDEX] = bindingRootIndex;
         if (instruction !== null) {
+          viewData[BINDING_INDEX] = bindingRootIndex;
           instruction(
               RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
               currentElementIndex);
@@ -1470,21 +1470,22 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, previousOrP
   const start = previousOrParentTNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
   const end = start + (previousOrParentTNode.flags & TNodeFlags.DirectiveCountMask);
   const expando = tView.expandoInstructions !;
+  const firstTemplatePass = getFirstTemplatePass();
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     const directive = viewData[i];
     if (def.hostBindings) {
-      const before = expando.length;
+      const previousExpandoLength = expando.length;
       setCurrentDirectiveDef(def);
       def.hostBindings !(RenderFlags.Create, directive, previousOrParentTNode.index);
       setCurrentDirectiveDef(null);
-      // `hostBindings` function may or may not contain `allocHostVars` call,
-      // so we need to check whether `expandoInstructions` has changed and if not -
-      // we push `null` to keep indices in sync
-      if (before === expando.length) {
+      // `hostBindings` function may or may not contain `allocHostVars` call
+      // (e.g. it may not if it only contains host listeners), so we need to check whether
+      // `expandoInstructions` has changed and if not - we push `null` to keep indices in sync
+      if (previousExpandoLength === expando.length && firstTemplatePass) {
         expando.push(null);
       }
-    } else if (getFirstTemplatePass()) {
+    } else if (firstTemplatePass) {
       expando.push(null);
     }
   }
