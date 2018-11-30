@@ -83,7 +83,7 @@ export class Template implements Node {
 
 export class Content implements Node {
   constructor(
-      public selectorIndex: number, public attributes: TextAttribute[],
+      public selector: string, public attributes: TextAttribute[],
       public sourceSpan: ParseSourceSpan, public i18n?: I18nAST) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitContent(this); }
 }

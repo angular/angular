@@ -45,16 +45,10 @@ const IDENT_PROPERTY_IDX = 9;
 const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ATTR_PREFIX = '*';
-// Default selector used by `<ng-content>` if none specified
-const DEFAULT_CONTENT_SELECTOR = '*';
 
 // Result of the html AST to Ivy AST transformation
 export type Render3ParseResult = {
   nodes: t.Node[]; errors: ParseError[];
-  // Any non default (empty or '*') selector found in the template
-  ngContentSelectors: string[];
-  // Wether the template contains any `<ng-content>`
-  hasNgContent: boolean;
 };
 
 export function htmlAstToRender3Ast(
@@ -74,17 +68,11 @@ export function htmlAstToRender3Ast(
   return {
     nodes: ivyNodes,
     errors: allErrors,
-    ngContentSelectors: transformer.ngContentSelectors,
-    hasNgContent: transformer.hasNgContent,
   };
 }
 
 class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
-  // Selectors for the `ng-content` tags. Only non `*` selectors are recorded here
-  ngContentSelectors: string[] = [];
-  // Any `<ng-content>` in the template ?
-  hasNgContent = false;
 
   constructor(private bindingParser: BindingParser) {}
 
@@ -168,20 +156,12 @@ class HtmlAstToIvyAst implements html.Visitor {
     let parsedElement: t.Node|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>`
-      this.hasNgContent = true;
-
       if (element.children && !element.children.every(isEmptyTextNode)) {
         this.reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
-
       const selector = preparsedElement.selectAttr;
-
-      let attributes: t.TextAttribute[] =
-          element.attrs.map(attribute => this.visitAttribute(attribute));
-
-      const selectorIndex =
-          selector === DEFAULT_CONTENT_SELECTOR ? 0 : this.ngContentSelectors.push(selector);
-      parsedElement = new t.Content(selectorIndex, attributes, element.sourceSpan, element.i18n);
+      const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
+      parsedElement = new t.Content(selector, attrs, element.sourceSpan, element.i18n);
     } else if (isTemplateElement) {
       // `<ng-template>`
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
