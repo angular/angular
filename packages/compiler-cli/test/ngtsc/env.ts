@@ -96,11 +96,17 @@ export class NgtscTestEnvironment {
 
   write(fileName: string, content: string) { this.support.write(fileName, content); }
 
-  tsconfig(extraOpts: {[key: string]: string | boolean} = {}): void {
-    const opts = JSON.stringify({...extraOpts, 'enableIvy': 'ngtsc'});
-    const tsconfig: string =
-        `{"extends": "./tsconfig-base.json", "angularCompilerOptions": ${opts}}`;
-    this.write('tsconfig.json', tsconfig);
+  tsconfig(extraOpts: {[key: string]: string | boolean} = {}, extraRootDirs?: string[]): void {
+    const tsconfig: {[key: string]: any} = {
+      extends: './tsconfig-base.json',
+      angularCompilerOptions: {...extraOpts, enableIvy: 'ngtsc'},
+    };
+    if (extraRootDirs !== undefined) {
+      tsconfig.compilerOptions = {
+        rootDirs: ['.', ...extraRootDirs],
+      };
+    }
+    this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
   }
 
   /**

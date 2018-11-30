@@ -89,6 +89,25 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('Hello World');
   });
 
+  it('should compile Components with a templateUrl in a different rootDir', () => {
+    env.tsconfig({}, ['./extraRootDir']);
+    env.write('extraRootDir/test.html', '<p>Hello World</p>');
+    env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          templateUrl: 'test.html',
+        })
+        export class TestCmp {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('Hello World');
+  });
+
   it('should compile components with styleUrls', () => {
     env.tsconfig();
     env.write('test.ts', `

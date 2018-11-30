@@ -58,6 +58,7 @@ export class ComponentDecoratorHandler implements
     const meta = this._resolveLiteral(decorator);
     const component = reflectObjectLiteral(meta);
     const promises: Promise<void>[] = [];
+    const containingFile = node.getSourceFile().fileName;
 
     if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
@@ -66,8 +67,7 @@ export class ComponentDecoratorHandler implements
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
-      const promise = this.resourceLoader.preload(url);
+      const promise = this.resourceLoader.preload(templateUrl, containingFile);
       if (promise !== undefined) {
         promises.push(promise);
       }
@@ -76,8 +76,7 @@ export class ComponentDecoratorHandler implements
     const styleUrls = this._extractStyleUrls(component);
     if (this.resourceLoader.preload !== undefined && styleUrls !== null) {
       for (const styleUrl of styleUrls) {
-        const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), styleUrl);
-        const promise = this.resourceLoader.preload(url);
+        const promise = this.resourceLoader.preload(styleUrl, containingFile);
         if (promise !== undefined) {
           promises.push(promise);
         }
@@ -91,6 +90,7 @@ export class ComponentDecoratorHandler implements
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
+    const containingFile = node.getSourceFile().fileName;
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
 
@@ -117,8 +117,7 @@ export class ComponentDecoratorHandler implements
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
-      templateStr = this.resourceLoader.load(url);
+      templateStr = this.resourceLoader.load(templateUrl, containingFile);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
       const resolvedTemplate = staticallyResolve(templateExpr, this.reflector, this.checker);
@@ -210,7 +209,7 @@ export class ComponentDecoratorHandler implements
       if (styles === null) {
         styles = [];
       }
-      styles.push(...styleUrls.map(styleUrl => this.resourceLoader.load(styleUrl)));
+      styles.push(...styleUrls.map(styleUrl => this.resourceLoader.load(styleUrl, containingFile)));
     }
 
     let encapsulation: number = 0;
