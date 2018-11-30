@@ -165,7 +165,7 @@ def flatten_esm5(ctx):
       ctx: the skylark rule execution context
 
     Returns:
-      list of flattened files
+      depset of flattened files
     """
     esm5_sources = []
     result = []
@@ -186,4 +186,4 @@ def flatten_esm5(ctx):
             template = f,
             substitutions = {},
         )
-    return result
+    return depset(result)
