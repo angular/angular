@@ -115,7 +115,7 @@ def _ng_rollup_bundle(ctx):
     esm5_sources = flatten_esm5(ctx)
 
     rollup_config = write_rollup_config(ctx, [BO_PLUGIN], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
-    rollup_sourcemap = run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
+    rollup_sourcemap = run_rollup(ctx, depset(esm5_sources), rollup_config, ctx.outputs.build_es5)
 
     sourcemap = run_uglify(
         ctx,
