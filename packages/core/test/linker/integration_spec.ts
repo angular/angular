@@ -22,7 +22,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
 
 import {stringify} from '../../src/util';
 
@@ -209,20 +209,21 @@ function declareTests(config?: {useJit: boolean}) {
             .toEqual('Some other <div>HTML</div>');
       });
 
-      fixmeIvy('unknown') && it('should consume binding to className using class alias', () => {
-        TestBed.configureTestingModule({declarations: [MyComp]});
-        const template = '<div class="initial" [class]="ctxProp"></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
+      modifiedInIvy('Binding to the class property directly works differently') &&
+          it('should consume binding to className using class alias', () => {
+            TestBed.configureTestingModule({declarations: [MyComp]});
+            const template = '<div class="initial" [class]="ctxProp"></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            const fixture = TestBed.createComponent(MyComp);
 
-        const nativeEl = fixture.debugElement.children[0].nativeElement;
-        fixture.componentInstance.ctxProp = 'foo bar';
-        fixture.detectChanges();
+            const nativeEl = fixture.debugElement.children[0].nativeElement;
+            fixture.componentInstance.ctxProp = 'foo bar';
+            fixture.detectChanges();
 
-        expect(nativeEl).toHaveCssClass('foo');
-        expect(nativeEl).toHaveCssClass('bar');
-        expect(nativeEl).not.toHaveCssClass('initial');
-      });
+            expect(nativeEl).toHaveCssClass('foo');
+            expect(nativeEl).toHaveCssClass('bar');
+            expect(nativeEl).not.toHaveCssClass('initial');
+          });
 
       it('should consume binding to htmlFor using for alias', () => {
         const template = '<label [for]="ctxProp"></label>';
@@ -373,7 +374,7 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
       });
 
-      fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
+      modifiedInIvy('Comment node order changed') &&
           it('should support template directives via `<ng-template>` elements.', () => {
             TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
             const template =
@@ -401,7 +402,8 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('baz');
       });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy(
+          'FW-665: Discovery util fails with "Unable to find the given context data for the given target"') &&
           it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
             TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
             const template =
@@ -565,7 +567,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('variables', () => {
-        fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
+        modifiedInIvy('Comment node order changed') &&
             it('should allow to use variables in a for loop', () => {
               const template =
                   '<ng-template ngFor [ngForOf]="[1]" let-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</ng-template>';
@@ -583,7 +585,8 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('OnPush components', () => {
 
-        fixmeIvy('unknown') &&
+        fixmeIvy(
+            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template') &&
             it('should use ChangeDetectorRef to manually request a check', () => {
               TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
               const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
@@ -604,23 +607,25 @@ function declareTests(config?: {useJit: boolean}) {
               expect(cmp.numberOfChecks).toEqual(2);
             });
 
-        fixmeIvy('unknown') && it('should be checked when its bindings got updated', () => {
-          TestBed.configureTestingModule(
-              {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
-          const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+        fixmeIvy(
+            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template') &&
+            it('should be checked when its bindings got updated', () => {
+              TestBed.configureTestingModule(
+                  {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
+              const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+              TestBed.overrideComponent(MyComp, {set: {template}});
+              const fixture = TestBed.createComponent(MyComp);
 
-          const cmp = fixture.debugElement.children[0].references !['cmp'];
+              const cmp = fixture.debugElement.children[0].references !['cmp'];
 
-          fixture.componentInstance.ctxProp = 'one';
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+              fixture.componentInstance.ctxProp = 'one';
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(1);
 
-          fixture.componentInstance.ctxProp = 'two';
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
-        });
+              fixture.componentInstance.ctxProp = 'two';
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(2);
+            });
 
         if (getDOM().supportsDOMEvents()) {
           fixmeIvy('unknown') &&
@@ -643,43 +648,44 @@ function declareTests(config?: {useJit: boolean}) {
                  }));
         }
 
-        fixmeIvy('unknown') && it('should be checked when an event is fired', () => {
-          TestBed.configureTestingModule(
-              {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
-          const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+        fixmeIvy('FW-758: OnPush events not marking view dirty when using renderer2') &&
+            it('should be checked when an event is fired', () => {
+              TestBed.configureTestingModule(
+                  {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
+              const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+              TestBed.overrideComponent(MyComp, {set: {template}});
+              const fixture = TestBed.createComponent(MyComp);
 
-          const cmpEl = fixture.debugElement.children[0];
-          const cmp = cmpEl.componentInstance;
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+              const cmpEl = fixture.debugElement.children[0];
+              const cmp = cmpEl.componentInstance;
+              fixture.detectChanges();
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(1);
 
-          // regular element
-          cmpEl.children[0].triggerEventHandler('click', <Event>{});
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
+              // regular element
+              cmpEl.children[0].triggerEventHandler('click', <Event>{});
+              fixture.detectChanges();
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(2);
 
-          // element inside of an *ngIf
-          cmpEl.children[1].triggerEventHandler('click', <Event>{});
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(3);
+              // element inside of an *ngIf
+              cmpEl.children[1].triggerEventHandler('click', <Event>{});
+              fixture.detectChanges();
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(3);
 
-          // element inside a nested component
-          cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(4);
+              // element inside a nested component
+              cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
+              fixture.detectChanges();
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(4);
 
-          // host element
-          cmpEl.triggerEventHandler('click', <Event>{});
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(5);
-        });
+              // host element
+              cmpEl.triggerEventHandler('click', <Event>{});
+              fixture.detectChanges();
+              fixture.detectChanges();
+              expect(cmp.numberOfChecks).toEqual(5);
+            });
 
         it('should not affect updating properties on the component', () => {
           TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
@@ -767,7 +773,8 @@ function declareTests(config?: {useJit: boolean}) {
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy(
+          'FW-763: LView tree not properly constructed / destroyed for dynamically inserted components') &&
           it('should support events via EventEmitter on regular elements', async(() => {
                TestBed.configureTestingModule(
                    {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
@@ -1490,7 +1497,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('error handling', () => {
-      fixmeIvy('unknown') &&
+      fixmeIvy('FW-682: TestBed: tests assert that compilation produces specific error') &&
           it('should report a meaningful error when a directive is missing annotation', () => {
             TestBed.configureTestingModule(
                 {declarations: [MyComp, SomeDirectiveMissingAnnotation]});
@@ -1500,7 +1507,7 @@ function declareTests(config?: {useJit: boolean}) {
                     `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
           });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy('FW-682: TestBed: tests assert that compilation produces specific error') &&
           it('should report a meaningful error when a component is missing view annotation', () => {
             TestBed.configureTestingModule({declarations: [MyComp, ComponentWithoutView]});
             try {
@@ -1722,15 +1729,17 @@ function declareTests(config?: {useJit: boolean}) {
                 .toContain('"ng\-reflect\-ng\-if"\: "true"');
           });
 
-      fixmeIvy('unknown') && it('should indicate when toString() throws', () => {
-        TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
-        const template = '<div my-dir [elprop]="toStringThrow"></div>';
-        TestBed.overrideComponent(MyComp, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp);
+      // also affected by FW-587: Inputs with aliases in component decorators don't work
+      fixmeIvy('FW-664: ng-reflect-* is not supported') &&
+          it('should indicate when toString() throws', () => {
+            TestBed.configureTestingModule({declarations: [MyComp, MyDir]});
+            const template = '<div my-dir [elprop]="toStringThrow"></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            const fixture = TestBed.createComponent(MyComp);
 
-        fixture.detectChanges();
-        expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
-      });
+            fixture.detectChanges();
+            expect(getDOM().getInnerHTML(fixture.nativeElement)).toContain('[ERROR]');
+          });
     });
 
     describe('property decorators', () => {
