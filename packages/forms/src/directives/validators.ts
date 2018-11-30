@@ -381,7 +381,7 @@ export const PATTERN_VALIDATOR: any = {
  *
  * Note: if a string type attribute value is used, the regex will be applied with the
  * unicode flag on supported browsers. If a unicode-regex is passed, it might break on
- * unsupported browsers. In this case, the application developer should be responsible to handle the
+ * unsupported browser. In this case, the user should be responsible to handle the
  * browser compatibility.
  *
  * @usageNotes
