@@ -124,6 +124,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
           wrapDirectivesAndPipesInClosure: false,
           styles: facade.styles || [],
           encapsulation: facade.encapsulation as any,
+          interpolation: facade.interpolation as any,
           animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
           viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
                                                         null,

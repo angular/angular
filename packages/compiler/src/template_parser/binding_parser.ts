@@ -45,6 +45,8 @@ export class BindingParser {
     }
   }
 
+  get interpolationConfig(): InterpolationConfig { return this._interpolationConfig; }
+
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
   createBoundHostProperties(dirMeta: CompileDirectiveSummary, sourceSpan: ParseSourceSpan):
