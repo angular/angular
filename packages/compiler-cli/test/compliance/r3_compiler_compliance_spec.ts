@@ -1013,7 +1013,7 @@ describe('compiler compliance', () => {
       });
     });
 
-    it('should support content projection', () => {
+    it('should support content projection in root template', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -1061,10 +1061,10 @@ describe('compiler compliance', () => {
         });`;
 
       const ComplexComponentDefinition = `
-        const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
-        const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
         const $c3$ = ["id","first"];
         const $c4$ = ["id","second"];
+        const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
+        const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
         …
         ComplexComponent.ngComponentDef = $r3$.ɵdefineComponent({
           type: ComplexComponent,
@@ -1093,6 +1093,76 @@ describe('compiler compliance', () => {
       expectEmit(result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
       expectEmit(
           result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+    });
+
+    it('should support content projection in nested templates', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              template: \`
+                <div id="second" *ngIf="visible">
+                  <ng-content select="span[title=toFirst]"></ng-content>
+                </div>
+                <div id="third" *ngIf="visible">
+                  No ng-content, no instructions generated.
+                </div>
+                <ng-template>
+                  '*' selector: <ng-content></ng-content>
+                </ng-template>
+              \`,
+            })
+            class Cmp {}
+
+            @NgModule({ declarations: [Cmp] })
+            class Module {}
+          `
+        }
+      };
+      const output = `
+        const $_c0$ = [1, "ngIf"];
+        const $_c1$ = ["id", "second"];
+        const $_c2$ = [[["span", "title", "tofirst"]]];
+        const $_c3$ = ["span[title=toFirst]"];
+        function Cmp_div_Template_0(rf, ctx) { if (rf & 1) {
+            $r3$.ɵprojectionDef($_c2$, $_c3$);
+            $r3$.ɵelementStart(0, "div", $_c1$);
+            $r3$.ɵprojection(1, 1);
+            $r3$.ɵelementEnd();
+        } }
+        const $_c4$ = ["id", "third"];
+        function Cmp_div_Template_1(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div", $_c4$);
+            $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
+            $r3$.ɵelementEnd();
+          }
+        }
+        function Template_2(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵprojectionDef();
+            $r3$.ɵtext(0, " '*' selector: ");
+            $r3$.ɵprojection(1);
+          }
+        }
+        …
+        template: function Cmp_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, null, $_c0$);
+            $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, null, $_c0$);
+            $r3$.ɵtemplate(2, Template_2, 2, 0);
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
+            $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
+          }
+        }
+      `;
+
+      const {source} = compile(files, angularFiles);
+      expectEmit(source, output, 'Invalid content projection instructions generated');
     });
 
     describe('queries', () => {
