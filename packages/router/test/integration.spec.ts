@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
-import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, Navigation, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, Subscription, of } from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
 
@@ -154,10 +154,8 @@ describe('Integration', () => {
 
          const history = (location as any)._history;
          expect(history[history.length - 1].state.foo).toBe('bar');
-         expect(history[history.length - 1].state).toEqual({
-           foo: 'bar',
-           navigationId: history.length
-         });
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
          expect(navigation.extras.state).toBeDefined();
          expect(navigation.extras.state).toEqual({foo: 'bar'});
        })));
@@ -1908,10 +1906,8 @@ describe('Integration', () => {
          const history = (location as any)._history;
 
          expect(history[history.length - 1].state.foo).toBe('bar');
-         expect(history[history.length - 1].state).toEqual({
-           foo: 'bar',
-           navigationId: history.length
-         });
+         expect(history[history.length - 1].state)
+             .toEqual({foo: 'bar', navigationId: history.length});
        })));
   });
 

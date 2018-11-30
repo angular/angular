@@ -209,7 +209,8 @@ export type Navigation = {
   extractedUrl: UrlTree;
   /**
    * Extracted URL after redirects have been applied. This URL may not be available immediately,
-   * therefore this property can be `undefined`.
+   * therefore this property can be `undefined`. It is guaranteed to be set after the
+   * {@link RoutesRecognized} event fires.
    */
   finalUrl?: UrlTree;
   /**
