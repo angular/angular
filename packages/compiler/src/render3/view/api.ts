@@ -13,7 +13,6 @@ import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
 
-
 /**
  * Information needed to compile a directive for the render3 runtime.
  */
