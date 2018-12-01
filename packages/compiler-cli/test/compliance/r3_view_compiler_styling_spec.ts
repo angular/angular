@@ -773,7 +773,6 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵallocHostVars(4);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -782,7 +781,9 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
               $r3$.ɵelementStylingApply(elIndex, ctx);
             }
-          }
+          },
+          consts: 0,
+          vars: 0,
           `;
 
       const result = compile(files, angularFiles);
@@ -832,7 +833,6 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵallocHostVars(6);
               $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -843,7 +843,9 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelementClassProp(elIndex, 1, ctx.myFooClass, ctx);
               $r3$.ɵelementStylingApply(elIndex, ctx);
             }
-          }
+          },
+          consts: 0,
+          vars: 0,
           `;
 
       const result = compile(files, angularFiles);
@@ -898,7 +900,6 @@ describe('compiler compliance: styling', () => {
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵallocHostVars(2);
               $r3$.ɵelementStyling(_c0, _c1, null, ctx);
             }
             if (rf & 2) {
@@ -910,7 +911,6 @@ describe('compiler compliance: styling', () => {
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵallocHostVars(2);
               $r3$.ɵelementStyling(_c2, _c3, null, ctx);
             }
             if (rf & 2) {
@@ -925,5 +925,110 @@ describe('compiler compliance: styling', () => {
          const result = compile(files, angularFiles);
          expectEmit(result.source, template, 'Incorrect template');
        });
+  });
+
+  it('should count only non-style and non-class host bindings on Components', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Component, NgModule, HostBinding} from '@angular/core';
+
+          @Component({
+            selector: 'my-component',
+            template: '',
+            host: {
+              'style': 'width:200px; height:500px',
+              'class': 'foo baz'
+            }
+          })
+          export class MyComponent {
+            @HostBinding('style')
+            myStyle = {width:'100px'};
+
+            @HostBinding('class')
+            myClass = {bar:false};
+
+            @HostBinding('id')
+            id = 'some id';
+
+            @HostBinding('title')
+            title = 'some title';
+          }
+
+          @NgModule({declarations: [MyComponent]})
+          export class MyModule {}
+        `
+      }
+    };
+
+    const template = `
+      const $_c0$ = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
+      const $_c1$ = ["width", "height", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
+      …
+      hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+        if (rf & 1) {
+          $r3$.ɵallocHostVars(2);
+          $r3$.ɵelementStyling($_c0$, $_c1$, $r3$.ɵdefaultStyleSanitizer, ctx);
+        }
+        if (rf & 2) {
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
+          $r3$.ɵelementStylingApply(elIndex, ctx);
+        }
+      },
+      consts: 0,
+      vars: 0,
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
+  it('should count only non-style and non-class host bindings on Directives', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+          import {Directive, Component, NgModule, HostBinding} from '@angular/core';
+
+          @Directive({selector: '[myWidthDir]'})
+          export class WidthDirective {
+            @HostBinding('style.width')
+            myWidth = 200;
+
+            @HostBinding('class.foo')
+            myFooClass = true;
+
+            @HostBinding('id')
+            id = 'some id';
+
+            @HostBinding('title')
+            title = 'some title';
+          }
+        `
+      }
+    };
+
+    const template = `
+      const $_c0$ = ["foo"];
+      const $_c1$ = ["width"];
+      …
+      hostBindings: function WidthDirective_HostBindings(rf, ctx, elIndex) {
+        if (rf & 1) {
+          $r3$.ɵallocHostVars(2);
+          $r3$.ɵelementStyling($_c0$, $_c1$, null, ctx);
+        }
+        if (rf & 2) {
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
+          $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
+          $r3$.ɵelementStylingApply(elIndex, ctx);
+        }
+      }
+    `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
   });
 });
