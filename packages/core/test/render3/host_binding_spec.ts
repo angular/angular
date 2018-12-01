@@ -8,7 +8,7 @@
 
 import {ElementRef, EventEmitter} from '@angular/core';
 
-import {AttributeMarker, defineComponent, template, defineDirective, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
 import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -778,6 +778,82 @@ describe('host bindings', () => {
     fixture.update();
     expect(hostElement.id).toBe('green');
     expect(hostElement.title).toBe('other title');
+  });
+
+  it('should work correctly with inherited directives with hostBindings', () => {
+    let subDir !: SubDirective;
+    let superDir !: SuperDirective;
+
+    class SuperDirective {
+      id = 'my-id';
+
+      static ngDirectiveDef = defineDirective({
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        hostBindings: (rf: RenderFlags, ctx: SuperDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'id', bind(ctx.id));
+          }
+        },
+        factory: () => superDir = new SuperDirective(),
+      });
+    }
+
+    class SubDirective extends SuperDirective {
+      title = 'my-title';
+
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        hostBindings: (rf: RenderFlags, ctx: SubDirective, elementIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elementIndex, 'title', bind(ctx.title));
+          }
+        },
+        factory: () => subDir = new SubDirective(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['subDir', '']);
+        element(1, 'div', ['superDir', '']);
+      }
+    }, 2, 0, [SubDirective, SuperDirective]);
+
+    const fixture = new ComponentFixture(App);
+    const els = fixture.hostElement.querySelectorAll('div') as NodeListOf<HTMLElement>;
+
+    const firstDivEl = els[0];
+    const secondDivEl = els[1];
+
+    // checking first div element with inherited directive
+    expect(firstDivEl.id).toEqual('my-id');
+    expect(firstDivEl.title).toEqual('my-title');
+
+    subDir.title = 'new-title';
+    fixture.update();
+    expect(firstDivEl.id).toEqual('my-id');
+    expect(firstDivEl.title).toEqual('new-title');
+
+    subDir.id = 'new-id';
+    fixture.update();
+    expect(firstDivEl.id).toEqual('new-id');
+    expect(firstDivEl.title).toEqual('new-title');
+
+    // checking second div element with simple directive
+    expect(secondDivEl.id).toEqual('my-id');
+
+    superDir.id = 'new-id';
+    fixture.update();
+    expect(secondDivEl.id).toEqual('new-id');
   });
 
   it('should support host attributes', () => {
