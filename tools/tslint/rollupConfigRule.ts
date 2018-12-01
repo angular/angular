@@ -30,6 +30,8 @@ const sourceFilePathBlacklist = [
   /[/\\]packages[/\\]benchpress[/\\]/,
   /[/\\]packages[/\\]examples[/\\]/,
   /[/\\]packages[/\\]elements[/\\]schematics[/\\]/,
+  /[/\\]packages[/\\]private[/\\]/,
+  /[/\\]packages[/\\][^/\\]+[/\\]docs[/\\]/,
 
   // language-service bundles everything in its UMD, so we don't need a globals. There are
   // exceptions but we simply ignore those files from this rule.

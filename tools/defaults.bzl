@@ -5,6 +5,7 @@ load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 load("//packages/bazel:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
+load("@build_bazel_rules_typescript//:defs.bzl", _ts_devserver = "ts_devserver")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
@@ -75,6 +76,15 @@ def _default_module_name(testonly):
         return "@angular/" + pkg[len("packages/"):]
 
     return None
+
+def ts_devserver(deps, **kwargs):
+    """Default values for ts_devserver"""
+    deps = deps + ["@ngdeps//node_modules/tslib:tslib.js"]
+
+    _ts_devserver(
+        deps = deps,
+        **kwargs
+    )
 
 def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""

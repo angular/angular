@@ -1,0 +1,50 @@
+load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+######################
+# App
+######################
+ng_module(
+    name = "app",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.e2e.ts"],
+    ),
+    deps = [
+        "//packages/animations",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+######################
+# Server
+######################
+ts_devserver(
+    name = "server",
+    bootstrap = [
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+    ],
+    entry_module = "@angular/animations/docs/examples/dsl/main",
+    index_html = ":index.html",
+    deps = [
+        ":app",
+    ],
+)
+
+######################
+# E2E tests
+######################
+ts_library(
+    name = "e2e_lib",
+    testonly = True,
+    srcs = glob(["**/*.e2e.ts"]),
+    deps = [
+        "//packages/private/testing/e2e",
+        "@ngdeps//protractor",
+    ],
+)
+
+protractor_web_test_suite(
+    name = "e2e",
+    srcs = ":e2e_lib",
+    server = ":server",
+)

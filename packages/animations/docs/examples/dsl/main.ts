@@ -6,4 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AppModule, MyExpandoCmp as AppComponent} from './animation_example';
+import {platformBrowser} from '@angular/platform-browser';
+import {AppModuleNgFactory} from './dsl_example.ngfactory';
+
+
+// bootstrap
+platformBrowser().bootstrapModuleFactory(AppModuleNgFactory);

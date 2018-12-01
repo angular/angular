@@ -1,0 +1,39 @@
+{
+  "//": "this tsconfig.json is here just to enable IDE support - it is not used for building this code",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "./dist/",
+    "paths": {
+      "selenium-webdriver": [
+        "../../../../../node_modules/@types/selenium-webdriver/index.d.ts"
+      ],
+      "protractor": [
+        "../../../../../node_modules/protractor"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
+      "@angular/*": [
+        "../../../../*"
+      ],
+    },
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.promise",
+      "es2015.collection",
+      "es2015.iterable",
+      "es2015.core"
+    ],
+  },
+  "include": [
+    "**/*.ts"
+  ]
+}
