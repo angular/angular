@@ -1624,11 +1624,18 @@ function queueHostBindingForCheck(
   ngDevMode &&
       assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
   const expando = tView.expandoInstructions !;
+  const length = expando.length;
   // check whether a given `hostBindings` function already exists in expandoInstructions,
   // which can happen in case directive definition was extended from base definition (as a part of
   // the `InheritDefinitionFeature` logic)
-  if (expando.length < 2 || expando[expando.length - 2] !== def.hostBindings) {
+  if (length < 2 || expando[length - 2] !== def.hostBindings) {
     expando.push(def.hostBindings !, hostVars);
+  } else {
+    // if we found the same `hostBindings` function in the list, we just increase the number of
+    // host vars associated with that function, but do not add it into the list again
+    if (length >= 2 && expando[length - 2] === def.hostBindings) {
+      expando[length - 1] = (expando[length - 1] as number) + hostVars;
+    }
   }
 }
 
