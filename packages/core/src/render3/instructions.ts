@@ -1515,9 +1515,10 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, previousOrP
       setCurrentDirectiveDef(null);
       // `hostBindings` function may or may not contain `allocHostVars` call
       // (e.g. it may not if it only contains host listeners), so we need to check whether
-      // `expandoInstructions` has changed and if not - we push `null` to keep indices in sync
+      // `expandoInstructions` has changed and if not - we still push `hostBindings` to
+      // expando block, to make sure we execute it for DI cycle
       if (previousExpandoLength === expando.length && firstTemplatePass) {
-        expando.push(null);
+        expando.push(def.hostBindings);
       }
     } else if (firstTemplatePass) {
       expando.push(null);

@@ -37,6 +37,10 @@ const EMPTY_ARRAY: any[] = [];
 // If there is a match, the first matching group will contain the attribute name to bind.
 const ATTR_REGEX = /attr\.([^\]]+)/;
 
+function getStylingPrefix(propName: string): string {
+  return propName.substring(0, 5).toLowerCase();
+}
+
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): {definitionMap: DefinitionMap, statements: o.Statement[]} {
@@ -62,8 +66,14 @@ function baseDirectiveFields(
 
   definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
 
-  // Initialize hostVarsCount to number of bound host properties (interpolations illegal)
-  const hostVarsCount = Object.keys(meta.host.properties).length;
+  // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
+  // except 'style' and 'class' properties, since they should *not* allocate host var slots
+  const hostVarsCount = Object.keys(meta.host.properties)
+                            .filter(name => {
+                              const prefix = getStylingPrefix(name);
+                              return prefix !== 'style' && prefix !== 'class';
+                            })
+                            .length;
 
   const elVarExp = o.variable('elIndex');
   const contextVarExp = o.variable(CONTEXT_NAME);
@@ -672,7 +682,7 @@ function createHostBindingsFunction(
 
     for (const binding of bindings) {
       const name = binding.name;
-      const stylePrefix = name.substring(0, 5).toLowerCase();
+      const stylePrefix = getStylingPrefix(name);
       if (stylePrefix === 'style') {
         const {propertyName, unit} = parseNamedProperty(name);
         styleBuilder.registerStyleInput(propertyName, binding.expression, unit, binding.sourceSpan);
