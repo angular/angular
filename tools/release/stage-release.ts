@@ -1,3 +1,4 @@
+import * as OctokitApi from '@octokit/rest';
 import {bold, cyan, green, italic, red, yellow} from 'chalk';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {prompt} from 'inquirer';
@@ -41,7 +42,12 @@ class StageReleaseTask {
   /** Instance of a wrapper that can execute Git commands. */
   git: GitClient;
 
-  constructor(public projectDir: string) {
+  /** Octokit API instance that can be used to make Github API calls. */
+  githubApi: OctokitApi;
+
+  constructor(public projectDir: string,
+              public repositoryOwner: string,
+              public repositoryName: string) {
     this.packageJsonPath = join(projectDir, 'package.json');
 
     console.log(this.projectDir);
@@ -61,7 +67,9 @@ class StageReleaseTask {
       process.exit(1);
     }
 
-    this.git = new GitClient(projectDir, this.packageJson.repository.url);
+    this.githubApi = new OctokitApi();
+    this.git = new GitClient(projectDir,
+        `https://github.com/${repositoryOwner}/${repositoryName}.git`);
   }
 
   async run() {
@@ -81,8 +89,7 @@ class StageReleaseTask {
     this.verifyPublishBranch(expectedPublishBranch);
     this.verifyLocalCommitsMatchUpstream(expectedPublishBranch);
     this.verifyNoUncommittedChanges();
-
-    // TODO(devversion): Assert that GitHub statuses succeed for this branch.
+    await this.verifyPassingGithubStatus();
 
     const newVersionName = newVersion.format();
     const stagingBranch = `release-stage/${newVersionName}`;
@@ -136,8 +143,8 @@ class StageReleaseTask {
 
     // Check if current branch matches the expected publish branch.
     if (expectedPublishBranch !== currentBranchName) {
-      console.error(red(`Cannot stage release from "${italic(currentBranchName)}". Please stage ` +
-        `the release from "${bold(expectedPublishBranch)}".`));
+      console.error(red(`  ✘ Cannot stage release from "${italic(currentBranchName)}". Please ` +
+        `stage the release from "${bold(expectedPublishBranch)}".`));
       process.exit(1);
     }
   }
@@ -149,8 +156,9 @@ class StageReleaseTask {
 
     // Check if the current branch is in sync with the remote branch.
     if (upstreamCommitSha !== localCommitSha) {
-      console.error(red(`Cannot stage release. The current branch is not in sync with the remote ` +
-        `branch. Please make sure your local branch "${italic(publishBranch)}" is up to date.`));
+      console.error(red(`  ✘ Cannot stage release. The current branch is not in sync with the ` +
+        `remote branch. Please make sure your local branch "${italic(publishBranch)}" is up ` +
+        `to date.`));
       process.exit(1);
     }
   }
@@ -158,7 +166,7 @@ class StageReleaseTask {
   /** Verifies that there are no uncommitted changes in the project. */
   private verifyNoUncommittedChanges() {
     if (this.git.hasUncommittedChanges()) {
-      console.error(red(`Cannot stage release. There are changes which are not committed and ` +
+      console.error(red(`  ✘ Cannot stage release. There are changes which are not committed and ` +
         `should be stashed.`));
       process.exit(1);
     }
@@ -169,10 +177,32 @@ class StageReleaseTask {
     const newPackageJson = {...this.packageJson, version: newVersionName};
     writeFileSync(this.packageJsonPath, JSON.stringify(newPackageJson, null, 2));
   }
+
+  /** Verifies that the latest commit of the current branch is passing all Github statuses. */
+  private async verifyPassingGithubStatus() {
+    const commitRef = this.git.getLocalCommitSha('HEAD');
+    const {state} = (await this.githubApi.repos.getCombinedStatusForRef({
+      owner: this.repositoryOwner,
+      repo: this.repositoryName,
+      ref: commitRef,
+    })).data;
+
+    if (state === 'failure') {
+      console.error(red(`  ✘   Cannot stage release. Commit "${commitRef}" does not pass all ` +
+        `github status checks. Please make sure this commit passes all checks before re-running.`));
+      process.exit(1);
+    } else if (state === 'pending') {
+      console.error(red(`  ✘   Cannot stage release yet. Commit "${commitRef}" still has ` +
+        `pending github statuses that need to succeed before staging a release.`));
+      process.exit(0);
+    }
+
+    console.info(green(`  ✓   Upstream commit is passing all github status checks.`));
+  }
 }
 
 /** Entry-point for the release staging script. */
 if (require.main === module) {
-  new StageReleaseTask(join(__dirname, '../../')).run();
+  new StageReleaseTask(join(__dirname, '../../'), 'angular', 'material2').run();
 }
 

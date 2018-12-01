@@ -126,7 +126,6 @@
     "node-sass": "^4.9.3",
     "parse5": "^5.0.0",
     "protractor": "^5.4.0",
-    "request": "^2.83.0",
     "resolve-bin": "^0.4.0",
     "rollup": "^0.56.3",
     "rollup-plugin-alias": "^1.4.0",
