@@ -38,11 +38,12 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
-import {createStylingContextTemplate, renderStyleAndClassBindings, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {createStylingContextTemplate, renderStyleAndClassBindings, setStyle, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+
 
 
 /**
@@ -1216,9 +1217,6 @@ export function elementStylingApply(index: number, directive?: {}): void {
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string, directive?: {}): void {
-  if (directive != undefined)
-    return hackImplementationOfElementStyleProp(
-        index, styleIndex, value, suffix, directive);  // supported in next PR
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -1233,7 +1231,11 @@ export function elementStyleProp(
       valueToAdd = value as any as string;
     }
   }
-  updateElementStyleProp(getStylingContext(index, getLView()), styleIndex, valueToAdd);
+  if (directive != undefined) {
+    hackImplementationOfElementStyleProp(index, styleIndex, valueToAdd, suffix, directive);
+  } else {
+    updateElementStyleProp(getStylingContext(index, getLView()), styleIndex, valueToAdd);
+  }
 }
 
 /**
@@ -1293,14 +1295,40 @@ function hackImplementationOfElementStyling(
     classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer: StyleSanitizeFn | null, directive: {}): void {
-  const node = getNativeByTNode(getPreviousOrParentTNode(), getLView());
+  const node = getNativeByTNode(getPreviousOrParentTNode(), getLView()) as RElement;
   ngDevMode && assertDefined(node, 'expecting parent DOM node');
   const hostStylingHackMap: HostStylingHackMap =
       ((node as any).hostStylingHack || ((node as any).hostStylingHack = new Map()));
+  const squashedClassDeclarations = hackSquashDeclaration(classDeclarations);
   hostStylingHackMap.set(directive, {
-    classDeclarations: hackSquashDeclaration(classDeclarations),
+    classDeclarations: squashedClassDeclarations,
     styleDeclarations: hackSquashDeclaration(styleDeclarations), styleSanitizer
   });
+  hackSetStaticClasses(node, squashedClassDeclarations);
+}
+
+function hackSetStaticClasses(node: RElement, classDeclarations: (string | boolean)[]) {
+  // Static classes need to be set here because static classes don't generate
+  // elementClassProp instructions.
+  const lView = getLView();
+  const staticClassStartIndex =
+      classDeclarations.indexOf(InitialStylingFlags.VALUES_MODE as any) + 1;
+  const renderer = lView[RENDERER];
+
+  for (let i = staticClassStartIndex; i < classDeclarations.length; i += 2) {
+    const className = classDeclarations[i] as string;
+    const value = classDeclarations[i + 1];
+    // if value is true, then this is a static class and we should set it now.
+    // class bindings are set separately in elementClassProp.
+    if (value === true) {
+      if (isProceduralRenderer(renderer)) {
+        renderer.addClass(node, className);
+      } else {
+        const classList = (node as HTMLElement).classList;
+        classList.add(className);
+      }
+    }
+  }
 }
 
 function hackSquashDeclaration(declarations: (string | boolean | InitialStylingFlags)[] | null):
@@ -1330,9 +1358,15 @@ function hackImplementationOfElementStylingApply(index: number, directive?: {}):
 }
 
 function hackImplementationOfElementStyleProp(
-    index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directive?: {}): void {
-  throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
+    index: number, styleIndex: number, value: string | null, suffix?: string,
+    directive?: {}): void {
+  const lView = getLView();
+  const node = getNativeByIndex(index, lView);
+  ngDevMode && assertDefined(node, 'could not locate node');
+  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
+  const styleName = hostStylingHack.styleDeclarations[styleIndex];
+  const renderer = lView[RENDERER];
+  setStyle(node, styleName, value as string, renderer, null);
 }
 
 function hackImplementationOfElementStylingMap<T>(

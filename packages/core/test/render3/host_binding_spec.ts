@@ -9,9 +9,9 @@
 import {ElementRef, EventEmitter} from '@angular/core';
 
 import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
-import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {RenderFlags, InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
 
 import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';
@@ -977,5 +977,96 @@ describe('host bindings', () => {
     const fixture = new ComponentFixture(App);
     const hostBindingEl = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
     expect(hostBindingEl.id).toEqual('after-content');
+  });
+
+  describe('styles', () => {
+
+    it('should bind to host styles', () => {
+      let hostBindingDir !: HostBindingToStyles;
+      /**
+       * host: {
+       *   '[style.width.px]': 'width'
+       * }
+       */
+      class HostBindingToStyles {
+        width = 2;
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingToStyles,
+          selectors: [['host-binding-to-styles']],
+          factory: () => hostBindingDir = new HostBindingToStyles(),
+          consts: 0,
+          vars: 0,
+          hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
+            if (rf & RenderFlags.Create) {
+              allocHostVars(0);  // this is wrong, but necessary until FW-761 gets in
+              elementStyling(null, ['width'], null, ctx);
+            }
+            if (rf & RenderFlags.Update) {
+              elementStyleProp(0, 0, ctx.width, 'px', ctx);
+              elementStylingApply(0, ctx);
+            }
+          },
+          template: (rf: RenderFlags, cmp: HostBindingToStyles) => {}
+        });
+      }
+
+      /** <host-binding-to-styles></host-binding-to-styles> */
+      const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'host-binding-to-styles');
+        }
+      }, 1, 0, [HostBindingToStyles]);
+
+      const fixture = new ComponentFixture(App);
+      const hostBindingEl =
+          fixture.hostElement.querySelector('host-binding-to-styles') as HTMLElement;
+      expect(hostBindingEl.style.width).toEqual('2px');
+
+      hostBindingDir.width = 5;
+      fixture.update();
+      expect(hostBindingEl.style.width).toEqual('5px');
+    });
+
+    it('should apply static host classes', () => {
+      /**
+       * host: {
+       *   'class': 'mat-toolbar'
+       * }
+       */
+      class StaticHostClass {
+        static ngComponentDef = defineComponent({
+          type: StaticHostClass,
+          selectors: [['static-host-class']],
+          factory: () => new StaticHostClass(),
+          consts: 0,
+          vars: 0,
+          hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
+            if (rf & RenderFlags.Create) {
+              allocHostVars(0);  // this is wrong, but necessary until FW-761 gets in
+              elementStyling(
+                  ['mat-toolbar', InitialStylingFlags.VALUES_MODE, 'mat-toolbar', true], null, null,
+                  ctx);
+            }
+            if (rf & RenderFlags.Update) {
+              elementStylingApply(0, ctx);
+            }
+          },
+          template: (rf: RenderFlags, cmp: StaticHostClass) => {}
+        });
+      }
+
+      /** <static-host-class></static-host-class> */
+      const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'static-host-class');
+        }
+      }, 1, 0, [StaticHostClass]);
+
+      const fixture = new ComponentFixture(App);
+      const hostBindingEl = fixture.hostElement.querySelector('static-host-class') as HTMLElement;
+      expect(hostBindingEl.className).toEqual('mat-toolbar');
+    });
+
   });
 });
