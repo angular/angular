@@ -5,6 +5,5 @@ jasmine_node_test(
     srcs = glob(["*.js"]),
     data = [
         "commit-message.json",
-        "spec/support/jasmine.json",
     ],
 )
