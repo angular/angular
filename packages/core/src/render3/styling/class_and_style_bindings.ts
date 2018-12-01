@@ -594,7 +594,7 @@ export function renderStyleAndClassBindings(
  * @param renderer
  * @param store an optional key/value map that will be used as a context to render styles on
  */
-function setStyle(
+export function setStyle(
     native: any, prop: string, value: string | null, renderer: Renderer3,
     sanitizer: StyleSanitizeFn | null, store?: BindingStore | null,
     playerBuilder?: ClassAndStylePlayerBuilder<any>| null) {

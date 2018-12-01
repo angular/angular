@@ -819,6 +819,9 @@
     "name": "hackImplementationOfElementStylingApply"
   },
   {
+    "name": "hackSetStaticClasses"
+  },
+  {
     "name": "hackSquashDeclaration"
   },
   {
