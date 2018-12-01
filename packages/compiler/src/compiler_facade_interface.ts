@@ -131,16 +131,11 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   directives: {selector: string, expression: any}[];
   styles: string[];
   encapsulation: ViewEncapsulation;
-  interpolation: InterpolationConfig;
   viewProviders: Provider[]|null;
+  interpolation?: [string, string];
 }
 
 export type ViewEncapsulation = number;
-
-export interface InterpolationConfig {
-  start: string;
-  end: string;
-}
 
 export interface R3QueryMetadataFacade {
   propertyName: string;
