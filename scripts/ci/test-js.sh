@@ -35,8 +35,3 @@ travisFoldStart "test.unit.rebuildHack"
 travisFoldStart "test.unit.localChrome"
   $(npm bin)/karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
 travisFoldEnd "test.unit.localChrome"
-
-
-travisFoldStart "test.unit.localChrome.router"
-  $(npm bin)/karma start ./packages/router/karma.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
-travisFoldEnd "test.unit.localChrome.router"
