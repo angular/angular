@@ -51,6 +51,10 @@ def _esm5_outputs_aspect(target, ctx):
     if not hasattr(target.typescript, "replay_params"):
         print("WARNING: no esm5 output from target %s//%s:%s available" % (target.label.workspace_root, target.label.package, target.label.name))
         return []
+    elif not target.typescript.replay_params:
+        # In case there are "replay_params" specified but the compile action didn't generate any
+        # outputs (e.g. only "d.ts" files), we cannot create ESM5 outputs for this target either.
+        return []
 
     # We create a new tsconfig.json file that will have our compilation settings
     tsconfig = ctx.actions.declare_file("%s_esm5.tsconfig.json" % target.label.name)
