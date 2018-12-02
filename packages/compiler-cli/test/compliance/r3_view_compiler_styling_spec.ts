@@ -859,6 +859,12 @@ describe('compiler compliance: styling', () => {
              'spec.ts': `
                 import {Directive, Component, NgModule, HostBinding} from '@angular/core';
 
+                @Directive({selector: '[myClassDir]'})
+                export class ClassDirective {
+                  @HostBinding('class')
+                  myClassMap = {red: true};
+                }
+
                 @Directive({selector: '[myWidthDir]'})
                 export class WidthDirective {
                   @HostBinding('style.width')
@@ -880,13 +886,13 @@ describe('compiler compliance: styling', () => {
                 @Component({
                   selector: 'my-component',
                   template: '
-                    <div myWidthDir myHeightDir></div>
+                    <div myWidthDir myHeightDir myClassDir></div>
                   ',
                 })
                 export class MyComponent {
                 }
 
-                @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective]})
+                @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective, ClassDirective]})
                 export class MyModule {}
             `
            }
@@ -897,6 +903,17 @@ describe('compiler compliance: styling', () => {
           const _c1 = ["width"];
           const _c2 = ["bar"];
           const _c3 = ["height"];
+          …
+          function ClassDirective_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵallocHostVars(1);
+              $r3$.ɵelementStyling(null, null, null, ctx);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(elIndex, ctx.myClassMap, null, ctx);
+              $r3$.ɵelementStylingApply(elIndex, ctx);
+            }
+          }
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
