@@ -152,7 +152,10 @@ and adds the result to the `AppModule`'s `imports` array.
 라우팅 규칙은 개발자가 설정하기 전까지는 아무것도 없습니다.
 다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드이며, 이 라우팅 규칙은 라우터 모듈의 `RouterModule.forRoot` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
 
+<!--
 <code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (excerpt)">
+-->
+<code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (일부)">
 
 </code-example>
 
@@ -1449,7 +1452,10 @@ To test this feature, add a button with a `RouterLink` to the `HeroListComponent
 -->
 이 동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
 
+<!--
 <code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
+-->
+<code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (일부)">
 
 </code-example>
 
@@ -2106,25 +2112,41 @@ Follow these steps:
   
 <div class="alert is-helpful">
 
+   <!--
    Selectors are **not required** for _routed components_ due to the components are dynamically inserted when the page is rendered, but are useful for identifying and targeting them in your HTML element tree.
+   -->
+   _라우팅 대상이 될 컴포넌트_ 는 페이지에 동적으로 렌더링되기 때문에 셀렉터를 **지정하지 않아도 됩니다.** 하지만 HTML 엘리먼트 트리에서 이 컴포넌트를 쉽게 찾으려면 셀렉터를 지정하는 것이 좋습니다.
 
 </div>
 
+<!--
 * Copy the `hero-detail` folder, the `hero.ts`, `hero.service.ts`,  and `mock-heroes.ts` files into the `heroes` subfolder.
 * Copy the `message.service.ts` into the `src/app` folder.
 * Update the relative path import to the `message.service` in the `hero.service.ts` file.
+-->
+* `hero-detail` 폴더에 있는 `hero.ts`, `hero.service.ts`, `mock-heroes.ts` 파일을 `heroes` 폴더로 옮깁니다.
+* `message.service.ts` 파일을 `src/app` 폴더로 옮깁니다.
+* `hero.service.ts` 파일에서 `message.service`를 로드하던 경로를 수정합니다.
 
+<!--
 Next, you'll update the `HeroesModule` metadata.
 
   * Import and add the `HeroDetailComponent` and `HeroListComponent` to the `declarations` array in the `HeroesModule`.
+-->
+그 다음에는 `HeroesModule` 메타데이터를 수정합니다.
+
+  * `HeroesModule`의 `declarations` 배열에 `HeroDetailComponent`와 `HeroListComponent`를 추가합니다.
+
 
 <code-example path="router/src/app/heroes/heroes.module.ts" header="src/app/heroes/heroes.module.ts">
 
 </code-example>
 
 
-
+<!--
 When you're done, you'll have these *hero management* files:
+-->
+여기까지 하고나면 이 모듈은 다음과 같은 파일들로 구성됩니다.
 
 
 <div class='filetree'>
@@ -2208,9 +2230,12 @@ When you're done, you'll have these *hero management* files:
 
 {@a hero-routing-requirements}
 
-
+<!--
 #### *Hero* feature routing requirements
+-->
+#### *히어로* 모듈 라우팅
 
+<!--
 The heroes feature has two interacting components, the hero list and the hero detail.
 The list view is self-sufficient; you navigate to it, it gets a list of heroes and displays them.
 
@@ -2229,19 +2254,41 @@ Now that you have routes for the `Heroes` module, register them with the `Router
 There is a small but critical difference.
 In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method to register the routes and application level service providers.
 In a feature module you use the static **`forChild`** method.
+-->
+히어로 모듈은 히어로의 목록을 표시하는 컴포넌트와 히어로의 상세 정보를 표시하는 컴포넌트로 구성됩니다.
+그리고 리스트를 표시하는 컴포넌트는 스스로 동작합니다. 사용자가 이 컴포넌트에 해당하는 주소로 이동하면 컴포넌트가 히어로의 목록을 가져와서 화면에 표시할 것입니다.
 
+하지만 상세정보를 표시하는 컴포넌트는 좀 다릅니다. 이 컴포넌트는 히어로 한 명의 정보를 화면에 표시하는데, 이 컴포넌트는 어떤 히어로를 표시해야 하는지 스스로 알지 못합니다.
+그래서 이 정보는 외부에서 전달해야 합니다.
+
+사용자가 히어로 목록에서 히어로를 한 명 선택하면 애플리케이션은 상세정보 화면으로 이동하면서 이 히어로의 정보를 표시해야 합니다.
+이 때 히어로의 ID를 라우팅 URL에 포함시키면 네비게이션할 때 이 정보를 활용할 수 있습니다.
+
+새로 만든 `src/app/heroes/` 폴더로 옮긴 컴포넌트를 대상으로 라우팅 규칙을 정의해 봅시다.
+
+이 단계가 `Heroes` 모듈에 라우팅 규칙을 등록하는 단계입니다. 라우팅 규칙은 `AppRoutingModule`에서 살펴봤던 것처럼 `RouterModule`을 사용해서 `Router`에 등록합니다.
+
+그런데 이 때 꼭 짚고 넘어가야 할 다른 점이 하나 있습니다.
+`AppRoutingModule`에서는 애플리케이션 계층에 필요한 라우팅 규칙과 서비스 프로바이더를 등록하기 위해 **`RouterModule.forRoot`** 메소드를 사용했습니다.
+하지만 기능 모듈에서는 **`forChild`** 메소드를 사용해야 합니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Only call `RouterModule.forRoot` in the root `AppRoutingModule`
 (or the `AppModule` if that's where you register top level application routes).
 In any other module, you must call the **`RouterModule.forChild`** method to register additional routes.
+-->
+`RouterModule.forRoot` 메소드는 애플리케이션 최상위 라우팅 모듈인 `AppRoutingModule` (라우팅 모듈이 따로 없다면 `AppModule`)에서만 사용합니다.
+다른 모듈에서는 서비스 프로바이더를 생략하고 라우팅 규칙만 등록하기 위해 **`RouterModule.forChild`** 메소드를 사용합니다.
 
 </div>
 
+<!--
 The updated `HeroesRoutingModule` looks like this:
+-->
+이제 `HeroesRoutingModule`은 다음과 같이 변경되었습니다.
 
 
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts">
@@ -2252,20 +2299,26 @@ The updated `HeroesRoutingModule` looks like this:
 
 <div class="alert is-helpful">
 
-
+<!--
 Consider giving each feature module its own route configuration file.
 It may seem like overkill early when the feature routes are simple.
 But routes have a tendency to grow more complex and consistency in patterns pays off over time.
-
+-->
+기능모듈마다 각각 라우팅 설정 파일을 두는 것을 고려해 보세요.
+기능모듈에서 관리하는 라우팅 규칙이 복잡하지 않은 개발 초기에는 이 방식이 번거로워 보일 수도 있습니다.
+하지만 애플리케이션이 점점 복잡해질수록 이렇게 관리하는 방식이 더 편합니다.
 
 </div>
 
 
 {@a remove-duplicate-hero-routes}
 
-
+<!--
 #### Remove duplicate hero routes
+-->
+#### 중복된 라우팅 규칙 제거하기
 
+<!--
 The hero routes are currently defined in _two_ places: in the `HeroesRoutingModule`,
 by way of the `HeroesModule`, and in the `AppRoutingModule`.
 
@@ -2276,7 +2329,16 @@ Remove the `HeroListComponent` import and the `/heroes` route from the `app-rout
 
 **Leave the default and the wildcard routes!**
 These are concerns at the top level of the application itself.
+-->
+이제 히어로 모듈과 관련된 라우팅 규칙은 `HeroesModule`에서 라우팅을 담당하는 `HeroesRoutingModule`과 `AppRoutingModule` 두 군데에 존재합니다.
 
+모듈의 라우팅 규칙은 해당 모듈이 로드하는 기능 모듈의 모든 라우팅 규칙이 조합되어 구성됩니다.
+그래서 라우팅 규칙은 한 모듈에 모두 정의하는 것이 아니라 자식 모듈에 각각 구현해도 됩니다.
+
+이제 `/heroes`와 관련된 라우팅 규칙은 `app-routing.module.ts` 파일에서 제거합니다.
+
+**기본 라우팅 규칙과 와일드카드 라우팅 규칙은 그대로 두세요!**
+이 라우팅 규칙들은 애플리케이션 최상위 계층에서 처리해야 하는 규칙입니다.
 
 <code-example path="router/src/app/app-routing.module.2.ts" linenums="false" header="src/app/app-routing.module.ts (v2)">
 
@@ -2286,12 +2348,19 @@ These are concerns at the top level of the application itself.
 
 {@a merge-hero-routes}
 
-
+<!--
 #### Remove heroes declarations
+-->
+#### 히어로 컴포넌트 선언 제거하기
 
+<!--
 Remove the `HeroListComponent` from the `AppModule`'s `declarations` because it's now provided by the `HeroesModule`. You can evolve the hero feature with more components and different routes. That's a key benefit of creating a separate module for each feature area.
 
 After these steps, the `AppModule` should look like this:
+-->
+이제 `AppModule`의 `declarations`에서 `HeroListComponent`를 제거합니다. 이 컴포넌트는 `HeroesModule`에 등록하는 방식으로 사용할 것입니다. 그리고 히어로와 관련된 컴포넌트나 라우팅 규칙이 추가되는 것도 모두 히어로 모듈에 추가할 것입니다. 기능 모듈을 각각 나눠서 정의하는 것은 Angular 구성요소를 효율적으로 관리하기 위한 것입니다.
+
+여기까지 수정하고 나면 `AppModule`은 다음과 같습니다:
 
 
 <code-example path="router/src/app/app.module.3.ts" header="src/app/app.module.ts">
@@ -2302,18 +2371,23 @@ After these steps, the `AppModule` should look like this:
 
 {@a routing-module-order}
 
-
+<!--
 ### Module import order matters
+-->
+### 모듈 로드순서 정리하기
 
+<!--
 Look at the module `imports` array. Notice that the `AppRoutingModule` is _last_.
 Most importantly, it comes _after_ the `HeroesModule`.
+-->
+모듈에 선언한 `imports` 배열을 봅시다. 이 모듈 설정을 보면 `AppRoutingModule`이 _가장 마지막에_ 로드되는 것을 확인할 수 있습니다. `AppRoutingModule`은 `HeroesModule`보다 반드시 _뒤에_ 로드되어야 합니다.
 
 <code-example path="router/src/app/app.module.3.ts" region="module-imports" header="src/app/app.module.ts (module-imports)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The order of route configuration matters.
 The router accepts the first route that matches a navigation request path.
 
@@ -2329,43 +2403,71 @@ Each routing module augments the route configuration _in the order of import_.
 If you list `AppRoutingModule` first, the wildcard route will be registered
 _before_ the hero routes.
 The wildcard route&mdash;which matches _every_ URL&mdash;will intercept the attempt to navigate to a hero route.
+-->
+라우팅 규칙은 올바른 순서로 등록되어야 합니다.
+라우터는 라우팅 규칙 중 가장 먼저 매칭된 규칙에 따라 네비게이션 동작을 실행합니다.
 
+그래서 모든 라우팅 규칙을 `AppRoutingModule`에 정의했을 때 "Page not found"로 라우팅하는 와일드카드 라우팅 규칙이 적용되기 _전에_ `/heroes` 라우팅이 적용되어야 하기 때문에 `/heroes` 라우팅 규칙 뒤에 [와일드카드](#wildcard) 라우팅 규칙을 등록했습니다.
+
+지금 수정한 예제에서 라우팅 규칙은 한 파일에만 정의되어 있지 않습니다.
+라우팅 규칙은 `AppRoutingModule`과 `HeroesRoutingModule`에 각각 정의되어 있습니다.
+
+이 때 애플리케이션 전체 라우팅 규칙은 _라우팅 모듈을 로드하는 순서에 따라_ 조합됩니다.
+그래서 `AppRoutingModule`을 먼저 로드하면 와일드카드 라우팅 규칙이 히어로 모듈의 라우팅 규칙보다 _먼저_ 등록됩니다.
+그리고 와일드카드 라우팅 규칙은 _모든_ URL과 매칭되기 때문에 히어로 모듈에 정의한 라우팅 규칙은 동작하지 않습니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Reverse the routing modules and see for yourself that
 a click of the heroes link results in "Page not found".
 Learn about inspecting the runtime router configuration
 [below](#inspect-config "Inspect the router config").
-
+-->
+라우팅 모듈을 로드하는 순서를 바꾸고 히어로 모듈로 이동하는 링크를 클릭하면 "Page not found" 페이지가 표시됩니다.
+애플리케이션이 실행될 때 동작하는 라우터 설정을 확인하는 방법은 [아래](#inspect-config "Inspect the router config") 섹션을 참고하세요.
 
 </div>
 
+<!--
 ### Route Parameters
+-->
+### 라우팅 변수
 
 {@a route-def-with-parameter}
 
-
+<!--
 #### Route definition with a parameter
+-->
+#### 라우팅 규칙에 변수 활용하기
 
+<!--
 Return to the `HeroesRoutingModule` and look at the route definitions again.
 The route to `HeroDetailComponent` has a twist.
+-->
+`HeroesRoutingModule`로 돌아가서 라우팅 규칙을 다시 한 번 봅시다.
+`HeroDetailComponent`로 라우팅하는 라우팅 규칙은 다음과 같이 정의되어 있습니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route">
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (일부)" region="hero-detail-route">
 
 </code-example>
 
 
-
+<!--
 Notice the `:id` token in the path. That creates a slot in the path for a **Route Parameter**.
 In this case, the router will insert the `id` of a hero into that slot.
 
 If you tell the router to navigate to the detail component and display "Magneta",
 you expect a hero id to appear in the browser URL like this:
+-->
+URL 경로에 `:id` 토큰이 사용된 것을 확인해 보세요. 라우팅 경로를 이렇게 지정하면 **라우팅 변수**를 사용한다는 것을 의미합니다.
+라우터는 이 라우팅 규칙의 `id` 부분에 사용자가 선택한 히어로의 ID를 할당합니다.
 
+그래서 "Magneta"에 해당하는 히어로의 상세 정보화면으로 이동한다면 브라우저의 URL은 다음과 같이 표시될 것입니다:
 
 <code-example format="nocode">
   localhost:4200/hero/15
@@ -2373,84 +2475,113 @@ you expect a hero id to appear in the browser URL like this:
 </code-example>
 
 
-
+<!--
 If a user enters that URL into the browser address bar, the router should recognize the
 pattern and go to the same "Magneta" detail view.
-
+-->
+사용자가 브라우저 주소표시줄에 이 URL을 직접 입력해도 라우터는 라우팅 규칙에 등록된 패턴에 따라 "Magneta" 히어로의 상세 정보 화면을 표시합니다.
 
 <div class="callout is-helpful">
 
 
 
 <header>
+  <!--
   Route parameter: Required or optional?
+  -->
+  라우팅 변수: 필수일까? 생략해도 될까?
 </header>
 
 
-
+<!--
 Embedding the route parameter token, `:id`,
 in the route definition path is a good choice for this scenario
 because the `id` is *required* by the `HeroDetailComponent` and because
 the value `15` in the path clearly distinguishes the route to "Magneta" from
 a route for some other hero.
-
+-->
+이 예제에서 라우팅 변수의 값이 `15`이면 `HeroDetailComponent`는 "Magneta"의 상세 정보를 화면에 표시합니다. 따라서 라우팅 변수 토큰 `:id`는 사용자가 선택한 히어로를 다른 히어로와 구분해야 하기 때문에 *필수 항목*입니다.
 
 </div>
 
 
 {@a route-parameters}
 
-
+<!--
 #### Setting the route parameters in the list view
+-->
+#### 리스트 화면에 라우팅 변수 설정하기
 
+<!--
 After navigating to the `HeroDetailComponent`, you expect to see the details of the selected hero.
 You need *two* pieces of information: the routing path to the component and the hero's `id`.
 
 Accordingly, the _link parameters array_ has *two* items:  the routing _path_ and a _route parameter_ that specifies the
 `id` of the selected hero.
+-->
+`HeroDetailComponent`로 이동하고 나면 사용자가 선택한 히어로의 정보가 화면에 표시되어야 합니다.
+그러면 이 정보를 컴포넌트에 전달하기 위해 사용자가 선택한 히어로의 `id`가 컴포넌트로 이동하는 라우팅 경로에 전달되어야 합니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (링크에 사용된 배열 형태의 인자)" region="link-parameters-array">
 
 </code-example>
 
 
-
+<!--
 The router composes the destination URL from the array like this:
 `localhost:4200/hero/15`.
-
-
+-->
+라우터는 배열 형태로 전달된 이 주소를 `localhost:4200/hero/15`로 조합합니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 How does the target `HeroDetailComponent` learn about that `id`?
 Don't analyze the URL. Let the router do it.
 
 The router extracts the route parameter (`id:15`) from the URL and supplies it to
 the `HeroDetailComponent` via the `ActivatedRoute` service.
+-->
+`HeroDetailComponent`는 선택된 히어로의 `id`를 어떻게 알 수 있을까요?
+이 때 URL을 직접 참조하는 방법보다 라우터를 활용하는 방법이 더 좋습니다.
 
+URL에 사용된 라우팅 변수 (`id:15`)는 라우터가 파싱하며, 이렇게 파싱된 라우팅 변수는 `ActivatedRoute` 서비스를 통해 `HeroDetailComponent`에서 확인할 수 있습니다.
 
 </div>
 
 {@a activated-route}
 
+<!--
 ### _Activated Route_ in action
+-->
+### _활성화된 라우팅 규칙 (Activated Route)_ 활용하기
 
+<!--
 Import the `Router`, `ActivatedRoute`, and `ParamMap` tokens from the router package.
+-->
+라우터 패키지에서 `Router`, `ActivatedRoute`, `ParamMap` 토큰을 로드합니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (activated route)" region="imports">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (활성화된 라우팅 규칙)" region="imports">
 
 </code-example>
 
 
-
+<!--
 Import the `switchMap` operator because you need it later to process the `Observable` route parameters.
+-->
+그리고 `Observable` 형태로 제공되는 라우팅 인자를 활용하기 위해 `switchMap` 연산자도 로드합니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap operator import)" region="rxjs-operator-import">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (switchMap 연산자 로드)" region="rxjs-operator-import">
 
 </code-example>
 
@@ -2458,23 +2589,30 @@ Import the `switchMap` operator because you need it later to process the `Observ
 
 {@a hero-detail-ctor}
 
-
+<!--
 As usual, you write a constructor that asks Angular to inject services
 that the component requires and reference them as private variables.
+-->
+일반적으로 컴포넌트에 서비스를 의존성으로 주입하는 로직은 컴포넌트 클래스의 생성자에 작성하며, 이렇게 주입받은 의존성 객체는 `private` 프로퍼티로 선언합니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (constructor)" region="ctor">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (생성자)" region="ctor">
 
 </code-example>
 
+<!--
 Later, in the `ngOnInit` method, you use the `ActivatedRoute` service to retrieve the parameters for the route,
 pull the hero `id` from the parameters and retrieve the hero to display.
-
+-->
+그리고 생성자 다음에 실행되는 `ngOnInit` 메소드에는 `ActivatedRoute` 서비스를 사용해서 라우팅 변수를 참조하는 로직을 작성하는데, 화면에 표시할 히어로를 구분하기 위해 라우팅 변수들 중에 `id`를 조회합니다.
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit)" region="ngOnInit">
 
 </code-example>
 
+<!--
 The `paramMap` processing is a bit tricky. When the map changes, you `get()`
 the `id` parameter from the changed parameters.
 
@@ -2488,52 +2626,90 @@ The `switchMap` operator also cancels previous in-flight requests. If the user r
 with a new `id` while the `HeroService` is still retrieving the old `id`, `switchMap` discards that old request and returns the hero for the new `id`.
 
 The observable `Subscription` will be handled by the `AsyncPipe` and the component's `hero` property will be (re)set with the retrieved hero.
+-->
+`paramMap`을 활용하는 방식이 중요합니다. 이 예제가 실행되면 라우팅 변수 맵이 변경될 때마다 변경된 맵을 대상으로 `get()` 메소드를 실행하고 `id` 변수의 값을 참조합니다.
+
+그러면 이렇게 참조한 `id`를 `HeroService`에 전달해서 이 `id`에 해당되는 히어로의 정보를 서버에서 받아옵니다.
+
+이 과정에 RxJS `map` 연산자를 사용하는 것이 맞지 않을까 생각이 들 수도 있습니다.
+하지만 `HeroService`가 반환하는 것은 `Observable<Hero>`이기 때문에 이 `Observable`을 처리하려면 `switchMap` 연산자를 사용해야 합니다.
+
+`switchMap` 연산자는 이전에 발생한 요청을 취소하는 역할도 합니다. 서버의 응답을 받기 전에 사용자가 다른 히어로를 선택해서 새로운 `id`가 `HeroService`에 전달되면, `switchMap` 연산자는 이전에 발생한 요청을 취소하고 새로운 `id`에 해당하는 요청을 생성합니다.
+
+그리고 이 옵저버블은 컴포넌트의 `hero` 프로퍼티 값을 할당하거나 재할당하는데, 컴포넌트 템플릿에 사용된 `AsyncPipe`에 의해 구독이 시작됩니다.
 
 #### _ParamMap_ API
 
+<!--
 The `ParamMap` API is inspired by the [URLSearchParams interface](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams). It provides methods
 to handle parameter access for both route parameters (`paramMap`) and query parameters (`queryParamMap`).
+-->
+`ParamMap` API는 [URLSearchParams 인터페이스](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams)를 기반으로 만들어진 것입니다. 이 인터페이스는 라우팅 변수를 참조할 수 있는 `paramMap`과 쿼리 인자를 참조할 수 있는 `queryParamMap`을 제공합니다.
 
 <table>
   <tr>
-    <th>
+    <th style="width:6rem;">
+      <!--
       Member
+      -->
+      메소드
     </th>
 
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
   </tr>
 
   <tr>
     <td>
+      <!--
       <code>has(name)</code>
+      -->
+      <code>has(이름)</code>
     </td>
     <td>
 
+    <!--
     Returns `true` if the parameter name is in the map of parameters.
+    -->
+    인자로 전달된 이름에 해당하는 변수가 있으면 `true`를 반환합니다.
 
     </td>
   </tr>
 
   <tr>
     <td>
+      <!--
       <code>get(name)</code>
+      -->
+      <code>get(이름)</code>
     </td>
     <td>
 
+    <!--
     Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values.
+    -->
+    인자로 전달된 이름에 해당하는 변수가 맵에 있으면 그 변수를 `string` 타입으로 반환하고, 변수가 존재하지 않으면 `null`을 반환합니다. 해당 변수가 배열 타입이면 _첫번째_ 엘리먼트를 반환합니다.
 
     </td>
   </tr>
 
   <tr>
     <td>
+      <!--
       <code>getAll(name)</code>
+      -->
+      <code>getAll(이름)</code>
     </td>
     <td>
 
+    <!--
     Returns a `string array` of the parameter name value if found, or an empty `array` if the parameter name value is not in the map. Use `getAll` when a single parameter could have multiple values.
+    -->
+    인자로 전달된 이름에 해당하는 변수가 맵에 있으면 `string` 배열 타입으로 반환하고, 변수가 존재하지 않으면 빈 배열을 반환합니다. 이 메소드는 하나의 변수가 여러번 사용될 때 사용합니다.
 
     </td>
   </tr>
@@ -2544,7 +2720,10 @@ to handle parameter access for both route parameters (`paramMap`) and query para
     </td>
     <td>
 
+    <!--
     Returns a `string array` of all parameter names in the map.
+    -->
+    라우팅 변수 맵에 존재하는 모든 인자를 `string` 배열 타입으로 반환합니다.
 
     </td>
   </tr>
