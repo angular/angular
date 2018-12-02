@@ -19,7 +19,7 @@
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",
     "shelljs": "0.8.2",
-    "tsickle": "0.32.1"
+    "tsickle": "0.34.0"
   },
   "peerDependencies": {
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
