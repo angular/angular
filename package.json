@@ -88,9 +88,10 @@
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
-    "@bazel/bazel": "^0.18.1",
+    "@bazel/bazel": "~0.20.0",
     "@bazel/buildifier": "^0.19.2",
     "@bazel/ibazel": "~0.8.2",
+    "@bazel/karma": "0.21.0",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
     "@types/jasminewd2": "^2.0.4",
