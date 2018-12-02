@@ -28,9 +28,6 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
 
   let def: any = null;
 
-  // if NG_INJECTABLE_DEF is already defined on this class then don't overwrite it
-  if (type.hasOwnProperty(NG_INJECTABLE_DEF)) return;
-
   Object.defineProperty(type, NG_INJECTABLE_DEF, {
     get: () => {
       if (def === null) {

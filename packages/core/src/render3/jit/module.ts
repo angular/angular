@@ -27,13 +27,12 @@ const EMPTY_ARRAY: Type<any>[] = [];
 export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}): void {
   compileNgModuleDef(moduleType, ngModule);
   compileNgInjectorDef(moduleType, ngModule);
-  setScopeOnDeclaredComponents(moduleType, ngModule);
 }
 
 /**
- * Compiles and adds the `ngModuleDef` properties to the module class.
+ * Compiles and adds the `ngModuleDef` property to the module class.
  */
-export function compileNgModuleDef(moduleType: Type<any>, ngModule: NgModule): void {
+function compileNgModuleDef(moduleType: Type<any>, ngModule: NgModule): void {
   ngDevMode && assertDefined(moduleType, 'Required value moduleType');
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
 
@@ -56,6 +55,7 @@ export function compileNgModuleDef(moduleType: Type<any>, ngModule: NgModule): v
               exports: flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders),
               emitInline: true,
             });
+        setScopeOnDeclaredComponents(moduleType);
       }
       return ngModuleDef;
     },
@@ -63,9 +63,9 @@ export function compileNgModuleDef(moduleType: Type<any>, ngModule: NgModule): v
 }
 
 /**
- * Compiles and adds the `ngInjectorDef` properties to the module class.
+ * Compiles and adds the `ngInjectorDef` property to the module class.
  */
-export function compileNgInjectorDef(moduleType: Type<any>, ngModule: NgModule): void {
+function compileNgInjectorDef(moduleType: Type<any>, ngModule: NgModule): void {
   // if NG_INJECTOR_DEF is already defined on this class then don't overwrite it
   if (moduleType.hasOwnProperty(NG_INJECTOR_DEF)) return;
 
@@ -98,12 +98,15 @@ export function compileNgInjectorDef(moduleType: Type<any>, ngModule: NgModule):
  * ngComponentDef set yet. If this is the case, then a reference to the module is written into
  * the `ngSelectorScope` property of the declared type.
  */
-function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule) {
-  const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
+export function setScopeOnDeclaredComponents(moduleType: Type<any>) {
+  const def = getNgModuleDef(moduleType);
+  if (def === null) {
+    throw new Error(`${moduleType.name} does not have an ngModuleDef`);
+  }
 
   const transitiveScopes = transitiveScopesFor(moduleType);
 
-  declarations.forEach(declaration => {
+  def.declarations.forEach(declaration => {
     if (declaration.hasOwnProperty(NG_COMPONENT_DEF)) {
       // An `ngComponentDef` field exists - go ahead and patch the component directly.
       const component = declaration as Type<any>& {ngComponentDef: ComponentDef<any>};
@@ -138,10 +141,10 @@ export function patchComponentDefWithScope<C>(
  * until they have.
  */
 export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
-  if (!isNgModule(moduleType)) {
+  const def = getNgModuleDef(moduleType);
+  if (def === null) {
     throw new Error(`${moduleType.name} does not have an ngModuleDef`);
   }
-  const def = getNgModuleDef(moduleType) !;
 
   if (def.transitiveCompileScopes !== null) {
     return def.transitiveCompileScopes;
@@ -211,7 +214,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
         scopes.compilation.pipes.add(entry);
         scopes.exported.pipes.add(entry);
       });
-    } else if (getNgModuleDef(exportedTyped)) {
+    } else if (getPipeDef(exportedTyped)) {
       scopes.exported.pipes.add(exportedTyped);
     } else {
       scopes.exported.directives.add(exportedTyped);
