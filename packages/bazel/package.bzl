@@ -38,11 +38,11 @@ def rules_angular_dependencies():
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "c3b08805602cd1d2b67ebe96407c1e8c6ed3d4ce55236ae2efe2f1948f38168d",
-        strip_prefix = "bazel-toolchains-5124557861ebf4c0b67f98180bff1f8551e0b421",
+        sha256 = "07a81ee03f5feae354c9f98c884e8e886914856fb2b6a63cba4619ef10aaaf0b",
+        strip_prefix = "bazel-toolchains-31b5dc8c4e9c7fd3f5f4d04c6714f2ce87b126c1",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/5124557861ebf4c0b67f98180bff1f8551e0b421.tar.gz",
-            "https://github.com/bazelbuild/bazel-toolchains/archive/5124557861ebf4c0b67f98180bff1f8551e0b421.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/31b5dc8c4e9c7fd3f5f4d04c6714f2ce87b126c1.tar.gz",
+            "https://github.com/bazelbuild/bazel-toolchains/archive/31b5dc8c4e9c7fd3f5f4d04c6714f2ce87b126c1.tar.gz",
         ],
     )
 
@@ -79,17 +79,15 @@ def rules_angular_dev_dependencies():
     #############################################
     http_archive(
         name = "io_bazel_rules_sass",
-        sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
-        strip_prefix = "rules_sass-1.11.0",
-        url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
+        strip_prefix = "rules_sass-1.15.1",
+        url = "https://github.com/bazelbuild/rules_sass/archive/1.15.1.zip",
     )
 
     http_archive(
         name = "io_bazel_skydoc",
-        sha256 = "7bfb5545f59792a2745f2523b9eef363f9c3e7274791c030885e7069f8116016",
-        strip_prefix = "skydoc-fe2e9f888d28e567fef62ec9d4a93c425526d701",
+        strip_prefix = "skydoc-a9550cb3ca3939cbabe3b589c57b6f531937fa99",
         # TODO: switch to upstream when https://github.com/bazelbuild/skydoc/pull/103 is merged
-        url = "https://github.com/alexeagle/skydoc/archive/fe2e9f888d28e567fef62ec9d4a93c425526d701.zip",
+        url = "https://github.com/alexeagle/skydoc/archive/a9550cb3ca3939cbabe3b589c57b6f531937fa99.zip",
     )
 
 def _maybe(repo_rule, name, **kwargs):
