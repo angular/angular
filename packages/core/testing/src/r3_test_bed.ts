@@ -460,8 +460,8 @@ const EMPTY_ARRAY: Type<any>[] = [];
 // Resolvers for Angular decorators
 type Resolvers = {
   module: Resolver<NgModule>,
-  component: Resolver<Directive>,
-  directive: Resolver<Component>,
+  component: Resolver<Component>,
+  directive: Resolver<Directive>,
   pipe: Resolver<Pipe>,
 };
 
@@ -469,7 +469,7 @@ function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
   const ngModule = resolvers.module.resolve(moduleType);
 
   if (ngModule === null) {
-    throw new Error(`${stringify(moduleType)} has not @NgModule annotation`);
+    throw new Error(`${stringify(moduleType)} has no @NgModule decorator`);
   }
 
   compileNgModuleDef(moduleType, ngModule);
