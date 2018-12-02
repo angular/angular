@@ -63,7 +63,7 @@ We will be insisting on a minimal reproduce scenario in order to save maintainer
 
 Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you we are going to close an issue that doesn't have enough info to be reproduced.
 
-You can file new issues by filling out our [new issue form](https://github.com/angular/angular/issues/new).
+You can file new issues by selecting from our [new issue templates](https://github.com/angular/angular/issues/new/choose) and filling out the form.
 
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
