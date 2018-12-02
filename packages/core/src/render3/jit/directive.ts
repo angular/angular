@@ -41,7 +41,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   maybeQueueResolutionOfComponentResources(metadata);
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
-      const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${stringify(type)}' is not resolved:`];
@@ -66,7 +65,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
           viewProviders: metadata.viewProviders || null,
         };
-        ngComponentDef = compiler.compileComponent(
+        ngComponentDef = getCompilerFacade().compileComponent(
             angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
 
         // If component compilation is async, then the @NgModule annotation which declares the
