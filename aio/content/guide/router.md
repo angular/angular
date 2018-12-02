@@ -2731,8 +2731,12 @@ to handle parameter access for both route parameters (`paramMap`) and query para
 
 {@a reuse}
 
+<!--
 #### Observable <i>paramMap</i> and component reuse
+-->
+#### <i>paramMap</i> 옵저버블과 컴포넌트 재사용
 
+<!--
 In this example, you retrieve the route parameter map from an `Observable`.
 That implies that the route parameter map can change during the lifetime of this component.
 
@@ -2750,12 +2754,26 @@ Better to simply re-use the same component instance and update the parameter.
 Unfortunately, `ngOnInit` is only called once per component instantiation.
 You need a way to detect when the route parameters change from _within the same instance_.
 The observable `paramMap` property handles that beautifully.
+-->
+이 예제에서 라우팅 변수 맵은 `Observable` 타입으로 참조할 수 있습니다.
+그래서 이 맵은 컴포넌트가 동작하는 동안 현재 상태에 따라 계속 갱신됩니다.
 
+그래서 라우터는 이 컴포넌트 인스턴스를 사용하는 동안 변경되는 라우팅 변수를 추적하면서 재사용할 수 있습니다. 브라우저가 접근하는 URL이 변경되면 라우팅 변수도 상황에 맞게 변경됩니다.
+
+부모 컴포넌트에 히어로의 리스트를 탐색하는 "앞으로", "뒤로" 버튼이 있다고 합시다.
+그러면 이 버튼이 클릭될 때마다 `HeroDetailComponent`에 전달되는 `id`도 변경될 것입니다.
+
+이 때 `id`가 변경되는 것에 반응하기 위해 DOM에서 `HeroDetailComponent`를 제거했다가 다시 추가할 필요는 없습니다. 이렇게 구현하면 화면이 깜빡이는 불편함만 더해질 뿐 입니다.
+그래서 이 경우에는 컴포넌트 인스턴스를 그대로 사용하면서 라우팅 변수가 변경되는 것에만 반응하는 것이 더 좋습니다.
+
+하지만 `ngOnInit` 함수는 컴포넌트의 인스턴스가 생성될 때 딱 한 번만 실행됩니다.
+그래서 _컴포넌트 인스턴스를 유지하면서_ 라우팅 인자가 변경되는 것을 감지하는 방법이 필요합니다.
+`paramMap` 프로퍼티가 옵저버블로 제공되는 것은 이런 상황을 위한 것입니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 When subscribing to an observable in a component, you almost always arrange to unsubscribe when the component is destroyed.
 
 There are a few exceptional observables where this is not necessary.
@@ -2765,7 +2783,16 @@ The `ActivatedRoute` and its observables are insulated from the `Router` itself.
 The `Router` destroys a routed component when it is no longer needed and the injected `ActivatedRoute` dies with it.
 
 Feel free to unsubscribe anyway. It is harmless and never a bad practice.
+-->
+컴포넌트에서 옵저버블을 구독하면 이 컴포넌트가 종료될 때 구독했던 옵저버블을 해지하는 것이 좋다고 알고 있을 것입니다.
 
+하지만 이런 로직이 필요하지 않은 경우가 있습니다.
+`ActivatedRoute` 옵저버블을 사용하는 경우도 이런 예외에 해당됩니다.
+
+`ActivatedRoute`와 이 서비스가 제공하는 옵저버블은 모두 `Router`가 직접 관리합니다.
+그래서 `Router`가 라우팅 대상 컴포넌트를 종료하면 이 컴포넌트에 주입되었던 `ActivatedRoute`도 함께 종료됩니다.
+
+옵저버블을 해제하지 않았다고 걱정하지 마세요. 프레임워크가 알아서 처리할 것입니다.
 
 </div>
 
@@ -2773,8 +2800,12 @@ Feel free to unsubscribe anyway. It is harmless and never a bad practice.
 
 {@a snapshot}
 
-
+<!--
 #### _Snapshot_: the _no-observable_ alternative
+-->
+#### _스냅샷_: 옵저버블을 사용하지 않는 방법
+
+<!--
 _This_ application won't re-use the `HeroDetailComponent`.
 The user always returns to the hero list to select another hero to view.
 There's no way to navigate from one hero detail to another hero detail
@@ -2787,9 +2818,23 @@ be re-used, you can simplify the code with the *snapshot*.
 The `route.snapshot` provides the initial value of the route parameter map.
 You can access the parameters directly without subscribing or adding observable operators.
 It's much simpler to write and read:
+-->
+지금까지 작성한 _이_ 애플리케이션은 `HeroDetailComponent` 인스턴스를 재사용하지 않습니다.
+사용자는 히어로 목록에서 히어로를 한 명 선택해서 상세 정보를 확인하고, 다시 목록 화면으로 돌아가는 것을 반복할 뿐입니다.
+지금까지 구현된 시나리오에서 어떤 히어로의 상세정보를 보다가 다른 히어로의 상세정보로 바로 넘어가는 경우는 없습니다.
+그래서 `HeroDetailComponent`의 인스턴스는 해당 주소에 접근할 때마다 새로 생성됩니다.
+
+`HeroDetailComponent`의 인스턴스가 *절대로, 확실하게* 재사용되지 않는다면 *스냅샷(snapshot)*을 사용하는 것이 더 간단합니다.
 
 
+`route.snapshot`은 라우팅 변수 맵의 초기 값을 제공합니다.
+그래서 이 변수를 참조하면 옵저버블을 구독하거나 연산자를 사용하지 않아도 라우팅 변수를 확인할 수 있습니다.
+코드는 이 방식이 더 간단합니다.
+
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit snapshot)" region="snapshot">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.2.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit 스냅샷)" region="snapshot">
 
 </code-example>
 
@@ -2798,12 +2843,15 @@ It's much simpler to write and read:
 <div class="alert is-helpful">
 
 
-
+<!--
 **Remember:** you only get the _initial_ value of the parameter map with this technique.
 Stick with the observable `paramMap` approach if there's even a chance that the router
 could re-use the component.
 This sample stays with the observable `paramMap` strategy just in case.
-
+-->
+**기억하세요:** 스냅샷을 참조하면 라우팅 변수들의 _초기값_ 만 참조할 수 있습니다.
+그래서 라우터가 컴포넌트를 재사용하는 방식으로 구현하는 경우에는 `paramMap` 옵저버블을 사용해야 합니다.
+이 예제에서는 `paramMap` 옵저버블을 사용하는 방식으로 계속 설명합니다.
 
 </div>
 
@@ -2811,29 +2859,44 @@ This sample stays with the observable `paramMap` strategy just in case.
 
 {@a nav-to-list}
 
-
+<!--
 ### Navigating back to the list component
+-->
+### 히어로 목록을 표시하는 컴포넌트로 돌아가기
 
+<!--
 The `HeroDetailComponent` has a "Back" button wired to its `gotoHeroes` method that navigates imperatively
 back to the `HeroListComponent`.
 
 The router `navigate` method takes the same one-item _link parameters array_
 that you can bind to a `[routerLink]` directive.
 It holds the _path to the `HeroListComponent`_:
+-->
+`HeroDetailComponent`에는 `HeroListComponent`로 돌아가기 위해 `gotoHeroes` 메소드를 실행하는 "Back" 버튼이 있습니다.
 
+이 때 라우터가 제공하는 `navigate` 메소드에 _링크 변수 배열 (link parameters array)_ 을 전달합니다.
+이 배열에는 _`HeroListComponent`로 돌아가는 경로_ 가 지정되어 있습니다:
 
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (excerpt)" region="gotoHeroes">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (일부)" region="gotoHeroes">
 
 </code-example>
 
 
 {@a optional-route-parameters}
 
+<!--
 #### Route Parameters: Required or optional?
+-->
+#### 라우팅 변수: 필수일까? 생략해도 될까?
 
+<!--
 Use [*route parameters*](#route-parameters) to specify a *required* parameter value *within* the route URL
 as you do when navigating to the `HeroDetailComponent` in order to view the hero with *id* 15:
-
+-->
+`HeroDetailComponent`를 화면에 표시하면서 특정 히어로를 지정하기 위해 *id* 15에 해당하는 [*라우팅 변수*](#route-parameters)를 지정해야 했기 때문에 이 라우팅 변수는 필수 항목입니다.
 
 <code-example format="nocode">
   localhost:4200/hero/15
@@ -2841,18 +2904,20 @@ as you do when navigating to the `HeroDetailComponent` in order to view the hero
 </code-example>
 
 
-
+<!--
 You can also add *optional* information to a route request.
 For example, when returning to the hero-detail.component.ts list from the hero detail view,
 it would be nice if the viewed hero was preselected in the list.
-
+-->
+그런데 *추가* 정보를 제공하기 위해 옵션 라우팅 변수를 사용할 수도 있습니다.
+예를 들면 히어로의 상세정보 화면에서 히어로 목록 화면으로 돌아가면서 이전에 선택되었던 히어로 항목이 어떤 것인지 표시하는 용도로 사용하는 식입니다.
 
 <figure>
   <img src='generated/images/guide/router/selected-hero.png' alt="Selected hero">
 </figure>
 
 
-
+<!--
 You'll implement this feature in a moment by including the viewed hero's `id`
 in the URL as an optional parameter when returning from the `HeroDetailComponent`.
 
@@ -2873,43 +2938,69 @@ Define _optional_ parameters in a separate object _after_ you define the require
 In general, prefer a *required route parameter* when
 the value is mandatory (for example, if necessary to distinguish one route path from another);
 prefer an *optional parameter* when the value is optional, complex, and/or multivariate.
+-->
+이런 방식은 `HeroDetailComponent` 화면에서 봤던 히어로의 `id`를 히어로 목록에 돌아온 후에도 활용하려고 할 때 사용합니다.
 
+그런데 추가 정보는 필수 라우팅 변수와 다른 형태가 될 수도 있습니다. 컴포넌트의 결합도를 낮추려고 한다면 `name='wind*'`와 같이 사용할 수도 있습니다.
+`after='12/31/2015' & before='1/1/2017'`와 같이 여러 값을 한 번에 전달할 수도 있으며, 이렇게 사용할 때 인자의 순서는 중요하지 않습니다. `before='1/1/2017' & after='12/31/2015'`라고 사용해도 되고 `during='currentYear'`라고 사용해도 됩니다.
+
+하지만 이런 형태가 되면 기존에 라우팅 규칙으로 정의했던 URL *경로* 와는 매칭되지 않을 수 있습니다. 이런 형식의 URL과 매칭되는 라우팅 규칙을 정의하려면 아주 복잡한 패턴 매칭 방법을 구현해야 할 수도 있습니다.
+
+옵션 라우팅 변수는 애플리케이션을 네비게이션하는 과정에 필요한 복잡한 정보를 전달하기 위해 사용합니다.
+그리고 이 과정에 라우팅 규칙의 패턴 매칭과 긴밀하게 연결될 필요는 없습니다.
+
+그래서 라우터는 옵션 라우팅 변수를 일반 라우팅 변수를 사용하는 것처럼 쉽게 사용할 수 있는 문법을 제공합니다.
+일반적으로 라우팅하는 선언 _뒤에_ 객체 형태로 옵션 라우팅 변수를 전달하면 됩니다.
+
+라우팅 변수가 꼭 필요하다면 *필수 라우팅 변수*를 사용하는 방식으로 구현하는 것이 좋습니다. 그리고 라우팅 변수를 생략할 수 있거나 이 변수의 형태가 복잡하다면 *옵션 라우팅 변수*를 사용하는 것이 좋습니다.
 
 {@a optionally-selecting}
 
-
+<!--
 #### Heroes list: optionally selecting a hero
+-->
+#### 히어로 목록: 옵션 라우팅 변수로 히어로 선택하기
 
+<!--
 When navigating to the `HeroDetailComponent` you specified the _required_ `id` of the hero-to-edit in the
 *route parameter* and made it the second item of the [_link parameters array_](#link-parameters-array).
+-->
+`HeroDetailComponent`로 네비게이션하는 경우에는 원하는 히어로를 구분하기 위해 `id` 라우팅 변수가 _필수 항목_ 입니다. 그래서 네비게이션할 때 [_링크 변수 배열_](#link-parameters-array)을 다음과 같이 지정했습니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (link-parameters-array)" region="link-parameters-array">
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.1.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (링크 변수 배열)" region="link-parameters-array">
 
 </code-example>
 
 
-
+<!--
 The router embedded the `id` value in the navigation URL because you had defined it
 as a route parameter with an `:id` placeholder token in the route `path`:
+-->
+그러면 이미 라우팅 규칙에 `:id` 토큰이 선언되었기 때문에 라우터는 `id` 값으로 URL을 조합합니다.
 
-
+<!--
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (hero-detail-route)" region="hero-detail-route">
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.1.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (히어로 상세정보로 라우팅하는 규칙)" region="hero-detail-route">
 
 </code-example>
 
 
-
+<!--
 When the user clicks the back button, the `HeroDetailComponent` constructs another _link parameters array_
 which it uses to navigate back to the `HeroListComponent`.
-
+-->
+그리고 `HeroDetailComponent`에서 사용자가 뒤로가기 버튼을 누르면 화면이 `HeroListComponent`로 전환되면서 새로운 _링크 변수 배열_ 을 생성합니다.
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (gotoHeroes)" region="gotoHeroes">
 
 </code-example>
 
 
-
+<!--
 This array lacks a route parameter because you had no reason to send information to the `HeroListComponent`.
 
 Now you have a reason. You'd like to send the id of the current hero with the navigation request so that the
@@ -2919,21 +3010,38 @@ This is a _nice-to-have_ feature; the list will display perfectly well without i
 Send the `id` with an object that contains an _optional_ `id` parameter.
 For demonstration purposes, there's an extra junk parameter (`foo`) in the object that the `HeroListComponent` should ignore.
 Here's the revised navigation statement:
+-->
+하지만 지금까지 `HeroDetailComponent`는 `HeroListComponent`로 정보를 전달할 필요가 없기 때문에 라우팅 변수를 사용하지 않았습니다.
 
+이제 정보를 전달해 봅시다. 이제부터는 `HeroDetailComponent`에 표시하던 히어로의 `id`를 `HeroListComponent`로 전달하고, `HeroListComponent`는 이 `id`에 해당하는 히어로를 목록에서 찾아 다른 배경색으로 표시하려고 합니다.
+이 기능은 _있으면 좋은_ 기능일 뿐입니다. 이 기능이 없어도 히어로의 목록을 표시하는 기능에는 문제가 없습니다.
 
+`HeroDetailComponent`는 `id` 프로퍼티가 있는 _옵션_ 라우팅 변수를 사용합니다.
+그리고 지금 예제에서는 설명을 위해 실제로 사용하지 않는 라우팅 변수(`foo`)도 객체에 선언했습니다. `HeroListComponent`는 이 변수를 사용하지 않습니다.
+그러면 히어로의 목록을 표시하는 화면으로 이동하는 로직이 다음과 같이 구현됩니다:
+
+<!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (go to heroes)" region="gotoHeroes">
+-->
+<code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (히어로 목록 화면으로 이동하기)" region="gotoHeroes">
 
 </code-example>
 
 
-
+<!--
 The application still works. Clicking "back" returns to the hero list view.
 
 Look at the browser address bar.
 
 
 It should look something like this, depending on where you run it:
+-->
+애플리케이션은 이전과 마찬가지로 동작합니다. 그리고 `HeroDetailComponent`에서 "back" 버튼을 누르면 히어로의 목록을 표시하는 화면으로 이동합니다.
 
+브라우저의 주소표시줄이 어떻게 변경되는지 확인해 보세요.
+
+
+주소 표시줄은 다음과 같이 표시될 것입니다:
 
 <code-example language="bash">
   localhost:4200/heroes;id=15;foo=foo
@@ -2941,19 +3049,25 @@ It should look something like this, depending on where you run it:
 </code-example>
 
 
-
+<!--
 The `id` value appears in the URL as (`;id=15;foo=foo`), not in the URL path.
 The path for the "Heroes" route doesn't have an `:id` token.
 
 The optional route parameters are not separated by "?" and "&" as they would be in the URL query string.
 They are **separated by semicolons ";"**
 This is *matrix URL* notation&mdash;something you may not have seen before.
+-->
+이 URL에 포함된 `id` 값은 라우팅 규칙의 URL과 매칭되지 않습니다.
+왜냐하면 히어로의 목록을 표시하는 라우팅 규칙에 `:id` 토큰이 없기 때문입니다.
 
+그런데 옵션 라우팅 변수는 일반적인 URL 쿼리 스트링에 사용하는 "?"나 "&"로 항목을 구분하지 않습니다.
+옵션 라우팅 변수에서 각 항목은 **세미콜론 ";"**으로 구분됩니다.
+이 방식은 *매트릭스 URL (matrix URL)* 표시법입니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 *Matrix URL* notation is an idea first introduced
 in a [1996 proposal](http://www.w3.org/DesignIssues/MatrixURIs.html) by the founder of the web, Tim Berners-Lee.
 
@@ -2965,6 +3079,13 @@ support for the matrix notation across browsers.
 The syntax may seem strange to you but users are unlikely to notice or care
 as long as the URL can be emailed and pasted into a browser address bar
 as this one can.
+-->
+*매트릭스 URL* 표기법은 웹을 만든 Tim Berners-Lee가 [1996](http://www.w3.org/DesignIssues/MatrixURIs.html)년에 처음 제안한 표기법입니다.
+
+이 표기법은 HTML 표준이 되지는 못했지만 아직 유효하며, 부모 라우팅과 자식 라우팅에 사용되는 변수를 구분하는 용도로 많이 사용되고 있습니다.
+이 때 라우터는 매트릭스 표기법을 직접 처리하기도 하지만 브라우저에 매트릭스 표기법을 지원하는 용도로도 사용됩니다.
+
+이 표기법이 낯설어 보일 수도 있지만 사용자가 이 표기법을 꼭 이해해야 하는 것은 아닙니다. 이 표기법을 사용해도 이메일을 보낼 때나 브라우저 주소표시줄에 붙여넣을 때 아무 제약없이 사용할 수 있습니다.
 
 </div>
 
@@ -2972,24 +3093,31 @@ as this one can.
 
 {@a route-parameters-activated-route}
 
-
+<!--
 ### Route parameters in the *ActivatedRoute* service
+-->
+### *ActivatedRoute* 서비스에서 라우팅 변수 참조하기
 
+<!--
 The list of heroes is unchanged. No hero row is highlighted.
-
+-->
+아직 히어로의 목록을 표시하는 컴포넌트는 수정하지 않았습니다. 목록에서 배경색이 변경된 항목도 없습니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The <live-example></live-example> *does* highlight the selected
 row because it demonstrates the final state of the application which includes the steps you're *about* to cover.
 At the moment this guide is describing the state of affairs *prior* to those steps.
+-->
+<live-example></live-example>에서 확인하면 히어로의 상세 정보를 확인하고 돌아왔을 때 그 히어로가 목록에서 하이라이트 표시되는 것을 확인할 수 있습니다. 왜냐하면 이 예제에 구현된 코드는 이 단계에서 다루는 내용을 모두 적용한 코드이기 때문입니다.
+이번 섹션에서는 이렇게 구현하는 방법을 설명합니다.
 
 </div>
 
 
-
+<!--
 The `HeroListComponent` isn't expecting any parameters at all and wouldn't know what to do with them.
 You can change that.
 
@@ -3001,34 +3129,54 @@ You injected that service in the constructor of the `HeroDetailComponent`.
 This time you'll be navigating in the opposite direction, from the `HeroDetailComponent` to the `HeroListComponent`.
 
 First you extend the router import statement to include the `ActivatedRoute` service symbol:
+-->
+`HeroListComponent`는 아직 라우팅 변수를 받을 준비가 되어있지 않으며 변수를 받아도 어떤 동작을 해야할지도 모릅니다.
+이 내용을 구현해 봅시다.
 
+이전에는 `HeroListComponent`에서 `HeroDetailComponent`로 네비게이션할 때 이 컴포넌트에 주입된 `ActivatedRoute` 서비스에서 제공하는 라우팅 변수 맵 `Observable`을 구독했었습니다.
+
+그리고 이번에는 `HeroDetailComponent`에서 `HeroListComponent`로 네비게이션하는 경우를 생각해 봅시다.
+
+먼저, `@angular/router` 패키지에서 `ActivatedRoute` 서비스 심볼을 로드합니다:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (import)" region="import-router">
 
 </code-example>
 
 
-
+<!--
 Import the `switchMap` operator to perform an operation on the `Observable` of route parameter map.
+-->
+그리고 `switchMap` 연산자와 `Observable` 심볼도 로드합니다.
 
 
+<!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs imports)" region="rxjs-imports">
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (rxjs 로드)" region="rxjs-imports">
 
 </code-example>
 
 
-
+<!--
 Then you inject the `ActivatedRoute` in the `HeroListComponent` constructor.
+-->
+그리고 나면 `HeroListComponent` 생성자로 `ActivatedRoute`를 주입합니다.
 
 
+<!--
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (constructor and ngOnInit)" region="ctor">
+-->
+<code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (생성자와 ngOnInit)" region="ctor">
 
 </code-example>
 
 
-
+<!--
 The `ActivatedRoute.paramMap` property is an `Observable` map of route parameters. The `paramMap` emits a new map of values that includes `id`
 when the user navigates to the component. In `ngOnInit` you subscribe to those values, set the `selectedId`, and get the heroes.
+-->
+`ActivatedRoute.paramMap` 프로퍼티는 라우팅 변수를 제공하는 `Observable` 맵입니다. 이 프로퍼티는 사용자가 이 컴포넌트로 네비게이션 할 때마다 `id`가 포함된 맵을 새로 생성합니다. 그래서 `ngOnInit` 메소드에서 이 옵저버블을 구독하면 히어로 한 명의 정보를 가져올 때 활용할 수 있습니다.
 
 
 <!--
@@ -3036,32 +3184,39 @@ Update the template with a [class binding](guide/template-syntax#class-binding).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 -->
-Update the template with a [클래스 바인딩](guide/template-syntax#클래스-바인딩).
-The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
-Look for it within the repeated `<li>` tag as shown here:
+템플릿에 [CSS 클래스 바인딩](guide/template-syntax#클래스-바인딩)을 활용하도록 수정해 봅시다.
+라우팅 변수로 받아온 히어로의 `id`에 해당하는 엘리먼트에는 `selected` CSS 클래스를 지정하고, 이 `id`에 해당하지 않는 엘리먼트에는 `selected` CSS 클래스를 제거하려고 합니다.
+이 로직은 템플릿에서 반복되는 `<li>` 태그에 사용되었습니다:
 
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html">
 
 </code-example>
 
+<!--
 Add some styles to apply when the list item is selected.
+-->
+그리고 리스트 항목에 적용되는 스타일을 다음과 같이 정의합니다.
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.css" linenums="false" region="selected" header="src/app/heroes/hero-list/hero-list.component.css">
 
 </code-example>
 
 
-
+<!--
 When the user navigates from the heroes list to the "Magneta" hero and back, "Magneta" appears selected:
+-->
+이제 사용자가 히어로 목록에서 "Magneta"를 선택했다가 돌아오면 "Magneta" 항목이 다음과 같이 표시될 것입니다:
 
 <figure>
   <img src='generated/images/guide/router/selected-hero.png' alt="Selected List">
 </figure>
 
 
-
+<!--
 The optional `foo` route parameter is harmless and continues to be ignored.
+-->
+`foo` 옵션 라우팅 변수는 아무 역할도 하지 않습니다.
 
 ### Adding routable animations
 
