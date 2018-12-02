@@ -33,6 +33,9 @@ import {getReflect, reflectDependencies} from './util';
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
+  // if NG_COMPONENT_DEF is already defined on this class then don't overwrite it
+  if (type.hasOwnProperty(NG_COMPONENT_DEF)) return;
+
   let ngComponentDef: any = null;
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(metadata);
@@ -95,6 +98,9 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  * will resolve when compilation completes and the directive becomes usable.
  */
 export function compileDirective(type: Type<any>, directive: Directive): void {
+  // if NG_DIRECTIVE_DEF is already defined on this class then don't overwrite it
+  if (type.hasOwnProperty(NG_DIRECTIVE_DEF)) return;
+
   let ngDirectiveDef: any = null;
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {

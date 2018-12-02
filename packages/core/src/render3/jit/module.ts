@@ -25,16 +25,21 @@ const EMPTY_ARRAY: Type<any>[] = [];
  * This function automatically gets called when a class has a `@NgModule` decorator.
  */
 export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}): void {
-  compileNgModuleDefs(moduleType, ngModule);
+  compileNgModuleDef(moduleType, ngModule);
+  compileNgInjectorDef(moduleType, ngModule);
   setScopeOnDeclaredComponents(moduleType, ngModule);
 }
 
 /**
- * Compiles and adds the `ngModuleDef` and `ngInjectorDef` properties to the module class.
+ * Compiles and adds the `ngModuleDef` properties to the module class.
  */
-export function compileNgModuleDefs(moduleType: Type<any>, ngModule: NgModule): void {
+export function compileNgModuleDef(moduleType: Type<any>, ngModule: NgModule): void {
   ngDevMode && assertDefined(moduleType, 'Required value moduleType');
   ngDevMode && assertDefined(ngModule, 'Required value ngModule');
+
+  // if NG_MODULE_DEF is already defined on this class then don't overwrite it
+  if (moduleType.hasOwnProperty(NG_MODULE_DEF)) return;
+
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
 
   let ngModuleDef: any = null;
@@ -53,8 +58,16 @@ export function compileNgModuleDefs(moduleType: Type<any>, ngModule: NgModule): 
             });
       }
       return ngModuleDef;
-    }
+    },
   });
+}
+
+/**
+ * Compiles and adds the `ngInjectorDef` properties to the module class.
+ */
+export function compileNgInjectorDef(moduleType: Type<any>, ngModule: NgModule): void {
+  // if NG_INJECTOR_DEF is already defined on this class then don't overwrite it
+  if (moduleType.hasOwnProperty(NG_INJECTOR_DEF)) return;
 
   let ngInjectorDef: any = null;
   Object.defineProperty(moduleType, NG_INJECTOR_DEF, {

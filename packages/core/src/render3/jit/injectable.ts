@@ -23,8 +23,8 @@ import {convertDependencies, reflectDependencies} from './util';
  * `ngInjectableDef` onto the injectable type.
  */
 export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
-  // Allow the compilation of a class with a `@Injectable()` decorator without parameters
-  const meta: Injectable = srcMeta || {providedIn: null};
+  // if NG_INJECTABLE_DEF is already defined on this class then don't overwrite it
+  if (type.hasOwnProperty(NG_INJECTABLE_DEF)) return;
 
   let def: any = null;
 

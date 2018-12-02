@@ -125,7 +125,8 @@ export {
 } from './render3/jit/directive';
 export {
   compileNgModule as ɵcompileNgModule,
-  compileNgModuleDefs as ɵcompileNgModuleDefs,
+  compileNgModuleDef as ɵcompileNgModuleDef,
+  compileNgInjectorDef as ɵcompileNgInjectorDef,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
 } from './render3/jit/module';
 export {

@@ -15,6 +15,7 @@ import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
+import {defineNgModule} from '@angular/core/src/render3';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 
 
@@ -376,6 +377,85 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestComponent as any).ngComponentDef.viewQuery).not.toBeNull();
+  });
+
+  describe('decorators are ignored when definition is already present', () => {
+
+    const EXISTING_DEF = {};
+
+    it('ignores @Component()', () => {
+      @Component({selector: 'test'})
+      class TestComponent {
+        static ngComponentDef = EXISTING_DEF;
+      }
+
+      expect(TestComponent.ngComponentDef).toBe(EXISTING_DEF);
+    });
+
+    it('ignores @Directive()', () => {
+      @Directive({selector: 'test'})
+      class TestDirective {
+        static ngDirectiveDef = EXISTING_DEF;
+      }
+
+      expect(TestDirective.ngDirectiveDef).toBe(EXISTING_DEF);
+    });
+
+    it('ignores @Injectable()', () => {
+      @Injectable({providedIn: 'root'})
+      class TestInjectable {
+        static ngInjectableDef = EXISTING_DEF;
+      }
+
+      expect(TestInjectable.ngInjectableDef).toBe(EXISTING_DEF);
+    });
+
+    it('ignores @Pipe()', () => {
+      @Pipe({name: 'test'})
+      class TestPipe {
+        static ngPipeDef = EXISTING_DEF;
+      }
+
+      expect(TestPipe.ngPipeDef).toBe(EXISTING_DEF);
+    });
+
+    it('compiles ngInjectorDef for @Module() with existing ngModuleDef', () => {
+      @NgModule({})
+      class TestModule {
+        static ngModuleDef = EXISTING_DEF;
+      }
+
+      expect(TestModule.ngModuleDef).toBe(EXISTING_DEF);
+      expect((TestModule as any).ngInjectorDef).toBeDefined();
+      expect((TestModule as any).ngInjectorDef.factory).toBeDefined();
+    });
+
+    it('compiles ngModuleDef for @Module() with existing ngInjectorDef', () => {
+      @NgModule({})
+      class TestModule {
+        static ngInjectorDef = EXISTING_DEF;
+      }
+
+      expect(TestModule.ngInjectorDef).toBe(EXISTING_DEF);
+      expect((TestModule as any).ngModuleDef).toBeDefined();
+      expect((TestModule as any).ngModuleDef.type).toBe(TestModule);
+    });
+
+    it('patches a module onto the component even if ngModuleDef is already set', () => {
+      @Component({selector: 'test', template: 'test'})
+      class TestComponent {
+      }
+
+      @NgModule({declarations: [TestComponent]})
+      class TestModule {
+        static ngModuleDef = defineNgModule({type: TestModule, declarations: [TestComponent]});
+      }
+
+      const cmpDef: ComponentDef<TestComponent> = (TestComponent as any).ngComponentDef;
+      expect(cmpDef.directiveDefs instanceof Function).toBe(true);
+      expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
+    });
+
   });
 });
 

@@ -16,6 +16,9 @@ import {angularCoreEnv} from './environment';
 import {reflectDependencies} from './util';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
+  // if NG_PIPE_DEF is already defined on this class then don't overwrite it
+  if (type.hasOwnProperty(NG_PIPE_DEF)) return;
+
   let ngPipeDef: any = null;
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
