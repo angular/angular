@@ -7,6 +7,12 @@ load(
     "rules_angular_dev_dependencies",
 )
 
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "b7a62250a3a73277ade0ce306d22f122365b513f5402222403e507f2f997d421",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
+)
+
 # Uncomment for local bazel rules development
 #local_repository(
 #    name = "build_bazel_rules_nodejs",
@@ -20,6 +26,11 @@ load(
 # Angular Bazel users will call this function
 rules_angular_dependencies()
 
+# Install transitive deps of rules_nodejs
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+
+rules_nodejs_dependencies()
+
 # These are the dependencies only for us
 rules_angular_dev_dependencies()
 
@@ -27,11 +38,6 @@ rules_angular_dev_dependencies()
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 
 rules_typescript_dependencies()
-
-# Install transitive deps of rules_nodejs
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-
-rules_nodejs_dependencies()
 
 #
 # Point Bazel to WORKSPACEs that live in subdirectories
@@ -55,9 +61,11 @@ local_repository(
 #
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.18.0", """
-If you are on a Mac and using Homebrew, there is a breaking change to the installation in Bazel 0.16
-See https://blog.bazel.build/2018/08/22/bazel-homebrew.html
+check_bazel_version("0.20.0", """
+You no longer need to install Bazel on your machine.
+Angular has a dependency on the @bazel/bazel package which supplies it.
+Try running `yarn bazel` instead.
+    (If you did run that, check that you've got a fresh `yarn install`)
 
 """)
 
