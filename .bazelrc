@@ -74,3 +74,28 @@ test --experimental_ui
 # to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
+
+###############################
+# Remote Build Execution support
+# Turn on these settings with
+#  --config=remote
+###############################
+
+# Load default settings for Remote Build Execution
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.20.0.bazelrc
+
+# Increase the default number of jobs by 50% because our build has lots of
+# parallelism
+build:remote --jobs=150
+
+# Point to our custom execution platform; see tools/BUILD.bazel
+build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
+build:remote --host_platform=//tools:rbe_ubuntu1604-angular
+build:remote --platforms=//tools:rbe_ubuntu1604-angular
+
+# Remote instance.
+build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+
+# Do not accept remote cache.
+# We need to understand the security risks of using prior build artifacts.
+build:remote --remote_accept_cached=false

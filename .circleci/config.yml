@@ -25,7 +25,10 @@ var_4: &define_env_vars
 var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
-    command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
+    command: |
+      openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
+      echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
+      sudo bash -c "echo 'build --config=remote' >> /etc/bazel.bazelrc"
 
 # Settings common to each job
 var_6: &job_defaults
