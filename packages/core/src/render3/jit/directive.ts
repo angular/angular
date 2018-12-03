@@ -18,7 +18,7 @@ import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
 import {angularCoreEnv} from './environment';
-import {patchComponentDefWithScope, transitiveScopesFor} from './module';
+import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
 import {getReflect, reflectDependencies} from './util';
 
 
@@ -51,6 +51,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           error.push(`Did you run and wait for 'resolveComponentResources()'?`);
           throw new Error(error.join('\n'));
         }
+
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           template: metadata.template || '',
@@ -66,6 +67,13 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         };
         ngComponentDef = compiler.compileComponent(
             angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
+
+        // When NgModule decorator executed, we enqueued the module definition such that
+        // it would only dequeue and add itself as module scope to all of its declarations,
+        // but only if  if all of its declarations had resolved. This call runs the check
+        // to see if any modules that are in the queue can be dequeued and add scope to
+        // their declarations.
+        flushModuleScopingQueueAsMuchAsPossible();
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {resolveForwardRef} from '../../di/forward_ref';
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
 import {assertDefined} from '../assert';
@@ -19,6 +20,55 @@ import {reflectDependencies} from './util';
 
 const EMPTY_ARRAY: Type<any>[] = [];
 
+interface ModuleQueueItem {
+  moduleType: Type<any>;
+  ngModule: NgModule;
+}
+
+const moduleQueue: ModuleQueueItem[] = [];
+
+/**
+ * Enqueues moduleDef to be checked later to see if scope can be set on its
+ * component declarations.
+ */
+function enqueueModuleForDelayedScoping(moduleType: Type<any>, ngModule: NgModule) {
+  moduleQueue.push({moduleType, ngModule});
+}
+
+let flushingModuleQueue = false;
+/**
+ * Loops over queued module definitions, if a given module definition has all of its
+ * declarations resolved, it dequeues that module definition and sets the scope on
+ * its declarations.
+ */
+export function flushModuleScopingQueueAsMuchAsPossible() {
+  if (!flushingModuleQueue) {
+    flushingModuleQueue = true;
+    for (let i = moduleQueue.length - 1; i >= 0; i--) {
+      const {moduleType, ngModule} = moduleQueue[i];
+
+      if (ngModule.declarations && ngModule.declarations.every(isResolvedDeclaration)) {
+        // dequeue
+        moduleQueue.splice(i, 1);
+        setScopeOnDeclaredComponents(moduleType, ngModule);
+      }
+    }
+    flushingModuleQueue = false;
+  }
+}
+
+/**
+ * Returns truthy if a declaration has resolved. If the declaration happens to be
+ * an array of declarations, it will recurse to check each declaration in that array
+ * (which may also be arrays).
+ */
+function isResolvedDeclaration(declaration: any[] | Type<any>): boolean {
+  if (Array.isArray(declaration)) {
+    return declaration.every(isResolvedDeclaration);
+  }
+  return !!resolveForwardRef(declaration);
+}
+
 /**
  * Compiles a module in JIT mode.
  *
@@ -26,7 +76,12 @@ const EMPTY_ARRAY: Type<any>[] = [];
  */
 export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}): void {
   compileNgModuleDefs(moduleType, ngModule);
-  setScopeOnDeclaredComponents(moduleType, ngModule);
+
+  // Because we don't know if all declarations have resolved yet at the moment the
+  // NgModule decorator is executing, we're enqueueing the setting of module scope
+  // on its declarations to be run at a later time when all declarations for the module,
+  // including forward refs, have resolved.
+  enqueueModuleForDelayedScoping(moduleType, ngModule);
 }
 
 /**
