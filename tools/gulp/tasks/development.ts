@@ -83,20 +83,24 @@ task('serve:devapp', ['build:devapp'], sequenceTask([':serve:devapp', ':watch:de
 
 /** Task that copies all vendors into the dev-app package. Allows hosting the app on firebase. */
 task('stage-deploy:devapp', ['build:devapp'], () => {
-  copyFiles(join(projectDir, 'node_modules'), vendorGlob, join(outDir, 'node_modules'));
-  copyFiles(bundlesDir, '*.+(js|map)', join(outDir, 'dist/bundles'));
-  copyFiles(cdkPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/cdk'));
-  copyFiles(materialPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/material'));
+  const deployOutputDir = join(outputDir, 'devapp-deploy');
+
+  copyFiles(outDir, '**/*.+(css|js|map)', deployOutputDir);
+  copyFiles(join(projectDir, 'node_modules'), vendorGlob, join(deployOutputDir, 'node_modules'));
+  copyFiles(bundlesDir, '*.+(js|map)', join(deployOutputDir, 'dist/bundles'));
+  copyFiles(cdkPackage.outputDir, '**/*.+(js|map)', join(deployOutputDir, 'dist/packages/cdk'));
+  copyFiles(materialPackage.outputDir, '**/*.+(js|map)',
+    join(deployOutputDir, 'dist/packages/material'));
   copyFiles(materialExperimentalPackage.outputDir, '**/*.+(js|map)',
-      join(outDir, 'dist/packages/material-experimental'));
+    join(deployOutputDir, 'dist/packages/material-experimental'));
   copyFiles(cdkExperimentalPackage.outputDir, '**/*.+(js|map)',
-      join(outDir, 'dist/packages/cdk-experimental'));
+    join(deployOutputDir, 'dist/packages/cdk-experimental'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
-      join(outDir, 'dist/packages/material'));
+    join(deployOutputDir, 'dist/packages/material'));
   copyFiles(examplesPackage.outputDir, '**/*.+(js|map)',
-      join(outDir, 'dist/packages/material-examples'));
+    join(deployOutputDir, 'dist/packages/material-examples'));
   copyFiles(momentAdapterPackage.outputDir, '**/*.+(js|map)',
-      join(outDir, 'dist/packages/material-moment-adapter'));
+    join(deployOutputDir, 'dist/packages/material-moment-adapter'));
 });
 
 /**
