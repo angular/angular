@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
@@ -15,7 +15,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
-import {ComponentFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
 
 const Directive: typeof _Directive = function(...args: any[]): any {
   // In test we use @Directive for documentation only so it's safe to mock out the implementation.
@@ -414,6 +414,45 @@ describe('pipe', () => {
       expect(fixture.html).toEqual('MyComponent Title - ServiceA Title');
     });
 
+  });
+
+  describe('WrappedValue', () => {
+    @Pipe({name: 'wrappingPipe'})
+    class WrappingPipe implements PipeTransform {
+      transform(value: any) { return new WrappedValue('Bar'); }
+
+      static ngPipeDef = definePipe({
+        name: 'wrappingPipe',
+        type: WrappingPipe,
+        factory: function WrappingPipe_Factory() { return new WrappingPipe(); },
+        pure: false
+      });
+    }
+
+    function createTemplate() {
+      text(0);
+      pipe(1, 'wrappingPipe');
+    }
+
+    function updateTemplate() { textBinding(0, interpolation1('', pipeBind1(1, 1, null), '')); }
+
+    it('should unwrap', () => {
+      const fixture =
+          new TemplateFixture(createTemplate, updateTemplate, 2, 3, undefined, [WrappingPipe]);
+      expect(fixture.html).toEqual('Bar');
+    });
+
+    it('should force change detection', () => {
+      const fixture =
+          new TemplateFixture(createTemplate, updateTemplate, 2, 3, undefined, [WrappingPipe]);
+      expect(fixture.html).toEqual('Bar');
+
+      fixture.hostElement.childNodes[0] !.textContent = 'Foo';
+      expect(fixture.html).toEqual('Foo');
+
+      fixture.update();
+      expect(fixture.html).toEqual('Bar');
+    });
   });
 
 });
