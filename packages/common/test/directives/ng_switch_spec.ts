@@ -87,6 +87,33 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         getComponent().switchValue = 'b';
         detectChangesAndExpectText('when b1;when b2;');
       });
+
+      it('should support use array for multiple cases', () => {
+        const template = '<ul [ngSwitch]="switchValue">' +
+          '<li *ngSwitchCase="\'a\'">when a1;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b1;</li>' +
+          '<li *ngSwitchCase="[\'c\', \'d\']">when c1;when d1;</li>' +
+          '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+          '<li *ngSwitchCase="\'e\'">when e1;</li>' +
+          '<li *ngSwitchCase="[\'e\']">when e2;</li>' +
+          '<li *ngSwitchDefault>when default1;</li>' +
+          '</ul>';
+
+        fixture = createTestComponent(template);
+        detectChangesAndExpectText('when default1;');
+
+        getComponent().switchValue = 'c';
+        detectChangesAndExpectText('when c1;when d1;');
+
+        getComponent().switchValue = 'e';
+        detectChangesAndExpectText('when e1;when e2;');
+
+        getComponent().switchValue = 'd';
+        detectChangesAndExpectText('when c1;when d1;');
+
+        getComponent().switchValue = 'b';
+        detectChangesAndExpectText('when b1;when b2;');
+      });
     });
 
     describe('when values changes', () => {
