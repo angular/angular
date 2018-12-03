@@ -205,8 +205,8 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
-    expect(cmpDef.directiveDefs instanceof Function).toBe(true);
-    expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
+    // directive defs are still null, since no directives were in that component
+    expect(cmpDef.directiveDefs).toBeNull();
   });
 
   it('should add hostbindings and hostlisteners', () => {
