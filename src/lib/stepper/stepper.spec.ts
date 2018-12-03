@@ -929,7 +929,7 @@ describe('MatStepper', () => {
     });
 
     it('should show error state', () => {
-      let nextButtonNativeEl = fixture.debugElement
+      const nextButtonNativeEl = fixture.debugElement
           .queryAll(By.directive(MatStepperNext))[0].nativeElement;
 
       stepper.selectedIndex = 1;
@@ -939,6 +939,23 @@ describe('MatStepper', () => {
 
       expect(stepper._getIndicatorType(0)).toBe(STEP_STATE.ERROR);
     });
+
+    it('should respect a custom falsy hasError value', () => {
+      const nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+
+      stepper.selectedIndex = 1;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(0)).toBe(STEP_STATE.ERROR);
+
+      stepper._steps.first.hasError = false;
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(0)).not.toBe(STEP_STATE.ERROR);
+    });
+
   });
 
   describe('stepper using Material UI Guideline logic', () => {
@@ -1138,7 +1155,8 @@ function createComponent<T>(component: Type<T>,
   template: `
   <form [formGroup]="formGroup">
     <mat-horizontal-stepper>
-      <mat-step errorMessage="This field is required" [stepControl]="formArray?.get([0])">
+      <mat-step errorMessage="This field is required"
+        [stepControl]="formGroup.get('firstNameCtrl')">
         <ng-template matStepLabel>Step 1</ng-template>
         <mat-form-field>
           <mat-label>First name</mat-label>

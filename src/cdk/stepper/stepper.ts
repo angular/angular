@@ -181,7 +181,7 @@ export class CdkStep implements OnChanges {
   /** Whether step has an error. */
   @Input()
   get hasError(): boolean {
-    return this._customError || this._getDefaultError();
+    return this._customError == null ? this._getDefaultError() : this._customError;
   }
   set hasError(value: boolean) {
     this._customError = coerceBooleanProperty(value);
