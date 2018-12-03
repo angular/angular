@@ -1,3 +1,29 @@
+## 7.1.1 "fondant-friendship" (2018-12-03)
+
+
+### Bug Fixes
+
+* **a11y:** don't handle disallowed modifier keys in typeahead mode ([#14301](https://github.com/angular/material2/issues/14301)) ([700f20f](https://github.com/angular/material2/commit/700f20f)), closes [#14274](https://github.com/angular/material2/issues/14274)
+* **badge:** badge instances not being cleaned up on destroy ([#14265](https://github.com/angular/material2/issues/14265)) ([da3776f](https://github.com/angular/material2/commit/da3776f))
+* **checkbox:** poor color contrast for disabled checkbox ([#14044](https://github.com/angular/material2/issues/14044)) ([9c86b5f](https://github.com/angular/material2/commit/9c86b5f))
+* **chips:** invert focus overlay on dark theme ([#14204](https://github.com/angular/material2/issues/14204)) ([7af8d02](https://github.com/angular/material2/commit/7af8d02))
+* **drag-drop:** add support for dragging svg elements in IE11 ([#14215](https://github.com/angular/material2/issues/14215)) ([81db16c](https://github.com/angular/material2/commit/81db16c)), closes [#14214](https://github.com/angular/material2/issues/14214)
+* **drag-drop:** dragged elements blurry in some browsers ([#14299](https://github.com/angular/material2/issues/14299)) ([63174d2](https://github.com/angular/material2/commit/63174d2)), closes [#14283](https://github.com/angular/material2/issues/14283)
+* **drag-drop:** only add top-level drop lists to drop group ([#14130](https://github.com/angular/material2/issues/14130)) ([4acecd7](https://github.com/angular/material2/commit/4acecd7))
+* **drag-drop:** remove expensive style recalculation ([#14189](https://github.com/angular/material2/issues/14189)) ([f212345](https://github.com/angular/material2/commit/f212345))
+* **form-field:** error when native select has no options ([#14102](https://github.com/angular/material2/issues/14102)) ([0ef75ea](https://github.com/angular/material2/commit/0ef75ea)), closes [#14101](https://github.com/angular/material2/issues/14101)
+* **list:** don't handle events when modifier key is pressed ([#14313](https://github.com/angular/material2/issues/14313)) ([0c7ce7a](https://github.com/angular/material2/commit/0c7ce7a))
+* **menu:** allow alternate roles to be set on menu item ([#14165](https://github.com/angular/material2/issues/14165)) ([3f1588f](https://github.com/angular/material2/commit/3f1588f)), closes [#14163](https://github.com/angular/material2/issues/14163)
+* **ng-add:** do not throw if custom builder is used for "test" ([#14203](https://github.com/angular/material2/issues/14203)) ([498a3d8](https://github.com/angular/material2/commit/498a3d8)), closes [#14176](https://github.com/angular/material2/issues/14176)
+* **scrolling:** default to vertical CSS class for invalid orientation ([#14145](https://github.com/angular/material2/issues/14145)) ([dbe27c4](https://github.com/angular/material2/commit/dbe27c4))
+* **scrolling:** provide virtual scroll viewport as scrollable ([#14168](https://github.com/angular/material2/issues/14168)) ([c552504](https://github.com/angular/material2/commit/c552504))
+* **slide-toggle:** label not being read out by JAWS ([#14304](https://github.com/angular/material2/issues/14304)) ([754414b](https://github.com/angular/material2/commit/754414b)), closes [#4610](https://github.com/angular/material2/issues/4610)
+* **slide-toggle:** label not being read out by screen reader on IE ([#14259](https://github.com/angular/material2/issues/14259)) ([5264804](https://github.com/angular/material2/commit/5264804))
+* **stepper:** showing hover state after tap on touch devices ([#14074](https://github.com/angular/material2/issues/14074)) ([f3031ad](https://github.com/angular/material2/commit/f3031ad))
+* **tabs:** avoid hitting change detection if text content hasn't changed ([#14251](https://github.com/angular/material2/issues/14251)) ([9778af2](https://github.com/angular/material2/commit/9778af2)), closes [#14249](https://github.com/angular/material2/issues/14249)
+* **tabs:** blurry text in scrolled header on some browsers ([#14303](https://github.com/angular/material2/issues/14303)) ([f7c8026](https://github.com/angular/material2/commit/f7c8026))
+
+
 <a name="7.1.0"></a>
 # 7.1.0 "stone-silhouette" (2018-11-20)
 
