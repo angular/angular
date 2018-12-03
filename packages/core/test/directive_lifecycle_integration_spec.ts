@@ -10,46 +10,42 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {Component, Directive} from '@angular/core/src/metadata';
 import {TestBed, inject} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
-import {fixmeIvy} from '@angular/private/testing';
 
-{
-  describe('directive lifecycle integration spec', () => {
-    let log: Log;
+describe('directive lifecycle integration spec', () => {
+  let log: Log;
 
-    beforeEach(() => {
-      TestBed
-          .configureTestingModule({
-            declarations: [
-              LifecycleCmp,
-              LifecycleDir,
-              MyComp5,
-            ],
-            providers: [Log]
-          })
-          .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
-    });
-
-    beforeEach(inject([Log], (_log: any) => { log = _log; }));
-
-    fixmeIvy('unknown') &&
-        it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
-           () => {
-             const fixture = TestBed.createComponent(MyComp5);
-             fixture.detectChanges();
-
-             expect(log.result())
-                 .toEqual(
-                     'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
-                     'ngAfterViewInit; ngAfterViewChecked');
-
-             log.clear();
-             fixture.detectChanges();
-
-             expect(log.result())
-                 .toEqual('ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
-           });
+  beforeEach(() => {
+    TestBed
+        .configureTestingModule({
+          declarations: [
+            LifecycleCmp,
+            LifecycleDir,
+            MyComp5,
+          ],
+          providers: [Log]
+        })
+        .overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
   });
-}
+
+  beforeEach(inject([Log], (_log: any) => { log = _log; }));
+
+  it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked',
+     () => {
+       const fixture = TestBed.createComponent(MyComp5);
+       fixture.detectChanges();
+
+       expect(log.result())
+           .toEqual(
+               'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
+               'ngAfterViewInit; ngAfterViewChecked');
+
+       log.clear();
+       fixture.detectChanges();
+
+       expect(log.result())
+           .toEqual('ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked');
+     });
+});
 
 
 @Directive({selector: '[lifecycle-dir]'})

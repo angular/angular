@@ -12,18 +12,16 @@ import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
 
-{
-  if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
-
-  declareTestsUsingBootstrap();
+if (ivyEnabled) {
+  describe('ivy', () => { declareTests(); });
+} else {
+  describe('jit', () => { declareTests({useJit: true}); });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
+
+declareTestsUsingBootstrap();
 
 function declareTests(config?: {useJit: boolean}) {
   // Place to put reproductions for regressions
@@ -162,14 +160,13 @@ function declareTests(config?: {useJit: boolean}) {
         expect(injector.get(token)).toEqual(tokenValue);
       });
 
-      fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens') &&
-          it('should support providers with string token with a `.` in it', () => {
-            const token = 'a.b';
-            const tokenValue = 1;
-            const injector = createInjector([{provide: token, useValue: tokenValue}]);
+      it('should support providers with string token with a `.` in it', () => {
+        const token = 'a.b';
+        const tokenValue = 1;
+        const injector = createInjector([{provide: token, useValue: tokenValue}]);
 
-            expect(injector.get(token)).toEqual(tokenValue);
-          });
+        expect(injector.get(token)).toEqual(tokenValue);
+      });
 
       it('should support providers with an anonymous function as token', () => {
         const token = () => true;
@@ -191,15 +188,14 @@ function declareTests(config?: {useJit: boolean}) {
         expect(injector.get(token2)).toEqual(tokenValue2);
       });
 
-      fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens') &&
-          it('should support providers that have a `name` property with a number value', () => {
-            class TestClass {
-              constructor(public name: number) {}
-            }
-            const data = [new TestClass(1), new TestClass(2)];
-            const injector = createInjector([{provide: 'someToken', useValue: data}]);
-            expect(injector.get('someToken')).toEqual(data);
-          });
+      it('should support providers that have a `name` property with a number value', () => {
+        class TestClass {
+          constructor(public name: number) {}
+        }
+        const data = [new TestClass(1), new TestClass(2)];
+        const injector = createInjector([{provide: 'someToken', useValue: data}]);
+        expect(injector.get('someToken')).toEqual(data);
+      });
 
       describe('ANALYZE_FOR_ENTRY_COMPONENTS providers', () => {
 
@@ -337,21 +333,22 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.debugElement.childNodes.length).toBe(0);
       });
 
-      fixmeIvy('unknown') && it('should allow empty embedded templates', () => {
-        @Component({template: '<ng-template [ngIf]="true"></ng-template>'})
-        class MyComp {
-        }
+      modifiedInIvy('Comment node order changed') &&
+          it('should allow empty embedded templates', () => {
+            @Component({template: '<ng-template [ngIf]="true"></ng-template>'})
+            class MyComp {
+            }
 
-        const fixture =
-            TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
-        fixture.detectChanges();
+            const fixture =
+                TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+            fixture.detectChanges();
 
-        // Note: We always need to create at least a comment in an embedded template,
-        // so we can append other templates after it.
-        // 1 comment for the anchor,
-        // 1 comment for the empty embedded template.
-        expect(fixture.debugElement.childNodes.length).toBe(2);
-      });
+            // Note: We always need to create at least a comment in an embedded template,
+            // so we can append other templates after it.
+            // 1 comment for the anchor,
+            // 1 comment for the empty embedded template.
+            expect(fixture.debugElement.childNodes.length).toBe(2);
+          });
     });
 
     fixmeIvy('unknown') &&
