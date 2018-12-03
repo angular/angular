@@ -29,10 +29,10 @@
     "@angular-devkit/core" "7.0.6"
     rxjs "6.3.3"
 
-"@angular/bazel@7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.1.0.tgz#1a1a12a2b3d56c107a00c72218f1326e2fd54c97"
-  integrity sha512-YJaLOI0/x/BB+Ax9C488NBX1L3lLDU4S3BUAAbS5ciXfFFZUZuCKPCBV4STDOaQkRk0orT0PNEhSd1J5ohnmug==
+"@angular/bazel@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/bazel/-/bazel-7.1.1.tgz#28a176191f04e6cfa3f0ae5037aced05a6b3e191"
+  integrity sha512-iJa7/ue0zq95CM/FwZdeEUcpAcentGpPoM/UBJgiBBfAfidMpJAnvyeIcZi8WUeMe6xXvTthyr13Xw1vio+fVQ==
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
@@ -43,10 +43,10 @@
     shelljs "0.8.2"
     tsickle "0.32.1"
 
-"@angular/compiler-cli@7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-7.1.0.tgz#b02b2f94b9510caadc2b16bf1f97aa41d21a3ce2"
-  integrity sha512-Q42B3YmjMNYWTxTWfyDDFa6HSVqwY3rZO5Kp3Q/NKhQ6w/WddduxjARf/OCbtp0bVX3wZNObS6nO4H65rNCtsw==
+"@angular/compiler-cli@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-7.1.1.tgz#c5f6225fb72b56f42fa78c332fdee9755c64604e"
+  integrity sha512-4NXlkDhOEQgaP3Agigqw93CvXJvsfnXa0xiglq9e/wjL+6XbtM9WcDb5lfRQz41N9RSkO3pEHGvKMweKZGgogA==
   dependencies:
     canonical-path "1.0.0"
     chokidar "^1.4.2"
@@ -60,10 +60,10 @@
     tslib "^1.9.0"
     yargs "9.0.1"
 
-"@angular/compiler@7.1.0":
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-7.1.0.tgz#3455eeb575d0b9b68a099b5781d3cce78468146a"
-  integrity sha512-1Hjx6e+lVXZyXFFe4OW34ZpiaGEYyB1MQ7k2C+cMm0ABMQS3LsWT4DYhY7bk0mmMuuXQj66C62MX76ladDtdIg==
+"@angular/compiler@7.1.1":
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-7.1.1.tgz#4efbcad27ab43d4cd36d936a8df2e073f6d02d0a"
+  integrity sha512-oJvBe8XZ+DXF/W/DxWBTbBcixJTuPeZWdkcZIGWhJoQP7K5GnGnj8ffP9Lp6Dh4TKv85awtC6OfIKhbHxa650Q==
   dependencies:
     tslib "^1.9.0"
 

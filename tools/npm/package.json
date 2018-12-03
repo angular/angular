@@ -1,9 +1,9 @@
 {
   "description": "minimal @npm repo required to build @rxjs from source and so that @npm//@angular/bazel is a valid target",
   "dependencies": {
-    "@angular/bazel": "7.1.0",
-    "@angular/compiler": "7.1.0",
-    "@angular/compiler-cli": "7.1.0",
+    "@angular/bazel": "7.1.1",
+    "@angular/compiler": "7.1.1",
+    "@angular/compiler-cli": "7.1.1",
     "@bazel/karma": "0.21.0",
     "@bazel/typescript": "0.21.0",
     "typescript": "^3.1.1"
