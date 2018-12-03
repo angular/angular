@@ -14,6 +14,9 @@ npm_package(
         "//packages/bazel/docs",
     ],
     tags = ["release-with-framework"],
+    visibility = [
+        "//packages/bazel:__subpackages__",
+    ],
     deps = [
         "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",

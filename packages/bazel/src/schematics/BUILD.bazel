@@ -19,3 +19,19 @@ jasmine_node_test(
         "//tools/testing:node",
     ],
 )
+
+sh_test(
+    name = "e2e_test",
+    size = "large",
+    testonly = True,
+    srcs = [
+        "e2e_test.sh",
+    ],
+    data = [
+        "//packages/bazel:npm_package",
+        "@nodejs//:bin/node",
+        "@nodejs//:bin/yarn",
+        "@nodejs//:node_runfiles",
+    ],
+    local = True,  # equivalent to tags=["local"]
+)
