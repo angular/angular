@@ -7,9 +7,10 @@
  */
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
-
 import {CommonModule} from '@angular/common';
 import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+// TODO(ocombe): replace this with the real runtime i18n service
+import {localize} from './translations';
 
 class Todo {
   editing: boolean;
@@ -28,11 +29,12 @@ class Todo {
 @Injectable({providedIn: 'root'})
 class TodoStore {
   todos: Array<Todo> = [
-    new Todo('Demonstrate Components'),
-    new Todo('Demonstrate Structural Directives', true),
-    new Todo('Demonstrate NgModules'),
-    new Todo('Demonstrate zoneless change detection'),
-    new Todo('Demonstrate internationalization'),
+    new Todo(localize('Demonstrate Components')),
+    new Todo(localize('Demonstrate Structural Directives'), true),
+    // Using a placeholder
+    new Todo(localize('Demonstrate {$value}', {value: 'NgModules'})),
+    new Todo(localize('Demonstrate zoneless change detection')),
+    new Todo(localize('Demonstrate internationalization')),
   ];
 
   private getWithCompleted(completed: boolean) {
@@ -62,9 +64,9 @@ class TodoStore {
   encapsulation: ViewEncapsulation.None,
   template: `
   <section class="todoapp">
-    <header class="header">
+    <header class="header" i18n>
       <h1>todos</h1>
-      <input class="new-todo" placeholder="What needs to be done?" autofocus=""
+      <input class="new-todo" i18n-placeholder placeholder="What needs to be done?" autofocus=""
              [value]="newTodoText"
              (keyup)="$event.code == 'Enter' ? addTodo() : updateNewTodoValue($event.target.value)">
     </header>
@@ -95,13 +97,10 @@ class TodoStore {
       </ul>
     </section>
     <footer *ngIf="todoStore.todos.length > 0" class="footer">
-      <span class="todo-count">
-        <strong>{{todoStore.getRemaining().length}}</strong>
-        {{todoStore.getRemaining().length == 1 ? 'item' : 'items'}} left
+      <span class="todo-count" i18n>
+        <strong>{{todoStore.getRemaining().length}}</strong> {todoStore.getRemaining().length, plural, =1 {item left} other {items left}}
       </span>
-      <button *ngIf="todoStore.getCompleted().length > 0"
-              class="clear-completed"
-              (click)="removeCompleted()">
+      <button *ngIf="todoStore.getCompleted().length > 0" class="clear-completed" (click)="removeCompleted()" i18n>
         Clear completed
       </button>
     </footer>
