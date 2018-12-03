@@ -12,7 +12,7 @@ import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, ge
 import {LContext} from './interfaces/context';
 import {DirectiveDef} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE} from './interfaces/injector';
-import {TElementNode, TNode} from './interfaces/node';
+import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 import {readPatchedLView, stringify} from './util';
 import {NodeInjector} from './view_engine_compatibility';
@@ -22,7 +22,7 @@ import {NodeInjector} from './view_engine_compatibility';
  * Returns the component instance associated with a given DOM host element.
  * Elements which don't represent components return `null`.
  *
- * @param element Host DOM element from which the component should be retrieved for.
+ * @param element Host DOM element from which the component should be retrieved.
  *
  * ```
  * <my-app>
@@ -52,7 +52,7 @@ export function getComponent<T = {}>(element: Element): T|null {
  * Returns the component instance associated with a given DOM host element.
  * Elements which don't represent components return `null`.
  *
- * @param element Host DOM element from which the component should be retrieved for.
+ * @param element Host DOM element from which the component should be retrieved.
  *
  * ```
  * <my-app>
@@ -113,8 +113,8 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
  */
 export function getRootContext(target: LView | {}): RootContext {
   const lViewData = Array.isArray(target) ? target : loadLContext(target) !.lView;
-  const rootLViewData = getRootView(lViewData);
-  return rootLViewData[CONTEXT] as RootContext;
+  const rootLView = getRootView(lViewData);
+  return rootLView[CONTEXT] as RootContext;
 }
 
 /**
@@ -146,17 +146,17 @@ export function getInjector(target: {}): Injector {
 /**
  * Retrieve a set of injection tokens at a given DOM node.
  *
- * @param element Element for which the DOM listeners should be retrieved.
+ * @param element Element for which the injection tokens should be retrieved.
  * @publicApi
  */
 export function getInjectionTokens(element: Element): any[] {
-  const context = loadLContext(element as HTMLElement, false) !;
+  const context = loadLContext(element, false);
   if (!context) return [];
   const lView = context.lView;
   const tView = lView[TVIEW];
   const tNode = tView.data[context.nodeIndex] as TNode;
   const providerTokens: any[] = [];
-  const startIndex = tNode.injectorIndex + INJECTOR_BLOOM_PARENT_SIZE;
+  const startIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
   const endIndex = tNode.directiveEnd;
   for (let i = startIndex; i < endIndex; i++) {
     let value = tView.data[i];
@@ -288,6 +288,12 @@ export interface Listener {
   useCapture: boolean|null;
 }
 
+export function isBrowserEvents(listener: Listener): boolean {
+  // Browser events are those which don't have `useCapture` as boolean.
+  return typeof listener.useCapture === 'boolean';
+}
+
+
 /**
  * Retrieves a list of DOM listeners.
  *
@@ -298,7 +304,7 @@ export interface Listener {
  *     </div>
  * </mp-app>
  *
- * expect(getListeners(<child-comp>)).toEqual({
+ * expect(getListeners(<div>)).toEqual({
  *   name: 'click',
  *   element: <div>,
  *   callback: () => doSomething(),
@@ -320,15 +326,15 @@ export function getListeners(element: Element): Listener[] {
     for (let i = 0; i < tCleanup.length;) {
       const firstParam = tCleanup[i++];
       const secondParam = tCleanup[i++];
-      if (typeof firstParam == 'string') {
+      if (typeof firstParam === 'string') {
         const name: string = firstParam;
         const listenerElement: Element = lView[secondParam];
         const callback: (value: any) => any = lCleanup[tCleanup[i++]];
         const useCaptureOrIndx = tCleanup[i++];
-        // if useCaptureOrIndx is boolean than report it as is.
-        // if useCaptureOrIndx is positive number than it in unsubscribe method
-        // if useCaptureOrIndx is negative number than it is a Subscription
-        const useCapture = typeof useCaptureOrIndx == 'boolean' ?
+        // if useCaptureOrIndx is boolean then report it as is.
+        // if useCaptureOrIndx is positive number then it in unsubscribe method
+        // if useCaptureOrIndx is negative number then it is a Subscription
+        const useCapture = typeof useCaptureOrIndx === 'boolean' ?
             useCaptureOrIndx :
             (useCaptureOrIndx >= 0 ? false : null);
         if (element == listenerElement) {

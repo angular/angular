@@ -127,7 +127,7 @@ export interface TNode {
   directiveStart: number;
 
   /**
-   * Stores final index of the directives.
+   * Stores final exclusive index of the directives.
    */
   directiveEnd: number;
 

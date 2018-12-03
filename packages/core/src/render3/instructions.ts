@@ -247,7 +247,7 @@ export function createViewNode(index: number, view: LView) {
     view[TVIEW].node = createTNode(view, TNodeType.View, index, null, null, null) as TViewNode;
   }
 
-  return view[HOST_NODE] = tNode;
+  return view[HOST_NODE] = view[TVIEW].node as TViewNode;
 }
 
 
@@ -835,15 +835,18 @@ export function listener(
   }
 
   const outputs = tNode.outputs;
-  let outputData: PropertyAliasValue|undefined;
-  if (outputs && (outputData = outputs[eventName])) {
-    for (let i = 0; i < outputData.length; i += 2) {
-      ngDevMode && assertDataInRange(lView, outputData[i] as number);
-      const subscription = lView[outputData[i] as number][outputData[i + 1]].subscribe(listenerFn);
+  let props: PropertyAliasValue|undefined;
+  if (outputs && (props = outputs[eventName])) {
+    const propsLength = props.length;
+    if (propsLength) {
       const lCleanup = getCleanup(lView);
-      const idx = lCleanup.length;
-      lCleanup.push(listenerFn, subscription);
-      tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+      for (let i = 0; i < propsLength; i += 2) {
+        ngDevMode && assertDataInRange(lView, props[i] as number);
+        const subscription = lView[props[i] as number][props[i + 1]].subscribe(listenerFn);
+        const idx = lCleanup.length;
+        lCleanup.push(listenerFn, subscription);
+        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+      }
     }
   }
 }
@@ -870,9 +873,7 @@ function createOutput(lView: LView, outputs: PropertyAliasValue, listener: Funct
  * - Cleanup function
  * - Index of context we just saved in LView.cleanupInstances
  */
-export function storeCleanupWithContext(
-    lView: LView | null, context: any, cleanupFn: Function): void {
-  if (!lView) lView = getLView();
+export function storeCleanupWithContext(lView: LView, context: any, cleanupFn: Function): void {
   const lCleanup = getCleanup(lView);
   lCleanup.push(context);
 
@@ -1107,7 +1108,7 @@ export function elementClassProp(
   }
   const val =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
-  updateElementClassProp(getStylingContext(index, getLView()), classIndex, val);
+  updateElementClassProp(getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, val);
 }
 
 /**
@@ -1166,14 +1167,14 @@ export function elementStyling(
 
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
-    const index = tNode.index - HEADER_OFFSET;
+    const index = tNode.index;
     if (delegateToClassInput(tNode)) {
       const lView = getLView();
       const stylingContext = getStylingContext(index, lView);
       const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
       setInputsForProperty(lView, tNode.inputs !['class'] !, initialClasses);
     }
-    elementStylingApply(index);
+    elementStylingApply(index - HEADER_OFFSET);
   }
 }
 
@@ -1200,7 +1201,7 @@ export function elementStylingApply(index: number, directive?: {}): void {
   const lView = getLView();
   const isFirstRender = (lView[FLAGS] & LViewFlags.CreationMode) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
-      getStylingContext(index, lView), lView[RENDERER], lView, isFirstRender);
+      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(lView);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
@@ -1248,7 +1249,8 @@ export function elementStyleProp(
   if (directive != undefined) {
     hackImplementationOfElementStyleProp(index, styleIndex, valueToAdd, suffix, directive);
   } else {
-    updateElementStyleProp(getStylingContext(index, getLView()), styleIndex, valueToAdd);
+    updateElementStyleProp(
+        getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd);
   }
 }
 
@@ -1282,7 +1284,7 @@ export function elementStylingMap<T>(
         index, classes, styles, directive);  // supported in next PR
   const lView = getLView();
   const tNode = getTNode(index, lView);
-  const stylingContext = getStylingContext(index, lView);
+  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
   if (delegateToClassInput(tNode) && classes !== NO_CHANGE) {
     const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
     const classInputVal =

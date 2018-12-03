@@ -60,7 +60,7 @@ export function allocStylingContext(
  * @param viewData The view to search for the styling context
  */
 export function getStylingContext(index: number, viewData: LView): StylingContext {
-  let storageIndex = index + HEADER_OFFSET;
+  let storageIndex = index;
   let slotValue: LContainer|LView|StylingContext|RElement = viewData[storageIndex];
   let wrapper: LContainer|LView|StylingContext = viewData;
 
@@ -73,7 +73,7 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
     return wrapper as StylingContext;
   } else {
     // This is an LView or an LContainer
-    const stylingTemplate = getTNode(index, viewData).stylingTemplate;
+    const stylingTemplate = getTNode(index - HEADER_OFFSET, viewData).stylingTemplate;
 
     if (wrapper !== viewData) {
       storageIndex = HOST;
@@ -86,7 +86,7 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
 }
 
 export function isStylingContext(value: any): value is StylingContext {
-  // Not an LViewData or an LContainer
+  // Not an LView or an LContainer
   return Array.isArray(value) && typeof value[FLAGS] !== 'number' &&
       typeof value[ACTIVE_INDEX] !== 'number';
 }
@@ -160,7 +160,7 @@ export function getOrCreatePlayerContext(target: {}, context?: LContext | null):
   }
 
   const {lView, nodeIndex} = context;
-  const stylingContext = getStylingContext(nodeIndex - HEADER_OFFSET, lView);
+  const stylingContext = getStylingContext(nodeIndex, lView);
   return getPlayerContext(stylingContext) || allocPlayerContext(stylingContext);
 }
 

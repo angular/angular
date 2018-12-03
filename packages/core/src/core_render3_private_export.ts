@@ -154,7 +154,7 @@ export {
 } from './sanitization/bypass';
 
 export {
-  getLContext as ɵgetContext
+  getLContext as ɵgetLContext
 } from './render3/context_discovery';
 
 export {

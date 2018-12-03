@@ -8,12 +8,12 @@
 
 import {Injector} from '../di';
 import {assertDomNode} from '../render3/assert';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
 import {TVIEW} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBased} from '../render3/styling/class_and_style_bindings';
-import {isStylingContext} from '../render3/styling/util';
+import {getStylingContext} from '../render3/styling/util';
 import {DebugContext} from '../view/index';
 
 export class EventListener {
@@ -206,7 +206,7 @@ class DebugNode__POST_R3__ implements DebugNode {
   constructor(nativeNode: Node) { this.nativeNode = nativeNode; }
 
   get parent(): DebugElement|null {
-    const parent = this.nativeNode.parentNode as HTMLElement;
+    const parent = this.nativeNode.parentNode as Element;
     return parent ? new DebugElement__POST_R3__(parent) : null;
   }
 
@@ -214,23 +214,17 @@ class DebugNode__POST_R3__ implements DebugNode {
 
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
-    return nativeElement && getComponent(nativeElement as HTMLElement);
+    return nativeElement && getComponent(nativeElement as Element);
   }
-  get context(): any {
-    const nativeElement = this.nativeNode;
-    return nativeElement && getContext(nativeElement as HTMLElement);
-  }
+  get context(): any { return getContext(this.nativeNode as Element); }
 
   get listeners(): EventListener[] {
-    const nativeElement = this.nativeNode;
-    return nativeElement &&
-        getListeners(nativeElement as HTMLElement)
-            .filter(listener => typeof listener.useCapture == 'boolean');
+    return getListeners(this.nativeNode as Element).filter(isBrowserEvents);
   }
 
   get references(): {[key: string]: any;} { return getLocalRefs(this.nativeNode); }
 
-  get providerTokens(): any[] { return getInjectionTokens(this.nativeNode as HTMLElement); }
+  get providerTokens(): any[] { return getInjectionTokens(this.nativeNode as Element); }
 }
 
 class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugElement {
@@ -239,11 +233,11 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     super(nativeNode);
   }
 
-  get nativeElement(): HTMLElement|null {
-    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as HTMLElement : null;
+  get nativeElement(): Element|null {
+    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
   }
 
-  get name(): string { return (this.nativeElement as HTMLElement).nodeName; }
+  get name(): string { return this.nativeElement !.nodeName; }
 
   get properties(): {[key: string]: any;} {
     const context = loadLContext(this.nativeNode) !;
@@ -275,7 +269,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     if (element) {
       const lContext = loadLContextFromNode(element);
       const lNode = lContext.lView[lContext.nodeIndex];
-      if (isStylingContext(lNode)) {
+      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
              i += StylingIndex.Size) {
           if (isClassBased(lNode, i)) {
@@ -304,13 +299,14 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     if (element) {
       const lContext = loadLContextFromNode(element);
       const lNode = lContext.lView[lContext.nodeIndex];
-      if (isStylingContext(lNode)) {
+      const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
+      if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
              i += StylingIndex.Size) {
           if (!isClassBased(lNode, i)) {
             const styleName = getProp(lNode, i);
             const value = getValue(lNode, i) as string | null;
-            if (value) {
+            if (value !== null) {
               // we want to ignore `null` since those don't overwrite the values.
               styles[styleName] = value;
             }
@@ -318,7 +314,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
         }
       } else {
         // Fallback, just read DOM.
-        const eStyles = element.style;
+        const eStyles = (element as HTMLElement).style;
         for (let i = 0; i < eStyles.length; i++) {
           const name = eStyles.item(i);
           styles[name] = eStyles.getPropertyValue(name);
@@ -369,7 +365,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   triggerEventHandler(eventName: string, eventObj: any): void {
     this.listeners.forEach((listener) => {
-      if (listener.name == eventName) {
+      if (listener.name === eventName) {
         listener.callback(eventObj);
       }
     });

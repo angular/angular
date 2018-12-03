@@ -235,6 +235,8 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   const dirIndex = rootTView.data.length - 1;
 
   queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
+  // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
+  // LNode).
   queueLifecycleHooks(rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
 }
 

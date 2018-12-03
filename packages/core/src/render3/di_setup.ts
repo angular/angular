@@ -12,7 +12,6 @@ import {Provider} from '../di/provider';
 import {isTypeProvider, providerToFactory} from '../di/r3_injector';
 
 import {DirectiveDef} from '.';
-import {assertGreaterThan} from './assert';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
 import {directiveInject} from './instructions';
 import {NodeInjectorFactory} from './interfaces/injector';
@@ -94,8 +93,8 @@ function resolveProvider(
                 tNode as TElementNode | TContainerNode | TElementContainerNode, lView),
             lView, token);
         tInjectables.push(token);
-        tNode.directiveStart += 1;
-        tNode.directiveEnd += 1;
+        tNode.directiveStart++;
+        tNode.directiveEnd++;
         if (isViewProvider) {
           tNode.providerIndexes += TNodeProviderIndexes.CptViewProvidersCountShifter;
         }
@@ -150,8 +149,8 @@ function resolveProvider(
           lInjectablesBlueprint[existingViewProvidersFactoryIndex].providerFactory = factory;
         }
         tInjectables.push(token);
-        tNode.directiveStart += 1;
-        tNode.directiveEnd += 1;
+        tNode.directiveStart++;
+        tNode.directiveEnd++;
         if (isViewProvider) {
           tNode.providerIndexes += TNodeProviderIndexes.CptViewProvidersCountShifter;
         }

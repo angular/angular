@@ -12,7 +12,7 @@ import {stringify} from '../render3/util';
 
 import {BypassType, allowSanitizationBypass} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
-import {SecurityContext} from './security';
+import {Sanitizer, SecurityContext} from './security';
 import {StyleSanitizeFn, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
@@ -32,7 +32,7 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * and urls have been removed.
  */
 export function sanitizeHtml(unsafeHtml: any): string {
-  const sanitizer = getLView()[SANITIZER];
+  const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
   }
@@ -56,7 +56,7 @@ export function sanitizeHtml(unsafeHtml: any): string {
  * dangerous javascript and urls have been removed.
  */
 export function sanitizeStyle(unsafeStyle: any): string {
-  const sanitizer = getLView()[SANITIZER];
+  const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
   }
@@ -81,7 +81,7 @@ export function sanitizeStyle(unsafeStyle: any): string {
  * all of the dangerous javascript has been removed.
  */
 export function sanitizeUrl(unsafeUrl: any): string {
-  const sanitizer = getLView()[SANITIZER];
+  const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.URL, unsafeUrl) || '';
   }
@@ -101,7 +101,7 @@ export function sanitizeUrl(unsafeUrl: any): string {
  * only trusted `url`s have been allowed to pass.
  */
 export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
-  const sanitizer = getLView()[SANITIZER];
+  const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
   }
@@ -122,7 +122,7 @@ export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
  * because only trusted `scripts` have been allowed to pass.
  */
 export function sanitizeScript(unsafeScript: any): string {
-  const sanitizer = getLView()[SANITIZER];
+  const sanitizer = getSanitizer();
   if (sanitizer) {
     return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
   }
@@ -145,3 +145,8 @@ export const defaultStyleSanitizer = (function(prop: string, value?: string): st
 
   return sanitizeStyle(value);
 } as StyleSanitizeFn);
+
+function getSanitizer(): Sanitizer|null {
+  const lView = getLView();
+  return lView && lView[SANITIZER];
+}

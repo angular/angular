@@ -475,15 +475,15 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
 function removeListeners(lView: LView): void {
   const tCleanup = lView[TVIEW].cleanup !;
   if (tCleanup != null) {
+    const lCleanup = lView[CLEANUP] !;
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
-        const lCleanup = lView[CLEANUP] !;
         // This is a listener with the native renderer
         const idx = tCleanup[i + 1];
         const listener = lCleanup[tCleanup[i + 2]];
         const native = readElementValue(lView[idx]);
         const useCaptureOrSubIdx = tCleanup[i + 3];
-        if (typeof useCaptureOrSubIdx == 'boolean') {
+        if (typeof useCaptureOrSubIdx === 'boolean') {
           // DOM listener
           native.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
         } else {
@@ -498,11 +498,11 @@ function removeListeners(lView: LView): void {
         i += 2;
       } else if (typeof tCleanup[i] === 'number') {
         // This is a listener with renderer2 (cleanup fn can be found by index)
-        const cleanupFn = lView[CLEANUP] ![tCleanup[i]];
+        const cleanupFn = lCleanup[tCleanup[i]];
         cleanupFn();
       } else {
         // This is a cleanup function that is grouped with the index of its context
-        const context = lView[CLEANUP] ![tCleanup[i + 1]];
+        const context = lCleanup[tCleanup[i + 1]];
         tCleanup[i].call(context);
       }
     }

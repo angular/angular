@@ -60,7 +60,7 @@ export function getPlayers(ref: ComponentInstance | DirectiveInstance | HTMLElem
     return [];
   }
 
-  const stylingContext = getStylingContext(context.nodeIndex - HEADER_OFFSET, context.lView);
+  const stylingContext = getStylingContext(context.nodeIndex, context.lView);
   const playerContext = stylingContext ? getPlayerContext(stylingContext) : null;
   return playerContext ? getPlayersInternal(playerContext) : [];
 }

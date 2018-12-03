@@ -659,7 +659,7 @@ describe('host bindings', () => {
         selectors: [['', 'hostDir', '']],
         factory: () => new HostBindingDir(),
         hostBindings: (rf: RenderFlags, ctx: HostBindingDir, elIndex: number) => {
-          // LViewData [..., title, ctx.title, pf1]
+          // LView [..., title, ctx.title, pf1]
           if (rf & RenderFlags.Create) {
             allocHostVars(3);
           }
