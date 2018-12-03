@@ -13,11 +13,12 @@
  * running outside of Closure Compiler. This method will not be needed once runtime translation
  * service support is introduced.
  */
-export function polyfillGoogGetMsg(): void {
+export function polyfillGoogGetMsg(translations?: {[key: string]: string}): void {
   const glob = (global as any);
   glob.goog = glob.goog || {};
   glob.goog.getMsg =
       glob.goog.getMsg || function(input: string, placeholders: {[key: string]: string} = {}) {
+        input = translations ? translations[input] || input : input;
         return Object.keys(placeholders).length ?
             input.replace(/\{\$(.*?)\}/g, (match, key) => placeholders[key] || '') :
             input;
