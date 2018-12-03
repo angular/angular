@@ -852,21 +852,6 @@ export function listener(
 }
 
 /**
- * Iterates through the outputs associated with a particular event name and subscribes to
- * each output.
- */
-function createOutput(lView: LView, outputs: PropertyAliasValue, listener: Function): void {
-  for (let i = 0; i < outputs.length; i += 2) {
-    ngDevMode && assertDataInRange(lView, outputs[i] as number);
-    const subscription = lView[outputs[i] as number][outputs[i + 1]].subscribe(listener);
-    const lCleanup = getCleanup(lView);
-    const idx = lCleanup.length;
-    lCleanup.push(subscription, listener);
-    getTViewCleanup(lView).push(name, -idx, idx + 1, null);
-  }
-}
-
-/**
  * Saves context for this cleanup function in LView.cleanupInstances.
  *
  * On the first template pass, saves in TView:
