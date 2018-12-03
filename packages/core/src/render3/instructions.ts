@@ -1517,7 +1517,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, previousOrP
       // (e.g. it may not if it only contains host listeners), so we need to check whether
       // `expandoInstructions` has changed and if not - we push `null` to keep indices in sync
       if (previousExpandoLength === expando.length && firstTemplatePass) {
-        expando.push(null);
+        expando.push(def.hostBindings);
       }
     } else if (firstTemplatePass) {
       expando.push(null);

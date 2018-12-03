@@ -999,7 +999,6 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              allocHostVars(0);  // this is wrong, but necessary until FW-761 gets in
               elementStyling(null, ['width'], null, ctx);
             }
             if (rf & RenderFlags.Update) {
@@ -1043,7 +1042,6 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              allocHostVars(0);  // this is wrong, but necessary until FW-761 gets in
               elementStyling(
                   ['mat-toolbar', InitialStylingFlags.VALUES_MODE, 'mat-toolbar', true], null, null,
                   ctx);
