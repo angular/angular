@@ -43,7 +43,9 @@ test --nolegacy_external_runfiles
 ###############################
 
 # Releases should always be stamped with version control info
-build:release --workspace_status_command=./tools/bazel_stamp_vars.sh
+# This command assumes node on the path and is a workaround for
+# https://github.com/bazelbuild/bazel/issues/4802
+build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
 
 ###############################
 # Output                      #
