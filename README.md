@@ -8,6 +8,7 @@
 # Angular
 
 Angular is a development platform for building mobile and desktop web applications using Typescript/JavaScript and other languages.
+[Testing Angular Applications](https://www.manning.com/books/testing-angular-applications).
 
 ## Quickstart
 
