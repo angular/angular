@@ -72,7 +72,7 @@
     "name": "INJECTOR"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "InjectFlags"
@@ -387,6 +387,12 @@
     "name": "appendChild"
   },
   {
+    "name": "assertGreaterThan"
+  },
+  {
+    "name": "assertLessThan"
+  },
+  {
     "name": "assertTemplate"
   },
   {
@@ -472,9 +478,6 @@
   },
   {
     "name": "createNodeAtIndex"
-  },
-  {
-    "name": "createOutput"
   },
   {
     "name": "createRootComponent"
@@ -1170,9 +1173,6 @@
     "name": "storeCleanupFn"
   },
   {
-    "name": "storeCleanupWithContext"
-  },
-  {
     "name": "stringify"
   },
   {
@@ -1189,6 +1189,9 @@
   },
   {
     "name": "textBinding"
+  },
+  {
+    "name": "throwError"
   },
   {
     "name": "throwMultipleComponentError"

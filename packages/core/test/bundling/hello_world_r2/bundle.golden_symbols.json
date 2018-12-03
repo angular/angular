@@ -171,7 +171,7 @@
     "name": "INJECTOR$1"
   },
   {
-    "name": "INJECTOR_SIZE"
+    "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
     "name": "Inject"
@@ -562,6 +562,12 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "assertGreaterThan"
+  },
+  {
+    "name": "assertLessThan"
   },
   {
     "name": "assertPlatform"
@@ -1366,6 +1372,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "throwError"
   },
   {
     "name": "tickRootContext"
