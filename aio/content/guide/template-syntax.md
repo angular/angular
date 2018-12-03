@@ -1760,169 +1760,359 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 {@a inputs-outputs}
 
-## Input and Output properties
+## `@Input()` and `@Output()` properties
 
-An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
-Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
+`@Input()` and `@Output()` allow Angular to share data between the parent context and child directives. An `@Input()` property is writable while an `@Output()` property is observable.
 
-An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
-The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
-Values flow _out_ of the component as events bound with an [event binding](#event-binding).
+Consider this example of a child/parent relationship:
 
-You can only bind to _another_ component or directive through its _Input_ and _Output_ properties.
+```html
+<parent-component>
+  <child-component></child-component>
+</parent-component>
 
-<div class="alert is-important">
+```
 
-Remember that all **components** are **directives**.
+Here, the `<child-component>` selector, or child directive, is embedded
+within a `<parent-component>`, which serves as the child's context.
 
-The following discussion refers to _components_ for brevity and
-because this topic is mostly a concern for component authors.
+`@Input()` and `@Output()` act as
+the API, or application programming interface, of the child
+component in that they allow the child to
+communicate with the parent. Think of `@Input()` and `@Output()` like ports
+or doorways&mdash;`@Input()` is the doorway into the component allowing data
+to flow in while `@Output()` is the doorway out of the component, allowing the
+child component to send data out.
+
+This section about `@Input()` and `@Output()` has its own <live-example name="inputs-outputs"></live-example>. The following subsections highlight
+key points in the sample app.
+
+<div class="alert is-helpful">
+
+#### `@Input()` and `@Output()` are independent
+
+Though `@Input()` and `@Output()` often appear together in apps, you can use
+them separately. If the nested
+component is such that it only needs to send data to its parent, you wouldn't
+need an `@Input()`, only an `@Output()`. The reverse is also true in that if the
+child only needs to receive data from the parent, you'd only neeed `@Input()`.
+
 </div>
 
-<h3 class="no-toc">Discussion</h3>
+{@a input}
 
-You are usually binding a template to its _own component class_.
-In such binding expressions, the component's property or method is to the _right_ of the (`=`).
+## How to use `@Input()`
 
-<code-example path="template-syntax/src/app/app.component.html" region="io-1" header="src/app/app.component.html" linenums="false">
+Use the `@Input()` decorator in a child component or directive to let Angular know
+that a property in that component can receive its value from its parent component.
+It helps to remember that the data flow is from the perspective of the
+child component. So an `@Input()` allows data to be input _into_ the
+child component from the parent component.
+
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
+</figure>
+
+To illustrate the use of `@Input()`, edit these parts of your app:
+
+* The child component class and template
+* The parent component class and template
+
+
+### In the child
+
+To use the `@Input()` decorator in a child component class, first import
+`Input` and then decorate the property with `@Input()`:
+
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.ts" region="use-input" header="src/app/item-detail/item-detail.component.ts" linenums="false">
 </code-example>
 
-The `iconUrl` and `onSave` are members of the `AppComponent` class.
-They are _not_ decorated with `@Input()` or `@Output`.
-Angular does not object.
 
-**You can always bind to a public property of a component in its own template.**
-It doesn't have to be an _Input_ or _Output_ property
+In this case, `@Input()` decorates the property <code class="no-auto-link">item</code>, which has
+a type of `string`, however, `@Input()` properties can have any type, such as
+`number`, `string`, `boolean`, or `object`. The value for `item` will come from the parent component, which the next section covers.
 
-A component's class and template are closely coupled.
-They are both parts of the same thing.
-Together they _are_ the component.
-Exchanges between a component class and its template are internal implementation details.
+Next, in the child component template, add the following:
 
-### Binding to a different component
-
-You can also bind to a property of a _different_ component.
-In such bindings, the _other_ component's property is to the _left_ of the (`=`).
-
-In the following example, the `AppComponent` template binds `AppComponent` class members to properties of the `HeroDetailComponent` whose selector is `'app-hero-detail'`.
-
-<code-example path="template-syntax/src/app/app.component.html" region="io-2" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/item-detail/item-detail.component.html" region="property-in-template" header="src/app/item-detail/item-detail.component.html" linenums="false">
 </code-example>
 
-The Angular compiler _may_ reject these bindings with errors like this one:
+
+
+### In the parent
+
+The next step is to bind the property in the parent component's template.
+In this example, the parent component template is `app.component.html`.
+
+First, use the child's selector, here `<app-item-detail>`, as a directive within the
+parent component template. Then, use [property binding](guide/template-syntax#property-binding)
+to bind the property in the child to the property of the parent.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="input-parent" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+Next, in the parent component class, `app.component.ts`, designate a value for `currentItem`:
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="parent-property" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+With `@Input()`, Angular passes the value for `currentItem` to the child so that `item` renders as `Television`.
+
+The following diagram shows this structure:
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+</figure>
+
+The target in the square brackets, `[]`, is the property you decorate
+with `@Input()` in the child component. The binding source, the part
+to the right of the equal sign, is the data that the parent
+component passes to the nested component.
+
+The key takeaway is that when binding to a child component's property in a parent component&mdash;that is, what's
+in square brackets&mdash;you must
+decorate the property with `@Input()` in the child component.
+
+<div class="alert is-helpful">
+
+#### `OnChanges` and `@Input()`
+
+To watch for changes on an `@Input()` property, use
+`OnChanges`, one of Angular's [lifecycle hooks](guide/lifecycle-hooks#onchanges).
+`OnChanges` is specifically designed to work with properties that have the
+`@Input()` decorator. See the [`OnChanges`](guide/lifecycle-hooks#onchanges) section of the [Lifecycle Hooks](guide/lifecycle-hooks) guide for more details and examples.
+
+</div>
+
+{@a output}
+
+## How to use `@Output()`
+
+Use the `@Output()` decorator in the child component or directive to allow data to flow from
+the child _out_ to the parent.
+
+An `@Output()` property should normally be initialized to an Angular [`EventEmitter`](api/core/EventEmitter) with values flowing out of the component as [events](#event-binding).
+
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
+</figure>
+
+Just like with `@Input()`, you can use `@Output()`
+on a property of the child component but its type should be
+`EventEmitter`.
+
+`@Output()` marks a property in a child component as a doorway
+through which data can travel from the child to the parent.
+The child component then has to raise an event so the
+parent knows something has changed. To raise an event,
+`@Output()` works hand in hand with `EventEmitter`,
+which is a class in `@angular/core` that you
+use to emit custom events.
+
+When you use `@Output()`, edit these parts of your app:
+
+* The child component class and template
+* The parent component class and template
+
+
+The following example shows how to set up an `@Output()` in a child
+component that pushes data you enter in an HTML `<input>` to an array in the
+parent component.
+
+<div class="alert is-helpful">
+
+The HTML element `<input>` and the Angular decorator `@Input()`
+are different. This documentation is about component communication in Angular as it pertains to `@Input()` and `@Output()`. For more information on the HTML element `<input>`, see the [W3C Recommendation](https://www.w3.org/TR/html5/sec-forms.html#the-input-element).
+
+</div>
+
+### In the child
+
+This example features an `<input>` where a user can enter a value and click a `<button>` that raises an event. The `EventEmitter` then relays the data to the parent component.
+
+First, be sure to import `Output` and `EventEmitter`
+in the child component class:
+
+```js
+import { Output, EventEmitter } from '@angular/core';
+
+```
+
+Next, still in the child, decorate a property with `@Output()` in the component class.
+The following example `@Output()` is called `newItemEvent` and its type is
+`EventEmitter`, which means it's an event.
+
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output" header="src/app/item-output/item-output.component.ts" linenums="false">
+</code-example>
+
+The different parts of the above declaration are as follows:
+
+* `@Output()`&mdash;a decorator function marking the property as a way for data to go from the child to the parent
+* `newItemEvent`&mdash;the name of the `@Output()`
+* `EventEmitter<string>`&mdash;the `@Output()`'s type
+* `new EventEmitter<string>()`&mdash;tells Angular to create a new event emitter and that the data it emits is of type string. The type could be any type, such as `number`, `boolean`, and so on. For more information on `EventEmitter`, see the [EventEmitter API documentation](api/core/EventEmitter).
+
+Next, create an `addNewItem()` method in the same component class:
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.ts" region="item-output-class" header="src/app/item-output/item-output.component.ts" linenums="false">
+</code-example>
+
+The `addNewItem()` function uses the `@Output()`, `newItemEvent`,
+to raise an event in which it emits the value the user
+types into the `<input>`. In other words, when
+the user clicks the add button in the UI, the child lets the parent know
+about the event and gives that data to the parent.
+
+#### In the child's template
+
+The child's template has two controls. The first is an HTML `<input>` with a
+[template reference variable](guide/template-syntax#ref-var) , `#newItem`,
+where the user types in an item name. Whatever the user types
+into the `<input>` gets stored in the `#newItem` variable.
+
+<code-example path="inputs-outputs/src/app/item-output/item-output.component.html" region="child-output" header="src/app/item-output/item-output.component.html" linenums="false">
+</code-example>
+
+The second element is a `<button>`
+with an [event binding](guide/template-syntax#event-binding). You know it's
+an event binding because the part to the left of the equal
+sign is in parentheses, `(click)`.
+
+The `(click)` event is bound to the `addNewItem()` method in the child component class which
+takes as its argument whatever the value of `#newItem` is.
+
+Now the child component has an `@Output()`
+for sending data to the parent and a method for raising an event.
+The next step is in the parent.
+
+### In the parent
+
+In this example, the parent component is `AppComponent`, but you could use
+any component in which you could nest the child.
+
+The `AppComponent` in this example features a list of `items`
+in an array and a method for adding more items to the array.
+
+<code-example path="inputs-outputs/src/app/app.component.ts" region="add-new-item" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+The `addItem()` method takes an argument in the form of a string
+and then pushes, or adds, that string to the `items` array.
+
+#### In the parent's template
+
+Next, in the parent's template, bind the parent's
+method to the child's event. Put the child selector, here `<app-item-output>`,
+within the parent component's
+template, `app.component.html`.
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="output-parent" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The event binding, `(newItemEvent)='addItem($event)'`, tells
+Angular to connect the event in the child, `newItemEvent`, to
+the method in the parent, `addItem()`, and that the event that the child
+is notifying the parent about is to be the argument of `addItem()`.
+In other words, this is where the actual hand off of data takes place.
+The `$event` contains the data that the user types into the `<input>`
+in the child template UI.
+
+Now, in order to see the `@Output()` working, add the following to the parent's template:
+
+```
+  <ul>
+    <li *ngFor="let item of items">{{item}}</li>
+  </ul>
+  ```
+
+The `*ngFor` iterates over the items in the `items` array. When you enter a value in the child's `<input>` and click the button, the child emits the event and the parent's `addItem()` method pushes the value to the `items` array and it renders in the list.
+
+
+## `@Input()` and `@Output()` together
+
+You can use `@Input()` and `@Output()` on the same child component as in the following:
+
+<code-example path="inputs-outputs/src/app/app.component.html" region="together" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The target, `item`, which is an `@Input()` property in the child component class, receives its value from the parent's property, `currentItem`. When you click delete, the child component raises an event, `deleteRequest`, which is the argument for the parent's `crossOffItem()` method.
+
+The following diagram is of an `@Input()` and an `@Output()` on the same
+child component and shows the different parts of each:
+
+<figure>
+  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+</figure>
+
+As the diagram shows, use inputs and outputs together in the same manner as using them separately. Here, the child selector is `<app-input-output>` with `item` and `deleteRequest` being `@Input()` and `@Output()`
+properties in the child component class. The property `currentItem` and the method `crossOffItem()` are both in the parent component class.
+
+To combine property and event bindings using the banana-in-a-box
+syntax, `[()]`, see [Two-way Binding](guide/template-syntax#two-way).
+
+For more detail on how these work, see the previous sections on [Input](guide/template-syntax#input) and [Output](guide/template-syntax#output). To see it in action, see the <live-example name="inputs-outputs">Inputs and Outputs Example</live-example>.
+
+## `@Input()` and `@Output()` declarations
+
+Instead of using the `@Input()` and `@Output()` decorators
+to declare inputs and outputs, you can identify
+members in the `inputs` and `outputs` arrays
+of the directive metadata, as in this example:
+
+<code-example path="inputs-outputs/src/app/in-the-metadata/in-the-metadata.component.ts" region="metadata" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+While declaring `inputs` and `outputs` in the `@Directive` and `@Component`
+metadata is possible, it is a better practice to use the `@Input()` and `@Output()`
+class decorators instead, as follows:
+
+<code-example path="inputs-outputs/src/app/input-output/input-output.component.ts" region="input-output" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+See the [Decorate input and output properties](guide/styleguide#decorate-input-and-output-properties) section of the
+[Style Guide](guide/styleguide) for details.
+
+
+
+<div class="alert is-helpful">
+
+If you get a template parse error when trying to use inputs or outputs, but you know that the
+properties do indeed exist, double check
+that your properties are annotated with `@Input()` / `@Output()` or that you've declared
+them in an `inputs`/`outputs` array:
 
 <code-example language="sh" class="code-shell">
 Uncaught Error: Template parse errors:
-Can't bind to 'hero' since it isn't a known property of 'app-hero-detail'
-</code-example>
-
-You know that `HeroDetailComponent` has `hero` and `deleteRequest` properties.
-But the Angular compiler refuses to recognize them.
-
-**The Angular compiler won't bind to properties of a different component
-unless they are Input or Output properties**.
-
-There's a good reason for this rule.
-
-It's OK for a component to bind to its _own_ properties.
-The component author is in complete control of those bindings.
-
-But other components shouldn't have that kind of unrestricted access.
-You'd have a hard time supporting your component if anyone could bind to any of its properties.
-Outside components should only be able to bind to the component's public binding API.
-
-Angular asks you to be _explicit_ about that API.
-It's up to _you_ to decide which properties are available for binding by
-external components.
-
-#### TypeScript _public_ doesn't matter
-
-You can't use the TypeScript _public_ and _private_ access modifiers to
-shape the component's public binding API.
-
-<div class="alert is-important">
-
-All data bound properties must be TypeScript _public_ properties.
-Angular never binds to a TypeScript _private_ property.
-
-</div>
-
-Angular requires some other way to identify properties that _outside_ components are allowed to bind to.
-That _other way_ is the `@Input()` and `@Output()` decorators.
-
-### Declaring Input and Output properties
-
-In the sample for this guide, the bindings to `HeroDetailComponent` do not fail
-because the data bound properties are annotated with `@Input()` and `@Output()` decorators.
-
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" header="src/app/hero-detail.component.ts" linenums="false">
-</code-example>
-
-<div class="alert is-helpful">
-
-Alternatively, you can identify members in the `inputs` and `outputs` arrays
-of the directive metadata, as in this example:
-
-<code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" header="src/app/hero-detail.component.ts" linenums="false">
+Can't bind to 'item' since it isn't a known property of 'app-item-detail'
 </code-example>
 
 </div>
 
-### Input or output?
+{@a aliasing-io}
 
-*Input* properties usually receive data values.
-*Output* properties expose event producers, such as `EventEmitter` objects.
+## Aliasing inputs and outputs
 
-The terms _input_ and _output_ reflect the perspective of the target directive.
+Sometimes the public name of an input/output property should be different from the internal name. While it is a best practice to avoid this situation, Angular does
+offer a solution.
 
-<figure>
-  <img src="generated/images/guide/template-syntax/input-output.png" alt="Inputs and outputs">
-</figure>
+### Aliasing in the metadata
 
-`HeroDetailComponent.hero` is an **input** property from the perspective of `HeroDetailComponent`
-because data flows *into* that property from a template binding expression.
+Alias inputs and outputs in the metadata using a colon-delimited (`:`) string with
+the directive property name on the left and the public alias on the right:
 
-`HeroDetailComponent.deleteRequest` is an **output** property from the perspective of `HeroDetailComponent`
-because events stream *out* of that property and toward the handler in a template binding statement.
-
-<h3 id='aliasing-io'>
-  Aliasing input/output properties
-</h3>
-
-Sometimes the public name of an input/output property should be different from the internal name.
-
-This is frequently the case with [attribute directives](guide/attribute-directives).
-Directive consumers expect to bind to the name of the directive.
-For example, when you apply a directive with a `myClick` selector to a `<div>` tag,
-you expect to bind to an event property that is also called `myClick`.
-
-<code-example path="template-syntax/src/app/app.component.html" region="myClick" header="src/app/app.component.html" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-However, the directive name is often a poor choice for the name of a property within the directive class.
-The directive name rarely describes what the property does.
-The `myClick` directive name is not a good name for a property that emits click messages.
 
-Fortunately, you can have a public name for the property that meets conventional expectations,
-while using a different name internally.
-In the example immediately above, you are actually binding *through the* `myClick` *alias* to
-the directive's own `clicks` property.
+### Aliasing with the `@Input()`/`@Output()` decorator
 
-You can specify the alias for the property name by passing it into the input/output decorator like this:
+You can specify the alias for the property name by passing the alias name to the `@Input()`/`@Output()` decorator. The internal name remains as usual.
 
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" header="src/app/click.directive.ts" linenums="false">
+<code-example path="inputs-outputs/src/app/aliasing/aliasing.component.ts" region="alias-input-output" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-<div class="alert is-helpful">
-
-You can also alias property names in the `inputs` and `outputs` arrays.
-You write a colon-delimited (`:`) string with
-the directive property name on the *left* and the public alias on the *right*:
-
-<code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick2" header="src/app/click.directive.ts" linenums="false">
-</code-example>
-
-</div>
 
 
 <hr/>
