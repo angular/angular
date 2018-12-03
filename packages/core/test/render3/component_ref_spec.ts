@@ -9,8 +9,8 @@
 import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
-import {defineComponent} from '../../src/render3';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
+import {defineComponent} from '../../src/render3/index';
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';
 
