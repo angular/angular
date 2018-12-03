@@ -64,10 +64,10 @@
     "@bazel/bazel-linux_x64" "0.18.0"
     "@bazel/bazel-win32_x64" "0.18.0"
 
-"@bazel/ibazel@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.1.1.tgz#f970c08b4e4efb0ab17e04ade3cc610554f33bed"
-  integrity sha1-+XDAi05O+wqxfgSt48xhBVTzO+0=
+"@bazel/ibazel@~0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.8.2.tgz#a837d93922c0d273361ed4f141c792384c0e10bb"
+  integrity sha512-5lbqeoqv2sIRybV9s4CIRNBR68wdv22wfpNY1qmO3AsPrLx4zICPXyW8YOiLaLvYPzvezPznfhD7Is13jU/jsQ==
 
 "@bazel/karma@0.21.0":
   version "0.21.0"
