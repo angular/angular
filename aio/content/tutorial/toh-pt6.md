@@ -251,7 +251,7 @@ Here is the final version of `getHeroes` with the `tap` that logs the operation.
 
 Most web APIs support a _get by id_ request in the form `:baseURL/:id`.
 
-Here, the _base URL_ is the `heroesURL` defined in the [Heroes and HTTP](http://localhost:4800/tutorial/toh-pt6#heroes-and-http) section (`api/heroes`) and _id_ is
+Here, the _base URL_ is the `heroesURL` defined in the [Heroes and HTTP](tutorial/toh-pt6#heroes-and-http) section (`api/heroes`) and _id_ is
 the number of the hero that you want to retrieve. For example, `api/heroes/11`.
 
 Add a `HeroService.getHero()` method to make that request:
