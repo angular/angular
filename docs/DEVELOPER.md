@@ -29,8 +29,6 @@ following products on your development machine:
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
 
-* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [BAZEL.md](https://github.com/angular/angular/blob/master/docs/BAZEL.md)
-
 ## Getting the Sources
 
 Fork and clone the Angular repository:
@@ -124,7 +122,7 @@ You can automatically format your code by running:
 A better way is to set up your IDE to format the changed file on each file save.
 
 ### VS Code
-1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code. 
+1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
 2. Open `settings.json` in your workspace and add these lines:
 ```json
   "files.autoSave": "onFocusChange",
