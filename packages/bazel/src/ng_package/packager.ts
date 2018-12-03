@@ -73,6 +73,9 @@ function main(args: string[]): number {
       // List of all files in the ng_package rule's srcs.
       srcsArg,
 
+      // List of all type definitions that need to packaged into the ng_package.
+      typeDefinitionsArg,
+
       // List of all files in the ng_package rule's data.
       dataArg,
 
@@ -85,6 +88,7 @@ function main(args: string[]): number {
   const esm2015 = esm2015Arg.split(',').filter(s => !!s);
   const esm5 = esm5Arg.split(',').filter(s => !!s);
   const bundles = bundlesArg.split(',').filter(s => !!s);
+  const typeDefinitions = typeDefinitionsArg.split(',').filter(s => !!s);
   const srcs = srcsArg.split(',').filter(s => !!s);
   const dataFiles: string[] = dataArg.split(',').filter(s => !!s);
   const modulesManifest = JSON.parse(modulesManifestArg);
@@ -134,7 +138,8 @@ function main(args: string[]): number {
    * @param outDir path where we copy the file, relative to the out
    */
   function writeEsmFile(file: string, suffix: string, outDir: string) {
-    const root = file.substr(0, file.lastIndexOf(suffix + path.sep) + suffix.length + 1);
+    // Note that the specified file path is always using the posix path delimiter.
+    const root = file.substr(0, file.lastIndexOf(`${suffix}/`) + suffix.length + 1);
     const rel = path.dirname(path.relative(path.join(root, srcDir), file));
     if (!rel.startsWith('..')) {
       copyFile(file, path.join(out, outDir), rel);
@@ -148,8 +153,9 @@ function main(args: string[]): number {
   fesm2015.forEach(file => { copyFile(file, out, 'fesm2015'); });
   fesm5.forEach(file => { copyFile(file, out, 'fesm5'); });
 
-  const allsrcs = shx.find('-R', binDir);
-  allsrcs.filter(hasFileExtension('.d.ts')).forEach((f: string) => {
+  // Copy all type definitions into the package. This is necessary so that developers can use
+  // the package with type definitions.
+  typeDefinitions.forEach((f: string) => {
     const content = fs.readFileSync(f, 'utf-8')
                         // Strip the named AMD module for compatibility with non-bazel users
                         .replace(/^\/\/\/ <amd-module name=.*\/>\n/gm, '');
@@ -233,12 +239,6 @@ function main(args: string[]): number {
         path.relative(path.dirname(from), path.join(srcDir, path.relative(binDir, file)));
     if (result.startsWith('..')) return result;
     return `./${result}`;
-  }
-
-  /** Gets a predicate function to filter non-generated files with a specified extension. */
-  function hasFileExtension(ext: string): (path: string) => boolean {
-    return f => f.endsWith(ext) && !f.endsWith(`.ngfactory${ext}`) &&
-        !f.endsWith(`.ngsummary${ext}`);
   }
 
   function copyFile(file: string, baseDir: string, relative = '.') {
