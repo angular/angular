@@ -24,7 +24,6 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     tags = [
-        "fixme-ivy-aot",
         "ivy-only",
     ],
     deps = [

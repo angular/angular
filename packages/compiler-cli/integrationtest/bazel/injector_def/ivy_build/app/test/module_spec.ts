@@ -7,7 +7,6 @@
  */
 
 import {Injectable, InjectionToken, Injector, NgModule, createInjector, forwardRef} from '@angular/core';
-import {fixmeIvy} from '@angular/private/testing';
 import {AOT_TOKEN, AotModule, AotService} from 'app_built/src/module';
 
 describe('Ivy NgModule', () => {
@@ -41,24 +40,23 @@ describe('Ivy NgModule', () => {
 
     it('works', () => { createInjector(JitAppModule); });
 
-    fixmeIvy('FW-645: jit doesn\'t support forwardRefs')
-        .it('throws an error on circular module dependencies', () => {
-          @NgModule({
-            imports: [forwardRef(() => BModule)],
-          })
-          class AModule {
-          }
+    it('throws an error on circular module dependencies', () => {
+      @NgModule({
+        imports: [forwardRef(() => BModule)],
+      })
+      class AModule {
+      }
 
-          @NgModule({
-            imports: [AModule],
-          })
-          class BModule {
-          }
+      @NgModule({
+        imports: [AModule],
+      })
+      class BModule {
+      }
 
-          expect(() => createInjector(AModule))
-              .toThrowError(
-                  'Circular dependency in DI detected for type AModule. Dependency path: AModule > BModule > AModule.');
-        });
+      expect(() => createInjector(AModule))
+          .toThrowError(
+              'Circular dependency in DI detected for type AModule. Dependency path: AModule > BModule > AModule.');
+    });
 
     it('merges imports and exports', () => {
       const TOKEN = new InjectionToken<string>('TOKEN');
