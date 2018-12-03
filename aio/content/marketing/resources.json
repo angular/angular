@@ -825,7 +825,13 @@
             "rev": true,
             "title": "StrongBrew",
             "url": "https://strongbrew.io/"
-          }
+          },
+          "raer6": {
+           "desc": "An example-rich, hands-on guide that gives you the real-world techniques you need to thoroughly test all parts of your Angular applications",
+           "rev": true,
+           "title": "Testing Angular Applications",
+           "url": "https://www.manning.com/books/testing-angular-applications"
+      
         }
       }
     }
