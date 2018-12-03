@@ -41,7 +41,8 @@ For more complex labels, add a template with the `matStepLabel` directive inside
 ```
 
 #### Label position
-For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the default value, while `bottom` will place it under the step icon instead of at its side.
+For `mat-horizontal-stepper` it's possible to define the position of the label. `end` is the
+default value, while `bottom` will place it under the step icon instead of at its side.
 This behaviour is controlled by `labelPosition` property.
 
 <!-- example(stepper-label-position-bottom) -->
@@ -163,7 +164,8 @@ by placing a `matStepperIcon` for each of the icons that you want to override. T
 Note that you aren't limited to using the `mat-icon` component when providing custom icons.
 
 #### Step States
-You can set the state of a step to whatever you want. The given state by default maps to an icon. However, it can be overridden the same way as mentioned above.
+You can set the state of a step to whatever you want. The given state by default maps to an icon.
+However, it can be overridden the same way as mentioned above.
 
 ```html
 <mat-horizontal-stepper>
@@ -194,14 +196,15 @@ You can set the state of a step to whatever you want. The given state by default
 </mat-horizontal-stepper>
 ```
 
-In order to use the custom step states, you must add the `displayDefaultIndicatorType` option to the global default stepper options which can be specified by providing a value for
-`MAT_STEPPER_GLOBAL_OPTIONS` in your application's root module.
+In order to use the custom step states, you must add the `displayDefaultIndicatorType` option to
+the global default stepper options which can be specified by providing a value for
+`STEPPER_GLOBAL_OPTIONS` in your application's root module.
 
 ```ts
 @NgModule({
   providers: [
     {
-      provide: MAT_STEPPER_GLOBAL_OPTIONS,
+      provide: STEPPER_GLOBAL_OPTIONS,
       useValue: { displayDefaultIndicatorType: false }
     }
   ]
@@ -212,13 +215,14 @@ In order to use the custom step states, you must add the `displayDefaultIndicato
 
 ### Error State
 
-The stepper can now show error states by simply providing the `showError` option to the `MAT_STEPPER_GLOBAL_OPTIONS` in your application's root module as mentioned above.
+The stepper can now show error states by simply providing the `showError` option to the
+`STEPPER_GLOBAL_OPTIONS` in your application's root module as mentioned above.
 
 ```ts
 @NgModule({
   providers: [
     {
-      provide: MAT_STEPPER_GLOBAL_OPTIONS,
+      provide: STEPPER_GLOBAL_OPTIONS,
       useValue: { showError: true }
     }
   ]

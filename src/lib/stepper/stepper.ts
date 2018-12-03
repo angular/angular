@@ -11,7 +11,7 @@ import {
   CdkStep,
   CdkStepper,
   StepContentPositionState,
-  MAT_STEPPER_GLOBAL_OPTIONS,
+  STEPPER_GLOBAL_OPTIONS,
   StepperOptions
 } from '@angular/cdk/stepper';
 import {AnimationEvent} from '@angular/animations';
@@ -63,7 +63,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
   /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
               @SkipSelf() private _errorStateMatcher: ErrorStateMatcher,
-              @Optional() @Inject(MAT_STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
+              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
     super(stepper, stepperOptions);
   }
 

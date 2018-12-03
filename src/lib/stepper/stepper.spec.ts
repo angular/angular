@@ -9,7 +9,7 @@ import {
   SPACE,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {StepperOrientation, MAT_STEPPER_GLOBAL_OPTIONS, STEP_STATE} from '@angular/cdk/stepper';
+import {StepperOrientation, STEPPER_GLOBAL_OPTIONS, STEP_STATE} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent, createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {Component, DebugElement, EventEmitter, OnInit, Type, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
@@ -918,7 +918,7 @@ describe('MatStepper', () => {
       fixture = createComponent(
         MatHorizontalStepperWithErrorsApp,
         [{
-          provide: MAT_STEPPER_GLOBAL_OPTIONS,
+          provide: STEPPER_GLOBAL_OPTIONS,
           useValue: {showError: true}
         }],
         [MatFormFieldModule, MatInputModule]
@@ -949,7 +949,7 @@ describe('MatStepper', () => {
       fixture = createComponent(
         MatHorizontalStepperWithErrorsApp,
         [{
-          provide: MAT_STEPPER_GLOBAL_OPTIONS,
+          provide: STEPPER_GLOBAL_OPTIONS,
           useValue: {displayDefaultIndicatorType: false}
         }],
         [MatFormFieldModule, MatInputModule]

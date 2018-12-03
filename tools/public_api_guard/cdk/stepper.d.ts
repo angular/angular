@@ -82,6 +82,8 @@ export declare const STEP_STATE: {
 
 export declare type StepContentPositionState = 'previous' | 'current' | 'next';
 
+export declare const STEPPER_GLOBAL_OPTIONS: InjectionToken<StepperOptions>;
+
 export interface StepperOptions {
     displayDefaultIndicatorType?: boolean;
     showError?: boolean;

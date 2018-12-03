@@ -79,8 +79,15 @@ export const STEP_STATE = {
 };
 
 /** InjectionToken that can be used to specify the global stepper options. */
-export const MAT_STEPPER_GLOBAL_OPTIONS =
-  new InjectionToken<StepperOptions>('mat-stepper-global-options');
+export const STEPPER_GLOBAL_OPTIONS =
+  new InjectionToken<StepperOptions>('STEPPER_GLOBAL_OPTIONS');
+
+/**
+ * InjectionToken that can be used to specify the global stepper options.
+ * @deprecated Use `STEPPER_GLOBAL_OPTIONS` instead.
+ * @breaking-change 8.0.0.
+ */
+export const MAT_STEPPER_GLOBAL_OPTIONS = STEPPER_GLOBAL_OPTIONS;
 
 /** Configurable options for stepper. */
 export interface StepperOptions {
@@ -188,7 +195,7 @@ export class CdkStep implements OnChanges {
   /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
   constructor(
     @Inject(forwardRef(() => CdkStepper)) private _stepper: CdkStepper,
-    @Optional() @Inject(MAT_STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
+    @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
     this._stepperOptions = stepperOptions ? stepperOptions : {};
     this._displayDefaultIndicatorType = this._stepperOptions.displayDefaultIndicatorType !== false;
     this._showError = !!this._stepperOptions.showError;
