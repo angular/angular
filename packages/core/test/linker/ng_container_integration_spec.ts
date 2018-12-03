@@ -13,13 +13,11 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
-{
-  if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+if (ivyEnabled) {
+  describe('ivy', () => { declareTests(); });
+} else {
+  describe('jit', () => { declareTests({useJit: true}); });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 function declareTests(config?: {useJit: boolean}) {
