@@ -10,8 +10,8 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
   templateUrl: './<%= dasherize(name) %>.component.html',<% } if(inlineStyle) { %>
   styles: [`
     <%= indentTextContent(resolvedFiles.stylesheet, 4) %>
-  `],<% } else { %>
-  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>'],<% } %><% if(!!viewEncapsulation) { %>
+  `]<% } else { %>
+  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>']<% } %><% if(!!viewEncapsulation) { %>,
   encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } if (changeDetection !== 'Default') { %>,
   changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
 })
