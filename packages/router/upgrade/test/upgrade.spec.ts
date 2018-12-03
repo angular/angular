@@ -8,6 +8,7 @@
 
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
+import {fixmeIvy} from '@angular/private/testing';
 import {Router} from '@angular/router';
 import {setUpLocationSync} from '@angular/router/upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';
@@ -43,59 +44,63 @@ describe('setUpLocationSync', () => {
       `);
   });
 
-  it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
-     () => {
-       const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+  fixmeIvy('FW-777: R3Injector doesn\'t support injectors as a provider') &&
+      it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
+         () => {
+           const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
 
-       upgradeModule.$injector.get.and.callFake(
-           (name: string) => (name === '$rootScope') && $rootScope);
+           upgradeModule.$injector.get.and.callFake(
+               (name: string) => (name === '$rootScope') && $rootScope);
 
-       setUpLocationSync(upgradeModule);
+           setUpLocationSync(upgradeModule);
 
-       expect($rootScope.$on).toHaveBeenCalledTimes(1);
-       expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
-     });
+           expect($rootScope.$on).toHaveBeenCalledTimes(1);
+           expect($rootScope.$on)
+               .toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
+         });
 
-  it('should navigate by url every time $locationChangeStart is broadcasted', () => {
-    const url = 'https://google.com';
-    const pathname = '/custom/route';
-    const normalizedPathname = 'foo';
-    const query = '?query=1&query2=3';
-    const hash = '#new/hash';
-    const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+  fixmeIvy('FW-777: R3Injector doesn\'t support injectors as a provider') &&
+      it('should navigate by url every time $locationChangeStart is broadcasted', () => {
+        const url = 'https://google.com';
+        const pathname = '/custom/route';
+        const normalizedPathname = 'foo';
+        const query = '?query=1&query2=3';
+        const hash = '#new/hash';
+        const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
 
-    upgradeModule.$injector.get.and.returnValue($rootScope);
-    LocationMock.normalize.and.returnValue(normalizedPathname);
+        upgradeModule.$injector.get.and.returnValue($rootScope);
+        LocationMock.normalize.and.returnValue(normalizedPathname);
 
-    setUpLocationSync(upgradeModule);
+        setUpLocationSync(upgradeModule);
 
-    const callback = $rootScope.$on.calls.argsFor(0)[1];
-    callback({}, url + pathname + query + hash, '');
+        const callback = $rootScope.$on.calls.argsFor(0)[1];
+        callback({}, url + pathname + query + hash, '');
 
-    expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
-    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
+        expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
+        expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
 
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
-    expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
-  });
+        expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
+        expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
+      });
 
-  it('should work correctly on browsers that do not start pathname with `/`', () => {
-    const anchorProto = HTMLAnchorElement.prototype;
-    const originalDescriptor = Object.getOwnPropertyDescriptor(anchorProto, 'pathname');
-    Object.defineProperty(anchorProto, 'pathname', {get: () => 'foo/bar'});
+  fixmeIvy('FW-777: R3Injector doesn\'t support injectors as a provider') &&
+      it('should work correctly on browsers that do not start pathname with `/`', () => {
+        const anchorProto = HTMLAnchorElement.prototype;
+        const originalDescriptor = Object.getOwnPropertyDescriptor(anchorProto, 'pathname');
+        Object.defineProperty(anchorProto, 'pathname', {get: () => 'foo/bar'});
 
-    try {
-      const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
-      upgradeModule.$injector.get.and.returnValue($rootScope);
+        try {
+          const $rootScope = jasmine.createSpyObj('$rootScope', ['$on']);
+          upgradeModule.$injector.get.and.returnValue($rootScope);
 
-      setUpLocationSync(upgradeModule);
+          setUpLocationSync(upgradeModule);
 
-      const callback = $rootScope.$on.calls.argsFor(0)[1];
-      callback({}, '', '');
+          const callback = $rootScope.$on.calls.argsFor(0)[1];
+          callback({}, '', '');
 
-      expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
-    } finally {
-      Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
-    }
-  });
+          expect(LocationMock.normalize).toHaveBeenCalledWith('/foo/bar');
+        } finally {
+          Object.defineProperty(anchorProto, 'pathname', originalDescriptor !);
+        }
+      });
 });
