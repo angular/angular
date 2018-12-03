@@ -7,6 +7,7 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core/testing",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/upgrade",
         "//packages/upgrade/static",
@@ -15,9 +16,6 @@ ts_library(
 
 ts_web_test_suite(
     name = "test_web",
-    tags = [
-        "fixme-ivy-aot",
-    ],
     deps = [
         ":test_lib",
     ],
