@@ -194,6 +194,9 @@ export {
   SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
 } from './metadata/ng_module';
 export {
+  getDebugNode__POST_R3__ as ɵgetDebugNode__POST_R3__,
+} from './debug/debug_node';
+export {
   SWITCH_COMPILE_INJECTABLE__POST_R3__ as ɵSWITCH_COMPILE_INJECTABLE__POST_R3__,
 } from './di/injectable';
 export {
@@ -202,6 +205,12 @@ export {
 export {
   SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as ɵSWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__,
 } from './change_detection/change_detector_ref';
+export {
+  Compiler_compileModuleSync__POST_R3__ as ɵCompiler_compileModuleSync__POST_R3__,
+  Compiler_compileModuleAsync__POST_R3__ as ɵCompiler_compileModuleAsync__POST_R3__,
+  Compiler_compileModuleAndAllComponentsSync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsSync__POST_R3__,
+  Compiler_compileModuleAndAllComponentsAsync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__,
+} from './linker/compiler';
 export {
   SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
 } from './linker/element_ref';
