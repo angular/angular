@@ -196,6 +196,15 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   /** Subscription to the stream that initializes the root element. */
   private _rootElementInitSubscription = Subscription.EMPTY;
 
+  /** Cached reference to the boundary element. */
+  private _boundaryElement?: HTMLElement;
+
+  /** Cached dimensions of the preview element. */
+  private _previewRect?: ClientRect;
+
+  /** Cached dimensions of the boundary element. */
+  private _boundaryRect?: ClientRect;
+
   /** Elements that can be used to drag the draggable item. */
   @ContentChildren(CdkDragHandle, {descendants: true}) _handles: QueryList<CdkDragHandle>;
 
@@ -217,6 +226,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
    * when trying to enable dragging on an element that you might not have access to.
    */
   @Input('cdkDragRootElement') rootElementSelector: string;
+
+  /**
+   * Selector that will be used to determine the element to which the draggable's position will
+   * be constrained. Matching starts from the element's parent and goes up the DOM until a matching
+   * element has been found.
+   */
+  @Input('cdkDragBoundary') boundaryElementSelector: string;
 
   /** Whether starting to drag this element is disabled. */
   @Input('cdkDragDisabled')
@@ -334,7 +350,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     this._rootElementInitSubscription.unsubscribe();
     this._destroyPreview();
     this._destroyPlaceholder();
-    this._nextSibling = null;
+    this._boundaryElement = this._nextSibling = null!;
     this._dragDropRegistry.removeDragItem(this);
     this._removeSubscriptions();
     this._moveEvents.complete();
@@ -414,6 +430,11 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
     this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
+    this._boundaryElement = this._getBoundaryElement();
+
+    if (this._boundaryElement) {
+      this._boundaryRect = this._boundaryElement.getBoundingClientRect();
+    }
 
     // If we have a custom preview template, the element won't be visible anyway so we avoid the
     // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
@@ -456,9 +477,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
   /** Handler that is invoked when the user moves their pointer after they've initiated a drag. */
   private _pointerMove = (event: MouseEvent | TouchEvent) => {
-    const pointerPosition = this._getConstrainedPointerPosition(event);
-
     if (!this._hasStartedDragging) {
+      const pointerPosition = this._getPointerPositionOnPage(event);
       const distanceX = Math.abs(pointerPosition.x - this._pickupPositionOnPage.x);
       const distanceY = Math.abs(pointerPosition.y - this._pickupPositionOnPage.y);
 
@@ -474,18 +494,28 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       return;
     }
 
+    // We only need the preview dimensions if we have a boundary element.
+    if (this._boundaryElement) {
+      // Cache the preview element rect if we haven't cached it already or if
+      // we cached it too early before the element dimensions were computed.
+      if (!this._previewRect || (!this._previewRect.width && !this._previewRect.height)) {
+        this._previewRect = (this._preview || this._rootElement).getBoundingClientRect();
+      }
+    }
+
+    const constrainedPointerPosition = this._getConstrainedPointerPosition(event);
     this._hasMoved = true;
     event.preventDefault();
-    this._updatePointerDirectionDelta(pointerPosition);
+    this._updatePointerDirectionDelta(constrainedPointerPosition);
 
     if (this.dropContainer) {
-      this._updateActiveDropContainer(pointerPosition);
+      this._updateActiveDropContainer(constrainedPointerPosition);
     } else {
       const activeTransform = this._activeTransform;
       activeTransform.x =
-          pointerPosition.x - this._pickupPositionOnPage.x + this._passiveTransform.x;
+          constrainedPointerPosition.x - this._pickupPositionOnPage.x + this._passiveTransform.x;
       activeTransform.y =
-          pointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
+          constrainedPointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
       const transform = getTransform(activeTransform.x, activeTransform.y);
 
       // Preserve the previous `transform` value, if there was one.
@@ -506,7 +536,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       this._ngZone.run(() => {
         this._moveEvents.next({
           source: this,
-          pointerPosition,
+          pointerPosition: constrainedPointerPosition,
           event,
           delta: this._pointerDirectionDelta
         });
@@ -560,6 +590,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
     this._destroyPreview();
     this._destroyPlaceholder();
+    this._boundaryRect = this._previewRect = undefined;
 
     // Re-enter the NgZone since we bound `document` events on the outside.
     this._ngZone.run(() => {
@@ -769,6 +800,19 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       point.x = this._pickupPositionOnPage.x;
     }
 
+    if (this._boundaryRect) {
+      const {x: pickupX, y: pickupY} = this._pickupPositionInElement;
+      const boundaryRect = this._boundaryRect;
+      const previewRect = this._previewRect!;
+      const minY = boundaryRect.top + pickupY;
+      const maxY = boundaryRect.bottom - (previewRect.height - pickupY);
+      const minX = boundaryRect.left + pickupX;
+      const maxX = boundaryRect.right - (previewRect.width - pickupX);
+
+      point.x = clamp(point.x, minX, maxX);
+      point.y = clamp(point.y, minY, maxY);
+    }
+
     return point;
   }
 
@@ -832,22 +876,17 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
   /** Gets the root draggable element, based on the `rootElementSelector`. */
   private _getRootElement(): HTMLElement {
-    if (this.rootElementSelector) {
-      const selector = this.rootElementSelector;
-      let currentElement = this.element.nativeElement.parentElement as HTMLElement | null;
+    const element = this.element.nativeElement;
+    const rootElement = this.rootElementSelector ?
+        getClosestMatchingAncestor(element, this.rootElementSelector) : null;
 
-      while (currentElement) {
-        // IE doesn't support `matches` so we have to fall back to `msMatchesSelector`.
-        if (currentElement.matches ? currentElement.matches(selector) :
-            (currentElement as any).msMatchesSelector(selector)) {
-          return currentElement;
-        }
+    return rootElement || element;
+  }
 
-        currentElement = currentElement.parentElement;
-      }
-    }
-
-    return this.element.nativeElement;
+  /** Gets the boundary element, based on the `boundaryElementSelector`. */
+  private _getBoundaryElement() {
+    const selector = this.boundaryElementSelector;
+    return selector ? getClosestMatchingAncestor(this.element.nativeElement, selector) : undefined;
   }
 
   /** Unsubscribes from the global subscriptions. */
@@ -880,4 +919,24 @@ function deepCloneNode(node: HTMLElement): HTMLElement {
   // Remove the `id` to avoid having multiple elements with the same id on the page.
   clone.removeAttribute('id');
   return clone;
+}
+
+/** Clamps a value between a minimum and a maximum. */
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+/** Gets the closest ancestor of an element that matches a selector. */
+function getClosestMatchingAncestor(element: HTMLElement, selector: string) {
+  let currentElement = element.parentElement as HTMLElement | null;
+
+  while (currentElement) {
+    // IE doesn't support `matches` so we have to fall back to `msMatchesSelector`.
+    if (currentElement.matches ? currentElement.matches(selector) :
+        (currentElement as any).msMatchesSelector(selector)) {
+      return currentElement;
+    }
+
+    currentElement = currentElement.parentElement;
+  }
 }

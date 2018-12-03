@@ -10,6 +10,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     _placeholderTemplate: CdkDragPlaceholder;
     _pointerDown: (event: TouchEvent | MouseEvent) => void;
     _previewTemplate: CdkDragPreview;
+    boundaryElementSelector: string;
     data: T;
     disabled: boolean;
     dropContainer: CdkDropListContainer;
