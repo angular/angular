@@ -100,8 +100,8 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RElement|RText|
 }
 
 export function getTNode(index: number, view: LView): TNode {
-  assertGreaterThan(index, -1, 'wrong index for TNode');
-  assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
+  ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
+  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 
