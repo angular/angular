@@ -13,13 +13,11 @@ import {TestBed} from '@angular/core/testing';
 import {fixmeIvy} from '@angular/private/testing';
 
 
-{
-  if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
-  } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
-  }
+if (ivyEnabled) {
+  describe('ivy', () => { declareTests(); });
+} else {
+  describe('jit', () => { declareTests({useJit: true}); });
+  describe('no jit', () => { declareTests({useJit: false}); });
 }
 
 class DummyConsole implements Console {

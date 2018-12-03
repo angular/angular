@@ -74,7 +74,7 @@ class SomeComponent {
       return MyModule;
     }
 
-    fixmeIvy('unknown') &&
+    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running') &&
         it('should bootstrap a component from a child module',
            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
              @Component({
@@ -103,7 +103,7 @@ class SomeComponent {
              expect(component.injector.get('hello')).toEqual('component');
            })));
 
-    fixmeIvy('unknown') &&
+    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running') &&
         it('should bootstrap a component with a custom selector',
            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
              @Component({
@@ -176,12 +176,13 @@ class SomeComponent {
           });
         });
 
-        fixmeIvy('unknown') && it('should be called when a component is bootstrapped',
-                                  inject([ApplicationRef], (ref: ApplicationRef) => {
-                                    createRootEl();
-                                    const compRef = ref.bootstrap(SomeComponent);
-                                    expect(capturedCompRefs).toEqual([compRef]);
-                                  }));
+        fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running') &&
+            it('should be called when a component is bootstrapped',
+               inject([ApplicationRef], (ref: ApplicationRef) => {
+                 createRootEl();
+                 const compRef = ref.bootstrap(SomeComponent);
+                 expect(capturedCompRefs).toEqual([compRef]);
+               }));
       });
 
       describe('bootstrap', () => {

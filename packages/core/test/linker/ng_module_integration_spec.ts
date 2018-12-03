@@ -142,8 +142,8 @@ function declareTests(config?: {useJit: boolean}) {
       return new ComponentFixture(comp, null !, false);
     }
 
-    fixmeIvy('FW-682: Compiler error handling') &&  //
-        describe('errors', () => {
+    describe('errors', () => {
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error when exporting a directive that was neither declared nor imported', () => {
             @NgModule({exports: [SomeDirective]})
             class SomeModule {
@@ -154,6 +154,7 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export directive ${stringify(SomeDirective)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error when exporting a pipe that was neither declared nor imported', () => {
             @NgModule({exports: [SomePipe]})
             class SomeModule {
@@ -164,6 +165,7 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error if a directive is declared in more than 1 module', () => {
             @NgModule({declarations: [SomeDirective]})
             class Module1 {
@@ -182,6 +184,7 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
              () => {
                @NgModule({declarations: [SomeDirective], exports: [SomeDirective]})
@@ -199,6 +202,7 @@ function declareTests(config?: {useJit: boolean}) {
                        `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
              });
 
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error if a pipe is declared in more than 1 module', () => {
             @NgModule({declarations: [SomePipe]})
             class Module1 {
@@ -217,6 +221,7 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
+      fixmeIvy('FW-682: Compiler error handling') &&
           it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
              () => {
                @NgModule({declarations: [SomePipe], exports: [SomePipe]})
@@ -234,7 +239,7 @@ function declareTests(config?: {useJit: boolean}) {
                        `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
              });
 
-        });
+    });
 
     describe('schemas', () => {
       fixmeIvy('FW-682: Compiler error handling') &&
@@ -1048,7 +1053,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(created).toBe(false);
         });
 
-        fixmeIvy('ngOnDestroy not running') &&
+        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called') &&
             it('should support ngOnDestroy on any provider', () => {
               let destroyed = false;
 
@@ -1068,7 +1073,7 @@ function declareTests(config?: {useJit: boolean}) {
               expect(destroyed).toBe(true);
             });
 
-        fixmeIvy('ngOnDestroy not running') &&
+        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called') &&
             it('should support ngOnDestroy for lazy providers', () => {
               let created = false;
               let destroyed = false;
@@ -1330,7 +1335,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('providersByKey is not defined') &&
+        fixmeIvy('unknown') &&
             it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {
