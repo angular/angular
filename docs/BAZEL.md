@@ -65,7 +65,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
 - `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This switches which compiler is used (ngc, ngtsc, or a tsc pass-through mode).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
-    - `aot`: Compile in ivy AOT move, e.g. `--define=compile=aot`
+    - `aot`: Compile in ivy AOT mode, e.g. `--define=compile=aot`
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
     - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--define=compile=aot`).
     - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--define=compile=legacy`.

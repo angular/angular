@@ -35,9 +35,6 @@ ts_web_test_suite(
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
-    tags = [
-        "fixme-ivy-aot",
-    ],
     # do not sort
     deps = [
         ":test_lib",
