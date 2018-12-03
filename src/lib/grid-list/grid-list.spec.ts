@@ -207,6 +207,19 @@ describe('MatGridList', () => {
     expect(getStyle(tiles[2], 'top')).toBe('102px');
   });
 
+  it('should allow alternate units for the gutter size', () => {
+    const fixture = createComponent(GridListWithUnspecifiedGutterSize);
+    const gridList = fixture.debugElement.query(By.directive(MatGridList));
+
+    gridList.componentInstance.gutterSize = '10%';
+    fixture.detectChanges();
+
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+
+    expect(getStyle(tiles[0], 'width')).toBe('90px');
+    expect(getComputedLeft(tiles[1])).toBe(110);
+  });
+
   it('should set the correct list height in ratio mode', () => {
     const fixture = createComponent(GridListWithRatioHeightAndMulipleRows);
     fixture.detectChanges();

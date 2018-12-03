@@ -286,11 +286,13 @@ export class FitTileStyler extends TileStyler {
 
 
 /** Wraps a CSS string in a calc function */
-function calc(exp: string): string { return `calc(${exp})`; }
+function calc(exp: string): string {
+  return `calc(${exp})`;
+}
 
 
 /** Appends pixels to a CSS string if no units are given. */
 function normalizeUnits(value: string): string {
-  return (value.match(/px|em|rem/)) ? value : value + 'px';
+  return value.match(/([A-Za-z%]+)$/) ? value : `${value}px`;
 }
 
