@@ -176,13 +176,12 @@ class SomeComponent {
           });
         });
 
-        fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running') &&
-            it('should be called when a component is bootstrapped',
-               inject([ApplicationRef], (ref: ApplicationRef) => {
-                 createRootEl();
-                 const compRef = ref.bootstrap(SomeComponent);
-                 expect(capturedCompRefs).toEqual([compRef]);
-               }));
+        it('should be called when a component is bootstrapped',
+           inject([ApplicationRef], (ref: ApplicationRef) => {
+             createRootEl();
+             const compRef = ref.bootstrap(SomeComponent);
+             expect(capturedCompRefs).toEqual([compRef]);
+           }));
       });
 
       describe('bootstrap', () => {
