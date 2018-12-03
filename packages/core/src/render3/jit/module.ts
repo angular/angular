@@ -253,7 +253,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
         scopes.compilation.pipes.add(entry);
         scopes.exported.pipes.add(entry);
       });
-    } else if (getNgModuleDef(exportedTyped)) {
+    } else if (getPipeDef(exportedTyped)) {
       scopes.exported.pipes.add(exportedTyped);
     } else {
       scopes.exported.directives.add(exportedTyped);
