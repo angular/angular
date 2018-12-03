@@ -193,6 +193,22 @@ select.mat-input-element {
     }
   }
 
+  .mat-input-element {
+    // The arrow is 2 * $arrow-size wide and we add one more width for some spacing.
+    $padding: $arrow-size * 3;
+    padding-right: $padding;
+
+    [dir='rtl'] & {
+      padding-right: 0;
+      padding-left: $padding;
+    }
+  }
+
+  // Ensure that long labels don't collide with the select arrow.
+  .mat-form-field-label-wrapper {
+    max-width: calc(100% - #{$arrow-size * 2});
+  }
+
   &.mat-form-field-appearance-outline .mat-form-field-infix::after {
     margin-top: -$arrow-size;
   }

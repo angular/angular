@@ -73,6 +73,13 @@ $mat-form-field-default-infix-width: 180px !default;
   height: 100%;
   overflow: hidden;
   pointer-events: none;  // We shouldn't catch mouse events (let them through).
+
+  [dir='rtl'] & {
+    // Usually this isn't necessary since the element is 100% wide, but
+    // when we've got a `select` node, we need to set a `max-width` on it.
+    left: auto;
+    right: 0;
+  }
 }
 
 // The label itself. This is invisible unless it is. The logic to show it is
