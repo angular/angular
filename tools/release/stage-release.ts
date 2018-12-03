@@ -110,8 +110,8 @@ class StageReleaseTask {
     console.log();
     console.log(green(`  ✓   Updated the changelog in ` +
       `"${bold(CHANGELOG_FILE_NAME)}"`));
-    console.log(yellow(`  ⚠   You can also make other unrelated modifications. After the ` +
-      `changes have been made, just continue here.`));
+    console.log(yellow(`  ⚠   Please review CHANGELOG.md and ensure that the log contains only ` +
+      `changes that apply to the public library release. When done, proceed to the prompt below.`));
     console.log();
 
     const {shouldContinue} = await prompt<{shouldContinue: boolean}>({
@@ -175,7 +175,7 @@ class StageReleaseTask {
   /** Updates the version of the project package.json and writes the changes to disk. */
   private updatePackageJsonVersion(newVersionName: string) {
     const newPackageJson = {...this.packageJson, version: newVersionName};
-    writeFileSync(this.packageJsonPath, JSON.stringify(newPackageJson, null, 2));
+    writeFileSync(this.packageJsonPath, JSON.stringify(newPackageJson, null, 2) + '\n');
   }
 
   /** Verifies that the latest commit of the current branch is passing all Github statuses. */
