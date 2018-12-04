@@ -9,12 +9,11 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util';
 
-// FW-670: Internal Error: The name q is already defined in scope
 describe('Query API', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
@@ -54,49 +53,51 @@ describe('Query API', () => {
   }));
 
   describe('querying by directive type', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should contain all direct child directives in the light dom (constructor)', () => {
-          const template = '<div text="1"></div>' +
-              '<needs-query text="2"><div text="3">' +
-              '<div text="too-deep"></div>' +
-              '</div></needs-query>' +
-              '<div text="4"></div>';
+          const template = `
+            <div text="1"></div>
+            <needs-query text="2">
+              <div text="3">
+                <div text="too-deep"></div>
+              </div>
+            </needs-query>
+            <div text="4"></div>
+          `;
           const view = createTestCmpAndDetectChanges(MyComp0, template);
 
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all direct child directives in the content dom', () => {
-          const template =
-              '<needs-content-children #q><div text="foo"></div></needs-content-children>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain all direct child directives in the content dom', () => {
+      const template = '<needs-content-children #q><div text="foo"></div></needs-content-children>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const q = view.debugElement.children[0].references !['q'];
-          view.detectChanges();
-          expect(q.textDirChildren.length).toEqual(1);
-          expect(q.numberOfChildrenAfterContentInit).toEqual(1);
-        });
+      const q = view.debugElement.children[0].references !['q'];
+      view.detectChanges();
+      expect(q.textDirChildren.length).toEqual(1);
+      expect(q.numberOfChildrenAfterContentInit).toEqual(1);
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain the first content child', () => {
-          const template =
-              '<needs-content-child #q><div *ngIf="shouldShow" text="foo"></div></needs-content-child>';
-          const view = createTestCmp(MyComp0, template);
-          view.componentInstance.shouldShow = true;
-          view.detectChanges();
-          const q: NeedsContentChild = view.debugElement.children[0].references !['q'];
-          expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
+    it('should contain the first content child', () => {
+      const template =
+          '<needs-content-child #q><div *ngIf="shouldShow" text="foo"></div></needs-content-child>';
+      const view = createTestCmp(MyComp0, template);
+      view.componentInstance.shouldShow = true;
+      view.detectChanges();
+      const q: NeedsContentChild = view.debugElement.children[0].references !['q'];
+      expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
-          view.componentInstance.shouldShow = false;
-          view.detectChanges();
-          expect(q.logs).toEqual([
-            ['setter', 'foo'], ['init', 'foo'], ['check', 'foo'], ['setter', null],
-            ['check', null]
-          ]);
-        });
+      view.componentInstance.shouldShow = false;
+      view.detectChanges();
+      expect(q.logs).toEqual([
+        ['setter', 'foo'], ['init', 'foo'], ['check', 'foo'], ['setter', null], ['check', null]
+      ]);
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
            () => {
              const template =
@@ -111,7 +112,7 @@ describe('Query API', () => {
              expect(directive.child.text).toEqual('foo');
            });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
         it('should contain the first view child', () => {
           const template = '<needs-view-child #q></needs-view-child>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
@@ -127,7 +128,7 @@ describe('Query API', () => {
           ]);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
         it('should set static view and content children already after the constructor call', () => {
           const template =
               '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
@@ -141,7 +142,7 @@ describe('Query API', () => {
           expect(q.viewChild.text).toEqual('viewFoo');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
         it('should contain the first view child across embedded views', () => {
           TestBed.overrideComponent(
               MyComp0, {set: {template: '<needs-view-child #q></needs-view-child>'}});
@@ -170,7 +171,8 @@ describe('Query API', () => {
           expect(q.logs).toEqual([['setter', null], ['check', null]]);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should contain all directives in the light dom when descendants flag is used', () => {
           const template = '<div text="1"></div>' +
               '<needs-query-desc text="2"><div text="3">' +
@@ -182,7 +184,8 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|4|');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should contain all directives in the light dom', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div text="3"></div></needs-query>' +
@@ -192,7 +195,8 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should reflect dynamically inserted directives', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
@@ -205,19 +209,19 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3|');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should be cleanly destroyed when a query crosses view boundaries', () => {
-          const template = '<div text="1"></div>' +
-              '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
-              '<div text="4"></div>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should be cleanly destroyed when a query crosses view boundaries', () => {
+      const template = '<div text="1"></div>' +
+          '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
+          '<div text="4"></div>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          view.componentInstance.shouldShow = true;
-          view.detectChanges();
-          view.destroy();
-        });
+      view.componentInstance.shouldShow = true;
+      view.detectChanges();
+      view.destroy();
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should reflect moved directives', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div *ngFor="let  i of list" [text]="i"></div></needs-query>' +
@@ -230,7 +234,7 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy('FW-682 - TestBed: tests assert that compilation produces specific error') &&
         it('should throw with descriptive error when query selectors are not present', () => {
           TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
           const template = '<has-null-query-condition></has-null-query-condition>';
@@ -242,33 +246,29 @@ describe('Query API', () => {
   });
 
   describe('query for TemplateRef', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should find TemplateRefs in the light and shadow dom', () => {
-          const template = '<needs-tpl><ng-template><div>light</div></ng-template></needs-tpl>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const needsTpl: NeedsTpl = view.debugElement.children[0].injector.get(NeedsTpl);
+    it('should find TemplateRefs in the light and shadow dom', () => {
+      const template = '<needs-tpl><ng-template><div>light</div></ng-template></needs-tpl>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const needsTpl: NeedsTpl = view.debugElement.children[0].injector.get(NeedsTpl);
 
-          expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0])
-              .toHaveText('light');
-          expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
-              .toHaveText('shadow');
-        });
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.query.first).rootNodes[0]).toHaveText('light');
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.viewQuery.first).rootNodes[0])
+          .toHaveText('shadow');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should find named TemplateRefs', () => {
-          const template =
-              '<needs-named-tpl><ng-template #tpl><div>light</div></ng-template></needs-named-tpl>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const needsTpl: NeedsNamedTpl = view.debugElement.children[0].injector.get(NeedsNamedTpl);
-          expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0])
-              .toHaveText('light');
-          expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).rootNodes[0])
-              .toHaveText('shadow');
-        });
+    it('should find named TemplateRefs', () => {
+      const template =
+          '<needs-named-tpl><ng-template #tpl><div>light</div></ng-template></needs-named-tpl>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const needsTpl: NeedsNamedTpl = view.debugElement.children[0].injector.get(NeedsNamedTpl);
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.contentTpl).rootNodes[0]).toHaveText('light');
+      expect(needsTpl.vc.createEmbeddedView(needsTpl.viewTpl).rootNodes[0]).toHaveText('shadow');
+    });
   });
 
   describe('read a different token', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    modifiedInIvy(
+        'Breaking change in Ivy: no longer allow multiple local refs with the same name, all local refs are now unique') &&
         it('should contain all content children', () => {
           const template =
               '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
@@ -281,232 +281,203 @@ describe('Query API', () => {
           ]);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain the first content child', () => {
-          const template =
-              '<needs-content-child-read><div #q text="ca"></div></needs-content-child-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain the first content child', () => {
+      const template =
+          '<needs-content-child-read><div #q text="ca"></div></needs-content-child-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsContentChildWithRead =
-              view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
-          expect(comp.textDirChild.text).toEqual('ca');
-        });
+      const comp: NeedsContentChildWithRead =
+          view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
+      expect(comp.textDirChild.text).toEqual('ca');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain the first descendant content child', () => {
-          const template = '<needs-content-child-read>' +
-              '<div dir><div #q text="ca"></div></div>' +
-              '</needs-content-child-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain the first descendant content child', () => {
+      const template = '<needs-content-child-read>' +
+          '<div dir><div #q text="ca"></div></div>' +
+          '</needs-content-child-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsContentChildWithRead =
-              view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
-          expect(comp.textDirChild.text).toEqual('ca');
-        });
+      const comp: NeedsContentChildWithRead =
+          view.debugElement.children[0].injector.get(NeedsContentChildWithRead);
+      expect(comp.textDirChild.text).toEqual('ca');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain the first descendant content child templateRef', () => {
-          const template = '<needs-content-child-template-ref-app>' +
-              '</needs-content-child-template-ref-app>';
-          const view = createTestCmp(MyComp0, template);
+    it('should contain the first descendant content child templateRef', () => {
+      const template = '<needs-content-child-template-ref-app>' +
+          '</needs-content-child-template-ref-app>';
+      const view = createTestCmp(MyComp0, template);
 
-          // can't
-          // execute
-          // checkNoChanges
-          // as
-          // our
-          // view
-          // modifies
-          // our
-          // content
-          // children
-          // (via
-          // a
-          // query).
-          view.detectChanges(false);
-          expect(view.nativeElement).toHaveText('OUTER');
-        });
+      // can't execute checkNoChanges as our view modifies our content children (via a query).
+      view.detectChanges(false);
+      expect(view.nativeElement).toHaveText('OUTER');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain the first view child', () => {
-          const template = '<needs-view-child-read></needs-view-child-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain the first view child', () => {
+      const template = '<needs-view-child-read></needs-view-child-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsViewChildWithRead =
-              view.debugElement.children[0].injector.get(NeedsViewChildWithRead);
-          expect(comp.textDirChild.text).toEqual('va');
-        });
+      const comp: NeedsViewChildWithRead =
+          view.debugElement.children[0].injector.get(NeedsViewChildWithRead);
+      expect(comp.textDirChild.text).toEqual('va');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all child directives in the view', () => {
-          const template = '<needs-view-children-read></needs-view-children-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain all child directives in the view', () => {
+      const template = '<needs-view-children-read></needs-view-children-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsViewChildrenWithRead =
-              view.debugElement.children[0].injector.get(NeedsViewChildrenWithRead);
-          expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual([
-            'va', 'vb'
-          ]);
-        });
+      const comp: NeedsViewChildrenWithRead =
+          view.debugElement.children[0].injector.get(NeedsViewChildrenWithRead);
+      expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual(['va', 'vb']);
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should support reading a ViewContainer', () => {
-          const template =
-              '<needs-viewcontainer-read><ng-template>hello</ng-template></needs-viewcontainer-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should support reading a ViewContainer', () => {
+      const template =
+          '<needs-viewcontainer-read><ng-template>hello</ng-template></needs-viewcontainer-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsViewContainerWithRead =
-              view.debugElement.children[0].injector.get(NeedsViewContainerWithRead);
-          comp.createView();
-          expect(view.debugElement.children[0].nativeElement).toHaveText('hello');
-        });
+      const comp: NeedsViewContainerWithRead =
+          view.debugElement.children[0].injector.get(NeedsViewContainerWithRead);
+      comp.createView();
+      expect(view.debugElement.children[0].nativeElement).toHaveText('hello');
+    });
   });
 
   describe('changes', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should notify query on change', async(() => {
-             const template = '<needs-query #q>' +
-                 '<div text="1"></div>' +
-                 '<div *ngIf="shouldShow" text="2"></div>' +
-                 '</needs-query>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should notify query on change', async(() => {
+         const template = '<needs-query #q>' +
+             '<div text="1"></div>' +
+             '<div *ngIf="shouldShow" text="2"></div>' +
+             '</needs-query>';
+         const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-             const q = view.debugElement.children[0].references !['q'];
+         const q = view.debugElement.children[0].references !['q'];
 
-             q.query.changes.subscribe({
-               next: () => {
-                 expect(q.query.first.text).toEqual('1');
-                 expect(q.query.last.text).toEqual('2');
-               }
-             });
+         q.query.changes.subscribe({
+           next: () => {
+             expect(q.query.first.text).toEqual('1');
+             expect(q.query.last.text).toEqual('2');
+           }
+         });
 
-             view.componentInstance.shouldShow = true;
-             view.detectChanges();
-           }));
+         view.componentInstance.shouldShow = true;
+         view.detectChanges();
+       }));
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should correctly clean-up when destroyed together with the directives it is querying',
-           () => {
-             const template =
-                 '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
-             view.componentInstance.shouldShow = true;
-             view.detectChanges();
+    it('should correctly clean-up when destroyed together with the directives it is querying',
+       () => {
+         const template = '<needs-query #q *ngIf="shouldShow"><div text="foo"></div></needs-query>';
+         const view = createTestCmpAndDetectChanges(MyComp0, template);
+         view.componentInstance.shouldShow = true;
+         view.detectChanges();
 
-             let isQueryListCompleted = false;
+         let isQueryListCompleted = false;
 
-             const q: NeedsQuery = view.debugElement.children[0].references !['q'];
-             const changes = <Subject<any>>q.query.changes;
-             expect(q.query.length).toEqual(1);
-             expect(changes.closed).toBeFalsy();
-             changes.subscribe(() => {}, () => {}, () => { isQueryListCompleted = true; });
+         const q: NeedsQuery = view.debugElement.children[0].references !['q'];
+         const changes = <Subject<any>>q.query.changes;
+         expect(q.query.length).toEqual(1);
+         expect(changes.closed).toBeFalsy();
+         changes.subscribe(() => {}, () => {}, () => { isQueryListCompleted = true; });
 
-             view.componentInstance.shouldShow = false;
-             view.detectChanges();
-             expect(changes.closed).toBeTruthy();
-             expect(isQueryListCompleted).toBeTruthy();
+         view.componentInstance.shouldShow = false;
+         view.detectChanges();
+         expect(changes.closed).toBeTruthy();
+         expect(isQueryListCompleted).toBeTruthy();
 
-             view.componentInstance.shouldShow = true;
-             view.detectChanges();
-             const q2: NeedsQuery = view.debugElement.children[0].references !['q'];
+         view.componentInstance.shouldShow = true;
+         view.detectChanges();
+         const q2: NeedsQuery = view.debugElement.children[0].references !['q'];
 
-             expect(q2.query.length).toEqual(1);
-             expect(changes.closed).toBeTruthy();
-             expect((<Subject<any>>q2.query.changes).closed).toBeFalsy();
-           });
+         expect(q2.query.length).toEqual(1);
+         expect(changes.closed).toBeTruthy();
+         expect((<Subject<any>>q2.query.changes).closed).toBeFalsy();
+       });
   });
 
   describe('querying by var binding', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all the child directives in the light dom with the given var binding',
-           () => {
-             const template = '<needs-query-by-ref-binding #q>' +
-                 '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
-                 '</needs-query-by-ref-binding>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
-             const q = view.debugElement.children[0].references !['q'];
+    it('should contain all the child directives in the light dom with the given var binding',
+       () => {
+         const template = '<needs-query-by-ref-binding #q>' +
+             '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
+             '</needs-query-by-ref-binding>';
+         const view = createTestCmpAndDetectChanges(MyComp0, template);
+         const q = view.debugElement.children[0].references !['q'];
 
-             view.componentInstance.list = ['1d', '2d'];
-             view.detectChanges();
-             expect(q.query.first.text).toEqual('1d');
-             expect(q.query.last.text).toEqual('2d');
-           });
+         view.componentInstance.list = ['1d', '2d'];
+         view.detectChanges();
+         expect(q.query.first.text).toEqual('1d');
+         expect(q.query.last.text).toEqual('2d');
+       });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should support querying by multiple var bindings', () => {
-          const template = '<needs-query-by-ref-bindings #q>' +
-              '<div text="one" #textLabel1="textDir"></div>' +
-              '<div text="two" #textLabel2="textDir"></div>' +
-              '</needs-query-by-ref-bindings>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
+    it('should support querying by multiple var bindings', () => {
+      const template = '<needs-query-by-ref-bindings #q>' +
+          '<div text="one" #textLabel1="textDir"></div>' +
+          '<div text="two" #textLabel2="textDir"></div>' +
+          '</needs-query-by-ref-bindings>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
 
-          expect(q.query.first.text).toEqual('one');
-          expect(q.query.last.text).toEqual('two');
-        });
+      expect(q.query.first.text).toEqual('one');
+      expect(q.query.last.text).toEqual('two');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should support dynamically inserted directives', () => {
-          const template = '<needs-query-by-ref-binding #q>' +
-              '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
-              '</needs-query-by-ref-binding>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
+    it('should support dynamically inserted directives', () => {
+      const template = '<needs-query-by-ref-binding #q>' +
+          '<div *ngFor="let item of list" [text]="item" #textLabel="textDir"></div>' +
+          '</needs-query-by-ref-binding>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
 
-          view.componentInstance.list = ['1d', '2d'];
-          view.detectChanges();
-          view.componentInstance.list = ['2d', '1d'];
-          view.detectChanges();
-          expect(q.query.last.text).toEqual('1d');
-        });
+      view.componentInstance.list = ['1d', '2d'];
+      view.detectChanges();
+      view.componentInstance.list = ['2d', '1d'];
+      view.detectChanges();
+      expect(q.query.last.text).toEqual('1d');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all the elements in the light dom with the given var binding', () => {
-          const template = '<needs-query-by-ref-binding #q>' +
-              '<div *ngFor="let item of list">' +
-              '<div #textLabel>{{item}}</div>' +
-              '</div>' +
-              '</needs-query-by-ref-binding>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
+    it('should contain all the elements in the light dom with the given var binding', () => {
+      const template = '<needs-query-by-ref-binding #q>' +
+          '<div *ngFor="let item of list">' +
+          '<div #textLabel>{{item}}</div>' +
+          '</div>' +
+          '</needs-query-by-ref-binding>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
 
-          view.componentInstance.list = ['1d', '2d'];
-          view.detectChanges();
-          expect(q.query.first.nativeElement).toHaveText('1d');
-          expect(q.query.last.nativeElement).toHaveText('2d');
-        });
+      view.componentInstance.list = ['1d', '2d'];
+      view.detectChanges();
+      expect(q.query.first.nativeElement).toHaveText('1d');
+      expect(q.query.last.nativeElement).toHaveText('2d');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all the elements in the light dom even if they get projected', () => {
-          const template = '<needs-query-and-project #q>' +
-              '<div text="hello"></div><div text="world"></div>' +
-              '</needs-query-and-project>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain all the elements in the light dom even if they get projected', () => {
+      const template = '<needs-query-and-project #q>' +
+          '<div text="hello"></div><div text="world"></div>' +
+          '</needs-query-and-project>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          expect(asNativeElements(view.debugElement.children)).toHaveText('hello|world|');
-        });
+      expect(asNativeElements(view.debugElement.children)).toHaveText('hello|world|');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should support querying the view by using a view query', () => {
-          const template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should support querying the view by using a view query', () => {
+      const template = '<needs-view-query-by-ref-binding #q></needs-view-query-by-ref-binding>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const q: NeedsViewQueryByLabel = view.debugElement.children[0].references !['q'];
-          expect(q.query.first.nativeElement).toHaveText('text');
-        });
+      const q: NeedsViewQueryByLabel = view.debugElement.children[0].references !['q'];
+      expect(q.query.first.nativeElement).toHaveText('text');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should contain all child directives in the view dom', () => {
-          const template = '<needs-view-children #q></needs-view-children>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
-          expect(q.textDirChildren.length).toEqual(1);
-          expect(q.numberOfChildrenAfterViewInit).toEqual(1);
-        });
+    it('should contain all child directives in the view dom', () => {
+      const template = '<needs-view-children #q></needs-view-children>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
+      expect(q.textDirChildren.length).toEqual(1);
+      expect(q.numberOfChildrenAfterViewInit).toEqual(1);
+    });
   });
 
   describe('querying in the view', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should contain all the elements in the view with that have the given directive', () => {
           const template = '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
@@ -514,7 +485,8 @@ describe('Query API', () => {
           expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
         it('should not include directive present on the host element', () => {
           const template = '<needs-view-query #q text="self"></needs-view-query>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
@@ -522,131 +494,101 @@ describe('Query API', () => {
           expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should reflect changes in the component', () => {
-          const template = '<needs-view-query-if #q></needs-view-query-if>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q: NeedsViewQueryIf = view.debugElement.children[0].references !['q'];
-          expect(q.query.length).toBe(0);
+    it('should reflect changes in the component', () => {
+      const template = '<needs-view-query-if #q></needs-view-query-if>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q: NeedsViewQueryIf = view.debugElement.children[0].references !['q'];
+      expect(q.query.length).toBe(0);
 
-          q.show = true;
-          view.detectChanges();
-          expect(q.query.length).toBe(1);
-          expect(q.query.first.text).toEqual('1');
-        });
+      q.show = true;
+      view.detectChanges();
+      expect(q.query.length).toBe(1);
+      expect(q.query.first.text).toEqual('1');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should not be affected by other changes in the component', () => {
-          const template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q: NeedsViewQueryNestedIf = view.debugElement.children[0].references !['q'];
+    it('should not be affected by other changes in the component', () => {
+      const template = '<needs-view-query-nested-if #q></needs-view-query-nested-if>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q: NeedsViewQueryNestedIf = view.debugElement.children[0].references !['q'];
 
-          expect(q.query.length).toEqual(1);
-          expect(q.query.first.text).toEqual('1');
+      expect(q.query.length).toEqual(1);
+      expect(q.query.first.text).toEqual('1');
 
-          q.show = false;
-          view.detectChanges();
-          expect(q.query.length).toEqual(1);
-          expect(q.query.first.text).toEqual('1');
-        });
+      q.show = false;
+      view.detectChanges();
+      expect(q.query.length).toEqual(1);
+      expect(q.query.first.text).toEqual('1');
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
-           () => {
-             const template = '<needs-view-query-order #q></needs-view-query-order>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
-             const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
+    it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
+       () => {
+         const template = '<needs-view-query-order #q></needs-view-query-order>';
+         const view = createTestCmpAndDetectChanges(MyComp0, template);
+         const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
 
-             expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
+         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
 
-             q.list = ['-3', '2'];
-             view.detectChanges();
-             expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '-3', '2', '4']);
-           });
+         q.list = ['-3', '2'];
+         view.detectChanges();
+         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '-3', '2', '4']);
+       });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
-           () => {
-             const template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
-             const q: NeedsViewQueryOrderWithParent =
-                 view.debugElement.children[0].references !['q'];
-             expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
+    it('should maintain directives in pre-order depth-first DOM order after dynamic insertion',
+       () => {
+         const template = '<needs-view-query-order-with-p #q></needs-view-query-order-with-p>';
+         const view = createTestCmpAndDetectChanges(MyComp0, template);
+         const q: NeedsViewQueryOrderWithParent = view.debugElement.children[0].references !['q'];
+         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
 
-             q.list = ['-3', '2'];
-             view.detectChanges();
-             expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '-3', '2', '4']);
-           });
+         q.list = ['-3', '2'];
+         view.detectChanges();
+         expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '-3', '2', '4']);
+       });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should handle long ngFor cycles', () => {
-          const template = '<needs-view-query-order #q></needs-view-query-order>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
+    it('should handle long ngFor cycles', () => {
+      const template = '<needs-view-query-order #q></needs-view-query-order>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q: NeedsViewQueryOrder = view.debugElement.children[0].references !['q'];
 
-          // no
-          // significance
-          // to
-          // 50,
-          // just
-          // a
-          // reasonably
-          // large
-          // cycle.
-          for (let i = 0; i < 50; i++) {
-            const newString = i.toString();
-            q.list = [newString];
-            view.detectChanges();
-            expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', newString, '4']);
-          }
-        });
+      // no significance to 50, just a reasonably large cycle.
+      for (let i = 0; i < 50; i++) {
+        const newString = i.toString();
+        q.list = [newString];
+        view.detectChanges();
+        expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', newString, '4']);
+      }
+    });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should support more than three queries', () => {
-          const template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
-          expect(q.query1).toBeDefined();
-          expect(q.query2).toBeDefined();
-          expect(q.query3).toBeDefined();
-          expect(q.query4).toBeDefined();
-        });
+    it('should support more than three queries', () => {
+      const template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
+      expect(q.query1).toBeDefined();
+      expect(q.query2).toBeDefined();
+      expect(q.query3).toBeDefined();
+      expect(q.query4).toBeDefined();
+    });
   });
 
   describe('query over moved templates', () => {
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
-        it('should include manually projected templates in queries', () => {
-          const template =
-              '<manual-projecting #q><ng-template><div text="1"></div></ng-template></manual-projecting>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
-          expect(q.query.length).toBe(0);
+    it('should include manually projected templates in queries', () => {
+      const template =
+          '<manual-projecting #q><ng-template><div text="1"></div></ng-template></manual-projecting>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
+      expect(q.query.length).toBe(0);
 
-          q.create();
-          view.detectChanges();
-          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1']);
+      q.create();
+      view.detectChanges();
+      expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1']);
 
-          q.destroy();
-          view.detectChanges();
-          expect(q.query.length).toBe(0);
-        });
+      q.destroy();
+      view.detectChanges();
+      expect(q.query.length).toBe(0);
+    });
 
-    // Note:
-    // This
-    // tests
-    // is
-    // just
-    // document
-    // our
-    // current
-    // behavior,
-    // which
-    // we
-    // do
-    // for
-    // performance
-    // reasons.
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    // Note: this test is just document our current behavior, which we do for performance reasons.
+    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
         it('should not affected queries for projected templates if views are detached or moved', () => {
           const template =
               '<manual-projecting #q><ng-template let-x="x"><div [text]="x"></div></ng-template></manual-projecting>';
@@ -672,7 +614,8 @@ describe('Query API', () => {
           expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy(
+        'FW-763 - LView tree not properly constructed / destroyed for dynamically inserted components') &&
         it('should remove manually projected templates if their parent view is destroyed', () => {
           const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
@@ -692,21 +635,19 @@ describe('Query API', () => {
           expect(q.query.length).toBe(0);
         });
 
-    fixmeIvy('FW-670: Internal Error: The name q is already defined in scope') &&
+    fixmeIvy('unknown') &&
         it('should not throw if a content template is queried and created in the view during change detection',
            () => {
              @Component(
                  {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
              class AutoProjecting {
                // TODO(issue/24571):
-               // remove
-               // '!'.
+               // remove '!'.
                @ContentChild(TemplateRef)
                content !: TemplateRef<any>;
 
                // TODO(issue/24571):
-               // remove
-               // '!'.
+               // remove '!'.
                @ContentChildren(TextDirective)
                query !: QueryList<TextDirective>;
              }
@@ -717,17 +658,9 @@ describe('Query API', () => {
              const view = createTestCmpAndDetectChanges(MyComp0, template);
 
              const q = view.debugElement.children[0].references !['q'];
-             // This
-             // should
-             // be
-             // 1,
-             // but
-             // due
-             // to
+             // This should be 1, but due to
              // https://github.com/angular/angular/issues/15117
-             // this
-             // is
-             // 0.
+             // this is 0.
              expect(q.query.length).toBe(0);
            });
 
