@@ -275,6 +275,7 @@ jobs:
           # The `destination` needs to be kept in synch with the value of
           # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
           destination: aio/dist/aio-snapshot.tgz
+      - run: node ./aio/scripts/create-preview $CIRCLE_BUILD_NUM
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   test_aio_preview:
@@ -460,7 +461,3 @@ workflows:
             branches:
               only:
                 - master
-
-notify:
-  webhooks:
-    - url: https://ngbuilds.io/circle-build
