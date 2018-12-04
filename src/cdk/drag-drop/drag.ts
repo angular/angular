@@ -323,6 +323,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       .pipe(take(1))
       .subscribe(() => {
         const rootElement = this._rootElement = this._getRootElement();
+
+        if (rootElement.nodeType !== this._document.ELEMENT_NODE) {
+          throw Error(`cdkDrag must be attached to an element node. ` +
+                      `Currently attached to "${rootElement.nodeName}".`);
+        }
+
         rootElement.addEventListener('mousedown', this._pointerDown, activeEventListenerOptions);
         rootElement.addEventListener('touchstart', this._pointerDown, passiveEventListenerOptions);
         this._handles.changes.pipe(startWith(null)).subscribe(() =>
