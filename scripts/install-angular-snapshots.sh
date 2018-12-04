@@ -8,5 +8,9 @@ set -e
 # Go to the project root directory
 cd $(dirname $0)/../
 
-yarn add \
-  $(awk 'match($0, "@angular/(.*)\":", m){print "github:angular/"m[1]"-builds"}' package.json)
+# Searches for all Angular dependencies in the "package.json" and computes the URL to the github
+# snapshot builds for each Angular package. Afterwards it runs `yarn add --force {urls}` in order
+# to install the snapshot builds for each package. Note that we need to use `--force` because
+# otherwise Yarn will error due to already specified dependencies.
+egrep -o '@angular/[^"]+' ./package.json | sed 's/@/github:/' | sed 's/.*/&-builds/' |
+  xargs yarn add --force
