@@ -102,167 +102,167 @@ import {fixmeIvy} from '@angular/private/testing';
     function declareTests(
         {ngUrl, templateDecorator}:
             {ngUrl: string, templateDecorator: (template: string) => { [key: string]: any }}) {
-      fixmeIvy('unknown') &&
-          it('should use the right source url in html parse errors', fakeAsync(() => {
-               @Component({...templateDecorator('<div>\n  </error>')})
-               class MyComp {
-               }
+      fixmeIvy('unknown').it(
+          'should use the right source url in html parse errors', fakeAsync(() => {
+            @Component({...templateDecorator('<div>\n  </error>')})
+            class MyComp {
+            }
 
-               expect(() => compileAndCreateComponent(MyComp))
-                   .toThrowError(new RegExp(
-                       `Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:2`));
-             }));
+            expect(() => compileAndCreateComponent(MyComp))
+                .toThrowError(
+                    new RegExp(`Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:2`));
+          }));
 
-      fixmeIvy('unknown') &&
-          it('should use the right source url in template parse errors', fakeAsync(() => {
-               @Component({...templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>')})
-               class MyComp {
-               }
+      fixmeIvy('unknown').it(
+          'should use the right source url in template parse errors', fakeAsync(() => {
+            @Component({...templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>')})
+            class MyComp {
+            }
 
-               expect(() => compileAndCreateComponent(MyComp))
-                   .toThrowError(new RegExp(
-                       `Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:7`));
-             }));
+            expect(() => compileAndCreateComponent(MyComp))
+                .toThrowError(
+                    new RegExp(`Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:7`));
+          }));
 
-      fixmeIvy('unknown') && it('should create a sourceMap for templates', fakeAsync(() => {
-                                  const template = `Hello World!`;
+      fixmeIvy('unknown').it('should create a sourceMap for templates', fakeAsync(() => {
+                               const template = `Hello World!`;
 
-                                  @Component({...templateDecorator(template)})
-                                  class MyComp {
-                                  }
+                               @Component({...templateDecorator(template)})
+                               class MyComp {
+                               }
 
-                                  compileAndCreateComponent(MyComp);
+                               compileAndCreateComponent(MyComp);
 
-                                  const sourceMap =
-                                      getSourceMap('ng:///DynamicTestModule/MyComp.ngfactory.js');
-                                  expect(sourceMap.sources).toEqual([
-                                    'ng:///DynamicTestModule/MyComp.ngfactory.js', ngUrl
-                                  ]);
-                                  expect(sourceMap.sourcesContent).toEqual([' ', template]);
-                                }));
+                               const sourceMap =
+                                   getSourceMap('ng:///DynamicTestModule/MyComp.ngfactory.js');
+                               expect(sourceMap.sources).toEqual([
+                                 'ng:///DynamicTestModule/MyComp.ngfactory.js', ngUrl
+                               ]);
+                               expect(sourceMap.sourcesContent).toEqual([' ', template]);
+                             }));
 
 
-      fixmeIvy('unknown') &&
-          it('should report source location for di errors', fakeAsync(() => {
-               const template = `<div>\n    <div   someDir></div></div>`;
+      fixmeIvy('unknown').it(
+          'should report source location for di errors', fakeAsync(() => {
+            const template = `<div>\n    <div   someDir></div></div>`;
 
-               @Component({...templateDecorator(template)})
-               class MyComp {
-               }
+            @Component({...templateDecorator(template)})
+            class MyComp {
+            }
 
-               @Directive({selector: '[someDir]'})
-               class SomeDir {
-                 constructor() { throw new Error('Test'); }
-               }
+            @Directive({selector: '[someDir]'})
+            class SomeDir {
+              constructor() { throw new Error('Test'); }
+            }
 
-               TestBed.configureTestingModule({declarations: [SomeDir]});
-               let error: any;
-               try {
-                 compileAndCreateComponent(MyComp);
-               } catch (e) {
-                 error = e;
-               }
-               // The error should be logged from the element
-               expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
-                 line: 2,
-                 column: 4,
-                 source: ngUrl,
-               });
-             }));
+            TestBed.configureTestingModule({declarations: [SomeDir]});
+            let error: any;
+            try {
+              compileAndCreateComponent(MyComp);
+            } catch (e) {
+              error = e;
+            }
+            // The error should be logged from the element
+            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
+              line: 2,
+              column: 4,
+              source: ngUrl,
+            });
+          }));
 
-      fixmeIvy('unknown') &&
-          it('should report di errors with multiple elements and directives', fakeAsync(() => {
-               const template = `<div someDir></div><div someDir="throw"></div>`;
+      fixmeIvy('unknown').it(
+          'should report di errors with multiple elements and directives', fakeAsync(() => {
+            const template = `<div someDir></div><div someDir="throw"></div>`;
 
-               @Component({...templateDecorator(template)})
-               class MyComp {
-               }
+            @Component({...templateDecorator(template)})
+            class MyComp {
+            }
 
-               @Directive({selector: '[someDir]'})
-               class SomeDir {
-                 constructor(@Attribute('someDir') someDir: string) {
-                   if (someDir === 'throw') {
-                     throw new Error('Test');
-                   }
-                 }
-               }
+            @Directive({selector: '[someDir]'})
+            class SomeDir {
+              constructor(@Attribute('someDir') someDir: string) {
+                if (someDir === 'throw') {
+                  throw new Error('Test');
+                }
+              }
+            }
 
-               TestBed.configureTestingModule({declarations: [SomeDir]});
-               let error: any;
-               try {
-                 compileAndCreateComponent(MyComp);
-               } catch (e) {
-                 error = e;
-               }
-               // The error should be logged from the 2nd-element
-               expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
-                 line: 1,
-                 column: 19,
-                 source: ngUrl,
-               });
-             }));
+            TestBed.configureTestingModule({declarations: [SomeDir]});
+            let error: any;
+            try {
+              compileAndCreateComponent(MyComp);
+            } catch (e) {
+              error = e;
+            }
+            // The error should be logged from the 2nd-element
+            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
+              line: 1,
+              column: 19,
+              source: ngUrl,
+            });
+          }));
 
-      fixmeIvy('unknown') &&
-          it('should report source location for binding errors', fakeAsync(() => {
-               const template = `<div>\n    <span   [title]="createError()"></span></div>`;
+      fixmeIvy('unknown').it(
+          'should report source location for binding errors', fakeAsync(() => {
+            const template = `<div>\n    <span   [title]="createError()"></span></div>`;
 
-               @Component({...templateDecorator(template)})
-               class MyComp {
-                 createError() { throw new Error('Test'); }
-               }
+            @Component({...templateDecorator(template)})
+            class MyComp {
+              createError() { throw new Error('Test'); }
+            }
 
-               const comp = compileAndCreateComponent(MyComp);
+            const comp = compileAndCreateComponent(MyComp);
 
-               let error: any;
-               try {
-                 comp.detectChanges();
-               } catch (e) {
-                 error = e;
-               }
-               // the stack should point to the binding
-               expect(getSourcePositionForStack(error.stack)).toEqual({
-                 line: 2,
-                 column: 12,
-                 source: ngUrl,
-               });
-               // The error should be logged from the element
-               expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
-                 line: 2,
-                 column: 4,
-                 source: ngUrl,
-               });
-             }));
+            let error: any;
+            try {
+              comp.detectChanges();
+            } catch (e) {
+              error = e;
+            }
+            // the stack should point to the binding
+            expect(getSourcePositionForStack(error.stack)).toEqual({
+              line: 2,
+              column: 12,
+              source: ngUrl,
+            });
+            // The error should be logged from the element
+            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
+              line: 2,
+              column: 4,
+              source: ngUrl,
+            });
+          }));
 
-      fixmeIvy('unknown') &&
-          it('should report source location for event errors', fakeAsync(() => {
-               const template = `<div>\n    <span   (click)="createError()"></span></div>`;
+      fixmeIvy('unknown').it(
+          'should report source location for event errors', fakeAsync(() => {
+            const template = `<div>\n    <span   (click)="createError()"></span></div>`;
 
-               @Component({...templateDecorator(template)})
-               class MyComp {
-                 createError() { throw new Error('Test'); }
-               }
+            @Component({...templateDecorator(template)})
+            class MyComp {
+              createError() { throw new Error('Test'); }
+            }
 
-               const comp = compileAndCreateComponent(MyComp);
+            const comp = compileAndCreateComponent(MyComp);
 
-               let error: any;
-               const errorHandler = TestBed.get(ErrorHandler);
-               spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
-               comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
-               expect(error).toBeTruthy();
-               // the stack should point to the binding
-               expect(getSourcePositionForStack(error.stack)).toEqual({
-                 line: 2,
-                 column: 12,
-                 source: ngUrl,
-               });
-               // The error should be logged from the element
-               expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
-                 line: 2,
-                 column: 4,
-                 source: ngUrl,
-               });
+            let error: any;
+            const errorHandler = TestBed.get(ErrorHandler);
+            spyOn(errorHandler, 'handleError').and.callFake((e: any) => error = e);
+            comp.debugElement.children[0].children[0].triggerEventHandler('click', 'EVENT');
+            expect(error).toBeTruthy();
+            // the stack should point to the binding
+            expect(getSourcePositionForStack(error.stack)).toEqual({
+              line: 2,
+              column: 12,
+              source: ngUrl,
+            });
+            // The error should be logged from the element
+            expect(getSourcePositionForStack(getErrorLoggerStack(error))).toEqual({
+              line: 2,
+              column: 4,
+              source: ngUrl,
+            });
 
-             }));
+          }));
     }
   });
 }

@@ -15,8 +15,8 @@ import {fixmeIvy} from '@angular/private/testing';
 describe('forwardRef integration', function() {
   beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
 
-  fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
-      it('should instantiate components which are declared using forwardRef', () => {
+  fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+      .it('should instantiate components which are declared using forwardRef', () => {
         const a =
             TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
         a.detectChanges();

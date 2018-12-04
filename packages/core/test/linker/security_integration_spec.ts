@@ -52,8 +52,8 @@ function declareTests(config?: {useJit: boolean}) {
     afterEach(() => { getDOM().log = originalLog; });
 
     describe('events', () => {
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
-          it('should disallow binding to attr.on*', () => {
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
+          .it('should disallow binding to attr.on*', () => {
             const template = `<div [attr.onclick]="ctxProp"></div>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
@@ -62,8 +62,8 @@ function declareTests(config?: {useJit: boolean}) {
                     /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
           });
 
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
-          it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
+          .it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
             const template = `<div [onclick]="ctxProp"></div>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
               schemas: [NO_ERRORS_SCHEMA]
@@ -75,8 +75,8 @@ function declareTests(config?: {useJit: boolean}) {
           });
 
       fixmeIvy(
-          'FW-786: Element properties and directive inputs are not distinguished for sanitisation purposes') &&
-          it('should disallow binding to on* unless it is consumed by a directive', () => {
+          'FW-786: Element properties and directive inputs are not distinguished for sanitisation purposes')
+          .it('should disallow binding to on* unless it is consumed by a directive', () => {
             const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
               schemas: [NO_ERRORS_SCHEMA]
@@ -173,8 +173,8 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, true);
       });
 
-      fixmeIvy('FW-785: Host bindings are not sanitised') &&
-          it('should escape unsafe properties if they are used in host bindings', () => {
+      fixmeIvy('FW-785: Host bindings are not sanitised')
+          .it('should escape unsafe properties if they are used in host bindings', () => {
             @Directive({selector: '[dirHref]'})
             class HrefDirective {
               // TODO(issue/24571): remove '!'.
@@ -190,8 +190,8 @@ function declareTests(config?: {useJit: boolean}) {
             checkEscapeOfHrefProperty(fixture, false);
           });
 
-      fixmeIvy('FW-785: Host bindings are not sanitised') &&
-          it('should escape unsafe attributes if they are used in host bindings', () => {
+      fixmeIvy('FW-785: Host bindings are not sanitised')
+          .it('should escape unsafe attributes if they are used in host bindings', () => {
             @Directive({selector: '[dirHref]'})
             class HrefDirective {
               // TODO(issue/24571): remove '!'.
@@ -227,8 +227,8 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
       });
 
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
-          it('should escape unsafe SVG attributes', () => {
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
+          .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 

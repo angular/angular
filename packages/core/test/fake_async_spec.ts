@@ -33,10 +33,10 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
       })('foo', 'bar');
     });
 
-    fixmeIvy('unknown') && it('should work with inject()',
-                              fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => {
-                                expect(parser).toBeAnInstanceOf(Parser);
-                              })));
+    fixmeIvy('unknown').it(
+        'should work with inject()', fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => {
+          expect(parser).toBeAnInstanceOf(Parser);
+        })));
 
     it('should throw on nested calls', () => {
       expect(() => {

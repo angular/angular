@@ -52,8 +52,8 @@ function declareTests(config?: {useJit: boolean}) {
       expect(el).toHaveText('foo');
     });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
-        it('should be rendered as comment with children as siblings', () => {
+    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+        .it('should be rendered as comment with children as siblings', () => {
           const template = '<ng-container><p></p></ng-container>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
@@ -67,8 +67,8 @@ function declareTests(config?: {useJit: boolean}) {
           expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
         });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
-        it('should support nesting', () => {
+    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+        .it('should support nesting', () => {
           const template =
               '<ng-container>1</ng-container><ng-container><ng-container>2</ng-container></ng-container>';
           TestBed.overrideComponent(MyComp, {set: {template}});
@@ -86,8 +86,8 @@ function declareTests(config?: {useJit: boolean}) {
           expect(children[4]).toHaveText('2');
         });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>') &&
-        it('should group inner nodes', () => {
+    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+        .it('should group inner nodes', () => {
           const template = '<ng-container *ngIf="ctxBoolProp"><p></p><b></b></ng-container>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
@@ -136,8 +136,8 @@ function declareTests(config?: {useJit: boolean}) {
       expect(dir.text).toEqual('container');
     });
 
-    fixmeIvy('unknown') &&
-        it('should contain all direct child directives in a <ng-container> (content dom)', () => {
+    fixmeIvy('unknown').it(
+        'should contain all direct child directives in a <ng-container> (content dom)', () => {
           const template =
               '<needs-content-children #q><ng-container><div text="foo"></div></ng-container></needs-content-children>';
           TestBed.overrideComponent(MyComp, {set: {template}});
