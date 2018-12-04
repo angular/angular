@@ -2375,7 +2375,8 @@ describe('Integration', () => {
              expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}, {data: 3}, {data: 4}]);
            })));
 
-        it('should not rerun guards and resolvers', fakeAsync(inject([Router], (router: Router) => {
+        it('should rerun rerun guards and resolvers when path params change',
+           fakeAsync(inject([Router], (router: Router) => {
              const fixture = configureRouter(router, 'pathParamsChange');
 
              const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
@@ -2447,6 +2448,42 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(guardRunCount).toEqual(4);
+           })));
+
+        it('should rerun rerun guards and resolvers when path or query params change',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, 'pathParamsOrQueryParamsChange');
+
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
+
+             // First navigation has already run
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Changing matrix params will not result in running guards or resolvers
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Adding query params will re-run guards/resolvers
+             router.navigateByUrl('/a;p=2?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+
+             // Changing query params will re-run guards/resolvers
+             router.navigateByUrl('/a;p=2?q=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(3);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
            })));
       });
 
