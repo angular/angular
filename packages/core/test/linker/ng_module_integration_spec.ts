@@ -143,8 +143,8 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     describe('errors', () => {
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error when exporting a directive that was neither declared nor imported', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error when exporting a directive that was neither declared nor imported', () => {
             @NgModule({exports: [SomeDirective]})
             class SomeModule {
             }
@@ -154,8 +154,8 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export directive ${stringify(SomeDirective)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error when exporting a pipe that was neither declared nor imported', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error when exporting a pipe that was neither declared nor imported', () => {
             @NgModule({exports: [SomePipe]})
             class SomeModule {
             }
@@ -165,8 +165,8 @@ function declareTests(config?: {useJit: boolean}) {
                     `Can't export pipe ${stringify(SomePipe)} from ${stringify(SomeModule)} as it was neither declared nor imported!`);
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error if a directive is declared in more than 1 module', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error if a directive is declared in more than 1 module', () => {
             @NgModule({declarations: [SomeDirective]})
             class Module1 {
             }
@@ -184,26 +184,26 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
-             () => {
-               @NgModule({declarations: [SomeDirective], exports: [SomeDirective]})
-               class Module1 {
-               }
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error if a directive is declared in more than 1 module also if the module declaring it is imported',
+              () => {
+                @NgModule({declarations: [SomeDirective], exports: [SomeDirective]})
+                class Module1 {
+                }
 
-               @NgModule({declarations: [SomeDirective], imports: [Module1]})
-               class Module2 {
-               }
+                @NgModule({declarations: [SomeDirective], imports: [Module1]})
+                class Module2 {
+                }
 
-               expect(() => createModule(Module2))
-                   .toThrowError(
-                       `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                       `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                       `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
-             });
+                expect(() => createModule(Module2))
+                    .toThrowError(
+                        `Type ${stringify(SomeDirective)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                        `Please consider moving ${stringify(SomeDirective)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                        `You can also create a new NgModule that exports and includes ${stringify(SomeDirective)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+              });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error if a pipe is declared in more than 1 module', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error if a pipe is declared in more than 1 module', () => {
             @NgModule({declarations: [SomePipe]})
             class Module1 {
             }
@@ -221,29 +221,29 @@ function declareTests(config?: {useJit: boolean}) {
                     `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
-             () => {
-               @NgModule({declarations: [SomePipe], exports: [SomePipe]})
-               class Module1 {
-               }
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error if a pipe is declared in more than 1 module also if the module declaring it is imported',
+              () => {
+                @NgModule({declarations: [SomePipe], exports: [SomePipe]})
+                class Module1 {
+                }
 
-               @NgModule({declarations: [SomePipe], imports: [Module1]})
-               class Module2 {
-               }
+                @NgModule({declarations: [SomePipe], imports: [Module1]})
+                class Module2 {
+                }
 
-               expect(() => createModule(Module2))
-                   .toThrowError(
-                       `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
-                       `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
-                       `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
-             });
+                expect(() => createModule(Module2))
+                    .toThrowError(
+                        `Type ${stringify(SomePipe)} is part of the declarations of 2 modules: ${stringify(Module1)} and ${stringify(Module2)}! ` +
+                        `Please consider moving ${stringify(SomePipe)} to a higher module that imports ${stringify(Module1)} and ${stringify(Module2)}. ` +
+                        `You can also create a new NgModule that exports and includes ${stringify(SomePipe)} then import that NgModule in ${stringify(Module1)} and ${stringify(Module2)}.`);
+              });
 
     });
 
     describe('schemas', () => {
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should error on unknown bound properties on custom elements by default', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
             }
@@ -281,16 +281,16 @@ function declareTests(config?: {useJit: boolean}) {
 
       afterEach(() => clearModulesForTest());
 
-      fixmeIvy('FW-740: missing global registry of NgModules by id') &&
-          it('should register loaded modules', () => {
+      fixmeIvy('FW-740: missing global registry of NgModules by id')
+          .it('should register loaded modules', () => {
             createModule(SomeModule);
             const factory = getModuleFactory(token);
             expect(factory).toBeTruthy();
             expect(factory.moduleType).toBe(SomeModule);
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when registering a duplicate module', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw when registering a duplicate module', () => {
             createModule(SomeModule);
             expect(() => createModule(SomeOtherModule)).toThrowError(/Duplicate module registered/);
           });
@@ -311,37 +311,37 @@ function declareTests(config?: {useJit: boolean}) {
             .toBe(SomeComp);
       });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw if we cannot find a module associated with a module-level entryComponent',
-             () => {
-               @Component({template: ''})
-               class SomeCompWithEntryComponents {
-               }
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw if we cannot find a module associated with a module-level entryComponent',
+              () => {
+                @Component({template: ''})
+                class SomeCompWithEntryComponents {
+                }
 
-               @NgModule({declarations: [], entryComponents: [SomeCompWithEntryComponents]})
-               class SomeModule {
-               }
+                @NgModule({declarations: [], entryComponents: [SomeCompWithEntryComponents]})
+                class SomeModule {
+                }
 
-               expect(() => createModule(SomeModule))
-                   .toThrowError(
-                       'Component SomeCompWithEntryComponents is not part of any NgModule or the module has not been imported into your module.');
-             });
+                expect(() => createModule(SomeModule))
+                    .toThrowError(
+                        'Component SomeCompWithEntryComponents is not part of any NgModule or the module has not been imported into your module.');
+              });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw if we cannot find a module associated with a component-level entryComponent',
-             () => {
-               @Component({template: '', entryComponents: [SomeComp]})
-               class SomeCompWithEntryComponents {
-               }
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw if we cannot find a module associated with a component-level entryComponent',
+              () => {
+                @Component({template: '', entryComponents: [SomeComp]})
+                class SomeCompWithEntryComponents {
+                }
 
-               @NgModule({declarations: [SomeCompWithEntryComponents]})
-               class SomeModule {
-               }
+                @NgModule({declarations: [SomeCompWithEntryComponents]})
+                class SomeModule {
+                }
 
-               expect(() => createModule(SomeModule))
-                   .toThrowError(
-                       'Component SomeComp is not part of any NgModule or the module has not been imported into your module.');
-             });
+                expect(() => createModule(SomeModule))
+                    .toThrowError(
+                        'Component SomeComp is not part of any NgModule or the module has not been imported into your module.');
+              });
 
       it('should create ComponentFactories via ANALYZE_FOR_ENTRY_COMPONENTS', () => {
         @NgModule({
@@ -426,8 +426,8 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('directives and pipes', () => {
-      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView') &&
-          describe('declarations', () => {
+      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
+          .describe('declarations', () => {
             it('should be supported in root modules', () => {
               @NgModule({
                 declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
@@ -489,8 +489,8 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('import/export', () => {
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
-            it('should support exported directives and pipes', () => {
+        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+            .it('should support exported directives and pipes', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
               class SomeImportedModule {
@@ -511,31 +511,31 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
-            it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
-               () => {
-                 @NgModule(
-                     {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
-                 class SomeImportedModule {
-                 }
+        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+            .it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
+                () => {
+                  @NgModule(
+                      {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+                  class SomeImportedModule {
+                  }
 
-                 @NgModule({
-                   declarations: [CompUsingModuleDirectiveAndPipe],
-                   imports: [{ngModule: SomeImportedModule}],
-                   entryComponents: [CompUsingModuleDirectiveAndPipe]
-                 })
-                 class SomeModule {
-                 }
+                  @NgModule({
+                    declarations: [CompUsingModuleDirectiveAndPipe],
+                    imports: [{ngModule: SomeImportedModule}],
+                    entryComponents: [CompUsingModuleDirectiveAndPipe]
+                  })
+                  class SomeModule {
+                  }
 
 
-                 const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-                 compFixture.detectChanges();
-                 expect(compFixture.debugElement.children[0].properties['title'])
-                     .toBe('transformed someValue');
-               });
+                  const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+                  compFixture.detectChanges();
+                  expect(compFixture.debugElement.children[0].properties['title'])
+                      .toBe('transformed someValue');
+                });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
-            it('should support reexported modules', () => {
+        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+            .it('should support reexported modules', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
               class SomeReexportedModule {
@@ -559,8 +559,8 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
-            it('should support exporting individual directives of an imported module', () => {
+        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+            .it('should support exporting individual directives of an imported module', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
               class SomeReexportedModule {
@@ -584,8 +584,8 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-682: Compiler error handling') &&
-            it('should not use non exported pipes of an imported module', () => {
+        fixmeIvy('FW-682: Compiler error handling')
+            .it('should not use non exported pipes of an imported module', () => {
               @NgModule({
                 declarations: [SomePipe],
               })
@@ -604,8 +604,8 @@ function declareTests(config?: {useJit: boolean}) {
                   .toThrowError(/The pipe 'somePipe' could not be found/);
             });
 
-        fixmeIvy('FW-682: Compiler error handling') &&
-            it('should not use non exported directives of an imported module', () => {
+        fixmeIvy('FW-682: Compiler error handling')
+            .it('should not use non exported directives of an imported module', () => {
               @NgModule({
                 declarations: [SomeDirective],
               })
@@ -667,14 +667,14 @@ function declareTests(config?: {useJit: boolean}) {
         expect(car.engine).toBeAnInstanceOf(TurboEngine);
       });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when no type and not @Inject (class case)', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw when no type and not @Inject (class case)', () => {
             expect(() => createInjector([NoAnnotations]))
                 .toThrowError('Can\'t resolve all parameters for NoAnnotations: (?).');
           });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when no type and not @Inject (factory case)', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw when no type and not @Inject (factory case)', () => {
             expect(() => createInjector([{provide: 'someToken', useFactory: factoryFn}]))
                 .toThrowError('Can\'t resolve all parameters for factoryFn: (?).');
           });
@@ -745,8 +745,8 @@ function declareTests(config?: {useJit: boolean}) {
         expect(cars[0]).toBe(injector.get(SportsCar));
       });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when the aliased provider does not exist', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw when the aliased provider does not exist', () => {
             const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
             const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
             expect(() => injector.get('car')).toThrowError(e);
@@ -796,14 +796,13 @@ function declareTests(config?: {useJit: boolean}) {
         expect(injector.get('token')).toEqual('value');
       });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when given invalid providers', () => {
-            expect(() => createInjector(<any>['blah']))
-                .toThrowError(
-                    `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?blah?]`);
-          });
+      fixmeIvy('FW-682: Compiler error handling').it('should throw when given invalid providers', () => {
+        expect(() => createInjector(<any>['blah']))
+            .toThrowError(
+                `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?blah?]`);
+      });
 
-      fixmeIvy('FW-682: Compiler error handling') && it('should throw when given blank providers', () => {
+      fixmeIvy('FW-682: Compiler error handling').it('should throw when given blank providers', () => {
         expect(() => createInjector(<any>[null, {provide: 'token', useValue: 'value'}]))
             .toThrowError(
                 `Invalid provider for the NgModule 'SomeModule' - only instances of Provider and Type are allowed, got: [?null?, ...]`);
@@ -949,8 +948,8 @@ function declareTests(config?: {useJit: boolean}) {
             .toThrowError('NullInjectorError: No provider for NonExisting!');
       });
 
-      fixmeIvy('FW-682: Compiler error handling') &&
-          it('should throw when trying to instantiate a cyclic dependency', () => {
+      fixmeIvy('FW-682: Compiler error handling')
+          .it('should throw when trying to instantiate a cyclic dependency', () => {
             expect(() => createInjector([Car, {provide: Engine, useClass: CyclicEngine}]))
                 .toThrowError(/Cannot instantiate cyclic dependency! Car/g);
           });
@@ -1053,8 +1052,8 @@ function declareTests(config?: {useJit: boolean}) {
           expect(created).toBe(false);
         });
 
-        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called') &&
-            it('should support ngOnDestroy on any provider', () => {
+        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called')
+            .it('should support ngOnDestroy on any provider', () => {
               let destroyed = false;
 
               class SomeInjectable {
@@ -1073,8 +1072,8 @@ function declareTests(config?: {useJit: boolean}) {
               expect(destroyed).toBe(true);
             });
 
-        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called') &&
-            it('should support ngOnDestroy for lazy providers', () => {
+        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called')
+            .it('should support ngOnDestroy for lazy providers', () => {
               let created = false;
               let destroyed = false;
 
@@ -1318,8 +1317,8 @@ function declareTests(config?: {useJit: boolean}) {
              expect(injector.get('token1')).toBe('imported2');
            });
 
-        fixmeIvy('FW-682: Compiler error handling') &&
-            it('should throw when given invalid providers in an imported ModuleWithProviders', () => {
+        fixmeIvy('FW-682: Compiler error handling')
+            .it('should throw when given invalid providers in an imported ModuleWithProviders', () => {
               @NgModule()
               class ImportedModule1 {
               }
@@ -1335,8 +1334,8 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('FW-794: NgModuleDefinition not exposed on NgModuleData') &&
-            it('definition should not persist across NgModuleRef instances', () => {
+        fixmeIvy('FW-794: NgModuleDefinition not exposed on NgModuleData')
+            .it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {
               }

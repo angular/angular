@@ -82,8 +82,8 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('');
     });
 
-    fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive') &&
-        it('should support multiple content tags', () => {
+    fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive')
+        .it('should support multiple content tags', () => {
           TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
           TestBed.overrideComponent(MainComp, {
             set: {
@@ -114,8 +114,8 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('(, BAC)');
     });
 
-    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
-        it('should redistribute direct child viewcontainers when the light dom changes', () => {
+    fixmeIvy('FW-665: Unable to find the given context data for the given target')
+        .it('should redistribute direct child viewcontainers when the light dom changes', () => {
           TestBed.configureTestingModule(
               {declarations: [MultipleContentTagsComponent, ManualViewportDirective]});
           TestBed.overrideComponent(MainComp, {
@@ -158,8 +158,8 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('OUTER(SIMPLE(AB))');
     });
 
-    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
-        it('should support nesting with content being direct child of a nested component', () => {
+    fixmeIvy('FW-665: Unable to find the given context data for the given target')
+        .it('should support nesting with content being direct child of a nested component', () => {
           TestBed.configureTestingModule({
             declarations:
                 [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective]
@@ -186,8 +186,8 @@ import {fixmeIvy} from '@angular/private/testing';
         });
 
     fixmeIvy(
-        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>') &&
-        it('should redistribute when the shadow dom changes', () => {
+        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>')
+        .it('should redistribute when the shadow dom changes', () => {
           TestBed.configureTestingModule(
               {declarations: [ConditionalContentComponent, ManualViewportDirective]});
           TestBed.overrideComponent(MainComp, {
@@ -295,8 +295,8 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
     });
 
-    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
-        it('should support moving ng-content around', () => {
+    fixmeIvy('FW-665: Unable to find the given context data for the given target')
+        .it('should support moving ng-content around', () => {
           TestBed.configureTestingModule({
             declarations:
                 [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
@@ -435,8 +435,8 @@ import {fixmeIvy} from '@angular/private/testing';
       });
     }
 
-    fixmeIvy('FW-665: Unable to find the given context data for the given target') &&
-        it('should support nested conditionals that contain ng-contents', () => {
+    fixmeIvy('FW-665: Unable to find the given context data for the given target')
+        .it('should support nested conditionals that contain ng-contents', () => {
           TestBed.configureTestingModule(
               {declarations: [ConditionalTextComponent, ManualViewportDirective]});
           TestBed.overrideComponent(
@@ -482,8 +482,8 @@ import {fixmeIvy} from '@angular/private/testing';
     });
 
     fixmeIvy(
-        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>') &&
-        it('should project filled view containers into a view container', () => {
+        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>')
+        .it('should project filled view containers into a view container', () => {
           TestBed.configureTestingModule(
               {declarations: [ConditionalContentComponent, ManualViewportDirective]});
           TestBed.overrideComponent(MainComp, {

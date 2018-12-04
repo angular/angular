@@ -77,59 +77,59 @@ withEachNg1Version(() => {
        }));
 
     fixmeIvy(
-        'FW-712: Rendering is being run on next "animation frame" rather than "Zone.microTaskEmpty" trigger') &&
-        it('should propagate changes to a downgraded component inside the ngZone', async(() => {
-             const element = html('<my-app></my-app>');
-             let appComponent: AppComponent;
+        'FW-712: Rendering is being run on next "animation frame" rather than "Zone.microTaskEmpty" trigger')
+        .it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+              const element = html('<my-app></my-app>');
+              let appComponent: AppComponent;
 
-             @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
-             class AppComponent {
-               value?: number;
-               constructor() { appComponent = this; }
-             }
+              @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+              class AppComponent {
+                value?: number;
+                constructor() { appComponent = this; }
+              }
 
-             @Component({
-               selector: 'my-child',
-               template: '<div>{{ valueFromPromise }}</div>',
-             })
-             class ChildComponent {
-               valueFromPromise?: number;
-               @Input()
-               set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
+              @Component({
+                selector: 'my-child',
+                template: '<div>{{ valueFromPromise }}</div>',
+              })
+              class ChildComponent {
+                valueFromPromise?: number;
+                @Input()
+                set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
 
-               constructor(private zone: NgZone) {}
+                constructor(private zone: NgZone) {}
 
-               ngOnChanges(changes: SimpleChanges) {
-                 if (changes['value'].isFirstChange()) return;
+                ngOnChanges(changes: SimpleChanges) {
+                  if (changes['value'].isFirstChange()) return;
 
-                 // HACK(ivy): Using setTimeout allows this test to pass but hides the ivy renderer
-                 // timing BC.
-                 //  setTimeout(() => expect(element.textContent).toEqual('5'), 0);
-                 this.zone.onMicrotaskEmpty.subscribe(
-                     () => { expect(element.textContent).toEqual('5'); });
+                  // HACK(ivy): Using setTimeout allows this test to pass but hides the ivy renderer
+                  // timing BC.
+                  //  setTimeout(() => expect(element.textContent).toEqual('5'), 0);
+                  this.zone.onMicrotaskEmpty.subscribe(
+                      () => { expect(element.textContent).toEqual('5'); });
 
-                 // Create a micro-task to update the value to be rendered asynchronously.
-                 Promise.resolve().then(
-                     () => this.valueFromPromise = changes['value'].currentValue);
-               }
-             }
+                  // Create a micro-task to update the value to be rendered asynchronously.
+                  Promise.resolve().then(
+                      () => this.valueFromPromise = changes['value'].currentValue);
+                }
+              }
 
-             @NgModule({
-               declarations: [AppComponent, ChildComponent],
-               entryComponents: [AppComponent],
-               imports: [BrowserModule, UpgradeModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                declarations: [AppComponent, ChildComponent],
+                entryComponents: [AppComponent],
+                imports: [BrowserModule, UpgradeModule]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             const ng1Module = angular.module('ng1', []).directive(
-                 'myApp', downgradeComponent({component: AppComponent}));
+              const ng1Module = angular.module('ng1', []).directive(
+                  'myApp', downgradeComponent({component: AppComponent}));
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-               appComponent.value = 5;
-             });
-           }));
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+                appComponent.value = 5;
+              });
+            }));
 
     // This test demonstrates https://github.com/angular/angular/issues/6385
     // which was invalidly fixed by https://github.com/angular/angular/pull/6386

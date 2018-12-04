@@ -22,106 +22,106 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    fixmeIvy('FW-716: Error: [$rootScope:inprog] $digest already in progress') &&
-        it('should bind properties, events', async(() => {
-             const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
-               $rootScope['name'] = 'world';
-               $rootScope['dataA'] = 'A';
-               $rootScope['dataB'] = 'B';
-               $rootScope['modelA'] = 'initModelA';
-               $rootScope['modelB'] = 'initModelB';
-               $rootScope['eventA'] = '?';
-               $rootScope['eventB'] = '?';
-             });
+    fixmeIvy('FW-716: Error: [$rootScope:inprog] $digest already in progress')
+        .it('should bind properties, events', async(() => {
+              const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+                $rootScope['name'] = 'world';
+                $rootScope['dataA'] = 'A';
+                $rootScope['dataB'] = 'B';
+                $rootScope['modelA'] = 'initModelA';
+                $rootScope['modelB'] = 'initModelB';
+                $rootScope['eventA'] = '?';
+                $rootScope['eventB'] = '?';
+              });
 
-             @Component({
-               selector: 'ng2',
-               inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
-               outputs: [
-                 'eventA', 'eventB', 'twoWayAEmitter: twoWayAChange',
-                 'twoWayBEmitter: twoWayBChange'
-               ],
-               template: 'ignore: {{ignore}}; ' +
-                   'literal: {{literal}}; interpolate: {{interpolate}}; ' +
-                   'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
-                   'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})'
-             })
-             class Ng2Component implements OnChanges {
-               ngOnChangesCount = 0;
-               ignore = '-';
-               literal = '?';
-               interpolate = '?';
-               oneWayA = '?';
-               oneWayB = '?';
-               twoWayA = '?';
-               twoWayB = '?';
-               eventA = new EventEmitter();
-               eventB = new EventEmitter();
-               twoWayAEmitter = new EventEmitter();
-               twoWayBEmitter = new EventEmitter();
+              @Component({
+                selector: 'ng2',
+                inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
+                outputs: [
+                  'eventA', 'eventB', 'twoWayAEmitter: twoWayAChange',
+                  'twoWayBEmitter: twoWayBChange'
+                ],
+                template: 'ignore: {{ignore}}; ' +
+                    'literal: {{literal}}; interpolate: {{interpolate}}; ' +
+                    'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
+                    'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})'
+              })
+              class Ng2Component implements OnChanges {
+                ngOnChangesCount = 0;
+                ignore = '-';
+                literal = '?';
+                interpolate = '?';
+                oneWayA = '?';
+                oneWayB = '?';
+                twoWayA = '?';
+                twoWayB = '?';
+                eventA = new EventEmitter();
+                eventB = new EventEmitter();
+                twoWayAEmitter = new EventEmitter();
+                twoWayBEmitter = new EventEmitter();
 
-               ngOnChanges(changes: SimpleChanges) {
-                 const assert = (prop: string, value: any) => {
-                   const propVal = (this as any)[prop];
-                   if (propVal != value) {
-                     throw new Error(`Expected: '${prop}' to be '${value}' but was '${propVal}'`);
-                   }
-                 };
+                ngOnChanges(changes: SimpleChanges) {
+                  const assert = (prop: string, value: any) => {
+                    const propVal = (this as any)[prop];
+                    if (propVal != value) {
+                      throw new Error(`Expected: '${prop}' to be '${value}' but was '${propVal}'`);
+                    }
+                  };
 
-                 const assertChange = (prop: string, value: any) => {
-                   assert(prop, value);
-                   if (!changes[prop]) {
-                     throw new Error(`Changes record for '${prop}' not found.`);
-                   }
-                   const actualValue = changes[prop].currentValue;
-                   if (actualValue != value) {
-                     throw new Error(
-                         `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
-                   }
-                 };
+                  const assertChange = (prop: string, value: any) => {
+                    assert(prop, value);
+                    if (!changes[prop]) {
+                      throw new Error(`Changes record for '${prop}' not found.`);
+                    }
+                    const actualValue = changes[prop].currentValue;
+                    if (actualValue != value) {
+                      throw new Error(
+                          `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
+                    }
+                  };
 
-                 switch (this.ngOnChangesCount++) {
-                   case 0:
-                     assert('ignore', '-');
-                     assertChange('literal', 'Text');
-                     assertChange('interpolate', 'Hello world');
-                     assertChange('oneWayA', 'A');
-                     assertChange('oneWayB', 'B');
-                     assertChange('twoWayA', 'initModelA');
-                     assertChange('twoWayB', 'initModelB');
+                  switch (this.ngOnChangesCount++) {
+                    case 0:
+                      assert('ignore', '-');
+                      assertChange('literal', 'Text');
+                      assertChange('interpolate', 'Hello world');
+                      assertChange('oneWayA', 'A');
+                      assertChange('oneWayB', 'B');
+                      assertChange('twoWayA', 'initModelA');
+                      assertChange('twoWayB', 'initModelB');
 
-                     this.twoWayAEmitter.emit('newA');
-                     this.twoWayBEmitter.emit('newB');
-                     this.eventA.emit('aFired');
-                     this.eventB.emit('bFired');
-                     break;
-                   case 1:
-                     assertChange('twoWayA', 'newA');
-                     assertChange('twoWayB', 'newB');
-                     break;
-                   case 2:
-                     assertChange('interpolate', 'Hello everyone');
-                     break;
-                   default:
-                     throw new Error('Called too many times! ' + JSON.stringify(changes));
-                 }
-               }
-             }
+                      this.twoWayAEmitter.emit('newA');
+                      this.twoWayBEmitter.emit('newB');
+                      this.eventA.emit('aFired');
+                      this.eventB.emit('bFired');
+                      break;
+                    case 1:
+                      assertChange('twoWayA', 'newA');
+                      assertChange('twoWayB', 'newB');
+                      break;
+                    case 2:
+                      assertChange('interpolate', 'Hello everyone');
+                      break;
+                    default:
+                      throw new Error('Called too many times! ' + JSON.stringify(changes));
+                  }
+                }
+              }
 
-             ng1Module.directive('ng2', downgradeComponent({
-                                   component: Ng2Component,
-                                 }));
+              ng1Module.directive('ng2', downgradeComponent({
+                                    component: Ng2Component,
+                                  }));
 
-             @NgModule({
-               declarations: [Ng2Component],
-               entryComponents: [Ng2Component],
-               imports: [BrowserModule, UpgradeModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                declarations: [Ng2Component],
+                entryComponents: [Ng2Component],
+                imports: [BrowserModule, UpgradeModule]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             const element = html(`
+              const element = html(`
            <div>
              <ng2 literal="Text" interpolate="Hello {{name}}"
                  bind-one-way-a="dataA" [one-way-b]="dataB"
@@ -130,23 +130,23 @@ withEachNg1Version(() => {
              | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
            </div>`);
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-               expect(multiTrim(document.body.textContent))
-                   .toEqual(
-                       'ignore: -; ' +
-                       'literal: Text; interpolate: Hello world; ' +
-                       'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
-                       'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+                expect(multiTrim(document.body.textContent))
+                    .toEqual(
+                        'ignore: -; ' +
+                        'literal: Text; interpolate: Hello world; ' +
+                        'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (2) | ' +
+                        'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
 
-               $apply(upgrade, 'name = "everyone"');
-               expect(multiTrim(document.body.textContent))
-                   .toEqual(
-                       'ignore: -; ' +
-                       'literal: Text; interpolate: Hello everyone; ' +
-                       'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
-                       'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
-             });
-           }));
+                $apply(upgrade, 'name = "everyone"');
+                expect(multiTrim(document.body.textContent))
+                    .toEqual(
+                        'ignore: -; ' +
+                        'literal: Text; interpolate: Hello everyone; ' +
+                        'oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | ' +
+                        'modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;');
+              });
+            }));
 
     it('should bind properties to onpush components', async(() => {
          const ng1Module = angular.module('ng1', []).run(
@@ -189,58 +189,58 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly') &&
-        it('should support two-way binding and event listener', async(() => {
-             const listenerSpy = jasmine.createSpy('$rootScope.listener');
-             const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
-               $rootScope['value'] = 'world';
-               $rootScope['listener'] = listenerSpy;
-             });
+    fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
+        .it('should support two-way binding and event listener', async(() => {
+              const listenerSpy = jasmine.createSpy('$rootScope.listener');
+              const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+                $rootScope['value'] = 'world';
+                $rootScope['listener'] = listenerSpy;
+              });
 
-             @Component({selector: 'ng2', template: `model: {{model}};`})
-             class Ng2Component implements OnChanges {
-               ngOnChangesCount = 0;
-               @Input() model = '?';
-               @Output() modelChange = new EventEmitter();
+              @Component({selector: 'ng2', template: `model: {{model}};`})
+              class Ng2Component implements OnChanges {
+                ngOnChangesCount = 0;
+                @Input() model = '?';
+                @Output() modelChange = new EventEmitter();
 
-               ngOnChanges(changes: SimpleChanges) {
-                 switch (this.ngOnChangesCount++) {
-                   case 0:
-                     expect(changes.model.currentValue).toBe('world');
-                     this.modelChange.emit('newC');
-                     break;
-                   case 1:
-                     expect(changes.model.currentValue).toBe('newC');
-                     break;
-                   default:
-                     throw new Error('Called too many times! ' + JSON.stringify(changes));
-                 }
-               }
-             }
+                ngOnChanges(changes: SimpleChanges) {
+                  switch (this.ngOnChangesCount++) {
+                    case 0:
+                      expect(changes.model.currentValue).toBe('world');
+                      this.modelChange.emit('newC');
+                      break;
+                    case 1:
+                      expect(changes.model.currentValue).toBe('newC');
+                      break;
+                    default:
+                      throw new Error('Called too many times! ' + JSON.stringify(changes));
+                  }
+                }
+              }
 
-             ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+              ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
 
-             @NgModule({
-               declarations: [Ng2Component],
-               entryComponents: [Ng2Component],
-               imports: [BrowserModule, UpgradeModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                declarations: [Ng2Component],
+                entryComponents: [Ng2Component],
+                imports: [BrowserModule, UpgradeModule]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             const element = html(`
+              const element = html(`
           <div>
             <ng2 [(model)]="value" (model-change)="listener($event)"></ng2>
             | value: {{value}}
           </div>
         `);
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-               expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
-               expect(listenerSpy).toHaveBeenCalledWith('newC');
-             });
-           }));
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+                expect(multiTrim(element.textContent)).toEqual('model: newC; | value: newC');
+                expect(listenerSpy).toHaveBeenCalledWith('newC');
+              });
+            }));
 
     it('should run change-detection on every digest (by default)', async(() => {
          let ng2Component: Ng2Component;
@@ -404,66 +404,66 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly') &&
-        it('should initialize inputs in time for `ngOnChanges`', async(() => {
-             @Component({
-               selector: 'ng2',
-               template: `
+    fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
+        .it('should initialize inputs in time for `ngOnChanges`', async(() => {
+              @Component({
+                selector: 'ng2',
+                template: `
              ngOnChangesCount: {{ ngOnChangesCount }} |
              firstChangesCount: {{ firstChangesCount }} |
              initialValue: {{ initialValue }}`
-             })
-             class Ng2Component implements OnChanges {
-               ngOnChangesCount = 0;
-               firstChangesCount = 0;
-               // TODO(issue/24571): remove '!'.
-               initialValue !: string;
-               // TODO(issue/24571): remove '!'.
-               @Input() foo !: string;
+              })
+              class Ng2Component implements OnChanges {
+                ngOnChangesCount = 0;
+                firstChangesCount = 0;
+                // TODO(issue/24571): remove '!'.
+                initialValue !: string;
+                // TODO(issue/24571): remove '!'.
+                @Input() foo !: string;
 
-               ngOnChanges(changes: SimpleChanges) {
-                 this.ngOnChangesCount++;
+                ngOnChanges(changes: SimpleChanges) {
+                  this.ngOnChangesCount++;
 
-                 if (this.ngOnChangesCount === 1) {
-                   this.initialValue = this.foo;
-                 }
+                  if (this.ngOnChangesCount === 1) {
+                    this.initialValue = this.foo;
+                  }
 
-                 if (changes['foo'] && changes['foo'].isFirstChange()) {
-                   this.firstChangesCount++;
-                 }
-               }
-             }
+                  if (changes['foo'] && changes['foo'].isFirstChange()) {
+                    this.firstChangesCount++;
+                  }
+                }
+              }
 
-             @NgModule({
-               imports: [BrowserModule, UpgradeModule],
-               declarations: [Ng2Component],
-               entryComponents: [Ng2Component]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                imports: [BrowserModule, UpgradeModule],
+                declarations: [Ng2Component],
+                entryComponents: [Ng2Component]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             const ng1Module = angular.module('ng1', []).directive(
-                 'ng2', downgradeComponent({component: Ng2Component}));
+              const ng1Module = angular.module('ng1', []).directive(
+                  'ng2', downgradeComponent({component: Ng2Component}));
 
-             const element = html(`
+              const element = html(`
            <ng2 [foo]="'foo'"></ng2>
            <ng2 foo="bar"></ng2>
            <ng2 [foo]="'baz'" ng-if="true"></ng2>
            <ng2 foo="qux" ng-if="true"></ng2>
          `);
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-               const nodes = element.querySelectorAll('ng2');
-               const expectedTextWith = (value: string) =>
-                   `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+                const nodes = element.querySelectorAll('ng2');
+                const expectedTextWith = (value: string) =>
+                    `ngOnChangesCount: 1 | firstChangesCount: 1 | initialValue: ${value}`;
 
-               expect(multiTrim(nodes[0].textContent)).toBe(expectedTextWith('foo'));
-               expect(multiTrim(nodes[1].textContent)).toBe(expectedTextWith('bar'));
-               expect(multiTrim(nodes[2].textContent)).toBe(expectedTextWith('baz'));
-               expect(multiTrim(nodes[3].textContent)).toBe(expectedTextWith('qux'));
-             });
-           }));
+                expect(multiTrim(nodes[0].textContent)).toBe(expectedTextWith('foo'));
+                expect(multiTrim(nodes[1].textContent)).toBe(expectedTextWith('bar'));
+                expect(multiTrim(nodes[2].textContent)).toBe(expectedTextWith('baz'));
+                expect(multiTrim(nodes[3].textContent)).toBe(expectedTextWith('qux'));
+              });
+            }));
 
     it('should bind to ng-model', async(() => {
          const ng1Module = angular.module('ng1', []).run(
@@ -709,88 +709,88 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-714: ng1 projected content is not being rendered') &&
-        it('should respect hierarchical dependency injection for ng2', async(() => {
-             @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
-             class ParentComponent {
-             }
+    fixmeIvy('FW-714: ng1 projected content is not being rendered')
+        .it('should respect hierarchical dependency injection for ng2', async(() => {
+              @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
+              class ParentComponent {
+              }
 
-             @Component({selector: 'child', template: 'child'})
-             class ChildComponent {
-               constructor(parent: ParentComponent) {}
-             }
+              @Component({selector: 'child', template: 'child'})
+              class ChildComponent {
+                constructor(parent: ParentComponent) {}
+              }
 
-             @NgModule({
-               declarations: [ParentComponent, ChildComponent],
-               entryComponents: [ParentComponent, ChildComponent],
-               imports: [BrowserModule, UpgradeModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                declarations: [ParentComponent, ChildComponent],
+                entryComponents: [ParentComponent, ChildComponent],
+                imports: [BrowserModule, UpgradeModule]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             const ng1Module =
-                 angular.module('ng1', [])
-                     .directive('parent', downgradeComponent({component: ParentComponent}))
-                     .directive('child', downgradeComponent({component: ChildComponent}));
+              const ng1Module =
+                  angular.module('ng1', [])
+                      .directive('parent', downgradeComponent({component: ParentComponent}))
+                      .directive('child', downgradeComponent({component: ChildComponent}));
 
-             const element = html('<parent><child></child></parent>');
+              const element = html('<parent><child></child></parent>');
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-               expect(multiTrim(document.body.textContent)).toBe('parent(child)');
-             });
-           }));
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+                expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+              });
+            }));
 
     fixmeIvy(
-        'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector') &&
-        it('should work with ng2 lazy loaded components', async(() => {
-             let componentInjector: Injector;
+        'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector')
+        .it('should work with ng2 lazy loaded components', async(() => {
+              let componentInjector: Injector;
 
-             @Component({selector: 'ng2', template: ''})
-             class Ng2Component {
-               constructor(injector: Injector) { componentInjector = injector; }
-             }
+              @Component({selector: 'ng2', template: ''})
+              class Ng2Component {
+                constructor(injector: Injector) { componentInjector = injector; }
+              }
 
-             @NgModule({
-               declarations: [Ng2Component],
-               entryComponents: [Ng2Component],
-               imports: [BrowserModule, UpgradeModule],
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+              @NgModule({
+                declarations: [Ng2Component],
+                entryComponents: [Ng2Component],
+                imports: [BrowserModule, UpgradeModule],
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-             @Component({template: ''})
-             class LazyLoadedComponent {
-               constructor(public module: NgModuleRef<any>) {}
-             }
+              @Component({template: ''})
+              class LazyLoadedComponent {
+                constructor(public module: NgModuleRef<any>) {}
+              }
 
-             @NgModule({
-               declarations: [LazyLoadedComponent],
-               entryComponents: [LazyLoadedComponent],
-             })
-             class LazyLoadedModule {
-             }
+              @NgModule({
+                declarations: [LazyLoadedComponent],
+                entryComponents: [LazyLoadedComponent],
+              })
+              class LazyLoadedModule {
+              }
 
-             const ng1Module = angular.module('ng1', []).directive(
-                 'ng2', downgradeComponent({component: Ng2Component}));
+              const ng1Module = angular.module('ng1', []).directive(
+                  'ng2', downgradeComponent({component: Ng2Component}));
 
-             const element = html('<ng2></ng2>');
+              const element = html('<ng2></ng2>');
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-               const modInjector = upgrade.injector;
-               // Emulate the router lazy loading a module and creating a component
-               const compiler = modInjector.get(Compiler);
-               const modFactory = compiler.compileModuleSync(LazyLoadedModule);
-               const childMod = modFactory.create(modInjector);
-               const cmpFactory =
-                   childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
-               const lazyCmp = cmpFactory.create(componentInjector);
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+                const modInjector = upgrade.injector;
+                // Emulate the router lazy loading a module and creating a component
+                const compiler = modInjector.get(Compiler);
+                const modFactory = compiler.compileModuleSync(LazyLoadedModule);
+                const childMod = modFactory.create(modInjector);
+                const cmpFactory = childMod.componentFactoryResolver.resolveComponentFactory(
+                    LazyLoadedComponent) !;
+                const lazyCmp = cmpFactory.create(componentInjector);
 
-               expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
-             });
+                expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
+              });
 
-           }));
+            }));
 
     it('should throw if `downgradedModule` is specified', async(() => {
          @Component({selector: 'ng2', template: ''})

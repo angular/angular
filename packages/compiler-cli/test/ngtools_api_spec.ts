@@ -60,7 +60,7 @@ describe('ngtools_api (deprecated)', () => {
     });
   }
 
-  fixmeIvy('FW-629: ngtsc lists lazy routes') && it('should list lazy routes recursively', () => {
+  fixmeIvy('FW-629: ngtsc lists lazy routes').it('should list lazy routes recursively', () => {
     writeSomeRoutes();
     const {program, host, options} = createProgram(['src/main.ts']);
     const routes = NgTools_InternalApi_NG_2.listLazyRoutes({

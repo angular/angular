@@ -54,8 +54,8 @@ describe('Query API', () => {
 
   describe('querying by directive type', () => {
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should contain all direct child directives in the light dom (constructor)', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should contain all direct child directives in the light dom (constructor)', () => {
           const template = `
             <div text="1"></div>
             <needs-query text="2">
@@ -97,23 +97,23 @@ describe('Query API', () => {
     });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
-           () => {
-             const template =
-                 '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
-                 '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
-             const view = createTestCmp(MyComp0, template);
-             view.detectChanges();
-             const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
-             expect(q.child.text).toEqual('foo');
-             const directive: DirectiveNeedsContentChild =
-                 view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
-             expect(directive.child.text).toEqual('foo');
-           });
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
+            () => {
+              const template =
+                  '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
+                  '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
+              const view = createTestCmp(MyComp0, template);
+              view.detectChanges();
+              const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
+              expect(q.child.text).toEqual('foo');
+              const directive: DirectiveNeedsContentChild =
+                  view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
+              expect(directive.child.text).toEqual('foo');
+            });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
-        it('should contain the first view child', () => {
+    fixmeIvy('FW-782 - View queries are executed twice in some cases')
+        .it('should contain the first view child', () => {
           const template = '<needs-view-child #q></needs-view-child>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
 
@@ -128,8 +128,8 @@ describe('Query API', () => {
           ]);
         });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
-        it('should set static view and content children already after the constructor call', () => {
+    fixmeIvy('FW-782 - View queries are executed twice in some cases')
+        .it('should set static view and content children already after the constructor call', () => {
           const template =
               '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
           const view = createTestCmp(MyComp0, template);
@@ -142,8 +142,8 @@ describe('Query API', () => {
           expect(q.viewChild.text).toEqual('viewFoo');
         });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
-        it('should contain the first view child across embedded views', () => {
+    fixmeIvy('FW-782 - View queries are executed twice in some cases')
+        .it('should contain the first view child across embedded views', () => {
           TestBed.overrideComponent(
               MyComp0, {set: {template: '<needs-view-child #q></needs-view-child>'}});
           TestBed.overrideComponent(NeedsViewChild, {
@@ -172,8 +172,8 @@ describe('Query API', () => {
         });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should contain all directives in the light dom when descendants flag is used', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should contain all directives in the light dom when descendants flag is used', () => {
           const template = '<div text="1"></div>' +
               '<needs-query-desc text="2"><div text="3">' +
               '<div text="4"></div>' +
@@ -185,8 +185,8 @@ describe('Query API', () => {
         });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should contain all directives in the light dom', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should contain all directives in the light dom', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div text="3"></div></needs-query>' +
               '<div text="4"></div>';
@@ -196,8 +196,8 @@ describe('Query API', () => {
         });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should reflect dynamically inserted directives', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should reflect dynamically inserted directives', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div *ngIf="shouldShow" [text]="\'3\'"></div></needs-query>' +
               '<div text="4"></div>';
@@ -221,8 +221,8 @@ describe('Query API', () => {
     });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should reflect moved directives', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should reflect moved directives', () => {
           const template = '<div text="1"></div>' +
               '<needs-query text="2"><div *ngFor="let  i of list" [text]="i"></div></needs-query>' +
               '<div text="4"></div>';
@@ -234,8 +234,8 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
         });
 
-    fixmeIvy('FW-682 - TestBed: tests assert that compilation produces specific error') &&
-        it('should throw with descriptive error when query selectors are not present', () => {
+    fixmeIvy('FW-682 - TestBed: tests assert that compilation produces specific error')
+        .it('should throw with descriptive error when query selectors are not present', () => {
           TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
           const template = '<has-null-query-condition></has-null-query-condition>';
           TestBed.overrideComponent(MyCompBroken0, {set: {template}});
@@ -268,8 +268,8 @@ describe('Query API', () => {
 
   describe('read a different token', () => {
     modifiedInIvy(
-        'Breaking change in Ivy: no longer allow multiple local refs with the same name, all local refs are now unique') &&
-        it('should contain all content children', () => {
+        'Breaking change in Ivy: no longer allow multiple local refs with the same name, all local refs are now unique')
+        .it('should contain all content children', () => {
           const template =
               '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
@@ -477,17 +477,19 @@ describe('Query API', () => {
 
   describe('querying in the view', () => {
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should contain all the elements in the view with that have the given directive', () => {
-          const template = '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q: NeedsViewQuery = view.debugElement.children[0].references !['q'];
-          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
-        });
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should contain all the elements in the view with that have the given directive',
+            () => {
+              const template =
+                  '<needs-view-query #q><div text="ignoreme"></div></needs-view-query>';
+              const view = createTestCmpAndDetectChanges(MyComp0, template);
+              const q: NeedsViewQuery = view.debugElement.children[0].references !['q'];
+              expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2', '3', '4']);
+            });
 
     fixmeIvy(
-        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy') &&
-        it('should not include directive present on the host element', () => {
+        'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
+        .it('should not include directive present on the host element', () => {
           const template = '<needs-view-query #q text="self"></needs-view-query>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
           const q: NeedsViewQuery = view.debugElement.children[0].references !['q'];
@@ -588,8 +590,8 @@ describe('Query API', () => {
     });
 
     // Note: this test is just document our current behavior, which we do for performance reasons.
-    fixmeIvy('FW-782 - View queries are executed twice in some cases') &&
-        it('should not affected queries for projected templates if views are detached or moved', () => {
+    fixmeIvy('FW-782 - View queries are executed twice in some cases')
+        .it('should not affected queries for projected templates if views are detached or moved', () => {
           const template =
               '<manual-projecting #q><ng-template let-x="x"><div [text]="x"></div></ng-template></manual-projecting>';
           const view = createTestCmpAndDetectChanges(MyComp0, template);
@@ -615,8 +617,8 @@ describe('Query API', () => {
         });
 
     fixmeIvy(
-        'FW-763 - LView tree not properly constructed / destroyed for dynamically inserted components') &&
-        it('should remove manually projected templates if their parent view is destroyed', () => {
+        'FW-763 - LView tree not properly constructed / destroyed for dynamically inserted components')
+        .it('should remove manually projected templates if their parent view is destroyed', () => {
           const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
           <div *ngIf="shouldShow">
@@ -635,34 +637,34 @@ describe('Query API', () => {
           expect(q.query.length).toBe(0);
         });
 
-    fixmeIvy('unknown') &&
-        it('should not throw if a content template is queried and created in the view during change detection',
-           () => {
-             @Component(
-                 {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
-             class AutoProjecting {
-               // TODO(issue/24571):
-               // remove '!'.
-               @ContentChild(TemplateRef)
-               content !: TemplateRef<any>;
+    fixmeIvy('unknown').it(
+        'should not throw if a content template is queried and created in the view during change detection',
+        () => {
+          @Component(
+              {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
+          class AutoProjecting {
+            // TODO(issue/24571):
+            // remove '!'.
+            @ContentChild(TemplateRef)
+            content !: TemplateRef<any>;
 
-               // TODO(issue/24571):
-               // remove '!'.
-               @ContentChildren(TextDirective)
-               query !: QueryList<TextDirective>;
-             }
+            // TODO(issue/24571):
+            // remove '!'.
+            @ContentChildren(TextDirective)
+            query !: QueryList<TextDirective>;
+          }
 
-             TestBed.configureTestingModule({declarations: [AutoProjecting]});
-             const template =
-                 '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
-             const view = createTestCmpAndDetectChanges(MyComp0, template);
+          TestBed.configureTestingModule({declarations: [AutoProjecting]});
+          const template =
+              '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
+          const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-             const q = view.debugElement.children[0].references !['q'];
-             // This should be 1, but due to
-             // https://github.com/angular/angular/issues/15117
-             // this is 0.
-             expect(q.query.length).toBe(0);
-           });
+          const q = view.debugElement.children[0].references !['q'];
+          // This should be 1, but due to
+          // https://github.com/angular/angular/issues/15117
+          // this is 0.
+          expect(q.query.length).toBe(0);
+        });
 
   });
 });

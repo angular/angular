@@ -2135,76 +2135,76 @@ withEachNg1Version(() => {
 
     describe('transclusion', () => {
       fixmeIvy(
-          `Error: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`) &&
-          it('should support single-slot transclusion', async(() => {
-               let ng2ComponentAInstance: Ng2ComponentA;
-               let ng2ComponentBInstance: Ng2ComponentB;
+          `Error: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`)
+          .it('should support single-slot transclusion', async(() => {
+                let ng2ComponentAInstance: Ng2ComponentA;
+                let ng2ComponentBInstance: Ng2ComponentB;
 
-               // Define `ng1Component`
-               const ng1Component: angular.IComponent = {
-                 template: 'ng1(<div ng-transclude></div>)',
-                 transclude: true
-               };
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: 'ng1(<div ng-transclude></div>)',
+                  transclude: true
+                };
 
-               // Define `Ng1ComponentFacade`
-               @Directive({selector: 'ng1'})
-               class Ng1ComponentFacade extends UpgradeComponent {
-                 constructor(elementRef: ElementRef, injector: Injector) {
-                   super('ng1', elementRef, injector);
-                 }
-               }
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-               // Define `Ng2Component`
-               @Component({
-                 selector: 'ng2A',
-                 template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
-               })
-               class Ng2ComponentA {
-                 value = 'foo';
-                 showB = false;
-                 constructor() { ng2ComponentAInstance = this; }
-               }
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2A',
+                  template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
+                })
+                class Ng2ComponentA {
+                  value = 'foo';
+                  showB = false;
+                  constructor() { ng2ComponentAInstance = this; }
+                }
 
-               @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
-               class Ng2ComponentB {
-                 value = 'bar';
-                 constructor() { ng2ComponentBInstance = this; }
-               }
+                @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
+                class Ng2ComponentB {
+                  value = 'bar';
+                  constructor() { ng2ComponentBInstance = this; }
+                }
 
-               // Define `ng1Module`
-               const ng1Module =
-                   angular.module('ng1Module', [])
-                       .component('ng1', ng1Component)
-                       .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
 
-               // Define `Ng2Module`
-               @NgModule({
-                 imports: [BrowserModule, UpgradeModule],
-                 declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
-                 entryComponents: [Ng2ComponentA]
-               })
-               class Ng2Module {
-                 ngDoBootstrap() {}
-               }
+                // Define `Ng2Module`
+                @NgModule({
+                  imports: [BrowserModule, UpgradeModule],
+                  declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+                  entryComponents: [Ng2ComponentA]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-               // Bootstrap
-               const element = html(`<ng2-a></ng2-a>`);
+                // Bootstrap
+                const element = html(`<ng2-a></ng2-a>`);
 
-               bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-                 expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
 
-                 ng2ComponentAInstance.value = 'baz';
-                 ng2ComponentAInstance.showB = true;
-                 $digest(adapter);
+                  ng2ComponentAInstance.value = 'baz';
+                  ng2ComponentAInstance.showB = true;
+                  $digest(adapter);
 
-                 expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
+                  expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
 
-                 ng2ComponentBInstance.value = 'qux';
-                 $digest(adapter);
+                  ng2ComponentBInstance.value = 'qux';
+                  $digest(adapter);
 
-                 expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
-               });
-             }));
+                  expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
+                });
+              }));
 
       it('should support single-slot transclusion with fallback content', async(() => {
            let ng1ControllerInstances: any[] = [];
@@ -2532,29 +2532,29 @@ withEachNg1Version(() => {
          }));
 
       fixmeIvy(
-          `Error: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`) &&
-          it('should support structural directives in transcluded content', async(() => {
-               let ng2ComponentInstance: Ng2Component;
+          `Error: Failed to execute 'insertBefore' on 'Node': The node before which the new node is to be inserted is not a child of this node.`)
+          .it('should support structural directives in transcluded content', async(() => {
+                let ng2ComponentInstance: Ng2Component;
 
-               // Define `ng1Component`
-               const ng1Component: angular.IComponent = {
-                 template:
-                     'ng1(x(<div ng-transclude="slotX"></div>) | default(<div ng-transclude=""></div>))',
-                 transclude: {slotX: 'contentX'}
-               };
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template:
+                      'ng1(x(<div ng-transclude="slotX"></div>) | default(<div ng-transclude=""></div>))',
+                  transclude: {slotX: 'contentX'}
+                };
 
-               // Define `Ng1ComponentFacade`
-               @Directive({selector: 'ng1'})
-               class Ng1ComponentFacade extends UpgradeComponent {
-                 constructor(elementRef: ElementRef, injector: Injector) {
-                   super('ng1', elementRef, injector);
-                 }
-               }
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-               // Define `Ng2Component`
-               @Component({
-                 selector: 'ng2',
-                 template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                ng2(
                  <ng1>
                    <content-x><div *ngIf="show">{{ x }}1</div></content-x>
@@ -2563,53 +2563,53 @@ withEachNg1Version(() => {
                    <div *ngIf="show">{{ y }}2</div>
                  </ng1>
                )`
-               })
-               class Ng2Component {
-                 x = 'foo';
-                 y = 'bar';
-                 show = true;
-                 constructor() { ng2ComponentInstance = this; }
-               }
+                })
+                class Ng2Component {
+                  x = 'foo';
+                  y = 'bar';
+                  show = true;
+                  constructor() { ng2ComponentInstance = this; }
+                }
 
-               // Define `ng1Module`
-               const ng1Module =
-                   angular.module('ng1Module', [])
-                       .component('ng1', ng1Component)
-                       .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-               // Define `Ng2Module`
-               @NgModule({
-                 imports: [BrowserModule, UpgradeModule],
-                 declarations: [Ng1ComponentFacade, Ng2Component],
-                 entryComponents: [Ng2Component],
-                 schemas: [NO_ERRORS_SCHEMA]
-               })
-               class Ng2Module {
-                 ngDoBootstrap() {}
-               }
+                // Define `Ng2Module`
+                @NgModule({
+                  imports: [BrowserModule, UpgradeModule],
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  schemas: [NO_ERRORS_SCHEMA]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-               // Bootstrap
-               const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-               bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-                 expect(multiTrim(element.textContent, true))
-                     .toBe('ng2(ng1(x(foo1)|default(bar2)))');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  expect(multiTrim(element.textContent, true))
+                      .toBe('ng2(ng1(x(foo1)|default(bar2)))');
 
-                 ng2ComponentInstance.x = 'baz';
-                 ng2ComponentInstance.y = 'qux';
-                 ng2ComponentInstance.show = false;
-                 $digest(adapter);
+                  ng2ComponentInstance.x = 'baz';
+                  ng2ComponentInstance.y = 'qux';
+                  ng2ComponentInstance.show = false;
+                  $digest(adapter);
 
-                 expect(multiTrim(element.textContent, true))
-                     .toBe('ng2(ng1(x(baz2)|default(qux1)))');
+                  expect(multiTrim(element.textContent, true))
+                      .toBe('ng2(ng1(x(baz2)|default(qux1)))');
 
-                 ng2ComponentInstance.show = true;
-                 $digest(adapter);
+                  ng2ComponentInstance.show = true;
+                  $digest(adapter);
 
-                 expect(multiTrim(element.textContent, true))
-                     .toBe('ng2(ng1(x(baz1)|default(qux2)))');
-               });
-             }));
+                  expect(multiTrim(element.textContent, true))
+                      .toBe('ng2(ng1(x(baz1)|default(qux2)))');
+                });
+              }));
     });
 
     describe('lifecycle hooks', () => {
@@ -3336,103 +3336,105 @@ withEachNg1Version(() => {
          }));
 
 
-      fixmeIvy('FW-713: ngDestroy not being called when downgraded ng2 component is destroyed') &&
-          it('should call `$onDestroy()` on controller', async(() => {
-               const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
-               const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
+      fixmeIvy('FW-713: ngDestroy not being called when downgraded ng2 component is destroyed')
+          .it('should call `$onDestroy()` on controller', async(() => {
+                const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
+                const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
 
-               // Define `ng1Directive`
-               const ng1DirectiveA: angular.IDirective = {
-                 template: 'ng1A',
-                 scope: {},
-                 bindToController: false,
-                 controllerAs: '$ctrl',
-                 controller: class {$onDestroy() { controllerOnDestroyA(); }}
-               };
+                // Define `ng1Directive`
+                const ng1DirectiveA: angular.IDirective = {
+                  template: 'ng1A',
+                  scope: {},
+                  bindToController: false,
+                  controllerAs: '$ctrl',
+                  controller: class {$onDestroy() { controllerOnDestroyA(); }}
+                };
 
-               const ng1DirectiveB: angular.IDirective = {
-                 template: 'ng1B',
-                 scope: {},
-                 bindToController: true,
-                 controllerAs: '$ctrl',
-                 controller:
-                     class {constructor() { (this as any)['$onDestroy'] = controllerOnDestroyB; }}
-               };
+                const ng1DirectiveB: angular.IDirective = {
+                  template: 'ng1B',
+                  scope: {},
+                  bindToController: true,
+                  controllerAs: '$ctrl',
+                  controller: class {
+                    constructor() { (this as any)['$onDestroy'] = controllerOnDestroyB; }
+                  }
+                };
 
-               // Define `Ng1ComponentFacade`
-               @Directive({selector: 'ng1A'})
-               class Ng1ComponentAFacade extends UpgradeComponent {
-                 constructor(elementRef: ElementRef, injector: Injector) {
-                   super('ng1A', elementRef, injector);
-                 }
-               }
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1A'})
+                class Ng1ComponentAFacade extends UpgradeComponent {
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1A', elementRef, injector);
+                  }
+                }
 
-               @Directive({selector: 'ng1B'})
-               class Ng1ComponentBFacade extends UpgradeComponent {
-                 constructor(elementRef: ElementRef, injector: Injector) {
-                   super('ng1B', elementRef, injector);
-                 }
-               }
+                @Directive({selector: 'ng1B'})
+                class Ng1ComponentBFacade extends UpgradeComponent {
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1B', elementRef, injector);
+                  }
+                }
 
-               // Define `Ng2Component`
-               @Component({
-                 selector: 'ng2',
-                 template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'
-               })
-               class Ng2Component {
-                 // TODO(issue/24571): remove '!'.
-                 @Input() show !: boolean;
-               }
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'
+                })
+                class Ng2Component {
+                  // TODO(issue/24571): remove '!'.
+                  @Input() show !: boolean;
+                }
 
-               // Define `ng1Module`
-               const ng1Module =
-                   angular.module('ng1Module', [])
-                       .directive('ng1A', () => ng1DirectiveA)
-                       .directive('ng1B', () => ng1DirectiveB)
-                       .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .directive('ng1A', () => ng1DirectiveA)
+                        .directive('ng1B', () => ng1DirectiveB)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-               // Define `Ng2Module`
-               @NgModule({
-                 declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
-                 entryComponents: [Ng2Component],
-                 imports: [BrowserModule, UpgradeModule]
-               })
-               class Ng2Module {
-                 ngDoBootstrap() {}
-               }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentAFacade, Ng1ComponentBFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-               // Bootstrap
-               const element = html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
+                // Bootstrap
+                const element =
+                    html('<ng2 [show]="!destroyFromNg2" ng-if="!destroyFromNg1"></ng2>');
 
-               bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-                 const $rootScope =
-                     adapter.$injector.get('$rootScope') as angular.IRootScopeService;
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  const $rootScope =
+                      adapter.$injector.get('$rootScope') as angular.IRootScopeService;
 
-                 expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-                 expect(controllerOnDestroyA).not.toHaveBeenCalled();
-                 expect(controllerOnDestroyB).not.toHaveBeenCalled();
+                  expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+                  expect(controllerOnDestroyA).not.toHaveBeenCalled();
+                  expect(controllerOnDestroyB).not.toHaveBeenCalled();
 
-                 $rootScope.$apply('destroyFromNg1 = true');
+                  $rootScope.$apply('destroyFromNg1 = true');
 
-                 expect(multiTrim(document.body.textContent)).toBe('');
-                 expect(controllerOnDestroyA).toHaveBeenCalled();
-                 expect(controllerOnDestroyB).toHaveBeenCalled();
+                  expect(multiTrim(document.body.textContent)).toBe('');
+                  expect(controllerOnDestroyA).toHaveBeenCalled();
+                  expect(controllerOnDestroyB).toHaveBeenCalled();
 
-                 controllerOnDestroyA.calls.reset();
-                 controllerOnDestroyB.calls.reset();
-                 $rootScope.$apply('destroyFromNg1 = false');
+                  controllerOnDestroyA.calls.reset();
+                  controllerOnDestroyB.calls.reset();
+                  $rootScope.$apply('destroyFromNg1 = false');
 
-                 expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
-                 expect(controllerOnDestroyA).not.toHaveBeenCalled();
-                 expect(controllerOnDestroyB).not.toHaveBeenCalled();
+                  expect(multiTrim(document.body.textContent)).toBe('ng1A | ng1B');
+                  expect(controllerOnDestroyA).not.toHaveBeenCalled();
+                  expect(controllerOnDestroyB).not.toHaveBeenCalled();
 
-                 $rootScope.$apply('destroyFromNg2 = true');
+                  $rootScope.$apply('destroyFromNg2 = true');
 
-                 expect(multiTrim(document.body.textContent)).toBe('');
-                 expect(controllerOnDestroyA).toHaveBeenCalled();
-                 expect(controllerOnDestroyB).toHaveBeenCalled();
-               });
-             }));
+                  expect(multiTrim(document.body.textContent)).toBe('');
+                  expect(controllerOnDestroyA).toHaveBeenCalled();
+                  expect(controllerOnDestroyB).toHaveBeenCalled();
+                });
+              }));
 
       it('should not call `$onDestroy()` on scope', async(() => {
            const scopeOnDestroy = jasmine.createSpy('scopeOnDestroy');
