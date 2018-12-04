@@ -52,27 +52,30 @@ function declareTests(config?: {useJit: boolean}) {
     afterEach(() => { getDOM().log = originalLog; });
 
     describe('events', () => {
-      fixmeIvy('unknown') && it('should disallow binding to attr.on*', () => {
-        const template = `<div [attr.onclick]="ctxProp"></div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
+          it('should disallow binding to attr.on*', () => {
+            const template = `<div [attr.onclick]="ctxProp"></div>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-        expect(() => TestBed.createComponent(SecuredComponent))
-            .toThrowError(
-                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-      });
+            expect(() => TestBed.createComponent(SecuredComponent))
+                .toThrowError(
+                    /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+          });
 
-      fixmeIvy('unknown') && it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
-        const template = `<div [onclick]="ctxProp"></div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
-          schemas: [NO_ERRORS_SCHEMA]
-        });
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
+          it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+            const template = `<div [onclick]="ctxProp"></div>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+              schemas: [NO_ERRORS_SCHEMA]
+            });
 
-        expect(() => TestBed.createComponent(SecuredComponent))
-            .toThrowError(
-                /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-      });
+            expect(() => TestBed.createComponent(SecuredComponent))
+                .toThrowError(
+                    /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+          });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy(
+          'FW-786: Element properties and directive inputs are not distinguished for sanitisation purposes') &&
           it('should disallow binding to on* unless it is consumed by a directive', () => {
             const template = `<div [onPrefixedProp]="ctxProp" [onclick]="ctxProp"></div>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
@@ -95,7 +98,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('safe HTML values', function() {
-      fixmeIvy('unknown') && it('should not escape values marked as trusted', () => {
+      it('should not escape values marked as trusted', () => {
         const template = `<a [href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -109,7 +112,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getProperty(e, 'href')).toEqual('javascript:alert(1)');
       });
 
-      fixmeIvy('unknown') && it('should error when using the wrong trusted value', () => {
+      it('should error when using the wrong trusted value', () => {
         const template = `<a [href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -121,7 +124,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(() => fixture.detectChanges()).toThrowError(/Required a safe URL, got a Script/);
       });
 
-      fixmeIvy('unknown') && it('should warn when using in string interpolation', () => {
+      it('should warn when using in string interpolation', () => {
         const template = `<a href="/foo/{{ctxProp}}">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -154,7 +157,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(value).toEqual('unsafe:javascript:alert(1)');
       }
 
-      fixmeIvy('unknown') && it('should escape unsafe properties', () => {
+      it('should escape unsafe properties', () => {
         const template = `<a [href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -162,7 +165,7 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, false);
       });
 
-      fixmeIvy('unknown') && it('should escape unsafe attributes', () => {
+      it('should escape unsafe attributes', () => {
         const template = `<a [attr.href]="ctxProp">Link Title</a>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -170,7 +173,7 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, true);
       });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy('FW-785: Host bindings are not sanitised') &&
           it('should escape unsafe properties if they are used in host bindings', () => {
             @Directive({selector: '[dirHref]'})
             class HrefDirective {
@@ -187,7 +190,7 @@ function declareTests(config?: {useJit: boolean}) {
             checkEscapeOfHrefProperty(fixture, false);
           });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy('FW-785: Host bindings are not sanitised') &&
           it('should escape unsafe attributes if they are used in host bindings', () => {
             @Directive({selector: '[dirHref]'})
             class HrefDirective {
@@ -204,7 +207,7 @@ function declareTests(config?: {useJit: boolean}) {
             checkEscapeOfHrefProperty(fixture, true);
           });
 
-      fixmeIvy('unknown') && it('should escape unsafe style values', () => {
+      it('should escape unsafe style values', () => {
         const template = `<div [style.background]="ctxProp">Text</div>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
@@ -224,15 +227,16 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
       });
 
-      fixmeIvy('unknown') && it('should escape unsafe SVG attributes', () => {
-        const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state') &&
+          it('should escape unsafe SVG attributes', () => {
+            const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-        expect(() => TestBed.createComponent(SecuredComponent))
-            .toThrowError(/Can't bind to 'xlink:href'/);
-      });
+            expect(() => TestBed.createComponent(SecuredComponent))
+                .toThrowError(/Can't bind to 'xlink:href'/);
+          });
 
-      fixmeIvy('unknown') && it('should escape unsafe HTML values', () => {
+      it('should escape unsafe HTML values', () => {
         const template = `<div [innerHTML]="ctxProp">Text</div>`;
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
