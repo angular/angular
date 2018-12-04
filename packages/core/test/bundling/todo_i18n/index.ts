@@ -98,7 +98,7 @@ class TodoStore {
     </section>
     <footer *ngIf="todoStore.todos.length > 0" class="footer">
       <span class="todo-count" i18n>
-        <strong>{{nbTodos}}</strong> {nbTodos, plural, =1 {item left} other {items left}}
+        <strong>{{todoStore.getRemaining().length}}</strong> {todoStore.getRemaining().length, plural, =1 {item left} other {items left}}
       </span>
       <button *ngIf="todoStore.getCompleted().length > 0" class="clear-completed" (click)="removeCompleted()" i18n>
         Clear completed
@@ -111,7 +111,6 @@ class TodoStore {
 })
 class ToDoAppComponent {
   newTodoText = '';
-  get nbTodos() { return this.todoStore.getRemaining().length; }
 
   constructor(public todoStore: TodoStore) {}
 
@@ -179,5 +178,4 @@ class ToDoAppComponent {
 class ToDoAppModule {
 }
 
-// TODO(misko): create cleaner way to publish component into global location for tests.
-(window as any).toDoAppComponent = renderComponent(ToDoAppComponent);
+renderComponent(ToDoAppComponent);

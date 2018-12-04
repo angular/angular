@@ -30,11 +30,10 @@ export const translations: {[key: string]: string} = {
 const glob = typeof global !== 'undefined' ? global : window;
 glob.goog = glob.goog || {};
 glob.goog.getMsg =
-    glob.goog.getMsg || function(input: string, placeholders: {[key: string]: string}) {
-      if (!placeholders) {
-        placeholders = {};
+    glob.goog.getMsg || function(input: string, placeholders: {[key: string]: string} = {}) {
+      if (typeof translations[input] !== 'undefined') {  // to account for empty string
+        input = translations[input];
       }
-      input = translations[input] || input;
       return Object.keys(placeholders).length ?
           input.replace(/\{\$(.*?)\}/g, (match, key) => placeholders[key] || '') :
           input;
