@@ -38,7 +38,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): boolean { return super.isClass(node) || !!this.getClassSymbol(node); }
+  isClass(node: ts.Node): node is ts.NamedDeclaration {
+    return super.isClass(node) || !!this.getClassSymbol(node);
+  }
 
   /**
    * Find a symbol for a node that we think is a class.

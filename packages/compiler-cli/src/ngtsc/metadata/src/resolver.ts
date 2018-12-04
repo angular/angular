@@ -353,7 +353,7 @@ class StaticInterpreter {
       return this.visitExpression(node.expression, context);
     } else if (ts.isNonNullExpression(node)) {
       return this.visitExpression(node.expression, context);
-    } else if (isPossibleClassDeclaration(node) && this.host.isClass(node)) {
+    } else if (this.host.isClass(node)) {
       return this.visitDeclaration(node, context);
     } else {
       return DYNAMIC_VALUE;
@@ -565,7 +565,7 @@ class StaticInterpreter {
       return lhs[rhs];
     } else if (lhs instanceof Reference) {
       const ref = lhs.node;
-      if (isPossibleClassDeclaration(ref) && this.host.isClass(ref)) {
+      if (this.host.isClass(ref)) {
         let absoluteModuleName = context.absoluteModuleName;
         if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
           absoluteModuleName = lhs.moduleName || absoluteModuleName;
@@ -759,10 +759,6 @@ function identifierOfDeclaration(decl: ts.Declaration): ts.Identifier|undefined 
   } else {
     return undefined;
   }
-}
-
-function isPossibleClassDeclaration(node: ts.Node): node is ts.Declaration {
-  return ts.isClassDeclaration(node) || ts.isVariableDeclaration(node);
 }
 
 function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
