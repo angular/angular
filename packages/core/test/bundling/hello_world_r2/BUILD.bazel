@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
-load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("//tools/http-server:http_server.bzl", "http_server")
 
 ng_module(
@@ -62,15 +61,6 @@ jasmine_node_test(
         "ivy-only",
     ],
     deps = [":test_lib"],
-)
-
-js_expected_symbol_test(
-    name = "symbol_test",
-    src = ":bundle.min_debug.js",
-    golden = ":bundle.golden_symbols.json",
-    tags = [
-        "ivy-only",
-    ],
 )
 
 http_server(
