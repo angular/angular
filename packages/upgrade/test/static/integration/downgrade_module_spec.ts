@@ -225,42 +225,41 @@ withEachNg1Version(() => {
            });
          }));
 
-      fixmeIvy('FW-713: ngDestroy not being called when downgraded ng2 component is destroyed') &&
-          it('should destroy components inside the Angular zone', async(() => {
-               let destroyedInTheZone = false;
+      it('should destroy components inside the Angular zone', async(() => {
+           let destroyedInTheZone = false;
 
-               @Component({selector: 'ng2', template: ''})
-               class Ng2Component implements OnDestroy {
-                 ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
-               }
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component implements OnDestroy {
+             ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
+           }
 
-               @NgModule({
-                 declarations: [Ng2Component],
-                 entryComponents: [Ng2Component],
-                 imports: [BrowserModule],
-               })
-               class Ng2Module {
-                 ngDoBootstrap() {}
-               }
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-               const bootstrapFn = (extraProviders: StaticProvider[]) =>
-                   platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
-               const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
-               const ng1Module =
-                   angular.module('ng1', [lazyModuleName])
-                       .directive(
-                           'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
-               const element = html('<ng2 ng-if="!hideNg2"></ng2>');
-               const $injector = angular.bootstrap(element, [ng1Module.name]);
-               const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-               // Wait for the module to be bootstrapped.
-               setTimeout(() => {
-                 $rootScope.$apply('hideNg2 = true');
-                 expect(destroyedInTheZone).toBe(true);
-               });
-             }));
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             $rootScope.$apply('hideNg2 = true');
+             expect(destroyedInTheZone).toBe(true);
+           });
+         }));
 
       fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly') &&
           it('should propagate input changes inside the Angular zone', async(() => {
@@ -526,54 +525,53 @@ withEachNg1Version(() => {
                });
              }));
 
-      fixmeIvy('FW-717: Browser locks up and disconnects') &&
-          it('should detach hostViews from the ApplicationRef once destroyed', async(() => {
-               let ng2Component: Ng2Component;
+      it('should detach hostViews from the ApplicationRef once destroyed', async(() => {
+           let ng2Component: Ng2Component;
 
-               @Component({selector: 'ng2', template: ''})
-               class Ng2Component {
-                 constructor(public appRef: ApplicationRef) {
-                   ng2Component = this;
-                   spyOn(appRef, 'attachView').and.callThrough();
-                   spyOn(appRef, 'detachView').and.callThrough();
-                 }
-               }
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component {
+             constructor(public appRef: ApplicationRef) {
+               ng2Component = this;
+               spyOn(appRef, 'attachView').and.callThrough();
+               spyOn(appRef, 'detachView').and.callThrough();
+             }
+           }
 
-               @NgModule({
-                 declarations: [Ng2Component],
-                 entryComponents: [Ng2Component],
-                 imports: [BrowserModule],
-               })
-               class Ng2Module {
-                 ngDoBootstrap() {}
-               }
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-               const bootstrapFn = (extraProviders: StaticProvider[]) =>
-                   platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
-               const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
-               const ng1Module =
-                   angular.module('ng1', [lazyModuleName])
-                       .directive(
-                           'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
 
-               const element = html('<ng2 ng-if="!hideNg2"></ng2>');
-               const $injector = angular.bootstrap(element, [ng1Module.name]);
-               const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-               setTimeout(() => {    // Wait for the module to be bootstrapped.
-                 setTimeout(() => {  // Wait for the hostView to be attached (during the `$digest`).
-                   const hostView: ViewRef =
-                       (ng2Component.appRef.attachView as jasmine.Spy).calls.mostRecent().args[0];
+           setTimeout(() => {    // Wait for the module to be bootstrapped.
+             setTimeout(() => {  // Wait for the hostView to be attached (during the `$digest`).
+               const hostView: ViewRef =
+                   (ng2Component.appRef.attachView as jasmine.Spy).calls.mostRecent().args[0];
 
-                   expect(hostView.destroyed).toBe(false);
+               expect(hostView.destroyed).toBe(false);
 
-                   $rootScope.$apply('hideNg2 = true');
+               $rootScope.$apply('hideNg2 = true');
 
-                   expect(hostView.destroyed).toBe(true);
-                   expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
-                 });
-               });
-             }));
+               expect(hostView.destroyed).toBe(true);
+               expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
+             });
+           });
+         }));
 
       it('should only retrieve the Angular zone once (and cache it for later use)',
          fakeAsync(() => {
