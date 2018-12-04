@@ -950,7 +950,7 @@ describe('ngtsc behavioral tests', () => {
       `
     ];
 
-    // Compomnents with templates listed below should not throw
+    // Components with templates listed below should not throw
     // the error, since refs are located in different scopes
     const validCases = [
       `
