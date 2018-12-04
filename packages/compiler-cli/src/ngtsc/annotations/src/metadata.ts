@@ -20,10 +20,7 @@ import {CtorParameter, Decorator, ReflectionHost} from '../../host';
  */
 export function generateSetClassMetadataCall(
     clazz: ts.Declaration, reflection: ReflectionHost, isCore: boolean): Statement|null {
-  // Classes come in two flavors, class declarations (ES2015) and variable declarations (ES5).
-  // Both must have a declared name to have metadata set on them.
-  if ((!ts.isClassDeclaration(clazz) && !ts.isVariableDeclaration(clazz)) ||
-      clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
+  if (!reflection.isClass(clazz) || clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
     return null;
   }
   const id = ts.updateIdentifier(clazz.name);
