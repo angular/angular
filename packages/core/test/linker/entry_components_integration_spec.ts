@@ -69,21 +69,20 @@ function declareTests(config?: {useJit: boolean}) {
       expect(childComp.cfr.resolveComponentFactory(ChildComp) !.componentType).toBe(ChildComp);
     });
 
-    fixmeIvy('unknown') &&
-        it('should not be able to get components from a parent component (content hierarchy)',
-           () => {
-             TestBed.overrideComponent(
-                 MainComp, {set: {template: '<child><nested></nested></child>'}});
-             TestBed.overrideComponent(ChildComp, {set: {template: '<ng-content></ng-content>'}});
+    fixmeIvy('unknown').it(
+        'should not be able to get components from a parent component (content hierarchy)', () => {
+          TestBed.overrideComponent(
+              MainComp, {set: {template: '<child><nested></nested></child>'}});
+          TestBed.overrideComponent(ChildComp, {set: {template: '<ng-content></ng-content>'}});
 
-             const compFixture = TestBed.createComponent(MainComp);
-             const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
-             const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
-             expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp) !.componentType)
-                 .toBe(ChildComp);
-             expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
-                 .toThrow(noComponentFactoryError(NestedChildComp));
-           });
+          const compFixture = TestBed.createComponent(MainComp);
+          const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
+          const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
+          expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp) !.componentType)
+              .toBe(ChildComp);
+          expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
+              .toThrow(noComponentFactoryError(NestedChildComp));
+        });
 
   });
 }

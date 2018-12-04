@@ -41,8 +41,8 @@ describe('Ivy NgModule', () => {
 
     it('works', () => { createInjector(JitAppModule); });
 
-    fixmeIvy('FW-645: jit doesn\'t support forwardRefs') &&
-        it('throws an error on circular module dependencies', () => {
+    fixmeIvy('FW-645: jit doesn\'t support forwardRefs')
+        .it('throws an error on circular module dependencies', () => {
           @NgModule({
             imports: [forwardRef(() => BModule)],
           })

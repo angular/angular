@@ -95,44 +95,44 @@ let lastCreatedRenderer: Renderer2;
       expect(renderEl).toHaveText('Hello World!');
     });
 
-    fixmeIvy('#FW-750 - fixture.debugElement is null') &&
-        it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
-           () => {
-             const fixture =
-                 TestBed.overrideTemplate(MyComp2, '<input [title]="y" style="position:absolute">')
-                     .createComponent(MyComp2);
+    fixmeIvy('#FW-750 - fixture.debugElement is null')
+        .it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
+            () => {
+              const fixture =
+                  TestBed.overrideTemplate(MyComp2, '<input [title]="y" style="position:absolute">')
+                      .createComponent(MyComp2);
 
-             const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
-               expect(lastCreatedRenderer).not.toBeNull();
+              const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
+                expect(lastCreatedRenderer).not.toBeNull();
 
-               const el = getRenderElement(workerEl);
-               lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);
-               expect(el.tabIndex).toEqual(1);
+                const el = getRenderElement(workerEl);
+                lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);
+                expect(el.tabIndex).toEqual(1);
 
-               lastCreatedRenderer.addClass(workerEl, 'a');
-               expect(getDOM().hasClass(el, 'a')).toBe(true);
+                lastCreatedRenderer.addClass(workerEl, 'a');
+                expect(getDOM().hasClass(el, 'a')).toBe(true);
 
-               lastCreatedRenderer.removeClass(workerEl, 'a');
-               expect(getDOM().hasClass(el, 'a')).toBe(false);
+                lastCreatedRenderer.removeClass(workerEl, 'a');
+                expect(getDOM().hasClass(el, 'a')).toBe(false);
 
-               lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
-               expect(getDOM().getStyle(el, 'width')).toEqual('10px');
+                lastCreatedRenderer.setStyle(workerEl, 'width', '10px');
+                expect(getDOM().getStyle(el, 'width')).toEqual('10px');
 
-               lastCreatedRenderer.removeStyle(workerEl, 'width');
-               expect(getDOM().getStyle(el, 'width')).toEqual('');
+                lastCreatedRenderer.removeStyle(workerEl, 'width');
+                expect(getDOM().getStyle(el, 'width')).toEqual('');
 
-               lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
-               expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
-             };
+                lastCreatedRenderer.setAttribute(workerEl, 'someattr', 'someValue');
+                expect(getDOM().getAttribute(el, 'someattr')).toEqual('someValue');
+              };
 
-             // root element
-             checkSetters(fixture.componentRef, fixture.nativeElement);
-             // nested elements
-             checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
-           });
+              // root element
+              checkSetters(fixture.componentRef, fixture.nativeElement);
+              // nested elements
+              checkSetters(fixture.componentRef, fixture.debugElement.children[0].nativeElement);
+            });
 
-    fixmeIvy('#FW-664 ng-reflect-* is not supported') &&
-        it('should update any template comment property/attributes', () => {
+    fixmeIvy('#FW-664 ng-reflect-* is not supported')
+        .it('should update any template comment property/attributes', () => {
           const fixture =
               TestBed.overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp"></ng-container>')
                   .createComponent(MyComp2);
@@ -161,7 +161,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     if (getDOM().supportsDOMEvents()) {
-      fixmeIvy('#FW-750 - fixture.debugElement is null') && it('should listen to events', () => {
+      fixmeIvy('#FW-750 - fixture.debugElement is null').it('should listen to events', () => {
         const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                             .createComponent(MyComp2);
 

@@ -579,28 +579,28 @@ class HiddenModule {
            });
          })));
 
-      fixmeIvy('FW-672: SVG xlink:href is sanitized to :xlink:href (extra ":")') &&
-          it('works with SVG elements', async(() => {
-               renderModule(SVGServerModule, {document: doc}).then(output => {
-                 expect(output).toBe(
-                     '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                     '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
-                 called = true;
-               });
-             }));
+      fixmeIvy('FW-672: SVG xlink:href is sanitized to :xlink:href (extra ":")')
+          .it('works with SVG elements', async(() => {
+                renderModule(SVGServerModule, {document: doc}).then(output => {
+                  expect(output).toBe(
+                      '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                      '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+                  called = true;
+                });
+              }));
 
       fixmeIvy(
-          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
-          it('works with animation', async(() => {
-               renderModule(AnimationServerModule, {document: doc}).then(output => {
-                 expect(output).toContain('Works!');
-                 expect(output).toContain('ng-trigger-myAnimation');
-                 expect(output).toContain('opacity:1;');
-                 expect(output).toContain('transform:translate3d(0 , 0 , 0);');
-                 expect(output).toContain('font-weight:bold;');
-                 called = true;
-               });
-             }));
+          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+          .it('works with animation', async(() => {
+                renderModule(AnimationServerModule, {document: doc}).then(output => {
+                  expect(output).toContain('Works!');
+                  expect(output).toContain('ng-trigger-myAnimation');
+                  expect(output).toContain('opacity:1;');
+                  expect(output).toContain('transform:translate3d(0 , 0 , 0);');
+                  expect(output).toContain('font-weight:bold;');
+                  called = true;
+                });
+              }));
 
       it('should handle ViewEncapsulation.Native', async(() => {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
