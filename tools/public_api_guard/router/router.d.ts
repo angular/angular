@@ -473,7 +473,7 @@ export declare class RoutesRecognized extends RouterEvent {
     toString(): string;
 }
 
-export declare type RunGuardsAndResolvers = 'pathParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export declare type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 export declare class Scroll {
     readonly anchor: string | null;

@@ -151,6 +151,10 @@ function shouldRunGuardsAndResolvers(
     case 'pathParamsChange':
       return !equalPath(curr.url, future.url);
 
+    case 'pathParamsOrQueryParamsChange':
+      return !equalPath(curr.url, future.url) ||
+          !shallowEqual(curr.queryParams, future.queryParams);
+
     case 'always':
       return true;
 
