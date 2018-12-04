@@ -369,8 +369,9 @@ export function insertView(
  * @param lContainer The container from which to detach a view
  * @param removeIndex The index of the view to detach
  * @param detached Whether or not this view is already detached.
+ * @returns Detached LView instance.
  */
-export function detachView(lContainer: LContainer, removeIndex: number, detached: boolean) {
+export function detachView(lContainer: LContainer, removeIndex: number, detached: boolean): LView {
   const views = lContainer[VIEWS];
   const viewToDetach = views[removeIndex];
   if (removeIndex > 0) {
@@ -388,6 +389,7 @@ export function detachView(lContainer: LContainer, removeIndex: number, detached
   viewToDetach[PARENT] = null;
   // Unsets the attached flag
   viewToDetach[FLAGS] &= ~LViewFlags.Attached;
+  return viewToDetach;
 }
 
 /**

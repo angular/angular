@@ -25,7 +25,7 @@ import {RenderFlags} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
-import {CONTEXT, HOST_NODE, LView, QUERIES, RENDERER, TView} from './interfaces/view';
+import {CONTAINER_INDEX, CONTEXT, HOST_NODE, LView, QUERIES, RENDERER, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, findComponentView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getLView, getPreviousOrParentTNode} from './state';
@@ -284,8 +284,9 @@ export function createContainerRef(
 
       detach(index?: number): viewEngine_ViewRef|null {
         const adjustedIdx = this._adjustIndex(index, -1);
-        detachView(this._lContainer, adjustedIdx, !!this._hostTNode.detached);
-        return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
+        const view = detachView(this._lContainer, adjustedIdx, !!this._hostTNode.detached);
+        const wasDetached = this._viewRefs.splice(adjustedIdx, 1)[0] != null;
+        return wasDetached ? new ViewRef(view, view[CONTEXT], view[CONTAINER_INDEX]) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
