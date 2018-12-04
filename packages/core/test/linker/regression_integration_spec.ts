@@ -74,7 +74,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(CountingPipe.calls).toBe(1);
       });
 
-      fixmeIvy('unknown') &&
+      fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account') &&
           it('should only update the bound property when using asyncPipe - #15205',
              fakeAsync(() => {
                @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
