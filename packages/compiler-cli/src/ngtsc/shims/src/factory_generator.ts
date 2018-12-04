@@ -47,20 +47,23 @@ export class FactoryGenerator implements ShimGenerator {
                             // Grab the symbol name.
                             .map(decl => decl.name !.text);
 
-    // For each symbol name, generate a constant export of the corresponding NgFactory.
-    // This will encompass a lot of symbols which don't need factories, but that's okay
-    // because it won't miss any that do.
-    const varLines = symbolNames.map(
-        name => `export const ${name}NgFactory = new i0.ɵNgModuleFactory(${name});`);
-    const sourceText = [
-      // This might be incorrect if the current package being compiled is Angular core, but it's
-      // okay to leave in at type checking time. TypeScript can handle this reference via its path
-      // mapping, but downstream bundlers can't. If the current package is core itself, this will be
-      // replaced in the factory transformer before emit.
-      `import * as i0 from '@angular/core';`,
-      `import {${symbolNames.join(', ')}} from '${relativePathToSource}';`,
-      ...varLines,
-    ].join('\n');
+    let sourceText = '';
+    if (symbolNames.length > 0) {
+      // For each symbol name, generate a constant export of the corresponding NgFactory.
+      // This will encompass a lot of symbols which don't need factories, but that's okay
+      // because it won't miss any that do.
+      const varLines = symbolNames.map(
+          name => `export const ${name}NgFactory = new i0.ɵNgModuleFactory(${name});`);
+      sourceText = [
+        // This might be incorrect if the current package being compiled is Angular core, but it's
+        // okay to leave in at type checking time. TypeScript can handle this reference via its path
+        // mapping, but downstream bundlers can't. If the current package is core itself, this will
+        // be replaced in the factory transformer before emit.
+        `import * as i0 from '@angular/core';`,
+        `import {${symbolNames.join(', ')}} from '${relativePathToSource}';`,
+        ...varLines,
+      ].join('\n');
+    }
     return ts.createSourceFile(
         genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
   }
