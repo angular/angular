@@ -3218,36 +3218,64 @@ The optional `foo` route parameter is harmless and continues to be ignored.
 -->
 `foo` 옵션 라우팅 변수는 아무 역할도 하지 않습니다.
 
+<!--
 ### Adding routable animations
+-->
+### 라우팅 애니메이션 적용하기
 
 {@a route-animation}
 
 
+<!--
 #### Adding animations to the routed component
+-->
+#### 컴포넌트를 라우팅하면서 애니메이션 적용하기
+
+<!--
 The heroes feature module is almost complete, but what is a feature without some smooth transitions?
 
 This section shows you how to add some [animations](guide/animations) to the `HeroDetailComponent`.
 
 First import the `BrowserAnimationsModule` and add it to the `imports` array:
+-->
+이제 히어로 기능 모듈은 거의 끝났습니다. 그런데 컴포넌트를 좀 더 자연스럽게 전환하는 방법이 있을까요?
 
+이번에는 `HeroDetailComponent`로 화면을 전환하면서 [애니메이션](guide/animations)을 적용하는 방법에 대해 알아봅시다.
+
+먼저 `AppModule` `imports` 배열에 `BrowserAnimationsModule`을 로드합니다.
+
+<!--
 <code-example path="router/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (animations-module)" region="animations-module">
+-->
+<code-example path="router/src/app/app.module.ts" linenums="false" header="src/app/app.module.ts (애니메이션 모듈)" region="animations-module">
 
 </code-example>
 
+<!--
 Next, add a `data` object to the routes for `HeroListComponent` and `HeroDetailComponent`. Transitions are based on `states` and you'll use the `animation` data from the route to provide a named animation `state` for the transitions.
+-->
+그리고 `HeroListComponent`와 `HeroDetailComponent`에 해당하는 라우팅 규칙에 `data` 객체를 추가합니다. 이 객체에 `animation` 데이터를 추가하는데, 전환효과는 이 때 지정된 `states`를 기반으로 동작할 것입니다.
 
+<!--
 <code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (animation data)">
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" header="src/app/heroes/heroes-routing.module.ts (애니메이션 데이터)">
 
 </code-example>
 
-
+<!--
 Create an `animations.ts` file in the root `src/app/` folder. The contents look like this:
+-->
+애플리케이션 최상위 폴더인 `src/app/`에 `animations.ts` 파일을 생성합니다. 그리고 이 파일의 내용을 다음과 같이 작성합니다:
 
+<!--
 <code-example path="router/src/app/animations.ts" linenums="false" header="src/app/animations.ts (excerpt)">
+-->
+<code-example path="router/src/app/animations.ts" linenums="false" header="src/app/animations.ts (일부)">
 
 </code-example>
 
-
+<!--
 This file does the following:
 
 * Imports the animation symbols that build the animation triggers, control state, and manage transitions between states.
@@ -3262,35 +3290,68 @@ Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/r
 `'./animations.ts`.
 
 Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
+-->
+이 파일의 내용은 이렇습니다:
+
+* 애니메이션 트리거, 상태 컨트롤, 상태가 변경될 때 적용될 트랜지션을 정의하기 위한 심볼을 로드합니다.
+
+* *`routeAnimation`*라는 이름으로 만든 애니메이션 트리거가 할당된 상수 `slideInAnimation`를 파일 외부로 공개합니다.
+
+* 이 애니메이션에 정의된 *트랜지션*은 라우팅 규칙의 상태가 `heroes`와 `hero`로 변경될 때마다 새로 들어오는 애플리케이션 뷰(`:enter`)가 화면 왼쪽에서 나타나고, 이전에 있던 애플리케이션 뷰(`:leave`)가 화면 오른쪽으로 사라지는 것을 정의한 것입니다.
+
+물론 라우팅 규칙에는 더 많은 트랜지션을 정의할 수도 있습니다. 이 예제에서는 이정도 트리거만 적용해 봅시다.
+
+`AppComponent`로 돌아가서 `@angular/router` 패키지에 잇는 `RouterOutlet` 토큰과 `./animations.ts` 파일에 정의한 `slideInDownAnimation`을 로드합니다.
+
+그리고 `@Component` 메타데이터의 `animations` 배열에 다음과 같이 `slideInDownAnimation`을 적용합니다.
 
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (animations)" region="animation-imports">
 
 </code-example>
 
+<!--
 In order to use the routable animations, you'll need to wrap the `RouterOutlet` inside an element. You'll
 use the `@routeAnimation` trigger and bind it to the element.
 
 For the `@routeAnimation` transitions to key off states, you'll need to provide it with the `data` from the `ActivatedRoute`. The `RouterOutlet` is exposed as an `outlet` template variable, so you bind a reference to the router outlet. A variable of `routerOutlet` is an ideal choice.
+-->
+컴포넌트를 라우팅 할 때 애니메이션을 적용하려면 `RouterOutlet`을 엘리먼트로 한 번 감싸고 이 엘리먼트에 `@routeAnimation` 트리거를 바인딩하면 됩니다.
 
+`@routeAnimation` 트랜지션을 특정 상태로 설정하려면 `ActivatedRoute`를 사용해서 `data`를 전달하면 됩니다. `RouterOutlet`은 컴포넌트 클래스의 메소드에서 참조하기 위해 `outlet`이라는 템플릿 변수로 지정했습니다.
+
+<!--
 <code-example path="router/src/app/app.component.2.html" linenums="false" header="src/app/app.component.html (router outlet)">
+-->
+<code-example path="router/src/app/app.component.2.html" linenums="false" header="src/app/app.component.html (라우팅 영역)">
 
 </code-example>
 
+<!--
 The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideDownAnimation` defined in `animations.ts`.
+-->
+그리고 `@routerAnimation` 프로퍼티에 `routerOutlet` 객체를 전달하기 위해 `AppComponent`에 `getAnimationData` 함수를 정의합니다. `getAnimationData` 함수는 `ActivatedRoute`로 전달된 `data`에서 애니메이션 프로퍼티 값을 반환합니다. 이렇게 반환된 `animation` 프로퍼티 값은 `animations.ts` 파일의 `slideDownAnimation`에 정의된 `transition` 이름과 매칭되면서 애니메이션이 동작합니다.
 
+<!--
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (router outlet)" region="function-binding">
+-->
+<code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (라우팅 영역)" region="function-binding">
 
 </code-example>
 
+<!--
 When switching between the two routes, the `HeroDetailComponent` and `HeroListComponent` will ease in from the left when routed to and will slide to the right when navigating away.
-
+-->
+이제 `HeroDetailComponent`와 `HeroListComponent`를 전환하면서 두 라우팅 규칙이 적용되면 네비게이션이 동작할 때마다 화면이 왼쪽으로, 오른쪽으로 전환되는 애니메이션이 동작합니다.
 
 
 {@a milestone-3-wrap-up}
 
-
+<!--
 ### Milestone 3 wrap up
+-->
+### 3단계 정리
 
+<!--
 You've learned how to do the following:
 
 * Organize the app into *feature areas*.
@@ -3300,7 +3361,16 @@ You've learned how to do the following:
 * Applying routable animations based on the page.
 
 After these changes, the folder structure looks like this:
+-->
+이번 단계에서는 이런 내용에 대해 알아봤습니다:
 
+* 애플리케이션을 *기능 단위*로 구조화하는 방법
+* 컴포넌트에서 다른 컴포넌트로 전환하는 방법
+* 라우팅 변수로 어떤 정보를 전달하고, 이 정보를 컴포넌트에서 받는 방법
+* 기능 단위로 나눈 NgModule을 `AppModule`에 로드하는 방법
+* 라우팅 될 때 컴포넌트에 애니메이션을 적용하는 방법
+
+그리고 지금까지 내용을 적용하고 난 후의 폴더 구조는 다음과 같습니다:
 
 <div class='filetree'>
 
@@ -3496,7 +3566,10 @@ After these changes, the folder structure looks like this:
 
 </div>
 
+<!--
 Here are the relevant files for this version of the sample application.
+-->
+이번 예제와 관련된 파일의 내용도 확인해 보세요.
 
 <code-tabs>
 
