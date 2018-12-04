@@ -683,7 +683,7 @@ describe('ngtsc behavioral tests', () => {
     `);
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i18n(1, MSG_EXTERNAL_8321000940098097247);');
+    expect(jsContents).toContain('i18n(1, MSG_EXTERNAL_8321000940098097247$$TEST_TS_0);');
   });
 
   it('should take i18nUseExternalIds config option into account', () => {
