@@ -215,7 +215,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   // the url displayed on the anchor element.
   // TODO(issue/24571): remove '!'.
-  @HostBinding() href !: string;
+  @HostBinding('attr.href') @Input() href !: string;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -257,6 +257,10 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
+    if (!this.commands.length && this.href !== undefined && this.href !== '') {
+      return true;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -267,7 +271,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    if (this.commands.length || !this.href) {
+    if (this.commands.length || this.href === undefined || this.href === '') {
       this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
     }
   }
