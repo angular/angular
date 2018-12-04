@@ -741,9 +741,9 @@ withEachNg1Version(() => {
              });
            }));
 
-    fixmeIvy('FW-717: Browser locks up and disconnects') &&
+    fixmeIvy(
+        'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector') &&
         it('should work with ng2 lazy loaded components', async(() => {
-
              let componentInjector: Injector;
 
              @Component({selector: 'ng2', template: ''})
@@ -787,7 +787,7 @@ withEachNg1Version(() => {
                    childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
                const lazyCmp = cmpFactory.create(componentInjector);
 
-               expect(lazyCmp.instance.module.injector).toBe(childMod.injector);
+               expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
              });
 
            }));
