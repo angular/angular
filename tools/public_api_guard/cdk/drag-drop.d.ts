@@ -120,7 +120,7 @@ export declare class CdkDropList<T = any> implements OnInit, OnDestroy {
     lockAxis: 'x' | 'y';
     orientation: 'horizontal' | 'vertical';
     sorted: EventEmitter<CdkDragSortEvent<T>>;
-    constructor(element: ElementRef<HTMLElement>, _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined);
+    constructor(element: ElementRef<HTMLElement>, _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDropList<T>>, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined, _document?: any);
     _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropList | null;
     _isOverContainer(x: number, y: number): boolean;
     _sortItem(item: CdkDrag, pointerX: number, pointerY: number, pointerDelta: {

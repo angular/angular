@@ -27,6 +27,7 @@ import {moveItemInArray} from './drag-utils';
 import {CdkDropList} from './drop-list';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropListGroup} from './drop-list-group';
+import {extendStyles} from './drag-styling';
 
 const ITEM_HEIGHT = 25;
 const ITEM_WIDTH = 75;
@@ -1057,6 +1058,8 @@ describe('CdkDrag', () => {
           .toBe('ltr', 'Expected preview element to inherit the directionality.');
       expect(previewRect.width).toBe(itemRect.width, 'Expected preview width to match element');
       expect(previewRect.height).toBe(itemRect.height, 'Expected preview height to match element');
+      expect(preview.style.pointerEvents)
+          .toBe('none', 'Expected pointer events to be disabled on the preview');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -2348,6 +2351,46 @@ describe('CdkDrag', () => {
 
       expect(Array.from(component.group._items)).toEqual([component.listOne, component.listTwo]);
     }));
+
+    it('should not be able to drop an element into a container that is under another element',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems.slice();
+        const element = groups[0][1].element.nativeElement;
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+        const coverElement = document.createElement('div');
+        const targetGroupRect = dropInstances[1].element.nativeElement.getBoundingClientRect();
+
+        // Add an extra element that covers the target container.
+        fixture.nativeElement.appendChild(coverElement);
+        extendStyles(coverElement.style, {
+          position: 'fixed',
+          top: targetGroupRect.top + 'px',
+          left: targetGroupRect.left + 'px',
+          bottom: targetGroupRect.bottom + 'px',
+          right: targetGroupRect.right + 'px',
+          background: 'orange'
+        });
+
+        dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toBeTruthy();
+        expect(event).toEqual({
+          previousIndex: 1,
+          currentIndex: 1,
+          item: groups[0][1],
+          container: dropInstances[0],
+          previousContainer: dropInstances[0],
+          isPointerOverContainer: false
+        });
+      }));
 
   });
 

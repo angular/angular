@@ -672,6 +672,9 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     }
 
     extendStyles(preview.style, {
+      // It's important that we disable the pointer events on the preview, because
+      // it can throw off the `document.elementFromPoint` calls in the `CdkDropList`.
+      pointerEvents: 'none',
       position: 'fixed',
       top: '0',
       left: '0',
