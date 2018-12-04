@@ -643,6 +643,21 @@ describe('MatInput without forms', () => {
     expect(formFieldEl.classList).toContain('mat-form-field-should-float');
   }));
 
+  it('should not float the label if the selectedIndex is negative', fakeAsync(() => {
+    const fixture = createComponent(MatInputSelect);
+    fixture.detectChanges();
+
+    const formFieldEl = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+    const selectEl: HTMLSelectElement = formFieldEl.querySelector('select');
+
+    expect(formFieldEl.classList).toContain('mat-form-field-should-float');
+
+    selectEl.selectedIndex = -1;
+    fixture.detectChanges();
+
+    expect(formFieldEl.classList).not.toContain('mat-form-field-should-float');
+  }));
+
   it('should not float labels when select has no value, no option label, ' +
       'no option innerHtml', fakeAsync(() => {
     const fixture = createComponent(MatInputSelectWithNoLabelNoValue);
