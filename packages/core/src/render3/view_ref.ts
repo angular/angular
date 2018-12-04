@@ -258,11 +258,21 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    */
   checkNoChanges(): void { checkNoChanges(this.context); }
 
-  attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) { this._viewContainerRef = vcRef; }
+  attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) {
+    if (this._appRef) {
+      throw new Error('This view is already attached directly to the ApplicationRef!');
+    }
+    this._viewContainerRef = vcRef;
+  }
 
   detachFromAppRef() { this._appRef = null; }
 
-  attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
+  attachToAppRef(appRef: ApplicationRef) {
+    if (this._viewContainerRef) {
+      throw new Error('This view is already attached to a ViewContainer!');
+    }
+    this._appRef = appRef;
+  }
 
   private _lookUpContext(): T {
     return this._context = this._lView[PARENT] ![this._componentIndex] as T;

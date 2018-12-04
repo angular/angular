@@ -429,25 +429,25 @@ class SomeComponent {
         expect(appRef.viewCount).toBe(0);
       });
 
-      fixmeIvy('unknown') &&
-          it('should not allow to attach a view to both, a view container and the ApplicationRef',
-             () => {
-               const comp = TestBed.createComponent(MyComp);
-               let hostView = comp.componentRef.hostView;
-               const containerComp = TestBed.createComponent(ContainerComp);
-               containerComp.detectChanges();
-               const vc = containerComp.componentInstance.vc;
-               const appRef: ApplicationRef = TestBed.get(ApplicationRef);
 
-               vc.insert(hostView);
-               expect(() => appRef.attachView(hostView))
-                   .toThrowError('This view is already attached to a ViewContainer!');
-               hostView = vc.detach(0) !;
+      it('should not allow to attach a view to both, a view container and the ApplicationRef',
+         () => {
+           const comp = TestBed.createComponent(MyComp);
+           let hostView = comp.componentRef.hostView;
+           const containerComp = TestBed.createComponent(ContainerComp);
+           containerComp.detectChanges();
+           const vc = containerComp.componentInstance.vc;
+           const appRef: ApplicationRef = TestBed.get(ApplicationRef);
 
-               appRef.attachView(hostView);
-               expect(() => vc.insert(hostView))
-                   .toThrowError('This view is already attached directly to the ApplicationRef!');
-             });
+           vc.insert(hostView);
+           expect(() => appRef.attachView(hostView))
+               .toThrowError('This view is already attached to a ViewContainer!');
+           hostView = vc.detach(0) !;
+
+           appRef.attachView(hostView);
+           expect(() => vc.insert(hostView))
+               .toThrowError('This view is already attached directly to the ApplicationRef!');
+         });
     });
   });
 
