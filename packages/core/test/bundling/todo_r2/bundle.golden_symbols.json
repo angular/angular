@@ -2082,7 +2082,7 @@
     "name": "injectViewContainerRef"
   },
   {
-    "name": "injectableDefFactory"
+    "name": "injectableDefOrInjectorDefFactory"
   },
   {
     "name": "insertBloom"

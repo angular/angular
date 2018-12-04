@@ -166,7 +166,7 @@ export class R3Injector {
           if (def && this.injectableDefInScope(def)) {
             // Found an ngInjectableDef and it's scoped to this injector. Pretend as if it was here
             // all along.
-            record = makeRecord(injectableDefFactory(token), NOT_YET);
+            record = makeRecord(injectableDefOrInjectorDefFactory(token), NOT_YET);
             this.records.set(token, record);
           }
         }
@@ -339,9 +339,14 @@ export class R3Injector {
   }
 }
 
-function injectableDefFactory(token: Type<any>| InjectionToken<any>): () => any {
+function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>): () => any {
   const injectableDef = getInjectableDef(token as InjectableType<any>);
   if (injectableDef === null) {
+    const injectorDef = getInjectorDef(token as InjectorType<any>);
+    if (injectorDef !== null) {
+      return injectorDef.factory;
+    }
+
     if (token instanceof InjectionToken) {
       throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
     }
@@ -369,7 +374,7 @@ function providerToRecord(provider: SingleProvider): Record<any> {
 export function providerToFactory(provider: SingleProvider): () => any {
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
-    return injectableDefFactory(resolveForwardRef(provider));
+    return injectableDefOrInjectorDefFactory(resolveForwardRef(provider));
   } else {
     if (isValueProvider(provider)) {
       factory = () => resolveForwardRef(provider.useValue);
@@ -383,7 +388,7 @@ export function providerToFactory(provider: SingleProvider): () => any {
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
-        return injectableDefFactory(classRef);
+        return injectableDefOrInjectorDefFactory(classRef);
       }
     }
   }
