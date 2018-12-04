@@ -910,4 +910,64 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = env.getContents('test.js');
     expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
   });
+
+  describe('local refs', () => {
+    const getComponentScript = (template: string): string => `
+      import {Component, Directive, NgModule} from '@angular/core';
+
+      @Component({selector: 'my-cmp', template: \`${template}\`})
+      class Cmp {}
+
+      @NgModule({declarations: [Cmp]})
+      class Module {}
+    `;
+
+    const duplicateRefCases = [
+      `
+        <div #ref></div>
+        <div #ref></div>
+      `,
+      `
+        <div #ref>
+          <div #ref></div>
+        </div>
+      `,
+      `
+        <div>
+          <div #ref></div>
+        </div>
+        <div>
+          <div #ref></div>
+        </div>
+      `,
+      `
+        <ng-container>
+          <div #ref></div>
+        </ng-container>
+        <div #ref></div>
+      `
+    ];
+
+    duplicateRefCases.forEach(template => {
+      it('should throw in case of duplicate refs', () => {
+        env.tsconfig();
+        env.write('test.ts', getComponentScript(template));
+        const errors = env.driveDiagnostics();
+        expect(errors[0].messageText)
+            .toContain('Internal Error: The name ref is already defined in scope');
+      });
+    });
+
+    it('should not throw in case refs are in different scopes', () => {
+      env.tsconfig();
+      env.write('test.ts', getComponentScript(`
+        <ng-template>
+          <div #ref></div>
+        </ng-template>
+        <div #ref></div>
+      `));
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
+  });
 });
