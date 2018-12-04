@@ -7,6 +7,7 @@
  */
 
 import {WorkspaceSchema, WorkspaceProject} from '@angular-devkit/core/src/workspace';
+import {SchematicsException} from '@angular-devkit/schematics';
 
 /**
  * Finds the specified project configuration in the workspace. Throws an error if the project
@@ -19,7 +20,7 @@ export function getProjectFromWorkspace(
   const project = workspace.projects[projectName || workspace.defaultProject!];
 
   if (!project) {
-    throw new Error(`Could not find project in workspace: ${projectName}`);
+    throw new SchematicsException(`Could not find project in workspace: ${projectName}`);
   }
 
   return project;

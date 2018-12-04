@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SchematicsException} from '@angular-devkit/schematics';
 import {DefaultTreeElement} from 'parse5';
 
 /** Determines the indentation of child elements for the given Parse5 element. */
@@ -14,8 +15,8 @@ export function getChildElementIndentation(element: DefaultTreeElement) {
     .find(node => node['tagName']) as DefaultTreeElement | null;
 
   if ((childElement && !childElement.sourceCodeLocation) || !element.sourceCodeLocation) {
-    throw new Error('Cannot determine child element indentation because the specified Parse5 ' +
-        'element does not have any source code location metadata.');
+    throw new SchematicsException('Cannot determine child element indentation because the ' +
+      'specified Parse5 element does not have any source code location metadata.');
   }
 
   const startColumns = childElement ?

@@ -8,7 +8,7 @@
 
 import {normalize} from '@angular-devkit/core';
 import {WorkspaceProject, WorkspaceSchema} from '@angular-devkit/core/src/workspace';
-import {Tree} from '@angular-devkit/schematics';
+import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {
   getProjectFromWorkspace,
   getProjectStyleFile,
@@ -62,8 +62,8 @@ function insertCustomTheme(project: WorkspaceProject, projectName: string, host:
 
   if (!stylesPath) {
     if (!project.sourceRoot) {
-      throw new Error(`Could not find source root for project: "${projectName}". Please make ` +
-        `sure that the "sourceRoot" property is set in the workspace config.`);
+      throw new SchematicsException(`Could not find source root for project: "${projectName}". ` +
+        `Please make sure that the "sourceRoot" property is set in the workspace config.`);
     }
 
     // Normalize the path through the devkit utilities because we want to avoid having
@@ -159,9 +159,9 @@ function validateDefaultTargetBuilder(project: WorkspaceProject, targetName: 'bu
   // builder has been changed, we warn because a theme is not mandatory for running tests
   // with Material. See: https://github.com/angular/material2/issues/14176
   if (!isDefaultBuilder && targetName === 'build') {
-    throw new Error(`Your project is not using the default builders for "${targetName}". The ` +
-      `Angular Material schematics cannot add a theme to the workspace configuration if the ` +
-      `builder has been changed. Exiting..`);
+    throw new SchematicsException(`Your project is not using the default builders for ` +
+      `"${targetName}". The Angular Material schematics cannot add a theme to the workspace ` +
+      `configuration if the builder has been changed.`);
   } else if (!isDefaultBuilder) {
     console.warn(`Your project is not using the default builders for "${targetName}". This ` +
       `means that we cannot add the configured theme to the "${targetName}" target.`);

@@ -13,6 +13,7 @@
  * dependency that will be shipped with `@schematics/angular`.
  */
 import typescript = require('typescript');
+import {SchematicsException} from '@angular-devkit/schematics';
 
 /**
  * This is an agnostic re-export of TypeScript. Depending on the context, this module file will
@@ -30,8 +31,8 @@ try {
   try {
     ts = require('typescript');
   } catch {
-    throw new Error('Error: Could not find a TypeScript version for the schematics. ' +
-      'Please report an issue on the Angular Material repository.');
+    throw new SchematicsException('Error: Could not find a TypeScript version for the ' +
+      'schematics. Please report an issue on the Angular Material repository.');
   }
 }
 

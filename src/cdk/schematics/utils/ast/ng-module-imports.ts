@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Tree} from '@angular-devkit/schematics';
+import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import * as ts from 'typescript';
 
 /**
- * Whether the Angular module in the given path imports the specifed module class name.
+ * Whether the Angular module in the given path imports the specified module class name.
  */
 export function hasNgModuleImport(tree: Tree, modulePath: string, className: string): boolean {
   const moduleFileContent = tree.read(modulePath);
 
   if (!moduleFileContent) {
-    throw new Error(`Could not read Angular module file: ${modulePath}`);
+    throw new SchematicsException(`Could not read Angular module file: ${modulePath}`);
   }
 
   const parsedFile = ts.createSourceFile(modulePath, moduleFileContent.toString(),
@@ -36,7 +36,7 @@ export function hasNgModuleImport(tree: Tree, modulePath: string, className: str
   ts.forEachChild(parsedFile, findModuleDecorator);
 
   if (!ngModuleMetadata) {
-    throw new Error(`Could not find NgModule declaration inside: "${modulePath}"`);
+    throw new SchematicsException(`Could not find NgModule declaration inside: "${modulePath}"`);
   }
 
   for (let property of ngModuleMetadata!.properties) {

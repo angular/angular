@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SchematicsException} from '@angular-devkit/schematics';
 import {RuleWalker} from 'tslint';
 import {
   attributeSelectors,
@@ -81,7 +82,8 @@ export const cdkUpgradeData: RuleUpgradeData = {
  */
 export function getChangesForTarget<T>(target: TargetVersion, data: VersionChanges<T>): T[] {
   if (!data) {
-    throw new Error(`No data could be found for target version: ${TargetVersion[target]}`);
+    throw new SchematicsException(
+      `No data could be found for target version: ${TargetVersion[target]}`);
   }
 
   if (!data[target]) {
