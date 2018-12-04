@@ -1872,6 +1872,14 @@ The generated output would look something like this
     "rate": 325 }
 </code-example>
 
+<div class="alert is-helpful">
+
+Please note that the pipe operator has a higher precedence than the ternary operator (`?:`), 
+which means `a ? b : c | x` is parsed as `a ? b : (c | x)`. Nevertheless, for a number of reasons, 
+the pipe operator cannot be used without parentheses in the first and second operands of `?:`.
+A good practice is to use parentheses in the third operand too.
+
+</div>
 
 <hr/>
 
