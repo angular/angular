@@ -53,8 +53,7 @@ If you're _coding along_ with this tutorial, stay here and add the *In-memory We
 Install the *In-memory Web API* package and *@angular/http* package from _npm_
 
 <code-example language="sh" class="code-shell">
-  npm install angular-in-memory-web-api --save
-  npm install @angular/http
+  npm install angular-in-memory-web-api @angular/http
 </code-example>
 
 Import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, 
