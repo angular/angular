@@ -257,10 +257,6 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
-    if (!this.commands.length && this.href !== undefined && this.href !== '') {
-      return true;
-    }
-
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
