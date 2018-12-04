@@ -57,7 +57,6 @@
     "@bazel/karma": "0.21.0",
     "@bazel/typescript": "0.21.0",
     "@firebase/app-types": "^0.3.2",
-    "@google-cloud/storage": "^1.1.1",
     "@octokit/rest": "^15.9.4",
     "@schematics/angular": "^7.1.0",
     "@types/browser-sync": "^0.0.42",
@@ -85,7 +84,6 @@
     "dgeni": "^0.4.10",
     "dgeni-packages": "^0.26.12",
     "firebase": "^5.5.2",
-    "firebase-admin": "^5.0.0",
     "firebase-tools": "^4.1.0",
     "fs-extra": "^3.0.1",
     "glob": "^7.1.2",
@@ -140,7 +138,7 @@
     "tsconfig-paths": "^2.3.0",
     "tslint": "^5.11.0",
     "tsutils": "^3.0.0",
-    "typescript": "^3.1.1",
+    "typescript": "~3.1.1",
     "uglify-js": "^2.8.14"
   }
 }
