@@ -24,6 +24,8 @@ import {
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
+  AfterViewInit,
+  ViewContainerRef,
 } from '@angular/core';
 import {
   CanDisableRipple,
@@ -33,6 +35,7 @@ import {
   MatOption,
   mixinDisableRipple,
 } from '@angular/material/core';
+import {TemplatePortal} from '@angular/cdk/portal';
 
 
 /**
@@ -92,13 +95,16 @@ export function MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY(): MatAutocompleteDefau
   ]
 })
 export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterContentInit,
-  CanDisableRipple {
+  AfterViewInit, CanDisableRipple {
 
   /** Manages active item in option list based on key events. */
   _keyManager: ActiveDescendantKeyManager<MatOption>;
 
   /** Whether the autocomplete panel should be visible, depending on option length. */
   showPanel: boolean = false;
+
+  /** @docs-private */
+  _portal: TemplatePortal;
 
   /** Whether the autocomplete panel is open. */
   get isOpen(): boolean { return this._isOpen && this.showPanel; }
@@ -165,10 +171,15 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
     private _elementRef: ElementRef<HTMLElement>,
+    private _viewContainerRef: ViewContainerRef,
     @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS) defaults: MatAutocompleteDefaultOptions) {
     super();
 
     this._autoActiveFirstOption = !!defaults.autoActiveFirstOption;
+  }
+
+  ngAfterViewInit() {
+    this._portal = new TemplatePortal(this.template, this._viewContainerRef);
   }
 
   ngAfterContentInit() {
