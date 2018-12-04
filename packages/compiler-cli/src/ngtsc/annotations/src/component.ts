@@ -266,8 +266,9 @@ export class ComponentDecoratorHandler implements
     const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(node);
     const matcher = new SelectorMatcher<ScopeDirective<any>>();
     if (scope !== null) {
-      scope.directives.forEach(
-          ({selector, meta}) => { matcher.addSelectables(CssSelector.parse(selector), meta); });
+      for (const meta of scope.directives) {
+        matcher.addSelectables(CssSelector.parse(meta.selector), meta);
+      }
       ctx.addTemplate(node as ts.ClassDeclaration, meta.parsedTemplate, matcher);
     }
   }
@@ -284,8 +285,10 @@ export class ComponentDecoratorHandler implements
       // fully analyzed.
       const {pipes, containsForwardDecls} = scope;
       const directives: {selector: string, expression: Expression}[] = [];
-      scope.directives.forEach(
-          ({selector, meta}) => directives.push({selector, expression: meta.directive}));
+
+      for (const meta of scope.directives) {
+        directives.push({selector: meta.selector, expression: meta.directive});
+      }
       const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
       metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }
