@@ -1335,7 +1335,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('unknown') &&
+        fixmeIvy('FW-794: NgModuleDefinition not exposed on NgModuleData') &&
             it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {
