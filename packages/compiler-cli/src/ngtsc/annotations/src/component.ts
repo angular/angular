@@ -144,9 +144,11 @@ export class ComponentDecoratorHandler implements
     if (component.has('interpolation')) {
       const expr = component.get('interpolation') !;
       const value = staticallyResolve(expr, this.reflector, this.checker);
-      if (!Array.isArray(value) || value.length !== 2) {
+      if (!Array.isArray(value) || value.length !== 2 ||
+          !value.every(element => typeof element === 'string')) {
         throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'interpolation must be an array with 2 elements');
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            'interpolation must be an array with 2 elements of string type');
       }
       interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
