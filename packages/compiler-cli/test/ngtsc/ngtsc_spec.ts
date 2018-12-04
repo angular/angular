@@ -1078,4 +1078,40 @@ describe('ngtsc behavioral tests', () => {
 
     // Success is enough to indicate that this passes.
   });
+
+  it('should not emit multiple references to the same directive', () => {
+    env.tsconfig();
+    env.write('node_modules/external/index.d.ts', `
+      import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+
+      export declare class ExternalDir {
+        static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+      }
+
+      export declare class ExternalModule {
+        static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+      }
+    `);
+    env.write('test.ts', `
+      import {Component, Directive, NgModule} from '@angular/core';
+      import {ExternalModule} from 'external';
+
+      @Component({
+        template: '<div test></div>',
+      })
+      class Cmp {}
+
+      @NgModule({
+        declarations: [Cmp],
+        // Multiple imports of the same module used to result in duplicate directive references
+        // in the output.
+        imports: [ExternalModule, ExternalModule],
+      })
+      class Module {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+  });
 });
