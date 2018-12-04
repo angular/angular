@@ -141,7 +141,7 @@
     "name": "injectRootLimpMode"
   },
   {
-    "name": "injectableDefFactory"
+    "name": "injectableDefOrInjectorDefFactory"
   },
   {
     "name": "isExistingProvider"
