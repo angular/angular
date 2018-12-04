@@ -387,12 +387,6 @@
     "name": "appendChild"
   },
   {
-    "name": "assertGreaterThan"
-  },
-  {
-    "name": "assertLessThan"
-  },
-  {
     "name": "assertTemplate"
   },
   {
@@ -1189,9 +1183,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwError"
   },
   {
     "name": "throwMultipleComponentError"

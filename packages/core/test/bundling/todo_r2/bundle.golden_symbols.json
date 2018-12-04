@@ -1239,12 +1239,6 @@
     "name": "appendChild"
   },
   {
-    "name": "assertGreaterThan"
-  },
-  {
-    "name": "assertLessThan"
-  },
-  {
     "name": "assertPlatform"
   },
   {
@@ -2695,9 +2689,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwError"
   },
   {
     "name": "throwMultipleComponentError"

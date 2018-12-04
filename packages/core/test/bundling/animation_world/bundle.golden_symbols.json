@@ -327,12 +327,6 @@
     "name": "appendChild"
   },
   {
-    "name": "assertGreaterThan"
-  },
-  {
-    "name": "assertLessThan"
-  },
-  {
     "name": "attachPatchData"
   },
   {
@@ -1165,9 +1159,6 @@
   },
   {
     "name": "textBinding"
-  },
-  {
-    "name": "throwError"
   },
   {
     "name": "throwMultipleComponentError"

@@ -564,12 +564,6 @@
     "name": "appendChild"
   },
   {
-    "name": "assertGreaterThan"
-  },
-  {
-    "name": "assertLessThan"
-  },
-  {
     "name": "assertPlatform"
   },
   {
@@ -1372,9 +1366,6 @@
   },
   {
     "name": "text"
-  },
-  {
-    "name": "throwError"
   },
   {
     "name": "tickRootContext"
