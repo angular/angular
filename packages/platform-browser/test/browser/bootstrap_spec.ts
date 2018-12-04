@@ -160,7 +160,7 @@ function bootstrap(
 
     afterEach(destroyPlatform);
 
-    fixmeIvy('unknown') &&
+    fixmeIvy('FW-553: TestBed is unaware of async compilation') &&
         it('should throw if bootstrapped Directive is not a Component',
            inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
              const logger = new MockConsole();
@@ -188,7 +188,7 @@ function bootstrap(
          });
        }));
 
-    fixmeIvy('unknown') &&
+    fixmeIvy('FW-553: TestBed is unaware of async compilation') &&
         it('should throw if no provider',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              const logger = new MockConsole();
