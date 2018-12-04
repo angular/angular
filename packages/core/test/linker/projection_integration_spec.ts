@@ -82,21 +82,22 @@ import {fixmeIvy} from '@angular/private/testing';
       expect(main.nativeElement).toHaveText('');
     });
 
-    fixmeIvy('unknown') && it('should support multiple content tags', () => {
-      TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<multiple-content-tags>' +
-              '<div>B</div>' +
-              '<div>C</div>' +
-              '<div class="left">A</div>' +
-              '</multiple-content-tags>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive') &&
+        it('should support multiple content tags', () => {
+          TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<multiple-content-tags>' +
+                  '<div>B</div>' +
+                  '<div>C</div>' +
+                  '<div class="left">A</div>' +
+                  '</multiple-content-tags>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      expect(main.nativeElement).toHaveText('(A, BC)');
-    });
+          expect(main.nativeElement).toHaveText('(A, BC)');
+        });
 
     it('should redistribute only direct children', () => {
       TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
@@ -184,34 +185,36 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
         });
 
-    fixmeIvy('unknown') && it('should redistribute when the shadow dom changes', () => {
-      TestBed.configureTestingModule(
-          {declarations: [ConditionalContentComponent, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<conditional-content>' +
-              '<div class="left">A</div>' +
-              '<div>B</div>' +
-              '<div>C</div>' +
-              '</conditional-content>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy(
+        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>') &&
+        it('should redistribute when the shadow dom changes', () => {
+          TestBed.configureTestingModule(
+              {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<conditional-content>' +
+                  '<div class="left">A</div>' +
+                  '<div>B</div>' +
+                  '<div>C</div>' +
+                  '</conditional-content>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const viewportDirective =
-          main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-              ManualViewportDirective);
+          const viewportDirective =
+              main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0]
+                  .injector.get(ManualViewportDirective);
 
-      expect(main.nativeElement).toHaveText('(, BC)');
+          expect(main.nativeElement).toHaveText('(, BC)');
 
-      viewportDirective.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(A, BC)');
+          viewportDirective.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(A, BC)');
 
-      viewportDirective.hide();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(, BC)');
-    });
+          viewportDirective.hide();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(, BC)');
+        });
 
     // GH-2095 - https://github.com/angular/angular/issues/2095
     // important as we are removing the ng-content element during compilation,
@@ -478,48 +481,51 @@ import {fixmeIvy} from '@angular/private/testing';
               '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
     });
 
-    fixmeIvy('unknown') && it('should project filled view containers into a view container', () => {
-      TestBed.configureTestingModule(
-          {declarations: [ConditionalContentComponent, ManualViewportDirective]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<conditional-content>' +
-              '<div class="left">A</div>' +
-              '<ng-template manual class="left">B</ng-template>' +
-              '<div class="left">C</div>' +
-              '<div>D</div>' +
-              '</conditional-content>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy(
+        'FW-745: Compiler isn\'t generating projectionDefs for <ng-content> tags inside <ng-templates>') &&
+        it('should project filled view containers into a view container', () => {
+          TestBed.configureTestingModule(
+              {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<conditional-content>' +
+                  '<div class="left">A</div>' +
+                  '<ng-template manual class="left">B</ng-template>' +
+                  '<div class="left">C</div>' +
+                  '<div>D</div>' +
+                  '</conditional-content>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
+          const conditionalComp =
+              main.debugElement.query(By.directive(ConditionalContentComponent));
 
-      const viewViewportDir =
-          conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-              ManualViewportDirective);
+          const viewViewportDir =
+              conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+                  ManualViewportDirective);
 
-      expect(main.nativeElement).toHaveText('(, D)');
-      expect(main.nativeElement).toHaveText('(, D)');
+          expect(main.nativeElement).toHaveText('(, D)');
+          expect(main.nativeElement).toHaveText('(, D)');
 
-      viewViewportDir.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(AC, D)');
+          viewViewportDir.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(AC, D)');
 
-      const contentViewportDir =
-          conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
-              ManualViewportDirective);
+          const contentViewportDir =
+              conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
+                  ManualViewportDirective);
 
-      contentViewportDir.show();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(ABC, D)');
+          contentViewportDir.show();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(ABC, D)');
 
-      // hide view viewport, and test that it also hides
-      // the content viewport's views
-      viewViewportDir.hide();
-      main.detectChanges();
-      expect(main.nativeElement).toHaveText('(, D)');
-    });
+          // hide view viewport, and test that it also hides
+          // the content viewport's views
+          viewViewportDir.hide();
+          main.detectChanges();
+          expect(main.nativeElement).toHaveText('(, D)');
+        });
   });
 }
 
