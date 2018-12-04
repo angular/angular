@@ -382,10 +382,10 @@ export interface Injectable {
 export declare const Injectable: InjectableDecorator;
 
 export interface InjectableDecorator {
-    (): any;
+    (): TypeDecorator;
     (options?: {
         providedIn: Type<any> | 'root' | null;
-    } & InjectableProvider): any;
+    } & InjectableProvider): TypeDecorator;
     new (): Injectable;
     new (options?: {
         providedIn: Type<any> | 'root' | null;
