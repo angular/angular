@@ -176,31 +176,31 @@ describe('i18n support in the view compiler', () => {
         /**
          * @desc meaningC
          */
-        const $MSG_EXTERNAL_4978592519614169666$ = goog.getMsg("Title C");
-        const $_c1$ = ["title", $MSG_EXTERNAL_4978592519614169666$];
+        const $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$ = goog.getMsg("Title C");
+        const $_c1$ = ["title", $MSG_EXTERNAL_4978592519614169666$$APP_SPEC_TS_3$];
         /**
          * @desc descD
          * @meaning meaningD
          */
-        const $MSG_EXTERNAL_5200291527729162531$ = goog.getMsg("Title D");
-        const $_c2$ = ["title", $MSG_EXTERNAL_5200291527729162531$];
+        const $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$ = goog.getMsg("Title D");
+        const $_c2$ = ["title", $MSG_EXTERNAL_5200291527729162531$$APP_SPEC_TS_5$];
         /**
          * @desc meaningE
          */
-        const $MSG_EXTERNAL_idE$ = goog.getMsg("Title E");
-        const $_c3$ = ["title", $MSG_EXTERNAL_idE$];
-        const $MSG_EXTERNAL_idF$ = goog.getMsg("Title F");
-        const $_c4$ = ["title", $MSG_EXTERNAL_idF$];
+        const $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$ = goog.getMsg("Title E");
+        const $_c3$ = ["title", $MSG_EXTERNAL_idE$$APP_SPEC_TS_7$];
+        const $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$ = goog.getMsg("Title F");
+        const $_c4$ = ["title", $MSG_EXTERNAL_idF$$APP_SPEC_TS_9$];
         /**
          * @desc [BACKUP_MESSAGE_ID:idH]desc
          */
-        const $MSG_EXTERNAL_idG$ = goog.getMsg("Title G");
-        const $_c5$ = ["title", $MSG_EXTERNAL_idG$];
+        const $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$ = goog.getMsg("Title G");
+        const $_c5$ = ["title", $MSG_EXTERNAL_idG$$APP_SPEC_TS_11$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_idA$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_idA$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "div");
             $r3$.ɵi18nAttributes(3, $_c0$);
@@ -262,8 +262,8 @@ describe('i18n support in the view compiler', () => {
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_8809028065680254561$ = goog.getMsg("introduction");
-        const $_c1$ = ["title", $MSG_EXTERNAL_8809028065680254561$];
+        const $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$ = goog.getMsg("introduction");
+        const $_c1$ = ["title", $MSG_EXTERNAL_8809028065680254561$$APP_SPEC_TS_1$];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
@@ -292,38 +292,43 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["id", "dynamic-1"];
-        const $MSG_EXTERNAL_5526535577705876535$ = goog.getMsg("static text");
+        const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
         /**
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
+        const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
         /**
          * @desc d1
          * @meaning m1
          */
-        const $MSG_EXTERNAL_7432761130955693041$ = goog.getMsg("{$interpolation}", {
+        const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
         const $_c1$ = [
-          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$,
-          "title", $MSG_EXTERNAL_8977039798304050198$,
-          "aria-label", $MSG_EXTERNAL_7432761130955693041$
+          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$,
+          "title", $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$,
+          "aria-label", $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$
         ];
         const $_c2$ = ["id", "dynamic-2"];
         /**
          * @desc d2
          * @meaning m2
          */
-        const $MSG_EXTERNAL_7566208596013750546$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+        const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
           "interpolation": "\uFFFD0\uFFFD",
           "interpolation_1": "\uFFFD1\uFFFD",
           "interpolation_2": "\uFFFD2\uFFFD"
         });
-        const $MSG_EXTERNAL_6639222533406278123$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $_c3$ = ["title", $MSG_EXTERNAL_7566208596013750546$, "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$];
+        const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $_c3$ = [
+          "title", $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$,
+          "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$
+        ];
         …
         consts: 5,
         vars: 8,
@@ -393,10 +398,10 @@ describe('i18n support in the view compiler', () => {
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_8538466649243975456$ = goog.getMsg("different scope {$interpolation}", {
+        const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
-        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$];
+        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -443,36 +448,43 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["id", "dynamic-1"];
-        const $MSG_EXTERNAL_5526535577705876535$ = goog.getMsg("static text");
+        const $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$ = goog.getMsg("static text");
         /**
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_8977039798304050198$ = goog.getMsg("intro {$interpolation}", {
+        const $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$ = goog.getMsg("intro {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
         /**
          * @desc d1
          * @meaning m1
          */
-        const $MSG_EXTERNAL_7432761130955693041$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$ = goog.getMsg("{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
         const $_c1$ = [
-          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$,
-          "title", $MSG_EXTERNAL_8977039798304050198$,
-          "aria-label", $MSG_EXTERNAL_7432761130955693041$
+          "aria-roledescription", $MSG_EXTERNAL_5526535577705876535$$APP_SPEC_TS_1$,
+          "title", $MSG_EXTERNAL_8977039798304050198$$APP_SPEC_TS_2$,
+          "aria-label", $MSG_EXTERNAL_7432761130955693041$$APP_SPEC_TS_3$
         ];
         const $_c2$ = ["id", "dynamic-2"];
         /**
          * @desc d2
          * @meaning m2
          */
-        const $MSG_EXTERNAL_7566208596013750546$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
+        const $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$ = goog.getMsg("{$interpolation} and {$interpolation_1} and again {$interpolation_2}", {
           "interpolation": "\uFFFD0\uFFFD",
           "interpolation_1": "\uFFFD1\uFFFD",
           "interpolation_2": "\uFFFD2\uFFFD"
         });
-        const $MSG_EXTERNAL_6639222533406278123$ = goog.getMsg("{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $_c3$ = ["title", $MSG_EXTERNAL_7566208596013750546$, "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$];
+        const $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$ = goog.getMsg("{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $_c3$ = [
+          "title", $MSG_EXTERNAL_7566208596013750546$$APP_SPEC_TS_6$,
+          "aria-roledescription", $MSG_EXTERNAL_6639222533406278123$$APP_SPEC_TS_7$
+        ];
         …
         consts: 5,
         vars: 8,
@@ -515,10 +527,10 @@ describe('i18n support in the view compiler', () => {
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_8538466649243975456$ = goog.getMsg("different scope {$interpolation}", {
+        const $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$ = goog.getMsg("different scope {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
-        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$];
+        const $_c1$ = ["title", $MSG_EXTERNAL_8538466649243975456$$APP_SPEC_TS__1$];
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
@@ -560,14 +572,14 @@ describe('i18n support in the view compiler', () => {
          * @desc d
          * @meaning m
          */
-        const $MSG_EXTERNAL_7727043314656808423$ = goog.getMsg("Element title");
-        const $_c0$ = ["title", $MSG_EXTERNAL_7727043314656808423$];
-        const $MSG_EXTERNAL_4969674997806975147$ = goog.getMsg("Some content");
+        const $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_1$ = goog.getMsg("Element title");
+        const $_c0$ = ["title", $MSG_EXTERNAL_7727043314656808423$$APP_SPEC_TS_1$];
+        const $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$ = goog.getMsg("Some content");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4969674997806975147$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
             $r3$.ɵi18nAttributes(2, $_c0$);
             $r3$.ɵelementEnd();
           }
@@ -611,7 +623,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4924931801512133405$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
+        const $MSG_EXTERNAL_4924931801512133405$$APP_SPEC_TS_0$ = goog.getMsg("Some text 'with single quotes', \"with double quotes\" and without quotes.");
       `;
 
       verify(input, output);
@@ -627,26 +639,26 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4890179241114413722$ = goog.getMsg("My i18n block #1");
-        const $MSG_EXTERNAL_2413150872298537152$ = goog.getMsg("My i18n block #2");
-        const $MSG_EXTERNAL_5023003143537152794$ = goog.getMsg("My i18n block #3");
+        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
+        const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #2");
+        const $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #3");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "div");
             $r3$.ɵtext(3, "My non-i18n block #1");
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(4, "div");
-            $r3$.ɵi18n(5, $MSG_EXTERNAL_2413150872298537152$);
+            $r3$.ɵi18n(5, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_1$);
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(6, "div");
             $r3$.ɵtext(7, "My non-i18n block #2");
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(8, "div");
-            $r3$.ɵi18n(9, $MSG_EXTERNAL_5023003143537152794$);
+            $r3$.ɵi18n(9, $MSG_EXTERNAL_5023003143537152794$$APP_SPEC_TS_2$);
             $r3$.ɵelementEnd();
           }
         }
@@ -661,14 +673,16 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2817319788724342848$ = goog.getMsg("Some value: {$phA}", { "phA": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$ = goog.getMsg("Some value: {$phA}", {
+          "phA": "\uFFFD0\uFFFD"
+        });
         …
         consts: 2,
         vars: 1,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_2817319788724342848$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_2817319788724342848$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -714,23 +728,29 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_572579892698764378$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $MSG_EXTERNAL_609623417156596326$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $MSG_EXTERNAL_3998119318957372120$ = goog.getMsg("My i18n block #{$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
+        const $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$ = goog.getMsg("My i18n block #{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
+        const $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$ = goog.getMsg("My i18n block #{$interpolation}", {
+          "interpolation": "\uFFFD0\uFFFD"
+        });
         …
         consts: 7,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_572579892698764378$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_572579892698764378$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "div");
-            $r3$.ɵi18n(3, $MSG_EXTERNAL_609623417156596326$);
+            $r3$.ɵi18n(3, $MSG_EXTERNAL_609623417156596326$$APP_SPEC_TS_1$);
             $r3$.ɵpipe(4, "uppercase");
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(5, "div");
-            $r3$.ɵi18n(6, $MSG_EXTERNAL_3998119318957372120$);
+            $r3$.ɵi18n(6, $MSG_EXTERNAL_3998119318957372120$$APP_SPEC_TS_2$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -766,12 +786,12 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7905233330103651696$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
+        const $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagSpan}Plain text in nested element{$closeTagSpan}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagSpan": "\uFFFD#2\uFFFD",
           "closeTagSpan": "\uFFFD/#2\uFFFD"
         });
-        const $MSG_EXTERNAL_5788821996131681377_RAW$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
+        const $MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = goog.getMsg(" My i18n block #{$interpolation} {$startTagDiv}{$startTagDiv}{$startTagSpan} More bindings in more nested element: {$interpolation_1} {$closeTagSpan}{$closeTagDiv}{$closeTagDiv}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagDiv": "[\uFFFD#6\uFFFD|\uFFFD#7\uFFFD]",
           "startTagSpan": "\uFFFD#8\uFFFD",
@@ -779,19 +799,19 @@ describe('i18n support in the view compiler', () => {
           "closeTagSpan": "\uFFFD/#8\uFFFD",
           "closeTagDiv": "[\uFFFD/#7\uFFFD|\uFFFD/#6\uFFFD]"
         });
-        const $MSG_EXTERNAL_5788821996131681377$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_5788821996131681377_RAW$);
+        const $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
         …
         consts: 9,
         vars: 5,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7905233330103651696$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7905233330103651696$$APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "span");
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(3, "div");
-            $r3$.ɵi18nStart(4, $MSG_EXTERNAL_5788821996131681377$);
+            $r3$.ɵi18nStart(4, $I18N_EXTERNAL_5788821996131681377$$APP_SPEC_TS_1$);
             $r3$.ɵpipe(5, "uppercase");
             $r3$.ɵelementStart(6, "div");
             $r3$.ɵelementStart(7, "div");
@@ -831,19 +851,19 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4782264005467235841$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
+        const $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$ = goog.getMsg("Span title {$interpolation} and {$interpolation_1}", {
           "interpolation": "\uFFFD0\uFFFD",
           "interpolation_1": "\uFFFD1\uFFFD"
         });
-        const $_c0$ = ["title", $MSG_EXTERNAL_4782264005467235841$];
-        const $MSG_EXTERNAL_4446430594603971069$ = goog.getMsg(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
+        const $_c0$ = ["title", $MSG_EXTERNAL_4782264005467235841$$APP_SPEC_TS_1$];
+        const $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$ = goog.getMsg(" My i18n block #1 with value: {$interpolation} {$startTagSpan} Plain text in nested element (block #1) {$closeTagSpan}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagSpan": "\uFFFD#2\uFFFD",
           "closeTagSpan": "\uFFFD/#2\uFFFD"
         });
-        const $MSG_EXTERNAL_2719594642740200058$ = goog.getMsg("Span title {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
-        const $_c1$ = ["title", $MSG_EXTERNAL_2719594642740200058$];
-        const $MSG_EXTERNAL_2778714953278357902$ = goog.getMsg(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
+        const $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$ = goog.getMsg("Span title {$interpolation}", { "interpolation": "\uFFFD0\uFFFD" });
+        const $_c1$ = ["title", $MSG_EXTERNAL_2719594642740200058$$APP_SPEC_TS_4$];
+        const $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$ = goog.getMsg(" My i18n block #2 with value {$interpolation} {$startTagSpan} Plain text in nested element (block #2) {$closeTagSpan}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagSpan": "\uFFFD#7\uFFFD",
           "closeTagSpan": "\uFFFD/#7\uFFFD"
@@ -854,14 +874,14 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4446430594603971069$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4446430594603971069$$APP_SPEC_TS_0$);
             $r3$.ɵelementStart(2, "span");
             $r3$.ɵi18nAttributes(3, $_c0$);
             $r3$.ɵelementEnd();
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(4, "div");
-            $r3$.ɵi18nStart(5, $MSG_EXTERNAL_2778714953278357902$);
+            $r3$.ɵi18nStart(5, $MSG_EXTERNAL_2778714953278357902$$APP_SPEC_TS_3$);
             $r3$.ɵpipe(6, "uppercase");
             $r3$.ɵelementStart(7, "span");
             $r3$.ɵi18nAttributes(8, $_c1$);
@@ -903,7 +923,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [1, "ngIf"];
-        const $MSG_EXTERNAL_7679414751795588050$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
+        const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagDiv": "\uFFFD#3\uFFFD",
           "interpolation_1": "\uFFFD1\uFFFD",
@@ -914,7 +934,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵelementStart(1, "div");
-            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_7679414751795588050$);
+            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$);
             $r3$.ɵelement(3, "div");
             $r3$.ɵpipe(4, "uppercase");
             $r3$.ɵi18nEnd();
@@ -1026,7 +1046,7 @@ describe('i18n support in the view compiler', () => {
         const $_c0$ = [1, "ngIf"];
         function MyComponent_div_div_Template_4(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1221890473527419724$, 2);
+            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
             $r3$.ɵelementStart(1, "div");
             $r3$.ɵelement(2, "div");
             $r3$.ɵelementEnd();
@@ -1041,7 +1061,7 @@ describe('i18n support in the view compiler', () => {
         }
         function MyComponent_div_Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1221890473527419724$, 1);
+            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 1);
             $r3$.ɵelementStart(1, "div");
             $r3$.ɵelementStart(2, "div");
             $r3$.ɵpipe(3, "uppercase");
@@ -1058,7 +1078,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(0);
           }
         }
-        const $MSG_EXTERNAL_1221890473527419724$$RAW$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
+        const $MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = goog.getMsg(" Some content {$startTagDiv_2} Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$startTagDiv_1} Content inside sub-template {$interpolation_2} {$startTagDiv} Bottom level element {$interpolation_3} {$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$closeTagDiv}{$startTagDiv_3} Some other content {$interpolation_4} {$startTagDiv} More nested levels with bindings {$interpolation_5} {$closeTagDiv}{$closeTagDiv}", {
           "startTagDiv_2": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
           "closeTagDiv": "[\uFFFD/#2:2\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*4:2\uFFFD|\uFFFD/#2:1\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#2:3\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*3:3\uFFFD]",
           "startTagDiv_3": "\uFFFD*3:3\uFFFD\uFFFD#1:3\uFFFD",
@@ -1071,10 +1091,10 @@ describe('i18n support in the view compiler', () => {
           "interpolation_4": "\uFFFD0:3\uFFFD",
           "interpolation_5": "\uFFFD1:3\uFFFD"
         });
-        const $MSG_EXTERNAL_1221890473527419724$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1221890473527419724$$RAW$);
+        const $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
         function MyComponent_div_Template_3(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1221890473527419724$, 3);
+            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 3);
             $r3$.ɵelementStart(1, "div");
             $r3$.ɵelement(2, "div");
             $r3$.ɵpipe(3, "uppercase");
@@ -1094,7 +1114,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1221890473527419724$);
+            $r3$.ɵi18nStart(1, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$);
             $r3$.ɵtemplate(2, MyComponent_div_Template_2, 5, 5, null, $_c1$);
             $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 4, null, $_c1$);
             $r3$.ɵi18nEnd();
@@ -1117,7 +1137,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = [1, "ngIf"];
-        const $MSG_EXTERNAL_119975189388320493$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
+        const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
           "startTagSpan": "\uFFFD#2\uFFFD",
           "interpolation": "\uFFFD0\uFFFD",
           "closeTagSpan": "\uFFFD/#2\uFFFD"
@@ -1126,7 +1146,7 @@ describe('i18n support in the view compiler', () => {
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
               $r3$.ɵelementStart(0, "div");
-              $r3$.ɵi18nStart(1, $MSG_EXTERNAL_119975189388320493$);
+              $r3$.ɵi18nStart(1, $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$);
               $r3$.ɵelement(2, "span");
               $r3$.ɵi18nEnd();
               $r3$.ɵelementEnd();
@@ -1161,12 +1181,12 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4890179241114413722$ = goog.getMsg("My i18n block #1");
+        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #1");
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
         }
@@ -1181,8 +1201,8 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8806993169187953163$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_EXTERNAL_8806993169187953163$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$RAW$, {
+        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1191,7 +1211,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_8806993169187953163$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1211,11 +1231,11 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2413150872298537152$ = goog.getMsg("My i18n block #2");
-        const $MSG_EXTERNAL_4890179241114413722$ = goog.getMsg("My i18n block #1");
+        const $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$ = goog.getMsg("My i18n block #2");
+        const $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$ = goog.getMsg("My i18n block #1");
         function Template_0(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_4890179241114413722$);
+            $r3$.ɵi18n(0, $MSG_EXTERNAL_4890179241114413722$$APP_SPEC_TS__1$);
           }
         }
         …
@@ -1223,7 +1243,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵtemplate(0, Template_0, 1, 0);
             $r3$.ɵelementContainerStart(1);
-            $r3$.ɵi18n(2, $MSG_EXTERNAL_2413150872298537152$);
+            $r3$.ɵi18n(2, $MSG_EXTERNAL_2413150872298537152$$APP_SPEC_TS_0$);
             $r3$.ɵelementContainerEnd();
           }
         }
@@ -1240,21 +1260,21 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["myClass", 1, "myClass", true];
-        const $MSG_EXTERNAL_5295701706185791735$ = goog.getMsg("Text #1");
+        const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$ = goog.getMsg("Text #1");
         const $_c1$ = ["padding", 1, "padding", "10px"];
-        const $MSG_EXTERNAL_4722270221386399294$ = goog.getMsg("Text #2");
+        const $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$ = goog.getMsg("Text #2");
         …
         consts: 4,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "span");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5295701706185791735$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$);
             $r3$.ɵelementStyling($_c0$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "span");
-            $r3$.ɵi18nStart(3, $MSG_EXTERNAL_4722270221386399294$);
+            $r3$.ɵi18nStart(3, $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$);
             $r3$.ɵelementStyling(null, $_c1$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
@@ -1273,7 +1293,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_355394464191978948$ = goog.getMsg("Some content: {$interpolation}", {
+        const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$ = goog.getMsg("Some content: {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
         …
@@ -1282,7 +1302,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_355394464191978948$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS_0$);
             $r3$.ɵpipe(2, "uppercase");
             $r3$.ɵelementContainerEnd();
           }
@@ -1302,12 +1322,12 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_355394464191978948$ = goog.getMsg("Some content: {$interpolation}", {
+        const $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$ = goog.getMsg("Some content: {$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
         function Template_0(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_355394464191978948$);
+            $r3$.ɵi18n(0, $MSG_EXTERNAL_355394464191978948$$APP_SPEC_TS__0$);
             $r3$.ɵpipe(1, "uppercase");
           } if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
@@ -1337,7 +1357,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_702706566400598764$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
+        const $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate}Template content: {$interpolation}{$closeTagNgTemplate}{$startTagNgContainer}Container content: {$interpolation_1}{$closeTagNgContainer}", {
           "startTagNgTemplate": "\uFFFD*2:1\uFFFD",
           "closeTagNgTemplate": "\uFFFD/*2:1\uFFFD",
           "startTagNgContainer": "\uFFFD#3\uFFFD",
@@ -1347,7 +1367,7 @@ describe('i18n support in the view compiler', () => {
         });
         function Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_702706566400598764$, 1);
+            $r3$.ɵi18n(0, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$, 1);
             $r3$.ɵpipe(1, "uppercase");
           }
           if (rf & 2) {
@@ -1362,7 +1382,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_702706566400598764$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_702706566400598764$$APP_SPEC_TS_0$);
             $r3$.ɵtemplate(2, Template_2, 2, 3);
             $r3$.ɵelementContainerStart(3);
             $r3$.ɵpipe(4, "uppercase");
@@ -1387,17 +1407,17 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_8806993169187953163$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_EXTERNAL_8806993169187953163$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$RAW$, {
+        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function Template_0(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_7842238767399919809$);
+            $r3$.ɵi18n(0, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS__1$);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
@@ -1412,7 +1432,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵtemplate(0, Template_0, 1, 1);
             $r3$.ɵelementContainerStart(1);
-            $r3$.ɵi18n(2, $MSG_EXTERNAL_8806993169187953163$);
+            $r3$.ɵi18n(2, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
             $r3$.ɵelementContainerEnd();
           }
           if (rf & 2) {
@@ -1443,7 +1463,7 @@ describe('i18n support in the view compiler', () => {
       const output = String.raw `
         function Template_1(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_2051477021417799640$, 3);
+            $r3$.ɵi18n(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 3);
           }
           if (rf & 2) {
             const $ctx_r2$ = $r3$.ɵnextContext(3);
@@ -1453,7 +1473,7 @@ describe('i18n support in the view compiler', () => {
         }
         function Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_2051477021417799640$, 2);
+            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 2);
             $r3$.ɵtemplate(1, Template_1, 1, 1);
             $r3$.ɵi18nEnd();
           }
@@ -1463,17 +1483,17 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(0);
           }
         }
-        const $MSG_EXTERNAL_2051477021417799640$$RAW$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
+        const $MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = goog.getMsg("{$startTagNgTemplate} Template A: {$interpolation} {$startTagNgTemplate} Template B: {$interpolation_1} {$startTagNgTemplate} Template C: {$interpolation_2} {$closeTagNgTemplate}{$closeTagNgTemplate}{$closeTagNgTemplate}", {
           "startTagNgTemplate": "[\uFFFD*2:1\uFFFD|\uFFFD*2:2\uFFFD|\uFFFD*1:3\uFFFD]",
           "closeTagNgTemplate": "[\uFFFD/*1:3\uFFFD|\uFFFD/*2:2\uFFFD|\uFFFD/*2:1\uFFFD]",
           "interpolation": "\uFFFD0:1\uFFFD",
           "interpolation_1": "\uFFFD0:2\uFFFD",
           "interpolation_2": "\uFFFD0:3\uFFFD"
         });
-        const $MSG_EXTERNAL_2051477021417799640$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2051477021417799640$$RAW$);
+        const $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
         function Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_2051477021417799640$, 1);
+            $r3$.ɵi18nStart(0, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$, 1);
             $r3$.ɵpipe(1, "uppercase");
             $r3$.ɵtemplate(2, Template_2, 2, 1);
             $r3$.ɵi18nEnd();
@@ -1490,7 +1510,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_2051477021417799640$);
+            $r3$.ɵi18nStart(1, $I18N_EXTERNAL_2051477021417799640$$APP_SPEC_TS_0$);
             $r3$.ɵtemplate(2, Template_2, 3, 3);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
@@ -1508,17 +1528,17 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_8806993169187953163$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_EXTERNAL_8806993169187953163$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$RAW$, {
+        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18n(0, $MSG_EXTERNAL_8806993169187953163$);
+            $r3$.ɵi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__1$);
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
@@ -1532,7 +1552,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_7842238767399919809$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
             $r3$.ɵelementContainerEnd();
             $r3$.ɵtemplate(2, Template_2, 1, 1);
           }
@@ -1558,15 +1578,15 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png", "title", "Logo"];
-        const $MSG_EXTERNAL_4891196282781544695$ = goog.getMsg("{$tagImg} is my logo #1 ", {
+        const $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$ = goog.getMsg("{$tagImg} is my logo #1 ", {
           "tagImg": "\uFFFD#2\uFFFD\uFFFD/#2\uFFFD"
         });
-        const $MSG_EXTERNAL_461986953980355147$ = goog.getMsg("{$tagImg} is my logo #2 ", {
+        const $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$ = goog.getMsg("{$tagImg} is my logo #2 ", {
           "tagImg": "\uFFFD#1\uFFFD\uFFFD/#1\uFFFD"
         });
         function Template_3(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_461986953980355147$);
+            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_461986953980355147$$APP_SPEC_TS__2$);
             $r3$.ɵelement(1, "img", $_c0$);
             $r3$.ɵi18nEnd();
           }
@@ -1575,7 +1595,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementContainerStart(0);
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4891196282781544695$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_4891196282781544695$$APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "img", $_c0$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementContainerEnd();
@@ -1598,7 +1618,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_963542717423364282$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
+        const $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$ = goog.getMsg("\n          Some text\n          {$startTagSpan}Text inside span{$closeTagSpan}\n        ", {
           "startTagSpan": "\uFFFD#3\uFFFD",
           "closeTagSpan": "\uFFFD/#3\uFFFD"
         });
@@ -1607,7 +1627,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 1) {
             $r3$.ɵtext(0, "\n        ");
             $r3$.ɵelementStart(1, "div");
-            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_963542717423364282$);
+            $r3$.ɵi18nStart(2, $MSG_EXTERNAL_963542717423364282$$APP_SPEC_TS_0$);
             $r3$.ɵelement(3, "span");
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
@@ -1627,8 +1647,8 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1637,7 +1657,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_7842238767399919809$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1656,8 +1676,8 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4166854826696768832$$RAW$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
-        const $MSG_EXTERNAL_4166854826696768832$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4166854826696768832$$RAW$, {
+        const $MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, single {'single quotes'} double {\"double quotes\"} other {other}}");
+        const $I18N_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4166854826696768832$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
       `;
@@ -1677,20 +1697,20 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [1, "ngIf"];
         const $_c1$ = ["title", "icu only"];
-        const $MSG_EXTERNAL_8806993169187953163$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
-        const $MSG_EXTERNAL_8806993169187953163$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$RAW$, {
+        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_Template_2(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $_c1$);
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_8806993169187953163$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1700,17 +1720,17 @@ describe('i18n support in the view compiler', () => {
           }
         }
         const $_c2$ = ["title", "icu and text"];
-        const $MSG_EXTERNAL_1922743304863699161$$RAW$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
+        const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $MSG_EXTERNAL_1922743304863699161$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1922743304863699161$$RAW$, {
+        const $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_Template_3(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $_c2$);
             $r3$.ɵtext(1, " You have ");
-            $r3$.ɵi18n(2, $MSG_EXTERNAL_1922743304863699161$);
+            $r3$.ɵi18n(2, $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$);
             $r3$.ɵtext(3, ". ");
             $r3$.ɵelementEnd();
           }
@@ -1727,7 +1747,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_7842238767399919809$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
             $r3$.ɵtemplate(2, MyComponent_div_Template_2, 2, 1, null, $_c0$);
             $r3$.ɵtemplate(3, MyComponent_div_Template_3, 4, 2, null, $_c0$);
@@ -1781,7 +1801,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_2417296354340576868$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
+        const $MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male - {$startBoldText}male{$closeBoldText}} female {female {$startBoldText}female{$closeBoldText}} other {{$startTagDiv}{$startItalicText}other{$closeItalicText}{$closeTagDiv}}}", {
           "startBoldText": "<b>",
           "closeBoldText": "</b>",
           "startItalicText": "<i>",
@@ -1789,18 +1809,18 @@ describe('i18n support in the view compiler', () => {
           "startTagDiv": "<div class=\"other\">",
           "closeTagDiv": "</div>"
         });
-        const $MSG_EXTERNAL_2417296354340576868$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2417296354340576868$$RAW$, {
+        const $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = ["other", 1, "other", true];
-        const $MSG_EXTERNAL_5791551881115084301$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
+        const $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startBoldText}Other content{$closeBoldText}{$startTagDiv}{$startItalicText}Another content{$closeItalicText}{$closeTagDiv}", {
           "startBoldText": "\uFFFD#2\uFFFD",
           "closeBoldText": "\uFFFD/#2\uFFFD",
           "startTagDiv": "\uFFFD#3\uFFFD",
           "startItalicText": "\uFFFD#4\uFFFD",
           "closeItalicText": "\uFFFD/#4\uFFFD",
           "closeTagDiv": "\uFFFD/#3\uFFFD",
-          "icu": $MSG_EXTERNAL_2417296354340576868$
+          "icu": $I18N_EXTERNAL_2417296354340576868$$APP_SPEC_TS_1$
         });
         …
         consts: 5,
@@ -1808,7 +1828,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5791551881115084301$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5791551881115084301$$APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "b");
             $r3$.ɵelementStart(3, "div");
             $r3$.ɵelementStyling($_c0$);
@@ -1833,10 +1853,10 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_6879461626778511059$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
+        const $MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male of age: {$interpolation}} female {female} other {other}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
-        const $MSG_EXTERNAL_6879461626778511059$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_6879461626778511059$$RAW$, {
+        const $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -1845,7 +1865,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_6879461626778511059$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_6879461626778511059$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1868,17 +1888,17 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_EXTERNAL_7068143081688428291$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $MSG_EXTERNAL_7068143081688428291$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$RAW$, {
+        const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $MSG_EXTERNAL_2967249209167308918$ = goog.getMsg("{$icu}{$icu_1}", {
-          "icu": $MSG_EXTERNAL_7842238767399919809$,
-          "icu_1": $MSG_EXTERNAL_7068143081688428291$
+        const $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$icu_1}", {
+          "icu": $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$,
+          "icu_1": $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS_2$
         });
         …
         consts: 2,
@@ -1886,7 +1906,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_2967249209167308918$);
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_2967249209167308918$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1914,31 +1934,31 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_APP_SPEC_TS_1$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1$$RAW$, {
+        const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_2$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$$RAW$, {
+        const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
         const $_c3$ = [1, "ngIf"];
-        const $MSG_APP_SPEC_TS__4$$RAW$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_APP_SPEC_TS__4$$RAW$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$$RAW$$RAW$, {
+        const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$$RAW$$RAW$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
+        const $MSG_APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagDiv}{$icu}{$closeTagDiv}{$startTagDiv_1}{$icu}{$closeTagDiv}", {
           "startTagDiv": "\uFFFD#2\uFFFD",
           "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
           "startTagDiv_1": "\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD",
           "icu": "\uFFFDI18N_EXP_ICU\uFFFD"
         });
-        const $MSG_APP_SPEC_TS_0$$RAW$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0$$RAW$$RAW$, {
-          "ICU": [$MSG_APP_SPEC_TS_1$, $MSG_APP_SPEC_TS_2$, $MSG_APP_SPEC_TS__4$]
+        const $I18N_APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_0$, {
+          "ICU": [$I18N_APP_SPEC_TS_1$, $I18N_APP_SPEC_TS_2$, $I18N_APP_SPEC_TS__4$]
         });
         function MyComponent_div_Template_3(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_APP_SPEC_TS_0$, 1);
+            $r3$.ɵi18nStart(0, $I18N_APP_SPEC_TS_0$, 1);
             $r3$.ɵelement(1, "div");
             $r3$.ɵi18nEnd();
           }
@@ -1954,7 +1974,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_APP_SPEC_TS_0$);
+            $r3$.ɵi18nStart(1, $I18N_APP_SPEC_TS_0$);
             $r3$.ɵelement(2, "div");
             $r3$.ɵtemplate(3, MyComponent_div_Template_3, 2, 1, null, $_c3$);
             $r3$.ɵi18nEnd();
@@ -1987,8 +2007,8 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_3052001905251380936$$RAW$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
-        const $MSG_EXTERNAL_3052001905251380936$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_3052001905251380936$$RAW$, {
+        const $MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT_1, select, male {male of age: {VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}} female {female} other {other}}");
+        const $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD",
           "VAR_SELECT_1": "\uFFFD1\uFFFD"
         });
@@ -1998,7 +2018,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_3052001905251380936$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_343563413083115114$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -2026,24 +2046,24 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7842238767399919809$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
-        const $MSG_EXTERNAL_7842238767399919809$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$RAW$, {
+        const $MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+        const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [1, "ngIf"];
-        const $MSG_EXTERNAL_7068143081688428291$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
-        const $MSG_EXTERNAL_7068143081688428291$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$RAW$, {
+        const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
+        const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_EXTERNAL_1194472282609532229$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+        const $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
           "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
           "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          "icu": $MSG_EXTERNAL_7842238767399919809$,
-          "icu_1": $MSG_EXTERNAL_7068143081688428291$
+          "icu": $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$,
+          "icu_1": $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$
         });
         function MyComponent_span_Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1194472282609532229$, 1);
+            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$, 1);
             $r3$.ɵelement(1, "span");
             $r3$.ɵi18nEnd();
           }
@@ -2059,7 +2079,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1194472282609532229$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_1194472282609532229$$APP_SPEC_TS_0$);
             $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 1, null, $_c2$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
@@ -2086,29 +2106,29 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_7825031864601787094$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
+        const $MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male {$interpolation}} female {female {$interpolation_1}} other {other}}", {
           "interpolation": "\uFFFD1\uFFFD",
           "interpolation_1": "\uFFFD2\uFFFD"
         });
-        const $MSG_EXTERNAL_7825031864601787094$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$RAW$, {
+        const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         const $_c0$ = [1, "ngIf"];
-        const $MSG_EXTERNAL_2310343208266678305$$RAW$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
+        const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
           "interpolation": "\uFFFD1:1\uFFFD"
         });
-        const $MSG_EXTERNAL_2310343208266678305$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2310343208266678305$$RAW$, {
+        const $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
         });
-        const $MSG_EXTERNAL_7186042105600518133$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
+        const $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$ = goog.getMsg("{$icu}{$startTagSpan}{$icu_1}{$closeTagSpan}", {
           "startTagSpan": "\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD",
           "closeTagSpan": "\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD",
-          "icu": $MSG_EXTERNAL_7825031864601787094$,
-          "icu_1": $MSG_EXTERNAL_2310343208266678305$
+          "icu": $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$,
+          "icu_1": $I18N_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$
         });
         function MyComponent_span_Template_2(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_7186042105600518133$, 1);
+            $r3$.ɵi18nStart(0, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$, 1);
             $r3$.ɵelement(1, "span");
             $r3$.ɵi18nEnd();
           }
@@ -2125,7 +2145,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7186042105600518133$);
+            $r3$.ɵi18nStart(1, $MSG_EXTERNAL_7186042105600518133$$APP_SPEC_TS_0$);
             $r3$.ɵtemplate(2, MyComponent_span_Template_2, 2, 2, null, $_c2$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
@@ -2155,12 +2175,12 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $MSG_EXTERNAL_4853189513362404940$$RAW$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
+        const $MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, male {male {$phA}} female {female {$phB}} other {other {$phC}}}", {
           "phA": "\uFFFD1\uFFFD",
           "phB": "\uFFFD2\uFFFD",
           "phC": "\uFFFD3\uFFFD"
         });
-        const $MSG_EXTERNAL_4853189513362404940$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4853189513362404940$$RAW$, {
+        const $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         …
@@ -2169,7 +2189,7 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4853189513362404940$);
+            $r3$.ɵi18n(1, $I18N_EXTERNAL_4853189513362404940$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {

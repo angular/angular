@@ -314,11 +314,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   i18nAllocateRef(messageId: string): o.ReadVarExpr {
     let name: string;
+    const suffix = this.fileBasedI18nSuffix.toUpperCase();
     if (this.i18nUseExternalIds) {
       const prefix = getTranslationConstPrefix(`EXTERNAL_`);
-      name = `${prefix}${messageId}`;
+      const uniqueSuffix = this.constantPool.uniqueName(suffix);
+      name = `${prefix}${messageId}$$${uniqueSuffix}`;
     } else {
-      const prefix = getTranslationConstPrefix(this.fileBasedI18nSuffix);
+      const prefix = getTranslationConstPrefix(suffix);
       name = this.constantPool.uniqueName(prefix);
     }
     return o.variable(name);
