@@ -20,7 +20,6 @@ import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
-import {checkMarkerFile, writeMarkerFile} from './build_marker';
 import {EntryPoint} from './entry_point';
 import {EntryPointBundle} from './entry_point_bundle';
 
@@ -53,11 +52,6 @@ export class Transformer {
    * @param bundle the bundle to transform.
    */
   transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
-    if (checkMarkerFile(entryPoint, bundle.format)) {
-      console.warn(`Skipping ${entryPoint.name} : ${bundle.format} (already built).`);
-      return;
-    }
-
     console.warn(`Compiling ${entryPoint.name} - ${bundle.format}`);
 
     const reflectionHost = this.getHost(isCore, bundle);
@@ -73,9 +67,6 @@ export class Transformer {
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
-
-    // Write the built-with-ngcc marker
-    writeMarkerFile(entryPoint, bundle.format);
   }
 
   getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
