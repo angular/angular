@@ -121,6 +121,14 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class InjectorWithDep {
+    constructor(readonly service: Service) {}
+
+    static ngInjectorDef = defineInjector({
+      factory: () => new InjectorWithDep(inject(Service)),
+    });
+  }
+
   class Module {
     static ngInjectorDef = defineInjector({
       factory: () => new Module(),
@@ -137,6 +145,7 @@ describe('InjectorDef-based createInjector()', () => {
         CircularA,
         CircularB,
         {provide: STATIC_TOKEN, useClass: StaticService, deps: [Service]},
+        InjectorWithDep,
       ],
     });
   }
@@ -202,6 +211,12 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(ServiceWithMultiDep);
     expect(instance instanceof ServiceWithMultiDep);
     expect(instance.locale).toEqual(['en', 'es']);
+  });
+
+  it('injects an injector with dependencies', () => {
+    const instance = injector.get(InjectorWithDep);
+    expect(instance instanceof InjectorWithDep);
+    expect(instance.service).toBe(injector.get(Service));
   });
 
   it('injects a token with useExisting', () => {
