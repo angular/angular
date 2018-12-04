@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
-import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
+import {Attribute, ChangeDetectorRef, Component, Directive, ElementRef, Host, InjectFlags, Injectable, Injector, NgModule, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
@@ -26,6 +26,7 @@ import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, 
 import {NgIf} from './common_with_def';
 import {TNODE} from '../../src/render3/interfaces/injector';
 import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
+import {Inject} from '@angular/core/src/di';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -2068,6 +2069,67 @@ describe('di', () => {
       } finally {
         leaveView(oldView);
       }
+    });
+  });
+
+  describe('regression', () => {
+    // based on https://stackblitz.com/edit/angular-riss8k?file=src/app/app.component.ts
+    fit('should behave same as ViewEngine', () => {
+      let controlContainers: ControlContainer[] = [];
+      let injectedControlContainer: ControlContainer|null = null;
+      @Component({
+        selector: 'my-app',
+        template: `
+          <div group>
+            <child></child>
+          </div>
+        `
+      })
+      class AppComponent {
+      }
+
+
+      @Injectable()
+      class ControlContainer {
+        constructor() { controlContainers.push(this); }
+      }
+
+      @Directive({
+        selector: '[group]',
+        providers: [{provide: ControlContainer, useExisting: GroupDirective}]
+      })
+      class GroupDirective {
+      }
+
+
+      @Directive({selector: '[controlName]'})
+      class ControlNameDirective {
+        // This does not seem to work. When code is generated instead of `ControlContainer` we are
+        // injecting `null`
+        // constructor(@Host() @SkipSelf() parent: ControlContainer) {}
+        constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent: ControlContainer) {
+          injectedControlContainer = parent;
+        }
+      }
+
+      @Component({
+        selector: 'child',
+        template: `
+          <input controlName type="text">
+        `,
+        viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}]
+      })
+      class ChildComponent {
+      }
+
+      @NgModule({declarations: [AppComponent, ControlNameDirective, ChildComponent]})
+      class MyApp {
+      }
+
+      const fixture = new ComponentFixture(AppComponent as ComponentType<AppComponent>);
+
+      expect(controlContainers).toBe([injectedControlContainer !]);
+
     });
   });
 
