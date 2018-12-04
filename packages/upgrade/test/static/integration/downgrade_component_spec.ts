@@ -520,96 +520,94 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-713: ngDestroy not being called when downgraded ng2 component is destroyed') &&
-        it('should properly run cleanup when ng1 directive is destroyed', async(() => {
+    it('should properly run cleanup when ng1 directive is destroyed', async(() => {
 
-             let destroyed = false;
-             @Component({selector: 'ng2', template: 'test'})
-             class Ng2Component implements OnDestroy {
-               ngOnDestroy() { destroyed = true; }
-             }
+         let destroyed = false;
+         @Component({selector: 'ng2', template: 'test'})
+         class Ng2Component implements OnDestroy {
+           ngOnDestroy() { destroyed = true; }
+         }
 
-             @NgModule({
-               declarations: [Ng2Component],
-               entryComponents: [Ng2Component],
-               imports: [BrowserModule, UpgradeModule]
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-             const ng1Module =
-                 angular.module('ng1', [])
-                     .directive(
-                         'ng1',
-                         () => { return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'}; })
-                     .directive('ng2', downgradeComponent({component: Ng2Component}));
-             const element = html('<ng1></ng1>');
-             platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
-               const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
-               adapter.bootstrap(element, [ng1Module.name]);
-               expect(element.textContent).toContain('test');
-               expect(destroyed).toBe(false);
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive(
+                     'ng1',
+                     () => { return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'}; })
+                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+         const element = html('<ng1></ng1>');
+         platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
+           const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
+           adapter.bootstrap(element, [ng1Module.name]);
+           expect(element.textContent).toContain('test');
+           expect(destroyed).toBe(false);
 
-               const $rootScope = adapter.$injector.get('$rootScope');
-               $rootScope.$apply('destroyIt = true');
+           const $rootScope = adapter.$injector.get('$rootScope');
+           $rootScope.$apply('destroyIt = true');
 
-               expect(element.textContent).not.toContain('test');
-               expect(destroyed).toBe(true);
-             });
-           }));
+           expect(element.textContent).not.toContain('test');
+           expect(destroyed).toBe(true);
+         });
+       }));
 
-    fixmeIvy('FW-642: ASSERTION ERROR: Slot should have been initialized to NO_CHANGE') &&
-        it('should properly run cleanup with multiple levels of nesting', async(() => {
-             let destroyed = false;
+    it('should properly run cleanup with multiple levels of nesting', async(() => {
+         let destroyed = false;
 
-             @Component({
-               selector: 'ng2-outer',
-               template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
-             })
-             class Ng2OuterComponent {
-               @Input() destroyIt = false;
-             }
+         @Component({
+           selector: 'ng2-outer',
+           template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
+         })
+         class Ng2OuterComponent {
+           @Input() destroyIt = false;
+         }
 
-             @Component({selector: 'ng2-inner', template: 'test'})
-             class Ng2InnerComponent implements OnDestroy {
-               ngOnDestroy() { destroyed = true; }
-             }
+         @Component({selector: 'ng2-inner', template: 'test'})
+         class Ng2InnerComponent implements OnDestroy {
+           ngOnDestroy() { destroyed = true; }
+         }
 
-             @Directive({selector: 'ng1'})
-             class Ng1ComponentFacade extends UpgradeComponent {
-               constructor(elementRef: ElementRef, injector: Injector) {
-                 super('ng1', elementRef, injector);
-               }
-             }
+         @Directive({selector: 'ng1'})
+         class Ng1ComponentFacade extends UpgradeComponent {
+           constructor(elementRef: ElementRef, injector: Injector) {
+             super('ng1', elementRef, injector);
+           }
+         }
 
-             @NgModule({
-               imports: [BrowserModule, UpgradeModule],
-               declarations: [Ng1ComponentFacade, Ng2InnerComponent, Ng2OuterComponent],
-               entryComponents: [Ng2InnerComponent, Ng2OuterComponent],
-             })
-             class Ng2Module {
-               ngDoBootstrap() {}
-             }
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng1ComponentFacade, Ng2InnerComponent, Ng2OuterComponent],
+           entryComponents: [Ng2InnerComponent, Ng2OuterComponent],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-             const ng1Module =
-                 angular.module('ng1', [])
-                     .directive('ng1', () => ({template: '<ng2-inner></ng2-inner>'}))
-                     .directive('ng2Inner', downgradeComponent({component: Ng2InnerComponent}))
-                     .directive('ng2Outer', downgradeComponent({component: Ng2OuterComponent}));
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive('ng1', () => ({template: '<ng2-inner></ng2-inner>'}))
+                 .directive('ng2Inner', downgradeComponent({component: Ng2InnerComponent}))
+                 .directive('ng2Outer', downgradeComponent({component: Ng2OuterComponent}));
 
-             const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
+         const element = html('<ng2-outer [destroy-it]="destroyIt"></ng2-outer>');
 
-             bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-               expect(element.textContent).toBe('test');
-               expect(destroyed).toBe(false);
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(element.textContent).toBe('test');
+           expect(destroyed).toBe(false);
 
-               $apply(upgrade, 'destroyIt = true');
+           $apply(upgrade, 'destroyIt = true');
 
-               expect(element.textContent).toBe('');
-               expect(destroyed).toBe(true);
-             });
-           }));
+           expect(element.textContent).toBe('');
+           expect(destroyed).toBe(true);
+         });
+       }));
 
     it('should work when compiled outside the dom (by fallback to the root ng2.injector)',
        async(() => {
@@ -743,7 +741,7 @@ withEachNg1Version(() => {
              });
            }));
 
-    fixmeIvy('FW-561: Runtime compiler is not loaded') &&
+    fixmeIvy('FW-717: Browser locks up and disconnects') &&
         it('should work with ng2 lazy loaded components', async(() => {
 
              let componentInjector: Injector;

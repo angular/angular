@@ -7,7 +7,6 @@
  */
 import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {fixmeIvy} from '@angular/private/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/src/common/downgrade_component_adapter';
 
