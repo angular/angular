@@ -911,7 +911,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
   });
 
-  describe('local refs', () => {
+  describe('duplicate local refs', () => {
     const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';
 
@@ -922,7 +922,9 @@ describe('ngtsc behavioral tests', () => {
       class Module {}
     `;
 
-    const duplicateRefCases = [
+    // Components with templates listed below should
+    // throw the "ref is already defined" error
+    const invalidCases = [
       `
         <div #ref></div>
         <div #ref></div>
@@ -948,7 +950,26 @@ describe('ngtsc behavioral tests', () => {
       `
     ];
 
-    duplicateRefCases.forEach(template => {
+    // Compomnents with templates listed below should not throw
+    // the error, since refs are located in different scopes
+    const validCases = [
+      `
+        <ng-template>
+          <div #ref></div>
+        </ng-template>
+        <div #ref></div>
+      `,
+      `
+        <div *ngIf="visible" #ref></div>
+        <div #ref></div>
+      `,
+      `
+        <div *ngFor="let item of items" #ref></div>
+        <div #ref></div>
+      `
+    ];
+
+    invalidCases.forEach(template => {
       it('should throw in case of duplicate refs', () => {
         env.tsconfig();
         env.write('test.ts', getComponentScript(template));
@@ -958,16 +979,13 @@ describe('ngtsc behavioral tests', () => {
       });
     });
 
-    it('should not throw in case refs are in different scopes', () => {
-      env.tsconfig();
-      env.write('test.ts', getComponentScript(`
-        <ng-template>
-          <div #ref></div>
-        </ng-template>
-        <div #ref></div>
-      `));
-      const errors = env.driveDiagnostics();
-      expect(errors.length).toBe(0);
+    validCases.forEach(template => {
+      it('should not throw in case refs are in different scopes', () => {
+        env.tsconfig();
+        env.write('test.ts', getComponentScript(template));
+        const errors = env.driveDiagnostics();
+        expect(errors.length).toBe(0);
+      });
     });
   });
 });
