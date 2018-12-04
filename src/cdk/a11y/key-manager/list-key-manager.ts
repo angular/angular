@@ -40,7 +40,7 @@ export type ListKeyManagerModifierKey = 'altKey' | 'ctrlKey' | 'metaKey' | 'shif
  */
 export class ListKeyManager<T extends ListKeyManagerOption> {
   private _activeItemIndex = -1;
-  private _activeItem: T;
+  private _activeItem: T | null = null;
   private _wrap = false;
   private _letterKeyStream = new Subject<string>();
   private _typeaheadSubscription = Subscription.EMPTY;
@@ -310,9 +310,11 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   updateActiveItem(item: any): void {
     const itemArray = this._getItemsArray();
     const index = typeof item === 'number' ? item : itemArray.indexOf(item);
+    const activeItem = itemArray[index];
 
+    // Explicitly check for `null` and `undefined` because other falsy values are valid.
+    this._activeItem = activeItem == null ? null : activeItem;
     this._activeItemIndex = index;
-    this._activeItem = itemArray[index];
   }
 
   /**

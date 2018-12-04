@@ -93,6 +93,15 @@ describe('Key managers', () => {
       expect(keyManager.activeItem!.getLabel()).toBe('one');
     });
 
+    it('should start off the activeItem as null', () => {
+      expect(new ListKeyManager([]).activeItem).toBeNull();
+    });
+
+    it('should set the activeItem to null if an invalid index is passed in', () => {
+      keyManager.setActiveItem(1337);
+      expect(keyManager.activeItem).toBeNull();
+    });
+
     describe('Key events', () => {
 
       it('should emit tabOut when the tab key is pressed', () => {
