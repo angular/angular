@@ -10,6 +10,7 @@ import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, Inject, Injectable, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 // Services, and components for the tests.
 
@@ -250,7 +251,7 @@ class CompWithUrlTemplate {
           expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
         });
 
-        it('should use set up directives and pipes', () => {
+        fixmeIvy('unknown') && it('should use set up directives and pipes', () => {
           const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
           const el = compFixture.debugElement;
 
@@ -287,13 +288,14 @@ class CompWithUrlTemplate {
              expect(service.value).toEqual('real value');
            }));
 
-        it('should use set up directives and pipes', withModule(moduleConfig, () => {
-             const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-             const el = compFixture.debugElement;
+        fixmeIvy('unknown') &&
+            it('should use set up directives and pipes', withModule(moduleConfig, () => {
+                 const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+                 const el = compFixture.debugElement;
 
-             compFixture.detectChanges();
-             expect(el.children[0].properties['title']).toBe('transformed someValue');
-           }));
+                 compFixture.detectChanges();
+                 expect(el.children[0].properties['title']).toBe('transformed someValue');
+               }));
 
         it('should use set up library modules',
            withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -307,7 +309,7 @@ class CompWithUrlTemplate {
           TestBed.compileComponents();
         }));
 
-        isBrowser &&
+        fixmeIvy('unknown') && isBrowser &&
             it('should allow to createSync components with templateUrl after explicit async compilation',
                () => {
                  const fixture = TestBed.createComponent(CompWithUrlTemplate);
@@ -368,7 +370,7 @@ class CompWithUrlTemplate {
                 .overrideDirective(
                     SomeDirective, {set: {selector: '[someDir]', host: {'[title]': 'someProp'}}});
           });
-          it('should work', () => {
+          fixmeIvy('unknown') && it('should work', () => {
             const compFixture = TestBed.createComponent(SomeComponent);
             compFixture.detectChanges();
             expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
@@ -383,7 +385,7 @@ class CompWithUrlTemplate {
                 .overridePipe(SomePipe, {set: {name: 'somePipe'}})
                 .overridePipe(SomePipe, {add: {pure: false}});
           });
-          it('should work', () => {
+          fixmeIvy('unknown') && it('should work', () => {
             const compFixture = TestBed.createComponent(SomeComponent);
             compFixture.detectChanges();
             expect(compFixture.nativeElement).toHaveText('transformed hello');
@@ -453,7 +455,7 @@ class CompWithUrlTemplate {
             expect(TestBed.get('a')).toBe('mockA: depValue');
           });
 
-          it('should support SkipSelf', () => {
+          fixmeIvy('unknown') && it('should support SkipSelf', () => {
             @NgModule({
               providers: [
                 {provide: 'a', useValue: 'aValue'},
@@ -493,25 +495,26 @@ class CompWithUrlTemplate {
             expect(someModule).toBeAnInstanceOf(SomeModule);
           });
 
-          it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
-            let someModule: SomeModule|undefined;
+          fixmeIvy('unknown') &&
+              it('should keep imported NgModules lazy with deprecatedOverrideProvider', () => {
+                let someModule: SomeModule|undefined;
 
-            @NgModule()
-            class SomeModule {
-              constructor() { someModule = this; }
-            }
+                @NgModule()
+                class SomeModule {
+                  constructor() { someModule = this; }
+                }
 
-            TestBed.configureTestingModule({
-              providers: [
-                {provide: 'a', useValue: 'aValue'},
-              ],
-              imports: [SomeModule]
-            });
-            TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
+                TestBed.configureTestingModule({
+                  providers: [
+                    {provide: 'a', useValue: 'aValue'},
+                  ],
+                  imports: [SomeModule]
+                });
+                TestBed.deprecatedOverrideProvider('a', {useValue: 'mockValue'});
 
-            expect(TestBed.get('a')).toBe('mockValue');
-            expect(someModule).toBeUndefined();
-          });
+                expect(TestBed.get('a')).toBe('mockValue');
+                expect(someModule).toBeUndefined();
+              });
 
           describe('injecting eager providers into an eager overwritten provider', () => {
             @NgModule({
@@ -544,7 +547,7 @@ class CompWithUrlTemplate {
         });
 
         describe('in Components', () => {
-          it('should support useValue', () => {
+          fixmeIvy('unknown') && it('should support useValue', () => {
             @Component({
               template: '',
               providers: [
@@ -561,7 +564,7 @@ class CompWithUrlTemplate {
             expect(ctx.debugElement.injector.get('a')).toBe('mockValue');
           });
 
-          it('should support useFactory', () => {
+          fixmeIvy('unknown') && it('should support useFactory', () => {
             @Component({
               template: '',
               providers: [
@@ -580,7 +583,7 @@ class CompWithUrlTemplate {
             expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
           });
 
-          it('should support @Optional without matches', () => {
+          fixmeIvy('unknown') && it('should support @Optional without matches', () => {
             @Component({
               template: '',
               providers: [
@@ -598,7 +601,7 @@ class CompWithUrlTemplate {
             expect(ctx.debugElement.injector.get('a')).toBe('mockA: null');
           });
 
-          it('should support Optional with matches', () => {
+          fixmeIvy('unknown') && it('should support Optional with matches', () => {
             @Component({
               template: '',
               providers: [
@@ -617,7 +620,7 @@ class CompWithUrlTemplate {
             expect(ctx.debugElement.injector.get('a')).toBe('mockA: depValue');
           });
 
-          it('should support SkipSelf', () => {
+          fixmeIvy('unknown') && it('should support SkipSelf', () => {
             @Directive({
               selector: '[myDir]',
               providers: [
@@ -644,7 +647,7 @@ class CompWithUrlTemplate {
             expect(ctx.debugElement.children[0].injector.get('a')).toBe('mockA: parentDepValue');
           });
 
-          it('should support multiple providers in a template', () => {
+          fixmeIvy('unknown') && it('should support multiple providers in a template', () => {
             @Directive({
               selector: '[myDir1]',
               providers: [
@@ -689,24 +692,26 @@ class CompWithUrlTemplate {
               constructor(@Inject('a') a: any, @Inject('b') b: any) {}
             }
 
-            it('should inject providers that were declared before it', () => {
-              TestBed.overrideProvider(
-                  'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
-              const ctx =
-                  TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+            fixmeIvy('unknown') &&
+                it('should inject providers that were declared before it', () => {
+                  TestBed.overrideProvider(
+                      'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
+                  const ctx = TestBed.configureTestingModule({declarations: [MyComp]})
+                                  .createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('b')).toBe('mockB: aValue');
-            });
+                  expect(ctx.debugElement.injector.get('b')).toBe('mockB: aValue');
+                });
 
-            it('should inject providers that were declared after it', () => {
-              TestBed.overrideProvider(
-                  'a', {useFactory: (b: string) => `mockA: ${b}`, deps: ['b']});
-              const ctx =
-                  TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+                fixmeIvy('unknown') &&
+                    it('should inject providers that were declared after it', () => {
+                      TestBed.overrideProvider(
+                          'a', {useFactory: (b: string) => `mockA: ${b}`, deps: ['b']});
+                      const ctx = TestBed.configureTestingModule({declarations: [MyComp]})
+                                      .createComponent(MyComp);
 
-              expect(ctx.debugElement.injector.get('a')).toBe('mockA: bValue');
-            });
-          });
+                      expect(ctx.debugElement.injector.get('a')).toBe('mockA: bValue');
+                    });
+              });
         });
 
         it('should reset overrides when the testing modules is resetted', () => {
@@ -718,35 +723,36 @@ class CompWithUrlTemplate {
       });
 
       describe('overrideTemplateUsingTestingModule', () => {
-        it('should compile the template in the context of the testing module', () => {
-          @Component({selector: 'comp', template: 'a'})
-          class MyComponent {
-            prop = 'some prop';
-          }
+        fixmeIvy('unknown') &&
+            it('should compile the template in the context of the testing module', () => {
+              @Component({selector: 'comp', template: 'a'})
+              class MyComponent {
+                prop = 'some prop';
+              }
 
-          let testDir: TestDir|undefined;
+              let testDir: TestDir|undefined;
 
-          @Directive({selector: '[test]'})
-          class TestDir {
-            constructor() { testDir = this; }
+              @Directive({selector: '[test]'})
+              class TestDir {
+                constructor() { testDir = this; }
 
-            // TODO(issue/24571): remove '!'.
-            @Input('test')
-            test !: string;
-          }
+                // TODO(issue/24571): remove '!'.
+                @Input('test')
+                test !: string;
+              }
 
-          TestBed.overrideTemplateUsingTestingModule(
-              MyComponent, '<div [test]="prop">Hello world!</div>');
+              TestBed.overrideTemplateUsingTestingModule(
+                  MyComponent, '<div [test]="prop">Hello world!</div>');
 
-          const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
-                              .createComponent(MyComponent);
-          fixture.detectChanges();
-          expect(fixture.nativeElement).toHaveText('Hello world!');
-          expect(testDir).toBeAnInstanceOf(TestDir);
-          expect(testDir !.test).toBe('some prop');
-        });
+              const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
+                                  .createComponent(MyComponent);
+              fixture.detectChanges();
+              expect(fixture.nativeElement).toHaveText('Hello world!');
+              expect(testDir).toBeAnInstanceOf(TestDir);
+              expect(testDir !.test).toBe('some prop');
+            });
 
-        it('should throw if the TestBed is already created', () => {
+        fixmeIvy('unknown') && it('should throw if the TestBed is already created', () => {
           @Component({selector: 'comp', template: 'a'})
           class MyComponent {
           }
@@ -758,18 +764,19 @@ class CompWithUrlTemplate {
                   /Cannot override template when the test module has already been instantiated/);
         });
 
-        it('should reset overrides when the testing module is resetted', () => {
-          @Component({selector: 'comp', template: 'a'})
-          class MyComponent {
-          }
+        fixmeIvy('unknown') &&
+            it('should reset overrides when the testing module is resetted', () => {
+              @Component({selector: 'comp', template: 'a'})
+              class MyComponent {
+              }
 
-          TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
+              TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
 
-          const fixture = TestBed.resetTestingModule()
-                              .configureTestingModule({declarations: [MyComponent]})
-                              .createComponent(MyComponent);
-          expect(fixture.nativeElement).toHaveText('a');
-        });
+              const fixture = TestBed.resetTestingModule()
+                                  .configureTestingModule({declarations: [MyComponent]})
+                                  .createComponent(MyComponent);
+              expect(fixture.nativeElement).toHaveText('a');
+            });
       });
 
       describe('setting up the compiler', () => {
@@ -783,27 +790,28 @@ class CompWithUrlTemplate {
                 {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
           });
 
-          it('should use set up providers', fakeAsync(() => {
-               TestBed.compileComponents();
-               tick();
-               const compFixture = TestBed.createComponent(CompWithUrlTemplate);
-               expect(compFixture.nativeElement).toHaveText('Hello world!');
-             }));
+          fixmeIvy('unknown') && it('should use set up providers', fakeAsync(() => {
+                                      TestBed.compileComponents();
+                                      tick();
+                                      const compFixture =
+                                          TestBed.createComponent(CompWithUrlTemplate);
+                                      expect(compFixture.nativeElement).toHaveText('Hello world!');
+                                    }));
         });
 
         describe('useJit true', () => {
           beforeEach(() => TestBed.configureCompiler({useJit: true}));
-          it('should set the value into CompilerConfig',
-             inject([CompilerConfig], (config: CompilerConfig) => {
-               expect(config.useJit).toBe(true);
-             }));
+          fixmeIvy('unknown') && it('should set the value into CompilerConfig',
+                                    inject([CompilerConfig], (config: CompilerConfig) => {
+                                      expect(config.useJit).toBe(true);
+                                    }));
         });
         describe('useJit false', () => {
           beforeEach(() => TestBed.configureCompiler({useJit: false}));
-          it('should set the value into CompilerConfig',
-             inject([CompilerConfig], (config: CompilerConfig) => {
-               expect(config.useJit).toBe(false);
-             }));
+          fixmeIvy('unknown') && it('should set the value into CompilerConfig',
+                                    inject([CompilerConfig], (config: CompilerConfig) => {
+                                      expect(config.useJit).toBe(false);
+                                    }));
         });
       });
     });
@@ -892,40 +900,43 @@ class CompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
-        it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
-           () => {
-             const itPromise = patchJasmineIt();
+        fixmeIvy('unknown') &&
+            it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
+               () => {
+                 const itPromise = patchJasmineIt();
 
-             expect(
-                 () =>
-                     it('should fail', withModule(
-                                           {declarations: [CompWithUrlTemplate]},
-                                           () => TestBed.createComponent(CompWithUrlTemplate))))
-                 .toThrowError(
-                     `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
-                     `Please call "TestBed.compileComponents" before your test.`);
+                 expect(
+                     () =>
+                         it('should fail', withModule(
+                                               {declarations: [CompWithUrlTemplate]},
+                                               () => TestBed.createComponent(CompWithUrlTemplate))))
+                     .toThrowError(
+                         `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+                         `Please call "TestBed.compileComponents" before your test.`);
 
-             restoreJasmineIt();
-           });
+                 restoreJasmineIt();
+               });
 
       });
 
-      it('should error on unknown bound properties on custom elements by default', () => {
-        @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-        class ComponentUsingInvalidProperty {
-        }
+      fixmeIvy('unknown') &&
+          it('should error on unknown bound properties on custom elements by default', () => {
+            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            class ComponentUsingInvalidProperty {
+            }
 
-        const itPromise = patchJasmineIt();
+            const itPromise = patchJasmineIt();
 
-        expect(
-            () => it(
-                'should fail', withModule(
-                                   {declarations: [ComponentUsingInvalidProperty]},
-                                   () => TestBed.createComponent(ComponentUsingInvalidProperty))))
-            .toThrowError(/Can't bind to 'someUnknownProp'/);
+            expect(
+                () =>
+                    it('should fail',
+                       withModule(
+                           {declarations: [ComponentUsingInvalidProperty]},
+                           () => TestBed.createComponent(ComponentUsingInvalidProperty))))
+                .toThrowError(/Can't bind to 'someUnknownProp'/);
 
-        restoreJasmineIt();
-      });
+            restoreJasmineIt();
+          });
     });
 
     describe('creating components', () => {
