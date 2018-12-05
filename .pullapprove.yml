@@ -212,6 +212,7 @@ groups:
       - mhevery #fallback
       - IgorMinar #fallback
       - jenniferfell #docs only
+      - kara
 
   compiler/i18n:
     conditions:
@@ -224,6 +225,7 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
+      - kara
 
   compiler:
     conditions:
