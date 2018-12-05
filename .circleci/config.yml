@@ -53,21 +53,19 @@ version: 2
 jobs:
   lint:
     <<: *job_defaults
-    resource_class: xlarge
     steps:
       - checkout:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
       - *define_env_vars
-      - *setup_circleci_bazel_config
       - *yarn_install
 
-      - run: 'yarn buildifier -mode=check ||
-              (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
+      - run: 'yarn bazel:format -mode=check ||
+              (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
-      - run: 'yarn skylint ||
-              (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
+      - run: 'yarn bazel:lint ||
+              (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
       - run: ./node_modules/.bin/gulp lint
 

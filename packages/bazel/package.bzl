@@ -74,21 +74,6 @@ def rules_angular_dev_dependencies():
         url = "https://github.com/google/brotli/archive/v1.0.5.zip",
     )
 
-    # Fetching the Bazel source code allows us to compile the Skylark linter
-    http_archive(
-        name = "io_bazel",
-        sha256 = "978f7e0440dd82182563877e2e0b7c013b26b3368888b57837e9a0ae206fd396",
-        strip_prefix = "bazel-0.18.0",
-        url = "https://github.com/bazelbuild/bazel/archive/0.18.0.zip",
-    )
-
-    http_archive(
-        name = "com_github_bazelbuild_buildtools",
-        sha256 = "a82d4b353942b10c1535528b02bff261d020827c9c57e112569eddcb1c93d7f6",
-        strip_prefix = "buildtools-0.17.2",
-        url = "https://github.com/bazelbuild/buildtools/archive/0.17.2.zip",
-    )
-
     #############################################
     # Dependencies for generating documentation #
     #############################################
