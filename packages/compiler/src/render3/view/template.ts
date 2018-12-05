@@ -41,11 +41,11 @@ import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, R
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
     case BindingType.Property:
+    case BindingType.Animation:
       return R3.elementProperty;
     case BindingType.Class:
       return R3.elementClassProp;
     case BindingType.Attribute:
-    case BindingType.Animation:
       return R3.elementAttribute;
     default:
       return undefined;
@@ -622,10 +622,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const instruction = mapBindingToInstruction(input.type);
       if (input.type === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
-        // setAttribute without a value doesn't make any sense
+        // setProperty without a value doesn't make any sense
         if (value.name || value.value) {
+          this.allocateBindingSlots(value);
           const name = prepareSyntheticAttributeName(input.name);
-          this.updateInstruction(input.sourceSpan, R3.elementAttribute, () => {
+          this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
             return [
               o.literal(elementIndex), o.literal(name), this.convertPropertyBinding(implicit, value)
             ];

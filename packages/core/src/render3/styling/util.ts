@@ -19,6 +19,8 @@ import {getTNode} from '../util';
 
 import {CorePlayerHandler} from './core_player_handler';
 
+const ANIMATION_PROP_PREFIX = '@';
+
 export function createEmptyStylingContext(
     element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
     initialStylingValues?: InitialStyles): StylingContext {
@@ -89,6 +91,10 @@ export function isStylingContext(value: any): value is StylingContext {
   // Not an LView or an LContainer
   return Array.isArray(value) && typeof value[FLAGS] !== 'number' &&
       typeof value[ACTIVE_INDEX] !== 'number';
+}
+
+export function isAnimationProp(name: string): boolean {
+  return name[0] === ANIMATION_PROP_PREFIX;
 }
 
 export function addPlayerInternal(

@@ -3,6 +3,9 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "ANIMATION_PROP_PREFIX"
+  },
+  {
     "name": "BINDING_INDEX"
   },
   {
@@ -874,6 +877,9 @@
   },
   {
     "name": "invokeDirectivesHostBindings"
+  },
+  {
+    "name": "isAnimationProp"
   },
   {
     "name": "isComponent"
