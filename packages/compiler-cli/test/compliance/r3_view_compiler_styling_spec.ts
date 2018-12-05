@@ -906,7 +906,6 @@ describe('compiler compliance: styling', () => {
           …
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵallocHostVars(1);
               $r3$.ɵelementStyling(null, null, null, ctx);
             }
             if (rf & 2) {
