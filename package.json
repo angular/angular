@@ -16,11 +16,9 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "preskylint": "bazel build --noshow_progress @io_bazel//src/tools/skylark/java/com/google/devtools/skylark/skylint:Skylint",
-    "//": "deprecated-api is disabled because we use actions.new_file(genfiles_dir) which has no replacement, see https://github.com/bazelbuild/bazel/issues/4858",
-    "skylint": "find . -type f -name \"*.bzl\" ! -path \"*/node_modules/*\" ! -path \"./dist/*\" | xargs $(bazel info bazel-bin)/external/io_bazel/src/tools/skylark/java/com/google/devtools/skylark/skylint/Skylint --disable-checks=deprecated-api",
-    "prebuildifier": "bazel build --noshow_progress @com_github_bazelbuild_buildtools//buildifier",
-    "buildifier": "find . -type f \\( -name \"*.bzl\" -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs $(bazel info bazel-bin)/external/com_github_bazelbuild_buildtools/buildifier/*/buildifier",
+    "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name BUILD -or -name BUILD.bazel -or -name WORKSPACE \\) ! -path \"*/node_modules/*\" | xargs buildifier -v",
+    "bazel:lint": "yarn bazel:format --lint=warn",
+    "bazel:lint-fix": "yarn bazel:format --lint=fix",
     "preinstall": "node tools/yarn/check-yarn.js",
     "postinstall": "yarn update-webdriver && node ./tools/postinstall-patches.js",
     "update-webdriver": "webdriver-manager update --gecko false $CHROMEDRIVER_VERSION_ARG",
@@ -91,6 +89,7 @@
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
     "@bazel/bazel": "^0.18.1",
+    "@bazel/buildifier": "^0.19.2",
     "@bazel/ibazel": "~0.8.2",
     "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
