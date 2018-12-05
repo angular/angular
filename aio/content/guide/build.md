@@ -54,7 +54,7 @@ The following sets content sets default values for the production build target:
 
 ```
 export const environment = {
-  production: true
+  production: true,
   apiUrl: 'http://my-prod-url'
 };
 ```
