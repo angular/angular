@@ -7,7 +7,7 @@
  */
 
 import {Component, NgModule} from '@angular/core';
-import {RouterModule, Routes} from '../../';
+import {RouterModule, Routes} from '@angular/router';
 
 @Component({
   selector: 'aot-router',
