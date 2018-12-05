@@ -106,6 +106,7 @@ export interface JasmineMethods {
   describe: typeof describe;
   fdescribe: typeof fdescribe;
   fixmeIvy: typeof fixmeIvy;
+  isEnabled: boolean;
 }
 
 const PASSTHROUGH: JasmineMethods = {
@@ -114,6 +115,7 @@ const PASSTHROUGH: JasmineMethods = {
   describe: maybeAppendFindPassingTestsMarker(describe),
   fdescribe: maybeAppendFindPassingTestsMarker(fdescribe),
   fixmeIvy: maybeAppendFindPassingTestsMarker(fixmeIvy),
+  isEnabled: true,
 };
 
 const FIND_PASSING_TESTS_MARKER = '__FIND_PASSING_TESTS_MARKER__';
@@ -122,7 +124,7 @@ function maybeAppendFindPassingTestsMarker<T extends Function>(fn: T): T {
     if (typeof args[0] == 'string') {
       args[0] += FIND_PASSING_TESTS_MARKER;
     }
-    return fn(...args);
+    return fn.apply(this, args);
   } : fn as any;
 }
 
@@ -134,6 +136,7 @@ const IGNORE: JasmineMethods = {
   describe: noop,
   fdescribe: noop,
   fixmeIvy: (reason) => IGNORE,
+  isEnabled: false,
 };
 
 if (FIND_PASSING_TESTS) {
