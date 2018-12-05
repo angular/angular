@@ -1046,4 +1046,36 @@ describe('ngtsc behavioral tests', () => {
       });
     });
   });
+
+  it('should compile programs with typeRoots', () => {
+    // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files' is necessary
+    // because otherwise TS picks up the testTypeRoot/test/index.d.ts file into the program
+    // automatically. Shims are also turned on (via allowEmptyCodegenFiles) because the shim
+    // ts.CompilerHost wrapper can break typeRoot functionality (which this test is meant to
+    // detect).
+    env.write('tsconfig.json', `{
+      "extends": "./tsconfig-base.json",
+      "angularCompilerOptions": {
+        "allowEmptyCodegenFiles": true
+      },
+      "compilerOptions": {
+        "typeRoots": ["./testTypeRoot"],
+      },
+      "files": ["./test.ts"]
+    }`);
+    env.write('test.ts', `
+      import {Test} from 'ambient';
+      console.log(Test);
+    `);
+    env.write('testTypeRoot/.exists', '');
+    env.write('testTypeRoot/test/index.d.ts', `
+      declare module 'ambient' {
+        export const Test = 'This is a test';
+      }
+    `);
+
+    env.driveMain();
+
+    // Success is enough to indicate that this passes.
+  });
 });
