@@ -10,10 +10,9 @@ import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {Component, ViewChild} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule, ɵBrowserAnimationBuilder as BrowserAnimationBuilder} from '@angular/platform-browser/animations';
 
 import {el} from '../../testing/src/browser_util';
-import {BrowserAnimationBuilder} from '../src/animation_builder';
 
 {
   describe('BrowserAnimationBuilder', () => {

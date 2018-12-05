@@ -9,11 +9,11 @@ import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transi
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
-import {InjectableAnimationEngine} from '../src/providers';
 
 (function() {
   if (isNode) return;
@@ -120,42 +120,44 @@ import {InjectableAnimationEngine} from '../src/providers';
       // these tests are only mean't to be run within the DOM
       if (isNode) return;
 
-      it('should flush and fire callbacks when the zone becomes stable', (async) => {
-        @Component({
-          selector: 'my-cmp',
-          template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
-          animations: [trigger(
-              'myAnimation',
-              [transition(
-                  '* => state',
-                  [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-        })
-        class Cmp {
-          exp: any;
-          event: any;
-          onStart(event: any) { this.event = event; }
-        }
+      fixmeIvy(
+          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
+          it('should flush and fire callbacks when the zone becomes stable', (async) => {
+            @Component({
+              selector: 'my-cmp',
+              template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
+              animations: [trigger(
+                  'myAnimation',
+                  [transition(
+                      '* => state',
+                      [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+            })
+            class Cmp {
+              exp: any;
+              event: any;
+              onStart(event: any) { this.event = event; }
+            }
 
-        TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-          declarations: [Cmp]
-        });
+            TestBed.configureTestingModule({
+              providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+              declarations: [Cmp]
+            });
 
-        const engine = TestBed.get(AnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
-        cmp.exp = 'state';
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          expect(cmp.event.triggerName).toEqual('myAnimation');
-          expect(cmp.event.phaseName).toEqual('start');
-          cmp.event = null;
+            const engine = TestBed.get(AnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'state';
+            fixture.detectChanges();
+            fixture.whenStable().then(() => {
+              expect(cmp.event.triggerName).toEqual('myAnimation');
+              expect(cmp.event.phaseName).toEqual('start');
+              cmp.event = null;
 
-          engine.flush();
-          expect(cmp.event).toBeFalsy();
-          async();
-        });
-      });
+              engine.flush();
+              expect(cmp.event).toBeFalsy();
+              async();
+            });
+          });
 
       it('should properly insert/remove nodes through the animation renderer that do not contain animations',
          (async) => {
@@ -195,75 +197,77 @@ import {InjectableAnimationEngine} from '../src/providers';
            });
          });
 
-      it('should only queue up dom removals if the element itself contains a valid leave animation',
-         () => {
-           @Component({
-             selector: 'my-cmp',
-             template: `
+      fixmeIvy(
+          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
+          it('should only queue up dom removals if the element itself contains a valid leave animation',
+             () => {
+               @Component({
+                 selector: 'my-cmp',
+                 template: `
                <div #elm1 *ngIf="exp1"></div>
                <div #elm2 @animation1 *ngIf="exp2"></div>
                <div #elm3 @animation2 *ngIf="exp3"></div>
             `,
-             animations: [
-               trigger('animation1', [transition('a => b', [])]),
-               trigger('animation2', [transition(':leave', [])]),
-             ]
-           })
-           class Cmp {
-             exp1: any = true;
-             exp2: any = true;
-             exp3: any = true;
+                 animations: [
+                   trigger('animation1', [transition('a => b', [])]),
+                   trigger('animation2', [transition(':leave', [])]),
+                 ]
+               })
+               class Cmp {
+                 exp1: any = true;
+                 exp2: any = true;
+                 exp3: any = true;
 
-             @ViewChild('elm1') public elm1: any;
+                 @ViewChild('elm1') public elm1: any;
 
-             @ViewChild('elm2') public elm2: any;
+                 @ViewChild('elm2') public elm2: any;
 
-             @ViewChild('elm3') public elm3: any;
-           }
+                 @ViewChild('elm3') public elm3: any;
+               }
 
-           TestBed.configureTestingModule({
-             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-             declarations: [Cmp]
-           });
+               TestBed.configureTestingModule({
+                 providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+                 declarations: [Cmp]
+               });
 
-           const engine = TestBed.get(AnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+               const engine = TestBed.get(AnimationEngine);
+               const fixture = TestBed.createComponent(Cmp);
+               const cmp = fixture.componentInstance;
 
-           fixture.detectChanges();
-           const elm1 = cmp.elm1;
-           const elm2 = cmp.elm2;
-           const elm3 = cmp.elm3;
-           assertHasParent(elm1);
-           assertHasParent(elm2);
-           assertHasParent(elm3);
-           engine.flush();
-           finishPlayers(engine.players);
+               fixture.detectChanges();
+               const elm1 = cmp.elm1;
+               const elm2 = cmp.elm2;
+               const elm3 = cmp.elm3;
+               assertHasParent(elm1);
+               assertHasParent(elm2);
+               assertHasParent(elm3);
+               engine.flush();
+               finishPlayers(engine.players);
 
-           cmp.exp1 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(0);
+               cmp.exp1 = false;
+               fixture.detectChanges();
+               assertHasParent(elm1, false);
+               assertHasParent(elm2);
+               assertHasParent(elm3);
+               engine.flush();
+               expect(engine.players.length).toEqual(0);
 
-           cmp.exp2 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2, false);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(0);
+               cmp.exp2 = false;
+               fixture.detectChanges();
+               assertHasParent(elm1, false);
+               assertHasParent(elm2, false);
+               assertHasParent(elm3);
+               engine.flush();
+               expect(engine.players.length).toEqual(0);
 
-           cmp.exp3 = false;
-           fixture.detectChanges();
-           assertHasParent(elm1, false);
-           assertHasParent(elm2, false);
-           assertHasParent(elm3);
-           engine.flush();
-           expect(engine.players.length).toEqual(1);
-         });
+               cmp.exp3 = false;
+               fixture.detectChanges();
+               assertHasParent(elm1, false);
+               assertHasParent(elm2, false);
+               assertHasParent(elm3);
+               engine.flush();
+               expect(engine.players.length).toEqual(1);
+             });
     });
   });
 
@@ -279,35 +283,37 @@ import {InjectableAnimationEngine} from '../src/providers';
       });
     });
 
-    it('should provide hooks at the start and end of change detection', () => {
-      @Component({
-        selector: 'my-cmp',
-        template: `
+    fixmeIvy(
+        `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
+        it('should provide hooks at the start and end of change detection', () => {
+          @Component({
+            selector: 'my-cmp',
+            template: `
           <div [@myAnimation]="exp"></div>
         `,
-        animations: [trigger('myAnimation', [])]
-      })
-      class Cmp {
-        public exp: any;
-      }
+            animations: [trigger('myAnimation', [])]
+          })
+          class Cmp {
+            public exp: any;
+          }
 
-      TestBed.configureTestingModule({
-        providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-        declarations: [Cmp]
-      });
+          TestBed.configureTestingModule({
+            providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+            declarations: [Cmp]
+          });
 
-      const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
-      const fixture = TestBed.createComponent(Cmp);
-      const cmp = fixture.componentInstance;
+          const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
 
-      renderer.log = [];
-      fixture.detectChanges();
-      expect(renderer.log).toEqual(['begin', 'end']);
+          renderer.log = [];
+          fixture.detectChanges();
+          expect(renderer.log).toEqual(['begin', 'end']);
 
-      renderer.log = [];
-      fixture.detectChanges();
-      expect(renderer.log).toEqual(['begin', 'end']);
-    });
+          renderer.log = [];
+          fixture.detectChanges();
+          expect(renderer.log).toEqual(['begin', 'end']);
+        });
   });
 })();
 
