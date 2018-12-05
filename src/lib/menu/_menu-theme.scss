@@ -24,7 +24,7 @@
     }
   }
 
-  .mat-menu-item .mat-icon:not(.mat-primary):not(.mat-accent):not(.mat-warn),
+  .mat-menu-item .mat-icon-no-color,
   .mat-menu-item-submenu-trigger::after {
     color: mat-color($foreground, 'icon');
   }

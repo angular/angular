@@ -87,6 +87,19 @@ describe('MatIcon', () => {
     expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'mat-primary', 'material-icons']);
   });
 
+  it('should apply a class if there is no color', () => {
+    let fixture = TestBed.createComponent(IconWithColor);
+
+    const testComponent = fixture.componentInstance;
+    const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+    testComponent.iconName = 'home';
+    testComponent.iconColor = '';
+    fixture.detectChanges();
+
+    expect(sortedClassNames(matIconElement))
+        .toEqual(['mat-icon', 'mat-icon-no-color', 'material-icons']);
+  });
+
   it('should mark mat-icon as aria-hidden by default', () => {
     const fixture = TestBed.createComponent(IconWithLigature);
     const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
@@ -121,7 +134,8 @@ describe('MatIcon', () => {
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'material-icons']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['mat-icon', 'mat-icon-no-color', 'material-icons']);
     });
 
     it('should use alternate icon font if set', () => {
@@ -133,7 +147,7 @@ describe('MatIcon', () => {
       const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'myfont']);
+      expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'mat-icon-no-color', 'myfont']);
     });
   });
 
@@ -682,17 +696,20 @@ describe('MatIcon', () => {
       testComponent.fontSet = 'f1';
       testComponent.fontIcon = 'house';
       fixture.detectChanges();
-      expect(sortedClassNames(matIconElement)).toEqual(['font1', 'house', 'mat-icon']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['font1', 'house', 'mat-icon', 'mat-icon-no-color']);
 
       testComponent.fontSet = 'f2';
       testComponent.fontIcon = 'igloo';
       fixture.detectChanges();
-      expect(sortedClassNames(matIconElement)).toEqual(['f2', 'igloo', 'mat-icon']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['f2', 'igloo', 'mat-icon', 'mat-icon-no-color']);
 
       testComponent.fontSet = 'f3';
       testComponent.fontIcon = 'tent';
       fixture.detectChanges();
-      expect(sortedClassNames(matIconElement)).toEqual(['f3', 'mat-icon', 'tent']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['f3', 'mat-icon', 'mat-icon-no-color', 'tent']);
     });
 
     it('should handle values with extraneous spaces being passed in to `fontSet`', () => {
@@ -704,14 +721,15 @@ describe('MatIcon', () => {
         fixture.detectChanges();
       }).not.toThrow();
 
-      expect(sortedClassNames(matIconElement)).toEqual(['font', 'mat-icon']);
+      expect(sortedClassNames(matIconElement)).toEqual(['font', 'mat-icon', 'mat-icon-no-color']);
 
       expect(() => {
         fixture.componentInstance.fontSet = ' changed';
         fixture.detectChanges();
       }).not.toThrow();
 
-      expect(sortedClassNames(matIconElement)).toEqual(['changed', 'mat-icon']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['changed', 'mat-icon', 'mat-icon-no-color']);
     });
 
     it('should handle values with extraneous spaces being passed in to `fontIcon`', () => {
@@ -723,14 +741,16 @@ describe('MatIcon', () => {
         fixture.detectChanges();
       }).not.toThrow();
 
-      expect(sortedClassNames(matIconElement)).toEqual(['font', 'mat-icon', 'material-icons']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['font', 'mat-icon', 'mat-icon-no-color', 'material-icons']);
 
       expect(() => {
         fixture.componentInstance.fontIcon = ' changed';
         fixture.detectChanges();
       }).not.toThrow();
 
-      expect(sortedClassNames(matIconElement)).toEqual(['changed', 'mat-icon', 'material-icons']);
+      expect(sortedClassNames(matIconElement))
+          .toEqual(['changed', 'mat-icon', 'mat-icon-no-color', 'material-icons']);
     });
 
   });
