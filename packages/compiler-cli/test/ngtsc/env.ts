@@ -57,7 +57,6 @@ export class NgtscTestEnvironment {
         "skipLibCheck": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "types": [],
         "outDir": "built",
         "rootDir": ".",
         "baseUrl": ".",
