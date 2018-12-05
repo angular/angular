@@ -78,7 +78,7 @@ def _enable_ivy_value(ctx):
     else:
         fail("unreachable")
 
-def _include_ng_files(ctx):
+def _is_legacy_ngc(ctx):
     """Determines whether Angular outputs will be produced by the current compilation strategy.
 
     Args:
@@ -139,7 +139,7 @@ def _should_produce_flat_module_outs(ctx):
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
 def _expected_outs(ctx):
-    include_ng_files = _include_ng_files(ctx)
+    is_legacy_ngc = _is_legacy_ngc(ctx)
 
     devmode_js_files = []
     closure_js_files = []
@@ -158,21 +158,27 @@ def _expected_outs(ctx):
 
         if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
             basename = short_path[len(package_prefix):-len(".ts")]
-            if include_ng_files and (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
+            if (len(factory_basename_set.to_list()) == 0 or basename in factory_basename_set.to_list()):
                 devmode_js = [
                     ".ngfactory.js",
                     ".ngsummary.js",
                     ".js",
                 ]
-                summaries = [".ngsummary.json"]
-                metadata = [".metadata.json"]
+
+                # Only ngc produces .json files, they're not needed in Ivy.
+                if is_legacy_ngc:
+                    summaries = [".ngsummary.json"]
+                    metadata = [".metadata.json"]
+                else:
+                    summaries = []
+                    metadata = []
             else:
                 devmode_js = [".js"]
                 if not _is_bazel():
                     devmode_js += [".ngfactory.js"]
                 summaries = []
                 metadata = []
-        elif include_ng_files and short_path.endswith(".css"):
+        elif is_legacy_ngc and short_path.endswith(".css"):
             basename = short_path[len(package_prefix):-len(".css")]
             devmode_js = [
                 ".css.shim.ngstyle.js",
@@ -195,7 +201,7 @@ def _expected_outs(ctx):
             metadata_files += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
     # We do this just when producing a flat module index for a publishable ng_module
-    if include_ng_files and _should_produce_flat_module_outs(ctx):
+    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
         flat_module_out = _flat_module_out_file(ctx)
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
         closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
@@ -207,7 +213,7 @@ def _expected_outs(ctx):
 
     # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
     # when ngtsc can extract messages
-    if include_ng_files:
+    if is_legacy_ngc:
         i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
     else:
         i18n_messages_files = []
@@ -224,7 +230,7 @@ def _expected_outs(ctx):
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     outs = _expected_outs(ctx)
-    include_ng_files = _include_ng_files(ctx)
+    is_legacy_ngc = _is_legacy_ngc(ctx)
     if "devmode_manifest" in kwargs:
         expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
     else:
@@ -235,7 +241,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
         # Summaries are only enabled if Angular outputs are to be produced.
-        "enableSummariesForJit": include_ng_files,
+        "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _enable_ivy_value(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
         # FIXME: wrong place to de-dupe
@@ -308,7 +314,7 @@ def ngc_compile_action(
       the parameters of the compilation which will be used to replay the ngc action for i18N.
     """
 
-    include_ng_files = _include_ng_files(ctx)
+    is_legacy_ngc = _is_legacy_ngc(ctx)
 
     mnemonic = "AngularTemplateCompile"
     progress_message = "Compiling Angular templates (%s) %s" % (_compiler_name(ctx), label)
@@ -346,7 +352,7 @@ def ngc_compile_action(
         },
     )
 
-    if include_ng_files and messages_out != None:
+    if is_legacy_ngc and messages_out != None:
         ctx.actions.run(
             inputs = list(inputs),
             outputs = messages_out,
@@ -440,7 +446,7 @@ def ng_module_impl(ctx, ts_compile_actions):
       conversion by ts_providers_dict_to_struct
     """
 
-    include_ng_files = _include_ng_files(ctx)
+    is_legacy_ngc = _is_legacy_ngc(ctx)
 
     providers = ts_compile_actions(
         ctx,
@@ -460,14 +466,14 @@ def ng_module_impl(ctx, ts_compile_actions):
 
     outs = _expected_outs(ctx)
 
-    if include_ng_files:
+    if is_legacy_ngc:
         providers["angular"] = {
             "summaries": outs.summaries,
             "metadata": outs.metadata,
         }
         providers["ngc_messages"] = outs.i18n_messages
 
-    if include_ng_files and _should_produce_flat_module_outs(ctx):
+    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
         if len(outs.metadata) > 1:
             fail("expecting exactly one metadata output for " + str(ctx.label))
 
