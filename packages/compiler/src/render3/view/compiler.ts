@@ -307,10 +307,10 @@ export function compileComponentFromMetadata(
     definitionMap.set('encapsulation', o.literal(meta.encapsulation));
   }
 
-  // e.g. `animations: [trigger('123', [])]`
+  // e.g. `animation: [trigger('123', [])]`
   if (meta.animations !== null) {
     definitionMap.set(
-        'data', o.literalMap([{key: 'animations', value: meta.animations, quoted: false}]));
+        'data', o.literalMap([{key: 'animation', value: meta.animations, quoted: false}]));
   }
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript

@@ -39,7 +39,7 @@ import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {createStylingContextTemplate, renderStyleAndClassBindings, setStyle, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {getStylingContext} from './styling/util';
+import {getStylingContext, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
 
@@ -745,10 +745,16 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
       } else {
         // Standard attributes
         const attrVal = attrs[i + 1];
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName as string, attrVal as string) :
-            native.setAttribute(attrName as string, attrVal as string);
+        if (isAnimationProp(attrName)) {
+          if (isProc) {
+            (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
+          }
+        } else {
+          isProc ?
+              (renderer as ProceduralRenderer3)
+                  .setAttribute(native, attrName as string, attrVal as string) :
+              native.setAttribute(attrName as string, attrVal as string);
+        }
         i += 2;
       }
     }
@@ -967,10 +973,12 @@ export function elementProperty<T>(
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value) as any) : value;
     ngDevMode && ngDevMode.rendererSetProperty++;
-    isProceduralRenderer(renderer) ?
-        renderer.setProperty(element as RElement, propName, value) :
-        ((element as RElement).setProperty ? (element as any).setProperty(propName, value) :
-                                             (element as any)[propName] = value);
+    if (isProceduralRenderer(renderer)) {
+      renderer.setProperty(element as RElement, propName, value);
+    } else if (!isAnimationProp(propName)) {
+      (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
+                                          (element as any)[propName] = value;
+    }
   }
 }
 

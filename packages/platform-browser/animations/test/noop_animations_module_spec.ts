@@ -16,11 +16,10 @@ import {fixmeIvy} from '@angular/private/testing';
   describe('NoopAnimationsModule', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [NoopAnimationsModule]}); });
 
-    it('should be removed once FW-643 is fixed', () => { expect(true).toBeTruthy(); });
+    it('should be removed once FW-800 is fixed', () => { expect(true).toBeTruthy(); });
 
-    // TODO: remove the dummy test above ^ once the bug FW-643 has been fixed
-    fixmeIvy(
-        `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+    // TODO: remove the dummy test above ^ once the bug FW-800 has been fixed
+    fixmeIvy(`FW-800: Animation listeners are not invoked`)
         .it('should flush and fire callbacks when the zone becomes stable', (async) => {
           @Component({
             selector: 'my-cmp',
@@ -55,8 +54,7 @@ import {fixmeIvy} from '@angular/private/testing';
           });
         });
 
-    fixmeIvy(
-        `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+    fixmeIvy(`FW-800: Animation listeners are not invoked`)
         .it('should handle leave animation callbacks even if the element is destroyed in the process',
             (async) => {
               @Component({
