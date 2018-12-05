@@ -15,6 +15,7 @@ import {
   PositionStrategy,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {filter, take, switchMap, delay, tap, map} from 'rxjs/operators';
 import {
@@ -29,6 +30,7 @@ import {
   NgZone,
   OnDestroy,
   Optional,
+  ViewContainerRef,
 } from '@angular/core';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -115,9 +117,9 @@ export function getMatAutocompleteMissingPanelError(): Error {
 })
 export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef | null;
+  private _portal: TemplatePortal;
   private _componentDestroyed = false;
   private _autocompleteDisabled = false;
-  private _autocomplete: MatAutocomplete;
   private _scrollStrategy: () => ScrollStrategy;
 
   /** Old value of the native input. Used to work around issues with the `input` event on IE. */
@@ -130,7 +132,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _manuallyFloatingLabel = false;
 
   /** The subscription for closing actions (some are bound to document). */
-  private _closingActionsSubscription = Subscription.EMPTY;
+  private _closingActionsSubscription: Subscription;
 
   /** Subscription to viewport size changes. */
   private _viewportSubscription = Subscription.EMPTY;
@@ -164,12 +166,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _onTouched = () => {};
 
   /** The autocomplete panel to be attached to this trigger. */
-  @Input('matAutocomplete')
-  get autocomplete(): MatAutocomplete { return this._autocomplete; }
-  set autocomplete(value: MatAutocomplete) {
-    this._autocomplete = value;
-    this._detachOverlay();
-  }
+  @Input('matAutocomplete') autocomplete: MatAutocomplete;
 
   /**
    * Reference relative to which to position the autocomplete panel.
@@ -193,8 +190,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     this._autocompleteDisabled = coerceBooleanProperty(value);
   }
 
-  constructor(private _element: ElementRef<HTMLInputElement>,
-              private _overlay: Overlay,
+  constructor(private _element: ElementRef<HTMLInputElement>, private _overlay: Overlay,
+              private _viewContainerRef: ViewContainerRef,
               private _zone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
               @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) scrollStrategy: any,
@@ -249,9 +246,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this.autocomplete.closed.emit();
     }
 
-    this.autocomplete._isOpen = false;
-    this._detachOverlay();
+    this.autocomplete._isOpen = this._overlayAttached = false;
 
+    if (this._overlayRef && this._overlayRef.hasAttached()) {
+      this._overlayRef.detach();
+      this._closingActionsSubscription.unsubscribe();
+    }
 
     // Note that in some cases this can end up being called after the component is destroyed.
     // Add a check to ensure that we don't try to run change detection on a destroyed view.
@@ -570,6 +570,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     }
 
     if (!this._overlayRef) {
+      this._portal = new TemplatePortal(this.autocomplete.template, this._viewContainerRef);
       this._overlayRef = this._overlay.create(this._getOverlayConfig());
 
       // Use the `keydownEvents` in order to take advantage of
@@ -596,7 +597,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     }
 
     if (this._overlayRef && !this._overlayRef.hasAttached()) {
-      this._overlayRef.attach(this.autocomplete._portal);
+      this._overlayRef.attach(this._portal);
       this._closingActionsSubscription = this._subscribeToClosingActions();
     }
 
@@ -609,14 +610,6 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     // autocomplete won't be shown if there are no options.
     if (this.panelOpen && wasOpen !== this.panelOpen) {
       this.autocomplete.opened.emit();
-    }
-  }
-
-  private _detachOverlay() {
-    this._overlayAttached = false;
-    this._closingActionsSubscription.unsubscribe();
-    if (this._overlayRef) {
-      this._overlayRef.detach();
     }
   }
 

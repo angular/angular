@@ -2233,35 +2233,6 @@ describe('MatAutocomplete', () => {
     expect(formControl.value).toBe('Cal', 'Expected new value to be propagated to model');
   }));
 
-  it('should work when dynamically changing the autocomplete', () => {
-    const fixture = createComponent(DynamicallyChangingAutocomplete);
-    fixture.detectChanges();
-    const input = fixture.debugElement.query(By.css('input')).nativeElement;
-
-    dispatchFakeEvent(input, 'focusin');
-    fixture.detectChanges();
-
-    expect(overlayContainerElement.textContent).toContain('First',
-      `Expected panel to display the option of the first autocomplete.`);
-    expect(overlayContainerElement.textContent).not.toContain('Second',
-      `Expected panel to not display the option of the second autocomplete.`);
-
-    dispatchFakeEvent(document, 'click');
-    fixture.detectChanges();
-
-    fixture.componentInstance.trigger.autocomplete = fixture.componentInstance.autoTow;
-    fixture.detectChanges();
-
-    dispatchFakeEvent(input, 'focusin');
-    fixture.detectChanges();
-
-    expect(overlayContainerElement.textContent).not.toContain('First',
-      `Expected panel to not display the option of the first autocomplete.`);
-    expect(overlayContainerElement.textContent).toContain('Second',
-      `Expected panel to display the option of the second autocomplete.`);
-
-  });
-
 });
 
 @Component({
@@ -2647,22 +2618,4 @@ class AutocompleteWithNativeAutocompleteAttribute {
   template: '<input [matAutocomplete]="null" matAutocompleteDisabled>'
 })
 class InputWithoutAutocompleteAndDisabled {
-}
-
-@Component({
-  template: `
-    <input type="number" matInput [matAutocomplete]="autoOne">
-    <mat-autocomplete #autoOne>
-      <mat-option [value]="0">First</mat-option>
-    </mat-autocomplete>
-
-    <mat-autocomplete #autoTow>
-      <mat-option [value]="1">Second</mat-option>
-    </mat-autocomplete>
-  `,
-})
-class DynamicallyChangingAutocomplete {
-  @ViewChild('autoOne') autoOne: MatAutocomplete;
-  @ViewChild('autoTow') autoTow: MatAutocomplete;
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
 }
