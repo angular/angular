@@ -16,9 +16,16 @@ export class SummaryGenerator implements ShimGenerator {
 
   getSummaryFileNames(): string[] { return Array.from(this.map.keys()); }
 
-  getOriginalSourceOfShim(fileName: string): string|null { return this.map.get(fileName) || null; }
+  recognize(fileName: string): boolean { return this.map.has(fileName); }
 
-  generate(original: ts.SourceFile, genFilePath: string): ts.SourceFile {
+  generate(genFilePath: string, readFile: (fileName: string) => ts.SourceFile | null): ts.SourceFile
+      |null {
+    const originalPath = this.map.get(genFilePath) !;
+    const original = readFile(originalPath);
+    if (original === null) {
+      return null;
+    }
+
     // Collect a list of classes that need to have factory types emitted for them. This list is
     // overly broad as at this point the ts.TypeChecker has not been created and so it can't be used
     // to semantically understand which decorators are Angular decorators. It's okay to output an
