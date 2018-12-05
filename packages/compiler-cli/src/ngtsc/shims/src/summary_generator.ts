@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {ShimGenerator} from './host';
-import {isNonDeclarationTsFile} from './util';
+import {generatedModuleName, isNonDeclarationTsFile} from './util';
 
 export class SummaryGenerator implements ShimGenerator {
   private constructor(private map: Map<string, string>) {}
@@ -43,8 +43,13 @@ export class SummaryGenerator implements ShimGenerator {
       varLines.push(`export const ɵempty = null;`);
     }
     const sourceText = varLines.join('\n');
-    return ts.createSourceFile(
+    const genFile = ts.createSourceFile(
         genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
+    if (original.moduleName !== undefined) {
+      genFile.moduleName =
+          generatedModuleName(original.moduleName, original.fileName, '.ngsummary');
+    }
+    return genFile;
   }
 
   static forRootFiles(files: ReadonlyArray<string>): SummaryGenerator {
