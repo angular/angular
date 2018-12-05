@@ -22,11 +22,16 @@ import {PlayerFactory, PlayerFactoryBuildFn} from '../interfaces/player';
  * @param value The raw value that will be exposed to the binding
  *   so that the binding can update its internal values when
  *   any changes are evaluated.
+ *
+ * @publicApi
  */
 export function bindPlayerFactory<T>(factoryFn: PlayerFactoryBuildFn, value: T): PlayerFactory {
   return new BoundPlayerFactory(factoryFn, value) as any;
 }
 
+/**
+ * @publicApi
+ */
 export class BoundPlayerFactory<T> {
   '__brand__': 'Brand for PlayerFactory that nothing will match';
   constructor(public fn: PlayerFactoryBuildFn, public value: T) {}

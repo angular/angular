@@ -6,9 +6,10 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn, StyleSanitizeMode} from '../../sanitization/style_sanitizer';
+import {applyClassChanges, applyStyleChanges} from '../animations/util';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
-import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
+import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerFactoryBuildOptions, PlayerIndex} from '../interfaces/player';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {DirectiveOwnerAndPlayerBuilderIndex, DirectiveRegistryValuesIndex, InitialStylingValues, InitialStylingValuesIndex, MapBasedOffsetValues, MapBasedOffsetValuesIndex, SinglePropOffsetValues, SinglePropOffsetValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LView, RootContext} from '../interfaces/view';
@@ -18,6 +19,7 @@ import {getRootContext} from '../util/view_traversal_utils';
 import {allowFlush as allowHostInstructionsQueueFlush, flushQueue as flushHostInstructionsQueue} from './host_instructions_queue';
 import {BoundPlayerFactory} from './player_factory';
 import {addPlayerInternal, allocPlayerContext, allocateOrUpdateDirectiveIntoContext, createEmptyStylingContext, getPlayerContext} from './util';
+
 
 
 /**
@@ -1106,336 +1108,23 @@ export function renderStyling(
                 wasQueued && totalPlayersQueued++;
               }
               if (oldPlayer) {
-                oldPlayer.destroy();
+                oldPlayer.destroy(player);
               }
+            } else if (oldPlayer) {
+              // the player builder has been removed ... therefore we should delete the associated
+              // player
+              oldPlayer.destroy();
             }
-          } else if (oldPlayer) {
-            // the player builder has been removed ... therefore we should delete the associated
-            // player
-            oldPlayer.destroy();
           }
+          setContextPlayersDirty(context, false);
         }
-        setContextPlayersDirty(context, false);
-      }
 
-      setContextDirty(context, false);
+        setContextDirty(context, false);
+      }
     }
   }
 
   return totalPlayersQueued;
-}
-
-/**
- * Assigns a style value to a style property for the given element.
- *
- * This function renders a given CSS prop/value entry using the
- * provided renderer. If a `store` value is provided then
- * that will be used a render context instead of the provided
- * renderer.
- *
- * @param native the DOM Element
- * @param prop the CSS style property that will be rendered
- * @param value the CSS style value that will be rendered
- * @param renderer
- * @param store an optional key/value map that will be used as a context to render styles on
- */
-export function setStyle(
-    native: any, prop: string, value: string | null, renderer: Renderer3,
-    sanitizer: StyleSanitizeFn | null, store?: BindingStore | null,
-    playerBuilder?: ClassAndStylePlayerBuilder<any>| null) {
-  value =
-      sanitizer && value ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : value;
-  if (store || playerBuilder) {
-    if (store) {
-      store.setValue(prop, value);
-    }
-    if (playerBuilder) {
-      playerBuilder.setValue(prop, value);
-    }
-  } else if (value) {
-    value = value.toString();  // opacity, z-index and flexbox all have number values which may not
-    // assign as numbers
-    ngDevMode && ngDevMode.rendererSetStyle++;
-    isProceduralRenderer(renderer) ?
-        renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase) :
-        native.style.setProperty(prop, value);
-  } else {
-    ngDevMode && ngDevMode.rendererRemoveStyle++;
-    isProceduralRenderer(renderer) ?
-        renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase) :
-        native.style.removeProperty(prop);
-  }
-}
-
-/**
- * Adds/removes the provided className value to the provided element.
- *
- * This function renders a given CSS class value using the provided
- * renderer (by adding or removing it from the provided element).
- * If a `store` value is provided then that will be used a render
- * context instead of the provided renderer.
- *
- * @param native the DOM Element
- * @param prop the CSS style property that will be rendered
- * @param value the CSS style value that will be rendered
- * @param renderer
- * @param store an optional key/value map that will be used as a context to render styles on
- */
-function setClass(
-    native: any, className: string, add: boolean, renderer: Renderer3, store?: BindingStore | null,
-    playerBuilder?: ClassAndStylePlayerBuilder<any>| null) {
-  if (store || playerBuilder) {
-    if (store) {
-      store.setValue(className, add);
-    }
-    if (playerBuilder) {
-      playerBuilder.setValue(className, add);
-    }
-    // DOMTokenList will throw if we try to add or remove an empty string.
-  } else if (className !== '') {
-    if (add) {
-      ngDevMode && ngDevMode.rendererAddClass++;
-      isProceduralRenderer(renderer) ? renderer.addClass(native, className) :
-                                       native['classList'].add(className);
-    } else {
-      ngDevMode && ngDevMode.rendererRemoveClass++;
-      isProceduralRenderer(renderer) ? renderer.removeClass(native, className) :
-                                       native['classList'].remove(className);
-    }
-  }
-}
-
-function setSanitizeFlag(context: StylingContext, index: number, sanitizeYes: boolean) {
-  if (sanitizeYes) {
-    (context[index] as number) |= StylingFlags.Sanitize;
-  } else {
-    (context[index] as number) &= ~StylingFlags.Sanitize;
-  }
-}
-
-function setDirty(context: StylingContext, index: number, isDirtyYes: boolean) {
-  const adjustedIndex =
-      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
-  if (isDirtyYes) {
-    (context[adjustedIndex] as number) |= StylingFlags.Dirty;
-  } else {
-    (context[adjustedIndex] as number) &= ~StylingFlags.Dirty;
-  }
-}
-
-function isDirty(context: StylingContext, index: number): boolean {
-  const adjustedIndex =
-      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
-  return ((context[adjustedIndex] as number) & StylingFlags.Dirty) == StylingFlags.Dirty;
-}
-
-export function isClassBasedValue(context: StylingContext, index: number): boolean {
-  const adjustedIndex =
-      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
-  return ((context[adjustedIndex] as number) & StylingFlags.Class) == StylingFlags.Class;
-}
-
-function isSanitizable(context: StylingContext, index: number): boolean {
-  const adjustedIndex =
-      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
-  return ((context[adjustedIndex] as number) & StylingFlags.Sanitize) == StylingFlags.Sanitize;
-}
-
-function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
-  return (configFlag & StylingFlags.BitMask) | (staticIndex << StylingFlags.BitCountSize) |
-      (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
-}
-
-function getInitialValue(context: StylingContext, flag: number): string|boolean|null {
-  const index = getInitialIndex(flag);
-  const entryIsClassBased = flag & StylingFlags.Class;
-  const initialValues = entryIsClassBased ? context[StylingIndex.InitialClassValuesPosition] :
-                                            context[StylingIndex.InitialStyleValuesPosition];
-  return initialValues[index] as string | boolean | null;
-}
-
-function getInitialIndex(flag: number): number {
-  return (flag >> StylingFlags.BitCountSize) & StylingIndex.BitMask;
-}
-
-function getMultiOrSingleIndex(flag: number): number {
-  const index =
-      (flag >> (StylingIndex.BitCountSize + StylingFlags.BitCountSize)) & StylingIndex.BitMask;
-  return index >= StylingIndex.SingleStylesStartPosition ? index : -1;
-}
-
-function getMultiStartIndex(context: StylingContext): number {
-  return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
-}
-
-function getMultiClassesStartIndex(context: StylingContext): number {
-  const classCache = context[StylingIndex.CachedMultiClasses];
-  return classCache
-      [MapBasedOffsetValuesIndex.ValuesStartPosition +
-       MapBasedOffsetValuesIndex.PositionStartOffset];
-}
-
-function getMultiStylesStartIndex(context: StylingContext): number {
-  const stylesCache = context[StylingIndex.CachedMultiStyles];
-  return stylesCache
-      [MapBasedOffsetValuesIndex.ValuesStartPosition +
-       MapBasedOffsetValuesIndex.PositionStartOffset];
-}
-
-function setProp(context: StylingContext, index: number, prop: string) {
-  context[index + StylingIndex.PropertyOffset] = prop;
-}
-
-function setValue(context: StylingContext, index: number, value: string | null | boolean) {
-  context[index + StylingIndex.ValueOffset] = value;
-}
-
-function hasPlayerBuilderChanged(
-    context: StylingContext, builder: ClassAndStylePlayerBuilder<any>| null, index: number) {
-  const playerContext = context[StylingIndex.PlayerContext] !;
-  if (builder) {
-    if (!playerContext || index === 0) {
-      return true;
-    }
-  } else if (!playerContext) {
-    return false;
-  }
-  return playerContext[index] !== builder;
-}
-
-function setPlayerBuilder(
-    context: StylingContext, builder: ClassAndStylePlayerBuilder<any>| null,
-    insertionIndex: number): number {
-  let playerContext = context[StylingIndex.PlayerContext] || allocPlayerContext(context);
-  if (insertionIndex > 0) {
-    playerContext[insertionIndex] = builder;
-  } else {
-    insertionIndex = playerContext[PlayerIndex.NonBuilderPlayersStart];
-    playerContext.splice(insertionIndex, 0, builder, null);
-    playerContext[PlayerIndex.NonBuilderPlayersStart] +=
-        PlayerIndex.PlayerAndPlayerBuildersTupleSize;
-  }
-  return insertionIndex;
-}
-
-export function directiveOwnerPointers(directiveIndex: number, playerIndex: number) {
-  return (playerIndex << DirectiveOwnerAndPlayerBuilderIndex.BitCountSize) | directiveIndex;
-}
-
-function setPlayerBuilderIndex(
-    context: StylingContext, index: number, playerBuilderIndex: number, directiveIndex: number) {
-  const value = directiveOwnerPointers(directiveIndex, playerBuilderIndex);
-  context[index + StylingIndex.PlayerBuilderIndexOffset] = value;
-}
-
-function getPlayerBuilderIndex(context: StylingContext, index: number): number {
-  const flag = context[index + StylingIndex.PlayerBuilderIndexOffset] as number;
-  const playerBuilderIndex = (flag >> DirectiveOwnerAndPlayerBuilderIndex.BitCountSize) &
-      DirectiveOwnerAndPlayerBuilderIndex.BitMask;
-  return playerBuilderIndex;
-}
-
-function getPlayerBuilder(context: StylingContext, index: number): ClassAndStylePlayerBuilder<any>|
-    null {
-  const playerBuilderIndex = getPlayerBuilderIndex(context, index);
-  if (playerBuilderIndex) {
-    const playerContext = context[StylingIndex.PlayerContext];
-    if (playerContext) {
-      return playerContext[playerBuilderIndex] as ClassAndStylePlayerBuilder<any>| null;
-    }
-  }
-  return null;
-}
-
-function setFlag(context: StylingContext, index: number, flag: number) {
-  const adjustedIndex =
-      index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
-  context[adjustedIndex] = flag;
-}
-
-function getPointers(context: StylingContext, index: number): number {
-  const adjustedIndex =
-      index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
-  return context[adjustedIndex] as number;
-}
-
-export function getValue(context: StylingContext, index: number): string|boolean|null {
-  return context[index + StylingIndex.ValueOffset] as string | boolean | null;
-}
-
-export function getProp(context: StylingContext, index: number): string {
-  return context[index + StylingIndex.PropertyOffset] as string;
-}
-
-export function isContextDirty(context: StylingContext): boolean {
-  return isDirty(context, StylingIndex.MasterFlagPosition);
-}
-
-export function setContextDirty(context: StylingContext, isDirtyYes: boolean): void {
-  setDirty(context, StylingIndex.MasterFlagPosition, isDirtyYes);
-}
-
-export function setContextPlayersDirty(context: StylingContext, isDirtyYes: boolean): void {
-  if (isDirtyYes) {
-    (context[StylingIndex.MasterFlagPosition] as number) |= StylingFlags.PlayerBuildersDirty;
-  } else {
-    (context[StylingIndex.MasterFlagPosition] as number) &= ~StylingFlags.PlayerBuildersDirty;
-  }
-}
-
-function swapMultiContextEntries(context: StylingContext, indexA: number, indexB: number) {
-  if (indexA === indexB) return;
-
-  const tmpValue = getValue(context, indexA);
-  const tmpProp = getProp(context, indexA);
-  const tmpFlag = getPointers(context, indexA);
-  const tmpPlayerBuilderIndex = getPlayerBuilderIndex(context, indexA);
-  const tmpDirectiveIndex = getDirectiveIndexFromEntry(context, indexA);
-
-  let flagA = tmpFlag;
-  let flagB = getPointers(context, indexB);
-
-  const singleIndexA = getMultiOrSingleIndex(flagA);
-  if (singleIndexA >= 0) {
-    const _flag = getPointers(context, singleIndexA);
-    const _initial = getInitialIndex(_flag);
-    setFlag(context, singleIndexA, pointers(_flag, _initial, indexB));
-  }
-
-  const singleIndexB = getMultiOrSingleIndex(flagB);
-  if (singleIndexB >= 0) {
-    const _flag = getPointers(context, singleIndexB);
-    const _initial = getInitialIndex(_flag);
-    setFlag(context, singleIndexB, pointers(_flag, _initial, indexA));
-  }
-
-  setValue(context, indexA, getValue(context, indexB));
-  setProp(context, indexA, getProp(context, indexB));
-  setFlag(context, indexA, getPointers(context, indexB));
-  const playerIndexA = getPlayerBuilderIndex(context, indexB);
-  const directiveIndexA = getDirectiveIndexFromEntry(context, indexB);
-  setPlayerBuilderIndex(context, indexA, playerIndexA, directiveIndexA);
-
-  setValue(context, indexB, tmpValue);
-  setProp(context, indexB, tmpProp);
-  setFlag(context, indexB, tmpFlag);
-  setPlayerBuilderIndex(context, indexB, tmpPlayerBuilderIndex, tmpDirectiveIndex);
-}
-
-function updateSinglePointerValues(context: StylingContext, indexStartPosition: number) {
-  for (let i = indexStartPosition; i < context.length; i += StylingIndex.Size) {
-    const multiFlag = getPointers(context, i);
-    const singleIndex = getMultiOrSingleIndex(multiFlag);
-    if (singleIndex > 0) {
-      const singleFlag = getPointers(context, singleIndex);
-      const initialIndexForSingle = getInitialIndex(singleFlag);
-      const flagValue = (isDirty(context, singleIndex) ? StylingFlags.Dirty : StylingFlags.None) |
-          (isClassBasedValue(context, singleIndex) ? StylingFlags.Class : StylingFlags.None) |
-          (isSanitizable(context, singleIndex) ? StylingFlags.Sanitize : StylingFlags.None);
-      const updatedFlag = pointers(flagValue, initialIndexForSingle, i);
-      setFlag(context, singleIndex, updatedFlag);
-    }
-  }
 }
 
 function insertNewMultiProperty(
@@ -1505,7 +1194,7 @@ function hasValueChanged(
 }
 
 export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
-  private _values: {[key: string]: string | null} = {};
+  private _values: {[key: string]: any} = {};
   private _dirty = false;
   private _factory: BoundPlayerFactory<T>;
 
@@ -1525,8 +1214,16 @@ export class ClassAndStylePlayerBuilder<T> implements PlayerBuilder {
     // change and therefore the binding values were not updated through
     // `setValue` which means no new player will be provided.
     if (this._dirty) {
+      const options: PlayerFactoryBuildOptions = {isFirstRender};
       const player = this._factory.fn(
-          this._element, this._type, this._values !, isFirstRender, currentPlayer || null);
+          this._element, this._type, this._values !, currentPlayer || null, options);
+      if (!player) {
+        if (this._type === BindingType.Class) {
+          applyClassChanges(this._element, this._values);
+        } else if (this._type === BindingType.Style) {
+          applyStyleChanges(this._element, this._values);
+        }
+      }
       this._values = {};
       this._dirty = false;
       return player;
@@ -1929,5 +1626,318 @@ function assertValidDirectiveIndex(context: StylingContext, directiveIndex: numb
   if (index >= dirs.length ||
       dirs[index + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] === -1) {
     throw new Error('The provided directive is not registered with the styling context');
+  }
+}
+
+/**
+ * Assigns a style value to a style property for the given element.
+ *
+ * This function renders a given CSS prop/value entry using the
+ * provided renderer. If a `store` value is provided then
+ * that will be used a render context instead of the provided
+ * renderer.
+ *
+ * @param native the DOM Element
+ * @param prop the CSS style property that will be rendered
+ * @param value the CSS style value that will be rendered
+ * @param renderer
+ * @param store an optional key/value map that will be used as a context to render styles on
+ */
+export function setStyle(
+    native: any, prop: string, value: string | null, renderer: Renderer3,
+    sanitizer: StyleSanitizeFn | null, store?: BindingStore | null,
+    playerBuilder?: ClassAndStylePlayerBuilder<any>| null) {
+  value =
+      sanitizer && value ? sanitizer(prop, value, StyleSanitizeMode.ValidateAndSanitize) : value;
+  if (store || playerBuilder) {
+    if (store) {
+      store.setValue(prop, value);
+    }
+    if (playerBuilder) {
+      playerBuilder.setValue(prop, value);
+    }
+  } else if (value) {
+    value = value.toString();  // opacity, z-index and flexbox all have number values which may not
+    // assign as numbers
+    ngDevMode && ngDevMode.rendererSetStyle++;
+    isProceduralRenderer(renderer) ?
+        renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase) :
+        native.style.setProperty(prop, value);
+  } else {
+    ngDevMode && ngDevMode.rendererRemoveStyle++;
+    isProceduralRenderer(renderer) ?
+        renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase) :
+        native.style.removeProperty(prop);
+  }
+}
+
+/**
+ * Adds/removes the provided className value to the provided element.
+ *
+ * This function renders a given CSS class value using the provided
+ * renderer (by adding or removing it from the provided element).
+ * If a `store` value is provided then that will be used a render
+ * context instead of the provided renderer.
+ *
+ * @param native the DOM Element
+ * @param prop the CSS style property that will be rendered
+ * @param value the CSS style value that will be rendered
+ * @param renderer
+ * @param store an optional key/value map that will be used as a context to render styles on
+ */
+function setClass(
+    native: any, className: string, add: boolean, renderer: Renderer3, store?: BindingStore | null,
+    playerBuilder?: ClassAndStylePlayerBuilder<any>| null) {
+  if (store || playerBuilder) {
+    if (store) {
+      store.setValue(className, add);
+    }
+    if (playerBuilder) {
+      playerBuilder.setValue(className, add);
+    }
+    // DOMTokenList will throw if we try to add or remove an empty string.
+  } else if (className !== '') {
+    if (add) {
+      ngDevMode && ngDevMode.rendererAddClass++;
+      isProceduralRenderer(renderer) ? renderer.addClass(native, className) :
+                                       native['classList'].add(className);
+    } else {
+      ngDevMode && ngDevMode.rendererRemoveClass++;
+      isProceduralRenderer(renderer) ? renderer.removeClass(native, className) :
+                                       native['classList'].remove(className);
+    }
+  }
+}
+
+function setSanitizeFlag(context: StylingContext, index: number, sanitizeYes: boolean) {
+  if (sanitizeYes) {
+    (context[index] as number) |= StylingFlags.Sanitize;
+  } else {
+    (context[index] as number) &= ~StylingFlags.Sanitize;
+  }
+}
+
+function setDirty(context: StylingContext, index: number, isDirtyYes: boolean) {
+  const adjustedIndex =
+      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
+  if (isDirtyYes) {
+    (context[adjustedIndex] as number) |= StylingFlags.Dirty;
+  } else {
+    (context[adjustedIndex] as number) &= ~StylingFlags.Dirty;
+  }
+}
+
+function isDirty(context: StylingContext, index: number): boolean {
+  const adjustedIndex =
+      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
+  return ((context[adjustedIndex] as number) & StylingFlags.Dirty) == StylingFlags.Dirty;
+}
+
+export function isClassBasedValue(context: StylingContext, index: number): boolean {
+  const adjustedIndex =
+      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
+  return ((context[adjustedIndex] as number) & StylingFlags.Class) == StylingFlags.Class;
+}
+
+function isSanitizable(context: StylingContext, index: number): boolean {
+  const adjustedIndex =
+      index >= StylingIndex.SingleStylesStartPosition ? (index + StylingIndex.FlagsOffset) : index;
+  return ((context[adjustedIndex] as number) & StylingFlags.Sanitize) == StylingFlags.Sanitize;
+}
+
+function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
+  return (configFlag & StylingFlags.BitMask) | (staticIndex << StylingFlags.BitCountSize) |
+      (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
+}
+
+function getInitialValue(context: StylingContext, flag: number): string|boolean|null {
+  const index = getInitialIndex(flag);
+  const entryIsClassBased = flag & StylingFlags.Class;
+  const initialValues = entryIsClassBased ? context[StylingIndex.InitialClassValuesPosition] :
+                                            context[StylingIndex.InitialStyleValuesPosition];
+  return initialValues[index] as string | boolean | null;
+}
+
+function getInitialIndex(flag: number): number {
+  return (flag >> StylingFlags.BitCountSize) & StylingIndex.BitMask;
+}
+
+function getMultiOrSingleIndex(flag: number): number {
+  const index =
+      (flag >> (StylingIndex.BitCountSize + StylingFlags.BitCountSize)) & StylingIndex.BitMask;
+  return index >= StylingIndex.SingleStylesStartPosition ? index : -1;
+}
+
+function getMultiStartIndex(context: StylingContext): number {
+  return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
+}
+
+function getMultiClassesStartIndex(context: StylingContext): number {
+  const classCache = context[StylingIndex.CachedMultiClasses];
+  return classCache
+      [MapBasedOffsetValuesIndex.ValuesStartPosition +
+       MapBasedOffsetValuesIndex.PositionStartOffset];
+}
+
+function getMultiStylesStartIndex(context: StylingContext): number {
+  const stylesCache = context[StylingIndex.CachedMultiStyles];
+  return stylesCache
+      [MapBasedOffsetValuesIndex.ValuesStartPosition +
+       MapBasedOffsetValuesIndex.PositionStartOffset];
+}
+
+function setProp(context: StylingContext, index: number, prop: string) {
+  context[index + StylingIndex.PropertyOffset] = prop;
+}
+
+function setValue(context: StylingContext, index: number, value: string | null | boolean) {
+  context[index + StylingIndex.ValueOffset] = value;
+}
+
+function hasPlayerBuilderChanged(
+    context: StylingContext, builder: ClassAndStylePlayerBuilder<any>| null, index: number) {
+  const playerContext = context[StylingIndex.PlayerContext] !;
+  if (builder) {
+    if (!playerContext || index === 0) {
+      return true;
+    }
+  } else if (!playerContext) {
+    return false;
+  }
+  return playerContext[index] !== builder;
+}
+
+function setPlayerBuilder(
+    context: StylingContext, builder: ClassAndStylePlayerBuilder<any>| null,
+    insertionIndex: number): number {
+  let playerContext = context[StylingIndex.PlayerContext] || allocPlayerContext(context);
+  if (insertionIndex > 0) {
+    playerContext[insertionIndex] = builder;
+  } else {
+    insertionIndex = playerContext[PlayerIndex.NonBuilderPlayersStart];
+    playerContext.splice(insertionIndex, 0, builder, null);
+    playerContext[PlayerIndex.NonBuilderPlayersStart] +=
+        PlayerIndex.PlayerAndPlayerBuildersTupleSize;
+  }
+  return insertionIndex;
+}
+
+export function directiveOwnerPointers(directiveIndex: number, playerIndex: number) {
+  return (playerIndex << DirectiveOwnerAndPlayerBuilderIndex.BitCountSize) | directiveIndex;
+}
+
+function setPlayerBuilderIndex(
+    context: StylingContext, index: number, playerBuilderIndex: number, directiveIndex: number) {
+  const value = directiveOwnerPointers(directiveIndex, playerBuilderIndex);
+  context[index + StylingIndex.PlayerBuilderIndexOffset] = value;
+}
+
+function getPlayerBuilderIndex(context: StylingContext, index: number): number {
+  const flag = context[index + StylingIndex.PlayerBuilderIndexOffset] as number;
+  const playerBuilderIndex = (flag >> DirectiveOwnerAndPlayerBuilderIndex.BitCountSize) &
+      DirectiveOwnerAndPlayerBuilderIndex.BitMask;
+  return playerBuilderIndex;
+}
+
+function getPlayerBuilder(context: StylingContext, index: number): ClassAndStylePlayerBuilder<any>|
+    null {
+  const playerBuilderIndex = getPlayerBuilderIndex(context, index);
+  if (playerBuilderIndex) {
+    const playerContext = context[StylingIndex.PlayerContext];
+    if (playerContext) {
+      return playerContext[playerBuilderIndex] as ClassAndStylePlayerBuilder<any>| null;
+    }
+  }
+  return null;
+}
+
+function setFlag(context: StylingContext, index: number, flag: number) {
+  const adjustedIndex =
+      index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
+  context[adjustedIndex] = flag;
+}
+
+function getPointers(context: StylingContext, index: number): number {
+  const adjustedIndex =
+      index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
+  return context[adjustedIndex] as number;
+}
+
+export function getValue(context: StylingContext, index: number): string|boolean|null {
+  return context[index + StylingIndex.ValueOffset] as string | boolean | null;
+}
+
+export function getProp(context: StylingContext, index: number): string {
+  return context[index + StylingIndex.PropertyOffset] as string;
+}
+
+export function isContextDirty(context: StylingContext): boolean {
+  return isDirty(context, StylingIndex.MasterFlagPosition);
+}
+
+export function setContextDirty(context: StylingContext, isDirtyYes: boolean): void {
+  setDirty(context, StylingIndex.MasterFlagPosition, isDirtyYes);
+}
+
+export function setContextPlayersDirty(context: StylingContext, isDirtyYes: boolean): void {
+  if (isDirtyYes) {
+    (context[StylingIndex.MasterFlagPosition] as number) |= StylingFlags.PlayerBuildersDirty;
+  } else {
+    (context[StylingIndex.MasterFlagPosition] as number) &= ~StylingFlags.PlayerBuildersDirty;
+  }
+}
+
+function swapMultiContextEntries(context: StylingContext, indexA: number, indexB: number) {
+  if (indexA === indexB) return;
+
+  const tmpValue = getValue(context, indexA);
+  const tmpProp = getProp(context, indexA);
+  const tmpFlag = getPointers(context, indexA);
+  const tmpPlayerBuilderIndex = getPlayerBuilderIndex(context, indexA);
+  const tmpDirectiveIndex = getDirectiveIndexFromEntry(context, indexA);
+
+  let flagA = tmpFlag;
+  let flagB = getPointers(context, indexB);
+
+  const singleIndexA = getMultiOrSingleIndex(flagA);
+  if (singleIndexA >= 0) {
+    const _flag = getPointers(context, singleIndexA);
+    const _initial = getInitialIndex(_flag);
+    setFlag(context, singleIndexA, pointers(_flag, _initial, indexB));
+  }
+
+  const singleIndexB = getMultiOrSingleIndex(flagB);
+  if (singleIndexB >= 0) {
+    const _flag = getPointers(context, singleIndexB);
+    const _initial = getInitialIndex(_flag);
+    setFlag(context, singleIndexB, pointers(_flag, _initial, indexA));
+  }
+
+  setValue(context, indexA, getValue(context, indexB));
+  setProp(context, indexA, getProp(context, indexB));
+  setFlag(context, indexA, getPointers(context, indexB));
+  const playerIndexA = getPlayerBuilderIndex(context, indexB);
+  const directiveIndexA = getDirectiveIndexFromEntry(context, indexB);
+  setPlayerBuilderIndex(context, indexA, playerIndexA, directiveIndexA);
+
+  setValue(context, indexB, tmpValue);
+  setProp(context, indexB, tmpProp);
+  setFlag(context, indexB, tmpFlag);
+  setPlayerBuilderIndex(context, indexB, tmpPlayerBuilderIndex, tmpDirectiveIndex);
+}
+
+function updateSinglePointerValues(context: StylingContext, indexStartPosition: number) {
+  for (let i = indexStartPosition; i < context.length; i += StylingIndex.Size) {
+    const multiFlag = getPointers(context, i);
+    const singleIndex = getMultiOrSingleIndex(multiFlag);
+    if (singleIndex > 0) {
+      const singleFlag = getPointers(context, singleIndex);
+      const initialIndexForSingle = getInitialIndex(singleFlag);
+      const flagValue = (isDirty(context, singleIndex) ? StylingFlags.Dirty : StylingFlags.None) |
+          (isClassBasedValue(context, singleIndex) ? StylingFlags.Class : StylingFlags.None) |
+          (isSanitizable(context, singleIndex) ? StylingFlags.Sanitize : StylingFlags.None);
+      const updatedFlag = pointers(flagValue, initialIndexForSingle, i);
+      setFlag(context, singleIndex, updatedFlag);
+    }
   }
 }

@@ -17,11 +17,11 @@
   <!-- The Angular application will be bootstrapped into this element. -->
   <todo-app></todo-app>
 
-  <!-- 
+  <!--
       Script tag which bootstraps the application. Use `?debug` in URL to select
       the debug version of the script.
-      
-      There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can 
+
+      There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can
       switch between which bundle the browser loads to experiment with the application.
 
       - `bundle.min.js`: Is what the site would serve to their users. It has gone
@@ -33,15 +33,16 @@
         and uglify, however special flags were passed to uglify to prevent inlining and
         property renaming.
     -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reflect-metadata/0.1.12/Reflect.js"></script>
   <script>
     document.write('<script src="' +
-      (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js.br') +
+      (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js') +
       '"></' + 'script>');
   </script>
   <script>
     if (typeof define === "function" && define.amd) {
-      // If `define` is defined that we are in devserver mode. Dev server concatenates all of the 
-      // source files and than loads them using `require`. There is an issue with the way 
+      // If `define` is defined that we are in devserver mode. Dev server concatenates all of the
+      // source files and than loads them using `require`. There is an issue with the way
       // `@angular/core` imports are generated which results in both `@angular/core` as well as `@angular/core/index`
       // This hack makes both of the exports available to the application.
       define("@angular/core", ["require", "exports", "tslib", "@angular/core/index"], function (require, exports) {

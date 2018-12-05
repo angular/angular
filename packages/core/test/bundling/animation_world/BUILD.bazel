@@ -49,3 +49,16 @@ http_server(
         "ivy-only",
     ],
 )
+
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_deb", "pkg_tar")
+
+pkg_tar(
+    name = "tar",
+    srcs = [
+        "animation_world.css",
+        "base.css",
+        "index.html",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+)

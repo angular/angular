@@ -232,6 +232,7 @@ export {
   PlayerFactory as ɵPlayerFactory,
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
+  PlayerFactoryBuildOptions as ɵPlayerFactoryBuildOptions,
 } from './render3/interfaces/player';
 
 export {
@@ -240,12 +241,19 @@ export {
 
 export {
   bindPlayerFactory as ɵbindPlayerFactory,
+  BoundPlayerFactory as ɵBoundPlayerFactory,
 } from './render3/styling/player_factory';
 
 export {
   addPlayer as ɵaddPlayer,
   getPlayers as ɵgetPlayers,
 } from './render3/players';
+
+export {
+  AnimatePipe as ɵAnimatePipe,
+  AnimatePipeModule as ɵAnimatePipeModule,
+  AUTO_STYLE as ɵAUTO_STYLE,
+} from './render3/animations/public_api';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.

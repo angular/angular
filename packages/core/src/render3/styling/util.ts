@@ -194,22 +194,24 @@ export function addPlayerInternal(
   }
 
   if (player) {
-    player.addEventListener(PlayState.Destroyed, () => {
-      const index = playerContext.indexOf(player);
-      const nonFactoryPlayerIndex = playerContext[PlayerIndex.NonBuilderPlayersStart];
+    const subscription = player.getStatus().subscribe(state => {
+      if (state === PlayState.Destroyed) {
+        const index = playerContext.indexOf(player);
+        subscription.unsubscribe();
 
-      // if the player is being removed from the factory side of the context
-      // (which is where the [style] and [class] bindings do their thing) then
-      // that side of the array cannot be resized since the respective bindings
-      // have pointer index values that point to the associated factory instance
-      if (index) {
-        if (index < nonFactoryPlayerIndex) {
-          playerContext[index] = null;
-        } else {
-          playerContext.splice(index, 1);
+        // if the player is being removed from the factory side of the context
+        // (which is where the [style] and [class] bindings do their thing) then
+        // that side of the array cannot be resized since the respective bindings
+        // have pointer index values that point to the associated factory instance
+        if (index) {
+          const nonFactoryPlayerIndex = playerContext[PlayerIndex.NonBuilderPlayersStart];
+          if (index < nonFactoryPlayerIndex) {
+            playerContext[index] = null;
+          } else {
+            playerContext.splice(index, 1);
+          }
         }
       }
-      player.destroy();
     });
 
     const playerHandler =

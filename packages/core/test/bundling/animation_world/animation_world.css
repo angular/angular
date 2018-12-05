@@ -1,49 +1,150 @@
+.material-icons {
+  font-size: inherit;
+}
+
 html, body {
   padding:0;
   margin:0;
   font-family: Verdana;
+  background:#999;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  margin: 0;
+  padding:0;
 }
 
 animation-world {
   display:block;
-  margin: 0 auto;
-  max-width:1000px;
-  border:2px solid black;
 }
 
-animation-world nav {
-  padding:1em;
-  border-bottom:2px solid black;
-  background:#eee;
+.grid {
+  display:grid;
+  grid-template-columns: 75fr 25fr;
+  grid-gap: 40px;
+}
+
+animation-world section {
+  margin:20px auto 40px;
+  min-height:800px;
+  width:80%;
+  background:white;
+  min-width:1000px;
+  padding:50px 50px 100px;
+  box-shadow:0 0 20px #000;
+}
+
+animation-world header {
+  font-size:30px;
+  color:#0092B2;
+  font-family:Helvetica;
+  margin-bottom:20px;
+  text-align: left;
+}
+
+animation-world button {
+  padding:10px;
+  border:0;
+  cursor: pointer;
+  background:#A8C545;
+  color:white;
+  font-size:1.5em;
+  display:block;
+  margin-bottom:1em;
+  width:100%;
+}
+
+animation-world button:hover,
+animation-world button:visited,
+animation-world button:active {
+  background:#8aa433!important;
 }
 
 animation-world .list {
   display:grid;
-  grid-template-columns: 33% 33% 34%;
-  grid-template-rows: 33% 33% 34%;
-  height:1000px;
+  grid-template-columns: repeat(4, 25fr);
+  grid-template-rows: repeat(4, 25fr);
+  grid-gap: 10px;
 }
 animation-world .record {
-  line-height:333px;
+  line-height:200px;
   text-align:center;
   font-weight: bold;
   font-size:50px;
   vertical-align: middle;
+  border:10px solid transparent;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+     -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
 }
 
-.record-1 { color:white; background: green;}
-.record-2 { color:white; background: red;}
-.record-3 { color:white; background: blue;}
-.record-4 { color:white; background: orange;}
-.record-5 { color:white; background: purple;}
-.record-6 { color:white; background: black;}
-.record-7 { color:white; background: silver;}
-.record-8 { color:white; background: teal;}
-.record-9 { color:white; background: pink;}
+.record-1.on { color:white; background: green;}
+.record-2.on { color:white; background: red;}
+.record-3.on { color:white; background: blue;}
+.record-4.on { color:white; background: orange;}
+.record-5.on { color:white; background: purple;}
+.record-6.on { color:white; background: black;}
+.record-7.on { color:white; background: silver;}
+.record-8.on { color:white; background: teal;}
+.record-9.on { color:white; background: pink;}
+.record-10.on { color:white; background: silver;}
+.record-11.on { color:white; background: turquoise;}
+.record-12.on { color:white; background: #ccc;}
+.record-13.on { color:white; background: maroon;}
+.record-14.on { color:white; background: #12351a;}
+.record-15.on { color:white; background: #FF1c2a; }
+.record-16.on { color:white; background: #f123a4;}
+
+.one { font-size:30px!important; background:#ccc; color:#666; }
+.two { font-size:60px!important; }
+.three { font-size:90px!important; }
+.four { transform: rotate(180deg); font-size:100px!important; }
+.border { border-color:grey!important; background:#222!important; color:white!important; }
 
 @keyframes fadeInOut {
   from { opacity: 0; background: white; }
   33% { opacity: 1; background: black; }
   66% { opacity: 0.5; background: black; }
   100% { opacity: 1 }
+}
+
+.box {
+  border:5px solid black;
+}
+
+.box .header {
+  padding:20px;
+  cursor: pointer;
+  font-size:30px;
+  background:#ccc;
+}
+
+.box .header:hover {
+  background:#ddd;
+}
+
+.box .header.active {
+  background:gold;
+  color:white;
+}
+
+.box .content {
+  overflow: hidden;
+}
+
+.box .content .inner {
+  padding:20px;
+}
+
+.dark {
+  background: #222;
+  color:white;
 }
