@@ -50,7 +50,7 @@ of some of the things they contain:
  <tr>
    <td><code>ReactiveFormsModule</code></td>
    <td><code>@angular/forms</code></td>
-   <td>When you want to build reactive forms</td>
+   <td>When you want to build [reactive forms](guide/reactive-forms) </td>
  </tr>
 
  <tr>
