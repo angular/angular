@@ -86,7 +86,7 @@
     "zone.js": "^0.8.26"
   },
   "optionalDependencies": {
-    "fsevents": "1.1.2"
+    "fsevents": "2.0.1"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
