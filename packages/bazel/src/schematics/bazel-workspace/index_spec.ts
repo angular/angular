@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {HostTree} from '@angular-devkit/schematics';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
 
 describe('Bazel-workspace Schematic', () => {
   const schematicRunner =
@@ -25,6 +26,19 @@ describe('Bazel-workspace Schematic', () => {
     expect(files).toContain('/demo/src/BUILD.bazel');
     expect(files).toContain('/demo/WORKSPACE');
     expect(files).toContain('/demo/yarn.lock');
+  });
+
+  it('should find existing Angular version', () => {
+    let host = new UnitTestTree(new HostTree);
+    host.create('/demo/node_modules/@angular/core/package.json', JSON.stringify({
+      name: '@angular/core',
+      version: '6.6.6',
+    }));
+    const options = {...defaultOptions};
+    host = schematicRunner.runSchematic('bazel-workspace', options, host);
+    expect(host.files).toContain('/demo/WORKSPACE');
+    const workspace = host.readContent('/demo/WORKSPACE');
+    expect(workspace).toMatch('ANGULAR_VERSION = "6.6.6"');
   });
 
   describe('WORKSPACE', () => {
