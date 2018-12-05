@@ -32,15 +32,16 @@ function declareTests(config?: {useJit: boolean}) {
     describe('platform pipes', () => {
       beforeEach(() => { TestBed.configureCompiler({...config}); });
 
-      fixmeIvy('unknown').it('should overwrite them by custom pipes', () => {
-        TestBed.configureTestingModule({declarations: [CustomPipe]});
-        const template = '{{true | somePipe}}';
-        TestBed.overrideComponent(MyComp1, {set: {template}});
-        const fixture = TestBed.createComponent(MyComp1);
+      fixmeIvy('FW-798: Handle pipes with duplicate names')
+          .it('should overwrite them by custom pipes', () => {
+            TestBed.configureTestingModule({declarations: [CustomPipe]});
+            const template = '{{true | somePipe}}';
+            TestBed.overrideComponent(MyComp1, {set: {template}});
+            const fixture = TestBed.createComponent(MyComp1);
 
-        fixture.detectChanges();
-        expect(fixture.nativeElement).toHaveText('someCustomPipe');
-      });
+            fixture.detectChanges();
+            expect(fixture.nativeElement).toHaveText('someCustomPipe');
+          });
     });
 
     describe('expressions', () => {
@@ -351,36 +352,37 @@ function declareTests(config?: {useJit: boolean}) {
           });
     });
 
-    fixmeIvy('unknown').it(
-        'should support @ContentChild and @Input on the same property for static queries', () => {
-          @Directive({selector: 'test'})
-          class Test {
-            // TODO(issue/24571): remove '!'.
-            @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
-          }
+    fixmeIvy('FW-797: @ContentChildren results are assigned after @Input bindings')
+        .it('should support @ContentChild and @Input on the same property for static queries',
+            () => {
+              @Directive({selector: 'test'})
+              class Test {
+                // TODO(issue/24571): remove '!'.
+                @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+              }
 
-          @Component({
-            selector: 'my-app',
-            template: `
+              @Component({
+                selector: 'my-app',
+                template: `
           <test></test><br>
           <test><ng-template>Custom as a child</ng-template></test><br>
           <ng-template #custom>Custom as a binding</ng-template>
           <test [tpl]="custom"></test><br>
         `
-          })
-          class App {
-          }
+              })
+              class App {
+              }
 
-          const fixture =
-              TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
-          fixture.detectChanges();
+              const fixture =
+                  TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
+              fixture.detectChanges();
 
-          const testDirs =
-              fixture.debugElement.queryAll(By.directive(Test)).map(el => el.injector.get(Test));
-          expect(testDirs[0].tpl).toBeUndefined();
-          expect(testDirs[1].tpl).toBeDefined();
-          expect(testDirs[2].tpl).toBeDefined();
-        });
+              const testDirs = fixture.debugElement.queryAll(By.directive(Test))
+                                   .map(el => el.injector.get(Test));
+              expect(testDirs[0].tpl).toBeUndefined();
+              expect(testDirs[1].tpl).toBeDefined();
+              expect(testDirs[2].tpl).toBeDefined();
+            });
 
     it('should not add ng-version for dynamically created components', () => {
       @Component({template: ''})

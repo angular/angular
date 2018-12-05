@@ -136,8 +136,8 @@ function declareTests(config?: {useJit: boolean}) {
       expect(dir.text).toEqual('container');
     });
 
-    fixmeIvy('unknown').it(
-        'should contain all direct child directives in a <ng-container> (content dom)', () => {
+    fixmeIvy('FW-795: Queries with descendants: true don\'t descent into <ng-container>')
+        .it('should contain all direct child directives in a <ng-container> (content dom)', () => {
           const template =
               '<needs-content-children #q><ng-container><div text="foo"></div></ng-container></needs-content-children>';
           TestBed.overrideComponent(MyComp, {set: {template}});

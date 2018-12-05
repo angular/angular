@@ -625,23 +625,22 @@ function declareTests(config?: {useJit: boolean}) {
             });
 
         if (getDOM().supportsDOMEvents()) {
-          fixmeIvy('unknown').it(
-              'should allow to destroy a component from within a host event handler',
-              fakeAsync(() => {
-                TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
-                const template = '<push-cmp-with-host-event></push-cmp-with-host-event>';
-                TestBed.overrideComponent(MyComp, {set: {template}});
-                const fixture = TestBed.createComponent(MyComp);
+          it('should allow to destroy a component from within a host event handler',
+             fakeAsync(() => {
+               TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
+               const template = '<push-cmp-with-host-event></push-cmp-with-host-event>';
+               TestBed.overrideComponent(MyComp, {set: {template}});
+               const fixture = TestBed.createComponent(MyComp);
 
-                tick();
-                fixture.detectChanges();
+               tick();
+               fixture.detectChanges();
 
-                const cmpEl = fixture.debugElement.children[0];
-                const cmp: PushCmpWithHostEvent = cmpEl.injector.get(PushCmpWithHostEvent);
-                cmp.ctxCallback = (_: any) => fixture.destroy();
+               const cmpEl = fixture.debugElement.children[0];
+               const cmp: PushCmpWithHostEvent = cmpEl.injector.get(PushCmpWithHostEvent);
+               cmp.ctxCallback = (_: any) => fixture.destroy();
 
-                expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
-              }));
+               expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
+             }));
         }
 
         fixmeIvy('FW-758: OnPush events not marking view dirty when using renderer2')

@@ -9,7 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util';
@@ -637,35 +637,66 @@ describe('Query API', () => {
           expect(q.query.length).toBe(0);
         });
 
-    fixmeIvy('unknown').it(
-        'should not throw if a content template is queried and created in the view during change detection',
-        () => {
-          @Component(
-              {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
-          class AutoProjecting {
-            // TODO(issue/24571):
-            // remove '!'.
-            @ContentChild(TemplateRef)
-            content !: TemplateRef<any>;
+    modifiedInIvy('https://github.com/angular/angular/issues/15117 fixed in ivy')
+        .it('should not throw if a content template is queried and created in the view during change detection',
+            () => {
+              @Component({
+                selector: 'auto-projecting',
+                template: '<div *ngIf="true; then: content"></div>'
+              })
+              class AutoProjecting {
+                // TODO(issue/24571):
+                // remove '!'.
+                @ContentChild(TemplateRef)
+                content !: TemplateRef<any>;
 
-            // TODO(issue/24571):
-            // remove '!'.
-            @ContentChildren(TextDirective)
-            query !: QueryList<TextDirective>;
-          }
+                // TODO(issue/24571):
+                // remove '!'.
+                @ContentChildren(TextDirective)
+                query !: QueryList<TextDirective>;
+              }
 
-          TestBed.configureTestingModule({declarations: [AutoProjecting]});
-          const template =
-              '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+              TestBed.configureTestingModule({declarations: [AutoProjecting]});
+              const template =
+                  '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
+              const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const q = view.debugElement.children[0].references !['q'];
-          // This should be 1, but due to
-          // https://github.com/angular/angular/issues/15117
-          // this is 0.
-          expect(q.query.length).toBe(0);
-        });
+              const q = view.debugElement.children[0].references !['q'];
+              // This should be 1, but due to
+              // https://github.com/angular/angular/issues/15117
+              // this is 0.
+              expect(q.query.length).toBe(0);
+            });
 
+    if (ivyEnabled) {
+      // The fixed version of the "should not throw if a content template is queried and created in
+      // the view during change detection" test. This test is a different as ivy fixes
+      // https://github.com/angular/angular/issues/15117 present in the view engine.
+      it('should not throw if a content template is queried and created in the view during change detection - fixed in ivy',
+         () => {
+           @Component(
+               {selector: 'auto-projecting', template: '<div *ngIf="true; then: content"></div>'})
+           class AutoProjecting {
+             // TODO(issue/24571):
+             // remove '!'.
+             @ContentChild(TemplateRef)
+             content !: TemplateRef<any>;
+
+             // TODO(issue/24571):
+             // remove '!'.
+             @ContentChildren(TextDirective)
+             query !: QueryList<TextDirective>;
+           }
+
+           TestBed.configureTestingModule({declarations: [AutoProjecting]});
+           const template =
+               '<auto-projecting #q><ng-template><div text="1"></div></ng-template></auto-projecting>';
+           const view = createTestCmpAndDetectChanges(MyComp0, template);
+
+           const q = view.debugElement.children[0].references !['q'];
+           expect(q.query.length).toBe(1);
+         });
+    }
   });
 });
 
