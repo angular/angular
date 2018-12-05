@@ -64,10 +64,9 @@ node_repositories(
     yarn_version = "1.12.1",
 )
 
-yarn_install(
+local_repository(
     name = "npm",
-    package_json = "//tools:npm/package.json",
-    yarn_lock = "//tools:npm/yarn.lock",
+    path = "tools/npm_workspace",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
