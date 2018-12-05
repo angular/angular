@@ -16,6 +16,9 @@ import {fixmeIvy} from '@angular/private/testing';
   describe('NoopAnimationsModule', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [NoopAnimationsModule]}); });
 
+    it('should be removed once FW-643 is fixed', () => { expect(true).toBeTruthy(); });
+
+    // TODO: remove the dummy test above ^ once the bug FW-643 has been fixed
     fixmeIvy(
         `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`) &&
         it('should flush and fire callbacks when the zone becomes stable', (async) => {
