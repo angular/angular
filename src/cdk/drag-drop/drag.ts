@@ -790,7 +790,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
   /** Determines the point of the page that was touched by the user. */
   private _getPointerPositionOnPage(event: MouseEvent | TouchEvent): Point {
-    const point = this._isTouchEvent(event) ? event.touches[0] : event;
+    // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
+    const point = this._isTouchEvent(event) ? (event.touches[0] || event.changedTouches[0]) : event;
 
     return {
       x: point.pageX - this._scrollPosition.left,

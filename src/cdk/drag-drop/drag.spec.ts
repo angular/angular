@@ -1895,6 +1895,30 @@ describe('CdkDrag', () => {
           .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
+    it('should not throw if the `touches` array is empty', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      dispatchTouchEvent(item, 'touchstart');
+      fixture.detectChanges();
+
+      dispatchTouchEvent(document, 'touchmove');
+      fixture.detectChanges();
+
+      dispatchTouchEvent(document, 'touchmove', 50, 50);
+      fixture.detectChanges();
+
+      expect(() => {
+        const endEvent = createTouchEvent('touchend', 50, 50);
+        Object.defineProperty(endEvent, 'touches', {get: () => []});
+
+        dispatchEvent(document, endEvent);
+        fixture.detectChanges();
+      }).not.toThrow();
+
+    }));
+
   });
 
   describe('in a connected drop container', () => {
