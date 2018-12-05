@@ -34,10 +34,15 @@ import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
+  /**
+   * @param ngModule The NgModuleRef to which all resolved factories are bound.
+   */
+  constructor(private ngModule?: viewEngine_NgModuleRef<any>) { super(); }
+
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
     ngDevMode && assertComponentType(component);
     const componentDef = getComponentDef(component) !;
-    return new ComponentFactory(componentDef);
+    return new ComponentFactory(componentDef, this.ngModule);
   }
 }
 
@@ -103,7 +108,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     return toRefArray(this.componentDef.outputs);
   }
 
-  constructor(private componentDef: ComponentDef<any>) {
+  /**
+   * @param componentDef The component definition.
+   * @param ngModule The NgModuleRef to which the factory is bound.
+   */
+  constructor(
+      private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
@@ -114,6 +124,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     const isInternalRootView = rootSelectorOrNode === undefined;
+    ngModule = ngModule || this.ngModule;
 
     const rootViewInjector =
         ngModule ? createChainedInjector(injector, ngModule.injector) : injector;

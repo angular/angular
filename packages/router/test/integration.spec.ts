@@ -3689,57 +3689,55 @@ describe('Integration', () => {
            })));
 
     // https://github.com/angular/angular/issues/13870
-    fixmeIvy(
-        'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components')
-        .it('should create a single instance of guards for lazy-loaded modules',
-            fakeAsync(inject(
-                [Router, Location, NgModuleFactoryLoader],
-                (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                  @Injectable()
-                  class Service {
-                  }
+    it('should create a single instance of guards for lazy-loaded modules',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Injectable()
+             class Service {
+             }
 
-                  @Injectable()
-                  class Resolver implements Resolve<Service> {
-                    constructor(public service: Service) {}
-                    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-                      return this.service;
-                    }
-                  }
+             @Injectable()
+             class Resolver implements Resolve<Service> {
+               constructor(public service: Service) {}
+               resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+                 return this.service;
+               }
+             }
 
-                  @Component({selector: 'lazy', template: 'lazy'})
-                  class LazyLoadedComponent {
-                    resolvedService: Service;
-                    constructor(public injectedService: Service, route: ActivatedRoute) {
-                      this.resolvedService = route.snapshot.data['service'];
-                    }
-                  }
+             @Component({selector: 'lazy', template: 'lazy'})
+             class LazyLoadedComponent {
+               resolvedService: Service;
+               constructor(public injectedService: Service, route: ActivatedRoute) {
+                 this.resolvedService = route.snapshot.data['service'];
+               }
+             }
 
-                  @NgModule({
-                    declarations: [LazyLoadedComponent],
-                    providers: [Service, Resolver],
-                    imports: [
-                      RouterModule.forChild([{
-                        path: 'loaded',
-                        component: LazyLoadedComponent,
-                        resolve: {'service': Resolver},
-                      }]),
-                    ]
-                  })
-                  class LoadedModule {
-                  }
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               providers: [Service, Resolver],
+               imports: [
+                 RouterModule.forChild([{
+                   path: 'loaded',
+                   component: LazyLoadedComponent,
+                   resolve: {'service': Resolver},
+                 }]),
+               ]
+             })
+             class LoadedModule {
+             }
 
-                  loader.stubbedModules = {expected: LoadedModule};
-                  const fixture = createRoot(router, RootCmp);
-                  router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
-                  router.navigateByUrl('/lazy/loaded');
-                  advance(fixture);
+             loader.stubbedModules = {expected: LoadedModule};
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+             router.navigateByUrl('/lazy/loaded');
+             advance(fixture);
 
-                  expect(fixture.nativeElement).toHaveText('lazy');
-                  const lzc = fixture.debugElement.query(By.directive(LazyLoadedComponent))
-                                  .componentInstance;
-                  expect(lzc.injectedService).toBe(lzc.resolvedService);
-                })));
+             expect(fixture.nativeElement).toHaveText('lazy');
+             const lzc =
+                 fixture.debugElement.query(By.directive(LazyLoadedComponent)).componentInstance;
+             expect(lzc.injectedService).toBe(lzc.resolvedService);
+           })));
 
 
     it('should emit RouteConfigLoadStart and RouteConfigLoadEnd event when route is lazy loaded',
@@ -3990,28 +3988,26 @@ describe('Integration', () => {
         });
       });
 
-      fixmeIvy(
-          'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components')
-          .it('should use the injector of the lazily-loaded configuration',
-              fakeAsync(inject(
-                  [Router, Location, NgModuleFactoryLoader],
-                  (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                    loader.stubbedModules = {expected: LoadedModule};
+      it('should use the injector of the lazily-loaded configuration',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+               loader.stubbedModules = {expected: LoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{
-                      path: 'eager-parent',
-                      component: EagerParentComponent,
-                      children: [{path: 'lazy', loadChildren: 'expected'}]
-                    }]);
+               router.resetConfig([{
+                 path: 'eager-parent',
+                 component: EagerParentComponent,
+                 children: [{path: 'lazy', loadChildren: 'expected'}]
+               }]);
 
-                    router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
-                    advance(fixture);
+               router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
+               advance(fixture);
 
-                    expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
-                    expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
-                  })));
+               expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
+               expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
+             })));
     });
 
     it('works when given a callback',

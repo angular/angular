@@ -235,7 +235,7 @@ export function createContainerRef(
           injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
           ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
         const contextInjector = injector || this.parentInjector;
-        if (!ngModuleRef && contextInjector) {
+        if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
           ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
         }
 
