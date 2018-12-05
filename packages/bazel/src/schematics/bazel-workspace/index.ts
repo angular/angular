@@ -15,6 +15,31 @@ import {validateProjectName} from '@schematics/angular/utility/validation';
 
 import {Schema as BazelWorkspaceOptions} from './schema';
 
+/**
+ * Look for package.json file for @angular/core in node_modules and extract its
+ * version.
+ */
+function findAngularVersion(options: BazelWorkspaceOptions, host: Tree): string|null {
+  // Need to look in multiple locations because we could be working in a subtree.
+  const candidates = [
+    'node_modules/@angular/core/package.json',
+    `${options.name}/node_modules/@angular/core/package.json`,
+  ];
+  for (const candidate of candidates) {
+    if (host.exists(candidate)) {
+      try {
+        const packageJson = JSON.parse(host.read(candidate).toString());
+        if (packageJson.name === '@angular/core' && packageJson.version) {
+          return packageJson.version;
+        }
+      } catch {
+      }
+    }
+  }
+  return null;
+}
+
+
 export default function(options: BazelWorkspaceOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     if (!options.name) {
@@ -29,8 +54,11 @@ export default function(options: BazelWorkspaceOptions): Rule {
     }
     const appDir = `${newProjectRoot}/${options.name}`;
 
+    // If user already has angular installed, Bazel should use that version
+    const existingAngularVersion = findAngularVersion(options, host);
+
     const workspaceVersions = {
-      'ANGULAR_VERSION': '7.1.0',
+      'ANGULAR_VERSION': existingAngularVersion || '7.1.1',
       'RULES_SASS_VERSION': '1.14.1',
       'RXJS_VERSION': '6.3.3',
     };
