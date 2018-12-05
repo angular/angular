@@ -428,7 +428,7 @@ withEachNg1Version(() => {
                     this.initialValue = this.foo;
                   }
 
-                  if (changes['foo'].changes['foo'].isFirstChange()) {
+                  if (changes['foo'] && changes['foo'].isFirstChange()) {
                     this.firstChangesCount++;
                   }
                 }
