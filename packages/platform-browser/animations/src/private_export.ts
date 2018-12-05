@@ -7,3 +7,4 @@
  */
 export {BrowserAnimationBuilder as ɵBrowserAnimationBuilder, BrowserAnimationFactory as ɵBrowserAnimationFactory} from './animation_builder';
 export {AnimationRenderer as ɵAnimationRenderer, AnimationRendererFactory as ɵAnimationRendererFactory} from './animation_renderer';
+export {InjectableAnimationEngine as ɵInjectableAnimationEngine} from './providers';
