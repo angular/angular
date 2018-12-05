@@ -55,6 +55,7 @@ export function createTsConfig(options: TsConfigOptions) {
       // declaration in the same tsconfig.json, otherwise ts will error.
       'declaration': true,
       'declarationDir': options.outDir,
+      'skipLibCheck': true,
     },
     'bazelOptions': {
       ...result.bazelOptions,
