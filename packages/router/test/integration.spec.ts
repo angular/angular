@@ -63,7 +63,7 @@ describe('Integration', () => {
 
          const fixture = createRoot(router, RootCmp);
          const events: Event[] = [];
-         router.events.subscribe(e => onlyNavigationStartAndEnd(e). events.push(e));
+         router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
 
          router.navigateByUrl('/simple');
          tick();
@@ -703,7 +703,7 @@ describe('Integration', () => {
        }]);
 
        const recordedEvents: any[] = [];
-       router.events.forEach(e => onlyNavigationStartAndEnd(e). recordedEvents.push(e));
+       router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
 
        router.navigateByUrl('/team/22/user/victor');
        advance(fixture);
@@ -1424,7 +1424,7 @@ describe('Integration', () => {
              [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveError'}}]);
 
          const recordedEvents: any[] = [];
-         router.events.subscribe(e => e instanceof RouterEvent. recordedEvents.push(e));
+         router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
 
          let e: any = null;
          router.navigateByUrl('/simple') !.catch(error => e = error);
@@ -1446,7 +1446,7 @@ describe('Integration', () => {
              [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveNullError'}}]);
 
          const recordedEvents: any[] = [];
-         router.events.subscribe(e => e instanceof RouterEvent. recordedEvents.push(e));
+         router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
 
          let e: any = 'some value';
          router.navigateByUrl('/simple').catch(error => e = error);
@@ -1902,11 +1902,11 @@ describe('Integration', () => {
          router.events.subscribe(e => {
            if (e instanceof NavigationStart) {
              const navigation = router.getCurrentNavigation();
-             initialUrl = navigation. navigation.finalUrl;
+             initialUrl = navigation && navigation.finalUrl;
            }
            if (e instanceof RoutesRecognized) {
              const navigation = router.getCurrentNavigation();
-             afterRedirectUrl = navigation. navigation.finalUrl;
+             afterRedirectUrl = navigation && navigation.finalUrl;
            }
          });
 
@@ -2200,7 +2200,7 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/redirected');
              expect(fixture.nativeElement).toHaveText('simple');
-             expect(cancelEvent. cancelEvent.reason)
+             expect(cancelEvent && cancelEvent.reason)
                  .toBe('NavigationCancelingError: Redirecting to "/redirected"');
              expectEvents(recordedEvents, [
                [NavigationStart, '/one'],
@@ -4188,7 +4188,7 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => e instanceof RouterEvent. events.push(e));
+           router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            // supported URL
            router.navigateByUrl('/include/user/kate');
@@ -4252,7 +4252,7 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => e instanceof RouterEvent. events.push(e));
+           router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            location.go('/include/user/kate(aux:excluded)');
            advance(fixture);
