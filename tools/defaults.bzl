@@ -8,6 +8,7 @@ load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
 _DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
+_DEFAULT_KARMA_BIN = "@ngdeps//@bazel/karma/bin:karma"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGER_PACKAGER = "//packages/bazel/src/ng_package:packager"
@@ -131,6 +132,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
     _ts_web_test_suite(
         bootstrap = bootstrap,
         deps = local_deps,
+        karma = _DEFAULT_KARMA_BIN,
         # Run unit tests on local Chromium by default.
         # You can exclude tests based on tags, e.g. to skip Firefox testing,
         #   `yarn bazel test --test_tag_filters=-browser:firefox-local [targets]`
