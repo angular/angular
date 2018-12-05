@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {relativePathBetween} from '../../util/src/path';
 
 import {ShimGenerator} from './host';
-import {isNonDeclarationTsFile} from './util';
+import {generatedModuleName, isNonDeclarationTsFile} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;
@@ -64,8 +64,13 @@ export class FactoryGenerator implements ShimGenerator {
         ...varLines,
       ].join('\n');
     }
-    return ts.createSourceFile(
+    const genFile = ts.createSourceFile(
         genFilePath, sourceText, original.languageVersion, true, ts.ScriptKind.TS);
+    if (original.moduleName !== undefined) {
+      genFile.moduleName =
+          generatedModuleName(original.moduleName, original.fileName, '.ngfactory');
+    }
+    return genFile;
   }
 
   static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
