@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('cli-hello-world App', () => {
+describe('cli-hello-world-ivy App', () => {
   let page: AppPage;
 
   beforeEach(() => {
