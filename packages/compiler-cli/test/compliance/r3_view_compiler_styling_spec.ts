@@ -140,7 +140,7 @@ describe('compiler compliance: styling', () => {
           },
           encapsulation: 2,
           data: {
-            animations: [{name: 'foo123'}, {name: 'trigger123'}]
+            animation: [{name: 'foo123'}, {name: 'trigger123'}]
           }
         });
       `;
@@ -182,7 +182,7 @@ describe('compiler compliance: styling', () => {
           },
           encapsulation: 2,
           data: {
-            animations: []
+            animation: []
           }
         });
       `;
@@ -220,6 +220,8 @@ describe('compiler compliance: styling', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
           …
+          consts: 3,
+          vars: 1,
           template:  function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", $e0_attrs$);
@@ -227,7 +229,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelement(2, "div", $e2_attrs$);
             }
             if (rf & 2) {
-              $r3$.ɵelementAttribute(0, "@foo", $r3$.ɵbind(ctx.exp));
+              $r3$.ɵelementProperty(0, "@foo", $r3$.ɵbind(ctx.exp));
             }
           },
           encapsulation: 2

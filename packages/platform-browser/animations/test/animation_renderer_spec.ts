@@ -120,8 +120,7 @@ import {el} from '../../testing/src/browser_util';
       // these tests are only mean't to be run within the DOM
       if (isNode) return;
 
-      fixmeIvy(
-          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+      fixmeIvy(`FW-800: Animation listeners are not invoked`)
           .it('should flush and fire callbacks when the zone becomes stable', (async) => {
             @Component({
               selector: 'my-cmp',
@@ -198,7 +197,7 @@ import {el} from '../../testing/src/browser_util';
          });
 
       fixmeIvy(
-          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+          `FW-801: Components with animations throw with "Cannot read property 'hostElement' of undefined" error`)
           .it('should only queue up dom removals if the element itself contains a valid leave animation',
               () => {
                 @Component({
@@ -283,8 +282,7 @@ import {el} from '../../testing/src/browser_util';
       });
     });
 
-    fixmeIvy(
-        `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
+    fixmeIvy(`FW-802: Animation 'start' and 'end' hooks are invoked twice`)
         .it('should provide hooks at the start and end of change detection', () => {
           @Component({
             selector: 'my-cmp',
