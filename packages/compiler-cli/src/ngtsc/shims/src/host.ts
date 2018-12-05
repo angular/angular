@@ -39,10 +39,15 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
           (delegate.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
               names, containingFile);
     }
+    if (delegate.directoryExists !== undefined) {
+      this.directoryExists = (directoryName: string) => delegate.directoryExists !(directoryName);
+    }
   }
 
   resolveTypeReferenceDirectives?:
       (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
+
+  directoryExists?: (directoryName: string) => boolean;
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
