@@ -61,7 +61,7 @@ export class CrisisDetailComponent implements OnInit {
     // so that the CrisisListComponent can select that crisis.
     // Add a totally useless `foo` parameter for kicks.
   // #docregion gotoCrises-navigate
-    // Relative navigation back to the crises
+    // 상대주소를 사용해서 목록 화면으로 돌아갑니다.
     this.router.navigate(['../', { id: crisisId, foo: 'foo' }], { relativeTo: this.route });
   // #enddocregion gotoCrises-navigate
   }

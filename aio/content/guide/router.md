@@ -4016,9 +4016,12 @@ The router then calculates the target URL based on the active route's location.
 
 {@a nav-to-crisis}
 
-
+<!--
 ### Navigate to crisis list with a relative URL
+-->
+### 상대주소를 사용해서 목록 화면으로 이동하기
 
+<!--
 You've already injected the `ActivatedRoute` that you need to compose the relative navigation path.
 
 When using a `RouterLink` to navigate instead of the `Router` service, you'd use the _same_
@@ -4027,23 +4030,37 @@ The `ActivatedRoute` is implicit in a `RouterLink` directive.
 
 
 Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back to the *Crisis Center* list using relative path navigation.
+-->
+이전 코드에서는 상대주소로 이동하기 위해 `ActivatedRoute`를 컴포넌트에 의존성으로 주입했습니다.
 
+그리고 `Router` 서비스 대신 `RouterLink`를 사용해도 이전과 _같은_ 링크 인자 배열을 전달하는데, 이번에는 이전에 사용하지 않았던 `relativeTo` 프로퍼티를 함께 사용합니다.
+이 때 `ActivatedRoute`는 `RouterLink` 디렉티브의 동작에 영향을 미칩니다.
 
+`CrisisDetailComponent`에 정의된 `gotoCrises` 메소드를 수정해서 상대주소를 사용하는 방법으로 *위기대응센터* 화면으로 이동해 봅시다.
+
+<!--
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate">
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (상대 주소로 이동)" region="gotoCrises-navigate">
 
 </code-example>
 
-
+<!--
 Notice that the path goes up a level using the `../` syntax.
 If the current crisis `id` is `3`, the resulting path back to the crisis list is  `/crisis-center/;id=3;foo=foo`.
-
+-->
+이 때 `../`을 사용했기 때문에 한단계 위 계층부터 주소가 시작한다는 것을 잊지 마세요.
+그래서 `id`가 `3`이라면 최종 경로는 `/crisis-center/;id=3;foo=foo`가 됩니다.
 
 {@a named-outlets}
 
 
-
+<!--
 ### Displaying multiple routes in named outlets
+-->
+### 이름을 지정해서 라우팅 영역 여러개 표시하기
 
+<!--
 You decide to give users a way to contact the crisis center.
 When a user clicks a "Contact" button, you want to display a message in a popup view.
 
@@ -4060,22 +4077,40 @@ Each named outlet has its own set of routes with their own components.
 Multiple outlets can be displaying different content, determined by different routes, all at the same time.
 
 Add an outlet named "popup" in the `AppComponent`, directly below the unnamed outlet.
+-->
+이번에는 위기대응센터에 직접 연락할 수 있는 기능을 구현해 봅시다.
+사용자가 "Contact" 버튼을 클릭하면 팝업을 띄워서 위기대응센터로 보낼 메시지를 입력하게 하려고 합니다.
 
+그런데 이 팝업은 사용자가 메시지를 보내거나 취소해서 닫지 않는 한 다른 페이지로 이동해도 계속 떠있게 하려고 합니다.
+그래서 이 팝업은 페이지를 표시하는 라우팅 영역에 함께 넣을 수 없습니다.
+
+하지만 지금까지는 라우팅 영역을 하나만 두는 방법이나, 이 라우팅 영역 아래 자식 라우팅 규칙을 적용하는 방법만 다뤘습니다.
+기본적으로 라우팅 영역에 _이름을 지정하지 않으면_ 템플릿에 있는 라우팅 영역 중 하나만 동작합니다.
+
+하지만 라우팅 영역에 _이름을 지정하면_ 템플릿에 있는 여러 라우팅 영역을 동시에 조작할 수 있습니다.
+이 방식을 사용하면 각각의 라우팅 영역에 서로 다른 라우팅 규칙을 적용해서 여러 컴포넌트를 동시에 표시할 수 있습니다.
+
+`AppComponent`에 있는 이름없는 라우팅 영역 바로 아래 "popup"이라는 이름으로 라우팅 영역을 추가해 봅시다.
 
 <code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (outlets)" region="outlets">
 
 </code-example>
 
 
-
+<!--
 That's where a popup will go, once you learn how to route a popup component to it.
-
+-->
+팝업은 이 라우팅 영역에 들어갈 것입니다. 이제부터 팝업 컴포넌트를 표시하기 위해 라우팅 규칙을 어떻게 활용해야 하는지 알아봅시다.
 
 {@a secondary-routes}
 
 
+<!--
 #### Secondary routes
+-->
+#### 서브 라우팅 규칙 (Secondary routes)
 
+<!--
 Named outlets are the targets of  _secondary routes_.
 
 Secondary routes look like primary routes and you configure them the same way.
@@ -4086,23 +4121,37 @@ They differ in a few key respects.
 * They are displayed in named outlets.
 
 Generate a new component to compose the message.
+-->
+방금 이름을 지정해서 만든 라우팅 영역은 _서브 라우팅 규칙_ 의 타겟이 될 것입니다.
+
+서브 라우팅 규칙은 기본 라우팅 규칙을 사용하는 것과 거의 비슷합니다.
+그러나 이런 점에서는 조금 다릅니다.
+
+* 서브 라우팅 규칙끼리 독립적으로 동작합니다.
+* 다른 라우팅 규칙과 조합할 수 있습니다.
+* 서브 라우팅 규칙에 연결된 컴포넌트는 이름을 지정한 라우팅 영역에 표시됩니다.
+
+다음 명령을 실행해서 메시지를 입력받을 컴포넌트를 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate component compose-message
 </code-example>
 
+<!--
 It displays a simple form with a header, an input box for the message,
 and two buttons, "Send" and "Cancel".
-
+-->
+이 컴포넌트에는 간단한 헤더와 메시지를 입력받을 입력 필드, "Send" 버튼과 "Cancel" 버튼이 존재합니다.
 
 <figure>
   <img src='generated/images/guide/router/contact-popup.png' alt="Contact popup">
 </figure>
 
 
-
+<!--
 Here's the component, its template and styles:
-
+-->
+그래서 이 컴포넌트 템플릿과 스타일은 다음과 같이 작성합니다.
 
 <code-tabs>
 
@@ -4121,7 +4170,7 @@ Here's the component, its template and styles:
 </code-tabs>
 
 
-
+<!--
 It looks about the same as any other component you've seen in this guide.
 There are two noteworthy differences.
 
@@ -4129,34 +4178,58 @@ Note that the `send()` method simulates latency by waiting a second before "send
 
 The `closePopup()` method closes the popup view by navigating to the popup outlet with a `null`.
 That's a peculiarity covered [below](#clear-secondary-routes).
+-->
+이 컴포넌트의 내용은 지금까지 봤던 다른 컴포넌트와 거의 비슷하며, 두가지 정도가 다릅니다.
 
+`send()` 메소드는 서버와 통신하는 것을 흉내내기 위해 시간을 약간 지연한 후에 팝업을 닫습니다.
+
+그리고 `closePopup()` 메소드는 팝업 라우팅 영역의 값을 `null`로 할당하면서 팝업을 닫습니다.
+약간은 이상해보이는 이 내용은 [아래](#clear-secondary-routes)에서 자세하게 다룹니다.
 
 {@a add-secondary-route}
 
-
+<!--
 #### Add a secondary route
+-->
+#### 서브 라우팅 규칙 추가하기
 
+<!--
 Open the `AppRoutingModule` and add a new `compose` route to the `appRoutes`.
+-->
+`AppRoutingModule`을 열고 `appRoutes`에 `compose` 라우팅 규칙을 추가합니다.
 
+<!--
 <code-example path="router/src/app/app-routing.module.3.ts" linenums="false" header="src/app/app-routing.module.ts (compose route)" region="compose">
+-->
+<code-example path="router/src/app/app-routing.module.3.ts" linenums="false" header="src/app/app-routing.module.ts (compose 라우팅 규칙)" region="compose">
 
 </code-example>
 
 
-
+<!--
 The `path` and `component` properties should be familiar.
 There's a new property, `outlet`, set to `'popup'`.
 This route now targets the popup outlet and the `ComposeMessageComponent` will display there.
 
 The user needs a way to open the popup.
 Open the `AppComponent` and add a "Contact" link.
+-->
+`path`와 `component` 프로퍼티는 이제 익숙할 것입니다.
+그런데 이 라우팅 규칙에는 `outlet` 프로퍼티에 `'popup'`이 할당되어 있습니다.
+이제 이 라우팅 규칙은 팝업 라우팅 영역을 대상으로 동작하며 `ComposeMessageComponent`도 팝업 라우팅 영역에 표시됩니다.
 
+사용자가 팝업을 열 방법도 필요합니다.
+`AppComponent`를 열고 "Contact" 링크를 추가합니다.
+
+<!--
 <code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (contact-link)" region="contact-link">
+-->
+<code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (contact 링크)" region="contact-link">
 
 </code-example>
 
 
-
+<!--
 Although the `compose` route is pinned to the "popup" outlet, that's not sufficient for wiring the route to a `RouterLink` directive.
 You have to specify the named outlet in a _link parameters array_ and bind it to the `RouterLink` with a property binding.
 
@@ -4165,12 +4238,19 @@ is another object keyed by one (or more) outlet names.
 In this case there is only the "popup" outlet property and its value is another _link parameters array_ that specifies the `compose` route.
 
 You are in effect saying, _when the user clicks this link, display the component associated with the `compose` route in the `popup` outlet_.
+-->
+그런데 `compose` 라우팅 규칙에 "popup" 라우팅 영역을 연결한 것만으로는 충분하지 않습니다. 이 라우팅 규칙을 `RouterLink` 디렉티브와 연결하려면 _링크 인자 배열_ 을 지정하면서 `outlets` 프로퍼티를 한 번 더 지정해야 합니다.
+
+이 예제에 사용된 _링크 인자 배열_ 에는 `compose` 주소에 해당하는 컴포넌트가 표시될 라우팅 영역을 지정하기 위해 `outlets` 프로퍼티가 있는 객체를 사용했습니다.
+이 코드에서 라우팅 영역은 "popup" 라우팅 영역만 지정되었지만, `compose` 라우팅 규칙에 따라 또 다른 _링크 인자 배열_ 이 전달될 수도 있습니다.
+
+이제 이 코드는 _사용자가 이 링크를 클릭하면 `compose` 라우팅 규칙에 해당하는 컴포넌트를 `popup` 라우팅 영역에 표시하라_ 는 것을 의미합니다.
 
 
 <div class="alert is-helpful">
 
 
-
+<!--
 This `outlets` object within an outer object was completely unnecessary
 when there was only one route and one _unnamed_ outlet to think about.
 
@@ -4182,7 +4262,16 @@ you can target multiple outlets with multiple routes in the same `RouterLink` di
 
 You're not actually doing that here.
 But to target a named outlet, you must use the richer, more verbose syntax.
+-->
+만약 템플릿에 라우팅 영역이 하나만 있고 이 라우팅 영역에 _이름이 지정되지 않았다면_ `outlets` 객체는 필요없습니다.
 
+왜냐하면 라우터는 기본적으로 _이름이 지정되지 않은_ 기본 라우팅 영역을 대상으로 동작하기 때문에 이 객체는 라우터 내부적으로 생성되기 때문입니다.
+
+라우팅 영역에 이름을 지정하는 것을 활용하면 라우터를 다른 방식으로 활용할 수도 있습니다:
+이 방식을 활용하면 `RouterLink` 디렉티브 하나로 여러 라우팅 영역에 서로 다른 라우팅 규칙을 적용할 수 있습니다.
+
+물론 당장 이렇게 구현할 필요는 없습니다.
+하지만 라우팅 영역에 이름을 지정하는 방식을 활용하면 Angular 라우터를 좀 더 효율적으로 활용할 수 있습니다.
 
 </div>
 
@@ -4190,11 +4279,17 @@ But to target a named outlet, you must use the richer, more verbose syntax.
 
 {@a secondary-route-navigation}
 
-
+<!--
 #### Secondary route navigation: merging routes during navigation
+-->
+#### 서브 라우팅 규칙 활용하기: 라우팅 규칙 머지하기
+
+<!--
 Navigate to the _Crisis Center_ and click "Contact".
 you should see something like the following URL in the browser address bar.
-
+-->
+_위기대응센터_ 로 이동해서 "Contact" 버튼을 클릭해 봅시다.
+그러면 브라우저의 주소표시줄에 다음과 같은 URL이 적용되는 것을 확인할 수 있습니다.
 
 <code-example>
   http://.../crisis-center(popup:compose)
@@ -4202,7 +4297,7 @@ you should see something like the following URL in the browser address bar.
 </code-example>
 
 
-
+<!--
 The interesting part of the URL follows the `...`:
 
 * The `crisis-center` is the primary navigation.
@@ -4210,14 +4305,21 @@ The interesting part of the URL follows the `...`:
 * The secondary route consists of an outlet name (`popup`), a `colon` separator, and the secondary route path (`compose`).
 
 Click the _Heroes_ link and look at the URL again.
+-->
+여기에서 `...` 뒤에 붙는 주소가 중요합니다:
 
+* `crisis-center`는 기본 라우팅 주소입니다.
+* 서브 라우팅 규칙은 괄호(`(`, `)`)로 묶입니다.
+* 서브 라우팅 규칙은 라우팅 영역의 이름(`popup`)과 구분자(`:`), 서브 라우팅 규칙의 주소(`compose`)로 구성됩니다.
+
+그리고 `Heroes` 링크를 클릭하면 URL이 다음과 같이 변경됩니다.
 
 <code-example>
   http://.../heroes(popup:compose)
 </code-example>
 
 
-
+<!--
 The primary navigation part has changed; the secondary route is the same.
 
 The router is keeping track of two separate branches in a navigation tree and generating a representation of that tree in the URL.
@@ -4229,13 +4331,27 @@ You can tell the router to navigate an entire tree at once by filling out the `o
 Then pass that object inside a _link parameters array_  to the `router.navigate` method.
 
 Experiment with these possibilities at your leisure.
+-->
+기본 라우팅 주소는 변경되었지만 서브 라우팅 주소는 변경되지 않았습니다.
 
+이 때 라우터는 네비게이션 트리를 이중으로 관리하면서 기본 라우팅 규칙과 서브 라우팅 규칙에 해당하는 URL을 자동으로 조합해서 표현합니다.
+
+원한다면 좀 더 많은 라우팅 영역에 각각 라우팅 규칙을 적용할 수 있는데, 이 때 라우팅 규칙의 어떤 계층에 이 내용이 정의되는 것은 중요하지 않습니다. 라우팅 규칙은 자유롭게 구성할 수 있으며, 라우터는 이 관계를 모두 조합해서 URL을 구성할 것입니다.
+
+그리고 위에서 언급한 것처럼 `outlets` 객체를 활용하면 모든 라우팅 영역을 한 번에 바꿀 수도 있습니다.
+이 내용에 해당되는 _링크 인자 배열_ 을 `router.navigate` 메소드에 전달하면 됩니다.
+
+어떻게 활용할 수 있는지 직접 코드를 작성하며 확인해 보세요.
 
 
 {@a clear-secondary-routes}
 
-
+<!--
 #### Clearing secondary routes
+-->
+#### 서브 라우팅 규칙 해제하기
+
+<!--
 As you've learned, a component in an outlet persists until you navigate away to a new component.
 Secondary outlets are no different in this regard.
 
@@ -4245,13 +4361,23 @@ That's why the popup stays visible as you navigate among the crises and heroes.
 
 Clicking the "send" or "cancel" buttons _does_ clear the popup view.
 To see how, look at the `closePopup()` method again:
+-->
+지금까지 알아본 것처럼 라우팅 영역에 표시되는 컴포넌트는 다른 주소로 이동하지 않는 이상 계속 남아있습니다.
+이 점은 서브 라우팅 영역도 마찬가지입니다.
+
+서브 라우팅 영역은 기본 라우팅 영역과도 독립적인 네비게이션 로직이 동작합니다.
+그래서 기본 라우팅 영역의 주소를 변경해도 팝업 라우팅 영역은 영향을 받지 않습니다.
+결국 위기대응센터 페이지와 히어로 페이지를 왔다갔다 해도 팝업은 계속 화면에 표시될 것입니다.
+
+팝업에 있는 "send" 버튼이나 "cancel" 버튼을 누르면 팝업 뷰를 비웁니다.
+`closePopup()` 메소드를 다시 한 번 봅시다:
 
 <code-example path="router/src/app/compose-message/compose-message.component.ts" linenums="false" header="src/app/compose-message/compose-message.component.ts (closePopup)" region="closePopup">
 
 </code-example>
 
 
-
+<!--
 It navigates imperatively with the `Router.navigate()` method, passing in a [link parameters array](#link-parameters-array).
 
 Like the array bound to the _Contact_ `RouterLink` in the `AppComponent`,
@@ -4262,6 +4388,15 @@ The only named outlet is `'popup'`.
 This time, the value of `'popup'` is `null`. That's not a route, but it is a legitimate value.
 Setting the popup `RouterOutlet` to `null` clears the outlet and removes
 the secondary popup route from the current URL.
+-->
+`Router.navigate()` 메소드를 사용하려면 반드시 [링크 변수 배열](#link-parameters-array)을 전달해야 합니다.
+
+그리고 `AppComponent`에 있는 _Contact_ `RouterLink`에 바인딩했던 것처럼, 링크 변수 배열에 `outlets` 프로퍼티가 있는 객체를 전달해야 합니다.
+`outlets` 프로퍼티는 라우팅 영역의 이름이 키인 객체를 갖습니다.
+지금까지 작성한 예제에는 `'popup'`이라는 라우팅 영역 하나만 존재합니다.
+
+위 코드에서 `'popup'`에 할당된 값은 `null`입니다. 이 값이 라우팅 규칙은 아니지만 라우팅 영역을 설정할 때는 유효한 값입니다.
+팝업 `RouterOutlet`의 값을 `null`로 할당하면 이 라우팅 영역을 비우기 때문에 브라우저 주소표시줄의 URL에서 서브 라우팅 규칙도 제거됩니다.
 
 {@a guards}
 
