@@ -15,6 +15,7 @@ export {
   defineNgModule as ɵdefineNgModule,
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
+  AttributeMarker as ɵAttributeMarker,
   ComponentType as ɵComponentType,
   ComponentFactory as ɵRender3ComponentFactory,
   ComponentRef as ɵRender3ComponentRef,
