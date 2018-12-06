@@ -233,12 +233,6 @@ describe('createUrlTree', () => {
       const t = create(p.root.children[PRIMARY_OUTLET], 1, p, [{outlets: {right: ['c']}}]);
       expect(serializer.serialize(t)).toEqual('/a/b/(right:c)');
     });
-
-    it('should support pathless route', () => {
-      const p = serializer.parse('/a');
-      const t = create(p.root.children[PRIMARY_OUTLET], -1, p, ['b']);
-      expect(serializer.serialize(t)).toEqual('/b');
-    });
   });
 
   it('should set fragment', () => {
@@ -266,8 +260,8 @@ function create(
     expect(segment).toBeDefined();
   }
   const s = new (ActivatedRouteSnapshot as any)(
-      segment.segments, <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null,
-      <any>segment, startIndex, <any>null);
+      [], <any>{}, <any>{}, '', <any>{}, PRIMARY_OUTLET, 'someComponent', null, <any>segment,
+      startIndex, <any>null);
   const a = new (ActivatedRoute as any)(
       new BehaviorSubject(null !), new BehaviorSubject(null !), new BehaviorSubject(null !),
       new BehaviorSubject(null !), new BehaviorSubject(null !), PRIMARY_OUTLET, 'someComponent', s);
