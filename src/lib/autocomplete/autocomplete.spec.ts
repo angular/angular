@@ -36,7 +36,7 @@ import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Observable, Subject, Subscription, EMPTY} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {MatInputModule} from '../input/index';
 import {
@@ -485,7 +485,7 @@ describe('MatAutocomplete', () => {
 
   it('should have the correct text direction in RTL', () => {
     const rtlFixture = createComponent(SimpleAutocomplete, [
-      {provide: Directionality, useFactory: () => ({value: 'rtl'})},
+      {provide: Directionality, useFactory: () => ({value: 'rtl', change: EMPTY})},
     ]);
 
     rtlFixture.detectChanges();
@@ -498,7 +498,7 @@ describe('MatAutocomplete', () => {
   });
 
   it('should update the panel direction if it changes for the trigger', () => {
-    const dirProvider = {value: 'rtl'};
+    const dirProvider = {value: 'rtl', change: EMPTY};
     const rtlFixture = createComponent(SimpleAutocomplete, [
       {provide: Directionality, useFactory: () => dirProvider},
     ]);

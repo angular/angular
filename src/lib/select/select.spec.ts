@@ -59,7 +59,7 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Subject, Subscription} from 'rxjs';
+import {Subject, Subscription, EMPTY, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';
@@ -76,7 +76,7 @@ const LETTER_KEY_DEBOUNCE_INTERVAL = 200;
 describe('MatSelect', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
-  let dir: {value: 'ltr'|'rtl'};
+  let dir: {value: 'ltr'|'rtl', change: Observable<string>};
   let scrolledSubject = new Subject();
   let viewportRuler: ViewportRuler;
   let platform: Platform;
@@ -98,7 +98,7 @@ describe('MatSelect', () => {
       ],
       declarations: declarations,
       providers: [
-        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}},
+        {provide: Directionality, useFactory: () => dir = {value: 'ltr', change: EMPTY}},
         {
           provide: ScrollDispatcher, useFactory: () => ({
             scrolled: () => scrolledSubject.asObservable(),

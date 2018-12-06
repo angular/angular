@@ -153,6 +153,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Whether the outline gap needs to be calculated next time the zone has stabilized. */
   private _outlineGapCalculationNeededOnStable = false;
+
   private _destroyed = new Subject<void>();
 
   /** The form-field appearance style. */
@@ -325,6 +326,10 @@ export class MatFormField extends _MatFormFieldMixinBase
       this._syncDescribedByIds();
       this._changeDetectorRef.markForCheck();
     });
+
+    if (this._dir) {
+      this._dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this.updateOutlineGap());
+    }
   }
 
   ngAfterContentChecked() {

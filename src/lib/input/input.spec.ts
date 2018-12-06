@@ -43,6 +43,8 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
+import {Directionality, Direction} from '@angular/cdk/bidi';
+import {Subject} from 'rxjs';
 import {MatInputModule, MatInput, MAT_INPUT_VALUE_ACCESSOR} from './index';
 import {MatTextareaAutosize} from './autosize';
 
@@ -1390,6 +1392,34 @@ describe('MatInput with appearance', () => {
     expect(parseInt(outlineStart.style.width)).toBeGreaterThan(0);
     expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
   }));
+
+  it('should update the outline gap if the direction changes', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    const fakeDirectionality = {change: new Subject<Direction>(), value: 'ltr'};
+    const outlineFixture = createComponent(MatInputWithAppearanceAndLabel, [{
+      provide: Directionality,
+      useValue: fakeDirectionality
+    }]);
+
+    outlineFixture.componentInstance.appearance = 'outline';
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    spyOn(outlineFixture.componentInstance.formField, 'updateOutlineGap');
+
+    fakeDirectionality.value = 'rtl';
+    fakeDirectionality.change.next('rtl');
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
+  }));
+
+
 
 });
 

@@ -35,6 +35,7 @@ ng_test_library(
     "@angular//packages/forms",
     "@angular//packages/platform-browser",
     "@angular//packages/platform-browser/animations",
+    "//src/cdk/bidi",
     "//src/cdk/platform",
     "//src/cdk/testing",
     "//src/lib/core",
