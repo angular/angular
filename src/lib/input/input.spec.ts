@@ -1361,6 +1361,35 @@ describe('MatInput with appearance', () => {
     expect(outlineFixture.componentInstance.formField.updateOutlineGap).toHaveBeenCalled();
   }));
 
+  it('should calculate the outline gaps if the element starts off invisible', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    let zone: MockNgZone;
+    const invisibleFixture = createComponent(MatInputWithOutlineInsideInvisibleElement, [{
+      provide: NgZone,
+      useFactory: () => zone = new MockNgZone()
+    }]);
+
+    invisibleFixture.detectChanges();
+    zone!.simulateZoneExit();
+    flush();
+    invisibleFixture.detectChanges();
+
+    const wrapperElement = invisibleFixture.nativeElement;
+    const formField = wrapperElement.querySelector('.mat-form-field');
+    const outlineStart = wrapperElement.querySelector('.mat-form-field-outline-start');
+    const outlineGap = wrapperElement.querySelector('.mat-form-field-outline-gap');
+
+    formField.style.display = '';
+    invisibleFixture.detectChanges();
+    zone!.simulateZoneExit();
+    flush();
+    invisibleFixture.detectChanges();
+
+    expect(parseInt(outlineStart.style.width)).toBeGreaterThan(0);
+    expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
+  }));
 
 });
 
@@ -1839,6 +1868,17 @@ class MatInputWithAppearanceAndLabel {
 })
 class MatInputWithoutPlaceholder {
 }
+
+@Component({
+  template: `
+    <mat-form-field appearance="outline" style="display: none;">
+      <mat-label>Label</mat-label>
+      <input matInput>
+    </mat-form-field>
+  `
+})
+class MatInputWithOutlineInsideInvisibleElement {}
+
 
 // Styles to reset padding and border to make measurement comparisons easier.
 const textareaStyleReset = `
