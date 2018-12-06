@@ -11,9 +11,9 @@ local_repository(
 
 http_archive(
     name = "rxjs",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
-    strip_prefix = "package/src",
     sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
+    strip_prefix = "package/src",
+    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
 )
 
 load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
@@ -42,6 +42,7 @@ http_archive(
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 check_bazel_version("0.17.0")
+
 node_repositories(
     node_version = "10.9.0",
     yarn_version = "1.12.1",
@@ -53,14 +54,16 @@ yarn_install(
     yarn_lock = "//src:yarn.lock",
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
+
 go_register_toolchains()
 
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories()
+
 browser_repositories(
     chromium = True,
     firefox = True,
