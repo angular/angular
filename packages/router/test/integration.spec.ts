@@ -467,38 +467,40 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/child/simple');
      })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should work when an outlet is added/removed', fakeAsync(() => {
-            @Component({
-              selector: 'someRoot',
-              template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
-            })
-            class RootCmpWithLink {
-              cond: boolean = true;
-            }
-            TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+  it('should work when an outlet is added/removed', fakeAsync(() => {
+       @Component({
+         selector: 'someRoot',
+         template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
+       })
+       class RootCmpWithLink {
+         cond: boolean = true;
+       }
+       TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
-            const router: Router = TestBed.get(Router);
+       const router: Router = TestBed.get(Router);
 
-            const fixture = createRoot(router, RootCmpWithLink);
+       const fixture = createRoot(router, RootCmpWithLink);
 
-            router.resetConfig([
-              {path: 'simple', component: SimpleCmp},
-              {path: 'blank', component: BlankCmp},
-            ]);
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'blank', component: BlankCmp},
+       ]);
 
-            router.navigateByUrl('/simple');
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
+       router.navigateByUrl('/simple');
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
 
-            fixture.componentInstance.cond = false;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[]');
+       fixture.componentInstance.cond = false;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[]');
 
-            fixture.componentInstance.cond = true;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
-          }));
+       fixture.componentInstance.cond = true;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
+
+       // TODO: remove extra tick for Ivy?
+       tick();
+     }));
 
   it('should update location when navigating', fakeAsync(() => {
        @Component({template: `record`})
@@ -4471,82 +4473,84 @@ describe('Integration', () => {
          expect(simpleCmp1).not.toBe(simpleCmp2);
        })));
 
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
-            fakeAsync(() => {
-              @Component({
-                selector: 'root-cmp',
-                template:
-                    '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
-              })
-              class RootCmpWithCondOutlet implements OnDestroy {
-                private subscription: Subscription;
-                public isToolpanelShowing: boolean = false;
+    it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'root-cmp',
+           template:
+               '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
+         })
+         class RootCmpWithCondOutlet implements OnDestroy {
+           private subscription: Subscription;
+           public isToolpanelShowing: boolean = false;
 
-                constructor(router: Router) {
-                  this.subscription =
-                      router.events.pipe(filter(event => event instanceof NavigationEnd))
-                          .subscribe(
-                              () => this.isToolpanelShowing =
-                                  !!router.parseUrl(router.url).root.children['toolpanel']);
-                }
+           constructor(router: Router) {
+             this.subscription =
+                 router.events.pipe(filter(event => event instanceof NavigationEnd))
+                     .subscribe(
+                         () => this.isToolpanelShowing =
+                             !!router.parseUrl(router.url).root.children['toolpanel']);
+           }
 
-                public ngOnDestroy(): void { this.subscription.unsubscribe(); }
-              }
+           public ngOnDestroy(): void { this.subscription.unsubscribe(); }
+         }
 
-              @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
-              class Tool1Component {
-              }
+         @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
+         class Tool1Component {
+         }
 
-              @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
-              class Tool2Component {
-              }
+         @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
+         class Tool2Component {
+         }
 
-              @NgModule({
-                declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
-                imports: [
-                  CommonModule,
-                  RouterTestingModule.withRoutes([
-                    {path: 'a', outlet: 'toolpanel', component: Tool1Component},
-                    {path: 'b', outlet: 'toolpanel', component: Tool2Component},
-                  ]),
-                ],
-              })
-              class TestModule {
-              }
+         @NgModule({
+           declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
+           imports: [
+             CommonModule,
+             RouterTestingModule.withRoutes([
+               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+             ]),
+           ],
+         })
+         class TestModule {
+         }
 
-              TestBed.configureTestingModule({imports: [TestModule]});
+         TestBed.configureTestingModule({imports: [TestModule]});
 
-              const router: Router = TestBed.get(Router);
-              router.routeReuseStrategy = new AttachDetachReuseStrategy();
+         const router: Router = TestBed.get(Router);
+         router.routeReuseStrategy = new AttachDetachReuseStrategy();
 
-              const fixture = createRoot(router, RootCmpWithCondOutlet);
+         const fixture = createRoot(router, RootCmpWithCondOutlet);
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(a)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(a)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(b)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(b)');
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(c)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(c)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(d)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(d)');
 
-              // Activate 'tool-2'
-              router.navigate([{outlets: {toolpanel: 'b'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool2Component, '(e)');
-            }));
+         // Activate 'tool-2'
+         router.navigate([{outlets: {toolpanel: 'b'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool2Component, '(e)');
+
+         // TODO: remove extra tick for Ivy?
+         tick();
+       }));
   });
 });
 
