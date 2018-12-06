@@ -279,7 +279,7 @@ jobs:
     - *restore_cache
     - *yarn_install
 
-    - run: ./scripts/install-angular-snapshots.sh
+    - run: node ./scripts/circleci/setup-angular-snapshots.js
     - run: ./scripts/circleci/run-local-browser-tests.sh
 
 # ----------------------------------------------------------------------------------------
