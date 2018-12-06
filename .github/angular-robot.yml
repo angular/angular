@@ -59,6 +59,10 @@ merge:
   # label to monitor
   mergeLabel: "PR action: merge"
 
+  # adding any of these labels will also add the merge label
+  mergeLinkedLabels:
+    - "PR action: merge-assistance"
+
   # list of checks that will determine if the merge label can be added
   checks:
 
