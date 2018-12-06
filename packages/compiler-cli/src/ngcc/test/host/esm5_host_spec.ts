@@ -1278,6 +1278,34 @@ describe('Esm5ReflectionHost', () => {
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
+
+    it('should return the correct declaration for an inner function identifier inside an ES5 IIFE',
+       () => {
+         const superGetDeclarationOfIdentifierSpy =
+             spyOn(Esm2015ReflectionHost.prototype, 'getDeclarationOfIdentifier').and.callThrough();
+         const program = makeTestProgram(SIMPLE_CLASS_FILE);
+         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+
+         const outerDeclaration = getDeclaration(
+             program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+         const innerDeclaration = (((outerDeclaration.initializer as ts.ParenthesizedExpression)
+                                        .expression as ts.CallExpression)
+                                       .expression as ts.FunctionExpression)
+                                      .body.statements[0] as ts.FunctionDeclaration;
+
+         const outerIdentifier = outerDeclaration.name as ts.Identifier;
+         const innerIdentifier = innerDeclaration.name as ts.Identifier;
+
+         expect(host.getDeclarationOfIdentifier(outerIdentifier) !.node).toBe(outerDeclaration);
+         expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledWith(outerIdentifier);
+         expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledTimes(1);
+
+         superGetDeclarationOfIdentifierSpy.calls.reset();
+
+         expect(host.getDeclarationOfIdentifier(innerIdentifier) !.node).toBe(outerDeclaration);
+         expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledWith(outerIdentifier);
+         expect(superGetDeclarationOfIdentifierSpy).toHaveBeenCalledTimes(1);
+       });
   });
 
   describe('getExportsOfModule()', () => {
