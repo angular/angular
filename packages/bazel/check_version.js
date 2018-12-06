@@ -7,8 +7,8 @@
  */
 /**
  * @fileoverview This script runs as a postinstall in the published npm packages
- * and checks that the version of the build_bazel_rules_typescript external
- * repository matches that of the published npm package.
+ * and checks that the version of the Angular external repository matches that
+ * of the published npm package.
  *
  * Note, this check is only performed with bazel managed deps when the yarn or
  * npm install is from a yarn_install or npm_install repository rule. For self
@@ -19,6 +19,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const semver = require('semver');
 
 // Version in package.bzl should match the npm package version
 // but this should be tolerant of development stamped versions such as
@@ -56,14 +57,11 @@ if (isBazelManagedDeps()) {
   }
   // Be tolerant of versions such as "0.17.0-7-g76dc057"
   const angularPackageVersion = contents.version.split('-')[0];
-  if (npmPackageVersion !== angularPackageVersion) {
-    // TODO: we might need to support a range here.
-    // For example, if you end up with @angular/bazel@6.1.8 and
-    // @angular/bazel@6.1.9 both installed one of the postinstalls is
-    // guaranteed to fail since there's only one version of
-    // angular
-    throw new Error(`Expected angular repository to be version ${
-        npmPackageVersion} but found ${angularPackageVersion}`);
+  const range = `~${angularPackageVersion}`;  // should match patch version
+  if (!semver.satisfies(npmPackageVersion, range)) {
+    throw new Error(
+        `Expected angular npm version ${npmPackageVersion} to satisfy ${range}. ` +
+        `Please update ANGULAR_VERSION in WORKSPACE file to match ${npmPackageVersion}`);
   }
 } else {
   // No version check
