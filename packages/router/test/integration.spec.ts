@@ -2634,46 +2634,48 @@ describe('Integration', () => {
              expect(canceledStatus).toEqual(false);
            })));
 
-        fixmeIvy('FW-766: One router test is wrong')
-            .it('works with componentless routes',
-                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-                  const fixture = createRoot(router, RootCmp);
+        it('works with componentless routes',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
 
-                  router.resetConfig([
-                    {
-                      path: 'grandparent',
-                      canDeactivate: ['RecordingDeactivate'],
-                      children: [{
-                        path: 'parent',
-                        canDeactivate: ['RecordingDeactivate'],
-                        children: [{
-                          path: 'child',
-                          canDeactivate: ['RecordingDeactivate'],
-                          children: [{
-                            path: 'simple',
-                            component: SimpleCmp,
-                            canDeactivate: ['RecordingDeactivate']
-                          }]
-                        }]
-                      }]
-                    },
-                    {path: 'simple', component: SimpleCmp}
-                  ]);
+             router.resetConfig([
+               {
+                 path: 'grandparent',
+                 canDeactivate: ['RecordingDeactivate'],
+                 children: [{
+                   path: 'parent',
+                   canDeactivate: ['RecordingDeactivate'],
+                   children: [{
+                     path: 'child',
+                     canDeactivate: ['RecordingDeactivate'],
+                     children: [{
+                       path: 'simple',
+                       component: SimpleCmp,
+                       canDeactivate: ['RecordingDeactivate']
+                     }]
+                   }]
+                 }]
+               },
+               {path: 'simple', component: SimpleCmp}
+             ]);
 
-                  router.navigateByUrl('/grandparent/parent/child/simple');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/grandparent/parent/child/simple');
+             router.navigateByUrl('/grandparent/parent/child/simple');
+             advance(fixture);
+             expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
-                  router.navigateByUrl('/simple');
-                  advance(fixture);
+             router.navigateByUrl('/simple');
+             advance(fixture);
 
-                  const child = fixture.debugElement.children[1].componentInstance;
+             const child = fixture.debugElement.children[1].componentInstance;
 
-                  expect(log.map((a: any) => a.path)).toEqual([
-                    'simple', 'child', 'parent', 'grandparent'
-                  ]);
-                  expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
-                })));
+             expect(log.map((a: any) => a.path)).toEqual([
+               'simple', 'child', 'parent', 'grandparent'
+             ]);
+             expect(log[0].component instanceof SimpleCmp).toBeTruthy();
+             [1, 2, 3].forEach(i => expect(log[i].component).toBeNull());
+             expect(child instanceof SimpleCmp).toBeTruthy();
+             expect(child).not.toBe(log[0].component);
+           })));
 
         it('works with aux routes',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
