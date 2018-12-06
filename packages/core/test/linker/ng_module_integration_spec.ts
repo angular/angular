@@ -745,12 +745,11 @@ function declareTests(config?: {useJit: boolean}) {
         expect(cars[0]).toBe(injector.get(SportsCar));
       });
 
-      fixmeIvy('FW-682: Compiler error handling')
-          .it('should throw when the aliased provider does not exist', () => {
-            const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
-            const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
-            expect(() => injector.get('car')).toThrowError(e);
-          });
+      it('should throw when the aliased provider does not exist', () => {
+        const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
+        const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
+        expect(() => injector.get('car')).toThrowError(e);
+      });
 
       it('should handle forwardRef in useExisting', () => {
         const injector = createInjector([
