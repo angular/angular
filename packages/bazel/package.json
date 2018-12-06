@@ -18,6 +18,7 @@
     "@bazel/typescript": "^0.21.0",
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",
+    "semver": "^5.6.0",
     "shelljs": "0.8.2",
     "tsickle": "0.34.0"
   },

@@ -8,6 +8,7 @@
 
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {clean} from './index';
 
 describe('Bazel-workspace Schematic', () => {
   const schematicRunner =
@@ -56,6 +57,17 @@ describe('Bazel-workspace Schematic', () => {
       expect(host.files).toContain('/demo-project/WORKSPACE');
       const content = host.readContent('/demo-project/WORKSPACE');
       expect(content).toContain('workspace(name = "demo_project"');
+    });
+  });
+});
+
+describe('clean', () => {
+  [['1.2.3', '1.2.3'], ['  1.2.3', '1.2.3'], ['1.2.3  ', '1.2.3'], ['~1.2.3', '1.2.3'],
+   ['^1.2.3', '1.2.3'], ['v1.2.3', '1.2.3'], ['1.2', null], ['a.b.c', null],
+  ].forEach(([version, want]) => {
+    it(`should match ${version} with ${want}`, () => {
+      const got = clean(version);
+      expect(got).toBe(want);
     });
   });
 });
