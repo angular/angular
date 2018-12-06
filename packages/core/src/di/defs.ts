@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
+import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '@angular/core/src/render3/fields';
 import {Type} from '../type';
 
 import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';

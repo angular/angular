@@ -21,8 +21,8 @@ import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
-import {getLContext} from '../../src/render3/context_discovery';
-import {StylingIndex} from '../../src/render3/interfaces/styling';
+import {getLContext} from '@angular/core/src/render3/context_discovery';
+import {StylingIndex} from '@angular/core/src/render3/interfaces/styling';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 
 describe('render3 integration test', () => {

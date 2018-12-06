@@ -12,6 +12,7 @@ ng_module(
     ),
     module_name = "@angular/core",
     deps = [
+        "//packages/core/src/render3",
         "//packages:types",
         "@ngdeps//zone.js",
         "@rxjs",

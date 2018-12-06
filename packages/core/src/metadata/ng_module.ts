@@ -10,7 +10,7 @@ import {ApplicationRef} from '../application_ref';
 import {InjectorType, defineInjector} from '../di/defs';
 import {Provider} from '../di/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
-import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
+import {compileNgModule as render3CompileNgModule} from '@angular/core/src/render3/jit/module';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 

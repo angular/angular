@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {injectInjector} from '../render3/di';
+import {injectInjector} from '@angular/core/src/render3/di';
 import {Type} from '../type';
 import {stringify} from '../util';
 import {noop} from '../util/noop';

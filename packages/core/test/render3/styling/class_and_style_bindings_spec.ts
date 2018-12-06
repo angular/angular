@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {createRootContext} from '../../../src/render3/component';
-import {getLContext} from '../../../src/render3/context_discovery';
-import {defineComponent} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
-import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
-import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
-import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
-import {StylingContext, StylingFlags, StylingIndex} from '../../../src/render3/interfaces/styling';
-import {CONTEXT, LView, LViewFlags, RootContext} from '../../../src/render3/interfaces/view';
-import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../../src/render3/styling/class_and_style_bindings';
-import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
-import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
-import {allocStylingContext} from '../../../src/render3/styling/util';
+import {createRootContext} from '@angular/core/src/render3/component';
+import {getLContext} from '@angular/core/src/render3/context_discovery';
+import {defineComponent} from '@angular/core/src/render3/index';
+import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '@angular/core/src/render3/instructions';
+import {InitialStylingFlags, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
+import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '@angular/core/src/render3/interfaces/player';
+import {RElement, Renderer3, domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
+import {StylingContext, StylingFlags, StylingIndex} from '@angular/core/src/render3/interfaces/styling';
+import {CONTEXT, LView, LViewFlags, RootContext} from '@angular/core/src/render3/interfaces/view';
+import {addPlayer, getPlayers} from '@angular/core/src/render3/players';
+import {ClassAndStylePlayerBuilder, createStylingContextTemplate, isContextDirty, renderStyleAndClassBindings as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '@angular/core/src/render3/styling/class_and_style_bindings';
+import {CorePlayerHandler} from '@angular/core/src/render3/styling/core_player_handler';
+import {BoundPlayerFactory, bindPlayerFactory} from '@angular/core/src/render3/styling/player_factory';
+import {allocStylingContext} from '@angular/core/src/render3/styling/util';
 import {defaultStyleSanitizer} from '../../../src/sanitization/sanitization';
 import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
 import {ComponentFixture, renderToHtml} from '../render_util';

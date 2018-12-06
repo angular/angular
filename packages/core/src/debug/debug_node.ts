@@ -7,13 +7,13 @@
  */
 
 import {Injector} from '../di';
-import {assertDomNode} from '../render3/assert';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
-import {TNode} from '../render3/interfaces/node';
-import {StylingIndex} from '../render3/interfaces/styling';
-import {TVIEW} from '../render3/interfaces/view';
-import {getProp, getValue, isClassBased} from '../render3/styling/class_and_style_bindings';
-import {getStylingContext} from '../render3/styling/util';
+import {assertDomNode} from '@angular/core/src/render3/assert';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '@angular/core/src/render3/discovery_utils';
+import {TNode} from '@angular/core/src/render3/interfaces/node';
+import {StylingIndex} from '@angular/core/src/render3/interfaces/styling';
+import {TVIEW} from '@angular/core/src/render3/interfaces/view';
+import {getProp, getValue, isClassBased} from '@angular/core/src/render3/styling/class_and_style_bindings';
+import {getStylingContext} from '@angular/core/src/render3/styling/util';
 import {DebugContext} from '../view/index';
 
 export class EventListener {

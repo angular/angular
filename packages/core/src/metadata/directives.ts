@@ -8,9 +8,9 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {NG_BASE_DEF} from '../render3/fields';
-import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
-import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
+import {NG_BASE_DEF} from '@angular/core/src/render3/fields';
+import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '@angular/core/src/render3/jit/directive';
+import {compilePipe as render3CompilePipe} from '@angular/core/src/render3/jit/pipe';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';

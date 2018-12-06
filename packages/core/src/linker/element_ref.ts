@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {injectElementRef as render3InjectElementRef} from '../render3/view_engine_compatibility';
+import {injectElementRef as render3InjectElementRef} from '@angular/core/src/render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
 /**

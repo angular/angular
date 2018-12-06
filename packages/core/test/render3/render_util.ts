@@ -20,16 +20,16 @@ import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '.
 import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
 import {SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
-import {CreateComponentOptions} from '../../src/render3/component';
-import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
-import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
-import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
-import {renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
-import {PlayerHandler} from '../../src/render3/interfaces/player';
-import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
+import {CreateComponentOptions} from '@angular/core/src/render3/component';
+import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '@angular/core/src/render3/context_discovery';
+import {extractDirectiveDef, extractPipeDef} from '@angular/core/src/render3/definition';
+import {NG_ELEMENT_ID} from '@angular/core/src/render3/fields';
+import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '@angular/core/src/render3/index';
+import {renderTemplate} from '@angular/core/src/render3/instructions';
+import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '@angular/core/src/render3/interfaces/definition';
+import {PlayerHandler} from '@angular/core/src/render3/interfaces/player';
+import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '@angular/core/src/render3/interfaces/renderer';
+import {HEADER_OFFSET, LView} from '@angular/core/src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
 

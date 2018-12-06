@@ -7,7 +7,7 @@
  */
 
 import {WrappedNodeExpr} from '@angular/compiler';
-import {convertToR3QueryMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {convertToR3QueryMetadata, extendsDirectlyFromObject} from '@angular/core/src/render3/jit/directive';
 
 describe('jit directive helper functions', () => {
 

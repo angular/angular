@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '../render3/view_engine_compatibility';
+import {injectChangeDetectorRef as render3InjectChangeDetectorRef} from '@angular/core/src/render3/view_engine_compatibility';
 
 /**
  * Base class for Angular Views, provides change detection functionality.

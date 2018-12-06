@@ -8,8 +8,8 @@
 
 import {Component} from '../../src/core';
 import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/metadata/resource_loading';
-import {ComponentType} from '../../src/render3/interfaces/definition';
-import {compileComponent} from '../../src/render3/jit/directive';
+import {ComponentType} from '@angular/core/src/render3/interfaces/definition';
+import {compileComponent} from '@angular/core/src/render3/jit/directive';
 
 describe('resource_loading', () => {
   describe('error handling', () => {

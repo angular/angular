@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility';
+import {injectViewContainerRef as render3InjectViewContainerRef} from '@angular/core/src/render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
 import {ComponentFactory, ComponentRef} from './component_factory';

@@ -116,21 +116,21 @@ export {
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
   setClassMetadata as ɵsetClassMetadata,
-} from './render3/index';
+} from '@angular/core/src/render3/index';
 
 
 export {
   compileComponent as ɵcompileComponent,
   compileDirective as ɵcompileDirective,
-} from './render3/jit/directive';
+} from '@angular/core/src/render3/jit/directive';
 export {
   compileNgModule as ɵcompileNgModule,
   compileNgModuleDefs as ɵcompileNgModuleDefs,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
-} from './render3/jit/module';
+} from '@angular/core/src/render3/jit/module';
 export {
   compilePipe as ɵcompilePipe,
-} from './render3/jit/pipe';
+} from '@angular/core/src/render3/jit/pipe';
 
 export {
   NgModuleDef as ɵNgModuleDef,
@@ -155,27 +155,27 @@ export {
 
 export {
   getLContext as ɵgetLContext
-} from './render3/context_discovery';
+} from '@angular/core/src/render3/context_discovery';
 
 export {
   Player as ɵPlayer,
   PlayerFactory as ɵPlayerFactory,
   PlayState as ɵPlayState,
   PlayerHandler as ɵPlayerHandler,
-} from './render3/interfaces/player';
+} from '@angular/core/src/render3/interfaces/player';
 
 export {
   LContext as ɵLContext,
-} from './render3/interfaces/context';
+} from '@angular/core/src/render3/interfaces/context';
 
 export {
   bindPlayerFactory as ɵbindPlayerFactory,
-} from './render3/styling/player_factory';
+} from '@angular/core/src/render3/styling/player_factory';
 
 export {
   addPlayer as ɵaddPlayer,
   getPlayers as ɵgetPlayers,
-} from './render3/players';
+} from '@angular/core/src/render3/players';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
@@ -217,7 +217,7 @@ export {
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
-} from './render3/global_utils';
+} from '@angular/core/src/render3/global_utils';
 export {
   SWITCH_INJECTOR_FACTORY__POST_R3__ as ɵSWITCH_INJECTOR_FACTORY__POST_R3__,
 } from './di/injector';

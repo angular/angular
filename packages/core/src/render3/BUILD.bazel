@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "ng_module", "ts_library")
+
+ts_library(
+    name = "render3",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core/src/render3",
+    deps = [
+        #"//packages:types",
+        #"@ngdeps//zone.js",
+        #"@rxjs",
+        #"@rxjs//operators",
+    ],
+    visibility = ["//packages/core:__subpackages__"],
+)

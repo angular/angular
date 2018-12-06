@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as render3CompileInjectable} from '../render3/jit/injectable';
+import {compileInjectable as render3CompileInjectable} from '@angular/core/src/render3/jit/injectable';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SANITIZER} from '../render3/interfaces/view';
-import {getLView} from '../render3/state';
-import {stringify} from '../render3/util';
+import {SANITIZER} from '@angular/core/src/render3/interfaces/view';
+import {getLView} from '@angular/core/src/render3/state';
+import {stringify} from '@angular/core/src/render3/util';
 
 import {BypassType, allowSanitizationBypass} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';

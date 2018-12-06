@@ -9,7 +9,7 @@
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
-import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
+import {injectRenderer2 as render3InjectRenderer2} from '@angular/core/src/render3/view_engine_compatibility';
 import {noop} from '../util/noop';
 
 
