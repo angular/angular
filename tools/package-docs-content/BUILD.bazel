@@ -1,0 +1,20 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("//tools:defaults.bzl", "ts_library")
+
+nodejs_binary(
+  name = "package-docs-content",
+  entry_point = "angular_material/tools/package-docs-content/package-docs-content.js",
+  data = [
+    "@matdeps//source-map-support",
+    ":sources",
+  ],
+)
+
+ts_library(
+  name = "sources",
+  srcs = glob(["**/*.ts"]),
+  deps = ["@matdeps//@types/node"],
+  tsconfig = ":tsconfig.json",
+)
