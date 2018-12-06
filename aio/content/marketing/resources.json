@@ -447,6 +447,12 @@
             "rev": true,
             "title": "Simple Quality UI",
             "url": "https://sq-ui.github.io/ng-sq-ui/#/"
+          },
+          "smart": {
+            "desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "rev": true,
+            "title": "Smart Web Components",
+            "url": "https://www.htmlelements.com/angular/"
           }
         }
       }
