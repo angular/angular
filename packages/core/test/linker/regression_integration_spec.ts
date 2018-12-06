@@ -75,46 +75,43 @@ function declareTests(config?: {useJit: boolean}) {
         expect(CountingPipe.calls).toBe(1);
       });
 
-      fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
-          .it('should only update the bound property when using asyncPipe - #15205',
-              fakeAsync(() => {
-                @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
-                class MyComp {
-                  p = Promise.resolve(1);
-                }
+      it('should only update the bound property when using asyncPipe - #15205', fakeAsync(() => {
+           @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
+           class MyComp {
+             p = Promise.resolve(1);
+           }
 
-                @Directive({selector: '[myDir]'})
-                class MyDir {
-                  setterCalls: {[key: string]: any} = {};
-                  // TODO(issue/24571): remove '!'.
-                  changes !: SimpleChanges;
+           @Directive({selector: '[myDir]'})
+           class MyDir {
+             setterCalls: {[key: string]: any} = {};
+             // TODO(issue/24571): remove '!'.
+             changes !: SimpleChanges;
 
-                  @Input()
-                  set a(v: number) { this.setterCalls['a'] = v; }
-                  @Input()
-                  set b(v: number) { this.setterCalls['b'] = v; }
+             @Input()
+             set a(v: number) { this.setterCalls['a'] = v; }
+             @Input()
+             set b(v: number) { this.setterCalls['b'] = v; }
 
-                  ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
-                }
+             ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
+           }
 
-                TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
-                const fixture = TestBed.createComponent(MyComp);
-                const dir =
-                    fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
+           TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+           const fixture = TestBed.createComponent(MyComp);
+           const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
 
-                fixture.detectChanges();
-                expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
-                expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
+           fixture.detectChanges();
+           expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
+           expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
 
-                dir.setterCalls = {};
-                dir.changes = {};
+           dir.setterCalls = {};
+           dir.changes = {};
 
-                tick();
-                fixture.detectChanges();
+           tick();
+           fixture.detectChanges();
 
-                expect(dir.setterCalls).toEqual({'a': 1});
-                expect(Object.keys(dir.changes)).toEqual(['a']);
-              }));
+           expect(dir.setterCalls).toEqual({'a': 1});
+           expect(Object.keys(dir.changes)).toEqual(['a']);
+         }));
 
       it('should only evaluate methods once - #10639', () => {
         TestBed.configureTestingModule({declarations: [MyCountingComp]});

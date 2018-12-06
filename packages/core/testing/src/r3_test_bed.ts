@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, RendererFactory2, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
