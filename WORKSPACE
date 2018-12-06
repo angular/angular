@@ -19,15 +19,18 @@ load(
 
 # Angular Bazel users will call this function
 rules_angular_dependencies()
+
 # These are the dependencies only for us
 rules_angular_dev_dependencies()
 
 # Install transitive deps of rules_typescript
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+
 rules_typescript_dependencies()
 
 # Install transitive deps of rules_nodejs
 load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+
 rules_nodejs_dependencies()
 
 #
@@ -35,9 +38,9 @@ rules_nodejs_dependencies()
 #
 http_archive(
     name = "rxjs",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
-    strip_prefix = "package/src",
     sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
+    strip_prefix = "package/src",
+    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
 )
 
 # Point to the integration test workspace just so that Bazel doesn't descend into it
@@ -70,7 +73,7 @@ local_repository(
     path = "tools/npm_workspace",
 )
 
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
