@@ -5,6 +5,7 @@ load("//tools:defaults.bzl", "ts_library")
 exports_files([
   "bazel-tsconfig-build.json",
   "bazel-tsconfig-test.json",
+  "README.md",
 ])
 
 ts_library(

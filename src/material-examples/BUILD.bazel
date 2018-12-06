@@ -1,8 +1,7 @@
 package(default_visibility=["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_package")
 load("//:packages.bzl", "CDK_TARGETS", "MATERIAL_TARGETS", "ROLLUP_GLOBALS")
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_package")
 load("//tools/highlight-files:index.bzl", "highlight_files")
 
 ng_module(

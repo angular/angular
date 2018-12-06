@@ -35,6 +35,19 @@ http_archive(
   sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
 )
 
+# We need to create a local repository called "npm" because currently Angular Material
+# stores all of it's NPM dependencies in the "@matdeps" repository. This is necessary because
+# we don't want to reserve the "npm" repository that is commonly used by downstream projects.
+# Since we still need the "npm" repository in order to use the Angular or TypeScript Bazel
+# rules, we create a local repository that is just defined in **this** workspace and is not
+# being shipped to downstream projects. This can be removed once downstream projects can
+# consume Angular Material completely from NPM.
+# TODO(devversion): remove once Angular Material can be consumed from NPM with Bazel.
+local_repository(
+  name = "npm",
+  path = "tools/npm-workspace"
+)
+
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
@@ -60,8 +73,7 @@ rules_angular_dependencies()
 load("@io_bazel_rules_sass//:package.bzl", "rules_sass_dependencies")
 rules_sass_dependencies()
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories",
-    "yarn_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
 # The minimum bazel version to use with this repo is 0.18.0
 check_bazel_version("0.18.0")
@@ -71,16 +83,6 @@ node_repositories(
   node_version = "10.10.0",
   # Use latest yarn version to support integrity field (added in yarn 1.10)
   yarn_version = "1.12.1",
-)
-
-# @npm is temporarily needed to build @rxjs from source since its ts_library
-# targets will depend on an @npm workspace by default.
-# TODO(gmagolan): remove this once rxjs ships with an named UMD bundle and we
-# are no longer building it from source.
-yarn_install(
-  name = "npm",
-  package_json = "//tools:npm/package.json",
-  yarn_lock = "//tools:npm/yarn.lock",
 )
 
 # Setup TypeScript Bazel workspace

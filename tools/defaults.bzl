@@ -1,10 +1,11 @@
 # Re-export of Bazel rules with repository-wide defaults
 
-load("@angular//:index.bzl", _ng_module = "ng_module")
+load("@angular//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library",
   _ts_web_test_suite = "ts_web_test_suite")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
+load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
@@ -52,6 +53,19 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
     tsconfig = tsconfig,
     testonly = testonly,
     node_modules = _DEFAULT_TS_TYPINGS,
+    **kwargs
+  )
+
+def ng_package(name, readme_md = None, **kwargs):
+  # If no readme file has been specified explicitly, use the default readme for
+  # release packages from "src/README.md".
+  if not readme_md:
+      readme_md = "//src:README.md"
+
+  _ng_package(
+    name = name,
+    readme_md = readme_md,
+    replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
     **kwargs
   )
 
