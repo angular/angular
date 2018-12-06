@@ -9,5 +9,6 @@
 /// <reference types="node" />
 
 export {FactoryGenerator, FactoryInfo, generatedFactoryTransform} from './src/factory_generator';
-export {GeneratedShimsHostWrapper} from './src/host';
+export {FlatIndexGenerator} from './src/flat_index_generator';
+export {GeneratedShimsHostWrapper, ShimGenerator} from './src/host';
 export {SummaryGenerator} from './src/summary_generator';
