@@ -217,6 +217,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     );
   }
 
+  /** Emits when the component is destroyed. */
+  private readonly _destroyed = new Subject<void>();
+
   /** Event emitted when the drawer's position changes. */
   // tslint:disable-next-line:no-output-on-prefix
   @Output('positionChanged') onPositionChanged: EventEmitter<void> = new EventEmitter<void>();
@@ -260,7 +263,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
      */
     this._ngZone.runOutsideAngular(() => {
         fromEvent<KeyboardEvent>(this._elementRef.nativeElement, 'keydown').pipe(
-            filter(event => event.keyCode === ESCAPE && !this.disableClose)
+            filter(event => event.keyCode === ESCAPE && !this.disableClose),
+            takeUntil(this._destroyed)
         ).subscribe(event => this._ngZone.run(() => {
             this.close();
             event.stopPropagation();
@@ -341,6 +345,8 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
     this._animationStarted.complete();
     this._animationEnd.complete();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /**
