@@ -1784,7 +1784,7 @@ describe('render3 integration test', () => {
           consts: 0,
           vars: 0,
           data: {
-            animations: [
+            animation: [
               animA,
               animB,
             ],
@@ -1797,7 +1797,7 @@ describe('render3 integration test', () => {
       const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
 
-      const capturedAnimations = rendererFactory.lastCapturedType !.data !['animations'];
+      const capturedAnimations = rendererFactory.lastCapturedType !.data !['animation'];
       expect(Array.isArray(capturedAnimations)).toBeTruthy();
       expect(capturedAnimations.length).toEqual(2);
       expect(capturedAnimations).toContain(animA);
@@ -1811,7 +1811,7 @@ describe('render3 integration test', () => {
           consts: 0,
           vars: 0,
           data: {
-            animations: [],
+            animation: [],
           },
           selectors: [['foo']],
           factory: () => new AnimComp(),
@@ -1821,7 +1821,7 @@ describe('render3 integration test', () => {
       const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
       const data = rendererFactory.lastCapturedType !.data;
-      expect(data.animations).toEqual([]);
+      expect(data.animation).toEqual([]);
     });
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {

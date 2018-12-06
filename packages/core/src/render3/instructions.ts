@@ -976,8 +976,8 @@ export function elementProperty<T>(
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
     } else if (!isAnimationProp(propName)) {
-      ((element as RElement).setProperty ? (element as any).setProperty(propName, value) :
-                                           (element as any)[propName] = value);
+      (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
+                                          (element as any)[propName] = value;
     }
   }
 }

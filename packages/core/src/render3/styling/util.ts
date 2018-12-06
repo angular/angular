@@ -94,7 +94,7 @@ export function isStylingContext(value: any): value is StylingContext {
 }
 
 export function isAnimationProp(name: string): boolean {
-  return name.startsWith(ANIMATION_PROP_PREFIX);
+  return name[0] === ANIMATION_PROP_PREFIX;
 }
 
 export function addPlayerInternal(
