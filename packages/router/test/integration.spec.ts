@@ -3561,94 +3561,93 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
-    fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens')
-        .it('should have 2 injector trees: module and element',
-            fakeAsync(inject(
-                [Router, Location, NgModuleFactoryLoader],
-                (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                  @Component({
-                    selector: 'lazy',
-                    template: 'parent[<router-outlet></router-outlet>]',
-                    viewProviders: [
-                      {provide: 'shadow', useValue: 'from parent component'},
-                    ],
-                  })
-                  class Parent {
-                  }
+    it('should have 2 injector trees: module and element',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({
+               selector: 'lazy',
+               template: 'parent[<router-outlet></router-outlet>]',
+               viewProviders: [
+                 {provide: 'shadow', useValue: 'from parent component'},
+               ],
+             })
+             class Parent {
+             }
 
-                  @Component({selector: 'lazy', template: 'child'})
-                  class Child {
-                  }
+             @Component({selector: 'lazy', template: 'child'})
+             class Child {
+             }
 
-                  @NgModule({
-                    declarations: [Parent],
-                    imports: [RouterModule.forChild([{
-                      path: 'parent',
-                      component: Parent,
-                      children: [
-                        {path: 'child', loadChildren: 'child'},
-                      ]
-                    }])],
-                    providers: [
-                      {provide: 'moduleName', useValue: 'parent'},
-                      {provide: 'fromParent', useValue: 'from parent'},
-                    ],
-                  })
-                  class ParentModule {
-                  }
+             @NgModule({
+               declarations: [Parent],
+               imports: [RouterModule.forChild([{
+                 path: 'parent',
+                 component: Parent,
+                 children: [
+                   {path: 'child', loadChildren: 'child'},
+                 ]
+               }])],
+               providers: [
+                 {provide: 'moduleName', useValue: 'parent'},
+                 {provide: 'fromParent', useValue: 'from parent'},
+               ],
+             })
+             class ParentModule {
+             }
 
-                  @NgModule({
-                    declarations: [Child],
-                    imports: [RouterModule.forChild([{path: '', component: Child}])],
-                    providers: [
-                      {provide: 'moduleName', useValue: 'child'},
-                      {provide: 'fromChild', useValue: 'from child'},
-                      {provide: 'shadow', useValue: 'from child module'},
-                    ],
-                  })
-                  class ChildModule {
-                  }
+             @NgModule({
+               declarations: [Child],
+               imports: [RouterModule.forChild([{path: '', component: Child}])],
+               providers: [
+                 {provide: 'moduleName', useValue: 'child'},
+                 {provide: 'fromChild', useValue: 'from child'},
+                 {provide: 'shadow', useValue: 'from child module'},
+               ],
+             })
+             class ChildModule {
+             }
 
-                  loader.stubbedModules = {
-                    parent: ParentModule,
-                    child: ChildModule,
-                  };
+             loader.stubbedModules = {
+               parent: ParentModule,
+               child: ChildModule,
+             };
 
-                  const fixture = createRoot(router, RootCmp);
-                  router.resetConfig([{path: 'lazy', loadChildren: 'parent'}]);
-                  router.navigateByUrl('/lazy/parent/child');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/lazy/parent/child');
-                  expect(fixture.nativeElement).toHaveText('parent[child]');
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{path: 'lazy', loadChildren: 'parent'}]);
+             router.navigateByUrl('/lazy/parent/child');
+             advance(fixture);
+             expect(location.path()).toEqual('/lazy/parent/child');
+             expect(fixture.nativeElement).toHaveText('parent[child]');
 
-                  const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
-                  const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
+             const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
+             const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
 
-                  expect(pInj.get('moduleName')).toEqual('parent');
-                  expect(pInj.get('fromParent')).toEqual('from parent');
-                  expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
-                  expect(pInj.get('fromChild', null)).toEqual(null);
-                  expect(pInj.get(Child, null)).toEqual(null);
+             expect(pInj.get('moduleName')).toEqual('parent');
+             expect(pInj.get('fromParent')).toEqual('from parent');
+             expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
+             expect(pInj.get('fromChild', null)).toEqual(null);
+             expect(pInj.get(Child, null)).toEqual(null);
 
-                  expect(cInj.get('moduleName')).toEqual('child');
-                  expect(cInj.get('fromParent')).toEqual('from parent');
-                  expect(cInj.get('fromChild')).toEqual('from child');
-                  expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
-                  expect(cInj.get(Child)).toBeAnInstanceOf(Child);
-                  // The child module can not shadow the parent component
-                  expect(cInj.get('shadow')).toEqual('from parent component');
+             expect(cInj.get('moduleName')).toEqual('child');
+             expect(cInj.get('fromParent')).toEqual('from parent');
+             expect(cInj.get('fromChild')).toEqual('from child');
+             expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
+             expect(cInj.get(Child)).toBeAnInstanceOf(Child);
+             // The child module can not shadow the parent component
+             expect(cInj.get('shadow')).toEqual('from parent component');
 
-                  const pmInj = pInj.get(NgModuleRef).injector;
-                  const cmInj = cInj.get(NgModuleRef).injector;
+             const pmInj = pInj.get(NgModuleRef).injector;
+             const cmInj = cInj.get(NgModuleRef).injector;
 
-                  expect(pmInj.get('moduleName')).toEqual('parent');
-                  expect(cmInj.get('moduleName')).toEqual('child');
+             expect(pmInj.get('moduleName')).toEqual('parent');
+             expect(cmInj.get('moduleName')).toEqual('child');
 
-                  expect(pmInj.get(Parent, '-')).toEqual('-');
-                  expect(cmInj.get(Parent, '-')).toEqual('-');
-                  expect(pmInj.get(Child, '-')).toEqual('-');
-                  expect(cmInj.get(Child, '-')).toEqual('-');
-                })));
+             expect(pmInj.get(Parent, '-')).toEqual('-');
+             expect(cmInj.get(Parent, '-')).toEqual('-');
+             expect(pmInj.get(Child, '-')).toEqual('-');
+             expect(cmInj.get(Child, '-')).toEqual('-');
+           })));
 
     // https://github.com/angular/angular/issues/12889
     it('should create a single instance of lazy-loaded modules',

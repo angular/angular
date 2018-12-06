@@ -80,10 +80,13 @@ function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injec
     get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T): T => {
       const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
 
-      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+          notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
         // Return the value from the root element injector when
         // - it provides it
         //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        // - the module injector should not be checked
+        //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
         return value;
       }
 
