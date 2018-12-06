@@ -11,25 +11,27 @@
 import {strings} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, mergeWith, move, url} from '@angular-devkit/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
+import {latestVersions} from '@schematics/angular/utility/latest-versions';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 
 import {Schema as BazelWorkspaceOptions} from './schema';
 
+
 /**
- * Look for package.json file for @angular/core in node_modules and extract its
- * version.
+ * Look for package.json file for package with `packageName` in node_modules and
+ * extract its version.
  */
-function findAngularVersion(options: BazelWorkspaceOptions, host: Tree): string|null {
+function findVersion(projectName: string, packageName: string, host: Tree): string|null {
   // Need to look in multiple locations because we could be working in a subtree.
   const candidates = [
-    'node_modules/@angular/core/package.json',
-    `${options.name}/node_modules/@angular/core/package.json`,
+    `node_modules/${packageName}/package.json`,
+    `${projectName}/node_modules/${packageName}/package.json`,
   ];
   for (const candidate of candidates) {
     if (host.exists(candidate)) {
       try {
         const packageJson = JSON.parse(host.read(candidate).toString());
-        if (packageJson.name === '@angular/core' && packageJson.version) {
+        if (packageJson.name === packageName && packageJson.version) {
           return packageJson.version;
         }
       } catch {
@@ -39,6 +41,15 @@ function findAngularVersion(options: BazelWorkspaceOptions, host: Tree): string|
   return null;
 }
 
+/**
+ * Clean the version string and return version in the form "1.2.3". Return
+ * null if version string is invalid. This is similar to semver.clean() but
+ * takes characters like '^' and '~' into account.
+ */
+export function clean(version: string): string|null {
+  const matches = version.match(/(\d+\.\d+\.\d+)/);
+  return matches ? matches.pop() : null;
+}
 
 export default function(options: BazelWorkspaceOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
@@ -54,13 +65,25 @@ export default function(options: BazelWorkspaceOptions): Rule {
     }
     const appDir = `${newProjectRoot}/${options.name}`;
 
-    // If user already has angular installed, Bazel should use that version
-    const existingAngularVersion = findAngularVersion(options, host);
+    // If the project already has some deps installed, Bazel should use existing
+    // versions.
+    const existingVersions = {
+      Angular: findVersion(options.name, '@angular/core', host),
+      RxJs: findVersion(options.name, 'rxjs', host),
+    };
+
+    for (const name of Object.keys(existingVersions)) {
+      const version = existingVersions[name];
+      if (version) {
+        context.logger.info(`Bazel will reuse existing version for ${name}: ${version}`);
+      }
+    }
 
     const workspaceVersions = {
-      'ANGULAR_VERSION': existingAngularVersion || '7.1.1',
-      'RULES_SASS_VERSION': '1.14.1',
-      'RXJS_VERSION': '6.3.3',
+      'ANGULAR_VERSION': existingVersions.Angular || clean(latestVersions.Angular),
+      'RXJS_VERSION': existingVersions.RxJs || clean(latestVersions.RxJs),
+      // TODO(kyliau): Consider moving this to latest-versions.ts
+      'RULES_SASS_VERSION': '1.15.1',
     };
 
     return mergeWith(apply(url('./files'), [

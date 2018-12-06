@@ -41,6 +41,16 @@ describe('Ng-new Schematic', () => {
     expect(json.dependencies[core]).toBe(json.devDependencies[bazel]);
   });
 
+  it('should add @bazel/* dev dependencies', () => {
+    const options = {...defaultOptions};
+    const host = schematicRunner.runSchematic('ng-new', options);
+    const content = host.readContent('/demo/package.json');
+    const json = JSON.parse(content);
+    const devDeps = Object.keys(json.devDependencies);
+    expect(devDeps).toContain('@bazel/karma');
+    expect(devDeps).toContain('@bazel/typescript');
+  });
+
   it('should create Bazel workspace file', () => {
     const options = {...defaultOptions};
     const host = schematicRunner.runSchematic('ng-new', options);
