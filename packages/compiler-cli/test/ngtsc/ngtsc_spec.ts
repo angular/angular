@@ -1132,4 +1132,29 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = env.getContents('test.js');
     expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
   });
+
+  describe('flat module indices', () => {
+    it('should generate a basic flat module index', () => {
+      env.tsconfig({
+        'flatModuleOutFile': 'flat.js',
+      });
+      env.write('test.ts', 'export const TEST = "this is a test";');
+
+      env.driveMain();
+      const jsContents = env.getContents('flat.js');
+      expect(jsContents).toContain('export * from \'./test\';');
+    });
+
+    it('should generate a flat module with an id', () => {
+      env.tsconfig({
+        'flatModuleOutFile': 'flat.js',
+        'flatModuleId': '@mymodule',
+      });
+      env.write('test.ts', 'export const TEST = "this is a test";');
+
+      env.driveMain();
+      const dtsContents = env.getContents('flat.d.ts');
+      expect(dtsContents).toContain('/// <amd-module name="@mymodule" />');
+    });
+  });
 });

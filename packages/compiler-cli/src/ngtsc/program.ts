@@ -17,7 +17,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
-import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, SummaryGenerator, generatedFactoryTransform} from './shims';
+import {FactoryGenerator, FactoryInfo, FlatIndexGenerator, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
@@ -56,6 +56,8 @@ export class NgtscProgram implements api.Program {
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
     let rootFiles = [...rootNames];
+
+    const generators: ShimGenerator[] = [];
     if (shouldGenerateShims) {
       // Summary generation.
       const summaryGenerator = SummaryGenerator.forRootFiles(rootNames);
@@ -73,7 +75,32 @@ export class NgtscProgram implements api.Program {
 
       const factoryFileNames = Array.from(factoryFileMap.keys());
       rootFiles.push(...factoryFileNames, ...summaryGenerator.getSummaryFileNames());
-      this.host = new GeneratedShimsHostWrapper(host, [summaryGenerator, factoryGenerator]);
+      generators.push(summaryGenerator, factoryGenerator);
+    }
+
+    if (options.flatModuleOutFile !== undefined) {
+      const flatModuleId = options.flatModuleId || null;
+      const flatIndexGenerator =
+          FlatIndexGenerator.forRootFiles(options.flatModuleOutFile, rootNames, flatModuleId);
+      if (flatIndexGenerator !== null) {
+        generators.push(flatIndexGenerator);
+        rootFiles.push(flatIndexGenerator.flatIndexPath);
+      } else {
+        // This error message talks specifically about having a single .ts file in "files". However
+        // the actual logic is a bit more permissive. If a single file exists, that will be taken,
+        // otherwise the highest level (shortest path) "index.ts" file will be used as the flat
+        // module entry point instead. If neither of these conditions apply, the error below is
+        // given.
+        //
+        // The user is not informed about the "index.ts" option as this behavior is deprecated -
+        // an explicit entrypoint should always be specified.
+        throw new Error(
+            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.');
+      }
+    }
+
+    if (generators.length > 0) {
+      this.host = new GeneratedShimsHostWrapper(host, generators);
     }
 
     this.tsProgram =
