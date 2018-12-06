@@ -81,22 +81,21 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('');
   });
 
-  fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive')
-      .it('should support multiple content tags', () => {
-        TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
-        TestBed.overrideComponent(MainComp, {
-          set: {
-            template: '<multiple-content-tags>' +
-                '<div>B</div>' +
-                '<div>C</div>' +
-                '<div class="left">A</div>' +
-                '</multiple-content-tags>'
-          }
-        });
-        const main = TestBed.createComponent(MainComp);
+  fixmeIvy('unknown').it('should support multiple content tags', () => {
+    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<multiple-content-tags>' +
+            '<div>B</div>' +
+            '<div>C</div>' +
+            '<div class="left">A</div>' +
+            '</multiple-content-tags>'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
 
-        expect(main.nativeElement).toHaveText('(A, BC)');
-      });
+    expect(main.nativeElement).toHaveText('(A, BC)');
+  });
 
   it('should redistribute only direct children', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
