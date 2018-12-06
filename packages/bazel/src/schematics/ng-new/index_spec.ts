@@ -70,14 +70,22 @@ describe('Ng-new Schematic', () => {
     expect(files).toContain('/demo/src/main.ts');
   });
 
-  it('should overwrite index.html with script tags', () => {
+  it('should not overwrite index.html with script tags', () => {
     const options = {...defaultOptions};
     const host = schematicRunner.runSchematic('ng-new', options);
     const {files} = host;
     expect(files).toContain('/demo/src/index.html');
     const content = host.readContent('/demo/src/index.html');
-    expect(content).toMatch('<script src="/zone.min.js"></script>');
-    expect(content).toMatch('<script src="/bundle.min.js"></script>');
+    expect(content).not.toMatch('<script src="/zone.min.js"></script>');
+    expect(content).not.toMatch('<script src="/bundle.min.js"></script>');
+  });
+
+  it('should generate main.dev.ts and main.prod.ts', () => {
+    const options = {...defaultOptions};
+    const host = schematicRunner.runSchematic('ng-new', options);
+    const {files} = host;
+    expect(files).toContain('/demo/src/main.dev.ts');
+    expect(files).toContain('/demo/src/main.prod.ts');
   });
 
   it('should overwrite .gitignore for bazel-out directory', () => {
