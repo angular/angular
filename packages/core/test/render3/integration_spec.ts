@@ -1876,13 +1876,13 @@ describe('render3 integration test', () => {
            });
          }
 
-         const rendererFactory = new MockRendererFactory(['setAttribute']);
+         const rendererFactory = new MockRendererFactory(['setProperty']);
          const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
          const renderer = rendererFactory.lastRenderer !;
          fixture.update();
 
-         const spy = renderer.spies['setAttribute'];
+         const spy = renderer.spies['setProperty'];
          const [elm, attr, value] = spy.calls.mostRecent().args;
          expect(attr).toEqual('@fooAnimation');
        });
