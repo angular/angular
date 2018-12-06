@@ -8,6 +8,8 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
         exclude = [
+            "render_util.ts",
+            "imported_renderer2.ts",
             "**/*_perf.ts",
             "domino.d.ts",
             "load_domino.ts",
@@ -15,6 +17,7 @@ ts_library(
         ],
     ),
     deps = [
+        ":render3_util",
         "//packages:types",
         "//packages/animations",
         "//packages/animations/browser",
@@ -27,6 +30,22 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
+    ],
+)
+
+ts_library(
+    name = "render3_util",
+    testonly = True,
+    srcs = [
+        "imported_renderer2.ts",
+        "render_util.ts",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/animations/browser/testing",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
     ],
 )
 

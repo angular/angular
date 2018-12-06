@@ -7,12 +7,13 @@
  */
 
 import {Query} from '../../metadata/di';
-import {Component, Directive} from '../../metadata/directives';
+import {Component, Directive, Pipe} from '../../metadata/directives';
+import {NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
 import {stringify} from '../../util';
-import {EMPTY_ARRAY} from '../definition';
+import {EMPTY_ARRAY, getComponentDef, getDirectiveDef, getPipeDef} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
@@ -79,8 +80,23 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         // component may execute and set an ngSelectorScope property on the component type. This
         // allows the component to patch itself with directiveDefs from the module after it
         // finishes compiling.
-        if (hasSelectorScope(type)) {
-          const scopes = transitiveScopesFor(type.ngSelectorScope);
+        let scopes: NgModuleTransitiveScopes|null = null;
+        if (hasSelectorScope(type) && metadata.deps !== undefined) {
+          scopes = transitiveScopesFor(type.ngSelectorScope);
+          const localScope = localScopeFor(metadata.deps);
+          scopes.compilation.directives = new Set(
+              [...Array.from(scopes.compilation.directives), ...Array.from(localScope.directives)]);
+          scopes.compilation.pipes =
+              new Set([...Array.from(scopes.compilation.pipes), ...Array.from(localScope.pipes)]);
+        } else if (hasSelectorScope(type)) {
+          scopes = transitiveScopesFor(type.ngSelectorScope);
+        } else if (metadata.deps) {
+          scopes = {
+            compilation: localScopeFor(metadata.deps),
+            exported: {directives: new Set(), pipes: new Set()}
+          };
+        }
+        if (scopes !== null) {
           patchComponentDefWithScope(ngComponentDef, scopes);
         }
       }
@@ -195,4 +211,17 @@ function isViewQuery(value: any): value is Query {
 
 function splitByComma(value: string): string[] {
   return value.split(',').map(piece => piece.trim());
+}
+
+function localScopeFor(deps: Array<Type<any>>) {
+  const directives = new Set();
+  const pipes = new Set();
+  deps.forEach(dep => {
+    if (getDirectiveDef(dep) !== null || getComponentDef(dep) !== null) {
+      directives.add(dep);
+    } else if (getPipeDef(dep) !== null) {
+      pipes.add(dep);
+    }
+  });
+  return {directives, pipes};
 }

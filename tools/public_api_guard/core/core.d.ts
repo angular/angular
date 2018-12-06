@@ -102,6 +102,7 @@ export declare type CompilerOptions = {
 export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
+    deps?: Array<Type<any>>;
     encapsulation?: ViewEncapsulation;
     entryComponents?: Array<Type<any> | any[]>;
     interpolation?: [string, string];

@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, InterpolationConfig, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, InterpolationConfig, R3ComponentMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
-import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
+import {TypeCheckContext} from '../../typecheck';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
 import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
-import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
+import {extractDirectiveGuards, isAngularCore, resolveTypeList, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -179,6 +179,13 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
+    let deps: Reference<ts.Declaration>[] = [];
+    if (component.has('deps')) {
+      const expr = component.get('deps') !;
+      const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
+      deps = resolveTypeList(expr, declarationMeta, 'deps', this.reflector);
+    }
+
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
@@ -189,7 +196,7 @@ export class ComponentDecoratorHandler implements
         directive: ref,
         selector: metadata.selector,
         exportAs: metadata.exportAs,
-        inputs: metadata.inputs,
+        inputs: metadata.inputs, deps,
         outputs: metadata.outputs,
         queries: metadata.queries.map(query => query.propertyName),
         isComponent: true, ...extractDirectiveGuards(node, this.reflector),

@@ -38,9 +38,10 @@ describe('ComponentDecoratorHandler', () => {
     ]);
     const checker = program.getTypeChecker();
     const host = new TypeScriptReflectionHost(checker);
+    const selectorRegistry = new SelectorScopeRegistry(checker, host);
+    const noopLoader = new NoopResourceLoader();
     const handler = new ComponentDecoratorHandler(
-        checker, host, new SelectorScopeRegistry(checker, host), false, new NoopResourceLoader(),
-        [''], false, true);
+        checker, host, selectorRegistry, false, noopLoader, [''], false, true);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
     const detected = handler.detect(TestCmp, host.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {

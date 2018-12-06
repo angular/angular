@@ -50,6 +50,7 @@ export class DirectiveDecoratorHandler implements
       this.scopeRegistry.registerDirective(node, {
         ref,
         directive: ref,
+        deps: [],
         name: node.name !.text,
         selector: analysis.selector,
         exportAs: analysis.exportAs,

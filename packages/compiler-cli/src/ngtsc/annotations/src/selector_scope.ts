@@ -134,24 +134,6 @@ export class SelectorScopeRegistry {
   lookupCompilationScopeAsRefs(node: ts.Declaration): CompilationScope<Reference>|null {
     node = ts.getOriginalNode(node) as ts.Declaration;
 
-    // If the component has no associated module, then it has no compilation scope.
-    if (!this._declararedTypeToModule.has(node)) {
-      return null;
-    }
-
-    const module = this._declararedTypeToModule.get(node) !;
-
-    // Compilation scope computation is somewhat expensive, so it's cached. Check the cache for
-    // the module.
-    if (this._compilationScopeCache.has(module)) {
-      // The compilation scope was cached.
-      const scope = this._compilationScopeCache.get(module) !;
-
-      // The scope as cached is in terms of References, not Expressions. Converting between them
-      // requires knowledge of the context file (in this case, the component node's source file).
-      return scope;
-    }
-
     // This is the first time the scope for this module is being computed.
     const directives: ScopeDirective<Reference<ts.Declaration>>[] = [];
     const pipes = new Map<string, Reference<ts.Declaration>>();
@@ -159,16 +141,37 @@ export class SelectorScopeRegistry {
     // Tracks which declarations already appear in the `CompilationScope`.
     const seenSet = new Set<ts.Declaration>();
 
+    const metadata = this._directiveToMetadata.get(node);
+    let deps: Reference<ts.Declaration>[] = [];
+    if (metadata) {
+      deps = metadata.deps;
+    }
+
+    const module = this._declararedTypeToModule.get(node);
+
+    // Compilation scope computation is somewhat expensive, so it's cached. Check the cache for
+    // the module.
+    if (this._compilationScopeCache.has(node)) {
+      // The compilation scope was cached.
+      const scope = this._compilationScopeCache.get(node) !;
+
+      // The scope as cached is in terms of References, not Expressions. Converting between them
+      // requires knowledge of the context file (in this case, the component node's source file).
+      return scope;
+    }
+
     // Process the declaration scope of the module, and lookup the selector of every declared type.
     // The initial value of ngModuleImportedFrom is 'null' which signifies that the NgModule
     // was not imported from a .d.ts source.
-    for (const ref of this.lookupScopesOrDie(module !, /* ngModuleImportedFrom */ null)
-             .compilation) {
+    if (module !== undefined) {
+      deps = deps.concat(
+          this.lookupNgModuleScopesOrDie(module, /* ngModuleImportedFrom */ null).compilation);
+    }
+    deps.forEach((ref: Reference<ts.Declaration>) => {
       const node = ts.getOriginalNode(ref.node) as ts.Declaration;
 
-      // Track whether this `ts.Declaration` has been seen before.
       if (seenSet.has(node)) {
-        continue;
+        return;
       } else {
         seenSet.add(node);
       }
@@ -184,7 +187,7 @@ export class SelectorScopeRegistry {
           pipes.set(name, ref);
         }
       }
-    }
+    });
 
     const scope: CompilationScope<Reference> = {directives, pipes};
 
@@ -204,7 +207,7 @@ export class SelectorScopeRegistry {
     return scope !== null ? convertScopeToExpressions(scope, node) : null;
   }
 
-  private lookupScopesOrDie(node: ts.Declaration, ngModuleImportedFrom: string|null):
+  private lookupNgModuleScopesOrDie(node: ts.Declaration, ngModuleImportedFrom: string|null):
       SelectorScopes {
     const result = this.lookupScopes(node, ngModuleImportedFrom);
     if (result === null) {
@@ -245,8 +248,9 @@ export class SelectorScopeRegistry {
         ...data.declarations,
         // Expand imports to the exported scope of those imports.
         ...flatten(data.imports.map(
-            ref => this.lookupScopesOrDie(ref.node as ts.Declaration, absoluteModuleName(ref))
-                       .exported)),
+            ref =>
+                this.lookupNgModuleScopesOrDie(ref.node as ts.Declaration, absoluteModuleName(ref))
+                    .exported)),
         // And include the compilation scope of exported modules.
         ...flatten(
             data.exports
@@ -346,10 +350,16 @@ export class SelectorScopeRegistry {
       return null;
     }
 
+    const metadata = this._directiveToMetadata.get(ref.node);
+    let deps: Reference<ts.Declaration>[] = [];
+    if (metadata) {
+      deps = metadata.deps;
+    }
+
     return {
       ref,
       name: clazz.name !.text,
-      directive: ref,
+      directive: ref, deps,
       isComponent: def.name === 'ngComponentDef', selector,
       exportAs: readStringType(def.type.typeArguments[2]),
       inputs: readStringMapType(def.type.typeArguments[3]),

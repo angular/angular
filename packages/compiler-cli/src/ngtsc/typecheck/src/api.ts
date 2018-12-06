@@ -17,6 +17,7 @@ import {Reference} from '../../metadata';
  */
 export interface TypeCheckableDirectiveMeta extends DirectiveMeta {
   ref: Reference<ts.ClassDeclaration>;
+  deps: Reference<ts.Declaration>[];
   queries: string[];
   ngTemplateGuards: string[];
   hasNgTemplateContextGuard: boolean;

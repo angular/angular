@@ -552,6 +552,11 @@ export interface Component extends Directive {
    * overridden in compiler options.
    */
   preserveWhitespaces?: boolean;
+
+  /**
+   * A set of directives, components and pipes used in the component's template.
+   */
+  deps?: Array<Type<any>>;
 }
 
 /**

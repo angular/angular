@@ -969,6 +969,48 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
   });
 
+  describe('local scope', () => {
+    it('should compile a component considering the directives in the local scope', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component, Directive} from '@angular/core';
+  
+        @Directive({selector: '[test]'})
+        class DirA {}
+  
+        @Component({
+          template: '<div test></div>',
+          deps: [DirA]
+        })
+        class SampleCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('directives: [DirA]');
+    });
+
+    it('should compile a component considering the pipes in the local scope', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component, Pipe} from '@angular/core';
+  
+        @Pipe({name: 'test'})
+        class TestPipe {}
+  
+        @Component({
+          template: '<div>{{ "text" | test }}</div>',
+          deps: [TestPipe]
+        })
+        class SampleCmp1 {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('pipes: [TestPipe]');
+    });
+  });
+
   describe('duplicate local refs', () => {
     const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';

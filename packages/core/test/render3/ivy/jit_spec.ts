@@ -15,7 +15,10 @@ import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
+import {getHostElement} from '@angular/core/src/render3';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
+
+import {renderComponent} from '../render_util';
 
 
 ivyEnabled && describe('render3 jit', () => {
@@ -377,6 +380,32 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect((TestComponent as any).ngComponentDef.viewQuery).not.toBeNull();
   });
+
+  it('should respect the "deps" property in the component metadata', () => {
+    @Component({selector: 'child', template: 'child'})
+    class ChildComponent {
+    }
+
+    @Pipe({name: 'customPipe'})
+    class MyPipe {
+      transform(val: string) { return val.toUpperCase(); }
+    }
+
+    @Component({
+      selector: 'test',
+      template: '<div>{{ "test" | customPipe }}</div><child></child>',
+      deps: [ChildComponent, MyPipe],
+    })
+    class TestComponent {
+    }
+
+    const def = (TestComponent as any).ngComponentDef;
+    expect(def).not.toBeNull();
+    const myComp = renderComponent(TestComponent as any);
+    const result = getHostElement(myComp).innerHTML;
+    expect(result).toBe('<div>TEST</div><child>child</child>');
+  });
+
 });
 
 it('ensure at least one spec exists', () => {});
