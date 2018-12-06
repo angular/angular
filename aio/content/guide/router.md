@@ -4400,8 +4400,12 @@ the secondary popup route from the current URL.
 
 {@a guards}
 
+<!--
 ## Milestone 5: Route guards
+-->
+## 5단계: 라우팅 가드 (Route guards)
 
+<!--
 At the moment, *any* user can navigate *anywhere* in the application *anytime*.
 That's not always the right thing to do.
 
@@ -4417,14 +4421,33 @@ A guard's return value controls the router's behavior:
 
 * If it returns `true`, the navigation process continues.
 * If it returns `false`, the navigation process stops and the user stays put.
+-->
+지금까지 작성한 애플리케이션은 *아무* 사용자가 애플리케이션의 *어느 페이지든* *아무때나* 접근할 수 있습니다.
+하지만 이 방법이 언제나 괜찮은 것은 아닙니다.
 
+* 어떤 컴포넌트는 인증받지 않은 사용자가 접근할 수 없어야 합니다.
+* 어쩌면 사용자가 로그인을 먼저 해야할 수도 있습니다.
+* 컴포넌트가 표시되기 전에 서버에서 데이터를 가져와야 할 수도 있습니다.
+* 컴포넌트를 떠나기 전에 변경된 내용을 저장해야 하는 경우도 있습니다.
+* 변경된 내용을 저장하지 않는다면 이 내용을 폐기할지 사용자에게 물어봐야 할 수도 있습니다.
+
+이런 경우에 _라우팅 가드_ 를 사용하면 라우팅 동작을 제어할 수 있습니다.
+
+라우팅 가드는 `boolean` 값을 반환해서 라우터의 동작을 제어합니다:
+
+* `true`를 반환하면 네비게이션 동작을 계속합니다.
+* `false`를 반환하면 네비게이션 동작을 멈춥니다.
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
+-->
+**참고:** 라우팅 가드를 사용하면 지금 동작하는 네비게이션을 취소하고 다른 곳으로 이동하게 할 수 있습니다.
 
 </div>
 
+<!--
 The guard *might* return its boolean answer synchronously.
 But in many cases, the guard can't produce an answer synchronously.
 The guard could ask the user a question, save changes to the server, or fetch fresh data.
@@ -4432,13 +4455,24 @@ These are all asynchronous operations.
 
 Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the
 router will wait for the observable to resolve to `true` or `false`.
+-->
+라우팅 가드는 *보통* 불리언 값을 동기 방식으로 반환합니다.
+하지만 라우팅 가드는 동기 방식으로 값을 반환할 수 없는 경우가 더 많습니다.
+사용자에게 어떤 것을 물어봐야 하거나, 서버에 변경사항을 저장하는 경우, 새로운 데이터를 가져와야 하는 경우가 이런 경우에 해당됩니다.
+이런 동작은 모두 비동기로 실행됩니다.
+
+그래서 라우팅 가드는 `Observable<boolean>` 타입이나 `Promise<boolean>` 타입을 반환할 수 있으며, 이 타입을 사용하면 라우팅 가드의 내부 로직이 완료될 때까지 라우터의 동작이 중단됩니다.
 
 <div class="alert is-critical">
 
+<!--
 **Note:** The observable provided to the Router _must_ also complete. If the observable does not complete, the navigation will not continue.
+-->
+**참고:** 라우팅 가드 내부 로직에 사용되는 옵저버블은 _반드시_ 종료되어야 합니다. 옵저버블이 종료되지 않으면 네비게이션도 진행되지 않습니다.
 
 </div>
 
+<!--
 The router supports multiple guard interfaces:
 
 * [`CanActivate`](api/router/CanActivate) to mediate navigation *to* a route.
@@ -4450,8 +4484,20 @@ The router supports multiple guard interfaces:
 * [`Resolve`](api/router/Resolve) to perform route data retrieval *before* route activation.
 
 * [`CanLoad`](api/router/CanLoad) to mediate navigation *to* a feature module loaded _asynchronously_.
+-->
+라우터는 몇 가지 라우팅 가드 인터페이스를 제공합니다:
 
+* 라우팅 규칙을 *적용하는 동작*은 [`CanActivate`](api/router/CanActivate)로 제어할 수 있습니다.
 
+* 자식 라우팅 규칙을 *적용하는 동작*은 [`CanActivateChild`](api/router/CanActivateChild)로 제어할 수 있습니다.
+
+* 현재 라우팅 규칙에서 *벗어나는 동작*은 [`CanDeactivate`](api/router/CanDeactivate)로 제어할 수 있습니다.
+
+* 라우팅 규칙이 *적용되기 전에* 라우팅 데이터를 받아오는 동작은 [`Resolve`](api/router/Resolve)로 제어할 수 있습니다.
+
+* 기능 모듈을 _비동기로_ 로드하는 동작은 [`CanLoad`](api/router/CanLoad)로 제어할 수 있습니다.
+
+<!--
 You can have multiple guards at every level of a routing hierarchy.
 The router checks the `CanDeactivate` and `CanActivateChild` guards first, from the deepest child route to the top.
 Then it checks the `CanActivate` guards from the top down to the deepest child route. If the feature module
@@ -4460,32 +4506,61 @@ If _any_ guard returns false, pending guards that have not completed will be can
 and the entire navigation is canceled.
 
 There are several examples over the next few sections.
+-->
+라우팅 가드는 라우팅 계층 어디에라도 몇개씩 자유롭게 적용할 수 있습니다.
+라우터는 가장 안쪽의 자식 라우팅 규칙부터 상위 라우팅 계층을 향해 `CanDeactivate`와 `CanActivateChild` 가드를 제일 먼저 실행합니다.
+그리고 최상위 라우팅 계층부터 가장 안쪽의 자식 라우팅 규칙까지 `CanActivate` 가드를 실행하는데, 이 과정에 기능 모듈이 비동기로 로드되면 이 모듈이 로드되기 전에 `CanLoad` 가드가 실행됩니다.
+이 과정이 수행되면서 _어떤_ 가드에서 `false`를 반환하면 아직 실행되지 않은 라우팅 가드는 실행이 취소되며 모든 네비게이션 동작도 취소됩니다.
 
+이 시나리오를 예제와 함께 확인해 봅시다.
 
 {@a can-activate-guard}
 
 
+<!--
 ### _CanActivate_: requiring authentication
+-->
+### _CanActivate_: 사용자 인증이 필요한 경우
 
+<!--
 Applications often restrict access to a feature area based on who the user is.
 You could permit access only to authenticated users or to users with a specific role.
 You might block or limit access until the user's account is activated.
 
 The `CanActivate` guard is the tool to manage these navigation business rules.
+-->
+애플리케이션은 보통 특정 기능에 접근할 수 있는 사용자를 제한하는 경우가 많습니다.
+그러면 애플리케이션 사용자가 로그인을 하거나 특정 권한이 있어야 한다고 정의할 수 있습니다.
+그리고 사용자의 계정이 활성화되지 않으면 접근을 제한할 수 있습니다.
 
+이런 네비게이션 동작은 `CanActivate` 가드를 사용해서 제어할 수 있습니다.
+
+<!--
 #### Add an admin feature module
+-->
+#### 관리자 기능 모듈 추가하기
 
+<!--
 In this next section, you'll extend the crisis center with some new *administrative* features.
 Those features aren't defined yet.
 But you can start by adding a new feature module named `AdminModule`.
 
 Generate an `admin` folder with a feature module file and a routing configuration file.
+-->
+이번 섹션에서는 위기대응센터에 새로운 *관리자* 기능을 추가해 봅시다.
+관리자 기능 모듈은 아직 정의되지 않았습니다.
+그래서 `AdminModule`이라는 기능모듈을 생성하는 것부터 시작합니다.
+
+다음 명령을 실행해서 `admin` 폴더와 `AdminModule`을 생성하고 이 때 라우팅 설정 파일도 함께 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate module admin --routing
 </code-example>
 
+<!--
 Next, generate the supporting components.
+-->
+그리고 관련 컴포넌트들을 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate component admin/admin-dashboard
@@ -4503,8 +4578,10 @@ Next, generate the supporting components.
   ng generate component admin/manage-heroes
 </code-example>
 
+<!--
 The admin feature file structure looks like this:
-
+-->
+그러면 다음과 같이 관리자 모듈이 구성될 것입니다:
 
 <div class='filetree'>
 
@@ -4607,10 +4684,11 @@ The admin feature file structure looks like this:
 </div>
 
 
-
+<!--
 The admin feature module contains the `AdminComponent` used for routing within the
 feature module, a dashboard route and two unfinished components to manage crises and heroes.
-
+-->
+관리자 모듈의 진입점은 `AdminComponent`입니다. 그리고 이 모듈에는 대시보드 컴포넌트와 위기를 관리하는 컴포넌트, 히어로를 관리하는 컴포넌트가 존재합니다.
 
 <code-tabs>
 
@@ -4641,26 +4719,37 @@ feature module, a dashboard route and two unfinished components to manage crises
 <div class="alert is-helpful">
 
 
-
+<!--
 Although the admin dashboard `RouterLink` only contains a relative slash without an additional URL segment, it
 is considered a match to any route within the admin feature area. You only want the `Dashboard` link to be active when the user visits that route. Adding an additional binding to the `Dashboard` routerLink,`[routerLinkActiveOptions]="{ exact: true }"`, marks the `./` link as active when the user navigates to the `/admin` URL and not when navigating to any of the child routes.
-
+-->
+대시보드로 이동하는 `RouterLink`에는 추가 URL 없이 현재 위치를 가리키는 상대주소가 지정되었는데, 이 주소는 관리자 기능 모듈의 진입 주소인 `/admin`을 가리킵니다.
+사용자가 이 링크를 클릭하면 `Dashboard`가 화면에 표시될 것입니다.
+이 동작을 위해 `Dashboard`로 이동하는 라우터 링크에는 `[routerLinkActiveOptions]="{ exact: true }"` 옵션이 사용되었습니다. 이제 사용자가 자식 라우팅 주소로 이동하지 않고 `/admin` URL로 이동하면 대시보드가 화면에 표시됩니다.
 
 </div>
 
 
 {@a component-less-route}
 
-
+<!--
 ##### Component-less route: grouping routes without a component
+-->
+##### 컴포넌트가 없는 라우팅 규칙: 라우팅 규칙을 그룹으로 묶기
 
+<!--
 The initial admin routing configuration:
+-->
+관리자 모듈의 초기 라우팅 설정은 다음과 같습니다:
 
-
+<!--
 <code-example path="router/src/app/admin/admin-routing.module.1.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (admin routing)" region="admin-routes">
+-->
+<code-example path="router/src/app/admin/admin-routing.module.1.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (관리자 모듈의 라우팅 규칙)" region="admin-routes">
 
 </code-example>
 
+<!--
 Looking at the child route under the `AdminComponent`, there is a `path` and a `children`
 property but it's not using a `component`.
 You haven't made a mistake in the configuration.
@@ -4673,18 +4762,31 @@ A _component-less_ route makes it easier to [guard child routes](#can-activate-c
 
 Next, import the `AdminModule` into `app.module.ts` and add it to the `imports` array
 to register the admin routes.
+-->
+`AdminComponent`의 자식 라우팅 규칙 중에는 `path`와 `children` 프로퍼티가 있지만 `component`가 없는 라우팅 규칙이 있습니다.
+이 라우팅 규칙은 잘못 작성한 것이 아니라 _컴포넌트가 없는_ 라우팅 규칙을 구현한 것입니다.
 
+이 라우팅 규칙을 사용한 목적은 `위기대응센터`과 간리하는 모든 라우팅 규칙을 `admin` 주소 안으로 묶기 위한 것입니다.
+이런 용도로 사용할 때 이 라우팅 규칙에  컴포넌트를 지정할 필요는 없습니다.
+_컴포넌트가 없는_ 라우팅 규칙은 [자식 라우팅 규칙에 적용하는 라우팅 가드](#can-activate-child-guard)를 좀 더 편하게 지정하기 위해 사용합니다.
 
+<!--
 <code-example path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (admin module)" region="admin-module">
+-->
+<code-example path="router/src/app/app.module.4.ts" linenums="false" header="src/app/app.module.ts (관리자 모듈)" region="admin-module">
 
 </code-example>
 
 
-
+<!--
 Add an "Admin" link to the `AppComponent` shell so that users can get to this feature.
+-->
+이제 사용자가 관리자 기능에 접근할 수 있도록 `AppComponent`에 "Admin" 링크를 추가합니다.
 
-
+<!--
 <code-example path="router/src/app/app.component.5.html" linenums="false" header="src/app/app.component.html (template)">
+-->
+<code-example path="router/src/app/app.component.5.html" linenums="false" header="src/app/app.component.html (템플릿)">
 
 </code-example>
 
@@ -4692,9 +4794,12 @@ Add an "Admin" link to the `AppComponent` shell so that users can get to this fe
 
 {@a guard-admin-feature}
 
-
+<!--
 #### Guard the admin feature
+-->
+#### 관리자 모듈로 접근하는 동작 제한하기
 
+<!--
 Currently every route within the *Crisis Center* is open to everyone.
 The new *admin* feature should be accessible only to authenticated users.
 
@@ -4706,33 +4811,54 @@ login page when they try to enter the admin area.
 This is a general purpose guard&mdash;you can imagine other features
 that require authenticated users&mdash;so you generate an
 `AuthGuard` in the `auth` folder.
+-->
+지금까지 작성한 애플리케이션은 모든 사용자가 "위기대응센터"에 접근할 수 있습니다.
+하지만 새로 추가한 *관리자* 모듈은 미리 인증된 사용자만 접근할 수 있도록 하려고 합니다.
+
+이 때 사용자가 로그인하지 않으면 링크를 감출 수도 있습니다. 하지만 이 방법은 간단한 트릭일 뿐이며 완벽한 방법이 아닙니다.
+
+이 방법 대신 로그인하지 않은 사용자가 관리자 페이지에 접근할 때 `canActivate()` 가드를 사용해서 로그인 페이지로 대신 이동하게 하는 것이 더 좋습니다.
+
+라우팅 가드는 보통 페이지에 접근하는 권한을 제어하는 용도로 사용합니다.
+다음 명령을 실행해서 `auth` 폴더에 `AuthGuard`를 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate guard auth/auth
 </code-example>
 
+<!--
 At the moment you're interested in seeing how guards work so the first version does nothing useful.
 It simply logs to console and `returns` true immediately, allowing navigation to proceed:
+-->
+이렇게 만든 라우팅 가드는 아직 의미있는 동작을 하지 않습니다.
+이 가드는 단순하게 콘솔에 로그를 출력하며 `true`를 바로 반환합니다. 따라서 네비게이션 동작도 그대로 진행됩니다:
 
-
+<!--
 <code-example path="router/src/app/auth/auth.guard.1.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)">
+-->
+<code-example path="router/src/app/auth/auth.guard.1.ts" linenums="false" header="src/app/auth/auth.guard.ts (일부)">
 
 </code-example>
 
 
-
+<!--
 Next, open `admin-routing.module.ts `, import the `AuthGuard` class, and
 update the admin route with a `canActivate` guard property that references it:
+-->
+이제 `admin-routing.module.ts` 파일을 열고 `AuthGuard` 클래스를 로드한 후에 관리자 페이지에 연결된 라우팅 규칙에 `canActivate` 가드를 다음과 같이 적용합니다:
 
-
+<!--
 <code-example path="router/src/app/admin/admin-routing.module.2.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (guarded admin route)" region="admin-route">
+-->
+<code-example path="router/src/app/admin/admin-routing.module.2.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (관리자 페이지에 라우팅 가드 적용하기)" region="admin-route">
 
 </code-example>
 
 
- 
+ <!--
 The admin feature is now protected by the guard, albeit protected poorly.
-
+-->
+아직 라우팅 가드가 실제로 동작하는 로직은 작성되지 않았지만, 관리자 모듈은 라우팅 가드로 보호되었습니다.
 
 {@a teach-auth}
 
