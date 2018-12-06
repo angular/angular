@@ -120,43 +120,42 @@ import {el} from '../../testing/src/browser_util';
       // these tests are only mean't to be run within the DOM
       if (isNode) return;
 
-      fixmeIvy(`FW-800: Animation listeners are not invoked`)
-          .it('should flush and fire callbacks when the zone becomes stable', (async) => {
-            @Component({
-              selector: 'my-cmp',
-              template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
-              animations: [trigger(
-                  'myAnimation',
-                  [transition(
-                      '* => state',
-                      [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-            })
-            class Cmp {
-              exp: any;
-              event: any;
-              onStart(event: any) { this.event = event; }
-            }
+      it('should flush and fire callbacks when the zone becomes stable', (async) => {
+        @Component({
+          selector: 'my-cmp',
+          template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
+          animations: [trigger(
+              'myAnimation',
+              [transition(
+                  '* => state',
+                  [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+        })
+        class Cmp {
+          exp: any;
+          event: any;
+          onStart(event: any) { this.event = event; }
+        }
 
-            TestBed.configureTestingModule({
-              providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-              declarations: [Cmp]
-            });
+        TestBed.configureTestingModule({
+          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+          declarations: [Cmp]
+        });
 
-            const engine = TestBed.get(AnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
-            cmp.exp = 'state';
-            fixture.detectChanges();
-            fixture.whenStable().then(() => {
-              expect(cmp.event.triggerName).toEqual('myAnimation');
-              expect(cmp.event.phaseName).toEqual('start');
-              cmp.event = null;
+        const engine = TestBed.get(AnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp = 'state';
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          expect(cmp.event.triggerName).toEqual('myAnimation');
+          expect(cmp.event.phaseName).toEqual('start');
+          cmp.event = null;
 
-              engine.flush();
-              expect(cmp.event).toBeFalsy();
-              async();
-            });
-          });
+          engine.flush();
+          expect(cmp.event).toBeFalsy();
+          async();
+        });
+      });
 
       it('should properly insert/remove nodes through the animation renderer that do not contain animations',
          (async) => {
