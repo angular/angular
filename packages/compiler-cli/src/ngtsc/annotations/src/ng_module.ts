@@ -17,7 +17,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
+import {getConstructorDependencies, isAngularCore, resolveTypeList, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -73,7 +73,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
       const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
-      declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
+      declarations = resolveTypeList(expr, declarationMeta, 'declarations', this.reflector);
       this.referencesRegistry.add(...declarations);
     }
     let imports: Reference<ts.Declaration>[] = [];
@@ -82,7 +82,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const importsMeta = staticallyResolve(
           expr, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      imports = this.resolveTypeList(expr, importsMeta, 'imports');
+      imports = resolveTypeList(expr, importsMeta, 'imports', this.reflector);
       this.referencesRegistry.add(...imports);
     }
     let exports: Reference<ts.Declaration>[] = [];
@@ -91,14 +91,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const exportsMeta = staticallyResolve(
           expr, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      exports = this.resolveTypeList(expr, exportsMeta, 'exports');
+      exports = resolveTypeList(expr, exportsMeta, 'exports', this.reflector);
       this.referencesRegistry.add(...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
-      bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
+      bootstrap = resolveTypeList(expr, bootstrapMeta, 'bootstrap', this.reflector);
       this.referencesRegistry.add(...bootstrap);
     }
 
@@ -230,50 +230,4 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return arg.typeName;
   }
-
-  /**
-   * Compute a list of `Reference`s from a resolved metadata value.
-   */
-  private resolveTypeList(expr: ts.Node, resolvedList: ResolvedValue, name: string):
-      Reference<ts.Declaration>[] {
-    const refList: Reference<ts.Declaration>[] = [];
-    if (!Array.isArray(resolvedList)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Expected array when reading property ${name}`);
-    }
-
-    resolvedList.forEach((entry, idx) => {
-      // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
-      // resolution was able to descend into the function and return an object literal, a Map).
-      if (entry instanceof Map && entry.has('ngModule')) {
-        entry = entry.get('ngModule') !;
-      }
-
-      if (Array.isArray(entry)) {
-        // Recurse into nested arrays.
-        refList.push(...this.resolveTypeList(expr, entry, name));
-      } else if (isDeclarationReference(entry)) {
-        if (!entry.expressable) {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `One entry in ${name} is not a type`);
-        } else if (!this.reflector.isClass(entry.node)) {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Entry is not a type, but is used as such in ${name} array`);
-        }
-        refList.push(entry);
-      } else {
-        // TODO(alxhub): expand ModuleWithProviders.
-        throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
-      }
-    });
-
-    return refList;
-  }
-}
-
-function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
-  return ref instanceof Reference &&
-      (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
-       ts.isVariableDeclaration(ref.node));
 }

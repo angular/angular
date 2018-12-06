@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
+import {AbsoluteReference, ImportMode, Reference, ResolvedValue} from '../../metadata';
 
 export function getConstructorDependencies(
     clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
@@ -179,4 +179,49 @@ function nodeStaticMethodNames(node: ts.Declaration, reflector: ReflectionHost):
   return reflector.getMembersOfClass(node)
       .filter(member => member.kind === ClassMemberKind.Method && member.isStatic)
       .map(member => member.name);
+}
+
+export function isDeclarationReference(ref: any): ref is Reference<ts.Declaration> {
+  return ref instanceof Reference &&
+      (ts.isClassDeclaration(ref.node) || ts.isFunctionDeclaration(ref.node) ||
+       ts.isVariableDeclaration(ref.node));
+}
+
+export function resolveTypeList(
+    expr: ts.Node, resolvedList: ResolvedValue, name: string,
+    reflector: ReflectionHost): Reference<ts.Declaration>[] {
+  const refList: Reference<ts.Declaration>[] = [];
+
+  if (!Array.isArray(resolvedList)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Expected array when reading property ${name}`);
+  }
+
+  resolvedList.forEach((entry, idx) => {
+    // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
+    // resolution was able to descend into the function and return an object literal, a Map).
+    if (entry instanceof Map && entry.has('ngModule')) {
+      entry = entry.get('ngModule') !;
+    }
+
+    if (Array.isArray(entry)) {
+      // Recurse into nested arrays.
+      refList.push(...resolveTypeList(expr, entry, name, reflector));
+    } else if (isDeclarationReference(entry)) {
+      if (!entry.expressable) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `One entry in ${name} is not a type`);
+      } else if (!reflector.isClass(entry.node)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
+            `Entry is not a type, but is used as such in ${name} array`);
+      }
+      refList.push(entry);
+    } else {
+      // TODO(alxhub): expand ModuleWithProviders.
+      throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
+    }
+  });
+
+  return refList;
 }
