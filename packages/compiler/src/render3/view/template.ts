@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -987,7 +987,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent): () => o.Expression[] {
-    const evNameSanitized = sanitizeIdentifier(outputAst.name);
+    let eventName: string = outputAst.name;
+    if (outputAst.type === ParsedEventType.Animation) {
+      eventName = prepareSyntheticAttributeName(`${outputAst.name}.${outputAst.phase}`);
+    }
+    const evNameSanitized = sanitizeIdentifier(eventName);
     const tagNameSanitized = sanitizeIdentifier(tagName);
     const functionName = `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_listener`;
 
@@ -1007,8 +1011,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const handler = o.fn(
           [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
           functionName);
-
-      return [o.literal(outputAst.name), handler];
+      return [o.literal(eventName), handler];
     };
   }
 }
