@@ -81,7 +81,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('');
   });
 
-  fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive')
+  fixmeIvy('FW-796: Content projection logic is incorrect for <ng-content> in nested templates')
       .it('should support multiple content tags', () => {
         TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
         TestBed.overrideComponent(MainComp, {

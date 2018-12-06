@@ -1026,7 +1026,7 @@ describe('compiler compliance', () => {
               selector: 'complex',
               template: \`
                 <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
-                <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>\`
+                <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>\`
               })
             export class ComplexComponent { }
 
@@ -1104,7 +1104,7 @@ describe('compiler compliance', () => {
             @Component({
               template: \`
                 <div id="second" *ngIf="visible">
-                  <ng-content select="span[title=toFirst]"></ng-content>
+                  <ng-content SELECT="span[title=toFirst]"></ng-content>
                 </div>
                 <div id="third" *ngIf="visible">
                   No ng-content, no instructions generated.
