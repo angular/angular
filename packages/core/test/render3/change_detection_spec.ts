@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplateRef, ViewContainerRef} from '@angular/core';
+import {EmbeddedViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
@@ -97,7 +97,7 @@ describe('change detection', () => {
 
         constructor(public vcr: ViewContainerRef) {}
 
-        create() { this.vcr.createEmbeddedView(this.tmp); }
+        create() { return this.vcr.createEmbeddedView(this.tmp); }
 
         static ngComponentDef = defineComponent({
           type: StructuralComp,
@@ -145,8 +145,11 @@ describe('change detection', () => {
       fixture.update();
       expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
 
-      structuralComp.create();
+      const viewRef: EmbeddedViewRef<any> = structuralComp.create();
       fixture.update();
+      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Temp content');
+
+      viewRef.detectChanges();
       expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Temp content');
 
       structuralComp.value = 'two';

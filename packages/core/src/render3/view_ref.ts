@@ -11,7 +11,7 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {checkNoChanges, checkNoChangesInRootView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
@@ -244,7 +244,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
-    detectChanges(this.context);
+    detectChangesInternal(this._lView, this.context, null);
     if (rendererFactory.end) {
       rendererFactory.end();
     }
