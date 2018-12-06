@@ -239,6 +239,64 @@ describe('compiler compliance: styling', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
+
+    it('should generate animation listeners', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-cmp',
+              template: \`
+                <div [@myAnimation]="exp"
+                  (@myAnimation.start)="onStart($event)"
+                  (@myAnimation.done)="onDone($event)"></div>
+              \`,
+              animations: [trigger(
+                   'myAnimation',
+                   [transition(
+                       '* => state',
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+            })
+            class MyComponent {
+              exp: any;
+              startEvent: any;
+              doneEvent: any;
+              onStart(event: any) { this.startEvent = event; }
+              onDone(event: any) { this.doneEvent = event; }
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = `
+        …
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          …
+          consts: 1,
+          vars: 1,
+          template: function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", _c0);
+              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div__myAnimation_start_listener($event) { return ctx.onStart($event); });
+              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div__myAnimation_done_listener($event) { return ctx.onDone($event); });
+              $r3$.ɵelementEnd();
+            } if (rf & 2) {
+              $r3$.ɵelementProperty(0, "@myAnimation", $r3$.ɵbind(ctx.exp));
+            }
+          },
+          encapsulation: 2,
+          …
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   describe('[style] and [style.prop]', () => {

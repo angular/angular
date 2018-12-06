@@ -49,14 +49,14 @@ export class BoundAttribute implements Node {
 
 export class BoundEvent implements Node {
   constructor(
-      public name: string, public handler: AST, public target: string|null,
-      public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+      public name: string, public type: ParsedEventType, public handler: AST,
+      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
-    return new BoundEvent(event.name, event.handler, target, phase, event.sourceSpan);
+    return new BoundEvent(event.name, event.type, event.handler, target, phase, event.sourceSpan);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
