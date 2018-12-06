@@ -2517,7 +2517,7 @@ export function checkNoChangesInRootView(lView: LView): void {
 }
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
-function detectChangesInternal<T>(hostView: LView, component: T, rf: RenderFlags | null) {
+export function detectChangesInternal<T>(hostView: LView, component: T, rf: RenderFlags | null) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const templateFn = hostTView.template !;

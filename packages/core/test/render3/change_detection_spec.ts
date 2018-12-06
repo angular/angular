@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplateRef, ViewContainerRef} from '@angular/core';
+import {EmbeddedViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
@@ -91,13 +91,22 @@ describe('change detection', () => {
     it('should support detectChanges on components that have LContainers', () => {
       let structuralComp !: StructuralComp;
 
+      function FooTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0);
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(0, bind(ctx.value));
+        }
+      }
+
       class StructuralComp {
         tmp !: TemplateRef<any>;
         value = 'one';
 
         constructor(public vcr: ViewContainerRef) {}
 
-        create() { this.vcr.createEmbeddedView(this.tmp); }
+        create() { return this.vcr.createEmbeddedView(this.tmp, this); }
 
         static ngComponentDef = defineComponent({
           type: StructuralComp,
@@ -107,32 +116,17 @@ describe('change detection', () => {
           inputs: {tmp: 'tmp'},
           consts: 1,
           vars: 1,
-          template: (rf: RenderFlags, ctx: StructuralComp) => {
-            if (rf & RenderFlags.Create) {
-              text(0);
-            }
-            if (rf & RenderFlags.Update) {
-              textBinding(0, bind(ctx.value));
-            }
-          }
+          template: FooTemplate
         });
       }
 
-      function FooTemplate(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          text(0, 'Temp content');
-        }
-      }
-
       /**
-       * <ng-template #foo>
-       *     Temp content
-       * </ng-template>
+       * <ng-template #foo>{{ value }}</ng-template>
        * <structural-comp [tmp]="foo"></structural-comp>
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
+          template(0, FooTemplate, 2, 1, '', null, ['foo', ''], templateRefExtractor);
           element(2, 'structural-comp');
         }
         if (rf & RenderFlags.Update) {
@@ -145,13 +139,19 @@ describe('change detection', () => {
       fixture.update();
       expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
 
-      structuralComp.create();
+      const viewRef: EmbeddedViewRef<any> = structuralComp.create();
       fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Temp content');
+      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>one');
 
+      // check embedded view update
       structuralComp.value = 'two';
-      detectChanges(structuralComp);
-      expect(fixture.html).toEqual('<structural-comp>two</structural-comp>Temp content');
+      viewRef.detectChanges();
+      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>two');
+
+      // check root view update
+      structuralComp.value = 'three';
+      fixture.update();
+      expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
     });
 
   });
