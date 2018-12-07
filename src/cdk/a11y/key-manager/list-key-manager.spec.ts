@@ -93,6 +93,17 @@ describe('Key managers', () => {
       expect(keyManager.activeItem!.getLabel()).toBe('one');
     });
 
+    it('should keep the active item in sync if the active item is removed', () => {
+      expect(keyManager.activeItemIndex).toBe(0);
+      expect(keyManager.activeItem!.getLabel()).toBe('one');
+
+      itemList.items.shift();
+      itemList.notifyOnChanges();
+
+      expect(keyManager.activeItemIndex).toBe(0);
+      expect(keyManager.activeItem!.getLabel()).toBe('two');
+    });
+
     it('should start off the activeItem as null', () => {
       expect(new ListKeyManager([]).activeItem).toBeNull();
     });
