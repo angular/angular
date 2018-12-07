@@ -5,15 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
+import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild} from '@angular/core';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-
-import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
+import {fixmeIvy} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -66,124 +66,127 @@ const DEFAULT_COMPONENT_ID = '1';
     }
 
     describe('fakeAsync testing', () => {
-      it('should only require one flushMicrotasks call to kick off animation callbacks',
-         fakeAsync(() => {
-           @Component({
-             selector: 'cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should only require one flushMicrotasks call to kick off animation callbacks',
+          fakeAsync(() => {
+            @Component({
+              selector: 'cmp',
+              template: `
             <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
           `,
-             animations: [trigger(
-                 'myAnimation',
-                 [transition('* => on, * => off', [animate(1000, style({opacity: 1}))])])]
-           })
-           class Cmp {
-             exp: any = false;
-             status: string = '';
-             cb(status: string) { this.status = status; }
-           }
+              animations: [trigger(
+                  'myAnimation',
+                  [transition('* => on, * => off', [animate(1000, style({opacity: 1}))])])]
+            })
+            class Cmp {
+              exp: any = false;
+              status: string = '';
+              cb(status: string) { this.status = status; }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = 'on';
-           fixture.detectChanges();
-           expect(cmp.status).toEqual('');
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'on';
+            fixture.detectChanges();
+            expect(cmp.status).toEqual('');
 
-           flushMicrotasks();
-           expect(cmp.status).toEqual('start');
+            flushMicrotasks();
+            expect(cmp.status).toEqual('start');
 
-           let player = MockAnimationDriver.log.pop() !;
-           player.finish();
-           expect(cmp.status).toEqual('done');
+            let player = MockAnimationDriver.log.pop() !;
+            player.finish();
+            expect(cmp.status).toEqual('done');
 
-           cmp.status = '';
-           cmp.exp = 'off';
-           fixture.detectChanges();
-           expect(cmp.status).toEqual('');
+            cmp.status = '';
+            cmp.exp = 'off';
+            fixture.detectChanges();
+            expect(cmp.status).toEqual('');
 
-           player = MockAnimationDriver.log.pop() !;
-           player.finish();
-           expect(cmp.status).toEqual('');
-           flushMicrotasks();
-           expect(cmp.status).toEqual('done');
-         }));
+            player = MockAnimationDriver.log.pop() !;
+            player.finish();
+            expect(cmp.status).toEqual('');
+            flushMicrotasks();
+            expect(cmp.status).toEqual('done');
+          }));
 
-      it('should always run .start callbacks before .done callbacks even for noop animations',
-         fakeAsync(() => {
-           @Component({
-             selector: 'cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should always run .start callbacks before .done callbacks even for noop animations',
+          fakeAsync(() => {
+            @Component({
+              selector: 'cmp',
+              template: `
                 <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
           `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     transition('* => go', []),
-                   ]),
-             ]
-           })
-           class Cmp {
-             exp: any = false;
-             log: string[] = [];
-             cb(status: string) { this.log.push(status); }
-           }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition('* => go', []),
+                    ]),
+              ]
+            })
+            class Cmp {
+              exp: any = false;
+              log: string[] = [];
+              cb(status: string) { this.log.push(status); }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = 'go';
-           fixture.detectChanges();
-           expect(cmp.log).toEqual([]);
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'go';
+            fixture.detectChanges();
+            expect(cmp.log).toEqual([]);
 
-           flushMicrotasks();
-           expect(cmp.log).toEqual(['start', 'done']);
-         }));
+            flushMicrotasks();
+            expect(cmp.log).toEqual(['start', 'done']);
+          }));
 
-      it('should emit the correct totalTime value for a noop-animation', fakeAsync(() => {
-           @Component({
-             selector: 'cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should emit the correct totalTime value for a noop-animation', fakeAsync(() => {
+            @Component({
+              selector: 'cmp',
+              template: `
                 <div [@myAnimation]="exp" (@myAnimation.start)="cb($event)" (@myAnimation.done)="cb($event)"></div>
           `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     transition(
-                         '* => go',
-                         [
-                           animate('1s', style({opacity: 0})),
-                         ]),
-                   ]),
-             ]
-           })
-           class Cmp {
-             exp: any = false;
-             log: AnimationEvent[] = [];
-             cb(event: AnimationEvent) { this.log.push(event); }
-           }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition(
+                          '* => go',
+                          [
+                            animate('1s', style({opacity: 0})),
+                          ]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              exp: any = false;
+              log: AnimationEvent[] = [];
+              cb(event: AnimationEvent) { this.log.push(event); }
+            }
 
-           TestBed.configureTestingModule({
-             declarations: [Cmp],
-             providers: [
-               {provide: AnimationDriver, useClass: NoopAnimationDriver},
-             ],
-           });
+            TestBed.configureTestingModule({
+              declarations: [Cmp],
+              providers: [
+                {provide: AnimationDriver, useClass: NoopAnimationDriver},
+              ],
+            });
 
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = 'go';
-           fixture.detectChanges();
-           expect(cmp.log).toEqual([]);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'go';
+            fixture.detectChanges();
+            expect(cmp.log).toEqual([]);
 
-           flushMicrotasks();
-           expect(cmp.log.length).toEqual(2);
-           const [start, end] = cmp.log;
-           expect(start.totalTime).toEqual(1000);
-           expect(end.totalTime).toEqual(1000);
-         }));
+            flushMicrotasks();
+            expect(cmp.log.length).toEqual(2);
+            const [start, end] = cmp.log;
+            expect(start.totalTime).toEqual(1000);
+            expect(end.totalTime).toEqual(1000);
+          }));
     });
 
     describe('component fixture integration', () => {
@@ -297,7 +300,7 @@ const DEFAULT_COMPONENT_ID = '1';
     });
 
     describe('animation triggers', () => {
-      it('should trigger a state change animation from void => state', () => {
+      fixmeIvy('unknown').it('should trigger a state change animation from void => state', () => {
         @Component({
           selector: 'if-cmp',
           template: `
@@ -327,94 +330,96 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
-      it('should allow a transition to use a function to determine what method to run', () => {
-        let valueToMatch = '';
-        let capturedElement: any;
-        const transitionFn = (fromState: string, toState: string, element: any) => {
-          capturedElement = element;
-          return toState == valueToMatch;
-        };
+      fixmeIvy('unknown').it(
+          'should allow a transition to use a function to determine what method to run', () => {
+            let valueToMatch = '';
+            let capturedElement: any;
+            const transitionFn = (fromState: string, toState: string, element: any) => {
+              capturedElement = element;
+              return toState == valueToMatch;
+            };
 
-        @Component({
-          selector: 'if-cmp',
-          template: '<div #element [@myAnimation]="exp"></div>',
-          animations: [
-            trigger('myAnimation', [transition(
-                                       transitionFn,
-                                       [style({opacity: 0}), animate(1234, style({opacity: 1}))])]),
-          ]
-        })
-        class Cmp {
-          @ViewChild('element')
-          element: any;
-          exp: any = '';
-        }
+            @Component({
+              selector: 'if-cmp',
+              template: '<div #element [@myAnimation]="exp"></div>',
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [transition(
+                        transitionFn, [style({opacity: 0}), animate(1234, style({opacity: 1}))])]),
+              ]
+            })
+            class Cmp {
+              @ViewChild('element')
+              element: any;
+              exp: any = '';
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
-        valueToMatch = cmp.exp = 'something';
-        fixture.detectChanges();
-        const element = cmp.element.nativeElement;
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            valueToMatch = cmp.exp = 'something';
+            fixture.detectChanges();
+            const element = cmp.element.nativeElement;
 
-        let players = getLog();
-        expect(players.length).toEqual(1);
-        let [p1] = players;
-        expect(p1.totalTime).toEqual(1234);
-        expect(capturedElement).toEqual(element);
-        resetLog();
+            let players = getLog();
+            expect(players.length).toEqual(1);
+            let [p1] = players;
+            expect(p1.totalTime).toEqual(1234);
+            expect(capturedElement).toEqual(element);
+            resetLog();
 
-        valueToMatch = 'something-else';
-        cmp.exp = 'this-wont-match';
-        fixture.detectChanges();
+            valueToMatch = 'something-else';
+            cmp.exp = 'this-wont-match';
+            fixture.detectChanges();
 
-        players = getLog();
-        expect(players.length).toEqual(0);
-      });
+            players = getLog();
+            expect(players.length).toEqual(0);
+          });
 
-      it('should allow a transition to use a function to determine what method to run and expose any parameter values',
-         () => {
-           const transitionFn =
-               (fromState: string, toState: string, element: any, params: {[key: string]: any}) => {
-                 return params['doMatch'] == true;
-               };
+      fixmeIvy('unknown').it(
+          'should allow a transition to use a function to determine what method to run and expose any parameter values',
+          () => {
+            const transitionFn =
+                (fromState: string, toState: string, element: any,
+                 params: {[key: string]: any}) => { return params['doMatch'] == true; };
 
-           @Component({
-             selector: 'if-cmp',
-             template: '<div [@myAnimation]="{value:exp, params: {doMatch:doMatch}}"></div>',
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [transition(
-                       transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))])]),
-             ]
-           })
-           class Cmp {
-             doMatch = false;
-             exp: any = '';
-           }
+            @Component({
+              selector: 'if-cmp',
+              template: '<div [@myAnimation]="{value:exp, params: {doMatch:doMatch}}"></div>',
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [transition(
+                        transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))])]),
+              ]
+            })
+            class Cmp {
+              doMatch = false;
+              exp: any = '';
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.doMatch = true;
-           fixture.detectChanges();
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.doMatch = true;
+            fixture.detectChanges();
 
-           let players = getLog();
-           expect(players.length).toEqual(1);
-           let [p1] = players;
-           expect(p1.totalTime).toEqual(3333);
-           resetLog();
+            let players = getLog();
+            expect(players.length).toEqual(1);
+            let [p1] = players;
+            expect(p1.totalTime).toEqual(3333);
+            resetLog();
 
-           cmp.doMatch = false;
-           cmp.exp = 'this-wont-match';
-           fixture.detectChanges();
+            cmp.doMatch = false;
+            cmp.exp = 'this-wont-match';
+            fixture.detectChanges();
 
-           players = getLog();
-           expect(players.length).toEqual(0);
-         });
+            players = getLog();
+            expect(players.length).toEqual(0);
+          });
 
       it('should allow a state value to be `0`', () => {
         @Component({
@@ -454,217 +459,223 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(player.duration).toEqual(1234);
       });
 
-      it('should always cancel the previous transition if a follow-up transition is not matched',
-         fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should always cancel the previous transition if a follow-up transition is not matched',
+          fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div [@myAnimation]="exp" (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
         `,
-             animations: [trigger(
-                 'myAnimation',
-                 [transition(
-                     'a => b', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-           })
-           class Cmp {
-             exp: any;
-             startEvent: any;
-             doneEvent: any;
+              animations: [trigger(
+                  'myAnimation',
+                  [transition(
+                      'a => b',
+                      [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+            })
+            class Cmp {
+              exp: any;
+              startEvent: any;
+              doneEvent: any;
 
-             callback(event: any) {
-               if (event.phaseName == 'done') {
-                 this.doneEvent = event;
-               } else {
-                 this.startEvent = event;
-               }
-             }
-           }
+              callback(event: any) {
+                if (event.phaseName == 'done') {
+                  this.doneEvent = event;
+                } else {
+                  this.startEvent = event;
+                }
+              }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = 'a';
-           fixture.detectChanges();
-           engine.flush();
-           expect(getLog().length).toEqual(0);
-           expect(engine.players.length).toEqual(0);
+            cmp.exp = 'a';
+            fixture.detectChanges();
+            engine.flush();
+            expect(getLog().length).toEqual(0);
+            expect(engine.players.length).toEqual(0);
 
-           flushMicrotasks();
-           expect(cmp.startEvent.toState).toEqual('a');
-           expect(cmp.startEvent.totalTime).toEqual(0);
-           expect(cmp.startEvent.toState).toEqual('a');
-           expect(cmp.startEvent.totalTime).toEqual(0);
-           resetLog();
+            flushMicrotasks();
+            expect(cmp.startEvent.toState).toEqual('a');
+            expect(cmp.startEvent.totalTime).toEqual(0);
+            expect(cmp.startEvent.toState).toEqual('a');
+            expect(cmp.startEvent.totalTime).toEqual(0);
+            resetLog();
 
-           cmp.exp = 'b';
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp = 'b';
+            fixture.detectChanges();
+            engine.flush();
 
-           const players = getLog();
-           expect(players.length).toEqual(1);
-           expect(engine.players.length).toEqual(1);
+            const players = getLog();
+            expect(players.length).toEqual(1);
+            expect(engine.players.length).toEqual(1);
 
-           flushMicrotasks();
-           expect(cmp.startEvent.toState).toEqual('b');
-           expect(cmp.startEvent.totalTime).toEqual(500);
-           expect(cmp.startEvent.toState).toEqual('b');
-           expect(cmp.startEvent.totalTime).toEqual(500);
-           resetLog();
+            flushMicrotasks();
+            expect(cmp.startEvent.toState).toEqual('b');
+            expect(cmp.startEvent.totalTime).toEqual(500);
+            expect(cmp.startEvent.toState).toEqual('b');
+            expect(cmp.startEvent.totalTime).toEqual(500);
+            resetLog();
 
-           let completed = false;
-           players[0].onDone(() => completed = true);
+            let completed = false;
+            players[0].onDone(() => completed = true);
 
-           cmp.exp = 'c';
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp = 'c';
+            fixture.detectChanges();
+            engine.flush();
 
-           expect(engine.players.length).toEqual(0);
-           expect(getLog().length).toEqual(0);
+            expect(engine.players.length).toEqual(0);
+            expect(getLog().length).toEqual(0);
 
-           flushMicrotasks();
-           expect(cmp.startEvent.toState).toEqual('c');
-           expect(cmp.startEvent.totalTime).toEqual(0);
-           expect(cmp.startEvent.toState).toEqual('c');
-           expect(cmp.startEvent.totalTime).toEqual(0);
+            flushMicrotasks();
+            expect(cmp.startEvent.toState).toEqual('c');
+            expect(cmp.startEvent.totalTime).toEqual(0);
+            expect(cmp.startEvent.toState).toEqual('c');
+            expect(cmp.startEvent.totalTime).toEqual(0);
 
-           expect(completed).toBe(true);
-         }));
+            expect(completed).toBe(true);
+          }));
 
-      it('should always fire inner callbacks even if no animation is fired when a view is inserted',
-         fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should always fire inner callbacks even if no animation is fired when a view is inserted',
+          fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div *ngIf="exp">
             <div @myAnimation (@myAnimation.start)="track($event)" (@myAnimation.done)="track($event)"></div>
           </div>
         `,
-             animations: [
-               trigger('myAnimation', []),
-             ]
-           })
-           class Cmp {
-             exp: any = false;
-             log: string[] = [];
-             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
-           }
+              animations: [
+                trigger('myAnimation', []),
+              ]
+            })
+            class Cmp {
+              exp: any = false;
+              log: string[] = [];
+              track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           fixture.detectChanges();
-           flushMicrotasks();
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.log).toEqual([]);
+            expect(cmp.log).toEqual([]);
 
-           cmp.exp = true;
-           fixture.detectChanges();
-           flushMicrotasks();
+            cmp.exp = true;
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.log).toEqual(['myAnimation-start', 'myAnimation-done']);
-         }));
+            expect(cmp.log).toEqual(['myAnimation-start', 'myAnimation-done']);
+          }));
 
-      it('should only turn a view removal as into `void` state transition', () => {
-        @Component({
-          selector: 'if-cmp',
-          template: `
+      fixmeIvy('unknown').it(
+          'should only turn a view removal as into `void` state transition', () => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div *ngIf="exp1" [@myAnimation]="exp2"></div>
         `,
-          animations: [trigger(
-              'myAnimation',
-              [
-                transition(
-                    'void <=> *', [style({width: '0px'}), animate(1000, style({width: '100px'}))]),
-                transition(
-                    '* => *', [style({height: '0px'}), animate(1000, style({height: '100px'}))]),
-              ])]
-        })
-        class Cmp {
-          exp1: any = false;
-          exp2: any = false;
-        }
+              animations: [trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        'void <=> *',
+                        [style({width: '0px'}), animate(1000, style({width: '100px'}))]),
+                    transition(
+                        '* => *',
+                        [style({height: '0px'}), animate(1000, style({height: '100px'}))]),
+                  ])]
+            })
+            class Cmp {
+              exp1: any = false;
+              exp2: any = false;
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-        function resetState() {
-          cmp.exp2 = 'something';
-          fixture.detectChanges();
-          engine.flush();
-          resetLog();
-        }
+            function resetState() {
+              cmp.exp2 = 'something';
+              fixture.detectChanges();
+              engine.flush();
+              resetLog();
+            }
 
-        cmp.exp1 = true;
-        cmp.exp2 = null;
+            cmp.exp1 = true;
+            cmp.exp2 = null;
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
-        ]);
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
+            ]);
 
-        resetState();
-        cmp.exp2 = false;
+            resetState();
+            cmp.exp2 = false;
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
-        ]);
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+            ]);
 
-        resetState();
-        cmp.exp2 = 0;
+            resetState();
+            cmp.exp2 = 0;
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
-        ]);
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+            ]);
 
-        resetState();
-        cmp.exp2 = '';
+            resetState();
+            cmp.exp2 = '';
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
-        ]);
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+            ]);
 
-        resetState();
-        cmp.exp2 = undefined;
+            resetState();
+            cmp.exp2 = undefined;
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
-        ]);
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, height: '0px'}, {offset: 1, height: '100px'}
+            ]);
 
-        resetState();
-        cmp.exp1 = false;
-        cmp.exp2 = 'abc';
+            resetState();
+            cmp.exp1 = false;
+            cmp.exp2 = 'abc';
 
-        fixture.detectChanges();
-        engine.flush();
+            fixture.detectChanges();
+            engine.flush();
 
-        expect(getLog().pop() !.keyframes).toEqual([
-          {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
-        ]);
-      });
+            expect(getLog().pop() !.keyframes).toEqual([
+              {offset: 0, width: '0px'}, {offset: 1, width: '100px'}
+            ]);
+          });
 
-      it('should stringify boolean triggers to `1` and `0`', () => {
+      fixmeIvy('unknown').it('should stringify boolean triggers to `1` and `0`', () => {
         @Component({
           selector: 'if-cmp',
           template: `
@@ -817,91 +828,95 @@ const DEFAULT_COMPONENT_ID = '1';
          });
 
       describe('host bindings', () => {
-        it('should trigger a state change animation from state => state on the component host element',
-           fakeAsync(() => {
-             @Component({
-               selector: 'my-cmp',
-               template: '...',
-               animations: [trigger(
-                   'myAnimation',
-                   [transition(
-                       'a => b',
-                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-             })
-             class Cmp {
-               @HostBinding('@myAnimation')
-               exp = 'a';
-             }
+        fixmeIvy('unknown').it(
+            'should trigger a state change animation from state => state on the component host element',
+            fakeAsync(() => {
+              @Component({
+                selector: 'my-cmp',
+                template: '...',
+                animations: [trigger(
+                    'myAnimation',
+                    [transition(
+                        'a => b',
+                        [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+              })
+              class Cmp {
+                @HostBinding('@myAnimation')
+                exp = 'a';
+              }
 
-             TestBed.configureTestingModule({declarations: [Cmp]});
+              TestBed.configureTestingModule({declarations: [Cmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
-             const fixture = TestBed.createComponent(Cmp);
-             const cmp = fixture.componentInstance;
-             fixture.detectChanges();
-             engine.flush();
-             expect(getLog().length).toEqual(0);
+              const engine = TestBed.get(ɵAnimationEngine);
+              const fixture = TestBed.createComponent(Cmp);
+              const cmp = fixture.componentInstance;
+              fixture.detectChanges();
+              engine.flush();
+              expect(getLog().length).toEqual(0);
 
-             cmp.exp = 'b';
-             fixture.detectChanges();
-             engine.flush();
-             expect(getLog().length).toEqual(1);
+              cmp.exp = 'b';
+              fixture.detectChanges();
+              engine.flush();
+              expect(getLog().length).toEqual(1);
 
-             const data = getLog().pop() !;
-             expect(data.element).toEqual(fixture.elementRef.nativeElement);
-             expect(data.keyframes).toEqual([{offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}]);
-           }));
+              const data = getLog().pop() !;
+              expect(data.element).toEqual(fixture.elementRef.nativeElement);
+              expect(data.keyframes).toEqual([
+                {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
+              ]);
+            }));
 
         // nonAnimationRenderer => animationRenderer
-        it('should trigger a leave animation when the inner components host binding updates',
-           fakeAsync(() => {
-             @Component({
-               selector: 'parent-cmp',
-               template: `
+        fixmeIvy('unknown').it(
+            'should trigger a leave animation when the inner components host binding updates',
+            fakeAsync(() => {
+              @Component({
+                selector: 'parent-cmp',
+                template: `
                 <child-cmp *ngIf="exp"></child-cmp>
               `
-             })
-             class ParentCmp {
-               public exp = true;
-             }
+              })
+              class ParentCmp {
+                public exp = true;
+              }
 
-             @Component({
-               selector: 'child-cmp',
-               template: '...',
-               animations: [trigger(
-                   'host',
-                   [transition(
-                       ':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))])])]
-             })
-             class ChildCmp {
-               @HostBinding('@host') public hostAnimation = true;
-             }
+              @Component({
+                selector: 'child-cmp',
+                template: '...',
+                animations: [trigger(
+                    'host',
+                    [transition(
+                        ':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))])])]
+              })
+              class ChildCmp {
+                @HostBinding('@host') public hostAnimation = true;
+              }
 
-             TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
-             const fixture = TestBed.createComponent(ParentCmp);
-             const cmp = fixture.componentInstance;
-             fixture.detectChanges();
-             engine.flush();
-             expect(getLog().length).toEqual(0);
+              const engine = TestBed.get(ɵAnimationEngine);
+              const fixture = TestBed.createComponent(ParentCmp);
+              const cmp = fixture.componentInstance;
+              fixture.detectChanges();
+              engine.flush();
+              expect(getLog().length).toEqual(0);
 
-             cmp.exp = false;
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement.children.length).toBe(1);
+              cmp.exp = false;
+              fixture.detectChanges();
+              expect(fixture.debugElement.nativeElement.children.length).toBe(1);
 
-             engine.flush();
-             expect(getLog().length).toEqual(1);
+              engine.flush();
+              expect(getLog().length).toEqual(1);
 
-             const [player] = getLog();
-             expect(player.keyframes).toEqual([
-               {opacity: '1', offset: 0},
-               {opacity: '0', offset: 1},
-             ]);
+              const [player] = getLog();
+              expect(player.keyframes).toEqual([
+                {opacity: '1', offset: 0},
+                {opacity: '0', offset: 1},
+              ]);
 
-             player.finish();
-             expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-           }));
+              player.finish();
+              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
+            }));
 
         // animationRenderer => nonAnimationRenderer
         it('should trigger a leave animation when the outer components element binding updates on the host component element',
@@ -955,67 +970,69 @@ const DEFAULT_COMPONENT_ID = '1';
            }));
 
         // animationRenderer => animationRenderer
-        it('should trigger a leave animation when both the inner and outer components trigger on the same element',
-           fakeAsync(() => {
-             @Component({
-               selector: 'parent-cmp',
-               animations: [trigger(
-                   'host',
-                   [transition(
-                       ':leave',
-                       [style({height: '100px'}), animate(1000, style({height: '0px'}))])])],
-               template: `
+        fixmeIvy('unknown').it(
+            'should trigger a leave animation when both the inner and outer components trigger on the same element',
+            fakeAsync(() => {
+              @Component({
+                selector: 'parent-cmp',
+                animations: [trigger(
+                    'host',
+                    [transition(
+                        ':leave',
+                        [style({height: '100px'}), animate(1000, style({height: '0px'}))])])],
+                template: `
                 <child-cmp *ngIf="exp" @host></child-cmp>
               `
-             })
-             class ParentCmp {
-               public exp = true;
-             }
+              })
+              class ParentCmp {
+                public exp = true;
+              }
 
-             @Component({
-               selector: 'child-cmp',
-               template: '...',
-               animations: [trigger(
-                   'host', [transition(
-                               ':leave',
-                               [style({width: '100px'}), animate(1000, style({width: '0px'}))])])]
-             })
-             class ChildCmp {
-               @HostBinding('@host') public hostAnimation = true;
-             }
+              @Component({
+                selector: 'child-cmp',
+                template: '...',
+                animations: [trigger(
+                    'host',
+                    [transition(
+                        ':leave',
+                        [style({width: '100px'}), animate(1000, style({width: '0px'}))])])]
+              })
+              class ChildCmp {
+                @HostBinding('@host') public hostAnimation = true;
+              }
 
-             TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-             const engine = TestBed.get(ɵAnimationEngine);
-             const fixture = TestBed.createComponent(ParentCmp);
-             const cmp = fixture.componentInstance;
-             fixture.detectChanges();
-             engine.flush();
-             expect(getLog().length).toEqual(0);
+              const engine = TestBed.get(ɵAnimationEngine);
+              const fixture = TestBed.createComponent(ParentCmp);
+              const cmp = fixture.componentInstance;
+              fixture.detectChanges();
+              engine.flush();
+              expect(getLog().length).toEqual(0);
 
-             cmp.exp = false;
-             fixture.detectChanges();
-             expect(fixture.debugElement.nativeElement.children.length).toBe(1);
+              cmp.exp = false;
+              fixture.detectChanges();
+              expect(fixture.debugElement.nativeElement.children.length).toBe(1);
 
-             engine.flush();
-             expect(getLog().length).toEqual(2);
+              engine.flush();
+              expect(getLog().length).toEqual(2);
 
-             const [p1, p2] = getLog();
-             expect(p1.keyframes).toEqual([
-               {width: '100px', offset: 0},
-               {width: '0px', offset: 1},
-             ]);
+              const [p1, p2] = getLog();
+              expect(p1.keyframes).toEqual([
+                {width: '100px', offset: 0},
+                {width: '0px', offset: 1},
+              ]);
 
-             expect(p2.keyframes).toEqual([
-               {height: '100px', offset: 0},
-               {height: '0px', offset: 1},
-             ]);
+              expect(p2.keyframes).toEqual([
+                {height: '100px', offset: 0},
+                {height: '0px', offset: 1},
+              ]);
 
-             p1.finish();
-             p2.finish();
-             flushMicrotasks();
-             expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-           }));
+              p1.finish();
+              p2.finish();
+              flushMicrotasks();
+              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
+            }));
 
         it('should not throw when the host element is removed and no animation triggers',
            fakeAsync(() => {
@@ -1922,46 +1939,47 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(p.contains(c2)).toBeTruthy();
          });
 
-      it('should detect trigger changes based on object.value properties', () => {
-        @Component({
-          selector: 'ani-cmp',
-          template: `
+      fixmeIvy('unknown').it(
+          'should detect trigger changes based on object.value properties', () => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div [@myAnimation]="{value:exp}"></div>
           `,
-          animations: [
-            trigger(
-                'myAnimation',
-                [
-                  transition('* => 1', [animate(1234, style({opacity: 0}))]),
-                  transition('* => 2', [animate(5678, style({opacity: 0}))]),
-                ]),
-          ]
-        })
-        class Cmp {
-          public exp: any;
-        }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition('* => 1', [animate(1234, style({opacity: 0}))]),
+                      transition('* => 2', [animate(5678, style({opacity: 0}))]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              public exp: any;
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-        cmp.exp = '1';
-        fixture.detectChanges();
-        engine.flush();
-        let players = getLog();
-        expect(players.length).toEqual(1);
-        expect(players[0].duration).toEqual(1234);
-        resetLog();
+            cmp.exp = '1';
+            fixture.detectChanges();
+            engine.flush();
+            let players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(1234);
+            resetLog();
 
-        cmp.exp = '2';
-        fixture.detectChanges();
-        engine.flush();
-        players = getLog();
-        expect(players.length).toEqual(1);
-        expect(players[0].duration).toEqual(5678);
-      });
+            cmp.exp = '2';
+            fixture.detectChanges();
+            engine.flush();
+            players = getLog();
+            expect(players.length).toEqual(1);
+            expect(players[0].duration).toEqual(5678);
+          });
 
       it('should not render animations when the object expression value is the same as it was previously',
          () => {
@@ -2006,60 +2024,61 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(players.length).toEqual(0);
          });
 
-      it('should update the final state styles when params update even if the expression hasn\'t changed',
-         fakeAsync(() => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should update the final state styles when params update even if the expression hasn\'t changed',
+          fakeAsync(() => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div [@myAnimation]="{value:exp,params:{color:color}}"></div>
           `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     state('*', style({color: '{{ color }}'}), {params: {color: 'black'}}),
-                     transition('* => 1', animate(500))
-                   ]),
-             ]
-           })
-           class Cmp {
-             public exp: any;
-             // TODO(issue/24571): remove '!'.
-             public color !: string | null;
-           }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      state('*', style({color: '{{ color }}'}), {params: {color: 'black'}}),
+                      transition('* => 1', animate(500))
+                    ]),
+              ]
+            })
+            class Cmp {
+              public exp: any;
+              // TODO(issue/24571): remove '!'.
+              public color !: string | null;
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = '1';
-           cmp.color = 'red';
-           fixture.detectChanges();
-           const player = getLog()[0] !;
-           const element = player.element;
-           player.finish();
+            cmp.exp = '1';
+            cmp.color = 'red';
+            fixture.detectChanges();
+            const player = getLog()[0] !;
+            const element = player.element;
+            player.finish();
 
-           flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
+            flushMicrotasks();
+            expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
 
-           cmp.exp = '1';
-           cmp.color = 'blue';
-           fixture.detectChanges();
-           resetLog();
+            cmp.exp = '1';
+            cmp.color = 'blue';
+            fixture.detectChanges();
+            resetLog();
 
-           flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+            flushMicrotasks();
+            expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
 
-           cmp.exp = '1';
-           cmp.color = null;
-           fixture.detectChanges();
-           resetLog();
+            cmp.exp = '1';
+            cmp.color = null;
+            fixture.detectChanges();
+            resetLog();
 
-           flushMicrotasks();
-           expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
-         }));
+            flushMicrotasks();
+            expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
+          }));
 
       it('should substitute in values if the provided state match is an object with values', () => {
         @Component({
@@ -2098,72 +2117,73 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
-      it('should retain substituted styles on the element once the animation is complete if referenced in the final state',
-         fakeAsync(() => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should retain substituted styles on the element once the animation is complete if referenced in the final state',
+          fakeAsync(() => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div [@myAnimation]="{value:exp, params: { color: color }}"></div>
           `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     state(
-                         'start', style({
-                           color: '{{ color }}',
-                           fontSize: '{{ fontSize }}px',
-                           width: '{{ width }}'
-                         }),
-                         {params: {color: 'red', fontSize: '200', width: '10px'}}),
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      state(
+                          'start', style({
+                            color: '{{ color }}',
+                            fontSize: '{{ fontSize }}px',
+                            width: '{{ width }}'
+                          }),
+                          {params: {color: 'red', fontSize: '200', width: '10px'}}),
 
-                     state(
-                         'final',
-                         style(
-                             {color: '{{ color }}', fontSize: '{{ fontSize }}px', width: '888px'}),
-                         {params: {color: 'green', fontSize: '50', width: '100px'}}),
+                      state(
+                          'final',
+                          style(
+                              {color: '{{ color }}', fontSize: '{{ fontSize }}px', width: '888px'}),
+                          {params: {color: 'green', fontSize: '50', width: '100px'}}),
 
-                     transition('start => final', animate(500)),
-                   ]),
-             ]
-           })
-           class Cmp {
-             public exp: any;
-             public color: any;
-           }
+                      transition('start => final', animate(500)),
+                    ]),
+              ]
+            })
+            class Cmp {
+              public exp: any;
+              public color: any;
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = 'start';
-           cmp.color = 'red';
-           fixture.detectChanges();
-           resetLog();
+            cmp.exp = 'start';
+            cmp.color = 'red';
+            fixture.detectChanges();
+            resetLog();
 
-           cmp.exp = 'final';
-           cmp.color = 'blue';
-           fixture.detectChanges();
+            cmp.exp = 'final';
+            cmp.color = 'blue';
+            fixture.detectChanges();
 
-           const players = getLog();
-           expect(players.length).toEqual(1);
-           const [p1] = players;
+            const players = getLog();
+            expect(players.length).toEqual(1);
+            const [p1] = players;
 
-           expect(p1.keyframes).toEqual([
-             {color: 'red', fontSize: '200px', width: '10px', offset: 0},
-             {color: 'blue', fontSize: '50px', width: '888px', offset: 1}
-           ]);
+            expect(p1.keyframes).toEqual([
+              {color: 'red', fontSize: '200px', width: '10px', offset: 0},
+              {color: 'blue', fontSize: '50px', width: '888px', offset: 1}
+            ]);
 
-           const element = p1.element;
-           p1.finish();
-           flushMicrotasks();
+            const element = p1.element;
+            p1.finish();
+            flushMicrotasks();
 
-           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
-           expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
-         }));
+            expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+            expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
+            expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
+          }));
 
       it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ',
          fakeAsync(() => {
@@ -2443,211 +2463,216 @@ const DEFAULT_COMPONENT_ID = '1';
     });
 
     describe('animation listeners', () => {
-      it('should trigger a `start` state change listener for when the animation changes state from void => state',
-         fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should trigger a `start` state change listener for when the animation changes state from void => state',
+          fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div *ngIf="exp" [@myAnimation]="exp" (@myAnimation.start)="callback($event)"></div>
         `,
-             animations: [trigger(
-                 'myAnimation',
-                 [transition(
-                     'void => *',
-                     [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-           })
-           class Cmp {
-             exp: any = false;
-             // TODO(issue/24571): remove '!'.
-             event !: AnimationEvent;
+              animations: [trigger(
+                  'myAnimation',
+                  [transition(
+                      'void => *',
+                      [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+            })
+            class Cmp {
+              exp: any = false;
+              // TODO(issue/24571): remove '!'.
+              event !: AnimationEvent;
 
-             callback = (event: any) => { this.event = event; };
-           }
+              callback = (event: any) => { this.event = event; };
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = 'true';
-           fixture.detectChanges();
-           flushMicrotasks();
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'true';
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.event.triggerName).toEqual('myAnimation');
-           expect(cmp.event.phaseName).toEqual('start');
-           expect(cmp.event.totalTime).toEqual(500);
-           expect(cmp.event.fromState).toEqual('void');
-           expect(cmp.event.toState).toEqual('true');
-         }));
+            expect(cmp.event.triggerName).toEqual('myAnimation');
+            expect(cmp.event.phaseName).toEqual('start');
+            expect(cmp.event.totalTime).toEqual(500);
+            expect(cmp.event.fromState).toEqual('void');
+            expect(cmp.event.toState).toEqual('true');
+          }));
 
-      it('should trigger a `done` state change listener for when the animation changes state from a => b',
-         fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should trigger a `done` state change listener for when the animation changes state from a => b',
+          fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div *ngIf="exp" [@myAnimation123]="exp" (@myAnimation123.done)="callback($event)"></div>
         `,
-             animations: [trigger(
-                 'myAnimation123',
-                 [transition(
-                     '* => b', [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))])])],
-           })
-           class Cmp {
-             exp: any = false;
-             // TODO(issue/24571): remove '!'.
-             event !: AnimationEvent;
+              animations: [trigger(
+                  'myAnimation123',
+                  [transition(
+                      '* => b',
+                      [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))])])],
+            })
+            class Cmp {
+              exp: any = false;
+              // TODO(issue/24571): remove '!'.
+              event !: AnimationEvent;
 
-             callback = (event: any) => { this.event = event; };
-           }
+              callback = (event: any) => { this.event = event; };
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = 'b';
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp = 'b';
+            fixture.detectChanges();
+            engine.flush();
 
-           expect(cmp.event).toBeFalsy();
+            expect(cmp.event).toBeFalsy();
 
-           const player = engine.players.pop();
-           player.finish();
-           flushMicrotasks();
+            const player = engine.players.pop();
+            player.finish();
+            flushMicrotasks();
 
-           expect(cmp.event.triggerName).toEqual('myAnimation123');
-           expect(cmp.event.phaseName).toEqual('done');
-           expect(cmp.event.totalTime).toEqual(999);
-           expect(cmp.event.fromState).toEqual('void');
-           expect(cmp.event.toState).toEqual('b');
-         }));
+            expect(cmp.event.triggerName).toEqual('myAnimation123');
+            expect(cmp.event.phaseName).toEqual('done');
+            expect(cmp.event.totalTime).toEqual(999);
+            expect(cmp.event.fromState).toEqual('void');
+            expect(cmp.event.toState).toEqual('b');
+          }));
 
-      it('should handle callbacks for multiple triggers running simultaneously', fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should handle callbacks for multiple triggers running simultaneously', fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div [@ani1]="exp1" (@ani1.done)="callback1($event)"></div>
           <div [@ani2]="exp2" (@ani2.done)="callback2($event)"></div>
         `,
-             animations: [
-               trigger(
-                   'ani1',
-                   [
-                     transition(
-                         '* => a',
-                         [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))]),
-                   ]),
-               trigger(
-                   'ani2',
-                   [
-                     transition(
-                         '* => b',
-                         [style({'width': '0px'}), animate(999, style({'width': '100px'}))]),
-                   ])
-             ],
-           })
-           class Cmp {
-             exp1: any = false;
-             exp2: any = false;
-             // TODO(issue/24571): remove '!'.
-             event1 !: AnimationEvent;
-             // TODO(issue/24571): remove '!'.
-             event2 !: AnimationEvent;
-             // tslint:disable:semicolon
-             callback1 = (event: any) => { this.event1 = event; };
-             // tslint:disable:semicolon
-             callback2 = (event: any) => { this.event2 = event; };
-           }
+              animations: [
+                trigger(
+                    'ani1',
+                    [
+                      transition(
+                          '* => a',
+                          [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))]),
+                    ]),
+                trigger(
+                    'ani2',
+                    [
+                      transition(
+                          '* => b',
+                          [style({'width': '0px'}), animate(999, style({'width': '100px'}))]),
+                    ])
+              ],
+            })
+            class Cmp {
+              exp1: any = false;
+              exp2: any = false;
+              // TODO(issue/24571): remove '!'.
+              event1 !: AnimationEvent;
+              // TODO(issue/24571): remove '!'.
+              event2 !: AnimationEvent;
+              // tslint:disable:semicolon
+              callback1 = (event: any) => { this.event1 = event; };
+              // tslint:disable:semicolon
+              callback2 = (event: any) => { this.event2 = event; };
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp1 = 'a';
-           cmp.exp2 = 'b';
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp1 = 'a';
+            cmp.exp2 = 'b';
+            fixture.detectChanges();
+            engine.flush();
 
-           expect(cmp.event1).toBeFalsy();
-           expect(cmp.event2).toBeFalsy();
+            expect(cmp.event1).toBeFalsy();
+            expect(cmp.event2).toBeFalsy();
 
-           const player1 = engine.players[0];
-           const player2 = engine.players[1];
+            const player1 = engine.players[0];
+            const player2 = engine.players[1];
 
-           player1.finish();
-           player2.finish();
-           expect(cmp.event1).toBeFalsy();
-           expect(cmp.event2).toBeFalsy();
+            player1.finish();
+            player2.finish();
+            expect(cmp.event1).toBeFalsy();
+            expect(cmp.event2).toBeFalsy();
 
-           flushMicrotasks();
-           expect(cmp.event1.triggerName).toBeTruthy('ani1');
-           expect(cmp.event2.triggerName).toBeTruthy('ani2');
-         }));
+            flushMicrotasks();
+            expect(cmp.event1.triggerName).toBeTruthy('ani1');
+            expect(cmp.event2.triggerName).toBeTruthy('ani2');
+          }));
 
-      it('should handle callbacks for multiple triggers running simultaneously on the same element',
-         fakeAsync(() => {
-           @Component({
-             selector: 'if-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should handle callbacks for multiple triggers running simultaneously on the same element',
+          fakeAsync(() => {
+            @Component({
+              selector: 'if-cmp',
+              template: `
           <div [@ani1]="exp1" (@ani1.done)="callback1($event)" [@ani2]="exp2" (@ani2.done)="callback2($event)"></div>
         `,
-             animations: [
-               trigger(
-                   'ani1',
-                   [
-                     transition(
-                         '* => a',
-                         [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))]),
-                   ]),
-               trigger(
-                   'ani2',
-                   [
-                     transition(
-                         '* => b',
-                         [style({'width': '0px'}), animate(999, style({'width': '100px'}))]),
-                   ])
-             ],
-           })
-           class Cmp {
-             exp1: any = false;
-             exp2: any = false;
-             // TODO(issue/24571): remove '!'.
-             event1 !: AnimationEvent;
-             // TODO(issue/24571): remove '!'.
-             event2 !: AnimationEvent;
-             callback1 = (event: any) => { this.event1 = event; };
-             callback2 = (event: any) => { this.event2 = event; };
-           }
+              animations: [
+                trigger(
+                    'ani1',
+                    [
+                      transition(
+                          '* => a',
+                          [style({'opacity': '0'}), animate(999, style({'opacity': '1'}))]),
+                    ]),
+                trigger(
+                    'ani2',
+                    [
+                      transition(
+                          '* => b',
+                          [style({'width': '0px'}), animate(999, style({'width': '100px'}))]),
+                    ])
+              ],
+            })
+            class Cmp {
+              exp1: any = false;
+              exp2: any = false;
+              // TODO(issue/24571): remove '!'.
+              event1 !: AnimationEvent;
+              // TODO(issue/24571): remove '!'.
+              event2 !: AnimationEvent;
+              callback1 = (event: any) => { this.event1 = event; };
+              callback2 = (event: any) => { this.event2 = event; };
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp1 = 'a';
-           cmp.exp2 = 'b';
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp1 = 'a';
+            cmp.exp2 = 'b';
+            fixture.detectChanges();
+            engine.flush();
 
-           expect(cmp.event1).toBeFalsy();
-           expect(cmp.event2).toBeFalsy();
+            expect(cmp.event1).toBeFalsy();
+            expect(cmp.event2).toBeFalsy();
 
-           const player1 = engine.players[0];
-           const player2 = engine.players[1];
+            const player1 = engine.players[0];
+            const player2 = engine.players[1];
 
-           player1.finish();
-           player2.finish();
-           expect(cmp.event1).toBeFalsy();
-           expect(cmp.event2).toBeFalsy();
+            player1.finish();
+            player2.finish();
+            expect(cmp.event1).toBeFalsy();
+            expect(cmp.event2).toBeFalsy();
 
-           flushMicrotasks();
-           expect(cmp.event1.triggerName).toBeTruthy('ani1');
-           expect(cmp.event2.triggerName).toBeTruthy('ani2');
-         }));
+            flushMicrotasks();
+            expect(cmp.event1.triggerName).toBeTruthy('ani1');
+            expect(cmp.event2.triggerName).toBeTruthy('ani2');
+          }));
 
       it('should handle a leave animation for multiple triggers even if not all triggers have their own leave transition specified',
          fakeAsync(() => {
@@ -2709,124 +2734,128 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(elm.innerText.trim()).toEqual('');
          }));
 
-      it('should trigger a state change listener for when the animation changes state from void => state on the host element',
-         fakeAsync(() => {
-           @Component({
-             selector: 'my-cmp',
-             template: `...`,
-             animations: [trigger(
-                 'myAnimation2',
-                 [transition(
-                     'void => *',
-                     [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
-           })
-           class Cmp {
-             // TODO(issue/24571): remove '!'.
-             event !: AnimationEvent;
+      fixmeIvy('unknown').it(
+          'should trigger a state change listener for when the animation changes state from void => state on the host element',
+          fakeAsync(() => {
+            @Component({
+              selector: 'my-cmp',
+              template: `...`,
+              animations: [trigger(
+                  'myAnimation2',
+                  [transition(
+                      'void => *',
+                      [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
+            })
+            class Cmp {
+              // TODO(issue/24571): remove '!'.
+              event !: AnimationEvent;
 
-             @HostBinding('@myAnimation2')
-             exp: any = false;
+              @HostBinding('@myAnimation2')
+              exp: any = false;
 
-             @HostListener('@myAnimation2.start', ['$event'])
-             callback = (event: any) => { this.event = event; }
-           }
+              @HostListener('@myAnimation2.start', ['$event'])
+              callback = (event: any) => { this.event = event; }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp = 'TRUE';
-           fixture.detectChanges();
-           flushMicrotasks();
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp = 'TRUE';
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.event.triggerName).toEqual('myAnimation2');
-           expect(cmp.event.phaseName).toEqual('start');
-           expect(cmp.event.totalTime).toEqual(1000);
-           expect(cmp.event.fromState).toEqual('void');
-           expect(cmp.event.toState).toEqual('TRUE');
-         }));
+            expect(cmp.event.triggerName).toEqual('myAnimation2');
+            expect(cmp.event.phaseName).toEqual('start');
+            expect(cmp.event.totalTime).toEqual(1000);
+            expect(cmp.event.fromState).toEqual('void');
+            expect(cmp.event.toState).toEqual('TRUE');
+          }));
 
-      it('should always fire callbacks even when a transition is not detected', fakeAsync(() => {
-           @Component({
-             selector: 'my-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should always fire callbacks even when a transition is not detected', fakeAsync(() => {
+            @Component({
+              selector: 'my-cmp',
+              template: `
               <div [@myAnimation]="exp" (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
             `,
-             animations: [trigger('myAnimation', [])]
-           })
-           class Cmp {
-             // TODO(issue/24571): remove '!'.
-             exp !: string;
-             log: any[] = [];
-             callback = (event: any) => this.log.push(`${event.phaseName} => ${event.toState}`);
-           }
+              animations: [trigger('myAnimation', [])]
+            })
+            class Cmp {
+              // TODO(issue/24571): remove '!'.
+              exp !: string;
+              log: any[] = [];
+              callback = (event: any) => this.log.push(`${event.phaseName} => ${event.toState}`);
+            }
 
-           TestBed.configureTestingModule({
-             providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
-             declarations: [Cmp]
-           });
+            TestBed.configureTestingModule({
+              providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
+              declarations: [Cmp]
+            });
 
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = 'a';
-           fixture.detectChanges();
-           flushMicrotasks();
-           expect(cmp.log).toEqual(['start => a', 'done => a']);
+            cmp.exp = 'a';
+            fixture.detectChanges();
+            flushMicrotasks();
+            expect(cmp.log).toEqual(['start => a', 'done => a']);
 
-           cmp.log = [];
-           cmp.exp = 'b';
-           fixture.detectChanges();
-           flushMicrotasks();
+            cmp.log = [];
+            cmp.exp = 'b';
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.log).toEqual(['start => b', 'done => b']);
-         }));
+            expect(cmp.log).toEqual(['start => b', 'done => b']);
+          }));
 
-      it('should fire callback events for leave animations even if there is no leave transition',
-         fakeAsync(() => {
-           @Component({
-             selector: 'my-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should fire callback events for leave animations even if there is no leave transition',
+          fakeAsync(() => {
+            @Component({
+              selector: 'my-cmp',
+              template: `
               <div *ngIf="exp" @myAnimation (@myAnimation.start)="callback($event)" (@myAnimation.done)="callback($event)"></div>
             `,
-             animations: [trigger('myAnimation', [])]
-           })
-           class Cmp {
-             exp: boolean = false;
-             log: any[] = [];
-             callback = (event: any) => {
-               const state = event.toState || '_default_';
-               this.log.push(`${event.phaseName} => ${state}`);
-             }
-           }
+              animations: [trigger('myAnimation', [])]
+            })
+            class Cmp {
+              exp: boolean = false;
+              log: any[] = [];
+              callback = (event: any) => {
+                const state = event.toState || '_default_';
+                this.log.push(`${event.phaseName} => ${state}`);
+              }
+            }
 
-           TestBed.configureTestingModule({
-             providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
-             declarations: [Cmp]
-           });
+            TestBed.configureTestingModule({
+              providers: [{provide: AnimationDriver, useClass: NoopAnimationDriver}],
+              declarations: [Cmp]
+            });
 
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.exp = true;
-           fixture.detectChanges();
-           flushMicrotasks();
-           expect(cmp.log).toEqual(['start => _default_', 'done => _default_']);
+            cmp.exp = true;
+            fixture.detectChanges();
+            flushMicrotasks();
+            expect(cmp.log).toEqual(['start => _default_', 'done => _default_']);
 
-           cmp.log = [];
+            cmp.log = [];
 
-           cmp.exp = false;
-           fixture.detectChanges();
-           flushMicrotasks();
+            cmp.exp = false;
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.log).toEqual(['start => void', 'done => void']);
-         }));
+            expect(cmp.log).toEqual(['start => void', 'done => void']);
+          }));
 
-      it('should fire callbacks on a sub animation once it starts and finishes', fakeAsync(() => {
-           @Component({
-             selector: 'my-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should fire callbacks on a sub animation once it starts and finishes', fakeAsync(() => {
+            @Component({
+              selector: 'my-cmp',
+              template: `
               <div class="parent"
                   [@parent]="exp1"
                   (@parent.start)="cb('parent-start',$event)"
@@ -2837,80 +2866,81 @@ const DEFAULT_COMPONENT_ID = '1';
                   (@child.done)="cb('child-done', $event)"></div>
               </div>
             `,
-             animations: [
-               trigger(
-                   'parent',
-                   [
-                     transition(
-                         '* => go',
-                         [
-                           style({width: '0px'}),
-                           animate(1000, style({width: '100px'})),
-                           query(
-                               '.child',
-                               [
-                                 animateChild({duration: '1s'}),
-                               ]),
-                           animate(1000, style({width: '0px'})),
-                         ]),
-                   ]),
-               trigger(
-                   'child',
-                   [
-                     transition(
-                         '* => go',
-                         [
-                           style({height: '0px'}),
-                           animate(1000, style({height: '100px'})),
-                         ]),
-                   ])
-             ]
-           })
-           class Cmp {
-             log: string[] = [];
-             // TODO(issue/24571): remove '!'.
-             exp1 !: string;
-             // TODO(issue/24571): remove '!'.
-             exp2 !: string;
+              animations: [
+                trigger(
+                    'parent',
+                    [
+                      transition(
+                          '* => go',
+                          [
+                            style({width: '0px'}),
+                            animate(1000, style({width: '100px'})),
+                            query(
+                                '.child',
+                                [
+                                  animateChild({duration: '1s'}),
+                                ]),
+                            animate(1000, style({width: '0px'})),
+                          ]),
+                    ]),
+                trigger(
+                    'child',
+                    [
+                      transition(
+                          '* => go',
+                          [
+                            style({height: '0px'}),
+                            animate(1000, style({height: '100px'})),
+                          ]),
+                    ])
+              ]
+            })
+            class Cmp {
+              log: string[] = [];
+              // TODO(issue/24571): remove '!'.
+              exp1 !: string;
+              // TODO(issue/24571): remove '!'.
+              exp2 !: string;
 
-             cb(name: string, event: AnimationEvent) { this.log.push(name); }
-           }
+              cb(name: string, event: AnimationEvent) { this.log.push(name); }
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           cmp.exp1 = 'go';
-           cmp.exp2 = 'go';
-           fixture.detectChanges();
-           engine.flush();
-           flushMicrotasks();
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.exp1 = 'go';
+            cmp.exp2 = 'go';
+            fixture.detectChanges();
+            engine.flush();
+            flushMicrotasks();
 
-           expect(cmp.log).toEqual(['parent-start', 'child-start']);
-           cmp.log = [];
+            expect(cmp.log).toEqual(['parent-start', 'child-start']);
+            cmp.log = [];
 
-           const players = getLog();
-           expect(players.length).toEqual(3);
-           const [p1, p2, p3] = players;
+            const players = getLog();
+            expect(players.length).toEqual(3);
+            const [p1, p2, p3] = players;
 
-           p1.finish();
-           flushMicrotasks();
-           expect(cmp.log).toEqual([]);
+            p1.finish();
+            flushMicrotasks();
+            expect(cmp.log).toEqual([]);
 
-           p2.finish();
-           flushMicrotasks();
-           expect(cmp.log).toEqual([]);
+            p2.finish();
+            flushMicrotasks();
+            expect(cmp.log).toEqual([]);
 
-           p3.finish();
-           flushMicrotasks();
-           expect(cmp.log).toEqual(['parent-done', 'child-done']);
-         }));
+            p3.finish();
+            flushMicrotasks();
+            expect(cmp.log).toEqual(['parent-done', 'child-done']);
+          }));
 
-      it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
-         fakeAsync(
-             () => {
-               @Component({
+      fixmeIvy('unknown').it(
+          'should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
+          fakeAsync(
+              () => {
+                @Component({
           selector: 'my-cmp',
           template: `
               <div class="parent" [@parent]="exp" (@parent.done)="cb('all','done', $event)">
@@ -2946,62 +2976,62 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-                 log: string[] = [];
-                 events: {[name: string]: any} = {};
-                 // TODO(issue/24571): remove '!'.
-                 exp !: string;
-                 items: any = [0, 1, 2, 3];
+                  log: string[] = [];
+                  events: {[name: string]: any} = {};
+                  // TODO(issue/24571): remove '!'.
+                  exp !: string;
+                  items: any = [0, 1, 2, 3];
 
-                 cb(name: string, phase: string, event: AnimationEvent) {
-                   this.log.push(name + '-' + phase);
-                   this.events[name] = event;
-                 }
-               }
+                  cb(name: string, phase: string, event: AnimationEvent) {
+                    this.log.push(name + '-' + phase);
+                    this.events[name] = event;
+                  }
+                }
 
-               TestBed.configureTestingModule({declarations: [Cmp]});
+                TestBed.configureTestingModule({declarations: [Cmp]});
 
-               const engine = TestBed.get(ɵAnimationEngine);
-               const fixture = TestBed.createComponent(Cmp);
-               const cmp = fixture.componentInstance;
-               cmp.exp = 'go';
-               fixture.detectChanges();
-               engine.flush();
-               flushMicrotasks();
+                const engine = TestBed.get(ɵAnimationEngine);
+                const fixture = TestBed.createComponent(Cmp);
+                const cmp = fixture.componentInstance;
+                cmp.exp = 'go';
+                fixture.detectChanges();
+                engine.flush();
+                flushMicrotasks();
 
-               expect(cmp.log).toEqual(['c-0-start', 'c-1-start', 'c-2-start', 'c-3-start']);
-               cmp.log = [];
+                expect(cmp.log).toEqual(['c-0-start', 'c-1-start', 'c-2-start', 'c-3-start']);
+                cmp.log = [];
 
-               const players = getLog();
-               // 1 + 4 + 4 = 9 players
-               expect(players.length).toEqual(9);
+                const players = getLog();
+                // 1 + 4 + 4 = 9 players
+                expect(players.length).toEqual(9);
 
-               const [pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
-               pA.finish();
-               pq1a.finish();
-               pq1b.finish();
-               pq1c.finish();
-               pq1d.finish();
-               flushMicrotasks();
+                const [pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
+                pA.finish();
+                pq1a.finish();
+                pq1b.finish();
+                pq1c.finish();
+                pq1d.finish();
+                flushMicrotasks();
 
-               expect(cmp.log).toEqual([]);
-               pq2a.finish();
-               pq2b.finish();
-               pq2c.finish();
-               pq2d.finish();
-               flushMicrotasks();
+                expect(cmp.log).toEqual([]);
+                pq2a.finish();
+                pq2b.finish();
+                pq2c.finish();
+                pq2d.finish();
+                flushMicrotasks();
 
-               expect(cmp.log).toEqual(
-                   ['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
+                expect(cmp.log).toEqual(
+                    ['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
 
-               expect(cmp.events['c-0'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
-               expect(cmp.events['c-0'].element.innerText.trim()).toEqual('0');
-               expect(cmp.events['c-1'].totalTime).toEqual(4100);
-               expect(cmp.events['c-1'].element.innerText.trim()).toEqual('1');
-               expect(cmp.events['c-2'].totalTime).toEqual(4100);
-               expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
-               expect(cmp.events['c-3'].totalTime).toEqual(4100);
-               expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
-             }));
+                expect(cmp.events['c-0'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
+                expect(cmp.events['c-0'].element.innerText.trim()).toEqual('0');
+                expect(cmp.events['c-1'].totalTime).toEqual(4100);
+                expect(cmp.events['c-1'].element.innerText.trim()).toEqual('1');
+                expect(cmp.events['c-2'].totalTime).toEqual(4100);
+                expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
+                expect(cmp.events['c-3'].totalTime).toEqual(4100);
+                expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
+              }));
     });
 
     describe('animation control flags', () => {
@@ -3255,59 +3285,60 @@ const DEFAULT_COMPONENT_ID = '1';
           expect(parent.childElementCount).toEqual(0);
         });
 
-        it('should properly resolve animation event listeners when disabled', fakeAsync(() => {
-             @Component({
-               selector: 'if-cmp',
-               template: `
+        fixmeIvy('unknown').it(
+            'should properly resolve animation event listeners when disabled', fakeAsync(() => {
+              @Component({
+                selector: 'if-cmp',
+                template: `
               <div [@.disabled]="disableExp">
                 <div [@myAnimation]="exp" (@myAnimation.start)="startEvent=$event" (@myAnimation.done)="doneEvent=$event"></div>
               </div>
             `,
-               animations: [
-                 trigger(
-                     'myAnimation',
-                     [
-                       transition(
-                           '* => 1, * => 2',
-                           [style({opacity: 0}), animate(9876, style({opacity: 1}))]),
-                     ]),
-               ]
-             })
-             class Cmp {
-               disableExp = false;
-               exp = '';
-               // TODO(issue/24571): remove '!'.
-               startEvent !: AnimationEvent;
-               // TODO(issue/24571): remove '!'.
-               doneEvent !: AnimationEvent;
-             }
+                animations: [
+                  trigger(
+                      'myAnimation',
+                      [
+                        transition(
+                            '* => 1, * => 2',
+                            [style({opacity: 0}), animate(9876, style({opacity: 1}))]),
+                      ]),
+                ]
+              })
+              class Cmp {
+                disableExp = false;
+                exp = '';
+                // TODO(issue/24571): remove '!'.
+                startEvent !: AnimationEvent;
+                // TODO(issue/24571): remove '!'.
+                doneEvent !: AnimationEvent;
+              }
 
-             TestBed.configureTestingModule({declarations: [Cmp]});
+              TestBed.configureTestingModule({declarations: [Cmp]});
 
-             const fixture = TestBed.createComponent(Cmp);
-             const cmp = fixture.componentInstance;
-             cmp.disableExp = true;
-             fixture.detectChanges();
-             resetLog();
-             expect(cmp.startEvent).toBeFalsy();
-             expect(cmp.doneEvent).toBeFalsy();
+              const fixture = TestBed.createComponent(Cmp);
+              const cmp = fixture.componentInstance;
+              cmp.disableExp = true;
+              fixture.detectChanges();
+              resetLog();
+              expect(cmp.startEvent).toBeFalsy();
+              expect(cmp.doneEvent).toBeFalsy();
 
-             cmp.exp = '1';
-             fixture.detectChanges();
-             flushMicrotasks();
-             expect(cmp.startEvent.totalTime).toEqual(9876);
-             expect(cmp.startEvent.disabled).toBeTruthy();
-             expect(cmp.doneEvent.totalTime).toEqual(9876);
-             expect(cmp.doneEvent.disabled).toBeTruthy();
+              cmp.exp = '1';
+              fixture.detectChanges();
+              flushMicrotasks();
+              expect(cmp.startEvent.totalTime).toEqual(9876);
+              expect(cmp.startEvent.disabled).toBeTruthy();
+              expect(cmp.doneEvent.totalTime).toEqual(9876);
+              expect(cmp.doneEvent.disabled).toBeTruthy();
 
-             cmp.exp = '2';
-             cmp.disableExp = false;
-             fixture.detectChanges();
-             flushMicrotasks();
-             expect(cmp.startEvent.totalTime).toEqual(9876);
-             expect(cmp.startEvent.disabled).toBeFalsy();
-             // the done event isn't fired because it's an actual animation
-           }));
+              cmp.exp = '2';
+              cmp.disableExp = false;
+              fixture.detectChanges();
+              flushMicrotasks();
+              expect(cmp.startEvent.totalTime).toEqual(9876);
+              expect(cmp.startEvent.disabled).toBeFalsy();
+              // the done event isn't fired because it's an actual animation
+            }));
 
         it('should work when there are no animations on the component handling the disable/enable flag',
            () => {
@@ -3360,112 +3391,114 @@ const DEFAULT_COMPONENT_ID = '1';
              expect(getLog().length).toEqual(1);
            });
 
-        it('should treat the property as true when the expression is missing', () => {
-          @Component({
-            selector: 'parent-cmp',
-            animations: [
-              trigger(
-                  'myAnimation',
-                  [
-                    transition(
-                        '* => go',
-                        [
-                          style({opacity: 0}),
-                          animate(500, style({opacity: 1})),
-                        ]),
-                  ]),
-            ],
-            template: `
+        fixmeIvy('unknown').it(
+            'should treat the property as true when the expression is missing', () => {
+              @Component({
+                selector: 'parent-cmp',
+                animations: [
+                  trigger(
+                      'myAnimation',
+                      [
+                        transition(
+                            '* => go',
+                            [
+                              style({opacity: 0}),
+                              animate(500, style({opacity: 1})),
+                            ]),
+                      ]),
+                ],
+                template: `
               <div @.disabled>
                 <div [@myAnimation]="exp"></div>
               </div>
                 `
-          })
-          class Cmp {
-            exp = '';
-          }
+              })
+              class Cmp {
+                exp = '';
+              }
 
-          TestBed.configureTestingModule({declarations: [Cmp]});
+              TestBed.configureTestingModule({declarations: [Cmp]});
 
-          const fixture = TestBed.createComponent(Cmp);
-          const cmp = fixture.componentInstance;
-          fixture.detectChanges();
-          resetLog();
+              const fixture = TestBed.createComponent(Cmp);
+              const cmp = fixture.componentInstance;
+              fixture.detectChanges();
+              resetLog();
 
-          cmp.exp = 'go';
-          fixture.detectChanges();
-          expect(getLog().length).toEqual(0);
-        });
+              cmp.exp = 'go';
+              fixture.detectChanges();
+              expect(getLog().length).toEqual(0);
+            });
 
-        it('should respect parent/sub animations when the respective area in the DOM is disabled',
-           fakeAsync(() => {
-             @Component({
-               selector: 'parent-cmp',
-               animations: [
-                 trigger(
-                     'parent',
-                     [
-                       transition(
-                           '* => empty',
-                           [
-                             style({opacity: 0}),
-                             query(
-                                 '@child',
-                                 [
-                                   animateChild(),
-                                 ]),
-                             animate('1s', style({opacity: 1})),
-                           ]),
-                     ]),
-                 trigger(
-                     'child',
-                     [
-                       transition(
-                           ':leave',
-                           [
-                             animate('1s', style({opacity: 0})),
-                           ]),
-                     ]),
-               ],
-               template: `
+        fixmeIvy('unknown').it(
+            'should respect parent/sub animations when the respective area in the DOM is disabled',
+            fakeAsync(() => {
+              @Component({
+                selector: 'parent-cmp',
+                animations: [
+                  trigger(
+                      'parent',
+                      [
+                        transition(
+                            '* => empty',
+                            [
+                              style({opacity: 0}),
+                              query(
+                                  '@child',
+                                  [
+                                    animateChild(),
+                                  ]),
+                              animate('1s', style({opacity: 1})),
+                            ]),
+                      ]),
+                  trigger(
+                      'child',
+                      [
+                        transition(
+                            ':leave',
+                            [
+                              animate('1s', style({opacity: 0})),
+                            ]),
+                      ]),
+                ],
+                template: `
               <div [@.disabled]="disableExp" #container>
                 <div [@parent]="exp" (@parent.done)="onDone($event)">
                   <div class="item" *ngFor="let item of items" @child (@child.done)="onDone($event)"></div>
                 </div>
               </div>
                 `
-             })
-             class Cmp {
-               @ViewChild('container') public container: any;
+              })
+              class Cmp {
+                @ViewChild('container') public container: any;
 
-               disableExp = false;
-               exp = '';
-               items: any[] = [];
-               doneLog: any[] = [];
+                disableExp = false;
+                exp = '';
+                items: any[] = [];
+                doneLog: any[] = [];
 
-               onDone(event: any) { this.doneLog.push(event); }
-             }
+                onDone(event: any) { this.doneLog.push(event); }
+              }
 
-             TestBed.configureTestingModule({declarations: [Cmp]});
-             const engine = TestBed.get(ɵAnimationEngine);
-             const fixture = TestBed.createComponent(Cmp);
-             const cmp = fixture.componentInstance;
-             cmp.disableExp = true;
-             cmp.items = [0, 1, 2, 3, 4];
-             fixture.detectChanges();
-             flushMicrotasks();
+              TestBed.configureTestingModule({declarations: [Cmp]});
+              const engine = TestBed.get(ɵAnimationEngine);
+              const fixture = TestBed.createComponent(Cmp);
+              const cmp = fixture.componentInstance;
+              cmp.disableExp = true;
+              cmp.items = [0, 1, 2, 3, 4];
+              fixture.detectChanges();
+              flushMicrotasks();
 
-             cmp.exp = 'empty';
-             cmp.items = [];
-             cmp.doneLog = [];
-             fixture.detectChanges();
-             flushMicrotasks();
+              cmp.exp = 'empty';
+              cmp.items = [];
+              cmp.doneLog = [];
+              fixture.detectChanges();
+              flushMicrotasks();
 
-             const elms = cmp.container.nativeElement.querySelectorAll('.item');
-             expect(elms.length).toEqual(0);
+              const elms = cmp.container.nativeElement.querySelectorAll('.item');
+              expect(elms.length).toEqual(0);
 
-             expect(cmp.doneLog.length).toEqual(6);
-           }));
+              expect(cmp.doneLog.length).toEqual(6);
+            }));
       });
     });
 
@@ -3569,63 +3602,64 @@ const DEFAULT_COMPONENT_ID = '1';
               /only state\(\) and transition\(\) definitions can sit inside of a trigger\(\)/);
     });
 
-    it('should combine multiple errors together into one exception when an animation fails to be built',
-       () => {
-         @Component({
-           selector: 'if-cmp',
-           template: `
+    fixmeIvy('unknown').it(
+        'should combine multiple errors together into one exception when an animation fails to be built',
+        () => {
+          @Component({
+            selector: 'if-cmp',
+            template: `
           <div [@foo]="fooExp" [@bar]="barExp"></div>
         `,
-           animations: [
-             trigger(
-                 'foo',
-                 [
-                   transition(':enter', []),
-                   transition(
-                       '* => *',
-                       [
-                         query('foo', animate(1000, style({background: 'red'}))),
-                       ]),
-                 ]),
-             trigger(
-                 'bar',
-                 [
-                   transition(':enter', []),
-                   transition(
-                       '* => *',
-                       [
-                         query('bar', animate(1000, style({background: 'blue'}))),
-                       ]),
-                 ]),
-           ]
-         })
-         class Cmp {
-           fooExp: any = false;
-           barExp: any = false;
-         }
+            animations: [
+              trigger(
+                  'foo',
+                  [
+                    transition(':enter', []),
+                    transition(
+                        '* => *',
+                        [
+                          query('foo', animate(1000, style({background: 'red'}))),
+                        ]),
+                  ]),
+              trigger(
+                  'bar',
+                  [
+                    transition(':enter', []),
+                    transition(
+                        '* => *',
+                        [
+                          query('bar', animate(1000, style({background: 'blue'}))),
+                        ]),
+                  ]),
+            ]
+          })
+          class Cmp {
+            fooExp: any = false;
+            barExp: any = false;
+          }
 
-         TestBed.configureTestingModule({declarations: [Cmp]});
+          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
-         const fixture = TestBed.createComponent(Cmp);
-         const cmp = fixture.componentInstance;
-         fixture.detectChanges();
+          const engine = TestBed.get(ɵAnimationEngine);
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          fixture.detectChanges();
 
-         cmp.fooExp = 'go';
-         cmp.barExp = 'go';
+          cmp.fooExp = 'go';
+          cmp.barExp = 'go';
 
-         let errorMsg: string = '';
-         try {
-           fixture.detectChanges();
-         } catch (e) {
-           errorMsg = e.message;
-         }
+          let errorMsg: string = '';
+          try {
+            fixture.detectChanges();
+          } catch (e) {
+            errorMsg = e.message;
+          }
 
-         expect(errorMsg).toMatch(/@foo has failed due to:/);
-         expect(errorMsg).toMatch(/`query\("foo"\)` returned zero elements/);
-         expect(errorMsg).toMatch(/@bar has failed due to:/);
-         expect(errorMsg).toMatch(/`query\("bar"\)` returned zero elements/);
-       });
+          expect(errorMsg).toMatch(/@foo has failed due to:/);
+          expect(errorMsg).toMatch(/`query\("foo"\)` returned zero elements/);
+          expect(errorMsg).toMatch(/@bar has failed due to:/);
+          expect(errorMsg).toMatch(/`query\("bar"\)` returned zero elements/);
+        });
 
     it('should not throw an error if styles overlap in separate transitions', () => {
       @Component({
@@ -3658,18 +3692,19 @@ const DEFAULT_COMPONENT_ID = '1';
       expect(() => { TestBed.createComponent(Cmp); }).not.toThrowError();
     });
 
-    it('should continue to clean up DOM-related animation artificats even if a compiler-level error is thrown midway',
-       () => {
-         @Component({
-           selector: 'if-cmp',
-           animations: [
-             trigger(
-                 'foo',
-                 [
-                   transition('* => something', []),
-                 ]),
-           ],
-           template: `
+    fixmeIvy('unknown').it(
+        'should continue to clean up DOM-related animation artificats even if a compiler-level error is thrown midway',
+        () => {
+          @Component({
+            selector: 'if-cmp',
+            animations: [
+              trigger(
+                  'foo',
+                  [
+                    transition('* => something', []),
+                  ]),
+            ],
+            template: `
           value = {{ foo[bar] }}
           <div #contents>
             <div *ngIf="exp">1</div>
@@ -3677,32 +3712,32 @@ const DEFAULT_COMPONENT_ID = '1';
             <div *ngIf="exp" [@foo]="'123'">3</div>
           </div>
         `,
-         })
-         class Cmp {
-           exp: any = false;
+          })
+          class Cmp {
+            exp: any = false;
 
-           @ViewChild('contents') public contents: any;
-         }
+            @ViewChild('contents') public contents: any;
+          }
 
-         TestBed.configureTestingModule({declarations: [Cmp]});
+          TestBed.configureTestingModule({declarations: [Cmp]});
 
-         const engine = TestBed.get(ɵAnimationEngine);
-         const fixture = TestBed.createComponent(Cmp);
+          const engine = TestBed.get(ɵAnimationEngine);
+          const fixture = TestBed.createComponent(Cmp);
 
-         const runCD = () => fixture.detectChanges();
-         const cmp = fixture.componentInstance;
+          const runCD = () => fixture.detectChanges();
+          const cmp = fixture.componentInstance;
 
-         cmp.exp = true;
-         expect(runCD).toThrow();
+          cmp.exp = true;
+          expect(runCD).toThrow();
 
-         const contents = cmp.contents.nativeElement;
-         expect(contents.innerText.replace(/\s+/gm, '')).toEqual('123');
+          const contents = cmp.contents.nativeElement;
+          expect(contents.innerText.replace(/\s+/gm, '')).toEqual('123');
 
-         cmp.exp = false;
-         expect(runCD).toThrow();
+          cmp.exp = false;
+          expect(runCD).toThrow();
 
-         expect(contents.innerText.trim()).toEqual('');
-       });
+          expect(contents.innerText.trim()).toEqual('');
+        });
 
     describe('errors for not using the animation module', () => {
       beforeEach(() => {
@@ -3711,31 +3746,33 @@ const DEFAULT_COMPONENT_ID = '1';
         });
       });
 
-      it('should throw when using an @prop binding without the animation module', () => {
-        @Component({template: `<div [@myAnimation]="true"></div>`})
-        class Cmp {
-        }
+      fixmeIvy('unknown').it(
+          'should throw when using an @prop binding without the animation module', () => {
+            @Component({template: `<div [@myAnimation]="true"></div>`})
+            class Cmp {
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
-        const comp = TestBed.createComponent(Cmp);
-        expect(() => comp.detectChanges())
-            .toThrowError(
-                'Found the synthetic property @myAnimation. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
-      });
+            TestBed.configureTestingModule({declarations: [Cmp]});
+            const comp = TestBed.createComponent(Cmp);
+            expect(() => comp.detectChanges())
+                .toThrowError(
+                    'Found the synthetic property @myAnimation. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+          });
 
-      it('should throw when using an @prop listener without the animation module', () => {
-        @Component({template: `<div (@myAnimation.start)="a = true"></div>`})
-        class Cmp {
-          a: any;
-        }
+      fixmeIvy('unknown').it(
+          'should throw when using an @prop listener without the animation module', () => {
+            @Component({template: `<div (@myAnimation.start)="a = true"></div>`})
+            class Cmp {
+              a: any;
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-        expect(() => TestBed.createComponent(Cmp))
-            .toThrowError(
-                'Found the synthetic listener @myAnimation.start. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+            expect(() => TestBed.createComponent(Cmp))
+                .toThrowError(
+                    'Found the synthetic listener @myAnimation.start. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
 
-      });
+          });
     });
   });
 })();
