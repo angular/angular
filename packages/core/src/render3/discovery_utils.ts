@@ -5,17 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Injector} from '../di/injector';
 
+import {Injector} from '../di/injector';
 import {assertDefined} from './assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
+import {NodeInjector} from './di';
 import {LContext} from './interfaces/context';
 import {DirectiveDef} from './interfaces/definition';
-import {INJECTOR_BLOOM_PARENT_SIZE} from './interfaces/injector';
 import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
 import {readPatchedLView, stringify} from './util';
-import {NodeInjector} from './view_engine_compatibility';
 
 
 /**

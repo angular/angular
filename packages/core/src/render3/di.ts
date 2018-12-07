@@ -287,10 +287,12 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * Look for the injector providing the token by walking up the node injector tree and then
  * the module injector tree.
  *
- * @param nodeInjector Node injector where the search should start
+ * @param tNode The Node where the search for the injector should start
+ * @param lView The `LView` that contains the `tNode`
  * @param token The token to look for
  * @param flags Injection flags
- * @returns the value from the injector or `null` when not found
+ * @param notFoundValue The value to return when the injection flags is `InjectFlags.Optional`
+ * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
     tNode: TElementNode | TContainerNode | TElementContainerNode, lView: LView,
@@ -558,22 +560,11 @@ export function injectInjector() {
 }
 
 export class NodeInjector implements Injector {
-  private _injectorIndex: number;
-
   constructor(
-      private _tNode: TElementNode|TContainerNode|TElementContainerNode, private _lView: LView) {
-    this._injectorIndex = getOrCreateNodeInjectorForNode(_tNode, _lView);
-  }
+      private _tNode: TElementNode|TContainerNode|TElementContainerNode, private _lView: LView) {}
 
-  get(token: any): any {
-    const previousTNode = getPreviousOrParentTNode();
-    const previousLView = getLView();
-    setTNodeAndViewData(this._tNode, this._lView);
-    try {
-      return getOrCreateInjectable(this._tNode, this._lView, token);
-    } finally {
-      setTNodeAndViewData(previousTNode, previousLView);
-    }
+  get(token: any, notFoundValue?: any): any {
+    return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
   }
 }
 
