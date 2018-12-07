@@ -20,6 +20,21 @@ export function isSwitchableVariableDeclaration(node: ts.Node):
 }
 
 /**
+ * A structure returned from `getModuleWithProviderInfo` that describes functions
+ * that return ModuleWithProviders objects.
+ */
+export interface ModuleWithProvidersFunction {
+  /**
+   * The declaration of the function that returns the `ModuleWithProviders` object.
+   */
+  declaration: ts.SignatureDeclaration;
+  /**
+   * The identifier of the `ngModule` property on the `ModuleWithProviders` object.
+   */
+  ngModule: ts.Identifier;
+}
+
+/**
  * A reflection host that has extra methods for looking at non-Typescript package formats
  */
 export interface NgccReflectionHost extends ReflectionHost {
@@ -45,4 +60,13 @@ export interface NgccReflectionHost extends ReflectionHost {
    * @returns An array of decorated classes.
    */
   findDecoratedClasses(sourceFile: ts.SourceFile): DecoratedClass[];
+
+  /**
+   * Search the given source file for exported functions and static class methods that return
+   * ModuleWithProviders objects.
+   * @param f The source file to search for these functions
+   * @returns An array of info items about each of the functions that return ModuleWithProviders
+   * objects.
+   */
+  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[];
 }

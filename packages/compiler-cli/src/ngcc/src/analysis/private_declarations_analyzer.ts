@@ -15,7 +15,7 @@ import {hasNameIdentifier, isDefined} from '../utils';
 export interface ExportInfo {
   identifier: string;
   from: string;
-  dtsFrom: string|null;
+  dtsFrom?: string|null;
 }
 export type PrivateDeclarationsAnalyses = ExportInfo[];
 

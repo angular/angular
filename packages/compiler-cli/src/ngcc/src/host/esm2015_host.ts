@@ -14,7 +14,7 @@ import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
-import {NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
+import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -355,6 +355,37 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           `Cannot get the dts file for a declaration that has no name: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
     }
     return this.dtsDeclarationMap.get(declaration.name.text) || null;
+  }
+
+  /**
+   * Search the given source file for exported functions and static class methods that return
+   * ModuleWithProviders objects.
+   * @param f The source file to search for these functions
+   * @returns An array of function declarations that look like they return ModuleWithProviders
+   * objects.
+   */
+  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[] {
+    const exports = this.getExportsOfModule(f);
+    if (!exports) return [];
+    const infos: ModuleWithProvidersFunction[] = [];
+    exports.forEach((declaration, name) => {
+      if (this.isClass(declaration.node)) {
+        this.getMembersOfClass(declaration.node).forEach(member => {
+          if (member.isStatic) {
+            const info = this.parseForModuleWithProviders(member.node);
+            if (info) {
+              infos.push(info);
+            }
+          }
+        });
+      } else {
+        const info = this.parseForModuleWithProviders(declaration.node);
+        if (info) {
+          infos.push(info);
+        }
+      }
+    });
+    return infos;
   }
 
   ///////////// Protected Helpers /////////////
@@ -1016,6 +1047,31 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     dtsProgram.getSourceFiles().forEach(
         sourceFile => { collectExportedDeclarations(checker, dtsDeclarationMap, sourceFile); });
     return dtsDeclarationMap;
+  }
+
+  /**
+   * Parse the given node, to see if it is a function that returns a `ModuleWithProviders` object.
+   * @param node a node to check to see if it is a function that returns a `ModuleWithProviders`
+   * object.
+   * @returns info about the function if it does return a `ModuleWithProviders` object; `null`
+   * otherwise.
+   */
+  protected parseForModuleWithProviders(node: ts.Node|null): ModuleWithProvidersFunction|null {
+    const declaration =
+        node && (ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node)) ? node : null;
+    const body = declaration ? this.getDefinitionOfFunction(declaration).body : null;
+    const lastStatement = body && body[body.length - 1];
+    const returnExpression =
+        lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
+    const ngModuleProperty = returnExpression && ts.isObjectLiteralExpression(returnExpression) &&
+            returnExpression.properties.find(
+                prop =>
+                    !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule') ||
+        null;
+    const ngModule = ngModuleProperty && ts.isPropertyAssignment(ngModuleProperty) &&
+            ts.isIdentifier(ngModuleProperty.initializer) && ngModuleProperty.initializer ||
+        null;
+    return ngModule && declaration && {ngModule, declaration};
   }
 }
 

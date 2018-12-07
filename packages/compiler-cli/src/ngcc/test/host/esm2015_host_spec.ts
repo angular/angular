@@ -485,6 +485,54 @@ const TYPINGS_DTS_FILES = [
   {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
 ];
 
+const MODULE_WITH_PROVIDERS_PROGRAM = [
+  {
+    name: '/src/functions.js',
+    contents: `
+    import {ExternalModule} from './module';
+    export class SomeService {}
+    export class InternalModule {}
+    export function aNumber() { return 42; }
+    export function aString() { return 'foo'; }
+    export function emptyObject() { return {}; }
+    export function ngModuleIdentifier() { return { ngModule: InternalModule }; }
+    export function ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+    export function ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+    export function onlyProviders() { return { providers: [SomeService] }; }
+    export function ngModuleNumber() { return { ngModule: 42 }; }
+    export function ngModuleString() { return { ngModule: 'foo' }; }
+    export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
+    export function externalNgModule() { return { ngModule: ExternalModule }; }
+    `
+  },
+  {
+    name: '/src/methods.js',
+    contents: `
+    import {ExternalModule} from './module';
+    export class SomeService {}
+    export class InternalModule {
+      static aNumber() { return 42; }
+      static aString() { return 'foo'; }
+      static emptyObject() { return {}; }
+      static ngModuleIdentifier() { return { ngModule: InternalModule }; }
+      static ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+      static ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+      static onlyProviders() { return { providers: [SomeService] }; }
+      static ngModuleNumber() { return { ngModule: 42 }; }
+      static ngModuleString() { return { ngModule: 'foo' }; }
+      static ngModuleObject() { return { ngModule: { foo: 42 } }; }
+      static externalNgModule() { return { ngModule: ExternalModule }; }
+
+      instanceNgModuleIdentifier() { return { ngModule: InternalModule }; }
+      instanceNgModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+      instanceNgModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+      instanceExternalNgModule() { return { ngModule: ExternalModule }; }
+    }
+    `
+  },
+  {name: '/src/module', contents: 'export class ExternalModule {}'},
+];
+
 describe('Fesm2015ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -1373,6 +1421,36 @@ describe('Fesm2015ReflectionHost', () => {
          const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
          expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
              .toEqual('/typings/class2.d.ts');
+       });
+  });
+
+  describe('getModuleWithProvidersFunctions', () => {
+    it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
+       () => {
+         const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+         const file = srcProgram.getSourceFile('/src/functions.js') !;
+         const fns = host.getModuleWithProvidersFunctions(file);
+         expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
+           ['ngModuleIdentifier', 'InternalModule'],
+           ['ngModuleWithEmptyProviders', 'InternalModule'],
+           ['ngModuleWithProviders', 'InternalModule'],
+           ['externalNgModule', 'ExternalModule'],
+         ]);
+       });
+
+    it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
+       () => {
+         const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+         const file = srcProgram.getSourceFile('/src/methods.js') !;
+         const fn = host.getModuleWithProvidersFunctions(file);
+         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.text])).toEqual([
+           ['ngModuleIdentifier', 'InternalModule'],
+           ['ngModuleWithEmptyProviders', 'InternalModule'],
+           ['ngModuleWithProviders', 'InternalModule'],
+           ['externalNgModule', 'ExternalModule'],
+         ]);
        });
   });
 });
