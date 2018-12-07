@@ -92,7 +92,6 @@ describe('change detection', () => {
       let structuralComp !: StructuralComp;
 
       function FooTemplate(rf: RenderFlags, ctx: any) {
-        debugger;
         if (rf & RenderFlags.Create) {
           text(0);
         }
