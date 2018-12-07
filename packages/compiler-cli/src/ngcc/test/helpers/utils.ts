@@ -84,6 +84,8 @@ export function getFakeCore() {
       export class InjectionToken {
         constructor(name: string) {}
       }
+
+      export interface ModuleWithProviders<T = any> {}
     `
   };
 }
