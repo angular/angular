@@ -11,6 +11,7 @@ import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
 import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
@@ -23,6 +24,7 @@ import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {EntryPoint} from './entry_point';
 import {EntryPointBundle} from './entry_point_bundle';
+
 
 
 /**
@@ -59,13 +61,14 @@ export class Transformer {
     const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
-    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses} =
-        this.analyzeProgram(reflectionHost, isCore, bundle);
+    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, isCore, bundle);
 
     // Transform the source files and source maps.
     const renderer = this.getRenderer(reflectionHost, isCore, bundle);
     const renderedFiles = renderer.renderProgram(
-        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses);
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
@@ -102,16 +105,26 @@ export class Transformer {
       ProgramAnalyses {
     const typeChecker = bundle.src.program.getTypeChecker();
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
+
+    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
+
     const decorationAnalyzer = new DecorationAnalyzer(
         typeChecker, reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
-    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    const decorationAnalyses = decorationAnalyzer.analyzeProgram(bundle.src.program);
+
+    const moduleWithProvidersAnalyzer =
+        bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
+    const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
+        moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
+
     const privateDeclarationsAnalyzer =
         new PrivateDeclarationsAnalyzer(reflectionHost, referencesRegistry);
-    const decorationAnalyses = decorationAnalyzer.analyzeProgram(bundle.src.program);
-    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
     const privateDeclarationsAnalyses =
         privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
-    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses};
+
+    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+            moduleWithProvidersAnalyses};
   }
 
   writeFile(file: FileInfo): void {
@@ -129,4 +142,5 @@ interface ProgramAnalyses {
   decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
   switchMarkerAnalyses: SwitchMarkerAnalyses;
   privateDeclarationsAnalyses: ExportInfo[];
+  moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null;
 }
