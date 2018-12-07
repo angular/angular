@@ -146,6 +146,7 @@ Install `@angular/platform-server` into your project. Use the same version as th
 
 ```
 $ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
+$ npm install --save-dev @nguniversal/express-engine
 ```
 
 ## Step 2: Prepare your app
@@ -186,12 +187,12 @@ Create a module named `AppServerModule` to act as the root module when running o
 Here's an example in `src/app/app.server.module.ts`.
 
 <code-example format="." language="typescript" linenums="false">
-import {NgModule} from '@angular/core';
-import {ServerModule} from '@angular/platform-server';
-import {ModuleMapLoaderModule} from '@nguniversal/module-map-ngfactory-loader';
+import { NgModule } from '@angular/core';
+import { ServerModule } from '@angular/platform-server';
+import { ModuleMapLoaderModule } from '@nguniversal/module-map-ngfactory-loader';
 
-import {AppModule} from './app.module';
-import {AppComponent} from './app.component';
+import { AppModule } from './app.module';
+import { AppComponent } from './app.component';
 
 @NgModule({
   imports: [
@@ -205,7 +206,7 @@ import {AppComponent} from './app.component';
   // imported AppModule, it needs to be repeated here.
   bootstrap: [AppComponent],
 })
-export class AppServerModule {}
+export class AppServerModule { }
 </code-example>
 
 ### 2c. Create a main file to export AppServerModule
@@ -255,7 +256,7 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
   "server": {
     "builder": "@angular-devkit/build-angular:server",
     "options": {
-      "outputPath": "dist/my-project-server",
+      "outputPath": "dist/server",
       "main": "src/main.server.ts",
       "tsConfig": "src/tsconfig.server.json"
     }
@@ -263,11 +264,45 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
 }
 </code-example>
 
+Once this is done, update the `"build"` outputPathin `"options"` to this.
+
+<code-example format="." language="none" linenums="false">
+"architect": {
+  "build": {
+    "builder": "@angular-devkit/build-angular:browser",
+    "options": {
+      "outputPath": "dist/browser",
+      ...
+    },
+    "configurations": { ... }
+  },
+}
+</code-example>
+
+Now if you run `ng build --prod` you will find your files in your `dist/browser` folder.
+
+<code-example format="." language="none" linenums="false">
+# This builds your project and places the output
+# in dist/browser/
+$ ng build --prod
+
+Date: 2018-12-07T14:40:19.414Z
+Hash: b75d5fcf9c1b7aaa0e56
+Time: 167781ms
+chunk {0} runtime.fd4d6f837d66081f8469.js (runtime) 2.29 kB [entry] [rendered]
+chunk {1} common.92caff00798b9a8919dd.js (common) 5.54 kB  [rendered]
+chunk {2} main.3b75ffb0c3bb668bc428.js (main) 425 kB [initial] [rendered]
+chunk {3} polyfills.31c72fa5c2468633587f.js (polyfills) 148 kB [initial] [rendered]
+chunk {4} styles.06adf6a47969f5ba4079.css (styles) 136 kB [initial] [rendered]
+chunk {5} 5.887fad2db70f56299cf0.js () 26.7 kB  [rendered]
+chunk {6} 6.baa04136dcc2ddcf3371.js () 74.7 kB  [rendered]
+</code-example>
+
 To build a server bundle for your application, use the `ng run` command, with the format `projectName#serverTarget`. In our example, there are now two targets configured, `"build"` and `"server"`.
 
 <code-example format="." language="none" linenums="false">
 # This builds your project using the server target, and places the output
-# in dist/my-project-server/
+# in dist/server/
 $ ng run my-project:server
 
 Date: 2017-07-24T22:42:09.739Z
@@ -385,28 +420,26 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
 <code-example format="." language="typescript" linenums="false">
-@NgModule({
 const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: {  server: './server.ts' },
+  entry: { server: './server.ts' },
   resolve: { extensions: ['.js', '.ts'] },
   target: 'node',
+  mode: 'none',
   // this makes sure we include node_modules and other 3rd party libraries
-  externals: [/(node_modules|main\..*\.js)/],
+  externals: [/node_modules/],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js'
   },
   module: {
-    rules: [
-      { test: /\.ts$/, loader: 'ts-loader' }
-    ]
+    rules: [{ test: /\.ts$/, loader: 'ts-loader' }]
   },
   plugins: [
     // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
-    // for "WARNING Critical dependency: the request of a dependency is an expression"
+    // for 'WARNING Critical dependency: the request of a dependency is an expression'
     new webpack.ContextReplacementPlugin(
       /(.+)?angular(\\|\/)core(.+)?/,
       path.join(__dirname, 'src'), // location of your src
@@ -418,7 +451,7 @@ module.exports = {
       {}
     )
   ]
-}
+};
 </code-example>
 
 The  project's `dist/` folder now contains both browser and server folders.
@@ -429,38 +462,72 @@ dist/
    server/
 </code-example>
 
+## Step 6: Creating scripts
+
+Now let's create a few handy scripts to help us do all of this in the future.
+You can add these in the `"scripts"` section of npm package file, `package.json`.
+
+<code-example format="." language="none" linenums="false">
+  "scripts": {
+    ...
+    "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+    "serve:ssr": "node dist/server",
+    "build:client-and-server-bundles": "ng build --prod && ng run <your_app>:server",
+    "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+  }
+</code-example>
+
+### Step 6a. Create server.js in the dist folder
+
+In order to start our node server, we need to generate the `server.js` file in our `dist/` folder.
+To do this, we must run our new script `build:ssr`.
+
+<code-example format="." language="none" linenums="false">
+# This builds your project and creates the server and finally 
+# generates the server.js file in your dist folder
+$ npm run build:ssr
+
+Hash: 913c5b33943b97b0e310
+Version: webpack 4.19.0
+Time: 16670ms
+Built at: 2018-12-07 14:51:02
+    Asset      Size  Chunks             Chunk Names
+server.js  8.11 MiB       0  [emitted]  server
+Entrypoint server = server.js
+  [0] ./server.ts 1.58 KiB {0} [built]
+  [2] external "events" 42 bytes {0} [built]
+  [3] external "fs" 42 bytes {0} [built]
+  [4] external "timers" 42 bytes {0} [optional] [built]
+  [5] external "crypto" 42 bytes {0} [built]
+[207] ./src lazy namespace object 160 bytes {0} [built]
+[215] external "path" 42 bytes {0} [built]
+[232] external "net" 42 bytes {0} [built]
+[263] external "stream" 42 bytes {0} [built]
+[282] external "querystring" 42 bytes {0} [built]
+[289] external "url" 42 bytes {0} [built]
+[296] external "http" 42 bytes {0} [built]
+[333] ./dist/server/main.js 403 KiB {0} [built]
+[399] external "https" 42 bytes {0} [built]
+[400] external "os" 42 bytes {0} [built]
+    + 394 hidden modules
+
+WARNING in ./node_modules/@angular/core/fesm5/core.js 4996:15-36
+System.import() is deprecated and will be removed soon. Use import() instead.
+For more info visit https://webpack.js.org/guides/code-splitting/
+ @ ./server.ts 4:0-47 8:0-14
+
+WARNING in ./node_modules/@angular/core/fesm5/core.js 5008:15-102
+System.import() is deprecated and will be removed soon. Use import() instead.
+For more info visit https://webpack.js.org/guides/code-splitting/
+ @ ./server.ts 4:0-47 8:0-14
+</code-example>
+
+## Step 7: Start the node server
+
 To run the app on the server, type the following in a command shell.
 
 <code-example format="." language="bash" linenums="false">
 node dist/server.js
-</code-example>
-
-### Creating scripts
-
-Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
-
-<code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
-
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
-   ...
-</code-example>
-
-To run a production build of your app with Universal on your local system, use the following command.
-
-<code-example format="." language="bash" linenums="false">
-npm run build:ssr && npm run serve:ssr
 </code-example>
 
 ### Working around the browser APIs
