@@ -8,11 +8,12 @@
 import {dirname} from 'canonical-path';
 import {existsSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
+import * as ts from 'typescript';
 
-import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
-import {PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
-import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
+import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -22,6 +23,7 @@ import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {EntryPoint} from './entry_point';
 import {EntryPointBundle} from './entry_point_bundle';
+
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -96,7 +98,8 @@ export class Transformer {
     }
   }
 
-  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
+  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
+      ProgramAnalyses {
     const typeChecker = bundle.src.program.getTypeChecker();
     const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
     const decorationAnalyzer = new DecorationAnalyzer(
@@ -119,4 +122,11 @@ export class Transformer {
     }
     writeFileSync(file.path, file.contents, 'utf8');
   }
+}
+
+
+interface ProgramAnalyses {
+  decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
+  switchMarkerAnalyses: SwitchMarkerAnalyses;
+  privateDeclarationsAnalyses: ExportInfo[];
 }
