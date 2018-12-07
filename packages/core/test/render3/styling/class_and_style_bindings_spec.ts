@@ -8,7 +8,7 @@
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
 import {defineComponent} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
+import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
 import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
@@ -228,6 +228,30 @@ describe('style and class based bindings', () => {
                renderToHtml(Template, {myStyles: {width: '200px', height: null}, myWidth: null}, 1))
                .toEqual('<span style="height: 100px; opacity: 0.5; width: 200px;"></span>');
          });
+
+      it('should support styles on SVG elements', () => {
+        // <svg [style.width.px]="diameter" [style.height.px]="diameter">
+        //   <circle stroke="green" fill="yellow" />
+        // </svg>
+        function Template(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            namespaceSVG();
+            elementStart(0, 'svg');
+            elementStyling(null, ['width', 'height']);
+            elementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
+            elementEnd();
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            elementStyleProp(0, 0, ctx.diameter, 'px');
+            elementStyleProp(0, 1, ctx.diameter, 'px');
+            elementStylingApply(0);
+          }
+        }
+
+        expect(renderToHtml(Template, {}, 2, 0))
+            .toEqual('<svg><circle fill="yellow" stroke="green"></circle></svg>');
+      })
     });
 
     describe('helper functions', () => {
