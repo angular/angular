@@ -1,4 +1,4 @@
-import {green, grey} from 'chalk';
+import {bold, green, yellow} from 'chalk';
 import {createReadStream, createWriteStream, readFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';
@@ -63,7 +63,8 @@ export async function promptChangelogReleaseName(): Promise<string> {
  * and has been cherry-picked into "master". In that case, the changelog will already contain
  * commits from master which might be added to the changelog again. This is because usually
  * patch and minor releases are tagged from the publish branches and therefore
- * conventional-changelog tries to build the changelog from last major version to master's HEAD.
+ * conventional-changelog tries to build the changelog from last major version to master's
+ * HEAD when a new major version is being published from the "master" branch.
  */
 function createDedupeWriterOptions(changelogPath: string) {
   const existingChangelogContent = readFileSync(changelogPath, 'utf8');
@@ -76,8 +77,8 @@ function createDedupeWriterOptions(changelogPath: string) {
         group.commits = group.commits.filter((commit: any) => {
           // NOTE: We cannot compare the SHA's because the commits will have a different SHA
           // if they are being cherry-picked into a different branch.
-          if (existingChangelogContent.includes(commit.header)) {
-            console.log(grey(`Excluding: "${commit.header}" (${commit.hash})`));
+          if (existingChangelogContent.includes(commit.subject)) {
+            console.log(yellow(`  ↺   Skipping duplicate: "${bold(commit.header)}"`));
             return false;
           }
           return true;
