@@ -150,8 +150,8 @@ describe('change detection', () => {
 
       // check root view update
       structuralComp.value = 'three';
-      detectChanges(structuralComp);
-      expect(fixture.html).toEqual('<structural-comp>three</structural-comp>two');
+      fixture.update();
+      expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
     });
 
   });
