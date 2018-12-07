@@ -26,7 +26,7 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let tokenExpr = param.type;
+    let tokenExpr = param.typeExpression;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
@@ -62,7 +62,7 @@ export function getConstructorDependencies(
     if (tokenExpr === null) {
       throw new FatalDiagnosticError(
           ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-          `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
+          `No suitable injection token for parameter '${param.name || idx}' of class '${clazz.name!.text}'. Found: ${param.typeNode!.getText()}`);
     }
     const token = new WrappedNodeExpr(tokenExpr);
     useType.push({token, optional, self, skipSelf, host, resolved});

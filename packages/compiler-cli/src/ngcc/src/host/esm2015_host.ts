@@ -797,10 +797,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         this.getParamInfoFromHelperCall(classSymbol, parameterNodes);
 
     return parameterNodes.map((node, index) => {
-      const {decorators, type} =
-          paramInfo && paramInfo[index] ? paramInfo[index] : {decorators: null, type: null};
+      const {decorators, typeExpression} = paramInfo && paramInfo[index] ?
+          paramInfo[index] :
+          {decorators: null, typeExpression: null};
       const nameNode = node.name;
-      return {name: getNameText(nameNode), nameNode, type, decorators};
+      return {name: getNameText(nameNode), nameNode, typeExpression, typeNode: null, decorators};
     });
   }
 
@@ -832,12 +833,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 element =>
                     ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null)
             .map(paramInfo => {
-              const type = paramInfo && paramInfo.get('type') || null;
+              const typeExpression = paramInfo && paramInfo.get('type') || null;
               const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
               const decorators = decoratorInfo &&
                   this.reflectDecorators(decoratorInfo)
                       .filter(decorator => this.isFromCore(decorator));
-              return {type, decorators};
+              return {typeExpression, decorators};
             });
       }
     }
@@ -857,7 +858,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getParamInfoFromHelperCall(
       classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
-    const parameters: ParamInfo[] = parameterNodes.map(() => ({type: null, decorators: null}));
+    const parameters: ParamInfo[] =
+        parameterNodes.map(() => ({typeExpression: null, decorators: null}));
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
       const {classDecorators} =
@@ -871,7 +873,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 metadataArg.text === 'design:paramtypes';
             const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
             if (isParamTypeDecorator && types) {
-              types.forEach((type, index) => parameters[index].type = type);
+              types.forEach((type, index) => parameters[index].typeExpression = type);
             }
             break;
           case '__param':
@@ -1024,7 +1026,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
 export type ParamInfo = {
   decorators: Decorator[] | null,
-  type: ts.Expression | null
+  typeExpression: ts.Expression | null
 };
 
 /**
