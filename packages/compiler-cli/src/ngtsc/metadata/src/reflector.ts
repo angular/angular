@@ -49,25 +49,43 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       // It may or may not be possible to write an expression that refers to the value side of the
       // type named for the parameter.
       let typeValueExpr: ts.Expression|null = null;
+      let originalTypeNode = node.type || null;
+      let typeNode = originalTypeNode;
+
+      // Check if we are dealing with a simple nullable union type e.g. `foo: Foo|null`
+      // and extract the type. More complext union types e.g. `foo: Foo|Bar` are not supported.
+      // We also don't need to support `foo: Foo|undefined` because Angular's DI injects `null` for
+      // optional tokes that don't have providers.
+      if (typeNode && ts.isUnionTypeNode(typeNode)) {
+        let childTypeNodes = typeNode.types.filter(
+            childTypeNode => childTypeNode.kind !== ts.SyntaxKind.NullKeyword);
+
+        if (childTypeNodes.length === 1) {
+          typeNode = childTypeNodes[0];
+        } else {
+          typeNode = null;
+        }
+      }
 
       // It's not possible to get a value expression if the parameter doesn't even have a type.
-      if (node.type !== undefined) {
+      if (typeNode) {
         // It's only valid to convert a type reference to a value reference if the type actually has
-        // a
-        // value declaration associated with it.
-        const type = this.checker.getTypeFromTypeNode(node.type);
-        if (type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
+        // a value declaration associated with it.
+        let type: ts.Type|null = this.checker.getTypeFromTypeNode(typeNode);
+
+        if (type && type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
           // The type points to a valid value declaration. Rewrite the TypeReference into an
           // Expression
           // which references the value pointed to by the TypeReference, if possible.
-          typeValueExpr = typeNodeToValueExpr(node.type);
+          typeValueExpr = typeNodeToValueExpr(typeNode);
         }
       }
 
       return {
         name,
         nameNode: node.name,
-        type: typeValueExpr, decorators,
+        typeExpression: typeValueExpr,
+        typeNode: originalTypeNode, decorators,
       };
     });
   }

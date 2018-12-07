@@ -82,7 +82,8 @@ export function generateSetClassMetadataCall(
 function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type = param.type !== null ? param.type : ts.createIdentifier('undefined');
+  const type =
+      param.typeExpression !== null ? param.typeExpression : ts.createIdentifier('undefined');
   const properties: ts.ObjectLiteralElementLike[] = [
     ts.createPropertyAssignment('type', type),
   ];

@@ -47,7 +47,7 @@ describe('reflector', () => {
           contents: `
             import {dec} from './dec';
             class Bar {}
-            
+
             class Foo {
               constructor(@dec bar: Bar) {}
             }
@@ -76,7 +76,7 @@ describe('reflector', () => {
           contents: `
             import {dec} from './dec';
             class Bar {}
-            
+
             class Foo {
               constructor(@dec bar: Bar) {}
             }
@@ -104,7 +104,7 @@ describe('reflector', () => {
           contents: `
             import {Bar} from './bar';
             import * as star from './bar';
-            
+
             class Foo {
               constructor(bar: Bar, otherBar: star.Bar) {}
             }
@@ -118,6 +118,34 @@ describe('reflector', () => {
       expect(args.length).toBe(2);
       expectParameter(args[0], 'bar', 'Bar');
       expectParameter(args[1], 'otherBar', 'star.Bar');
+    });
+
+
+    it('should reflect an nullable argument', () => {
+      const {program} = makeProgram([
+        {
+          name: 'bar.ts',
+          contents: `
+          export class Bar {}
+        `
+        },
+        {
+          name: 'entry.ts',
+          contents: `
+            import {Bar} from './bar';
+
+            class Foo {
+              constructor(bar: Bar|null) {}
+            }
+        `
+        }
+      ]);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const checker = program.getTypeChecker();
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
+      expect(args.length).toBe(1);
+      expectParameter(args[0], 'bar', 'Bar');
     });
   });
 
@@ -169,10 +197,10 @@ function expectParameter(
     decoratorFrom?: string): void {
   expect(param.name !).toEqual(name);
   if (type === undefined) {
-    expect(param.type).toBeNull();
+    expect(param.typeExpression).toBeNull();
   } else {
-    expect(param.type).not.toBeNull();
-    expect(argExpressionToString(param.type !)).toEqual(type);
+    expect(param.typeExpression).not.toBeNull();
+    expect(argExpressionToString(param.typeExpression !)).toEqual(type);
   }
   if (decorator !== undefined) {
     expect(param.decorators).not.toBeNull();
@@ -184,7 +212,11 @@ function expectParameter(
   }
 }
 
-function argExpressionToString(name: ts.Node): string {
+function argExpressionToString(name: ts.Node | null): string {
+  if (name == null) {
+    throw new Error('\'name\' argument can\'t be null');
+  }
+
   if (ts.isIdentifier(name)) {
     return name.text;
   } else if (ts.isPropertyAccessExpression(name)) {
