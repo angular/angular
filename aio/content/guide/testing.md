@@ -126,7 +126,7 @@ jobs:
           key: my-project-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "node_modules"
-      - run: npm run test -- --single-run --no-progress --browser=ChromeHeadlessCI
+      - run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
       - run: npm run e2e -- --no-progress --config=protractor-ci.conf.js
 ```
 
@@ -167,7 +167,7 @@ install:
   - npm install
 
 script:
-  - npm run test -- --single-run --no-progress --browser=ChromeHeadlessCI
+  - npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
   - npm run e2e -- --no-progress --config=protractor-ci.conf.js
 ```
 
@@ -218,7 +218,7 @@ exports.config = config;
 Now you can run the following commands to use the `--no-sandbox` flag:
 
 <code-example language="sh" class="code-shell">
-  ng test --single-run --no-progress --browser=ChromeHeadlessCI
+  ng test --watch=false --no-progress --browsers=ChromeHeadlessCI
   ng e2e --no-progress --config=protractor-ci.conf.js
 </code-example>
 
