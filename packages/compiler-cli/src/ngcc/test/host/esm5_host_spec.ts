@@ -824,7 +824,7 @@ describe('Esm5ReflectionHost', () => {
       expect(parameters !.map(parameter => parameter.name)).toEqual([
         '_viewContainer', '_template', 'injected'
       ]);
-      expect(parameters !.map(parameter => parameter.type !.getText())).toEqual([
+      expect(parameters !.map(parameter => parameter.typeExpression !.getText())).toEqual([
         'ViewContainerRef', 'TemplateRef', 'undefined'
       ]);
     });
@@ -1079,7 +1079,7 @@ describe('Esm5ReflectionHost', () => {
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isVariableDeclaration);
       const ctrDecorators = host.getConstructorParameters(classNode) !;
-      const identifierOfViewContainerRef = ctrDecorators[0].type !as ts.Identifier;
+      const identifierOfViewContainerRef = ctrDecorators[0].typeExpression !as ts.Identifier;
 
       const expectedDeclarationNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', ts.isVariableDeclaration);
