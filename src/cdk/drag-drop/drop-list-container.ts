@@ -7,9 +7,16 @@
  */
 
 import {InjectionToken, QueryList, ElementRef} from '@angular/core';
-import {CdkDrag} from './drag';
+import {CdkDrag} from './directives/drag';
 
 
+/**
+ * @deprecated To be removed. No longer being used. Previously the interface was used to avoid
+ * circular imports between `CdkDrag` and `CdkDropList`, however now we're using the
+ * `CdkDropListInternal` interface to achieve the same result, without having to maintain
+ * this large of an interface.
+ * @breaking-change 8.0.0
+ */
 export interface CdkDropListContainer<T = any> {
   /** DOM node that corresponds to the drop container. */
   element: ElementRef<HTMLElement>;
@@ -40,7 +47,7 @@ export interface CdkDropListContainer<T = any> {
    * @param isPointerOverContainer Whether the user's pointer was over the
    *    container when the item was dropped.
    */
-  drop(item: CdkDrag, currentIndex: number, previousContainer: CdkDropListContainer,
+  drop(item: CdkDrag, currentIndex: number, previousContainer: Partial<CdkDropListContainer>,
         isPointerOverContainer: boolean): void;
 
   /**
@@ -73,5 +80,13 @@ export interface CdkDropListContainer<T = any> {
  * Injection token that is used to provide a CdkDropList instance to CdkDrag.
  * Used for avoiding circular imports.
  */
-export const CDK_DROP_LIST_CONTAINER =
-    new InjectionToken<CdkDropListContainer>('CDK_DROP_LIST_CONTAINER');
+export const CDK_DROP_LIST = new InjectionToken<CdkDropListContainer>('CDK_DROP_LIST');
+
+/**
+ * Injection token that is used to provide a CdkDropList instance to CdkDrag.
+ * Used for avoiding circular imports.
+ * @deprecated Use `CDK_DROP_LIST` instead.
+ * @breaking-change 8.0.0
+ */
+export const CDK_DROP_LIST_CONTAINER = CDK_DROP_LIST;
+

@@ -6,14 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './drop-list';
-export * from './drop-list-group';
+// TODO(crisbeto): export once API is finalized
+// export * from './drag-ref';
+// export * from './drop-list-ref';
+
 export * from './drop-list-container';
-export * from './drag';
-export * from './drag-handle';
 export * from './drag-events';
 export * from './drag-utils';
-export * from './drag-preview';
-export * from './drag-placeholder';
 export * from './drag-drop-module';
 export * from './drag-drop-registry';
+
+export * from './directives/drop-list';
+export * from './directives/drop-list-group';
+export * from './directives/drag';
+export * from './directives/drag-handle';
+export * from './directives/drag-preview';
+export * from './directives/drag-placeholder';
+
+import {DragRefConfig} from './drag-ref';
+
+/**
+ * @deprecated Use `DragRefConfig` instead.
+ * @breaking-change 8.0.0
+ */
+export interface CdkDragConfig extends DragRefConfig {}

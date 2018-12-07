@@ -12,7 +12,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
-import {DragDropModule} from './drag-drop-module';
+import {DragDropModule} from '../drag-drop-module';
 import {
   createMouseEvent,
   dispatchEvent,
@@ -21,13 +21,14 @@ import {
   createTouchEvent,
 } from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
-import {CdkDrag, CDK_DRAG_CONFIG, CdkDragConfig} from './drag';
-import {CdkDragDrop} from './drag-events';
-import {moveItemInArray} from './drag-utils';
+import {CdkDrag, CDK_DRAG_CONFIG} from './drag';
+import {CdkDragDrop} from '../drag-events';
+import {moveItemInArray} from '../drag-utils';
 import {CdkDropList} from './drop-list';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropListGroup} from './drop-list-group';
-import {extendStyles} from './drag-styling';
+import {extendStyles} from '../drag-styling';
+import {DragRefConfig} from '../drag-ref';
 
 const ITEM_HEIGHT = 25;
 const ITEM_WIDTH = 75;
@@ -47,7 +48,7 @@ describe('CdkDrag', () => {
             // have to deal with thresholds.
             dragStartThreshold: dragDistance,
             pointerDirectionChangeThreshold: 5
-          } as CdkDragConfig
+          } as DragRefConfig
         },
         ...providers
       ],

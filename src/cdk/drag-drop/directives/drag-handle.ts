@@ -8,8 +8,8 @@
 
 import {Directive, ElementRef, Inject, Optional, Input} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CDK_DRAG_PARENT} from './drag-parent';
-import {toggleNativeDragInteractions} from './drag-styling';
+import {CDK_DRAG_PARENT} from '../drag-parent';
+import {toggleNativeDragInteractions} from '../drag-styling';
 
 /** Handle that can be used to drag and CdkDrag instance. */
 @Directive({

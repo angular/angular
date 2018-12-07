@@ -9,8 +9,8 @@ import {
 } from '@angular/cdk/testing';
 import {DragDropRegistry} from './drag-drop-registry';
 import {DragDropModule} from './drag-drop-module';
-import {CdkDrag} from './drag';
-import {CdkDropList} from './drop-list';
+import {CdkDrag} from './directives/drag';
+import {CdkDropList} from './directives/drop-list';
 
 describe('DragDropRegistry', () => {
   let fixture: ComponentFixture<SimpleDropZone>;
@@ -158,18 +158,6 @@ describe('DragDropRegistry', () => {
 
   it('should not throw when trying to register the same container again', () => {
     expect(() => registry.registerDropContainer(testComponent.dropInstances.first)).not.toThrow();
-  });
-
-  it('should throw when trying to register a different container with the same id', () => {
-    expect(() => {
-      testComponent.showDuplicateContainer = true;
-      fixture.detectChanges();
-    }).toThrowError(/Drop instance with id \"items\" has already been registered/);
-  });
-
-  it('should be able to get a drop container by its id', () => {
-    expect(registry.getDropContainer('items')).toBe(testComponent.dropInstances.first);
-    expect(registry.getDropContainer('does-not-exist')).toBeFalsy();
   });
 
   it('should not prevent the default `touchmove` actions when nothing is being dragged', () => {

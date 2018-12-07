@@ -166,7 +166,11 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
     return this._activeDragInstances.has(drag);
   }
 
-  /** Gets a drop container by its id. */
+  /**
+   * Gets a drop container by its id.
+   * @deprecated No longer being used. To be removed.
+   * @breaking-change 8.0.0
+   */
   getDropContainer(id: string): C | undefined {
     return Array.from(this._dropInstances).find(instance => instance.id === id);
   }
