@@ -94,8 +94,14 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
   get description(): string { return this._description; }
   set description(newDescription: string) {
     if (newDescription !== this._description) {
+      const badgeElement = this._badgeElement;
       this._updateHostAriaDescription(newDescription, this._description);
       this._description = newDescription;
+
+      if (badgeElement) {
+        newDescription ? badgeElement.setAttribute('aria-label', newDescription) :
+            badgeElement.removeAttribute('aria-label');
+      }
     }
   }
   private _description: string;

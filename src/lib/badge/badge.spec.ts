@@ -165,6 +165,25 @@ describe('MatBadge', () => {
     expect(element.classList).toContain('mat-badge-disabled');
   });
 
+  it('should update the aria-label if the description changes', () => {
+    const badgeContent = badgeNativeElement.querySelector('.mat-badge-content')!;
+
+    fixture.componentInstance.badgeDescription = 'initial content';
+    fixture.detectChanges();
+
+    expect(badgeContent.getAttribute('aria-label')).toBe('initial content');
+
+    fixture.componentInstance.badgeDescription = 'changed content';
+    fixture.detectChanges();
+
+    expect(badgeContent.getAttribute('aria-label')).toBe('changed content');
+
+    fixture.componentInstance.badgeDescription = '';
+    fixture.detectChanges();
+
+    expect(badgeContent.hasAttribute('aria-label')).toBe(false);
+  });
+
 });
 
 /** Test component that contains a MatBadge. */
