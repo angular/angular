@@ -251,7 +251,7 @@ describe('style and class based bindings', () => {
 
         expect(renderToHtml(Template, {}, 2, 0))
             .toEqual('<svg><circle fill="yellow" stroke="green"></circle></svg>');
-      })
+      });
     });
 
     describe('helper functions', () => {
