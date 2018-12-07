@@ -13,6 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
@@ -445,13 +446,14 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          }));
 
 
-      it('should ignore empty bindings', fakeAsync(() => {
-           const ctx = _bindSimpleProp('[someProp]', TestData);
-           ctx.componentInstance.a = 'value';
-           ctx.detectChanges(false);
+      fixmeIvy('FW-814: Bindings with an empty value should be ignored in the compiler')
+          .it('should ignore empty bindings', fakeAsync(() => {
+                const ctx = _bindSimpleProp('[someProp]', TestData);
+                ctx.componentInstance.a = 'value';
+                ctx.detectChanges(false);
 
-           expect(renderLog.log).toEqual([]);
-         }));
+                expect(renderLog.log).toEqual([]);
+              }));
 
       it('should support interpolation', fakeAsync(() => {
            const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
@@ -537,27 +539,28 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
 
-        it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
-             const ctx = createCompFixture(
-                 '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
-             const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
-             ctx.detectChanges(false);
-             dir.changes = {};
-             ctx.detectChanges(false);
+        fixmeIvy('unknown').it(
+            'should record unwrapped values via ngOnChanges', fakeAsync(() => {
+              const ctx = createCompFixture(
+                  '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
+              const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
+              ctx.detectChanges(false);
+              dir.changes = {};
+              ctx.detectChanges(false);
 
-             // Note: the binding for `b` did not change and has no ValueWrapper,
-             // and should therefore stay unchanged.
-             expect(dir.changes).toEqual({
-               'name': new SimpleChange('aName', 'aName', false),
-               'b': new SimpleChange(2, 2, false)
-             });
+              // Note: the binding for `b` did not change and has no ValueWrapper,
+              // and should therefore stay unchanged.
+              expect(dir.changes).toEqual({
+                'name': new SimpleChange('aName', 'aName', false),
+                'b': new SimpleChange(2, 2, false)
+              });
 
-             ctx.detectChanges(false);
-             expect(dir.changes).toEqual({
-               'name': new SimpleChange('aName', 'aName', false),
-               'b': new SimpleChange(2, 2, false)
-             });
-           }));
+              ctx.detectChanges(false);
+              expect(dir.changes).toEqual({
+                'name': new SimpleChange('aName', 'aName', false),
+                'b': new SimpleChange(2, 2, false)
+              });
+            }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
@@ -588,29 +591,30 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
            }));
 
-        it('should call pure pipes that are used multiple times only when the arguments change',
-           fakeAsync(() => {
-             const ctx = createCompFixture(
-                 `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
-                     '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
-                 Person);
-             ctx.componentInstance.name = 'a';
-             ctx.componentInstance.age = 10;
-             ctx.componentInstance.address = new Address('mtv');
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-             ]);
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-             ]);
-             ctx.componentInstance.age = 11;
-             ctx.detectChanges(false);
-             expect(renderLog.loggedValues).toEqual([
-               'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
-             ]);
-           }));
+        fixmeIvy('unknown').it(
+            'should call pure pipes that are used multiple times only when the arguments change',
+            fakeAsync(() => {
+              const ctx = createCompFixture(
+                  `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
+                      '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                  Person);
+              ctx.componentInstance.name = 'a';
+              ctx.componentInstance.age = 10;
+              ctx.componentInstance.address = new Address('mtv');
+              ctx.detectChanges(false);
+              expect(renderLog.loggedValues).toEqual([
+                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+              ]);
+              ctx.detectChanges(false);
+              expect(renderLog.loggedValues).toEqual([
+                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+              ]);
+              ctx.componentInstance.age = 11;
+              ctx.detectChanges(false);
+              expect(renderLog.loggedValues).toEqual([
+                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
+              ]);
+            }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
@@ -994,31 +998,32 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
 
-        it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
-             const ctx =
-                 createCompFixture('<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
+        fixmeIvy('unknown').it(
+            'should not call ngAfterViewInit again if it throws', fakeAsync(() => {
+              const ctx =
+                  createCompFixture('<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
 
-             let errored = false;
-             // First pass fails, but ngAfterViewInit should be called.
-             try {
-               ctx.detectChanges(false);
-             } catch (e) {
-               errored = true;
-             }
-             expect(errored).toBe(true);
+              let errored = false;
+              // First pass fails, but ngAfterViewInit should be called.
+              try {
+                ctx.detectChanges(false);
+              } catch (e) {
+                errored = true;
+              }
+              expect(errored).toBe(true);
 
-             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
-             directiveLog.clear();
+              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
+              directiveLog.clear();
 
-             // Second change detection also fails, but this time ngAfterViewInit should not be
-             // called.
-             try {
-               ctx.detectChanges(false);
-             } catch (e) {
-               throw new Error('Second detectChanges() should not have run detection.');
-             }
-             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
-           }));
+              // Second change detection also fails, but this time ngAfterViewInit should not be
+              // called.
+              try {
+                ctx.detectChanges(false);
+              } catch (e) {
+                throw new Error('Second detectChanges() should not have run detection.');
+              }
+              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
+            }));
       });
 
       describe('ngAfterViewChecked', () => {
@@ -1073,111 +1078,119 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       });
 
       describe('ngOnDestroy', () => {
-        it('should be called on view destruction', fakeAsync(() => {
-             const ctx = createCompFixture('<div testDirective="dir"></div>');
-             ctx.detectChanges(false);
+        fixmeIvy('unknown').it(
+            'should be called on view destruction', fakeAsync(() => {
+              const ctx = createCompFixture('<div testDirective="dir"></div>');
+              ctx.detectChanges(false);
 
-             ctx.destroy();
+              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
-           }));
+              expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
+            }));
 
-        it('should be called after processing the content and view children', fakeAsync(() => {
-             TestBed.overrideComponent(AnotherComponent, {
-               set: new Component(
-                   {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
-             });
+        fixmeIvy('unknown').it(
+            'should be called after processing the content and view children', fakeAsync(() => {
+              TestBed.overrideComponent(AnotherComponent, {
+                set: new Component(
+                    {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
+              });
 
-             const ctx = createCompFixture(
-                 '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                     '<other-cmp></other-cmp></div>',
-                 TestComponent);
+              const ctx = createCompFixture(
+                  '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                      '<other-cmp></other-cmp></div>',
+                  TestComponent);
 
-             ctx.detectChanges(false);
-             ctx.destroy();
+              ctx.detectChanges(false);
+              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-               'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
-               'parent.ngOnDestroy'
-             ]);
-           }));
+              expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
+                'parent.ngOnDestroy'
+              ]);
+            }));
 
-        it('should be called in reverse order so the child is always notified before the parent',
-           fakeAsync(() => {
-             const ctx = createCompFixture(
-                 '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
+        fixmeIvy('unknown').it(
+            'should be called in reverse order so the child is always notified before the parent',
+            fakeAsync(() => {
+              const ctx = createCompFixture(
+                  '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
-             ctx.detectChanges(false);
-             ctx.destroy();
+              ctx.detectChanges(false);
+              ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-               'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
-             ]);
-           }));
+              expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
+              ]);
+            }));
 
-        it('should deliver synchronous events to parent', fakeAsync(() => {
-             const ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
+        fixmeIvy('unknown').it(
+            'should deliver synchronous events to parent', fakeAsync(() => {
+              const ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
 
-             ctx.detectChanges(false);
-             ctx.destroy();
+              ctx.detectChanges(false);
+              ctx.destroy();
 
-             expect(ctx.componentInstance.a).toEqual('destroyed');
-           }));
+              expect(ctx.componentInstance.a).toEqual('destroyed');
+            }));
 
-        it('should call ngOnDestroy on pipes', fakeAsync(() => {
-             const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
+        fixmeIvy('unknown').it('should call ngOnDestroy on pipes', fakeAsync(() => {
+                                 const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
-             ctx.detectChanges(false);
-             ctx.destroy();
+                                 ctx.detectChanges(false);
+                                 ctx.destroy();
 
-             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-               'pipeWithOnDestroy.ngOnDestroy'
-             ]);
-           }));
+                                 expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                                   'pipeWithOnDestroy.ngOnDestroy'
+                                 ]);
+                               }));
 
-        it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
-             TestBed.overrideDirective(
-                 TestDirective, {set: {providers: [InjectableWithLifecycle]}});
+        fixmeIvy('unknown').it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
+                                 TestBed.overrideDirective(
+                                     TestDirective, {set: {providers: [InjectableWithLifecycle]}});
 
-             const ctx = createCompFixture('<div testDirective="dir"></div>', TestComponent);
+                                 const ctx = createCompFixture(
+                                     '<div testDirective="dir"></div>', TestComponent);
 
-             ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
-             ctx.detectChanges(false);
+                                 ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
+                                 ctx.detectChanges(false);
 
-             ctx.destroy();
+                                 ctx.destroy();
 
-             // We don't care about the exact order in this test.
-             expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
-               'dir.ngOnDestroy', 'injectable.ngOnDestroy'
-             ]);
-           }));
+                                 // We don't care about the exact order in this test.
+                                 expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
+                                   'dir.ngOnDestroy', 'injectable.ngOnDestroy'
+                                 ]);
+                               }));
       });
     });
 
     describe('enforce no new changes', () => {
-      it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-           @Directive({selector: '[changed]'})
-           class ChangingDirective {
-             @Input() changed: any;
-           }
+      fixmeIvy('unknown').it(
+          'should throw when a record gets changed after it has been checked', fakeAsync(() => {
+            @Directive({selector: '[changed]'})
+            class ChangingDirective {
+              @Input() changed: any;
+            }
 
-           TestBed.configureTestingModule({declarations: [ChangingDirective]});
+            TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-           const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+            const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
 
-           ctx.componentInstance.b = 1;
+            ctx.componentInstance.b = 1;
 
-           expect(() => ctx.checkNoChanges())
-               .toThrowError(/Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
-         }));
+            expect(() => ctx.checkNoChanges())
+                .toThrowError(
+                    /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
+          }));
 
-      it('should warn when the view has been created in a cd hook', fakeAsync(() => {
-           const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
-           ctx.componentInstance.a = 1;
-           expect(() => ctx.detectChanges())
-               .toThrowError(
-                   /It seems like the view has been created after its parent and its children have been dirty checked/);
-         }));
+      fixmeIvy('unknown').it(
+          'should warn when the view has been created in a cd hook', fakeAsync(() => {
+            const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
+            ctx.componentInstance.a = 1;
+            expect(() => ctx.detectChanges())
+                .toThrowError(
+                    /It seems like the view has been created after its parent and its children have been dirty checked/);
+          }));
 
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
@@ -1187,27 +1200,27 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            expect(() => ctx.checkNoChanges()).not.toThrow();
          }));
 
-      it('should not break the next run', fakeAsync(() => {
-           const ctx = _bindSimpleValue('a', TestData);
-           ctx.componentInstance.a = 'value';
-           expect(() => ctx.checkNoChanges()).toThrow();
+      fixmeIvy('unknown').it('should not break the next run', fakeAsync(() => {
+                               const ctx = _bindSimpleValue('a', TestData);
+                               ctx.componentInstance.a = 'value';
+                               expect(() => ctx.checkNoChanges()).toThrow();
 
-           ctx.detectChanges();
-           expect(renderLog.loggedValues).toEqual(['value']);
-         }));
+                               ctx.detectChanges();
+                               expect(renderLog.loggedValues).toEqual(['value']);
+                             }));
     });
 
     describe('mode', () => {
-      it('Detached', fakeAsync(() => {
-           const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
-           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
-           cmp.value = 'hello';
-           cmp.changeDetectorRef.detach();
+      fixmeIvy('unknown').it('Detached', fakeAsync(() => {
+                               const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
+                               const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+                               cmp.value = 'hello';
+                               cmp.changeDetectorRef.detach();
 
-           ctx.detectChanges();
+                               ctx.detectChanges();
 
-           expect(renderLog.log).toEqual([]);
-         }));
+                               expect(renderLog.log).toEqual([]);
+                             }));
 
       it('Detached should disable OnPush', fakeAsync(() => {
            const ctx = createCompFixture('<push-cmp [value]="value"></push-cmp>');
@@ -1260,34 +1273,36 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
          }));
 
-      it('Reattaches in the original cd mode', fakeAsync(() => {
-           const ctx = createCompFixture('<push-cmp></push-cmp>');
-           const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
-           cmp.changeDetectorRef.detach();
-           cmp.changeDetectorRef.reattach();
+      fixmeIvy('unknown').it('Reattaches in the original cd mode', fakeAsync(() => {
+                               const ctx = createCompFixture('<push-cmp></push-cmp>');
+                               const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
+                               cmp.changeDetectorRef.detach();
+                               cmp.changeDetectorRef.reattach();
 
-           // renderCount should NOT be incremented with each CD as CD mode should be resetted to
-           // on-push
-           ctx.detectChanges();
-           expect(cmp.renderCount).toBeGreaterThan(0);
-           const count = cmp.renderCount;
+                               // renderCount should NOT be incremented with each CD as CD mode
+                               // should be resetted to
+                               // on-push
+                               ctx.detectChanges();
+                               expect(cmp.renderCount).toBeGreaterThan(0);
+                               const count = cmp.renderCount;
 
-           ctx.detectChanges();
-           expect(cmp.renderCount).toBe(count);
-         }));
+                               ctx.detectChanges();
+                               expect(cmp.renderCount).toBe(count);
+                             }));
 
     });
 
     describe('multi directive order', () => {
-      it('should follow the DI order for the same element', fakeAsync(() => {
-           const ctx =
-               createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
+      fixmeIvy('unknown').it(
+          'should follow the DI order for the same element', fakeAsync(() => {
+            const ctx =
+                createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
 
-           ctx.detectChanges(false);
-           ctx.destroy();
+            ctx.detectChanges(false);
+            ctx.destroy();
 
-           expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
-         }));
+            expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
+          }));
     });
 
     describe('nested view recursion', () => {
@@ -1424,25 +1439,26 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
         });
 
-        it('should dirty check projected views if the declaration place is dirty checked', () => {
-          ctx.detectChanges(false);
-          log = [];
-          innerComp.cdRef.detach();
-          mainComp.cdRef.detectChanges();
+        fixmeIvy('unknown').it(
+            'should dirty check projected views if the declaration place is dirty checked', () => {
+              ctx.detectChanges(false);
+              log = [];
+              innerComp.cdRef.detach();
+              mainComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
+              expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
 
-          log = [];
-          outerComp.cdRef.detectChanges();
+              log = [];
+              outerComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['outer-start', 'outer-tpl']);
+              expect(log).toEqual(['outer-start', 'outer-tpl']);
 
-          log = [];
-          outerComp.cdRef.detach();
-          mainComp.cdRef.detectChanges();
+              log = [];
+              outerComp.cdRef.detach();
+              mainComp.cdRef.detectChanges();
 
-          expect(log).toEqual(['main-start', 'main-tpl']);
-        });
+              expect(log).toEqual(['main-start', 'main-tpl']);
+            });
       });
     });
 
@@ -1516,7 +1532,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         childThrows: LifetimeMethods;
       }
 
-      describe('calling init', () => {
+      fixmeIvy('unknown').describe('calling init', () => {
         function initialize(options: Options) {
           @Component({selector: 'my-child', template: ''})
           class MyChild {

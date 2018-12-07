@@ -700,30 +700,31 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         if (getDOM().supportsDOMEvents()) {
-          it('should be checked when an async pipe requests a check', fakeAsync(() => {
-               TestBed.configureTestingModule(
-                   {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
-               const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-               TestBed.overrideComponent(MyComp, {set: {template}});
-               const fixture = TestBed.createComponent(MyComp);
+          fixmeIvy('unknown').it(
+              'should be checked when an async pipe requests a check', fakeAsync(() => {
+                TestBed.configureTestingModule(
+                    {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
+                const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
+                TestBed.overrideComponent(MyComp, {set: {template}});
+                const fixture = TestBed.createComponent(MyComp);
 
-               tick();
+                tick();
 
-               const cmp: PushCmpWithAsyncPipe =
-                   fixture.debugElement.children[0].references !['cmp'];
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(1);
+                const cmp: PushCmpWithAsyncPipe =
+                    fixture.debugElement.children[0].references !['cmp'];
+                fixture.detectChanges();
+                expect(cmp.numberOfChecks).toEqual(1);
 
-               fixture.detectChanges();
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(1);
+                fixture.detectChanges();
+                fixture.detectChanges();
+                expect(cmp.numberOfChecks).toEqual(1);
 
-               cmp.resolve(2);
-               tick();
+                cmp.resolve(2);
+                tick();
 
-               fixture.detectChanges();
-               expect(cmp.numberOfChecks).toEqual(2);
-             }));
+                fixture.detectChanges();
+                expect(cmp.numberOfChecks).toEqual(2);
+              }));
         }
       });
 
@@ -1872,7 +1873,7 @@ function declareTests(config?: {useJit: boolean}) {
 
     if (getDOM().supportsDOMEvents()) {
       describe('svg', () => {
-        it('should support svg elements', () => {
+        fixmeIvy('unknown').it('should support svg elements', () => {
           TestBed.configureTestingModule({declarations: [MyComp]});
           const template = '<svg><use xlink:href="Port" /></svg>';
           TestBed.overrideComponent(MyComp, {set: {template}});
@@ -1891,7 +1892,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
         });
 
-        it('should support foreignObjects with document fragments', () => {
+        fixmeIvy('unknown').it('should support foreignObjects with document fragments', () => {
           TestBed.configureTestingModule({declarations: [MyComp]});
           const template =
               '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
@@ -1913,7 +1914,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('attributes', () => {
 
-        it('should support attributes with namespace', () => {
+        fixmeIvy('unknown').it('should support attributes with namespace', () => {
           TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
           const template = '<svg:use xlink:href="#id" />';
           TestBed.overrideComponent(SomeCmp, {set: {template}});
@@ -1924,7 +1925,7 @@ function declareTests(config?: {useJit: boolean}) {
               .toEqual('#id');
         });
 
-        it('should support binding to attributes with namespace', () => {
+        fixmeIvy('unknown').it('should support binding to attributes with namespace', () => {
           TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
           const template = '<svg:use [attr.xlink:href]="value" />';
           TestBed.overrideComponent(SomeCmp, {set: {template}});

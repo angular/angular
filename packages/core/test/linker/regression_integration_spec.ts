@@ -428,7 +428,7 @@ function declareTestsUsingBootstrap() {
     if (getDOM().supportsDOMEvents()) {
       // This test needs a real DOM....
 
-      it('should keep change detecting if there was an error', (done) => {
+      fixmeIvy('unknown').it('should keep change detecting if there was an error', (done) => {
         @Component({
           selector: COMP_SELECTOR,
           template:
