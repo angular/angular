@@ -233,24 +233,43 @@ describe('style and class based bindings', () => {
         // <svg [style.width.px]="diameter" [style.height.px]="diameter">
         //   <circle stroke="green" fill="yellow" />
         // </svg>
-        function Template(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            namespaceSVG();
-            elementStart(0, 'svg');
-            elementStyling(null, ['width', 'height']);
-            elementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
-            elementEnd();
-            elementEnd();
-          }
-          if (rf & RenderFlags.Update) {
-            elementStyleProp(0, 0, ctx.diameter, 'px');
-            elementStyleProp(0, 1, ctx.diameter, 'px');
-            elementStylingApply(0);
-          }
+        class Comp {
+          diameter: number = 100;
+
+          static ngComponentDef = defineComponent({
+            type: Comp,
+            selectors: [['comp']],
+            factory: () => new Comp(),
+            consts: 2,
+            vars: 0,
+            template: (rf: RenderFlags, ctx: Comp) => {
+              if (rf & RenderFlags.Create) {
+                namespaceSVG();
+                elementStart(0, 'svg');
+                elementStyling(null, ['width', 'height']);
+                elementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
+                elementEnd();
+                elementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+                elementStyleProp(0, 0, ctx.diameter, 'px');
+                elementStyleProp(0, 1, ctx.diameter, 'px');
+                elementStylingApply(0);
+              }
+            }
+          });
         }
 
-        expect(renderToHtml(Template, {}, 2, 0))
-            .toEqual('<svg><circle fill="yellow" stroke="green"></circle></svg>');
+        const fixture = new ComponentFixture(Comp);
+        fixture.update();
+
+        const target = fixture.hostElement.querySelector('svg') !as any;
+        expect(target.style.width).toEqual('100px');
+        expect(target.style.height).toEqual('100px');
+
+        expect(fixture.html)
+            .toEqual(
+                '<svg style="height: 100px; width: 100px;"><circle fill="yellow" stroke="green"></circle></svg>');
       });
     });
 
