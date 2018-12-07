@@ -10,9 +10,10 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {relativePathBetween} from '../../util/src/path';
+import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
-import {generatedModuleName, isNonDeclarationTsFile} from './util';
+import {generatedModuleName} from './util';
 
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 const STRIP_NG_FACTORY = /(.*)NgFactory$/;
@@ -87,7 +88,7 @@ export class FactoryGenerator implements ShimGenerator {
 
   static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
     const map = new Map<string, string>();
-    files.filter(sourceFile => isNonDeclarationTsFile(sourceFile))
+    files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
         .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
     return new FactoryGenerator(map);
   }
