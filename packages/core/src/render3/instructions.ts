@@ -444,7 +444,7 @@ function getRenderFlags(view: LView): RenderFlags {
 let _currentNamespace: string|null = null;
 
 export function namespaceSVG() {
-  _currentNamespace = 'http://www.w3.org/2000/svg/';
+  _currentNamespace = 'http://www.w3.org/2000/svg';
 }
 
 export function namespaceMathML() {

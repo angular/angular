@@ -8,7 +8,7 @@
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
 import {defineComponent} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap} from '../../../src/render3/instructions';
+import {createLView, createTView, elementClassProp, elementEnd, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../../src/render3/interfaces/definition';
 import {BindingStore, BindingType, PlayState, Player, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement, Renderer3, domRendererFactory3} from '../../../src/render3/interfaces/renderer';
@@ -228,6 +228,49 @@ describe('style and class based bindings', () => {
                renderToHtml(Template, {myStyles: {width: '200px', height: null}, myWidth: null}, 1))
                .toEqual('<span style="height: 100px; opacity: 0.5; width: 200px;"></span>');
          });
+
+      it('should support styles on SVG elements', () => {
+        // <svg [style.width.px]="diameter" [style.height.px]="diameter">
+        //   <circle stroke="green" fill="yellow" />
+        // </svg>
+        class Comp {
+          diameter: number = 100;
+
+          static ngComponentDef = defineComponent({
+            type: Comp,
+            selectors: [['comp']],
+            factory: () => new Comp(),
+            consts: 2,
+            vars: 0,
+            template: (rf: RenderFlags, ctx: Comp) => {
+              if (rf & RenderFlags.Create) {
+                namespaceSVG();
+                elementStart(0, 'svg');
+                elementStyling(null, ['width', 'height']);
+                elementStart(1, 'circle', ['stroke', 'green', 'fill', 'yellow']);
+                elementEnd();
+                elementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+                elementStyleProp(0, 0, ctx.diameter, 'px');
+                elementStyleProp(0, 1, ctx.diameter, 'px');
+                elementStylingApply(0);
+              }
+            }
+          });
+        }
+
+        const fixture = new ComponentFixture(Comp);
+        fixture.update();
+
+        const target = fixture.hostElement.querySelector('svg') !as any;
+        expect(target.style.width).toEqual('100px');
+        expect(target.style.height).toEqual('100px');
+
+        expect(fixture.html)
+            .toEqual(
+                '<svg style="height: 100px; width: 100px;"><circle fill="yellow" stroke="green"></circle></svg>');
+      });
     });
 
     describe('helper functions', () => {
