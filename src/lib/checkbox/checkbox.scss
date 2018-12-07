@@ -182,6 +182,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  outline: 0;
 
   .mat-ripple-element:not(.mat-checkbox-persistent-ripple) {
     opacity: 0.16;
