@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {ShimGenerator} from './host';
-import {isNonDeclarationTsFile} from './util';
+import {ShimGenerator} from '../../shims';
+import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 export class FlatIndexGenerator implements ShimGenerator {
   readonly flatIndexPath: string;
@@ -28,7 +30,7 @@ export class FlatIndexGenerator implements ShimGenerator {
     // If there's only one .ts file in the program, it's the entry. Otherwise, look for the shortest
     // (in terms of characters in the filename) file that ends in /index.ts. The second behavior is
     // deprecated; users should always explicitly specify a single .ts entrypoint.
-    const tsFiles = files.filter(isNonDeclarationTsFile);
+    const tsFiles = files.filter(file => isNonDeclarationTsPath(file));
     if (tsFiles.length === 1) {
       return new FlatIndexGenerator(flatIndexPath, tsFiles[0], moduleName);
     } else {

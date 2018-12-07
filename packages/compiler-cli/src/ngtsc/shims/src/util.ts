@@ -6,16 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
-import * as ts from 'typescript';
-
-const TS_FILE = /\.tsx?$/;
-const D_TS_FILE = /\.d\.ts$/;
-
-export function isNonDeclarationTsFile(file: string): boolean {
-  return TS_FILE.exec(file) !== null && D_TS_FILE.exec(file) === null;
-}
-
 export function generatedModuleName(
     originalModuleName: string, originalFileName: string, genSuffix: string): string {
   let moduleName: string;
