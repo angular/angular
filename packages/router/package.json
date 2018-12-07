@@ -16,7 +16,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angular/angular.git"
+    "url": "git+https://github.com/angular/angular.git",
+    "directory": "packages/router"
   },
   "author": "angular",
   "license": "MIT",
