@@ -164,6 +164,28 @@ export interface CtorParameter {
   name: string|null;
 
   /**
+   * extra prop added to the interace - this should break the build
+   *
+   *  this should break the tsc compilation of the following downstream targets:
+   * - //packages/compiler-cli/src/ngcc
+   * - //packages/compiler-cli/src/ngtsc/metadata
+   */
+  xxx: string;
+
+  /**
+   * but what's even more weird this invalid syntax will not result ina build error, but rather in a
+   * d.ts file with this interface shortended to just:
+   *
+   * export interface CtorParameter {
+   *   name: string | null;
+   *   xxx: sttring;
+   * }
+   *
+   * repro with: yarn bazel build packages/compiler-cli/src/ngtsc/host
+   */
+  x x x: w t f;
+
+  /**
    * TypeScript `ts.BindingName` representing the name of the parameter.
    *
    * The `nameNode` is useful in writing references to this member that will be correctly source-
