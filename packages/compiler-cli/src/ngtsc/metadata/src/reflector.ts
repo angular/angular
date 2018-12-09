@@ -436,7 +436,7 @@ function parameterName(name: ts.BindingName): string|null {
   }
 }
 
-function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
+export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
   if (ts.isTypeReferenceNode(node)) {
     return entityNameToValue(node.typeName);
   } else {

@@ -8,5 +8,5 @@
 
 /// <reference types="node" />
 
-export {TypeScriptReflectionHost, filterToMembersWithDecorator, findMember, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/reflector';
+export {TypeScriptReflectionHost, filterToMembersWithDecorator, findMember, reflectObjectLiteral, reflectTypeEntityToDeclaration, typeNodeToValueExpr} from './src/reflector';
 export {AbsoluteReference, EnumValue, ImportMode, Reference, ResolvedReference, ResolvedValue, isDynamicValue, staticallyResolve} from './src/resolver';
