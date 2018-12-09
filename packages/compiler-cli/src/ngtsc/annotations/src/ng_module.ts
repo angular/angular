@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
-import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, staticallyResolve, typeNodeToValueExpr} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -223,12 +223,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     const arg = type.typeArguments[0];
 
-    // If the argument isn't an Identifier, bail.
-    if (!ts.isTypeReferenceNode(arg) || !ts.isIdentifier(arg.typeName)) {
-      return null;
-    }
-
-    return arg.typeName;
+    return typeNodeToValueExpr(arg);
   }
 
   /**

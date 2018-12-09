@@ -387,10 +387,15 @@ describe('ngtsc behavioral tests', () => {
 
     env.write('node_modules/router/index.d.ts', `
         import {ModuleWithProviders} from '@angular/core';
+        import * as internal from './internal';
 
         declare class RouterModule {
-          static forRoot(): ModuleWithProviders<RouterModule>;
+          static forRoot(): ModuleWithProviders<internal.InternalRouterModule>;
         }
+    `);
+
+    env.write('node_modules/router/internal.d.ts', `
+        export declare class InternalRouterModule {}
     `);
 
     env.driveMain();
@@ -401,7 +406,8 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
     expect(dtsContents)
-        .toContain('i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
+        .toContain(
+            'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
   });
 
   it('should inject special types according to the metadata', () => {
