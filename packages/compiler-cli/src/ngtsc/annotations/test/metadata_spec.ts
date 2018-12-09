@@ -35,7 +35,7 @@ describe('ngtsc setClassMetadata converter', () => {
         `/*@__PURE__*/ i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null);`);
   });
 
-  it('should convert decorated class construtor parameter metadata', () => {
+  it('should convert decorated class constructor parameter metadata', () => {
     const res = compileAndPrint(`
     import {Component, Inject, Injector} from '@angular/core';
     const FOO = 'foo';
@@ -45,7 +45,7 @@ describe('ngtsc setClassMetadata converter', () => {
     }
     `);
     expect(res).toContain(
-        `[{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: Injector }], null);`);
+        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: Injector }]; }, null);`);
   });
 
   it('should convert decorated field metadata', () => {

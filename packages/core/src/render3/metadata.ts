@@ -10,7 +10,7 @@ import {Type} from '../type';
 
 interface TypeWithMetadata extends Type<any> {
   decorators?: any[];
-  ctorParameters?: any[];
+  ctorParameters?: () => any[];
   propDecorators?: {[field: string]: any};
 }
 
@@ -24,7 +24,7 @@ interface TypeWithMetadata extends Type<any> {
  * tree-shaken away during production builds.
  */
 export function setClassMetadata(
-    type: Type<any>, decorators: any[] | null, ctorParameters: any[] | null,
+    type: Type<any>, decorators: any[] | null, ctorParameters: (() => any[]) | null,
     propDecorators: {[field: string]: any} | null): void {
   const clazz = type as TypeWithMetadata;
   if (decorators !== null) {
