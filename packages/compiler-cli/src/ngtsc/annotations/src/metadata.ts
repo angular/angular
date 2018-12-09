@@ -45,8 +45,15 @@ export function generateSetClassMetadataCall(
   let metaCtorParameters: ts.Expression = ts.createNull();
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    metaCtorParameters = ts.createArrayLiteral(
+    const ctorParameters = ts.createArrayLiteral(
         classCtorParameters.map(param => ctorParameterToMetadata(param, isCore)));
+    metaCtorParameters = ts.createFunctionExpression(
+        /* modifiers */ undefined,
+        /* asteriskToken */ undefined,
+        /* name */ undefined,
+        /* typeParameters */ undefined,
+        /* parameters */ undefined,
+        /* type */ undefined, ts.createBlock([ts.createReturn(ctorParameters)]));
   }
 
   // Do the same for property decorators.
