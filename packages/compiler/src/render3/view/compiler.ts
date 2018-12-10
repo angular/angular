@@ -666,11 +666,11 @@ function createHostBindingsFunction(
     return convertPropertyBinding(
         null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
   };
-
   if (bindings) {
     const hostVarsCountFn = (numSlots: number): number => {
+      const originalVarsCount = totalHostVarsCount;
       totalHostVarsCount += numSlots;
-      return hostVarsCount;
+      return originalVarsCount;
     };
     const valueConverter = new ValueConverter(
         constantPool,
