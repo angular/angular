@@ -30,5 +30,8 @@
     "typings-test",
     "public_api_guard",
     "docs"
-  ]
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
 }
