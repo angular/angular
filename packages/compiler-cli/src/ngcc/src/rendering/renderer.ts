@@ -205,8 +205,9 @@ export abstract class Renderer {
   /**
    * From the given list of classes, computes a map of decorators that should be removed.
    * The decorators to remove are keyed by their container node, such that we can tell if
-   * we should remove the entire decorator property
-   * @param classes The list of classes that may have decorators to remove
+   * we should remove the entire decorator property.
+   * @param classes The list of classes that may have decorators to remove.
+   * @returns A map of decorators to remove, keyed by their container node.
    */
   protected computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
     const decoratorsToRemove = new RedundantDecoratorMap();
