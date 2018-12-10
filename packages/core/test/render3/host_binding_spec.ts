@@ -367,6 +367,70 @@ describe('host bindings', () => {
     expect(initHookComp.title).toEqual('input2-changes-init-check');
   });
 
+  it('should support host bindings with the same name as inputs', () => {
+    let hostBindingInputDir !: HostBindingInputDir;
+
+    class HostBindingInputDir {
+      // @Input()
+      disabled = false;
+
+      // @HostBinding('disabled')
+      hostDisabled = false;
+
+      static ngDirectiveDef = defineDirective({
+        type: HostBindingInputDir,
+        selectors: [['', 'hostBindingDir', '']],
+        factory: () => hostBindingInputDir = new HostBindingInputDir(),
+        hostBindings: (rf: RenderFlags, ctx: HostBindingInputDir, elIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'disabled', bind(ctx.hostDisabled), null, true);
+          }
+        },
+        inputs: {disabled: 'disabled'}
+      });
+    }
+
+    /** <input hostBindingDir [disabled]="isDisabled"> */
+    class App {
+      isDisabled = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        template: (rf: RenderFlags, ctx: App) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'input', ['hostBindingDir', '']);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(0, 'disabled', bind(ctx.isDisabled));
+          }
+        },
+        consts: 1,
+        vars: 1,
+        directives: [HostBindingInputDir]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    const hostBindingEl = fixture.hostElement.querySelector('input') as HTMLInputElement;
+    expect(hostBindingInputDir.disabled).toBe(true);
+    expect(hostBindingEl.disabled).toBe(false);
+
+    fixture.component.isDisabled = false;
+    fixture.update();
+    expect(hostBindingInputDir.disabled).toBe(false);
+    expect(hostBindingEl.disabled).toBe(false);
+
+    hostBindingInputDir.hostDisabled = true;
+    fixture.update();
+    expect(hostBindingInputDir.disabled).toBe(false);
+    expect(hostBindingEl.disabled).toBe(true);
+  });
+
   it('should support host bindings on second template pass', () => {
     /** <div hostBindingDir></div> */
     const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
