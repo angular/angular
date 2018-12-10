@@ -1047,8 +1047,8 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵelementStyling($_c0$, $_c1$, $r3$.ɵdefaultStyleSanitizer, ctx);
         }
         if (rf & 2) {
-          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
-          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id), null, true);
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title), null, true);
           $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
           $r3$.ɵelementStylingApply(elIndex, ctx);
         }
@@ -1095,8 +1095,8 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵelementStyling($_c0$, $_c1$, null, ctx);
         }
         if (rf & 2) {
-          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
-          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id), null, true);
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title), null, true);
           $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
           $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
           $r3$.ɵelementStylingApply(elIndex, ctx);

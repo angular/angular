@@ -576,7 +576,7 @@ describe('ngtsc behavioral tests', () => {
         }
         if (rf & 2) {
           i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(ctx.foo));
-          i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(ctx.bar));
+          i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(ctx.bar), null, true);
           i0.ɵelementClassProp(elIndex, 0, ctx.someClass, ctx);
           i0.ɵelementStylingApply(elIndex, ctx);
         }

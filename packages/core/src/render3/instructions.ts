@@ -938,7 +938,7 @@ export function elementAttribute(
 }
 
 /**
- * Update a property on an Element.
+ * Update a property on an element.
  *
  * If the property name also exists as an input property on one of the element's directives,
  * the component property will be set instead of the element property. This check must
@@ -949,17 +949,21 @@ export function elementAttribute(
  *        renaming as part of minification.
  * @param value New value to write.
  * @param sanitizer An optional function used to sanitize the value.
+ * @param nativeOnly Whether or not we should only set native properties and skip input check
+ * (this is necessary for host property bindings)
  */
 
 export function elementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): void {
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
+    nativeOnly?: boolean): void {
   if (value === NO_CHANGE) return;
   const lView = getLView();
   const element = getNativeByIndex(index, lView) as RElement | RComment;
   const tNode = getTNode(index, lView);
-  const inputData = initializeTNodeInputs(tNode);
+  let inputData: PropertyAliases|null|undefined;
   let dataValue: PropertyAliasValue|undefined;
-  if (inputData && (dataValue = inputData[propName])) {
+  if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
+      (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
