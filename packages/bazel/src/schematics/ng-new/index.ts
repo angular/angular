@@ -8,7 +8,7 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {apply, applyTemplates, chain, externalSchematic, MergeStrategy, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
+import {SchematicContext, apply, applyTemplates, chain, externalSchematic, MergeStrategy, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
 import {parseJsonAst, JsonAstObject, strings, JsonValue} from '@angular-devkit/core';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
