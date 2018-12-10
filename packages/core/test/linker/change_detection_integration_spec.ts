@@ -78,8 +78,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   }
 
   describe(`ChangeDetection`, () => {
-    // On CJS fakeAsync is not supported...
-    if (!getDOM().supportsDOMEvents()) return;
 
     beforeEach(() => {
       TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
@@ -1211,16 +1209,16 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('mode', () => {
-      fixmeIvy('unknown').it('Detached', fakeAsync(() => {
-                               const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
-                               const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
-                               cmp.value = 'hello';
-                               cmp.changeDetectorRef.detach();
+      it('Detached', fakeAsync(() => {
+           const ctx = createCompFixture('<comp-with-ref></comp-with-ref>');
+           const cmp: CompWithRef = queryDirs(ctx.debugElement, CompWithRef)[0];
+           cmp.value = 'hello';
+           cmp.changeDetectorRef.detach();
 
-                               ctx.detectChanges();
+           ctx.detectChanges();
 
-                               expect(renderLog.log).toEqual([]);
-                             }));
+           expect(renderLog.log).toEqual([]);
+         }));
 
       it('Detached should disable OnPush', fakeAsync(() => {
            const ctx = createCompFixture('<push-cmp [value]="value"></push-cmp>');

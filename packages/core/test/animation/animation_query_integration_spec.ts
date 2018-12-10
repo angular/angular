@@ -2635,59 +2635,58 @@ import {HostListener} from '../../src/metadata/directives';
             expect(p3.element.classList.contains('page2')).toBe(true);
           });
 
-      fixmeIvy('unknown').it(
-          'should emulate leave animation callbacks for all sub elements that have leave triggers within the component',
-          fakeAsync(() => {
-            @Component({
-              selector: 'ani-cmp',
-              animations: [
-                trigger('parent', []), trigger('child', []),
-                trigger(
-                    'childWithAnimation',
-                    [
-                      transition(
-                          ':leave',
-                          [
-                            animate(1000, style({background: 'red'})),
-                          ]),
-                    ])
-              ],
-              template: `
+      it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             animations: [
+               trigger('parent', []), trigger('child', []),
+               trigger(
+                   'childWithAnimation',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           animate(1000, style({background: 'red'})),
+                         ]),
+                   ])
+             ],
+             template: `
             <div data-name="p" class="parent" @parent *ngIf="exp" (@parent.start)="callback($event)" (@parent.done)="callback($event)">
               <div data-name="c1" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
               <div data-name="c2" @child (@child.start)="callback($event)" (@child.done)="callback($event)"></div>
               <div data-name="c3" @childWithAnimation (@childWithAnimation.start)="callback($event)" (@childWithAnimation.done)="callback($event)"></div>
             </div>
           `
-            })
-            class Cmp {
-              // TODO(issue/24571): remove '!'.
-              public exp !: boolean;
-              public log: string[] = [];
-              callback(event: any) {
-                this.log.push(event.element.getAttribute('data-name') + '-' + event.phaseName);
-              }
-            }
+           })
+           class Cmp {
+             // TODO(issue/24571): remove '!'.
+             public exp !: boolean;
+             public log: string[] = [];
+             callback(event: any) {
+               this.log.push(event.element.getAttribute('data-name') + '-' + event.phaseName);
+             }
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-            cmp.exp = true;
-            fixture.detectChanges();
-            flushMicrotasks();
-            cmp.log = [];
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+           cmp.log = [];
 
-            cmp.exp = false;
-            fixture.detectChanges();
-            flushMicrotasks();
-            expect(cmp.log).toEqual([
-              'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done',
-              'p-done'
-            ]);
-          }));
+           cmp.exp = false;
+           fixture.detectChanges();
+           flushMicrotasks();
+           expect(cmp.log).toEqual([
+             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done',
+             'p-done'
+           ]);
+         }));
 
       it('should build, but not run sub triggers when a parent animation is scheduled', () => {
         @Component({
@@ -2737,24 +2736,23 @@ import {HostListener} from '../../src/metadata/directives';
         expect(engine.players[0].getRealPlayer()).toBe(players[1]);
       });
 
-      fixmeIvy('unknown').it(
-          'should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation',
-          fakeAsync(() => {
-            @Component({
-              selector: 'parent-cmp',
-              animations: [
-                trigger(
-                    'parent',
-                    [
-                      transition(
-                          '* => go',
-                          [
-                            style({height: '0px'}),
-                            animate(1000, style({height: '100px'})),
-                          ]),
-                    ]),
-              ],
-              template: `
+      it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation',
+         fakeAsync(() => {
+           @Component({
+             selector: 'parent-cmp',
+             animations: [
+               trigger(
+                   'parent',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           style({height: '0px'}),
+                           animate(1000, style({height: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
             <div *ngIf="!remove"
                  [@parent]="exp"
                  (@parent.start)="track($event)"
@@ -2762,172 +2760,171 @@ import {HostListener} from '../../src/metadata/directives';
                  <child-cmp #child></child-cmp>
             </div>
           `
-            })
-            class ParentCmp {
-              @ViewChild('child') public childCmp: any;
+           })
+           class ParentCmp {
+             @ViewChild('child') public childCmp: any;
 
-              public exp: any;
-              public log: string[] = [];
-              public remove = false;
+             public exp: any;
+             public log: string[] = [];
+             public remove = false;
 
-              track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
-            }
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
 
-            @Component({
-              selector: 'child-cmp',
-              animations: [
-                trigger(
-                    'child',
-                    [
-                      transition(
-                          '* => go',
-                          [
-                            style({width: '0px'}),
-                            animate(1000, style({width: '100px'})),
-                          ]),
-                    ]),
-              ],
-              template: `
+           @Component({
+             selector: 'child-cmp',
+             animations: [
+               trigger(
+                   'child',
+                   [
+                     transition(
+                         '* => go',
+                         [
+                           style({width: '0px'}),
+                           animate(1000, style({width: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
             <div [@child]="exp"
                  (@child.start)="track($event)"
                  (@child.done)="track($event)"></div>
           `
-            })
-            class ChildCmp {
-              public exp: any;
-              public log: string[] = [];
-              track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
-            }
+           })
+           class ChildCmp {
+             public exp: any;
+             public log: string[] = [];
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
 
-            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(ParentCmp);
-            fixture.detectChanges();
-            flushMicrotasks();
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(ParentCmp);
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            const cmp = fixture.componentInstance;
-            const child = cmp.childCmp;
+           const cmp = fixture.componentInstance;
+           const child = cmp.childCmp;
 
-            expect(cmp.log).toEqual(['parent-start', 'parent-done']);
-            expect(child.log).toEqual(['child-start', 'child-done']);
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
 
-            cmp.log = [];
-            child.log = [];
-            cmp.exp = 'go';
-            cmp.childCmp.exp = 'go';
-            fixture.detectChanges();
-            flushMicrotasks();
+           cmp.log = [];
+           child.log = [];
+           cmp.exp = 'go';
+           cmp.childCmp.exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            expect(cmp.log).toEqual(['parent-start']);
-            expect(child.log).toEqual(['child-start']);
+           expect(cmp.log).toEqual(['parent-start']);
+           expect(child.log).toEqual(['child-start']);
 
-            const players = engine.players;
-            expect(players.length).toEqual(1);
-            players[0].finish();
+           const players = engine.players;
+           expect(players.length).toEqual(1);
+           players[0].finish();
 
-            expect(cmp.log).toEqual(['parent-start', 'parent-done']);
-            expect(child.log).toEqual(['child-start', 'child-done']);
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
 
-            cmp.log = [];
-            child.log = [];
-            cmp.remove = true;
-            fixture.detectChanges();
-            flushMicrotasks();
+           cmp.log = [];
+           child.log = [];
+           cmp.remove = true;
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            expect(cmp.log).toEqual(['parent-start', 'parent-done']);
-            expect(child.log).toEqual(['child-start', 'child-done']);
-          }));
+           expect(cmp.log).toEqual(['parent-start', 'parent-done']);
+           expect(child.log).toEqual(['child-start', 'child-done']);
+         }));
 
-      fixmeIvy('unknown').it(
-          'should fire and synchronize the start/done callbacks on multiple blocked sub triggers',
-          fakeAsync(() => {
-            @Component({
-              selector: 'cmp',
-              animations: [
-                trigger(
-                    'parent1',
-                    [
-                      transition(
-                          '* => go, * => go-again',
-                          [
-                            style({opacity: 0}),
-                            animate('1s', style({opacity: 1})),
-                          ]),
-                    ]),
-                trigger(
-                    'parent2',
-                    [
-                      transition(
-                          '* => go, * => go-again',
-                          [
-                            style({lineHeight: '0px'}),
-                            animate('1s', style({lineHeight: '10px'})),
-                          ]),
-                    ]),
-                trigger(
-                    'child1',
-                    [
-                      transition(
-                          '* => go, * => go-again',
-                          [
-                            style({width: '0px'}),
-                            animate('1s', style({width: '100px'})),
-                          ]),
-                    ]),
-                trigger(
-                    'child2',
-                    [
-                      transition(
-                          '* => go, * => go-again',
-                          [
-                            style({height: '0px'}),
-                            animate('1s', style({height: '100px'})),
-                          ]),
-                    ]),
-              ],
-              template: `
+      it('should fire and synchronize the start/done callbacks on multiple blocked sub triggers',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             animations: [
+               trigger(
+                   'parent1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+               trigger(
+                   'parent2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({lineHeight: '0px'}),
+                           animate('1s', style({lineHeight: '10px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({width: '0px'}),
+                           animate('1s', style({width: '100px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({height: '0px'}),
+                           animate('1s', style({height: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
                <div [@parent1]="parent1Exp" (@parent1.start)="track($event)"
                     [@parent2]="parent2Exp" (@parent2.start)="track($event)">
                  <div [@child1]="child1Exp" (@child1.start)="track($event)"
                       [@child2]="child2Exp" (@child2.start)="track($event)"></div>
                </div>
           `
-            })
-            class Cmp {
-              public parent1Exp = '';
-              public parent2Exp = '';
-              public child1Exp = '';
-              public child2Exp = '';
-              public log: string[] = [];
+           })
+           class Cmp {
+             public parent1Exp = '';
+             public parent2Exp = '';
+             public child1Exp = '';
+             public child2Exp = '';
+             public log: string[] = [];
 
-              track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
-            }
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            fixture.detectChanges();
-            flushMicrotasks();
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            const cmp = fixture.componentInstance;
-            cmp.log = [];
-            cmp.parent1Exp = 'go';
-            cmp.parent2Exp = 'go';
-            cmp.child1Exp = 'go';
-            cmp.child2Exp = 'go';
-            fixture.detectChanges();
-            flushMicrotasks();
+           const cmp = fixture.componentInstance;
+           cmp.log = [];
+           cmp.parent1Exp = 'go';
+           cmp.parent2Exp = 'go';
+           cmp.child1Exp = 'go';
+           cmp.child2Exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            expect(cmp.log).toEqual(
-                ['parent1-start', 'parent2-start', 'child1-start', 'child2-start']);
+           expect(cmp.log).toEqual(
+               ['parent1-start', 'parent2-start', 'child1-start', 'child2-start']);
 
-            cmp.parent1Exp = 'go-again';
-            cmp.parent2Exp = 'go-again';
-            cmp.child1Exp = 'go-again';
-            cmp.child2Exp = 'go-again';
-            fixture.detectChanges();
-            flushMicrotasks();
-          }));
+           cmp.parent1Exp = 'go-again';
+           cmp.parent2Exp = 'go-again';
+           cmp.child1Exp = 'go-again';
+           cmp.child2Exp = 'go-again';
+           fixture.detectChanges();
+           flushMicrotasks();
+         }));
 
       it('should stretch the starting keyframe of a child animation queries are issued by the parent',
          () => {
