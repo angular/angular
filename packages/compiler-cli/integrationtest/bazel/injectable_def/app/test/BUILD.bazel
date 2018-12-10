@@ -18,6 +18,7 @@ ts_library(
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-server",
+        "//packages/private/testing",
     ],
 )
 
