@@ -113,7 +113,7 @@ export interface AsyncValidator extends Validator {
 
 /**
  * @description
- * Provider which adds `RequiredValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `RequiredValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
@@ -123,7 +123,7 @@ export const REQUIRED_VALIDATOR: StaticProvider = {
 
 /**
  * @description
- * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` mult-iprovider list.
  */
 export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
@@ -135,27 +135,20 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
 /**
  * @description
  * A directive that adds the `required` validator to any controls marked with the
- * `required` attribute. The directive is provided with the `NG_VALIDATORS` provider `InjectionToken`.
+ * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
  * 
- * ### Adding a required validator using reactive forms
+ * ### Adding a required validator using template-driven forms
  *
- * The following example shows how to add a required validator to an input attached to a formControl binding 
- * using reactive forms.
- * 
- * ```ts
- * const fullNameControl = new FormControl();
  * ```
- * 
- * ```html
- * <input name="fullName" [formControl]="fullNameControl" required>
+ * <input name="fullName" ngModel required>
  * ```
  *
- * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  * @publicApi
  */
 @Directive({
@@ -203,28 +196,23 @@ export class RequiredValidator implements Validator {
 
 /**
  * A Directive that adds the `required` validator to checkbox controls marked with the
- * `required` attribute. The directive is provided with the `NG_VALIDATORS` provider `InjectionToken`.
+ * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
  * @usageNotes
  * 
- * ### Adding a required checkbox validator using reactive forms
+ * ### Adding a required checkbox validator using template-driven forms
  *
- * The following example shows how to add a checkbox required validator to an input attached to a formControl binding 
- * using reactive forms.
+ * The following example shows how to add a checkbox required validator to an input attached to an ngModel binding.
  * 
- * ```ts
- * const acceptControl = new FormControl();
  * ```
- * 
- * ```html
- * <input type="checkbox" name="accept" [formControl]="acceptControl" required>
+ * <input type="checkbox" name="active" ngModel required>
  * ```
  *
  * @publicApi
- * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
@@ -235,7 +223,7 @@ export class RequiredValidator implements Validator {
 export class CheckboxRequiredValidator extends RequiredValidator {
   /**
    * @description
-   * Method that receives a control to validate against if required true.
+   * Method that receives a control to validate against if required to be true.
    * Returns the validation result if required, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
@@ -245,7 +233,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 
 /**
  * @description
- * Provider which adds `EmailValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `EmailValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const EMAIL_VALIDATOR: any = {
   provide: NG_VALIDATORS,
@@ -255,7 +243,7 @@ export const EMAIL_VALIDATOR: any = {
 
 /**
  * A directive that adds the `email` validator to controls marked with the
- * `email` attribute. The directive is provided with the `NG_VALIDATORS` provider `InjectionToken`.
+ * `email` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  *
  * @see [Form Validation](guide/form-validation)
  *
@@ -263,20 +251,17 @@ export const EMAIL_VALIDATOR: any = {
  * 
  * ### Adding an email validator
  *
- * The following example shows how to add an email validator to an input attached to a formControl binding 
- * using reactive forms.
+ * The following example shows how to add an email validator to an input attached to a ngModel binding.
  * 
- * ```ts
- * const emailAddressControl = new FormControl();
  * ```
- * 
- * ```html
- * <input name="emailAddress" [formControl]="emailAddressControl" email>
+ * <input type="email" name="email" ngModel email>
+ * <input type="email" name="email" ngModel email="true">
+ * <input type="email" name="email" ngModel [email]="true">
  * ```
  *
  * @publicApi
- * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
@@ -327,8 +312,8 @@ export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null
 
 /**
  * @description
- * Defines a function that receives a control and asynchronously returns a map of
- * validation errors if present, otherwise null.
+ * Defines a function that receives a control and returns a Promise or observable
+ * that emits validation errors if present, otherwise null.
  *
  * @publicApi
  */
@@ -338,7 +323,7 @@ export interface AsyncValidatorFn {
 
 /**
  * @description
- * Provider which adds `MinLengthValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `MinLengthValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
@@ -348,8 +333,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
 
 /**
  * A directive that adds minimum length validation to controls marked with the
- * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` provider
- * `InjectionToken`.
+ * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` mult-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
@@ -357,15 +341,11 @@ export const MIN_LENGTH_VALIDATOR: any = {
  *
  * ### Adding a minimum length validator
  *
- * The following example shows how to add a minimum length validator to an input attached to a
- * formControl binding using reactive forms.
- *
- * ```ts
- * const firstNameControl = new FormControl();
- * ```
+ * The following example shows how to add a minimum length validator to an input attached to an
+ * ngModel binding.
  *
  * ```html
- * <input name="firstName" [formControl]="firstNameControl" minlength="4">
+ * <input name="firstName" ngModel minlength="4">
  * ```
  *
  * @ngModule ReactiveFormsModule
@@ -429,7 +409,7 @@ export class MinLengthValidator implements Validator,
 
 /**
  * @description
- * Provider which adds `MaxLengthValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `MaxLengthValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
@@ -439,8 +419,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 
 /**
  * A directive that adds max length validation to controls marked with the
- * `maxlength` attribute. The directive is provided with the `NG_VALIDATORS` provider
- * `InjectionToken`.
+ * `maxlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
@@ -448,15 +427,11 @@ export const MAX_LENGTH_VALIDATOR: any = {
  *
  * ### Adding a maximum length validator
  *
- * The following example shows how to add a maximum length validator to an input attached to a
- * formControl binding using reactive forms.
- *
- * ```ts
- * const firstNameControl = new FormControl();
- * ```
+ * The following example shows how to add a maximum length validator to an input attached to an
+ * ngModel binding.
  *
  * ```html
- * <input [formControl]="firstNameControl" maxlength="25">
+ * <input name="firstName" ngModel maxlength="25">
  * ```
  *
  * @ngModule ReactiveFormsModule
@@ -520,7 +495,7 @@ export class MaxLengthValidator implements Validator,
 
 /**
  * @description
- * Provider which adds `PatternValidator` to the `NG_VALIDATORS` provider `InjectionToken`.
+ * Provider which adds `PatternValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
@@ -533,7 +508,7 @@ export const PATTERN_VALIDATOR: any = {
  * @description
  * A directive that adds regex pattern validation to controls marked with the
  * `pattern` attribute. The regex must match the entire control value.
- * The directive is provided with the `NG_VALIDATORS` provider `InjectionToken`.
+ * The directive is provided with the `NG_VALIDATORS` multi-provider list.
  * 
  * @see [Form Validation](guide/form-validation)
  *
@@ -541,17 +516,13 @@ export const PATTERN_VALIDATOR: any = {
  *
  * ### Adding a pattern validator
  *
- * The following example shows how to add a pattern length validator to an input attached to a
- * formControl binding using reactive forms.
- *
- * ```ts
- * const firstNameControl = new FormControl();
- * ```
+ * The following example shows how to add a pattern validator to an input attached to an
+ * ngModel binding.
  *
  * ```html
- * <input [formControl]="firstNameControl" pattern="[a-zA-Z ]*">
+ * <input name="firstName" ngModel pattern="[a-zA-Z ]*">
  * ```
- *
+ * 
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
  * @publicApi
