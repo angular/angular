@@ -383,6 +383,84 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should reserve slots for pure functions in host binding function', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: '...',
+              host: {
+                '[@expansionHeight]': \`{
+                    value: getExpandedState(),
+                    params: {
+                      collapsedHeight: collapsedHeight,
+                      expandedHeight: expandedHeight
+                    }
+                }\`,
+                '[@expansionWidth]': \`{
+                  value: getExpandedState(),
+                  params: {
+                    collapsedWidth: collapsedWidth,
+                    expandedWidth: expandedWidth
+                  }
+                }\`
+              }
+            })
+            export class MyComponent {
+              @Input() expandedHeight: string;
+              @Input() collapsedHeight: string;
+
+              @Input() expandedWidth: string;
+              @Input() collapsedWidth: string;
+
+              getExpandedState() {
+                return 'expanded';
+              }
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+
+      const hostBindingsDef = `
+        const $_c0$ = function (a0, a1) { return { collapsedHeight: a0, expandedHeight: a1 }; };
+        const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
+        const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
+        …
+        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵallocHostVars(14);
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(elIndex, "expansionHeight",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
+                )
+              )
+            );
+            $r3$.ɵelementProperty(elIndex, "expansionWidth",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
+                )
+              )
+            );
+          }
+        },
+        …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, hostBindingsDef, 'Incorrect "hostBindings" function');
+    });
+
     it('should bind to class and style names', () => {
       const files = {
         app: {
