@@ -9,7 +9,7 @@
 import {ResourceLoader} from '@angular/compiler';
 import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {Component, Directive, Injectable, NgModule, OnDestroy, Pipe, Type} from '@angular/core';
+import {Component, Directive, Injectable, NgModule, OnDestroy, Pipe} from '@angular/core';
 import {TestBed, async, getTestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy} from '@angular/private/testing';
