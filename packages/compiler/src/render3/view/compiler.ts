@@ -691,16 +691,15 @@ function createHostBindingsFunction(
         const value = binding.expression.visit(valueConverter);
         const bindingExpr = bindingFn(bindingContext, value);
 
-        const {bindingName, instruction} = getBindingNameAndInstruction(name);
+        const {bindingName, instruction, extraParams} = getBindingNameAndInstruction(name);
+
+        const instructionParams: o.Expression[] = [
+          elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
+        ];
 
         updateStatements.push(...bindingExpr.stmts);
-        updateStatements.push(o.importExpr(instruction)
-                                  .callFn([
-                                    elVarExp,
-                                    o.literal(bindingName),
-                                    o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
-                                  ])
-                                  .toStmt());
+        updateStatements.push(
+            o.importExpr(instruction).callFn(instructionParams.concat(extraParams)).toStmt());
       }
     }
 
@@ -752,8 +751,9 @@ function createStylingStmt(
 }
 
 function getBindingNameAndInstruction(bindingName: string):
-    {bindingName: string, instruction: o.ExternalReference} {
+    {bindingName: string, instruction: o.ExternalReference, extraParams: o.Expression[]} {
   let instruction !: o.ExternalReference;
+  const extraParams: o.Expression[] = [];
 
   // Check to see if this is an attr binding or a property binding
   const attrMatches = bindingName.match(ATTR_REGEX);
@@ -762,9 +762,13 @@ function getBindingNameAndInstruction(bindingName: string):
     instruction = R3.elementAttribute;
   } else {
     instruction = R3.elementProperty;
+    extraParams.push(
+        o.literal(null),  // TODO: This should be a sanitizer fn (FW-785)
+        o.literal(true)   // host bindings must have nativeOnly prop set to true
+        );
   }
 
-  return {bindingName, instruction};
+  return {bindingName, instruction, extraParams};
 }
 
 function createHostListeners(
