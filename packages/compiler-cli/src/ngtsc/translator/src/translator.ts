@@ -252,7 +252,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitAssertNotNullExpr(ast: AssertNotNull, context: Context): ts.NonNullExpression {
-    return ts.createNonNullExpression(ast.condition.visitExpression(this, context));
+    return ast.condition.visitExpression(this, context);
   }
 
   visitCastExpr(ast: CastExpr, context: Context): ts.Expression {

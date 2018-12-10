@@ -79,6 +79,12 @@ describe('Renderer', () => {
     contents: `export declare class A {\nfoo(x: number): number;\n}\n`
   };
 
+  const COMPONENT_PROGRAM = {
+    name: '/src/component.js',
+    contents:
+        `import { Component } from '@angular/core';\nexport class A {}\nA.decorators = [\n    { type: Component, args: [{ selector: 'a', template: '{{ person!.name }}' }] }\n];\n`
+  };
+
   const INPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'file': '/src/file.js',
@@ -125,6 +131,25 @@ describe('Renderer', () => {
          expect(result[1].path).toEqual('/dist/file.js.map');
          expect(result[1].contents).toEqual(OUTPUT_PROGRAM_MAP.toJSON());
        });
+
+
+    it('should render as JavaScript', () => {
+      const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses} =
+          createTestRenderer('test-package', [COMPONENT_PROGRAM]);
+      renderer.renderProgram(decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+      const addDefinitionsSpy = renderer.addDefinitions as jasmine.Spy;
+      expect(addDefinitionsSpy.calls.first().args[2])
+          .toEqual(`/*@__PURE__*/ ɵngcc0.ɵsetClassMetadata(A, [{
+        type: Component,
+        args: [{ selector: 'a', template: '{{ person!.name }}' }]
+    }], null, null);
+A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], factory: function A_Factory(t) { return new (t || A)(); }, consts: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+        ɵngcc0.ɵtext(0);
+    } if (rf & 2) {
+        ɵngcc0.ɵtextBinding(0, ɵngcc0.ɵinterpolation1("", ctx.person.name, ""));
+    } }, encapsulation: 2 });`);
+    });
+
 
     describe('calling abstract methods', () => {
       it('should call addImports with the source code and info about the core Angular library.',
