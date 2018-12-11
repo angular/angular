@@ -13,7 +13,7 @@ import {Provider} from '../di/provider';
 import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
 import {Mutable, Type} from '../type';
-import {noSideEffects} from '../util';
+import {noSideEffects, stringify} from '../util';
 
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
@@ -651,6 +651,12 @@ export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return (type as any)[NG_PIPE_DEF] || null;
 }
 
-export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null {
-  return (type as any)[NG_MODULE_DEF] || null;
+export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
+export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
+export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
+  const ngModuleDef = (type as any)[NG_MODULE_DEF] || null;
+  if (!ngModuleDef && throwNotFound === true) {
+    throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
+  }
+  return ngModuleDef;
 }
