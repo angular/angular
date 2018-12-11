@@ -195,77 +195,75 @@ import {el} from '../../testing/src/browser_util';
            });
          });
 
-      fixmeIvy(
-          `FW-801: Components with animations throw with "Cannot read property 'hostElement' of undefined" error`)
-          .it('should only queue up dom removals if the element itself contains a valid leave animation',
-              () => {
-                @Component({
-                  selector: 'my-cmp',
-                  template: `
+      it('should only queue up dom removals if the element itself contains a valid leave animation',
+         () => {
+           @Component({
+             selector: 'my-cmp',
+             template: `
                <div #elm1 *ngIf="exp1"></div>
                <div #elm2 @animation1 *ngIf="exp2"></div>
                <div #elm3 @animation2 *ngIf="exp3"></div>
             `,
-                  animations: [
-                    trigger('animation1', [transition('a => b', [])]),
-                    trigger('animation2', [transition(':leave', [])]),
-                  ]
-                })
-                class Cmp {
-                  exp1: any = true;
-                  exp2: any = true;
-                  exp3: any = true;
+             animations: [
+               trigger('animation1', [transition('a => b', [])]),
+               trigger('animation2', [transition(':leave', [])]),
+             ]
+           })
+           class Cmp {
+             exp1: any = true;
+             exp2: any = true;
+             exp3: any = true;
 
-                  @ViewChild('elm1') public elm1: any;
+             @ViewChild('elm1') public elm1: any;
 
-                  @ViewChild('elm2') public elm2: any;
+             @ViewChild('elm2') public elm2: any;
 
-                  @ViewChild('elm3') public elm3: any;
-                }
+             @ViewChild('elm3') public elm3: any;
+           }
 
-                TestBed.configureTestingModule({
-                  providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-                  declarations: [Cmp]
-                });
+           TestBed.configureTestingModule({
+             providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+             declarations: [Cmp]
+           });
 
-                const engine = TestBed.get(AnimationEngine);
-                const fixture = TestBed.createComponent(Cmp);
-                const cmp = fixture.componentInstance;
+           const engine = TestBed.get(AnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-                fixture.detectChanges();
-                const elm1 = cmp.elm1;
-                const elm2 = cmp.elm2;
-                const elm3 = cmp.elm3;
-                assertHasParent(elm1);
-                assertHasParent(elm2);
-                assertHasParent(elm3);
-                engine.flush();
-                finishPlayers(engine.players);
+           fixture.detectChanges();
+           const elm1 = cmp.elm1;
+           const elm2 = cmp.elm2;
+           const elm3 = cmp.elm3;
+           assertHasParent(elm1);
+           assertHasParent(elm2);
+           assertHasParent(elm3);
+           engine.flush();
+           finishPlayers(engine.players);
 
-                cmp.exp1 = false;
-                fixture.detectChanges();
-                assertHasParent(elm1, false);
-                assertHasParent(elm2);
-                assertHasParent(elm3);
-                engine.flush();
-                expect(engine.players.length).toEqual(0);
+           cmp.exp1 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.players.length).toEqual(0);
 
-                cmp.exp2 = false;
-                fixture.detectChanges();
-                assertHasParent(elm1, false);
-                assertHasParent(elm2, false);
-                assertHasParent(elm3);
-                engine.flush();
-                expect(engine.players.length).toEqual(0);
+           cmp.exp2 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2, false);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.players.length).toEqual(0);
 
-                cmp.exp3 = false;
-                fixture.detectChanges();
-                assertHasParent(elm1, false);
-                assertHasParent(elm2, false);
-                assertHasParent(elm3);
-                engine.flush();
-                expect(engine.players.length).toEqual(1);
-              });
+           cmp.exp3 = false;
+           fixture.detectChanges();
+           assertHasParent(elm1, false);
+           assertHasParent(elm2, false);
+           assertHasParent(elm3);
+           engine.flush();
+           expect(engine.players.length).toEqual(1);
+         });
     });
   });
 
