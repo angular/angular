@@ -4862,25 +4862,38 @@ The admin feature is now protected by the guard, albeit protected poorly.
 
 {@a teach-auth}
 
-
+<!--
 #### Teach *AuthGuard* to authenticate
+-->
+#### *AuthGuard* 구현하기
 
+<!--
 Make the `AuthGuard` at least pretend to authenticate.
 
 The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `admin` folder:
+-->
+이제 인증기능을 수행하는 `AuthGuard`를 구현해 봅시다.
+
+`AuthGuard`는 애플리케이션에 있는 서비스를 사용해서 사용자가 로그인한 정보를 가져와야 합니다. 다음 명령을 실행해서 `admin` 폴더에 `AuthService`를 생성합니다:
 
 <code-example language="none" class="code-shell">
   ng generate service admin/auth
 </code-example>
 
+<!--
 Update the `AuthService` to log in the user:
+-->
+그리고 `AuthService`를 사용해서 사용자가 로그인했는지 확인할 수 있도록 다음과 같이 코드를 작성합니다:
 
+<!--
 <code-example path="router/src/app/auth/auth.service.ts" linenums="false" header="src/app/auth/auth.service.ts (excerpt)">
+-->
+<code-example path="router/src/app/auth/auth.service.ts" linenums="false" header="src/app/auth/auth.service.ts (일부)">
 
 </code-example>
 
 
-
+<!--
 Although it doesn't actually log in, it has what you need for this discussion.
 It has an `isLoggedIn` flag to tell you whether the user is authenticated.
 Its `login` method simulates an API call to an external service by returning an
@@ -4888,14 +4901,20 @@ observable that resolves successfully after a short pause.
 The `redirectUrl` property will store the attempted URL so you can navigate to it after authenticating.
 
 Revise the `AuthGuard` to call it.
+-->
+이 코드에 로그인 기능을 실제로 구현한 것은 아니지만, 이 문서에서 다루는 내용을 설명하기에는 이 정도면 충분합니다.
+사용자가 로그인을 했으면 `isLoggedIn` 플래그에 `true`를 할당합니다.
+`login` 메소드는 서버로 통신한 것을 흉내내기 위해 시간을 약간 지연시킨 후에 `Observable`을 반환합니다.
+그리고 `redirectUrl` 프로퍼티에는 사용자가 로그인 한 후에 리다이렉트할 URL을 저장해 둡니다.
 
+실제로 사용할 수 있는 수준으로 코드를 작성하면 `AuthGuard`는 다음과 같이 구현할 수 있습니다.
 
 <code-example path="router/src/app/auth/auth.guard.2.ts" linenums="false" header="src/app/auth/auth.guard.ts (v2)">
 
 </code-example>
 
 
-
+<!--
 Notice that you *inject* the `AuthService` and the `Router` in the constructor.
 You haven't provided the `AuthService` yet but it's good to know that you can inject helpful services into routing guards.
 
@@ -4909,23 +4928,43 @@ If the user is not logged in, you store the attempted URL the user came from usi
 tell the router to navigate to a login page&mdash;a page you haven't created yet.
 This secondary navigation automatically cancels the current navigation; `checkLogin()` returns
 `false` just to be clear about that.
+-->
+생성자로 `AuthService`와 `Router`가 *의존성으로 주입*되는 것을 확인해 보세요.
+아직 `AuthService`는 구현하지 않았지만, 라우팅 가드를 사용하면서 필요한 로직을 활용하기 위해 서비스를 이런 방식으로 주입할 수 있습니다.
 
+이 라우팅 가드는 불리언 값을 동기적으로 반환합니다.
+그리고 사용자가 로그인했다면 `true`를 반환하기 때문에 원래 실행하던 네비게이션 로직을 그대로 실행합니다.
+
+`ActivatedRouteSnapshot`에는 로그인 상태를 확인한 _이후에_ 사용될 라우팅 규칙을 담고 있으며, `RouterStateSnapshot`에는 이 시점에 사용될 `RouterState`를 담고 있습니다. 그래서 라우팅 가드가 제대로 동작하려면 이 정보들이 전달되어야 합니다.
+
+사용자가 로그인하지 않았으면 원래 네비게이션 하려던 URL을 `RouterStateSnapshot.url`에서 참조해서 프로퍼티로 저장한 후에 로그인 페이지로 이동합니다. 아직 로그인 페이지는 구현되지 않았습니다.
+그리고 `checkLogin()` 메소드가 `false`를 반환하기 때문에 현재 실행되고 있는 네비게이션 동작을 중단합니다.
 
 {@a add-login-component}
 
-
+<!--
 #### Add the *LoginComponent*
+-->
+#### `LoginComponent` 구현하기
 
+<!--
 You need a `LoginComponent` for the user to log in to the app. After logging in, you'll redirect
 to the stored URL if available, or use the default URL.
 There is nothing new about this component or the way you wire it into the router configuration.
+-->
+이제 사용자가 애플리케이션에 로그인하려면 `LoginComponent`가 필요합니다.
+이 컴포넌트에서 사용자가 로그인하고 나면 원래 이동하려던 페이지로 이동하며, 대상 페이지가 저장되지 않았다면 기본 URL로 이동할 것입니다.
+이 컴포넌트는 라우팅 설정에 활용된다는 것을 제외하면 이전에 다뤘던 컴포넌트와 거의 비슷합니다.
 
 <code-example language="none" class="code-shell">
   ng generate component auth/login
 </code-example>
 
+<!--
 Register a `/login` route in the `auth/auth-routing.module.ts`. In `app.module.ts`, import and add the `AuthModule` to the `AppModule` imports.
-
+-->
+`auth/auth-routing.module.ts` 파일에 `/login` 라우팅 규칙을 추가합니다.
+그리고 `app.module.ts` 파일에 정의된 `AppModule`에 `AuthModule`을 로드합니다.
 
 <code-tabs>
 
@@ -4950,9 +4989,12 @@ Register a `/login` route in the `auth/auth-routing.module.ts`. In `app.module.t
 
 {@a can-activate-child-guard}
 
-
+<!--
 ### _CanActivateChild_: guarding child routes
+-->
+### _CanActivateChild_: 자식 라우팅 제어하기
 
+<!--
 You can also protect child routes with the `CanActivateChild` guard.
 The `CanActivateChild` guard is similar to the `CanActivate` guard.
 The key difference is that it runs _before_  any child route is activated.
@@ -4968,19 +5010,38 @@ an `ActivatedRouteSnapshot` and `RouterStateSnapshot`.
 The `canActivateChild()` method can return an `Observable<boolean>` or `Promise<boolean>` for
 async checks and a `boolean` for sync checks.
 This one returns a `boolean`:
+-->
+`CanActivateChild` 라우팅 가드를 사용하면 자식 라우팅을 제어할 수 있습니다.
+`CanActivateChild`는 자식 라우팅 규칙이 활성화되기 _전에_ 실행된다는 점만 빼면 `CanActivate` 가드와 비슷합니다.
 
+지금까지는 로그인하지 않은 사용자가 관리자 기능 모듈에 접근하는 것을 제한했었습니다.
+그런데 이 로직이 제대로 동작하려면 기능 모듈 _안쪽에서_ 자식 라우팅 규칙이 활성화되는 것도 검사해야 합니다.
 
+이번에는 `AuthGuard`를 수정해서 `admin` 주소 안에서 페이지가 전환되는 것도 제어해 봅시다.
+`auth.guard.ts` 파일을 열고 라우터 패키지에서 `CanActivateChild` 인터페이스를 로드합니다.
+
+그리고 `canActivate()` 메소드를 구현했던 것처럼 `canActivateChild()` 메소드를 구현합니다. 이 때 `ActivatedRouteSnapshot`과 `RouterStateSnapshot`도 의존성으로 주입합니다.
+`canActivateChild()` 메소드를 비동기로 실행하려면 `Observable<boolean>`이나 `Promise<boolean>`을 반환하고, 동기로 실행하려면 `boolean` 타입을 반환하면 됩니다.
+이 예제에서는 `boolean` 타입을 반환하도록 해봅시다:
+
+<!--
 <code-example path="router/src/app/auth/auth.guard.3.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)" region="can-activate-child">
+-->
+<code-example path="router/src/app/auth/auth.guard.3.ts" linenums="false" header="src/app/auth/auth.guard.ts (일부)" region="can-activate-child">
 
 </code-example>
 
 
-
+<!--
 Add the same `AuthGuard` to the `component-less` admin route to protect all other child routes at one time
 instead of adding the `AuthGuard` to each route individually.
+-->
+이제 컴포넌트 없이 선언한 관리자 라우팅 규칙의 자식 라우팅 규칙에 `AuthGuard`를 다음과 같이 적용합니다. 이제 이 컴포넌트의 자식 라우팅 규칙은 모두 라우팅 가드로 보호됩니다.
 
-
+<!--
 <code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child">
+-->
+<code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (일부)" region="can-activate-child">
 
 </code-example>
 

@@ -10,7 +10,7 @@ import { tap, delay } from 'rxjs/operators';
 export class AuthService {
   isLoggedIn = false;
 
-  // store the URL so we can redirect after logging in
+  // 사용자가 로그인한 후에 이동할 URL을 저장합니다.
   redirectUrl: string;
 
   login(): Observable<boolean> {
