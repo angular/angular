@@ -90,11 +90,24 @@ jobs:
       - *copy_bazel_config
 
       - run: bazel build src/...
-      - run: bazel test src/... tools/public_api_guard/...
+      - run: bazel test src/...
 
       # Note: We want to save the cache in this job because the workspace cache also
       # includes the Bazel repository cache that will be updated in this job.
       - *save_cache
+
+  # --------------------------------------------------------------------------------------------
+  # Job that runs ts-api-guardian against our API goldens in "tools/public_api_guard".
+  # This job fails whenever an API has been updated but not explicitly approved through goldens.
+  # --------------------------------------------------------------------------------------------
+  api_golden_checks:
+    resource_class: xlarge
+    <<: *job_defaults
+    steps:
+    - *checkout_code
+    - *restore_cache
+
+    - run: bazel test tools/public_api_guard/...
 
   # ----------------------------------------------------------------
   # Job that runs the e2e tests with Protractor and Chrome Headless
@@ -298,6 +311,7 @@ workflows:
   build_and_test:
     jobs:
       - bazel_build_test
+      - api_golden_checks
 
   unit_tests:
     jobs:
