@@ -441,6 +441,39 @@ describe('ngtsc behavioral tests', () => {
     });
   });
 
+  it('should unwrap a ModuleWithProviders-like function if a matching literal type is provided for it',
+     () => {
+       env.tsconfig();
+       env.write(`test.ts`, `
+        import {NgModule} from '@angular/core';
+        import {RouterModule} from 'router';
+
+        @NgModule({imports: [RouterModule.forRoot()]})
+        export class TestModule {}
+    `);
+
+       env.write('node_modules/router/index.d.ts', `
+        import {ModuleWithProviders} from '@angular/core';
+
+        export interface MyType extends ModuleWithProviders {}
+
+        declare class RouterModule {
+          static forRoot(): (MyType)&{ngModule:RouterModule};
+        }
+    `);
+
+       env.driveMain();
+
+       const jsContents = env.getContents('test.js');
+       expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
+       const dtsContents = env.getContents('test.d.ts');
+       expect(dtsContents).toContain(`import * as i1 from 'router';`);
+       expect(dtsContents)
+           .toContain(
+               'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
+     });
+
   it('should inject special types according to the metadata', () => {
     env.tsconfig();
     env.write(`test.ts`, `
