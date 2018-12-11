@@ -57,8 +57,9 @@ var_8: &copy_bazel_config
 var_9: &docker-firefox-image
   # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
   # ngcontainer image does include an old Firefox version that does not support headless.
-  # See the PR that fixes this: https://github.com/angular/angular/pull/26435
-  - image: circleci/node:10.12-browsers
+  # TODO(devversion): Update to 11.4.0 once Nunjucks supports Node versions higher than v11.1.0
+  # See: https://github.com/mozilla/nunjucks/pull/1169
+  - image: circleci/node:11.1.0-browsers
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs

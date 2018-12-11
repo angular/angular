@@ -85,9 +85,10 @@ task(':watch:e2eapp', () => {
 
 /** Ensures that protractor and webdriver are set up to run. */
 task(':test:protractor:setup', execNodeTask(
-  // Disable download of the gecko selenium driver because otherwise the webdriver
-  // manager queries GitHub for the latest version and will result in rate limit failures.
-  'protractor', 'webdriver-manager', ['update', '--gecko', 'false']));
+  // Disable download of the gecko selenium driver because otherwise the webdriver-manager
+  // queries GitHub for the latest version and will result in rate limit failures. Also explicitly
+  // specify the chromedriver version that corresponds to the Chrome version used within CircleCI.
+  'protractor', 'webdriver-manager', ['update', '--gecko', 'false', '--versions.chrome', '2.43']));
 
 /** Runs protractor tests (assumes that server is already running. */
 task(':test:protractor', execNodeTask('protractor', [PROTRACTOR_CONFIG_PATH]));
