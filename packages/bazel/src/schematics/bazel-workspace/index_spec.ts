@@ -64,7 +64,7 @@ describe('Bazel-workspace Schematic', () => {
 describe('clean', () => {
   [['1.2.3', '1.2.3'], ['  1.2.3', '1.2.3'], ['1.2.3  ', '1.2.3'], ['~1.2.3', '1.2.3'],
    ['^1.2.3', '1.2.3'], ['v1.2.3', '1.2.3'], ['1.2', null], ['a.b.c', null],
-  ].forEach(([version, want]) => {
+  ].forEach(([version, want]: [string, string]) => {
     it(`should match ${version} with ${want}`, () => {
       const got = clean(version);
       expect(got).toBe(want);

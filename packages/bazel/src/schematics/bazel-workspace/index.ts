@@ -48,7 +48,7 @@ function findVersion(projectName: string, packageName: string, host: Tree): stri
  */
 export function clean(version: string): string|null {
   const matches = version.match(/(\d+\.\d+\.\d+)/);
-  return matches ? matches.pop() : null;
+  return matches && matches.pop() || null;
 }
 
 export default function(options: BazelWorkspaceOptions): Rule {
@@ -72,12 +72,12 @@ export default function(options: BazelWorkspaceOptions): Rule {
       RxJs: findVersion(options.name, 'rxjs', host),
     };
 
-    for (const name of Object.keys(existingVersions)) {
-      const version = existingVersions[name];
+    Object.keys(existingVersions).forEach((name: 'Angular' | 'RxJs') => {
+      const version = existingVersions[name] as string;
       if (version) {
         context.logger.info(`Bazel will reuse existing version for ${name}: ${version}`);
       }
-    }
+    });
 
     const workspaceVersions = {
       'ANGULAR_VERSION': existingVersions.Angular || clean(latestVersions.Angular),
