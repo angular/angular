@@ -19,7 +19,6 @@ import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util';
 import {NgForOf} from '../../test/render3/common_with_def';
-import {fixmeIvy} from '@angular/private/testing';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode} from './render_util';
@@ -1099,6 +1098,19 @@ describe('ViewContainerRef', () => {
              expect(dynamicComp.doCheckCount).toEqual(1);
              expect(changeDetector.context).toEqual(dynamicComp);
            });
+
+        it('should not throw when destroying a reattached component', () => {
+          const fixture = new ComponentFixture(AppComp);
+
+          const dynamicCompFactory = fixture.component.cfr.resolveComponentFactory(DynamicComp);
+          const ref = fixture.component.vcr.createComponent(dynamicCompFactory);
+          fixture.update();
+
+          fixture.component.vcr.detach(fixture.component.vcr.indexOf(ref.hostView));
+
+          expect(() => { ref.destroy(); }).not.toThrow();
+
+        });
       });
 
       class EmbeddedComponentWithNgContent {
