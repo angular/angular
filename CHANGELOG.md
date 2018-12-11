@@ -1,3 +1,16 @@
+<a name="7.2.0-beta.2"></a>
+# [7.2.0-beta.2](https://github.com/angular/angular/compare/7.2.0-beta.1...7.2.0-beta.2) (2018-12-11)
+
+
+### Bug Fixes
+
+* **bazel:** fix TS errors in the `schematics/bazel-workspace` files ([#27600](https://github.com/angular/angular/issues/27600)) ([3290fc3](https://github.com/angular/angular/commit/3290fc3))
+* **bazel:** Read latest versions from latest-versions.ts & use semver check ([#27526](https://github.com/angular/angular/issues/27526)) ([30a3b49](https://github.com/angular/angular/commit/30a3b49))
+* **bazel:** tsickle dependency not working with typescript 3.1.x ([#27402](https://github.com/angular/angular/issues/27402)) ([f034114](https://github.com/angular/angular/commit/f034114))
+* **forms:** typed argument for FormBuilder group ([#26985](https://github.com/angular/angular/issues/26985)) ([b0c7561](https://github.com/angular/angular/commit/b0c7561))
+
+
+
 <a name="7.1.3"></a>
 ## [7.1.3](https://github.com/angular/angular/compare/7.1.2...7.1.3) (2018-12-11)
 
