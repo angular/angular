@@ -79,35 +79,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   }
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
-    const symbol = this.checker.getSymbolAtLocation(id);
-
-    if (symbol === undefined || symbol.declarations === undefined ||
-        symbol.declarations.length !== 1) {
-      return null;
-    }
-
-    // Ignore decorators that are defined locally (not imported).
-    const decl: ts.Declaration = symbol.declarations[0];
-    if (!ts.isImportSpecifier(decl)) {
-      return null;
-    }
-
-    // Walk back from the specifier to find the declaration, which carries the module specifier.
-    const importDecl = decl.parent !.parent !.parent !;
-
-    // The module specifier is guaranteed to be a string literal, so this should always pass.
-    if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
-      // Not allowed to happen in TypeScript ASTs.
-      return null;
-    }
-
-    // Read the module specifier.
-    const from = importDecl.moduleSpecifier.text;
-
-    // Compute the name by which the decorator was exported, not imported.
-    const name = (decl.propertyName !== undefined ? decl.propertyName : decl.name).text;
-
-    return {from, name};
+    return this.getDirectImportOfIdentifier(id) || this.getImportOfNamespacedIdentifier(id);
   }
 
   getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
@@ -178,6 +150,90 @@ export class TypeScriptReflectionHost implements ReflectionHost {
   }
 
   getDtsDeclaration(_: ts.Declaration): ts.Declaration|null { return null; }
+
+
+  protected getDirectImportOfIdentifier(id: ts.Identifier): Import|null {
+    const symbol = this.checker.getSymbolAtLocation(id);
+
+    if (symbol === undefined || symbol.declarations === undefined ||
+        symbol.declarations.length !== 1) {
+      return null;
+    }
+
+    // Ignore decorators that are defined locally (not imported).
+    const decl: ts.Declaration = symbol.declarations[0];
+    if (!ts.isImportSpecifier(decl)) {
+      return null;
+    }
+
+    // Walk back from the specifier to find the declaration, which carries the module specifier.
+    const importDecl = decl.parent !.parent !.parent !;
+
+    // The module specifier is guaranteed to be a string literal, so this should always pass.
+    if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
+      // Not allowed to happen in TypeScript ASTs.
+      return null;
+    }
+
+    // Read the module specifier.
+    const from = importDecl.moduleSpecifier.text;
+
+    // Compute the name by which the decorator was exported, not imported.
+    const name = (decl.propertyName !== undefined ? decl.propertyName : decl.name).text;
+
+    return {from, name};
+  }
+
+  /**
+   * Try to get the import info for this identifier as though it is a namespaced import.
+   * For example, if the identifier is the `Directive` part of a qualified type chain like:
+   *
+   * ```
+   * core.Directive
+   * ```
+   *
+   * then it might be that `core` is a namespace import such as:
+   *
+   * ```
+   * import * as core from 'tslib';
+   * ```
+   *
+   * @param id the TypeScript identifier to find the import info for.
+   * @returns The import info if this is a namespaced import or `null`.
+   */
+  protected getImportOfNamespacedIdentifier(id: ts.Identifier): Import|null {
+    if (!(ts.isQualifiedName(id.parent) && id.parent.right === id)) {
+      return null;
+    }
+    const namespaceIdentifier = getQualifiedNameRoot(id.parent);
+    if (!namespaceIdentifier) {
+      return null;
+    }
+    const namespaceSymbol = this.checker.getSymbolAtLocation(namespaceIdentifier);
+    if (!namespaceSymbol) {
+      return null;
+    }
+    const declaration =
+        namespaceSymbol.declarations.length === 1 ? namespaceSymbol.declarations[0] : null;
+    if (!declaration) {
+      return null;
+    }
+    const namespaceDeclaration = ts.isNamespaceImport(declaration) ? declaration : null;
+    if (!namespaceDeclaration) {
+      return null;
+    }
+
+    const importDeclaration = namespaceDeclaration.parent.parent;
+    if (!ts.isStringLiteral(importDeclaration.moduleSpecifier)) {
+      // Should not happen as this would be invalid TypesScript
+      return null;
+    }
+
+    return {
+      from: importDeclaration.moduleSpecifier.text,
+      name: id.text,
+    };
+  }
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
@@ -442,4 +498,17 @@ function propertyNameToString(node: ts.PropertyName): string|null {
   } else {
     return null;
   }
+}
+
+/**
+ * Compute the left most identifier in a qualified type chain. E.g. the `a` of `a.b.c.SomeType`.
+ * @param qualifiedName The starting property access expression from which we want to compute
+ * the left most identifier.
+ * @returns the left most identifier in the chain or `null` if it is not an identifier.
+ */
+function getQualifiedNameRoot(qualifiedName: ts.QualifiedName): ts.Identifier|null {
+  while (ts.isQualifiedName(qualifiedName.left)) {
+    qualifiedName = qualifiedName.left;
+  }
+  return ts.isIdentifier(qualifiedName.left) ? qualifiedName.left : null;
 }
