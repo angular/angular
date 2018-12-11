@@ -34,3 +34,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":layout.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

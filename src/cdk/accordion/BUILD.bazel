@@ -34,3 +34,9 @@ markdown_to_html(
   name = "overview",
   srcs = [],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)
+

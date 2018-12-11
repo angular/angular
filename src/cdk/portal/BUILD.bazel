@@ -31,3 +31,8 @@ markdown_to_html(
   srcs = [":portal.md"],
 )
 
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)
+

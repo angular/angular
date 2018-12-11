@@ -24,6 +24,11 @@ sass_bundle(
   output_name = "_theming.scss",
 )
 
+filegroup(
+  name = "overviews",
+  srcs = ["//src/lib/%s:overview" % name for name in MATERIAL_PACKAGES]
+)
+
 # Creates the @angular/material package published to npm.
 ng_package(
   name = "npm_package",

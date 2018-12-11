@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//:packages.bzl", "CDK_TARGETS", "ROLLUP_GLOBALS")
+load("//:packages.bzl", "CDK_TARGETS", "CDK_PACKAGES", "ROLLUP_GLOBALS")
 load("//tools:defaults.bzl", "ng_module", "ng_package")
 
 # Root "@angular/cdk" entry-point that does not re-export individual entry-points.
@@ -11,6 +11,11 @@ ng_module(
   deps = [
     "@angular//packages/core",
   ],
+)
+
+filegroup(
+  name = "overviews",
+  srcs = ["//src/cdk/%s:overview" % name for name in CDK_PACKAGES]
 )
 
 # Creates the @angular/cdk package published to npm.

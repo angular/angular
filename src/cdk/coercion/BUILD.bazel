@@ -27,3 +27,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":coercion.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

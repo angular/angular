@@ -63,3 +63,7 @@ markdown_to_html(
   srcs = [":overlay.md"],
 )
 
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

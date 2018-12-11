@@ -30,3 +30,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":observers.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

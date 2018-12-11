@@ -1,4 +1,4 @@
-const hljs = require('highlight.js');
+import {highlightCodeBlock} from '../../highlight-files/highlight-code-block';
 
 /**
  * Nunjucks extension that supports rendering highlighted content. Content that is placed in
@@ -32,6 +32,6 @@ export class HighlightNunjucksExtension {
   }
 
   render(_context: any, language: string, contentFn: () => string) {
-    return hljs.highlight(language, contentFn()).value;
+    return highlightCodeBlock(contentFn(), language);
   }
 }

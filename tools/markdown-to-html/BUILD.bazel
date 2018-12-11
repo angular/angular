@@ -9,6 +9,7 @@ ts_library(
   deps = [
     "@matdeps//@types/node",
     "@matdeps//@types/marked",
+    "@matdeps//marked",
     "//tools/highlight-files:sources",
   ],
   tsconfig = ":tsconfig.json",
@@ -18,8 +19,6 @@ nodejs_binary(
   name = "markdown-to-html",
   entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
   data = [
-    "@matdeps//highlight.js",
-    "@matdeps//marked",
     "@matdeps//source-map-support",
     ":transform-markdown",
   ],

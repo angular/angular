@@ -18,5 +18,8 @@
   },
   "files": [
     "index.ts"
-  ]
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
 }
