@@ -537,28 +537,28 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
 
-        fixmeIvy('unknown').it(
-            'should record unwrapped values via ngOnChanges', fakeAsync(() => {
-              const ctx = createCompFixture(
-                  '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
-              const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
-              ctx.detectChanges(false);
-              dir.changes = {};
-              ctx.detectChanges(false);
+        fixmeIvy('FW-820: Pipes returning WrappedValue corrupt unrelated bindings ')
+            .it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
+                  const ctx = createCompFixture(
+                      '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
+                  const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
+                  ctx.detectChanges(false);
+                  dir.changes = {};
+                  ctx.detectChanges(false);
 
-              // Note: the binding for `b` did not change and has no ValueWrapper,
-              // and should therefore stay unchanged.
-              expect(dir.changes).toEqual({
-                'name': new SimpleChange('aName', 'aName', false),
-                'b': new SimpleChange(2, 2, false)
-              });
+                  // Note: the binding for `b` did not change and has no ValueWrapper,
+                  // and should therefore stay unchanged.
+                  expect(dir.changes).toEqual({
+                    'name': new SimpleChange('aName', 'aName', false),
+                    'b': new SimpleChange(2, 2, false)
+                  });
 
-              ctx.detectChanges(false);
-              expect(dir.changes).toEqual({
-                'name': new SimpleChange('aName', 'aName', false),
-                'b': new SimpleChange(2, 2, false)
-              });
-            }));
+                  ctx.detectChanges(false);
+                  expect(dir.changes).toEqual({
+                    'name': new SimpleChange('aName', 'aName', false),
+                    'b': new SimpleChange(2, 2, false)
+                  });
+                }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
@@ -589,30 +589,30 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
            }));
 
-        fixmeIvy('unknown').it(
-            'should call pure pipes that are used multiple times only when the arguments change',
-            fakeAsync(() => {
-              const ctx = createCompFixture(
-                  `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
-                      '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
-                  Person);
-              ctx.componentInstance.name = 'a';
-              ctx.componentInstance.age = 10;
-              ctx.componentInstance.address = new Address('mtv');
-              ctx.detectChanges(false);
-              expect(renderLog.loggedValues).toEqual([
-                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-              ]);
-              ctx.detectChanges(false);
-              expect(renderLog.loggedValues).toEqual([
-                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
-              ]);
-              ctx.componentInstance.age = 11;
-              ctx.detectChanges(false);
-              expect(renderLog.loggedValues).toEqual([
-                'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
-              ]);
-            }));
+        fixmeIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
+            .it('should call pure pipes that are used multiple times only when the arguments change',
+                fakeAsync(() => {
+                  const ctx = createCompFixture(
+                      `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
+                          '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                      Person);
+                  ctx.componentInstance.name = 'a';
+                  ctx.componentInstance.age = 10;
+                  ctx.componentInstance.address = new Address('mtv');
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+                  ]);
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3'
+                  ]);
+                  ctx.componentInstance.age = 11;
+                  ctx.detectChanges(false);
+                  expect(renderLog.loggedValues).toEqual([
+                    'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
+                  ]);
+                }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
@@ -1076,110 +1076,114 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       });
 
       describe('ngOnDestroy', () => {
-        fixmeIvy('unknown').it(
-            'should be called on view destruction', fakeAsync(() => {
-              const ctx = createCompFixture('<div testDirective="dir"></div>');
-              ctx.detectChanges(false);
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should be called on view destruction', fakeAsync(() => {
+                  const ctx = createCompFixture('<div testDirective="dir"></div>');
+                  ctx.detectChanges(false);
 
-              ctx.destroy();
+                  ctx.destroy();
 
-              expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
-            }));
+                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
+                }));
 
-        fixmeIvy('unknown').it(
-            'should be called after processing the content and view children', fakeAsync(() => {
-              TestBed.overrideComponent(AnotherComponent, {
-                set: new Component(
-                    {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
-              });
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should be called after processing the content and view children', fakeAsync(() => {
+                  TestBed.overrideComponent(AnotherComponent, {
+                    set: new Component({
+                      selector: 'other-cmp',
+                      template: '<div testDirective="viewChild"></div>'
+                    })
+                  });
 
-              const ctx = createCompFixture(
-                  '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                      '<other-cmp></other-cmp></div>',
-                  TestComponent);
+                  const ctx = createCompFixture(
+                      '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                          '<other-cmp></other-cmp></div>',
+                      TestComponent);
 
-              ctx.detectChanges(false);
-              ctx.destroy();
+                  ctx.detectChanges(false);
+                  ctx.destroy();
 
-              expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
-                'parent.ngOnDestroy'
-              ]);
-            }));
+                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                    'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy',
+                    'viewChild.ngOnDestroy', 'parent.ngOnDestroy'
+                  ]);
+                }));
 
-        fixmeIvy('unknown').it(
-            'should be called in reverse order so the child is always notified before the parent',
-            fakeAsync(() => {
-              const ctx = createCompFixture(
-                  '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should be called in reverse order so the child is always notified before the parent',
+                fakeAsync(() => {
+                  const ctx = createCompFixture(
+                      '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
-              ctx.detectChanges(false);
-              ctx.destroy();
+                  ctx.detectChanges(false);
+                  ctx.destroy();
 
-              expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
-              ]);
-            }));
+                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                    'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
+                  ]);
+                }));
 
-        fixmeIvy('unknown').it(
-            'should deliver synchronous events to parent', fakeAsync(() => {
-              const ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should deliver synchronous events to parent', fakeAsync(() => {
+                  const ctx =
+                      createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
 
-              ctx.detectChanges(false);
-              ctx.destroy();
+                  ctx.detectChanges(false);
+                  ctx.destroy();
 
-              expect(ctx.componentInstance.a).toEqual('destroyed');
-            }));
+                  expect(ctx.componentInstance.a).toEqual('destroyed');
+                }));
 
-        fixmeIvy('unknown').it('should call ngOnDestroy on pipes', fakeAsync(() => {
-                                 const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should call ngOnDestroy on pipes', fakeAsync(() => {
+                  const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
-                                 ctx.detectChanges(false);
-                                 ctx.destroy();
+                  ctx.detectChanges(false);
+                  ctx.destroy();
 
-                                 expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                                   'pipeWithOnDestroy.ngOnDestroy'
-                                 ]);
-                               }));
+                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+                    'pipeWithOnDestroy.ngOnDestroy'
+                  ]);
+                }));
 
-        fixmeIvy('unknown').it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
-                                 TestBed.overrideDirective(
-                                     TestDirective, {set: {providers: [InjectableWithLifecycle]}});
+        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+            .it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
+                  TestBed.overrideDirective(
+                      TestDirective, {set: {providers: [InjectableWithLifecycle]}});
 
-                                 const ctx = createCompFixture(
-                                     '<div testDirective="dir"></div>', TestComponent);
+                  const ctx = createCompFixture('<div testDirective="dir"></div>', TestComponent);
 
-                                 ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
-                                 ctx.detectChanges(false);
+                  ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
+                  ctx.detectChanges(false);
 
-                                 ctx.destroy();
+                  ctx.destroy();
 
-                                 // We don't care about the exact order in this test.
-                                 expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
-                                   'dir.ngOnDestroy', 'injectable.ngOnDestroy'
-                                 ]);
-                               }));
+                  // We don't care about the exact order in this test.
+                  expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
+                    'dir.ngOnDestroy', 'injectable.ngOnDestroy'
+                  ]);
+                }));
       });
     });
 
     describe('enforce no new changes', () => {
-      fixmeIvy('unknown').it(
-          'should throw when a record gets changed after it has been checked', fakeAsync(() => {
-            @Directive({selector: '[changed]'})
-            class ChangingDirective {
-              @Input() changed: any;
-            }
+      fixmeIvy('FW-823: ComponentFixture.checkNoChanges doesn\'t throw under TestBed')
+          .it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
+                @Directive({selector: '[changed]'})
+                class ChangingDirective {
+                  @Input() changed: any;
+                }
 
-            TestBed.configureTestingModule({declarations: [ChangingDirective]});
+                TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-            const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
 
-            ctx.componentInstance.b = 1;
+                ctx.componentInstance.b = 1;
 
-            expect(() => ctx.checkNoChanges())
-                .toThrowError(
-                    /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
-          }));
+                expect(() => ctx.checkNoChanges())
+                    .toThrowError(
+                        /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
+              }));
 
       fixmeIvy('unknown').it(
           'should warn when the view has been created in a cd hook', fakeAsync(() => {
@@ -1198,14 +1202,15 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            expect(() => ctx.checkNoChanges()).not.toThrow();
          }));
 
-      fixmeIvy('unknown').it('should not break the next run', fakeAsync(() => {
-                               const ctx = _bindSimpleValue('a', TestData);
-                               ctx.componentInstance.a = 'value';
-                               expect(() => ctx.checkNoChanges()).toThrow();
+      fixmeIvy('FW-823: ComponentFixture.checkNoChanges doesn\'t throw under TestBed')
+          .it('should not break the next run', fakeAsync(() => {
+                const ctx = _bindSimpleValue('a', TestData);
+                ctx.componentInstance.a = 'value';
+                expect(() => ctx.checkNoChanges()).toThrow();
 
-                               ctx.detectChanges();
-                               expect(renderLog.loggedValues).toEqual(['value']);
-                             }));
+                ctx.detectChanges();
+                expect(renderLog.loggedValues).toEqual(['value']);
+              }));
     });
 
     describe('mode', () => {
@@ -1271,36 +1276,38 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
          }));
 
-      fixmeIvy('unknown').it('Reattaches in the original cd mode', fakeAsync(() => {
-                               const ctx = createCompFixture('<push-cmp></push-cmp>');
-                               const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
-                               cmp.changeDetectorRef.detach();
-                               cmp.changeDetectorRef.reattach();
+      fixmeIvy(
+          'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template')
+          .it('Reattaches in the original cd mode', fakeAsync(() => {
+                const ctx = createCompFixture('<push-cmp></push-cmp>');
+                const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
+                cmp.changeDetectorRef.detach();
+                cmp.changeDetectorRef.reattach();
 
-                               // renderCount should NOT be incremented with each CD as CD mode
-                               // should be resetted to
-                               // on-push
-                               ctx.detectChanges();
-                               expect(cmp.renderCount).toBeGreaterThan(0);
-                               const count = cmp.renderCount;
+                // renderCount should NOT be incremented with each CD as CD mode
+                // should be resetted to
+                // on-push
+                ctx.detectChanges();
+                expect(cmp.renderCount).toBeGreaterThan(0);
+                const count = cmp.renderCount;
 
-                               ctx.detectChanges();
-                               expect(cmp.renderCount).toBe(count);
-                             }));
+                ctx.detectChanges();
+                expect(cmp.renderCount).toBe(count);
+              }));
 
     });
 
     describe('multi directive order', () => {
-      fixmeIvy('unknown').it(
-          'should follow the DI order for the same element', fakeAsync(() => {
-            const ctx =
-                createCompFixture('<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
+      fixmeIvy('FW-822: Order of bindings to directive inputs different in ivy')
+          .it('should follow the DI order for the same element', fakeAsync(() => {
+                const ctx = createCompFixture(
+                    '<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
 
-            ctx.detectChanges(false);
-            ctx.destroy();
+                ctx.detectChanges(false);
+                ctx.destroy();
 
-            expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
-          }));
+                expect(directiveLog.filter(['set'])).toEqual(['0.set', '1.set', '2.set']);
+              }));
     });
 
     describe('nested view recursion', () => {
