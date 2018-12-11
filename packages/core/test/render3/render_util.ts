@@ -393,7 +393,12 @@ class MockRenderer implements ProceduralRenderer3 {
   parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
   nextSibling(node: RNode): RNode|null { return node.nextSibling; }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
-    el.setAttribute(name, value);
+    // set all synthetic attributes as properties
+    if (name[0] === '@') {
+      this.setProperty(el, name, value);
+    } else {
+      el.setAttribute(name, value);
+    }
   }
   removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
   addClass(el: RElement, name: string): void {}
