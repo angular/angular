@@ -17,18 +17,18 @@ export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> 
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
-    // Get the Crisis Center ID
+    // 위기 관리 센터의 ID를 가져옵니다.
     console.log(route.paramMap.get('id'));
 
-    // Get the current URL
+    // 현재 URL을 확인합니다.
     console.log(state.url);
 
-    // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
+    // 위기 목록이 없거나 변경되지 않았으면 `true`를 바로 반환합니다.
     if (!component.crisis || component.crisis.name === component.editName) {
       return true;
     }
-    // Otherwise ask the user with the dialog service and return its
-    // observable which resolves to true or false when the user decides
+    // 내용이 변경된 경우에는 사용자에게 물어보는 팝업을 띄웁니다.
+    // 그리고 사용자가 응답한 값을 Observable 타입으로 반환합니다.
     return component.dialogService.confirm('Discard changes?');
   }
 }

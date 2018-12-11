@@ -5049,38 +5049,71 @@ instead of adding the `AuthGuard` to each route individually.
 
 {@a can-deactivate-guard}
 
-
+<!--
 ### _CanDeactivate_: handling unsaved changes
-Back in the "Heroes" workflow, the app accepts every change to a hero immediately without hesitation or validation.
+-->
+### _CanDeactivate_: 저장되지 않은 변경사항 체크하기
 
+<!--
+Back in the "Heroes" workflow, the app accepts every change to a hero immediately without hesitation or validation.
+-->
+"Heroes"가 동작하던 것을 다시 생각해보면, 이 앱은 히어로의 정보가 변경된 것을 검사하지 않고 바로 저장합니다.
+
+<!--
 In the real world, you might have to accumulate the users changes.
 You might have to validate across fields.
 You might have to validate on the server.
 You might have to hold changes in a pending state until the user confirms them *as a group* or
 cancels and reverts all changes.
+-->
+하지만 실제 운영환경에서는 사용자가 변경한 내용을 추적해야 하는 경우가 많습니다.
+필드를 검사해야 할 수도 있고, 서버로 전달된 데이터를 검사해야 할 수도 있으며, *여러개를 수정했을 때* 이 내용을 모두 반영할 것인지, 아니면 모두 취소할 것인지 정해지기 전까지는 상태를 유지해야 할 수도 있습니다.
 
+<!--
 What do you do about unapproved, unsaved changes when the user navigates away?
 You can't just leave and risk losing the user's changes; that would be a terrible experience.
+-->
+사용자가 화면에 있는 내용을 변경했는데 이 내용을 저장하지 않고 다른 페이지로 이동하려고 한다면 어떻게 해야 할까요?
+이 때 다른 페이지로 바로 이동하면 사용자가 변경한 내용이 모두 사라집니다. 사용자의 입장에서는 굉장히 불편할 수 있습니다.
 
+<!--
 It's better to pause and let the user decide what to do.
 If the user cancels, you'll stay put and allow more changes.
 If the user approves, the app can save.
+-->
+이것보다는 사용자가 결정을 내릴때까지 페이지 이동을 잠시 멈추는 것이 더 좋습니다.
+사용자가 페이지 이동을 취소하면 현재 페이지의 내용을 그대로 유지할 수 있으며, 사용자가 저장하기로 결정하면 변경사항을 모두 서버로 전달할 수도 있습니다.
 
+<!--
 You still might delay navigation until the save succeeds.
 If you let the user move to the next screen immediately and
 the save were to fail (perhaps the data are ruled invalid), you would lose the context of the error.
+-->
+그리고 사용자가 변경사항을 저장하기로 하면 서버로 보낸 요청이 완료될 때까지 잠시 네비게이션을 미룰 수도 있습니다.
+만약 서버로 보낸 데이터나 형식이 잘못된 것을 무시하고 다음 화면으로 바로 넘어가면, 데이터를 저장하면서 발생한 에러를 처리할 수 있습니다.
 
+<!--
 You can't block while waiting for the server&mdash;that's not possible in a browser.
 You need to stop the navigation while you wait, asynchronously, for the server
 to return with its answer.
+-->
+브라우저 자체 기능만으로는 서버의 응답이 올 때까지 페이지 이동을 보류해둘 수 없습니다.
+그래서 서버의 응답이 올 때까지 네비게이션을 멈춰두는 기능이 필요합니다.
 
+<!--
 You need the `CanDeactivate` guard.
+-->
+`CanDeactivate` 라우팅 가드는 이런 경우에 사용합니다.
 
 {@a cancel-save}
 
 
+<!--
 #### Cancel and save
+-->
+#### 페이지 이동을 취소하고 저장하기
 
+<!--
 The sample application doesn't talk to a server.
 Fortunately, you have another way to demonstrate an asynchronous router hook.
 
@@ -5090,14 +5123,26 @@ Instead, the app updates the entity when the user presses the *Save* button and
 discards the changes when the user presses the *Cancel* button.
 
 Both buttons navigate back to the crisis list after save or cancel.
+-->
+이 문서에서 다루는 애플리케이션은 서버와 통신을 하지 않습니다.
+하지만 라우터 후킹 함수를 사용하면 이 시나리오를 흉내낼 수 있습니다.
+
+사용자가 `CrisisDetailComponent`에서 위기사항에 대한 정보를 수정했다고 합시다.
+이 때 `HeroDetailComponent`와는 다르게, 사용자가 변경한 내용은 바로 저장하지 않으려고 합니다.
+이 컴포넌트에서는 사용자가 *Save* 버튼을 클릭했을 때 변경내용을 저장하고, 사용자가 *Cancel* 버튼을 클릭하면 변경사항을 폐지하려고 합니다.
+
+그리고 두 버튼을 클릭하면 모두 이전 페이지인 위기 목록 페이지로 이동합니다.
 
 
+<!--
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel and save methods)" region="cancel-save">
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (cancel, save 메소드)" region="cancel-save">
 
 </code-example>
 
 
-
+<!--
 What if the user tries to navigate away without saving or canceling?
 The user could push the browser back button or click the heroes link.
 Both actions trigger a navigation.
@@ -5106,58 +5151,84 @@ Should the app save or cancel automatically?
 This demo does neither. Instead, it asks the user to make that choice explicitly
 in a confirmation dialog box that *waits asynchronously for the user's
 answer*.
+-->
+사용자가 변경사항을 저장하거나 취소하지 않고 다른 페이지로 이동하려고 하는 상황은 어떤 상황일까요?
+이런 경우는 브라우저의 뒤로 가기 버튼을 클릭하거나 목록으로 이동하는 링크를 클릭했을 때 발생할 수 있습니다.
+두가지 경우 모두 네비게이션이 실행됩니다.
+그러면 앱에서 자동으로 변경사항을 저장하거나 취소해야 할까요?
+
+저장하거나 취소하는 것을 임의로 간주하고 이렇게 로직을 구현할 수도 있습니다. 하지만 이 예제에서는 팝업을 띄워서 사용자가 명시적으로 선택하도록 구현해 봅시다. 사용자가 응답할 때까지 페이지를 전환하는 동작은 *비동기적으로 중단*됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 You could wait for the user's answer with synchronous, blocking code.
 The app will be more responsive&mdash;and can do other work&mdash;by
 waiting for the user's answer asynchronously. Waiting for the user asynchronously
 is like waiting for the server asynchronously.
+-->
+사용자의 응답을 기다리는 것을 동기 방식으로 할 수도 있습니다.
+하지만 이런 경우에는 앱이 다른 작업을 하지 못하고 사용자의 응답이 있을 때까지 대기해야 합니다.
+사용자의 응답을 기다리는 것도 서버의 응답을 기다리는 것처럼 비동기로 하는 것이 좋습니다.
 
 </div>
 
 
-
+<!--
 Generate a `Dialog` service to handle user confirmation.
+-->
+사용자의 입력을 받기 위해 `Dialog` 서비스를 구현합니다.
 
 <code-example language="none" class="code-shell">
   ng generate service dialog
 </code-example>
 
+<!--
 Add a `confirm()` method to the `DialogService` to prompt the user to confirm their intent. The `window.confirm` is a _blocking_ action that displays a modal dialog and waits for user interaction.
+-->
+그리고 사용자의 응답을 받기 위해 `DialogService`에 `confirm()` 메소드를 추가합니다.
+`window.confirm` 메소드는 사용자가 응답할 때까지 화면에서 발생할 수 있는 동작을 _멈춥니다_.
 
 <code-example path="router/src/app/dialog.service.ts" header="src/app/dialog.service.ts">
 
 </code-example>
 
+<!--
 It returns an `Observable` that *resolves* when the user eventually decides what to do: either
 to discard changes and navigate away (`true`) or to preserve the pending changes and stay in the crisis editor (`false`).
-
+-->
+이 함수는 사용자의 응답을 `Observable` 타입으로 반환합니다. 사용자가 `true`를 선택하면 변경사항을 버리고 다른 페이지로 이동하며, 사용자가 `false`를 선택하면 네비게이션을 멈추고 현재 페이지에 머물러 있을 것입니다.
 
 {@a CanDeactivate}
 
-
+<!--
 Generate a _guard_ that checks for the presence of a `canDeactivate()` method in a component&mdash;any component.
+-->
+다음 명령을 실행해서 _라우팅 가드_ 를 생성합니다. 이 가드는 컴포넌트에 있는 `canDeactivate()` 메소드를 실행하는 역할을 합니다.
 
 <code-example language="none" class="code-shell">
   ng generate guard can-deactivate
 </code-example>
 
+<!--
 The `CrisisDetailComponent` will have this method.
 But the guard doesn't have to know that.
 The guard shouldn't know the details of any component's deactivation method.
 It need only detect that the component has a `canDeactivate()` method and call it.
 This approach makes the guard reusable.
-
+-->
+`CrisisDetailComponent`에는 이미 `canDeactivate()` 메소드가 구현되어 있습니다.
+하지만 이 라우팅 가드가 컴포넌트의 `canDeactivate()` 메소드의 로직을 알아야 할 필요는 없습니다.
+이 라우팅 가드는 단순하게 컴포넌트에 `canDeactivate()` 메소드가 정의되어 있는지 확인하고, 정의되어 있다면 이 메소드를 단순하게 실행하기만 합니다.
+이렇게 구현하면 이 라우팅 가드를 다른 컴포넌트를 대상으로도 재사용할 수 있습니다.
 
 <code-example path="router/src/app/can-deactivate.guard.ts" header="src/app/can-deactivate.guard.ts">
 
 </code-example>
 
 
-
+<!--
 Alternatively, you could make a component-specific `CanDeactivate` guard for the `CrisisDetailComponent`.
 The `canDeactivate()` method provides you with the current
 instance of the `component`, the current `ActivatedRoute`,
@@ -5165,51 +5236,79 @@ and `RouterStateSnapshot` in case you needed to access
 some external information. This would be useful if you only
 wanted to use this guard for this component and needed to get
 the component's properties or confirm whether the router should allow navigation away from it.
+-->
+이 방식 대신 `CrisisDetailComponent`에만 적용되는 `CanDeactivate` 가드를 구현할 수도 있습니다.
+그러면 이 라우팅 가드의 `canDeactivate()` 메소드는 현재 컴포넌트의 인스턴스와 현재 `ActivatedRoute`, `RouterStateSnapshot`, 필요하다면 더 많은 정보에 접근해야 합니다.
+이 라우팅 가드가 딱 이 함수에만 사용된다면 이렇게 구현할 수도 있습니다.
 
-
+<!--
 <code-example path="router/src/app/can-deactivate.guard.1.ts" linenums="false" header="src/app/can-deactivate.guard.ts (component-specific)">
+-->
+<code-example path="router/src/app/can-deactivate.guard.1.ts" linenums="false" header="src/app/can-deactivate.guard.ts (특정 컴포넌트를 위한 라우팅 가드)">
 
 </code-example>
 
 
-
+<!--
 Looking back at the `CrisisDetailComponent`, it implements the confirmation workflow for unsaved changes.
+-->
+다시 `CrisisDetailComponent`를 보면, 변경되지 않은 내용을 확인하는 로직은 다음과 같이 구현되어 있습니다.
 
-
+<!--
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (excerpt)" region="canDeactivate">
+-->
+<code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (일부)" region="canDeactivate">
 
 </code-example>
 
 
-
+<!--
 Notice that the `canDeactivate()` method *can* return synchronously;
 it returns `true` immediately if there is no crisis or there are no pending changes.
 But it can also return a `Promise` or an `Observable` and the router will wait for that
 to resolve to truthy (navigate) or falsy (stay put).
+-->
+`canDeactivate()` 메소드는 값을 *동기 방식으로* 반환할 수도 있습니다.
+만약 위기 목록이 없거나 변경된 내용이 없으면 이 메소드는 `true`를 즉시 반환합니다.
+하지만 이 메소드가 `Promise`나 `Observable` 타입을 반환한다면 이 객체들이 처리될 때까지 라우터는 동작하지 않고 멈춥니다.
 
-
+<!--
 Add the `Guard` to the crisis detail route in `crisis-center-routing.module.ts` using the `canDeactivate` array property.
-
+-->
+이제 이 라우팅 가드를 `crisis-center-routing.module.ts`에 다음과 같이 추가합니다.
 
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.3.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (can deactivate guard)">
 
 </code-example>
 
-
+<!--
 Now you have given the user a safeguard against unsaved changes.
+-->
+이제 사용자가 저장하지 않고 놓친 변경사항은 라우팅 가드로 한 번 더 확인하게 할 수 있습니다.
+
 {@a Resolve}
 
 {@a resolve-guard}
 
-
+<!--
 ### _Resolve_: pre-fetching component data
+-->
+### _Resolve_: 컴포넌트의 데이터를 미리 가져오기
 
+<!--
 In the `Hero Detail` and `Crisis Detail`, the app waited until the route was activated to fetch the respective hero or crisis.
 
 This worked well, but there's a better way.
 If you were using a real world API, there might be some delay before the data to display is returned from the server.
 You don't want to display a blank component while waiting for the data.
+-->
+`Hero Detail`과 `Crisis Detail` 화면은 히어로의 목록이나 위기목록을 서버에서 받아오기 전까지는 라우팅 규칙이 활성화되지 않습니다.
 
+이렇게 구현해도 문제는 없지만, 더 좋은 방법이 있습니다.
+그리고 실제 운영환경에서는 데이터를 가져올 때 시간이 걸리기 때문에 화면에 데이터가 표시되는 것도 약간 지연됩니다.
+이 때 컴포넌트는 빈 화면으로 표시되는데, 이렇게 동작하는 것을 좀 더 개선하는 방법에 대해 알아봅시다.
+
+<!--
 It's preferable to pre-fetch data from the server so it's ready the
 moment the route is activated. This also allows you to handle errors before routing to the component.
 There's no point in navigating to a crisis detail for an `id` that doesn't have a record.
@@ -5218,13 +5317,24 @@ It'd be better to send the user back to the `Crisis List` that shows only valid 
 In summary, you want to delay rendering the routed component until all necessary data have been fetched.
 
 You need a *resolver*.
+-->
+컴포넌트를 전환하면서 라우팅 규칙이 활성화되기 전에 서버에서 데이터를 먼저 받아오는 방법이 있습니다. 이 방법을 사용하면 서버와 통신할 때 발생할 수 있는 에러를 컴포넌트가 전환되기 전에 처리할 수 있습니다.
+마찬가지로, 이 방법은 위기 상세정보 화면으로 이동했지만 `id`에 해당하는 데이터가 없을 때에도 활용할 수 있습니다.
+해당하는 데이터가 없다면 다시 위기목록 화면으로 전환할 수도 있습니다.
 
+요약하자면, 컴포넌트에 필요한 데이터가 모두 준비될 때까지 라우팅 동작을 지연시킬 수 있습니다.
+
+이 동작은 *리졸버(resolver)*로 처리합니다.
 
 {@a fetch-before-navigating}
 
 
+<!--
 #### Fetch data before navigating
+-->
+#### 페이지를 이동하기 전에 데이터 먼저 받아오기
 
+<!--
 At the moment, the `CrisisDetailComponent` retrieves the selected crisis.
 If the crisis is not found, it navigates back to the crisis list view.
 
@@ -5233,6 +5343,14 @@ A `CrisisDetailResolver` service could retrieve a `Crisis` or navigate away if t
 _before_ activating the route and creating the `CrisisDetailComponent`.
 
 Generate a `CrisisDetailResolver` service file within the `Crisis Center` feature area.
+-->
+지금까지 작성한 예제에서 `CrisisDetailComponent`는 이전 화면에서 선택한 위기의 상세정보를 받아옵니다.
+그리고 해당 위기가 존재하지 않으면 위기 목록 화면으로 다시 돌아갑니다.
+
+하지만 이 과정이 네비게이션을 하기 전에 모두 끝난다면 사용자가 경험하는 UX는 좀 더 나아질 것입니다.
+지금부터 구현할 `CrisisDetailResolver` 서비스는 `CrisisDetailComponent`로 페이지를 전환하기 _전에_ 미리 `Crisis`를 받아오는데, 해당 데이터가 없으면 다른 페이지로 이동하도록 구현할 것입니다.
+
+다음 명령을 실행해서 `Crisis Center` 모듈에 `CrisisDetailResolver` 서비스를 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate service crisis-center/crisis-detail-resolver
