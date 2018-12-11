@@ -119,13 +119,12 @@ export const _MatCheckboxMixinBase:
   host: {
     'class': 'mat-checkbox',
     '[id]': 'id',
-    '[attr.tabindex]': '-1', // Reset back to -1 so that the `focus` event still works.
+    '[attr.tabindex]': 'null',
     '[class.mat-checkbox-indeterminate]': 'indeterminate',
     '[class.mat-checkbox-checked]': 'checked',
     '[class.mat-checkbox-disabled]': 'disabled',
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
     '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
-    '(focus)': '_inputElement.nativeElement.focus()',
   },
   providers: [MAT_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   inputs: ['disableRipple', 'color', 'tabIndex'],

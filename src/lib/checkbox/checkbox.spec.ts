@@ -370,15 +370,6 @@ describe('MatCheckbox', () => {
       expect(document.activeElement).toBe(inputElement);
     });
 
-    it('should focus on underlying input element when the host is focused', () => {
-      expect(document.activeElement).not.toBe(inputElement);
-
-      checkboxNativeElement.focus();
-      fixture.detectChanges();
-
-      expect(document.activeElement).toBe(inputElement);
-    });
-
     it('should forward the value to input element', () => {
       testComponent.checkboxValue = 'basic_checkbox';
       fixture.detectChanges();
@@ -799,7 +790,7 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
 
       const checkbox = fixture.debugElement.query(By.directive(MatCheckbox)).nativeElement;
-      expect(checkbox.getAttribute('tabindex')).toBe('-1');
+      expect(checkbox.getAttribute('tabindex')).toBeFalsy();
     });
   });
 
