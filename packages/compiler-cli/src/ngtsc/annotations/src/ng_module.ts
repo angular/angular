@@ -197,9 +197,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    */
   private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
                                                   ts.MethodDeclaration): ts.Expression|null {
-    const type = node.type;
+    const type = node.type || null;
+    return type &&
+        (this._reflectModuleFromTypeParam(type) || this._reflectModuleFromLiteralType(type));
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `ModuleWithProviders<T>`
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromTypeParam(type: ts.TypeNode): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
-    if (type === undefined || !ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+    if (!ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
       return null;
     }
 
@@ -224,6 +235,32 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const arg = type.typeArguments[0];
 
     return typeNodeToValueExpr(arg);
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `A|B|{ngModule: T}|C`.
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
+    if (!ts.isIntersectionTypeNode(type)) {
+      return null;
+    }
+    for (const t of type.types) {
+      if (ts.isTypeLiteralNode(t)) {
+        for (const m of t.members) {
+          const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
+                  m.name.text === 'ngModule' && m.type ||
+              null;
+          const ngModuleExpression = ngModuleType && typeNodeToValueExpr(ngModuleType);
+          if (ngModuleExpression) {
+            return ngModuleExpression;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /**
