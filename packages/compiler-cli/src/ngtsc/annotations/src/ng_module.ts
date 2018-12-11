@@ -286,12 +286,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    */
   private _reflectModuleFromTypeParam(type: ts.TypeNode): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
-    if (!ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+    if (!ts.isTypeReferenceNode(type)) {
+      return null;
+    }
+
+    const typeName = type && (ts.isIdentifier(type.typeName) && type.typeName ||
+                              ts.isQualifiedName(type.typeName) && type.typeName.right) ||
+        null;
+    if (typeName === null) {
       return null;
     }
 
     // Look at the type itself to see where it comes from.
-    const id = this.reflector.getImportOfIdentifier(type.typeName);
+    const id = this.reflector.getImportOfIdentifier(typeName);
 
     // If it's not named ModuleWithProviders, bail.
     if (id === null || id.name !== 'ModuleWithProviders') {

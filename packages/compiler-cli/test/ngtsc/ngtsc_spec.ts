@@ -1277,7 +1277,7 @@ describe('ngtsc behavioral tests', () => {
          env.tsconfig();
          env.write('dep.d.ts', `
           import {ModuleWithProviders, ɵNgModuleDefWithMeta as NgModuleDefWithMeta} from '@angular/core';
-      
+
           export declare class DepModule {
             static forRoot(arg1: any, arg2: any): ModuleWithProviders<DepModule>;
             static ngModuleDef: NgModuleDefWithMeta<DepModule, never, never, never>;
@@ -1286,12 +1286,12 @@ describe('ngtsc behavioral tests', () => {
          env.write('test.ts', `
           import {NgModule, ModuleWithProviders} from '@angular/core';
           import {DepModule} from './dep';
-    
+
           @NgModule({})
           export class Base {}
-    
+
           const mwp = DepModule.forRoot(1,2);
-    
+
           @NgModule({
             imports: [mwp],
           })
@@ -1307,6 +1307,40 @@ describe('ngtsc behavioral tests', () => {
      () => {
        env.tsconfig();
        env.write(`test.ts`, `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from 'router';
+
+      @NgModule({imports: [RouterModule.forRoot()]})
+      export class TestModule {}
+  `);
+
+       env.write('node_modules/router/index.d.ts', `
+      import {ModuleWithProviders, ɵNgModuleDefWithMeta} from '@angular/core';
+
+      export interface MyType extends ModuleWithProviders {}
+
+      declare class RouterModule {
+        static forRoot(): (MyType)&{ngModule:RouterModule};
+        static ngModuleDef: ɵNgModuleDefWithMeta<RouterModule, never, never, never>;
+      }
+  `);
+
+       env.driveMain();
+
+       const jsContents = env.getContents('test.js');
+       expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
+       const dtsContents = env.getContents('test.d.ts');
+       expect(dtsContents).toContain(`import * as i1 from "router";`);
+       expect(dtsContents)
+           .toContain(
+               'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
+     });
+
+  it('should unwrap a namespace imported ModuleWithProviders function if a generic type is provided for it',
+     () => {
+       env.tsconfig();
+       env.write(`test.ts`, `
         import {NgModule} from '@angular/core';
         import {RouterModule} from 'router';
 
@@ -1315,12 +1349,11 @@ describe('ngtsc behavioral tests', () => {
     `);
 
        env.write('node_modules/router/index.d.ts', `
-        import {ModuleWithProviders, ɵNgModuleDefWithMeta} from '@angular/core';
-
-        export interface MyType extends ModuleWithProviders {}
+        import * as core from '@angular/core';
+        import {RouterModule} from 'router';
 
         declare class RouterModule {
-          static forRoot(): (MyType)&{ngModule:RouterModule};
+          static forRoot(): core.ModuleWithProviders<RouterModule>;
           static ngModuleDef: ɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
     `);
