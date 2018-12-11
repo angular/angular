@@ -465,8 +465,9 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
     removeListeners(view);
     executeOnDestroys(view);
     executePipeOnDestroys(view);
+    const hostTNode = view[HOST_NODE];
     // For component views only, the local renderer is destroyed as clean up time.
-    if (view[TVIEW].id === -1 && isProceduralRenderer(view[RENDERER])) {
+    if (hostTNode && hostTNode.type === TNodeType.Element && isProceduralRenderer(view[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
     }

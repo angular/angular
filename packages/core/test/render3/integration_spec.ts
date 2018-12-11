@@ -7,12 +7,12 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
+import {RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {NO_CHANGE} from '../../src/render3/tokens';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
 import {enableBindings, disableBindings} from '../../src/render3/state';
@@ -20,7 +20,7 @@ import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, MockRendererFactory, TemplateFixture, createComponent, renderToHtml} from './render_util';
 import {getLContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
@@ -2651,59 +2651,5 @@ class ProxyRenderer3Factory implements RendererFactory3 {
   createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
     this.lastCapturedType = rendererType;
     return domRendererFactory3.createRenderer(hostElement, rendererType);
-  }
-}
-
-class MockRendererFactory implements RendererFactory3 {
-  lastRenderer: any;
-  private _spyOnMethods: string[];
-
-  constructor(spyOnMethods?: string[]) { this._spyOnMethods = spyOnMethods || []; }
-
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
-    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
-    return renderer;
-  }
-}
-
-class MockRenderer implements ProceduralRenderer3 {
-  public spies: {[methodName: string]: any} = {};
-
-  constructor(spyOnMethods: string[]) {
-    spyOnMethods.forEach(methodName => {
-      this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
-    });
-  }
-
-  destroy(): void {}
-  createComment(value: string): RComment { return document.createComment(value); }
-  createElement(name: string, namespace?: string|null): RElement {
-    return document.createElement(name);
-  }
-  createText(value: string): RText { return document.createTextNode(value); }
-  appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
-    parent.insertBefore(newChild, refChild, false);
-  }
-  removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
-  selectRootElement(selectorOrNode: string|any): RElement {
-    return ({} as any);
-  }
-  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
-  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {}
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
-  addClass(el: RElement, name: string): void {}
-  removeClass(el: RElement, name: string): void {}
-  setStyle(
-      el: RElement, style: string, value: any,
-      flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  setProperty(el: RElement, name: string, value: any): void {}
-  setValue(node: RText, value: string): void {}
-
-  // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void {
-    return () => {};
   }
 }
