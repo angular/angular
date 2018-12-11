@@ -152,11 +152,11 @@ describe('component', () => {
 
 });
 
-it('should not invoke renderer destroy method for child views', () => {
+it('should not invoke renderer destroy method for embedded views', () => {
   let comp: Comp;
 
   function MyComponent_div_Template_2(rf: any, ctx: any) {
-    if (rf & 1) {
+    if (rf & RenderFlags.Create) {
       elementStart(0, 'div');
       text(1, 'Child view');
       elementEnd();
@@ -181,13 +181,13 @@ it('should not invoke renderer destroy method for child views', () => {
        *  <div *ngIf="visible">Child view</div>
        */
       template: function(rf: RenderFlags, ctx: Comp) {
-        if (rf & 1) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           text(1, 'Root view');
           elementEnd();
           template(2, MyComponent_div_Template_2, 2, 0, null, [1, 'ngIf']);
         }
-        if (rf & 2) {
+        if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(ctx.visible));
         }
       }
