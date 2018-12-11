@@ -10,7 +10,6 @@ $mat-radio-ripple-radius: 20px;
 .mat-radio-button {
   display: inline-block;
   -webkit-tap-highlight-color: transparent;
-  outline: 0;
 }
 
 // Inner label container, wrapping entire element.
@@ -142,7 +141,7 @@ $mat-radio-ripple-radius: 20px;
     opacity: 0.04;
   }
 
-  .mat-radio-button:not(.mat-radio-disabled).cdk-focused & {
+  .mat-radio-button.cdk-focused & {
     opacity: 0.12;
   }
 

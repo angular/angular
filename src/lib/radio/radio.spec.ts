@@ -723,7 +723,7 @@ describe('MatRadio', () => {
       const radioButtonEl =
           predefinedFixture.debugElement.query(By.css('.mat-radio-button')).nativeElement;
 
-      expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
+      expect(radioButtonEl.getAttribute('tabindex')).toBeFalsy();
     });
 
   });
