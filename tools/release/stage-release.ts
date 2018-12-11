@@ -20,13 +20,16 @@ const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
  *
  *  1) Prompt for release type (with version suggestion)
  *  2) Prompt for version name if no suggestions has been selected
- *  3) Assert that the proper publish branch is checked out (e.g. 6.4.x for patches)
- *  4) Assert that there are no local changes which are uncommitted.
- *  5) Assert that the local branch is up to date with the remote branch.
- *  6) Creates a new branch for the release staging (release-stage/{VERSION})
- *  7) Switches to the staging branch and updates the package.json
- *  8) Waits for the user to continue (users can generate the changelog in the meanwhile)
- *  9) Create a commit that includes all changes in the staging branch.
+ *  3) Assert that there are no local changes which are uncommitted.
+ *  4) Assert that the proper publish branch is checked out. (e.g. 6.4.x for patches)
+ *     If a different branch is used, try switching to the publish branch automatically
+ *  5) Assert that the Github status checks pass for the publish branch.
+ *  6) Assert that the local branch is up to date with the remote branch.
+ *  7) Creates a new branch for the release staging (release-stage/{VERSION})
+ *  8) Switches to the staging branch and updates the package.json
+ *  9) Prompt for release name and generate changelog
+ *  10) Wait for the user to continue (users can customize generated changelog)
+ *  11) Create a commit that includes all changes in the staging branch.
  */
 class StageReleaseTask {
 
@@ -86,9 +89,10 @@ class StageReleaseTask {
     // new log messages to be more in the foreground.
     console.log();
 
-    this.verifyPublishBranch(expectedPublishBranch);
-    this.verifyLocalCommitsMatchUpstream(expectedPublishBranch);
     this.verifyNoUncommittedChanges();
+    this.switchToPublishBranch(expectedPublishBranch);
+
+    this.verifyLocalCommitsMatchUpstream(expectedPublishBranch);
     await this.verifyPassingGithubStatus();
 
     const newVersionName = newVersion.format();
@@ -137,16 +141,28 @@ class StageReleaseTask {
     // TODO(devversion): automatic push and PR open URL shortcut.
   }
 
-  /** Verifies that the user is on the specified publish branch. */
-  private verifyPublishBranch(expectedPublishBranch: string) {
+  /**
+   * Checks if the user is on the expected publish branch. If the user is on a different branch,
+   * this function automatically tries to checkout the publish branch.
+   */
+  private switchToPublishBranch(expectedPublishBranch: string): boolean {
     const currentBranchName = this.git.getCurrentBranch();
 
-    // Check if current branch matches the expected publish branch.
-    if (expectedPublishBranch !== currentBranchName) {
-      console.error(red(`  ✘ Cannot stage release from "${italic(currentBranchName)}". Please ` +
-        `stage the release from "${bold(expectedPublishBranch)}".`));
+    // If current branch already matches the expected publish branch, just continue
+    // by exiting this function.
+    if (expectedPublishBranch === currentBranchName) {
+      return;
+    }
+
+    if (!this.git.checkoutBranch(expectedPublishBranch)) {
+      console.error(red(`  ✘   Could not switch to the "${italic(expectedPublishBranch)}" ` +
+        `branch.`));
+      console.error(red(`      Please ensure that the branch exists or manually switch to the ` +
+        `branch.`));
       process.exit(1);
     }
+
+    console.log(green(`  ✓   Switched to the "${italic(expectedPublishBranch)}" branch.`));
   }
 
   /** Verifies that the local branch is up to date with the given publish branch. */
@@ -166,8 +182,8 @@ class StageReleaseTask {
   /** Verifies that there are no uncommitted changes in the project. */
   private verifyNoUncommittedChanges() {
     if (this.git.hasUncommittedChanges()) {
-      console.error(red(`  ✘ Cannot stage release. There are changes which are not committed and ` +
-        `should be stashed.`));
+      console.error(red(`  ✘   Cannot stage release. There are changes which are not committed ` +
+        `and should be discarded.`));
       process.exit(1);
     }
   }

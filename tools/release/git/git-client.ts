@@ -33,6 +33,11 @@ export class GitClient {
     return spawnSync('git', ['diff-index', '--quiet', 'HEAD'], {cwd: this.projectDir}).status !== 0;
   }
 
+  /** Checks out an existing branch with the specified name. */
+  checkoutBranch(branchName: string): boolean {
+    return spawnSync('git', ['checkout', branchName], {cwd: this.projectDir}).status === 0;
+  }
+
   /** Creates a new branch which is based on the previous active branch. */
   checkoutNewBranch(branchName: string): boolean {
     return spawnSync('git', ['checkout', '-b', branchName], {cwd: this.projectDir}).status === 0;
