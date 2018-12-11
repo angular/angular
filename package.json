@@ -56,6 +56,7 @@
     "@bazel/ibazel": "^0.9.0",
     "@bazel/karma": "0.21.0",
     "@bazel/typescript": "0.21.0",
+    "@firebase/app-types": "^0.3.2",
     "@octokit/rest": "^15.9.4",
     "@schematics/angular": "^7.1.2",
     "@types/browser-sync": "^0.0.42",
