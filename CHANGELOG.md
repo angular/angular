@@ -1,3 +1,13 @@
+<a name="7.1.3"></a>
+## [7.1.3](https://github.com/angular/angular/compare/7.1.2...7.1.3) (2018-12-11)
+
+
+### Bug Fixes
+
+* **bazel:** tsickle dependency not working with typescript 3.1.x ([#27402](https://github.com/angular/angular/issues/27402)) ([a9f39a4](https://github.com/angular/angular/commit/a9f39a4))
+
+
+
 <a name="7.1.2"></a>
 ## [7.1.2](https://github.com/angular/angular/compare/7.1.1...7.1.2) (2018-12-06)
 
