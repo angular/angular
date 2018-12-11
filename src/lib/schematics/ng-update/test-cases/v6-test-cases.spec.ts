@@ -19,6 +19,7 @@ describe('v6 upgrade test cases', () => {
   ];
 
   let testCasesOutputPath: string;
+  let cleanupTestApp: () => void;
 
   beforeAll(async () => {
     const testCaseInputs = testCases.reduce((inputs, testCaseName) => {
@@ -26,10 +27,14 @@ describe('v6 upgrade test cases', () => {
       return inputs;
     }, {} as {[name: string]: string});
 
-    const {tempPath} = await runTestCases('migration-v6', migrationCollection, testCaseInputs);
+    const {tempPath, removeTempDir} =
+      await runTestCases('migration-v6', migrationCollection, testCaseInputs);
 
     testCasesOutputPath = join(tempPath, 'projects/cdk-testing/src/test-cases/');
+    cleanupTestApp = removeTempDir;
   });
+
+  afterAll(() => cleanupTestApp());
 
   // Iterates through every test case directory and generates a jasmine test block that will
   // verify that the update schematics properly updated the test input to the expected output.

@@ -10,8 +10,8 @@ import {getSystemPath, normalize} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import * as virtualFs from '@angular-devkit/core/src/virtual-fs/host';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {readFileSync, writeFileSync, mkdirpSync} from 'fs-extra';
-import {join, dirname} from 'path';
+import {mkdirpSync, readFileSync, writeFileSync, removeSync} from 'fs-extra';
+import {dirname, join} from 'path';
 import {createTestApp, runPostScheduledTasks} from '../testing';
 
 /** Reads the UTF8 content of the specified file. Normalizes the path and ensures that */
@@ -34,7 +34,7 @@ export function createFileSystemTestApp(runner: SchematicTestRunner) {
     tempFileSystemHost.sync.write(f, virtualFs.stringToFileBuffer(appTree.readContent(f)));
   });
 
-  return {appTree, tempPath};
+  return {appTree, tempPath, removeTempDir: () => removeSync(tempPath)};
 }
 
 export async function runTestCases(migrationName: string, collectionPath: string,
@@ -47,7 +47,7 @@ export async function runTestCases(migrationName: string, collectionPath: string
   let logOutput = '';
   runner.logger.subscribe(entry => logOutput += entry.message);
 
-  const {appTree, tempPath} = createFileSystemTestApp(runner);
+  const {appTree, tempPath, removeTempDir} = createFileSystemTestApp(runner);
 
   // Write each test-case input to the file-system. This is necessary because otherwise
   // TSLint won't be able to pick up the test cases.
@@ -71,5 +71,5 @@ export async function runTestCases(migrationName: string, collectionPath: string
   // Switch back to the initial working directory.
   process.chdir(initialWorkingDir);
 
-  return {tempPath, logOutput};
+  return {tempPath, logOutput, removeTempDir};
 }

@@ -4,7 +4,7 @@ import {runTestCases} from '@angular/cdk/schematics/testing';
 describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const {logOutput} = await runTestCases('migration-v6', migrationCollection, {
+    const {logOutput, removeTempDir} = await runTestCases('migration-v6', migrationCollection, {
       'constructor-checks': require.resolve('./constructor-checks_input.ts')
     });
 
@@ -38,6 +38,8 @@ describe('constructor checks', () => {
 
     expect(logOutput).toMatch(/Found "ExtendedDateAdapter".*super.*: super\(string, Platform\)/);
     expect(logOutput).toMatch(/Found "ExtendedDateAdapter".*: new \w+\(string, Platform\)/);
+
+    removeTempDir();
   });
 });
 
