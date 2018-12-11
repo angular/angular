@@ -111,8 +111,9 @@ export class R3Injector {
     const dedupStack: InjectorType<any>[] = [];
     deepForEach([def], injectorDef => this.processInjectorType(injectorDef, [], dedupStack));
 
-    additionalProviders &&
-        deepForEach(additionalProviders, provider => this.processProvider(provider));
+    additionalProviders && deepForEach(
+                               additionalProviders, provider => this.processProvider(
+                                                        provider, def, additionalProviders));
 
 
     // Make sure the INJECTOR token provides this injector.
@@ -270,25 +271,31 @@ export class R3Injector {
     }
 
     // Next, include providers listed on the definition itself.
-    if (def.providers != null && !isDuplicate) {
-      deepForEach(def.providers, provider => this.processProvider(provider));
+    const defProviders = def.providers;
+    if (defProviders != null && !isDuplicate) {
+      const injectorType = defOrWrappedDef as InjectorType<any>;
+      deepForEach(
+          defProviders, provider => this.processProvider(provider, injectorType, defProviders));
     }
 
     // Finally, include providers from an InjectorDefTypeWithProviders if there was one.
-    deepForEach(providers, provider => this.processProvider(provider));
+    const ngModuleType = (defOrWrappedDef as InjectorTypeWithProviders<any>).ngModule;
+    deepForEach(providers, provider => this.processProvider(provider, ngModuleType, providers));
   }
 
   /**
    * Process a `SingleProvider` and add it.
    */
-  private processProvider(provider: SingleProvider): void {
+  private processProvider(
+      provider: SingleProvider, ngModuleType: InjectorType<any>, providers: any[]): void {
     // Determine the token from the provider. Either it's its own token, or has a {provide: ...}
     // property.
     provider = resolveForwardRef(provider);
-    let token: any = isTypeProvider(provider) ? provider : resolveForwardRef(provider.provide);
+    let token: any =
+        isTypeProvider(provider) ? provider : resolveForwardRef(provider && provider.provide);
 
     // Construct a `Record` for the provider.
-    const record = providerToRecord(provider);
+    const record = providerToRecord(provider, ngModuleType, providers);
 
     if (!isTypeProvider(provider) && provider.multi === true) {
       // If the provider indicates that it's a multi-provider, process it specially.
@@ -317,7 +324,7 @@ export class R3Injector {
 
   private hydrate<T>(token: Type<T>|InjectionToken<T>, record: Record<T>): T {
     if (record.value === CIRCULAR) {
-      throw new Error(`Circular dep for ${stringify(token)}`);
+      throw new Error(`Cannot instantiate cyclic dependency! ${stringify(token)}`);
     } else if (record.value === NOT_YET) {
       record.value = CIRCULAR;
       record.value = record.factory !();
@@ -345,20 +352,25 @@ function injectableDefOrInjectorDefFactory(token: Type<any>| InjectionToken<any>
     const injectorDef = getInjectorDef(token as InjectorType<any>);
     if (injectorDef !== null) {
       return injectorDef.factory;
-    }
-
-    if (token instanceof InjectionToken) {
+    } else if (token instanceof InjectionToken) {
       throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
+    } else if (token instanceof Function) {
+      const paramLength = token.length;
+      if (paramLength > 0) {
+        const args: string[] = new Array(paramLength).fill('?');
+        throw new Error(
+            `Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
+      }
+      return () => new (token as Type<any>)();
     }
-    // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
-    // no-args constructor.
-    return () => new (token as Type<any>)();
+    throw new Error('unreachable');
   }
   return injectableDef.factory;
 }
 
-function providerToRecord(provider: SingleProvider): Record<any> {
-  let factory: (() => any)|undefined = providerToFactory(provider);
+function providerToRecord(
+    provider: SingleProvider, ngModuleType: InjectorType<any>, providers: any[]): Record<any> {
+  let factory: (() => any)|undefined = providerToFactory(provider, ngModuleType, providers);
   if (isValueProvider(provider)) {
     return makeRecord(undefined, provider.useValue);
   } else {
@@ -371,7 +383,8 @@ function providerToRecord(provider: SingleProvider): Record<any> {
  *
  * @param provider provider to convert to factory
  */
-export function providerToFactory(provider: SingleProvider): () => any {
+export function providerToFactory(
+    provider: SingleProvider, ngModuleType?: InjectorType<any>, providers?: any[]): () => any {
   let factory: (() => any)|undefined = undefined;
   if (isTypeProvider(provider)) {
     return injectableDefOrInjectorDefFactory(resolveForwardRef(provider));
@@ -384,7 +397,18 @@ export function providerToFactory(provider: SingleProvider): () => any {
       factory = () => provider.useFactory(...injectArgs(provider.deps || []));
     } else {
       const classRef = resolveForwardRef(
-          (provider as StaticClassProvider | ClassProvider).useClass || provider.provide);
+          provider &&
+          ((provider as StaticClassProvider | ClassProvider).useClass || provider.provide));
+      if (!classRef) {
+        let ngModuleDetail = '';
+        if (ngModuleType && providers) {
+          const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');
+          ngModuleDetail =
+              ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(', ')}]`;
+        }
+        throw new Error(
+            `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail);
+      }
       if (hasDeps(provider)) {
         factory = () => new (classRef)(...injectArgs(provider.deps));
       } else {
@@ -409,15 +433,15 @@ function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
 }
 
 function isValueProvider(value: SingleProvider): value is ValueProvider {
-  return USE_VALUE in value;
+  return value && typeof value == 'object' && USE_VALUE in value;
 }
 
 function isExistingProvider(value: SingleProvider): value is ExistingProvider {
-  return !!(value as ExistingProvider).useExisting;
+  return !!(value && (value as ExistingProvider).useExisting);
 }
 
 function isFactoryProvider(value: SingleProvider): value is FactoryProvider {
-  return !!(value as FactoryProvider).useFactory;
+  return !!(value && (value as FactoryProvider).useFactory);
 }
 
 export function isTypeProvider(value: SingleProvider): value is TypeProvider {

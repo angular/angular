@@ -1492,28 +1492,23 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('error handling', () => {
-      fixmeIvy('FW-682: TestBed: tests assert that compilation produces specific error')
-          .it('should report a meaningful error when a directive is missing annotation', () => {
-            TestBed.configureTestingModule(
-                {declarations: [MyComp, SomeDirectiveMissingAnnotation]});
+      it('should report a meaningful error when a directive is missing annotation', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, SomeDirectiveMissingAnnotation]});
 
-            expect(() => TestBed.createComponent(MyComp))
-                .toThrowError(
-                    `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
-          });
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(
+                `Unexpected value '${stringify(SomeDirectiveMissingAnnotation)}' declared by the module 'DynamicTestModule'. Please add a @Pipe/@Directive/@Component annotation.`);
+      });
 
-      fixmeIvy('FW-682: TestBed: tests assert that compilation produces specific error')
-          .it('should report a meaningful error when a component is missing view annotation',
-              () => {
-                TestBed.configureTestingModule({declarations: [MyComp, ComponentWithoutView]});
-                try {
-                  TestBed.createComponent(ComponentWithoutView);
-                  expect(true).toBe(false);
-                } catch (e) {
-                  expect(e.message).toContain(
-                      `No template specified for component ${stringify(ComponentWithoutView)}`);
-                }
-              });
+      it('should report a meaningful error when a component is missing view annotation', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, ComponentWithoutView]});
+        try {
+          TestBed.createComponent(ComponentWithoutView);
+        } catch (e) {
+          expect(e.message).toContain(
+              `No template specified for component ${stringify(ComponentWithoutView)}`);
+        }
+      });
 
       fixmeIvy('FW-722: getDebugContext needs to be replaced / re-implemented')
           .it('should provide an error context when an error happens in DI', () => {

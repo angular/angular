@@ -52,27 +52,25 @@ function declareTests(config?: {useJit: boolean}) {
     afterEach(() => { getDOM().log = originalLog; });
 
     describe('events', () => {
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
-          .it('should disallow binding to attr.on*', () => {
-            const template = `<div [attr.onclick]="ctxProp"></div>`;
-            TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      it('should disallow binding to attr.on*', () => {
+        const template = `<div [attr.onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-            expect(() => TestBed.createComponent(SecuredComponent))
-                .toThrowError(
-                    /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-          });
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(
+                /Binding to event attribute 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+      });
 
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
-          .it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
-            const template = `<div [onclick]="ctxProp"></div>`;
-            TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
-              schemas: [NO_ERRORS_SCHEMA]
-            });
+      it('should disallow binding to on* with NO_ERRORS_SCHEMA', () => {
+        const template = `<div [onclick]="ctxProp"></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}}).configureTestingModule({
+          schemas: [NO_ERRORS_SCHEMA]
+        });
 
-            expect(() => TestBed.createComponent(SecuredComponent))
-                .toThrowError(
-                    /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
-          });
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(
+                /Binding to event property 'onclick' is disallowed for security reasons, please use \(click\)=.../);
+      });
 
       fixmeIvy(
           'FW-786: Element properties and directive inputs are not distinguished for sanitisation purposes')
@@ -227,7 +225,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
       });
 
-      fixmeIvy('FW-787: Exception in template parsing leaves TestBed in corrupted state')
+      fixmeIvy('FW-850: Should throw on unsafe SVG attributes')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});

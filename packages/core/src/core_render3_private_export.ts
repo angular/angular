@@ -128,6 +128,7 @@ export {
   compileNgModule as ɵcompileNgModule,
   compileNgModuleDefs as ɵcompileNgModuleDefs,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
+  resetCompiledComponents as ɵresetCompiledComponents,
 } from './render3/jit/module';
 export {
   compilePipe as ɵcompilePipe,
@@ -223,6 +224,8 @@ export {
 export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
+
+export {getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__} from './linker/ng_module_factory_loader';
 
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,
