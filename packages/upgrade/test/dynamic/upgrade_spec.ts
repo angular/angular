@@ -149,30 +149,28 @@ withEachNg1Version(() => {
         adapter = new UpgradeAdapter(Ng2Module);
       });
 
-      fixmeIvy('FW-682: JIT compilation occurs at component definition time rather than bootstrap')
-          .it('should throw an uncaught error', fakeAsync(() => {
-                const resolveSpy = jasmine.createSpy('resolveSpy');
-                spyOn(console, 'error');
+      it('should throw an uncaught error', fakeAsync(() => {
+           const resolveSpy = jasmine.createSpy('resolveSpy');
+           spyOn(console, 'error');
 
-                expect(() => {
-                  adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
-                  flushMicrotasks();
-                }).toThrowError();
-                expect(resolveSpy).not.toHaveBeenCalled();
-              }));
+           expect(() => {
+             adapter.bootstrap(html('<ng2></ng2>'), ['ng1']).ready(resolveSpy);
+             flushMicrotasks();
+           }).toThrowError();
+           expect(resolveSpy).not.toHaveBeenCalled();
+         }));
 
-      fixmeIvy('FW-682: JIT compilation occurs at component definition time rather than bootstrap')
-          .it('should output an error message to the console and re-throw', fakeAsync(() => {
-                const consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
-                expect(() => {
-                  adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
-                  flushMicrotasks();
-                }).toThrowError();
-                const args: any[] = consoleErrorSpy.calls.mostRecent().args;
-                expect(consoleErrorSpy).toHaveBeenCalled();
-                expect(args.length).toBeGreaterThan(0);
-                expect(args[0]).toEqual(jasmine.any(Error));
-              }));
+      it('should output an error message to the console and re-throw', fakeAsync(() => {
+           const consoleErrorSpy: jasmine.Spy = spyOn(console, 'error');
+           expect(() => {
+             adapter.bootstrap(html('<ng2></ng2>'), ['ng1']);
+             flushMicrotasks();
+           }).toThrowError();
+           const args: any[] = consoleErrorSpy.calls.mostRecent().args;
+           expect(consoleErrorSpy).toHaveBeenCalled();
+           expect(args.length).toBeGreaterThan(0);
+           expect(args[0]).toEqual(jasmine.any(Error));
+         }));
     });
 
     describe('scope/component change-detection', () => {

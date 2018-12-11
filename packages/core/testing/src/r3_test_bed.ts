@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵresetCompiledComponents as resetCompiledComponents, ɵstringify as stringify} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -221,6 +221,7 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   resetTestingModule(): void {
+    resetCompiledComponents();
     // reset metadata overrides
     this._moduleOverrides = [];
     this._componentOverrides = [];
@@ -423,7 +424,7 @@ export class TestBedRender3 implements Injector, TestBed {
     }
   }
 
-  private _createTestModule(): Type<any> {
+  private _createTestModule(): NgModuleType {
     const rootProviderOverrides = this._rootProviderOverrides;
 
     @NgModule({
@@ -445,7 +446,7 @@ export class TestBedRender3 implements Injector, TestBed {
     class DynamicTestModule {
     }
 
-    return DynamicTestModule;
+    return DynamicTestModule as NgModuleType;
   }
 }
 
@@ -453,6 +454,18 @@ let testBed: TestBedRender3;
 
 export function _getTestBedRender3(): TestBedRender3 {
   return testBed = testBed || new TestBedRender3();
+}
+
+const OWNER_MODULE = '__NG_MODULE__';
+/**
+ * This function clears the OWNER_MODULE property from the Types. This is set in r3/jit/modules.ts.
+ * It is common for the same Type to be compiled in different tests. If we don't clear this we will
+ * get errors which will complain that the same Component/Directive is in more than one NgModule.
+ */
+function clearNgModules(type: Type<any>) {
+  if (type.hasOwnProperty(OWNER_MODULE)) {
+    (type as any)[OWNER_MODULE] = undefined;
+  }
 }
 
 
@@ -468,7 +481,7 @@ type Resolvers = {
   pipe: Resolver<Pipe>,
 };
 
-function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
+function compileNgModule(moduleType: NgModuleType, resolvers: Resolvers): void {
   const ngModule = resolvers.module.resolve(moduleType);
 
   if (ngModule === null) {
@@ -548,7 +561,7 @@ function transitiveScopesFor<T>(
     }
   });
 
-  def.imports.forEach(<I>(imported: Type<I>) => {
+  def.imports.forEach(<I>(imported: NgModuleType) => {
     const ngModule = resolvers.module.resolve(imported);
 
     if (ngModule === null) {

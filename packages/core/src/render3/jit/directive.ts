@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentType} from '..';
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
@@ -58,7 +59,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
-          viewQueries: extractQueriesMetadata(getReflect().propMetadata(type), isViewQuery),
+          viewQueries: extractQueriesMetadata(type, getReflect().propMetadata(type), isViewQuery),
           directives: [],
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
@@ -108,7 +109,7 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
       if (ngDirectiveDef === null) {
-        const facade = directiveMetadata(type, directive);
+        const facade = directiveMetadata(type as ComponentType<any>, directive);
         ngDirectiveDef = getCompilerFacade().compileDirective(
             angularCoreEnv, `ng://${type && type.name}/ngDirectiveDef.js`, facade);
       }
@@ -141,7 +142,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     propMetadata: propMetadata,
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
-    queries: extractQueriesMetadata(propMetadata, isContentQuery),
+    queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
     lifecycle: {
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
     },
@@ -168,13 +169,18 @@ export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3Qu
   };
 }
 function extractQueriesMetadata(
-    propMetadata: {[key: string]: any[]},
+    type: Type<any>, propMetadata: {[key: string]: any[]},
     isQueryAnn: (ann: any) => ann is Query): R3QueryMetadataFacade[] {
   const queriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isQueryAnn(ann)) {
+          if (!ann.selector) {
+            throw new Error(
+                `Can't construct a query for the property "${field}" of ` +
+                `"${stringify(type)}" since the query selector wasn't defined.`);
+          }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
         }
       });

@@ -195,9 +195,6 @@ describe('InjectorDef-based createInjector()', () => {
     expect(injector.get(Service)).toBe(instance);
   });
 
-  it('throws an error when a token is not found',
-     () => { expect(() => injector.get(ServiceTwo)).toThrow(); });
-
   it('returns the default value if a provider isn\'t present',
      () => { expect(injector.get(ServiceTwo, null)).toBeNull(); });
 
@@ -239,9 +236,6 @@ describe('InjectorDef-based createInjector()', () => {
     expect(instance instanceof StaticService).toBeTruthy();
     expect(instance.dep).toBe(injector.get(Service));
   });
-
-  it('throws an error on circular deps',
-     () => { expect(() => injector.get(CircularA)).toThrow(); });
 
   it('allows injecting itself via INJECTOR',
      () => { expect(injector.get(INJECTOR)).toBe(injector); });
@@ -286,5 +280,25 @@ describe('InjectorDef-based createInjector()', () => {
   it('should not crash when importing something that has no ngInjectorDef', () => {
     injector = createInjector(ImportsNotAModule);
     expect(injector.get(ImportsNotAModule)).toBeDefined();
+  });
+
+  describe('error handling', () => {
+    it('throws an error when a token is not found',
+       () => { expect(() => injector.get(ServiceTwo)).toThrow(); });
+
+    it('throws an error on circular deps',
+       () => { expect(() => injector.get(CircularA)).toThrow(); });
+
+    it('should throw when it can\'t resolve all arguments', () => {
+      class MissingArgumentType {
+        constructor(missingType: any) {}
+      }
+      class ErrorModule {
+        static ngInjectorDef =
+            defineInjector({factory: () => new ErrorModule(), providers: [MissingArgumentType]});
+      }
+      expect(() => createInjector(ErrorModule).get(MissingArgumentType))
+          .toThrowError('Can\'t resolve all parameters for MissingArgumentType: (?).');
+    });
   });
 });

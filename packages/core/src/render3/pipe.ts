@@ -62,7 +62,7 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
       }
     }
   }
-  throw new Error(`Pipe with name '${name}' not found!`);
+  throw new Error(`The pipe '${name}' could not be found!`);
 }
 
 /**
