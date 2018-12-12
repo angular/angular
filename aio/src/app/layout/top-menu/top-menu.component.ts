@@ -5,7 +5,11 @@ import { NavigationNode } from 'app/navigation/navigation.service';
   selector: 'aio-top-menu',
   template: `
     <ul role="navigation">
-      <li *ngFor="let node of nodes"><a class="nav-link" [href]="node.url" [title]="node.title">{{ node.title }}</a></li>
+      <li *ngFor="let node of nodes">
+        <a class="nav-link" [href]="node.url" [title]="node.title">
+          <span class="nav-link-inner">{{ node.title }}</span>
+        </a>
+      </li>
     </ul>`
 })
 export class TopMenuComponent {
