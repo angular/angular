@@ -54,7 +54,7 @@ It appears this behaves as expected. If you still feel there is an issue, please
 ```
 I'm sorry but we can't reproduce the problem following the instructions you provided.
 
-If the problem still still exists in your application please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template.
+If the problem still exists in your application please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template.
 ```
 
 ## Angular: Obsolete (v2)
