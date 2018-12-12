@@ -68,21 +68,6 @@
 * **router:** allow passing state to `NavigationExtras` ([#27198](https://github.com/angular/angular/issues/27198)) ([67f4a5d](https://github.com/angular/angular/commit/67f4a5d))
 * **router:** restore whole  object when navigating back to a page managed by Angular router ([#27198](https://github.com/angular/angular/issues/27198)) ([2684249](https://github.com/angular/angular/commit/2684249))
 
-
-### BREAKING CHANGES
-
-* **bazel:** Bazel users: rules_angular_dependencies() will no longer install transitive dependencies of build_bazel_rules_nodejs and build_bazel_rules_typescript. User WORKSPACE files will now need to install rules_nodejs and rules_typescript transitive deps directly:
-
-```
-load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
-rules_typescript_dependencies()
-
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-rules_nodejs_dependencies()
-```
-
-
-
 <a name="7.2.0-beta.0"></a>
 # [7.2.0-beta.0](https://github.com/angular/angular/compare/7.1.0...7.2.0-beta.0) (2018-11-28)
 
