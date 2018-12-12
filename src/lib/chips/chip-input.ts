@@ -8,6 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Directive, ElementRef, EventEmitter, Inject, Input, OnChanges, Output} from '@angular/core';
+import {hasModifierKey} from '@angular/cdk/keycodes';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 import {MatChipList} from './chip-list';
 import {MatChipTextControl} from './chip-text-control';
@@ -134,7 +135,7 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
     if (!this._inputElement.value && !!event) {
       this._chipList._keydown(event);
     }
-    if (!event || this._isSeparatorKey(event.keyCode)) {
+    if (!event || this._isSeparatorKey(event)) {
       this.chipEnd.emit({ input: this._inputElement, value: this._inputElement.value });
 
       if (event) {
@@ -154,8 +155,13 @@ export class MatChipInput implements MatChipTextControl, OnChanges {
   }
 
   /** Checks whether a keycode is one of the configured separators. */
-  private _isSeparatorKey(keyCode: number) {
+  private _isSeparatorKey(event: KeyboardEvent) {
+    if (hasModifierKey(event)) {
+      return false;
+    }
+
     const separators = this.separatorKeyCodes;
+    const keyCode = event.keyCode;
     return Array.isArray(separators) ? separators.indexOf(keyCode) > -1 : separators.has(keyCode);
   }
 }

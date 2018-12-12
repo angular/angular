@@ -186,6 +186,18 @@ describe('MatChipInput', () => {
       expect(testChipInput.add).toHaveBeenCalled();
     });
 
+    it('should not emit the chipEnd event if a separator is pressed with a modifier key', () => {
+      const ENTER_EVENT = createKeyboardEvent('keydown', ENTER, inputNativeElement);
+      Object.defineProperty(ENTER_EVENT, 'shiftKey', {get: () => true});
+      spyOn(testChipInput, 'add');
+
+      chipInputDirective.separatorKeyCodes = [ENTER];
+      fixture.detectChanges();
+
+      chipInputDirective._keydown(ENTER_EVENT);
+      expect(testChipInput.add).not.toHaveBeenCalled();
+    });
+
   });
 });
 
