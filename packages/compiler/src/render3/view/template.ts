@@ -685,7 +685,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.i18n.appendTemplate(template.i18n !, templateIndex);
     }
 
-    const tagName = sanitizeIdentifier(template.tagName);
+    const tagName = sanitizeIdentifier(template.tagName || '');
     const contextName = tagName ? `${this.contextName}_${tagName}` : '';
     const templateName =
         contextName ? `${contextName}_Template_${templateIndex}` : `Template_${templateIndex}`;

@@ -46,7 +46,7 @@ function hasTagAndTypeMatch(
       (isProjectionMode ||
        (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) ||
        (tNode.type === TNodeType.Container && currentSelector === NG_TEMPLATE_SELECTOR));
-};
+}
 
 /**
  * A utility function to match an Ivy node static data against a simple CSS selector
