@@ -186,18 +186,16 @@ describe('MatSnackBar', () => {
   }));
 
 
-  it('should default to the passed message for the announcement message', fakeAsync(() => {
+  it('should clear the announcement message if it is the same as main message', fakeAsync(() => {
     spyOn(liveAnnouncer, 'announce');
 
-    snackBar.open(simpleMessage);
+    snackBar.open(simpleMessage, undefined, {announcementMessage: simpleMessage});
     viewContainerFixture.detectChanges();
 
     expect(overlayContainerElement.childElementCount)
       .toBe(1, 'Expected the overlay with the default announcement message to be added');
 
-    // Expect the live announcer to have been called with the display message and some
-    // string for the politeness. We do not want to test for the default politeness here.
-    expect(liveAnnouncer.announce).toHaveBeenCalledWith(simpleMessage, jasmine.any(String));
+    expect(liveAnnouncer.announce).not.toHaveBeenCalled();
   }));
 
   it('should be able to specify a custom announcement message', fakeAsync(() => {
