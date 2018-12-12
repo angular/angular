@@ -5,11 +5,16 @@
 @mixin mat-bottom-sheet-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
+  $backdrop-color: invert(mat-color($background, card, 0.288));
 
   .mat-bottom-sheet-container {
     @include _mat-theme-elevation(16, $theme);
     background: mat-color($background, dialog);
     color: mat-color($foreground, text);
+  }
+
+  .mat-bottom-sheet-backdrop {
+    background: $backdrop-color;
   }
 }
 

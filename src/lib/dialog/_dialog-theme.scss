@@ -7,11 +7,16 @@
 @mixin mat-dialog-theme($theme) {
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
+  $backdrop-color: invert(mat-color($background, card, 0.288));
 
   .mat-dialog-container {
     @include _mat-theme-elevation(24, $theme);
     background: mat-color($background, dialog);
     color: mat-color($foreground, text);
+  }
+
+  .mat-dialog-backdrop {
+    background: $backdrop-color;
   }
 }
 
