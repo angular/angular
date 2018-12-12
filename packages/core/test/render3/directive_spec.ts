@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '@angular/core';
+import {EventEmitter, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {AttributeMarker, RenderFlags, defineDirective} from '../../src/render3/index';
+import {AttributeMarker, RenderFlags, defineComponent, defineDirective, directiveInject} from '../../src/render3/index';
 
-import {bind, element, elementEnd, elementProperty, elementStart, listener, template, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, element, elementEnd, elementProperty, elementStart, listener, template, elementContainerStart, elementContainerEnd, text} from '../../src/render3/instructions';
 
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
+import {NgIf} from './common_with_def';
 
 describe('directive', () => {
 
@@ -121,6 +122,104 @@ describe('directive', () => {
          expect(directiveInstance !.testValue).toBe(false);
        });
 
+    it('should match directives on <ng-template>', () => {
+      /**
+       *   @Directive({
+       *     selector: 'ng-template[directiveA]'
+       *   })
+       *   export class DirectiveA {
+       *     constructor(public templateRef: TemplateRef<any>) {}
+       *   }
+       */
+      let tmplRef: any;
+      class DirectiveA {
+        constructor(public templateRef: any) { tmplRef = templateRef; }
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveA,
+          selectors: [['ng-template', 'directiveA', '']],
+          factory: () => new DirectiveA(directiveInject(TemplateRef as any))
+        });
+      }
+
+      function MyComponent_ng_template_Template_0(rf: RenderFlags, ctx: any) {
+        if (rf & 1) {
+          text(0, 'Some content');
+        }
+      }
+      class MyComponent {
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['my-component']],
+          factory: () => new MyComponent(),
+          consts: 2,
+          vars: 0,
+          // <ng-template directiveA>Some content</ng-template>
+          template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, MyComponent_ng_template_Template_0, 1, 0, 'ng-template', ['directiveA', '']);
+            }
+          },
+          directives: [DirectiveA, NgIf]
+        });
+      }
+
+      new ComponentFixture(MyComponent);
+      expect(tmplRef instanceof TemplateRef).toBeTruthy();
+    });
+
+    it('should match directives on <ng-container>', () => {
+      /**
+       *   @Directive({
+       *     selector: 'ng-container[directiveA]'
+       *   })
+       *   export class DirectiveA {
+       *     constructor(public vcRef: ViewContainerRef<any>) {}
+       *   }
+       */
+      let vcRef: any;
+      class DirectiveA {
+        constructor(public viewContainerRef: any) { vcRef = viewContainerRef; }
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveA,
+          selectors: [['ng-container', 'directiveA', '']],
+          factory: () => new DirectiveA(directiveInject(ViewContainerRef as any))
+        });
+      }
+
+      function MyComponent_ng_container_Template_0(rf: RenderFlags, ctx: any) {
+        if (rf & 1) {
+          elementContainerStart(0, ['directiveA', '']);
+          text(1, 'Some content');
+          elementContainerEnd();
+        }
+      }
+      class MyComponent {
+        visible = true;
+
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['my-component']],
+          factory: () => new MyComponent(),
+          consts: 1,
+          vars: 1,
+          // <ng-container *ngIf="visible" directiveA>Some content</ng-container>
+          template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container', [1, 'ngIf']);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'ngIf', bind(ctx.visible));
+            }
+          },
+          directives: [DirectiveA, NgIf]
+        });
+      }
+
+      new ComponentFixture(MyComponent);
+      expect(vcRef instanceof ViewContainerRef).toBeTruthy();
+    });
+
     it('should match directives with attribute selectors on outputs', () => {
       let directiveInstance: Directive;
 
@@ -173,7 +272,7 @@ describe('directive', () => {
        */
       const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          template(0, null, 0, 0, null, [AttributeMarker.SelectOnly, 'out']);
+          template(0, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'out']);
           listener('out', () => { ctx.value = true; });
         }
       }, 1, 0, [Directive]);

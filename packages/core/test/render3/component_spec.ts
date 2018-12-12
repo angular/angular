@@ -511,8 +511,8 @@ describe('recursive components', () => {
 
         if (rf & RenderFlags.Create) {
           text(0);
-          template(1, IfTemplate, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
-          template(2, IfTemplate2, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(1, IfTemplate, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, IfTemplate2, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           textBinding(0, bind(ctx.data.value));

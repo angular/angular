@@ -50,7 +50,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 3, 0, null, ['tplRef', '']);
+          template(0, embeddedTemplate, 3, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);
@@ -79,7 +79,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, () => {}, 0, 0, null, ['tplRef', '']);
+          template(0, () => {}, 0, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);
@@ -108,7 +108,7 @@ describe('TemplateRef', () => {
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, ngIfTemplate, 1, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+          template(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(ctx.showing));
@@ -120,7 +120,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 1, 1, null, ['tplRef', '']);
+          template(0, embeddedTemplate, 1, 1, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef, NgIf]);
@@ -158,7 +158,7 @@ describe('TemplateRef', () => {
        */
       const AppComponent = createComponent('app-cmp', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 2, 0, null, ['tplRef', '']);
+          template(0, embeddedTemplate, 2, 0, 'ng-template', ['tplRef', '']);
           directiveWithTplRef = getDirectiveOnNode(0, 0);
         }
       }, 1, 0, [DirectiveWithTplRef]);
