@@ -20,7 +20,7 @@
     "bazel:lint": "yarn bazel:format --lint=warn",
     "bazel:lint-fix": "yarn bazel:format --lint=fix",
     "preinstall": "node tools/yarn/check-yarn.js",
-    "postinstall": "yarn update-webdriver && node ./tools/postinstall-patches.js",
+    "postinstall": "yarn update-webdriver && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "update-webdriver": "webdriver-manager update --gecko false $CHROMEDRIVER_VERSION_ARG",
     "check-env": "gulp check-env",
     "commitmsg": "node ./scripts/git/commit-msg.js",
