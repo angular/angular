@@ -194,7 +194,7 @@ export function createNodeAtIndex(
     index: number, type: TNodeType.Projection, native: null, name: null,
     attrs: TAttributes | null): TProjectionNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.ElementContainer, native: RComment, name: null,
+    index: number, type: TNodeType.ElementContainer, native: RComment, name: string | null,
     attrs: TAttributes | null): TElementContainerNode;
 export function createNodeAtIndex(
     index: number, type: TNodeType.IcuContainer, native: RComment, name: null,
@@ -490,15 +490,17 @@ export function elementContainerStart(
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
+  const tagName = 'ng-container';
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const native = renderer.createComment(ngDevMode ? 'ng-container' : '');
+  const native = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);
-  const tNode = createNodeAtIndex(index, TNodeType.ElementContainer, native, null, attrs || null);
+  const tNode =
+      createNodeAtIndex(index, TNodeType.ElementContainer, native, tagName, attrs || null);
 
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, localRefs);
@@ -1646,7 +1648,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
-      if (isNodeMatchingSelectorList(tNode, def.selectors !)) {
+      if (isNodeMatchingSelectorList(tNode, def.selectors !, /* isProjectionMode */ false)) {
         matches || (matches = []);
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(

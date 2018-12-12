@@ -813,7 +813,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
@@ -878,7 +878,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {

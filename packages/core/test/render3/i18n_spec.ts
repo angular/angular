@@ -595,7 +595,7 @@ describe('Runtime i18n', () => {
         if (rf & RenderFlags.Create) {
           i18nStart(0, MSG_DIV, 1);
           elementStart(1, 'div');
-          template(2, subTemplate_2, 2, 0, null, ['ngIf', '']);
+          template(2, subTemplate_2, 2, 0, 'span', ['ngIf', '']);
           elementEnd();
           i18nEnd();
         }
@@ -624,7 +624,7 @@ describe('Runtime i18n', () => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'div');
               i18nStart(1, MSG_DIV);
-              template(2, subTemplate_1, 3, 1, null, ['ngIf', '']);
+              template(2, subTemplate_1, 3, 1, 'div', ['ngIf', '']);
               i18nEnd();
               elementEnd();
             }

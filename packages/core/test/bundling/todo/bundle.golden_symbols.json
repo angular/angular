@@ -114,6 +114,9 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
     "name": "NOT_FOUND"
   },
   {
@@ -829,6 +832,9 @@
   },
   {
     "name": "hasPlayerBuilderChanged"
+  },
+  {
+    "name": "hasTagAndTypeMatch"
   },
   {
     "name": "hasValueChanged"

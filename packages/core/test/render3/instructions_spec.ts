@@ -297,7 +297,7 @@ describe('instructions', () => {
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'ul');
-          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, null, _c0);
+          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c0);
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -335,7 +335,7 @@ describe('instructions', () => {
           vars: 1,
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              template(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, null, _c0);
+              template(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, 'ul', _c0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.rows));
