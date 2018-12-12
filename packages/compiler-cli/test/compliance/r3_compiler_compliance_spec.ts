@@ -15,7 +15,7 @@ import {compile, expectEmit} from './mock_compile';
  * These tests are codified version of the tests in compiler_canonical_spec.ts. Every
  * test in compiler_canonical_spec.ts should have a corresponding test here.
  */
-fdescribe('compiler compliance', () => {
+describe('compiler compliance', () => {
 
   const angularFiles = setup({
     compileAngular: false,
