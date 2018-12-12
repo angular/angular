@@ -88,6 +88,7 @@ ts_library(
     deps = [
         "@angular//packages/core/testing",
         "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@types",
     ],
 )
 
