@@ -76,7 +76,7 @@
     "shelljs": "^0.8.1",
     "source-map": "^0.6.1",
     "source-map-support": "0.5.9",
-    "tsickle": "0.32.1",
+    "tsickle": "0.33.1",
     "tslib": "^1.7.1",
     "typescript": "~3.1.1",
     "xhr2": "0.1.4",
