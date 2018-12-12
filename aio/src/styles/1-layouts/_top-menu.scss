@@ -147,13 +147,20 @@ aio-top-menu {
 
   a.nav-link {
     margin: 0;
-    padding: 8px 16px;
+    padding: 24px 0px;
     cursor: pointer;
-    border-radius: 4px;
-      
+
+    .nav-link-inner {
+      padding: 8px 16px;
+    }
+
     &:focus {
-      background: rgba($white, 0.15);
       outline: none;
+
+      .nav-link-inner {
+        background: rgba($white, 0.15);
+        border-radius: 4px;
+      }
     }
   }
 }
