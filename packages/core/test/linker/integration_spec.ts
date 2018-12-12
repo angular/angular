@@ -699,33 +699,32 @@ function declareTests(config?: {useJit: boolean}) {
           expect(cmp.prop).toEqual('two');
         });
 
-        if (getDOM().supportsDOMEvents()) {
-          fixmeIvy('unknown').it(
-              'should be checked when an async pipe requests a check', fakeAsync(() => {
-                TestBed.configureTestingModule(
-                    {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
-                const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-                TestBed.overrideComponent(MyComp, {set: {template}});
-                const fixture = TestBed.createComponent(MyComp);
+        fixmeIvy(
+            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template')
+            .it('should be checked when an async pipe requests a check', fakeAsync(() => {
+                  TestBed.configureTestingModule(
+                      {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
+                  const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
+                  TestBed.overrideComponent(MyComp, {set: {template}});
+                  const fixture = TestBed.createComponent(MyComp);
 
-                tick();
+                  tick();
 
-                const cmp: PushCmpWithAsyncPipe =
-                    fixture.debugElement.children[0].references !['cmp'];
-                fixture.detectChanges();
-                expect(cmp.numberOfChecks).toEqual(1);
+                  const cmp: PushCmpWithAsyncPipe =
+                      fixture.debugElement.children[0].references !['cmp'];
+                  fixture.detectChanges();
+                  expect(cmp.numberOfChecks).toEqual(1);
 
-                fixture.detectChanges();
-                fixture.detectChanges();
-                expect(cmp.numberOfChecks).toEqual(1);
+                  fixture.detectChanges();
+                  fixture.detectChanges();
+                  expect(cmp.numberOfChecks).toEqual(1);
 
-                cmp.resolve(2);
-                tick();
+                  cmp.resolve(2);
+                  tick();
 
-                fixture.detectChanges();
-                expect(cmp.numberOfChecks).toEqual(2);
-              }));
-        }
+                  fixture.detectChanges();
+                  expect(cmp.numberOfChecks).toEqual(2);
+                }));
       });
 
       it('should create a component that injects an @Host', () => {
@@ -1871,79 +1870,83 @@ function declareTests(config?: {useJit: boolean}) {
 
     if (getDOM().supportsDOMEvents()) {
       describe('svg', () => {
-        fixmeIvy('unknown').it('should support svg elements', () => {
-          TestBed.configureTestingModule({declarations: [MyComp]});
-          const template = '<svg><use xlink:href="Port" /></svg>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+        fixmeIvy('FW-672: SVG attribute xlink:href is output as :xlink:href (extra ":")')
+            .it('should support svg elements', () => {
+              TestBed.configureTestingModule({declarations: [MyComp]});
+              const template = '<svg><use xlink:href="Port" /></svg>';
+              TestBed.overrideComponent(MyComp, {set: {template}});
+              const fixture = TestBed.createComponent(MyComp);
 
-          const el = fixture.nativeElement;
-          const svg = getDOM().childNodes(el)[0];
-          const use = getDOM().childNodes(svg)[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
+              const el = fixture.nativeElement;
+              const svg = getDOM().childNodes(el)[0];
+              const use = getDOM().childNodes(svg)[0];
+              expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
+                  .toEqual('http://www.w3.org/2000/svg');
+              expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
+                  .toEqual('http://www.w3.org/2000/svg');
 
-          const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
-          expect(firstAttribute.name).toEqual('xlink:href');
-          expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
-        });
+              const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
+              expect(firstAttribute.name).toEqual('xlink:href');
+              expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
+            });
 
-        fixmeIvy('unknown').it('should support foreignObjects with document fragments', () => {
-          TestBed.configureTestingModule({declarations: [MyComp]});
-          const template =
-              '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+        fixmeIvy('FW-811: Align HTML namespaces between Ivy and Render2')
+            .it('should support foreignObjects with document fragments', () => {
+              TestBed.configureTestingModule({declarations: [MyComp]});
+              const template =
+                  '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
+              TestBed.overrideComponent(MyComp, {set: {template}});
+              const fixture = TestBed.createComponent(MyComp);
 
-          const el = fixture.nativeElement;
-          const svg = getDOM().childNodes(el)[0];
-          const foreignObject = getDOM().childNodes(svg)[0];
-          const p = getDOM().childNodes(foreignObject)[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
-              .toEqual('http://www.w3.org/1999/xhtml');
-        });
+              const el = fixture.nativeElement;
+              const svg = getDOM().childNodes(el)[0];
+              const foreignObject = getDOM().childNodes(svg)[0];
+              const p = getDOM().childNodes(foreignObject)[0];
+              expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
+                  .toEqual('http://www.w3.org/2000/svg');
+              expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
+                  .toEqual('http://www.w3.org/2000/svg');
+              expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
+                  .toEqual('http://www.w3.org/1999/xhtml');
+            });
       });
 
       describe('attributes', () => {
 
-        fixmeIvy('unknown').it('should support attributes with namespace', () => {
-          TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
-          const template = '<svg:use xlink:href="#id" />';
-          TestBed.overrideComponent(SomeCmp, {set: {template}});
-          const fixture = TestBed.createComponent(SomeCmp);
+        fixmeIvy('FW-672: SVG attribute xlink:href is output as :xlink:href (extra ":")')
+            .it('should support attributes with namespace', () => {
+              TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
+              const template = '<svg:use xlink:href="#id" />';
+              TestBed.overrideComponent(SomeCmp, {set: {template}});
+              const fixture = TestBed.createComponent(SomeCmp);
 
-          const useEl = getDOM().firstChild(fixture.nativeElement);
-          expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual('#id');
-        });
+              const useEl = getDOM().firstChild(fixture.nativeElement);
+              expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                  .toEqual('#id');
+            });
 
-        fixmeIvy('unknown').it('should support binding to attributes with namespace', () => {
-          TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
-          const template = '<svg:use [attr.xlink:href]="value" />';
-          TestBed.overrideComponent(SomeCmp, {set: {template}});
-          const fixture = TestBed.createComponent(SomeCmp);
+        fixmeIvy('FW-672: SVG attribute xlink:href is output as :xlink:href (extra ":")')
+            .it('should support binding to attributes with namespace', () => {
+              TestBed.configureTestingModule({declarations: [MyComp, SomeCmp]});
+              const template = '<svg:use [attr.xlink:href]="value" />';
+              TestBed.overrideComponent(SomeCmp, {set: {template}});
+              const fixture = TestBed.createComponent(SomeCmp);
 
-          const cmp = fixture.componentInstance;
-          const useEl = getDOM().firstChild(fixture.nativeElement);
+              const cmp = fixture.componentInstance;
+              const useEl = getDOM().firstChild(fixture.nativeElement);
 
-          cmp.value = '#id';
-          fixture.detectChanges();
+              cmp.value = '#id';
+              fixture.detectChanges();
 
-          expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual('#id');
+              expect(getDOM().getAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                  .toEqual('#id');
 
-          cmp.value = null;
-          fixture.detectChanges();
+              cmp.value = null;
+              fixture.detectChanges();
 
-          expect(getDOM().hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
-              .toEqual(false);
-        });
+              expect(getDOM().hasAttributeNS(useEl, 'http://www.w3.org/1999/xlink', 'href'))
+                  .toEqual(false);
+            });
       });
     }
   });
