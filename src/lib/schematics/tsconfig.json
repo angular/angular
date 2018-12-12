@@ -7,6 +7,8 @@
     "noEmitOnError": false,
     "strictNullChecks": true,
     "skipDefaultLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,

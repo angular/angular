@@ -96,8 +96,7 @@ export class MatButton extends _MatButtonMixinBase
                * @deprecated Platform checks for SSR are no longer needed
                * @breaking-change 8.0.0
                */
-              // tslint:disable-next-line:no-unused-variable
-              private _platform: Platform,
+              _platform: Platform,
               private _focusMonitor: FocusMonitor,
               // @breaking-change 8.0.0 `_animationMode` parameter to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
