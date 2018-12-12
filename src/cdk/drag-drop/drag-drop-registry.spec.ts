@@ -190,6 +190,16 @@ describe('DragDropRegistry', () => {
     expect(dispatchFakeEvent(document, 'wheel').defaultPrevented).toBe(true);
   });
 
+  it('should not prevent the default `selectstart` actions when nothing is being dragged', () => {
+    expect(dispatchFakeEvent(document, 'selectstart').defaultPrevented).toBe(false);
+  });
+
+  it('should prevent the default `selectstart` action when an item is being dragged', () => {
+    registry.startDragging(testComponent.dragItems.first, createMouseEvent('mousedown'));
+    expect(dispatchFakeEvent(document, 'selectstart').defaultPrevented).toBe(true);
+  });
+
+
 });
 
 @Component({

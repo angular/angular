@@ -720,6 +720,8 @@ export class DragRef<T = any> {
       zIndex: '1000'
     });
 
+    toggleNativeDragInteractions(preview, false);
+
     preview.classList.add('cdk-drag-preview');
     preview.setAttribute('dir', this._dir ? this._dir.value : 'ltr');
 
