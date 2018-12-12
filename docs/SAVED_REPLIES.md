@@ -19,11 +19,11 @@ I'm sorry but we don't understand the problem you are reporting.
 If the problem still exists in your application, please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template.
 ```
 
-## Angular: StackBlitz Needed (v2)
+## Angular: Can't reproduce (v2)
 ```
-I'm sorry but reported issues require a StackBlitz reproducing the problem.
+I'm sorry but we can't reproduce the problem you are reporting. We require that reported issues have a minimal reproduction that showcases the problem.
 
-If the problem still exists in your application, please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template.
+If the problem still exists in your application, please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template that include info on how to create a reproduction using our template.
 ```
 
 ## Angular: Duplicate (v2)
