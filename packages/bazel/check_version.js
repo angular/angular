@@ -57,7 +57,8 @@ if (isBazelManagedDeps()) {
   }
   // Be tolerant of versions such as "0.17.0-7-g76dc057"
   const angularPackageVersion = contents.version.split('-')[0];
-  const range = `~${angularPackageVersion}`;  // should match patch version
+  // Should match only the major and minor versions
+  const range = `${semver.major(angularPackageVersion)}.${semver.minor(angularPackageVersion)}.x`;
   if (!semver.satisfies(npmPackageVersion, range)) {
     throw new Error(
         `Expected angular npm version ${npmPackageVersion} to satisfy ${range}. ` +
