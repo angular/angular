@@ -96,10 +96,13 @@ export class CdkDropList<T = any> implements CdkDropListContainer, OnDestroy {
 
   /** Whether starting a dragging sequence from this container is disabled. */
   @Input('cdkDropListDisabled')
-  get disabled(): boolean { return this._dropListRef.disabled; }
-  set disabled(value: boolean) {
-    this._dropListRef.disabled = coerceBooleanProperty(value);
+  get disabled(): boolean {
+    return this._disabled || (!!this._group && this._group.disabled);
   }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+  }
+  private _disabled = false;
 
   /**
    * Function that is used to determine whether an item

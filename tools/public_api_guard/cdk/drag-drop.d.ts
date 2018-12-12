@@ -156,6 +156,7 @@ export interface CdkDropListContainer<T = any> {
 
 export declare class CdkDropListGroup<T> implements OnDestroy {
     readonly _items: Set<T>;
+    disabled: boolean;
     ngOnDestroy(): void;
 }
 

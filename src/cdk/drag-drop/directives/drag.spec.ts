@@ -1917,7 +1917,31 @@ describe('CdkDrag', () => {
         dispatchEvent(document, endEvent);
         fixture.detectChanges();
       }).not.toThrow();
+    }));
 
+    it('should not move the item if the group is disabled', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZonesViaGroupDirective);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.groupedDragItems[0];
+
+      fixture.componentInstance.groupDisabled = true;
+      fixture.detectChanges();
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems[0];
+      const thirdItemRect = dragItems[2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.right + 1, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
   });
@@ -2743,7 +2767,7 @@ class ConnectedDropZones implements AfterViewInit {
     }
   `],
   template: `
-    <div cdkDropListGroup>
+    <div cdkDropListGroup [cdkDropListGroupDisabled]="groupDisabled">
       <div
         cdkDropList
         [cdkDropListData]="todo"
@@ -2760,7 +2784,9 @@ class ConnectedDropZones implements AfterViewInit {
     </div>
   `
 })
-class ConnectedDropZonesViaGroupDirective extends ConnectedDropZones {}
+class ConnectedDropZonesViaGroupDirective extends ConnectedDropZones {
+  groupDisabled = false;
+}
 
 
 @Component({
