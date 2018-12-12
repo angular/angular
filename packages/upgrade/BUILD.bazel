@@ -30,6 +30,9 @@ ng_package(
     tags = [
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":upgrade",
         "//packages/upgrade/static",
