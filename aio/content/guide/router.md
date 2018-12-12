@@ -5293,7 +5293,7 @@ Now you have given the user a safeguard against unsaved changes.
 <!--
 ### _Resolve_: pre-fetching component data
 -->
-### _Resolve_: 컴포넌트의 데이터를 미리 가져오기
+### _Resolve_: 컴포넌트에 필요한 데이터 미리 가져오기
 
 <!--
 In the `Hero Detail` and `Crisis Detail`, the app waited until the route was activated to fetch the respective hero or crisis.
@@ -5362,63 +5362,101 @@ Generate a `CrisisDetailResolver` service file within the `Crisis Center` featur
 </code-example>
 
 
-
+<!--
 Take the relevant parts of the crisis retrieval logic in `CrisisDetailComponent.ngOnInit`
 and move them into the `CrisisDetailResolverService`.
 Import the `Crisis` model, `CrisisService`, and the `Router`
 so you can navigate elsewhere if you can't fetch the crisis.
+-->
+그리고 이제부터 라우팅 가드에서 담당할 로직을 `CrisisDetailComponent.ngOnInit`에서 `CrisisDetailResolverService`로 옮깁니다.
+이 때 `Crisis` 모델과 `CrisisService`, `Router` 객체가 의존성으로 필요하며, 해당 데이터를 가져오기 못하면 다른 곳으로 이동하게 할 것입니다.
 
+<!--
 Be explicit. Implement the `Resolve` interface with a type of `Crisis`.
 
 Inject the `CrisisService` and `Router` and implement the `resolve()` method.
 That method could return a `Promise`, an `Observable`, or a synchronous return value.
+-->
+타입은 명확하게 지정합니다. 이 클래스는 `Resolve` 인터페이스를 바탕으로 구현하며 이 때 처리하는 객체의 타입은 `Crisis`입니다.
 
+`CrisisService`와 `Router` 객체는 `resolve()` 메소드에 주입합니다.
+그리고 이 메소드는 `Promise`나 `observable`, 동기방식으로 결과를 반환할 수 있습니다.
+
+<!--
 The `CrisisService.getCrisis` method returns an observable, in order to prevent the route from loading until the data is fetched.
 The `Router` guards require an observable to `complete`, meaning it has emitted all
 of its values. You use the `take` operator with an argument of `1` to ensure that the
 Observable completes after retrieving the first value from the Observable returned by the
 `getCrisis` method.
+-->
+`CrisisService.getCrisis` 메소드는 옵저버블을 반환하는데, 이 메소드가 옵저버블을 반환하기 전까지 라우팅 규칙은 활성화되지 않습니다.
+그리고 이 라우팅 가드는 옵저버블이 완료되어야 종료됩니다.
+그래서 `take` 연산자에 `1` 인자를 전달해서 이 옵저버블이 `getCrisis` 메소드로부터 데이터를 하나 받으면 옵저버블 자체를 종료하도록 구현했습니다.
 
+<!--
 If it doesn't return a valid `Crisis`, return an empty `Observable`, canceling the previous in-flight navigation to the `CrisisDetailComponent` and navigate the user back to the `CrisisListComponent`. The update resolver service looks like this:
+-->
+만약 해당되는 `Crisis` 객체를 반환하지 못해서 `Observable`이 빈 값을 반환하게 되면 `CrisisDetailComponent`로 이동하던 네비게이션 로직이 취소되며 다시 `CrisisListComponent`로 이동합니다. 리졸버 서비스를 이런 로직으로 구현하면 다음과 같이 구현할 수 있습니다:
 
 <code-example path="router/src/app/crisis-center/crisis-detail-resolver.service.ts" header="src/app/crisis-center/crisis-detail-resolver.service.ts">
 
 </code-example>
 
+<!--
 Import this resolver in the `crisis-center-routing.module.ts`
 and add a `resolve` object to the `CrisisDetailComponent` route configuration.
+-->
+이 리졸버를 `crisis-center-routing.module.ts`에 로드하고 `CrisisDetailComponent` 라우팅 규칙에 `resolve` 객체로 추가합니다.
 
-
+<!--
 <code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (resolver)">
+-->
+<code-example path="router/src/app/crisis-center/crisis-center-routing.module.4.ts" linenums="false" header="src/app/crisis-center/crisis-center-routing.module.ts (리졸버)">
 
 </code-example>
 
 
-
+<!--
 The `CrisisDetailComponent` should no longer fetch the crisis.
 Update the `CrisisDetailComponent` to get the crisis from the  `ActivatedRoute.data.crisis` property instead;
 that's where you said it should be when you re-configured the route.
 It will be there when the `CrisisDetailComponent` ask for it.
-
+-->
+`CrisisDetailComponent`는 이제 위기에 대한 상세정보를 직접 서버에서 가져오지 않습니다.
+`CrisisDetailComponent`는 `ActivatedRoute.data.crisis` 프로퍼티로 이 데이터를 참조합니다.
+이 데이터는 위에서 수정한 라우팅 규칙에 의해 전달됩니다.
 
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" linenums="false" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (ngOnInit v2)" region="ngOnInit">
 
 </code-example>
 
 
-
+<!--
 **Two critical points**
+-->
+**2가지 중요한 내용**
 
+<!--
 1. The router's `Resolve` interface is optional.
 The `CrisisDetailResolverService` doesn't inherit from a base class.
 The router looks for that method and calls it if found.
+-->
+1. 라우터가 제공하는 `Resolve` 인터페이스를 꼭 사용해야 하는 것은 아닙니다.
+그리고 `CrisisDetailResolverService`는 베이스 클래스를 바탕으로 상속한 것도 아닙니다.
+라우터는 단순하게 관련된 메소드가 있는지 검사하고 실행할 뿐입니다.
 
+<!--
 1. Rely on the router to call the resolver.
 Don't worry about all the ways that the user  could navigate away.
 That's the router's job. Write this class and let the router take it from there.
 
 The relevant *Crisis Center* code for this milestone follows.
+-->
+1. 리졸버를 실행하는 것은 라우터입니다.
+더이상 사용자가 다른 페이지로 마음대로 이동하는 것을 걱정하지 않아도 됩니다.
+구현한 클래스를 라우터에 전달하기만 하면 이 동작을 라우터가 직접 관리합니다.
 
+지금까지 작성한 *위기대응센터*의 코드는 다음과 같습니다.
 
 <code-tabs>
 
@@ -5468,7 +5506,7 @@ The relevant *Crisis Center* code for this milestone follows.
 
 </code-tabs>
 
-Guards
+라우팅 가드
 
 <code-tabs>
 

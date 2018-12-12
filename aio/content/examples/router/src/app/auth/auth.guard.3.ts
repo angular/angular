@@ -32,10 +32,10 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   checkLogin(url: string): boolean {
     if (this.authService.isLoggedIn) { return true; }
 
-    // Store the attempted URL for redirecting
+    // 로그인한 후에 이동할 URL을 저장해 둡니다.
     this.authService.redirectUrl = url;
 
-    // Navigate to the login page
+    // 로그인 페이지로 이동합니다.
     this.router.navigate(['/login']);
     return false;
   }
