@@ -685,21 +685,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.i18n.appendTemplate(template.i18n !, templateIndex);
     }
 
-    let elName = '';
-    if (isSingleElementTemplate(template.children)) {
-      // When the template as a single child, derive the context name from the tag
-      elName = sanitizeIdentifier(template.children[0].name);
-    }
-
-    const contextName = elName ? `${this.contextName}_${elName}` : '';
-
+    const tagName = sanitizeIdentifier(template.tagName || '');
+    const contextName = tagName ? `${this.contextName}_${tagName}` : '';
     const templateName =
         contextName ? `${contextName}_Template_${templateIndex}` : `Template_${templateIndex}`;
 
     const parameters: o.Expression[] = [
       o.literal(templateIndex),
       o.variable(templateName),
-      o.TYPED_NULL_EXPR,
+      o.literal(template.tagName),
     ];
 
     // find directives matching on a given <ng-template> node

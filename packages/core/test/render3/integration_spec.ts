@@ -719,7 +719,8 @@ describe('render3 integration test', () => {
          const TestCmpt =
              createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
                if (rf & RenderFlags.Create) {
-                 template(0, ngIfTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+                 template(
+                     0, ngIfTemplate, 2, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
                  elementProperty(0, 'ngIf', bind(ctx.value));
@@ -778,7 +779,8 @@ describe('render3 integration test', () => {
          const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
            if (rf & RenderFlags.Create) {
              template(
-                 0, embeddedTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
+                 0, embeddedTemplate, 2, 0, 'ng-template',
+                 [AttributeMarker.SelectOnly, 'testDirective']);
            }
          }, 1, 0, [TestDirective]);
 
@@ -893,7 +895,9 @@ describe('render3 integration test', () => {
        */
       const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 4, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
+          template(
+              0, embeddedTemplate, 4, 0, 'ng-template',
+              [AttributeMarker.SelectOnly, 'testDirective']);
         }
       }, 1, 0, [TestDirective]);
 
@@ -981,7 +985,8 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           elementContainerStart(0, [AttributeMarker.SelectOnly, 'dir']);
-          template(1, ContentTemplate, 1, 0, '', null, ['content', ''], templateRefExtractor);
+          template(
+              1, ContentTemplate, 1, 0, 'ng-template', null, ['content', ''], templateRefExtractor);
           elementContainerEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -1037,7 +1042,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           elementContainerStart(0);
           template(
-              1, ContentTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'dir'], [],
+              1, ContentTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'dir'], [],
               templateRefExtractor);
           elementContainerEnd();
         }
@@ -1610,7 +1615,7 @@ describe('render3 integration test', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
+            template(0, FooTemplate, 1, 0, 'ng-template', null, ['foo', ''], templateRefExtractor);
             elementStart(2, 'structural-comp');
             elementStyling(['active']);
             elementEnd();
@@ -1990,7 +1995,7 @@ describe('render3 integration test', () => {
                   elementEnd();
                   element(2, 'div');
                 }
-              }, 3, 0, null, ['ngIf', '']);
+              }, 3, 0, 'ng-template', ['ngIf', '']);
               elementEnd();
             }
             if (rf & RenderFlags.Update) {

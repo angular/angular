@@ -489,7 +489,7 @@ describe('di', () => {
         const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            { template(1, IfTemplate, 4, 1, '', [AttributeMarker.SelectOnly, 'ngIf', '']); }
+            { template(1, IfTemplate, 4, 1, 'div', [AttributeMarker.SelectOnly, 'ngIf', '']); }
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -609,7 +609,10 @@ describe('di', () => {
         const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '', 'value', 'declaration']);
-            { template(1, FooTemplate, 3, 1, '', null, ['foo', ''], templateRefExtractor); }
+            {
+              template(
+                  1, FooTemplate, 3, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
+            }
             elementEnd();
             elementStart(3, 'div', ['dirB', '', 'value', 'insertion']);
             { element(4, 'div', ['structuralDir', '']); }
@@ -1157,7 +1160,7 @@ describe('di', () => {
           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['dirB', '']);
-              { template(1, IfTemplate, 1, 0, '', ['ngIf', '']); }
+              { template(1, IfTemplate, 1, 0, 'div', ['ngIf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -1300,7 +1303,7 @@ describe('di', () => {
            /** <ng-template dir></ng-template> */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               template(0, () => {}, 0, 0, null, ['dir', '']);
+               template(0, () => {}, 0, 0, 'ng-template', ['dir', '']);
                lContainer = load(0) as any;
              }
            }, 1, 0, [Directive]);
@@ -1347,8 +1350,9 @@ describe('di', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, function() {
-            }, 0, 0, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
+            template(
+                0, function() {}, 0, 0, 'ng-template', ['dir', '', 'dirSame', ''],
+                ['dir', 'dir', 'dirSame', 'dirSame']);
             text(3);
           }
           if (rf & RenderFlags.Update) {
@@ -1703,7 +1707,7 @@ describe('di', () => {
             /** <div *ngIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
             template: function(rf: RenderFlags, ctx: MyApp) {
               if (rf & RenderFlags.Create) {
-                template(0, C1, 3, 1, null, ['ngIf', 'showing']);
+                template(0, C1, 3, 1, 'div', ['ngIf', 'showing']);
               }
             },
             directives: directives
@@ -1827,7 +1831,7 @@ describe('di', () => {
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           template(
-              0, null, 0, 0, null,
+              0, null, 0, 0, 'ng-template',
               ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
         }
         if (rf & RenderFlags.Update) {

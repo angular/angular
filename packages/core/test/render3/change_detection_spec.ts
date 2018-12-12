@@ -126,7 +126,7 @@ describe('change detection', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, FooTemplate, 2, 1, '', null, ['foo', ''], templateRefExtractor);
+          template(0, FooTemplate, 2, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
           element(2, 'structural-comp');
         }
         if (rf & RenderFlags.Update) {

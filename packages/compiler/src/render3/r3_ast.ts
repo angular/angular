@@ -73,7 +73,7 @@ export class Element implements Node {
 
 export class Template implements Node {
   constructor(
-      public attributes: TextAttribute[], public inputs: BoundAttribute[],
+      public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public variables: Variable[], public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
@@ -189,8 +189,8 @@ export class TransformVisitor implements Visitor<Node> {
         newChildren != template.children || newVariables != template.variables ||
         newReferences != template.references) {
       return new Template(
-          newAttributes, newInputs, newOutputs, newChildren, newReferences, newVariables,
-          template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
+          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
     }
     return template;
   }

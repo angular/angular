@@ -11,9 +11,10 @@ import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 
-/* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
-  * test in compiler_canonical_spec.ts should have a corresponding test here.
-  */
+/**
+ * These tests are codified version of the tests in compiler_canonical_spec.ts. Every
+ * test in compiler_canonical_spec.ts should have a corresponding test here.
+ */
 describe('compiler compliance', () => {
 
   const angularFiles = setup({
@@ -794,7 +795,7 @@ describe('compiler compliance', () => {
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, null, $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, "li", $c2$);
               $r3$.ɵelementEnd();
             }
           },
@@ -1218,7 +1219,7 @@ describe('compiler compliance', () => {
             $r3$.ɵelementEnd();
           }
         }
-        function Template_2(rf, ctx) {
+        function Cmp_ng_template_Template_2(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵprojectionDef();
             $r3$.ɵtext(0, " '*' selector: ");
@@ -1228,9 +1229,9 @@ describe('compiler compliance', () => {
         …
         template: function Cmp_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, null, $_c0$);
-            $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, null, $_c0$);
-            $r3$.ɵtemplate(2, Template_2, 2, 0);
+            $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, "div", $_c0$);
+            $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, "div", $_c0$);
+            $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
@@ -1867,7 +1868,7 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, null, $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, "span", $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1889,7 +1890,7 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, null, $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, "div", $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -1954,7 +1955,7 @@ describe('compiler compliance', () => {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, null, $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, "span", $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -1966,7 +1967,7 @@ describe('compiler compliance', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -2119,6 +2120,9 @@ describe('compiler compliance', () => {
         }
       };
 
+      // TODO(akushnir): tag name generated for <g> element inside <svg> is incorrect.
+      // It's generated as ":svg:g", when it should be just "g". Potentially related to
+      // the issue described in FW-672.
       it('should support embedded views in the SVG namespace', () => {
         const files = {
           app: {
@@ -2177,7 +2181,7 @@ describe('compiler compliance', () => {
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, null, $t1_attrs$);
+                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, ":svg:g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
@@ -2255,7 +2259,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, null, $t1_attrs$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, "li", $t1_attrs$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -2334,7 +2338,7 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, null, $t4_attrs$);
+              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, "li", $t4_attrs$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
@@ -2355,7 +2359,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, null, $c1$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, "li", $c1$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {

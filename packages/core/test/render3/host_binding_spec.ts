@@ -472,7 +472,7 @@ describe('host bindings', () => {
      */
     const App = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        template(0, NgForTemplate, 2, 0, null, ['ngForOf', '']);
+        template(0, NgForTemplate, 2, 0, 'div', ['ngForOf', '']);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'ngForOf', bind(ctx.rows));
