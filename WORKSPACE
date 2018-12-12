@@ -5,8 +5,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.3.zip",
-  strip_prefix = "rules_nodejs-0.16.3",
+  # TODO(devversion): temporarily depend on a specific commit because we want to make sure that
+  # our CI is not flaky until there is a new version of the NodeJS rules. See commit:
+  # https://github.com/bazelbuild/rules_nodejs/commit/c40ceb960af4213164d4299d8fbc8220ebdd727f
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/c40ceb960af4213164d4299d8fbc8220ebdd727f.zip",
+  strip_prefix = "rules_nodejs-c40ceb960af4213164d4299d8fbc8220ebdd727f",
 )
 
 # Add TypeScript rules
