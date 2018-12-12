@@ -11,7 +11,7 @@
   <h4>native html select</h4>
   <mat-form-field>
     <select matNativeControl placeholder="Favorite car" [(ngModel)]="selectedCar" name="car">
-      <option value="" disabled selected></option>
+      <option value="" selected></option>
       <option *ngFor="let car of cars" [value]="car.value">
         {{car.viewValue}}
       </option>
