@@ -38,7 +38,7 @@ setEnvVar NODE_VERSION 10.9.0
 setEnvVar YARN_VERSION 1.12.1
 setEnvVar CHROMIUM_VERSION 561733  # Chrome 68 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
-setEnvVar SAUCE_CONNECT_VERSION 4.4.9
+setEnvVar SAUCE_CONNECT_VERSION 4.5.2
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
 setEnvVar CI_AIO_MIN_PWA_SCORE 95
 setEnvVar CI_BRANCH $TRAVIS_BRANCH
