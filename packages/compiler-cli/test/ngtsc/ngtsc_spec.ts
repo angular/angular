@@ -375,9 +375,10 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
-  it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
-    env.tsconfig();
-    env.write(`test.ts`, `
+  describe('unwrapping ModuleWithProviders functions', () => {
+    it('should extract the generic type and include it in the module\'s declaration', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
         import {NgModule} from '@angular/core';
         import {RouterModule} from 'router';
 
@@ -385,7 +386,36 @@ describe('ngtsc behavioral tests', () => {
         export class TestModule {}
     `);
 
-    env.write('node_modules/router/index.d.ts', `
+      env.write('node_modules/router/index.d.ts', `
+        import {ModuleWithProviders} from '@angular/core';
+
+        declare class RouterModule {
+          static forRoot(): ModuleWithProviders<RouterModule>;
+        }
+    `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain(`import * as i1 from 'router';`);
+      expect(dtsContents)
+          .toContain('i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
+    });
+
+    it('should extract the generic type if it is provided as qualified type name', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {NgModule} from '@angular/core';
+        import {RouterModule} from 'router';
+
+        @NgModule({imports: [RouterModule.forRoot()]})
+        export class TestModule {}
+    `);
+
+      env.write('node_modules/router/index.d.ts', `
         import {ModuleWithProviders} from '@angular/core';
         import * as internal from './internal';
 
@@ -394,20 +424,21 @@ describe('ngtsc behavioral tests', () => {
         }
     `);
 
-    env.write('node_modules/router/internal.d.ts', `
+      env.write('node_modules/router/internal.d.ts', `
         export declare class InternalRouterModule {}
     `);
 
-    env.driveMain();
+      env.driveMain();
 
-    const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
 
-    const dtsContents = env.getContents('test.d.ts');
-    expect(dtsContents).toContain(`import * as i1 from 'router';`);
-    expect(dtsContents)
-        .toContain(
-            'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
+      const dtsContents = env.getContents('test.d.ts');
+      expect(dtsContents).toContain(`import * as i1 from 'router';`);
+      expect(dtsContents)
+          .toContain(
+              'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
+    });
   });
 
   it('should inject special types according to the metadata', () => {
