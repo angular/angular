@@ -15,7 +15,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
+import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -193,24 +193,6 @@ function walkTNodeTree(
     }
     tNode = nextTNode;
   }
-}
-
-/**
- * Given a current view, finds the nearest component's host (LElement).
- *
- * @param lView LView for which we want a host element node
- * @returns The host node
- */
-export function findComponentView(lView: LView): LView {
-  let rootTNode = lView[HOST_NODE];
-
-  while (rootTNode && rootTNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lView[PARENT], 'lView.parent');
-    lView = lView[PARENT] !;
-    rootTNode = lView[HOST_NODE];
-  }
-
-  return lView;
 }
 
 /**
