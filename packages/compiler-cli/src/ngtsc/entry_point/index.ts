@@ -7,3 +7,6 @@
  */
 
 export {FlatIndexGenerator} from './src/generator';
+export {findFlatIndexEntryPoint} from './src/logic';
+export {checkForPrivateExports} from './src/private_export_checker';
+export {ReferenceGraph} from './src/reference_graph';

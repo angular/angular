@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {ErrorCode} from './src/code';
+export {ErrorCode, ngErrorCode} from './src/code';
 export {FatalDiagnosticError, isFatalDiagnosticError} from './src/error';
 export {replaceTsWithNgInErrors} from './src/util';
