@@ -41,7 +41,6 @@ merge:
     exclude:
       - "packages/*"
       - "packages/bazel/*"
-      - "packages/bazel/src/*"
       - "packages/bazel/src/builders/**"
       - "packages/bazel/src/ng_package/**"
       - "packages/bazel/src/protractor/**"
