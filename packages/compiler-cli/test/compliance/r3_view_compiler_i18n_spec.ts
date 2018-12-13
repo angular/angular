@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../compiler/src/compiler';
@@ -393,7 +394,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["ngFor", "", 1, "ngForOf"];
+        const $_c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
         /**
          * @desc d
          * @meaning m
@@ -522,7 +523,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["ngFor", "", 1, "ngForOf"];
+        const $_c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
         /**
          * @desc d
          * @meaning m
@@ -922,7 +923,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagDiv": "\uFFFD#3\uFFFD",
@@ -976,7 +977,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png"];
-        const $_c1$ = [1, "ngIf"];
+        const $_c1$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         function MyComponent_img_Template_1(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelement(0, "img", $_c0$);
@@ -1043,7 +1044,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         function MyComponent_div_div_Template_4(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
@@ -1136,7 +1137,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
           "startTagSpan": "\uFFFD#2\uFFFD",
           "interpolation": "\uFFFD0\uFFFD",
@@ -1259,23 +1260,21 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["myClass", 1, "myClass", true];
+        const $_c0$ = [${AttributeMarker.Classes}, "myClass"];
         const $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$ = goog.getMsg("Text #1");
-        const $_c1$ = ["padding", 1, "padding", "10px"];
+        const $_c1$ = [${AttributeMarker.Styles}, "padding", "10px"];
         const $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$ = goog.getMsg("Text #2");
         …
         consts: 4,
         vars: 0,
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "span");
+            $r3$.ɵelementStart(0, "span", $_c0$);
             $r3$.ɵi18nStart(1, $MSG_EXTERNAL_5295701706185791735$$APP_SPEC_TS_0$);
-            $r3$.ɵelementStyling($_c0$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
-            $r3$.ɵelementStart(2, "span");
+            $r3$.ɵelementStart(2, "span", $_c1$);
             $r3$.ɵi18nStart(3, $MSG_EXTERNAL_4722270221386399294$$APP_SPEC_TS_2$);
-            $r3$.ɵelementStyling(null, $_c1$);
             $r3$.ɵi18nEnd();
             $r3$.ɵelementEnd();
           }
@@ -1701,7 +1700,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $_c1$ = ["title", "icu only"];
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
@@ -1942,7 +1941,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $_c3$ = [1, "ngIf"];
+        const $_c3$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
         const $I18N_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
@@ -2050,7 +2049,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
         const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
@@ -2113,7 +2112,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
           "interpolation": "\uFFFD1:1\uFFFD"
         });

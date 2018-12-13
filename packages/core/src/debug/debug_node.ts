@@ -12,7 +12,7 @@ import {getComponent, getContext, getInjectionTokens, getInjector, getListeners,
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
 import {TVIEW} from '../render3/interfaces/view';
-import {getProp, getValue, isClassBased} from '../render3/styling/class_and_style_bindings';
+import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContext} from '../render3/styling/util';
 import {DebugContext} from '../view/index';
 
@@ -273,7 +273,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
              i += StylingIndex.Size) {
-          if (isClassBased(lNode, i)) {
+          if (isClassBasedValue(lNode, i)) {
             const className = getProp(lNode, i);
             const value = getValue(lNode, i);
             if (typeof value == 'boolean') {
@@ -303,7 +303,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       if (stylingContext) {
         for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
              i += StylingIndex.Size) {
-          if (!isClassBased(lNode, i)) {
+          if (!isClassBasedValue(lNode, i)) {
             const styleName = getProp(lNode, i);
             const value = getValue(lNode, i) as string | null;
             if (value !== null) {

@@ -542,7 +542,6 @@ describe('discovery utils deprecated', () => {
     });
 
     it('should return a map of local refs for an element with styling context', () => {
-
       class Comp {
         static ngComponentDef = defineComponent({
           type: Comp,
@@ -554,7 +553,6 @@ describe('discovery utils deprecated', () => {
             if (rf & RenderFlags.Create) {
               // <div #elRef class="fooClass">
               elementStart(0, 'div', null, ['elRef', '']);
-              elementStyling(['fooClass']);
               elementEnd();
             }
             if (rf & RenderFlags.Update) {

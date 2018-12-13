@@ -345,7 +345,3 @@ export type PipeTypeList =
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
-
-export const enum InitialStylingFlags {
-  VALUES_MODE = 0b1,
-}

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, InitialStylingFlags} from '@angular/compiler/src/core';
+import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
@@ -48,17 +48,15 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
-        const $c3$ = ["cx", "20", "cy", "30", "r", "50"];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
+        const $c2$ = ["cx", "20", "cy", "30", "r", "50"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceSVG();
             $r3$.ɵelementStart(1, "svg");
-            $r3$.ɵelement(2, "circle", $c3$);
+            $r3$.ɵelement(2, "circle", $c2$);
             $r3$.ɵelementEnd();
             $r3$.ɵnamespaceHTML();
             $r3$.ɵelementStart(3, "p");
@@ -100,13 +98,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceMathML();
             $r3$.ɵelementStart(1, "math");
             $r3$.ɵelement(2, "infinity");
@@ -150,13 +146,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵtext(1, "Hello ");
             $r3$.ɵelementStart(2, "b");
             $r3$.ɵtext(3, "World");
@@ -486,8 +480,8 @@ describe('compiler compliance', () => {
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
-        const _c0 = ["error"];
-        const _c1 = ["background-color"];
+        const $e0_classBindings$ = ["error"];
+        const $e0_styleBindings$ = ["background-color"];
         …
         MyComponent.ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory: function MyComponent_Factory(t){
@@ -498,7 +492,7 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
-                $r3$.ɵelementStyling(_c0, _c1);
+                $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -1204,7 +1198,7 @@ describe('compiler compliance', () => {
           }
         };
         const output = `
-          const $_c0$ = [1, "ngIf"];
+          const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
           const $_c1$ = ["id", "second"];
           function Cmp_div_Template_0(rf, ctx) { if (rf & 1) {
               $r3$.ɵelementStart(0, "div", $_c1$);
@@ -1310,7 +1304,6 @@ describe('compiler compliance', () => {
         const {source} = compile(files, angularFiles);
         expectEmit(source, output, 'Invalid content projection instructions generated');
       });
-
     });
 
     describe('queries', () => {

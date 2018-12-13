@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, EventEmitter} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
-import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery, elementHostAttrs} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
-import {RenderFlags, InitialStylingFlags} from '../../src/render3/interfaces/definition';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
 
 import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';
@@ -1141,9 +1141,8 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementStyling(
-                  ['mat-toolbar', InitialStylingFlags.VALUES_MODE, 'mat-toolbar', true], null, null,
-                  ctx);
+              elementHostAttrs(ctx, [AttributeMarker.Classes, 'mat-toolbar']);
+              elementStyling(['mat-toolbar'], null, null, ctx);
             }
             if (rf & RenderFlags.Update) {
               elementStylingApply(0, ctx);
@@ -1164,6 +1163,5 @@ describe('host bindings', () => {
       const hostBindingEl = fixture.hostElement.querySelector('static-host-class') as HTMLElement;
       expect(hostBindingEl.className).toEqual('mat-toolbar');
     });
-
   });
 });
