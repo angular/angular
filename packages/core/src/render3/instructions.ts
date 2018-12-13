@@ -15,6 +15,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
+
 import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
@@ -22,7 +23,7 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreat
 import {throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
-import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
@@ -30,17 +31,17 @@ import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection'
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {StylingIndex} from './interfaces/styling';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
-import {createStylingContextTemplate, renderStyleAndClassBindings, setStyle, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {getStylingContext, isAnimationProp} from './styling/util';
+import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+
 
 
 /**
@@ -456,7 +457,8 @@ export function namespaceHTML() {
  *
  * @param index Index of the element in the data array
  * @param name Name of the DOM Node
- * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
+ * @param attrs Statically bound set of attributes, classes, and styles to be written into the DOM
+ *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
  */
 export function element(
@@ -526,7 +528,8 @@ export function elementContainerEnd(): void {
  *
  * @param index Index of the element in the LView array
  * @param name Name of the DOM Node
- * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
+ * @param attrs Statically bound set of attributes, classes, and styles to be written into the DOM
+ *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
  *
  * Attributes and localRefs are passed as an array of strings where elements with an even index
@@ -550,6 +553,14 @@ export function elementStart(
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
 
   if (attrs) {
+    // it's important to only prepare styling-related datastructures once for a given
+    // tNode and not each time an element is created. Also, the styling code is designed
+    // to be patched and constructed at various points, but only up until the first element
+    // is created. Then the styling context is locked and can only be instantiated for each
+    // successive element that is created.
+    if (tView.firstTemplatePass && !tNode.stylingTemplate && hasStyling(attrs)) {
+      tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+    }
     setUpAttributes(native, attrs);
   }
 
@@ -563,6 +574,23 @@ export function elementStart(
     attachPatchData(native, lView);
   }
   increaseElementDepthCount();
+
+  // if a directive contains a host binding for "class" then all class-based data will
+  // flow through that (except for `[class.prop]` bindings). This also includes initial
+  // static class values as well. (Note that this will be fixed once map-based `[style]`
+  // and `[class]` bindings work for multiple directives.)
+  if (tView.firstTemplatePass) {
+    const inputData = initializeTNodeInputs(tNode);
+    if (inputData && inputData.hasOwnProperty('class')) {
+      tNode.flags |= TNodeFlags.hasClassInput;
+    }
+  }
+
+  // There is no point in rendering styles when a class directive is present since
+  // it will take that over for us (this will be removed once #FW-882 is in).
+  if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
+    renderInitialStylesAndClasses(native, tNode.stylingTemplate, lView[RENDERER]);
+  }
 }
 
 /**
@@ -721,25 +749,28 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
   let i = 0;
 
   while (i < attrs.length) {
-    const attrName = attrs[i];
-    if (attrName === AttributeMarker.SelectOnly) break;
-    if (attrName === NG_PROJECT_AS_ATTR_NAME) {
-      i += 2;
-    } else {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+    const attrName = attrs[i++];
+    if (typeof attrName == 'number') {
       if (attrName === AttributeMarker.NamespaceURI) {
         // Namespaced attributes
-        const namespaceURI = attrs[i + 1] as string;
-        const attrName = attrs[i + 2] as string;
-        const attrVal = attrs[i + 3] as string;
+        const namespaceURI = attrs[i++] as string;
+        const attrName = attrs[i++] as string;
+        const attrVal = attrs[i++] as string;
+        ngDevMode && ngDevMode.rendererSetAttribute++;
         isProc ?
             (renderer as ProceduralRenderer3)
                 .setAttribute(native, attrName, attrVal, namespaceURI) :
             native.setAttributeNS(namespaceURI, attrName, attrVal);
-        i += 4;
       } else {
+        // All other `AttributeMarker`s are ignored here.
+        break;
+      }
+    } else {
+      /// attrName is string;
+      const attrVal = attrs[i++];
+      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
         // Standard attributes
-        const attrVal = attrs[i + 1];
+        ngDevMode && ngDevMode.rendererSetAttribute++;
         if (isAnimationProp(attrName)) {
           if (isProc) {
             (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
@@ -750,7 +781,6 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
                   .setAttribute(native, attrName as string, attrVal as string) :
               native.setAttribute(attrName as string, attrVal as string);
         }
-        i += 2;
       }
     }
   }
@@ -902,6 +932,15 @@ export function elementEnd(): void {
 
   queueLifecycleHooks(getLView()[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
+
+  // this is fired at the end of elementEnd because ALL of the stylingBindings code
+  // (for directives and the template) have now executed which means the styling
+  // context can be instantiated properly.
+  if (hasClassInput(previousOrParentTNode)) {
+    const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
+    setInputsForProperty(
+        lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+  }
 }
 
 /**
@@ -1097,118 +1136,83 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
 }
 
 /**
- * Add or remove a class in a `classList` on a DOM element.
- *
- * This instruction is meant to handle the [class.foo]="exp" case
- *
- * @param index The index of the element to update in the data array
- * @param classIndex Index of class to toggle. Because it is going to DOM, this is not subject to
- *        renaming as part of minification.
- * @param value A value indicating if a given class should be added or removed.
- * @param directive the ref to the directive that is attempting to change styling.
- */
-export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
-  if (directive != undefined) {
-    return hackImplementationOfElementClassProp(
-        index, classIndex, value, directive);  // proper supported in next PR
-  }
-  const val =
-      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
-  updateElementClassProp(getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, val);
-}
-
-/**
  * Assign any inline style values to the element during creation mode.
  *
- * This instruction is meant to be called during creation mode to apply all styling
- * (e.g. `style="..."`) values to the element. This is also where the provided index
- * value is allocated for the styling details for its corresponding element (the element
- * index is the previous index value from this one).
+ * This instruction is meant to be called during creation mode to register all
+ * dynamic style and class bindings on the element. Note for static values (no binding)
+ * see `elementStart` and `elementHostAttrs`.
  *
- * (Note this function calls `elementStylingApply` immediately when called.)
+ * @param classBindingNames An array containing bindable class names.
+ *        The `elementClassProp` refers to the class name by index in this array.
+ *        (i.e. `['foo', 'bar']` means `foo=0` and `bar=1`).
+ * @param styleBindingNames An array containing bindable style properties.
+ *        The `elementStyleProp` refers to the class name by index in this array.
+ *        (i.e. `['width', 'height']` means `width=0` and `height=1`).
+ * @param styleSanitizer An optional sanitizer function that will be used to sanitize any CSS
+ *        property values that are applied to the element (during rendering).
+ *        Note that the sanitizer instance itself is tied to the `directive` (if  provided).
+ * @param directive A directive instance the styling is associated with. If not provided
+ *        current view's controller instance is assumed.
  *
- *
- * @param index Index value which will be allocated to store styling data for the element.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param classDeclarations A key/value array of CSS classes that will be registered on the element.
- *   Each individual style will be used on the element as long as it is not overridden
- *   by any classes placed on the element by multiple (`[class]`) or singular (`[class.named]`)
- *   bindings. If a class binding changes its value to a falsy value then the matching initial
- *   class value that are passed in here will be applied to the element (if matched).
- * @param styleDeclarations A key/value array of CSS styles that will be registered on the element.
- *   Each individual style will be used on the element as long as it is not overridden
- *   by any styles placed on the element by multiple (`[style]`) or singular (`[style.prop]`)
- *   bindings. If a style binding changes its value to null then the initial styling
- *   values that are passed in here will be applied to the element (if matched).
- * @param styleSanitizer An optional sanitizer function that will be used (if provided)
- *   to sanitize the any CSS property values that are applied to the element (during rendering).
- * @param directive the ref to the directive that is attempting to change styling.
+ * @publicApi
  */
 export function elementStyling(
-    classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
-  if (directive != undefined) {
-    isCreationMode() &&
-        hackImplementationOfElementStyling(
-            classDeclarations || null, styleDeclarations || null, styleSanitizer || null,
-            directive);  // supported in next PR
-    return;
-  }
   const tNode = getPreviousOrParentTNode();
-  const inputData = initializeTNodeInputs(tNode);
-
   if (!tNode.stylingTemplate) {
-    const hasClassInput = inputData && inputData.hasOwnProperty('class') ? true : false;
-    if (hasClassInput) {
-      tNode.flags |= TNodeFlags.hasClassInput;
-    }
-
-    // initialize the styling template.
-    tNode.stylingTemplate = createStylingContextTemplate(
-        classDeclarations, styleDeclarations, styleSanitizer, hasClassInput);
+    tNode.stylingTemplate = createEmptyStylingContext();
   }
-
-  if (styleDeclarations && styleDeclarations.length ||
-      classDeclarations && classDeclarations.length) {
-    const index = tNode.index;
-    if (delegateToClassInput(tNode)) {
-      const lView = getLView();
-      const stylingContext = getStylingContext(index, lView);
-      const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
-      setInputsForProperty(lView, tNode.inputs !['class'] !, initialClasses);
-    }
-    elementStylingApply(index - HEADER_OFFSET);
-  }
+  updateContextWithBindings(
+      tNode.stylingTemplate !, directive || null, classBindingNames, styleBindingNames,
+      styleSanitizer, hasClassInput(tNode));
 }
 
+/**
+ * Assign static styling values to a host element.
+ *
+ * NOTE: This instruction is meant to used from `hostBindings` function only.
+ *
+ * @param directive A directive instance the styling is associated with.
+ * @param attrs An array containing class and styling information. The values must be marked with
+ *              `AttributeMarker`.
+ *
+ *        ```
+ *        var attrs = [AttributeMarker.Classes, 'foo', 'bar',
+ *                     AttributeMarker.Styles, 'width', '100px', 'height, '200px']
+ *        elementHostAttrs(directive, attrs);
+ *        ```
+ *
+ * @publicApi
+ */
+export function elementHostAttrs(directive: any, attrs: TAttributes) {
+  const tNode = getPreviousOrParentTNode();
+  if (!tNode.stylingTemplate) {
+    tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+  }
+  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, directive);
+}
 
 /**
- * Apply all styling values to the element which have been queued by any styling instructions.
+ * Apply styling binding to the element.
  *
- * This instruction is meant to be run once one or more `elementStyle` and/or `elementStyleProp`
- * have been issued against the element. This function will also determine if any styles have
- * changed and will then skip the operation if there is nothing new to render.
+ * This instruction is meant to be run after `elementStyle` and/or `elementStyleProp`.
+ * if any styling bindings have changed then the changes are flushed to the element.
  *
- * Once called then all queued styles will be flushed.
  *
- * @param index Index of the element's styling storage that will be rendered.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param index Index of the element's with which styling is associated.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
  */
-export function elementStylingApply(index: number, directive?: {}): void {
-  if (directive != undefined) {
-    return hackImplementationOfElementStylingApply(index, directive);  // supported in next PR
-  }
+export function elementStylingApply(index: number, directive?: any): void {
   const lView = getLView();
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
-  const totalPlayersQueued = renderStyleAndClassBindings(
-      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender);
+  const totalPlayersQueued = renderStyling(
+      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender, null,
+      null, directive);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(lView);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
@@ -1216,29 +1220,34 @@ export function elementStylingApply(index: number, directive?: {}): void {
 }
 
 /**
- * Queue a given style to be rendered on an Element.
+ * Update a style bindings value on an element.
  *
  * If the style value is `null` then it will be removed from the element
  * (or assigned a different value depending if there are any styles placed
  * on the element with `elementStyle` or any styles that are present
  * from when the element was created (with `elementStyling`).
  *
- * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
+ * (Note that the styling element is updated as part of `elementStylingApply`.)
  *
- * @param index Index of the element's styling storage to change in the data array.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param styleIndex Index of the style property on this element. (Monotonically increasing.)
- * @param value New value to write (null to remove).
+ * @param index Index of the element's with which styling is associated.
+ * @param styleIndex Index of style to update. This index value refers to the
+ *        index of the style in the style bindings array that was passed into
+ *        `elementStlyingBindings`.
+ * @param value New value to write (null to remove). Note that if a directive also
+ *        attempts to write to the same binding value then it will only be able to
+ *        do so if the template binding value is `null` (or doesn't exist at all).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directive?: {}): void {
+    suffix?: string | null, directive?: {}): void {
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -1253,35 +1262,59 @@ export function elementStyleProp(
       valueToAdd = value as any as string;
     }
   }
-  if (directive != undefined) {
-    hackImplementationOfElementStyleProp(index, styleIndex, valueToAdd, suffix, directive);
-  } else {
-    updateElementStyleProp(
-        getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd);
-  }
+  updateElementStyleProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive);
 }
 
 /**
- * Queue a key/value map of styles to be rendered on an Element.
+ * Add or remove a class via a class binding on a DOM element.
  *
- * This instruction is meant to handle the `[style]="exp"` usage. When styles are applied to
- * the Element they will then be placed with respect to any styles set with `elementStyleProp`.
- * If any styles are set to `null` then they will be removed from the element (unless the same
- * style properties have been assigned to the element during creation using `elementStyling`).
+ * This instruction is meant to handle the [class.foo]="exp" case and, therefore,
+ * the class itself must already be applied using `elementStyling` within
+ * the creation block.
+ *
+ * @param index Index of the element's with which styling is associated.
+ * @param classIndex Index of class to toggle. This index value refers to the
+ *        index of the class in the class bindings array that was passed into
+ *        `elementStlyingBindings` (which is meant to be called before this
+ *        function is).
+ * @param value A true/false value which will turn the class on or off.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
+ */
+export function elementClassProp(
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
+  const onOrOffClassValue =
+      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
+  updateElementClassProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, onOrOffClassValue,
+      directive);
+}
+
+/**
+ * Update style and/or class bindings using object literal.
+ *
+ * This instruction is meant apply styling via the `[style]="exp"` and `[class]="exp"` template
+ * bindings. When styles are applied to the Element they will then be placed with respect to
+ * any styles set with `elementStyleProp`. If any styles are set to `null` then they will be
+ * removed from the element.
  *
  * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
  *
- * @param index Index of the element's styling storage to change in the data array.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
+ * @param index Index of the element's with which styling is associated.
  * @param classes A key/value style map of CSS classes that will be added to the given element.
  *        Any missing classes (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's list of CSS classes.
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+ *
+ * @publicApi
  */
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
@@ -1292,113 +1325,24 @@ export function elementStylingMap<T>(
   const lView = getLView();
   const tNode = getTNode(index, lView);
   const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
-  if (delegateToClassInput(tNode) && classes !== NO_CHANGE) {
-    const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+  if (hasClassInput(tNode) && classes !== NO_CHANGE) {
+    const initialClasses = getInitialClassNameValue(stylingContext);
     const classInputVal =
         (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
     setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+  } else {
+    updateStylingMap(stylingContext, classes, styles);
   }
-  updateStylingMap(stylingContext, classes, styles);
 }
 
 /* START OF HACK BLOCK */
-/*
- * HACK
- * The code below is a quick and dirty implementation of the host style binding so that we can make
- * progress on TestBed. Once the correct implementation is created this code should be removed.
- */
-interface HostStylingHack {
-  classDeclarations: string[];
-  styleDeclarations: string[];
-  styleSanitizer: StyleSanitizeFn|null;
-}
-type HostStylingHackMap = Map<{}, HostStylingHack>;
-
-function hackImplementationOfElementStyling(
-    classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer: StyleSanitizeFn | null, directive: {}): void {
-  const node = getNativeByTNode(getPreviousOrParentTNode(), getLView()) as RElement;
-  ngDevMode && assertDefined(node, 'expecting parent DOM node');
-  const hostStylingHackMap: HostStylingHackMap =
-      ((node as any).hostStylingHack || ((node as any).hostStylingHack = new Map()));
-  const squashedClassDeclarations = hackSquashDeclaration(classDeclarations);
-  hostStylingHackMap.set(directive, {
-    classDeclarations: squashedClassDeclarations,
-    styleDeclarations: hackSquashDeclaration(styleDeclarations), styleSanitizer
-  });
-  hackSetStaticClasses(node, squashedClassDeclarations);
-}
-
-function hackSetStaticClasses(node: RElement, classDeclarations: (string | boolean)[]) {
-  // Static classes need to be set here because static classes don't generate
-  // elementClassProp instructions.
-  const lView = getLView();
-  const staticClassStartIndex =
-      classDeclarations.indexOf(InitialStylingFlags.VALUES_MODE as any) + 1;
-  const renderer = lView[RENDERER];
-
-  for (let i = staticClassStartIndex; i < classDeclarations.length; i += 2) {
-    const className = classDeclarations[i] as string;
-    const value = classDeclarations[i + 1];
-    // if value is true, then this is a static class and we should set it now.
-    // class bindings are set separately in elementClassProp.
-    if (value === true) {
-      if (isProceduralRenderer(renderer)) {
-        renderer.addClass(node, className);
-      } else {
-        const classList = (node as HTMLElement).classList;
-        classList.add(className);
-      }
-    }
-  }
-}
-
-function hackSquashDeclaration(declarations: (string | boolean | InitialStylingFlags)[] | null):
-    string[] {
-  // assume the array is correct. This should be fine for View Engine compatibility.
-  return declarations || [] as any;
-}
-
-function hackImplementationOfElementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive: {}): void {
-  const lView = getLView();
-  const node = getNativeByIndex(index, lView);
-  ngDevMode && assertDefined(node, 'could not locate node');
-  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
-  const className = hostStylingHack.classDeclarations[classIndex];
-  const renderer = lView[RENDERER];
-  if (isProceduralRenderer(renderer)) {
-    value ? renderer.addClass(node, className) : renderer.removeClass(node, className);
-  } else {
-    const classList = (node as HTMLElement).classList;
-    value ? classList.add(className) : classList.remove(className);
-  }
-}
-
-function hackImplementationOfElementStylingApply(index: number, directive?: {}): void {
-  // Do nothing because the hack implementation is eager.
-}
-
-function hackImplementationOfElementStyleProp(
-    index: number, styleIndex: number, value: string | null, suffix?: string,
-    directive?: {}): void {
-  const lView = getLView();
-  const node = getNativeByIndex(index, lView);
-  ngDevMode && assertDefined(node, 'could not locate node');
-  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
-  const styleName = hostStylingHack.styleDeclarations[styleIndex];
-  const renderer = lView[RENDERER];
-  setStyle(node, styleName, value as string, renderer, null);
-}
-
 function hackImplementationOfElementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
-
 /* END OF HACK BLOCK */
+
 //////////////////////////
 //// Text
 //////////////////////////
@@ -2883,10 +2827,6 @@ function initializeTNodeInputs(tNode: TNode | null) {
     return tNode.inputs;
   }
   return null;
-}
-
-export function delegateToClassInput(tNode: TNode) {
-  return tNode.flags & TNodeFlags.hasClassInput;
 }
 
 

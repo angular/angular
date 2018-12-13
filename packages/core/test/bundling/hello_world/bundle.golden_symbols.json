@@ -27,10 +27,10 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "EMPTY"
+    "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_OBJ"
   },
   {
     "name": "EmptyErrorImpl"

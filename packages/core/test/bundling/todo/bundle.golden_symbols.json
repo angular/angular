@@ -45,10 +45,10 @@
     "name": "DefaultIterableDifferFactory"
   },
   {
-    "name": "EMPTY"
+    "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_OBJ"
   },
   {
     "name": "ElementRef"
@@ -85,6 +85,9 @@
   },
   {
     "name": "IterableDiffers"
+  },
+  {
+    "name": "LCONTAINER_LENGTH"
   },
   {
     "name": "MONKEY_PATCH_KEY_NAME"
@@ -321,19 +324,7 @@
     "name": "_c18"
   },
   {
-    "name": "_c19"
-  },
-  {
     "name": "_c2"
-  },
-  {
-    "name": "_c20"
-  },
-  {
-    "name": "_c21"
-  },
-  {
-    "name": "_c22"
   },
   {
     "name": "_c3"
@@ -372,6 +363,9 @@
     "name": "_symbolIterator"
   },
   {
+    "name": "_updateSingleStylingValue"
+  },
+  {
     "name": "addComponentLogic"
   },
   {
@@ -388,6 +382,9 @@
   },
   {
     "name": "allocStylingContext"
+  },
+  {
+    "name": "allowValueChange"
   },
   {
     "name": "appendChild"
@@ -492,9 +489,6 @@
     "name": "createRootContext"
   },
   {
-    "name": "createStylingContextTemplate"
-  },
-  {
     "name": "createTNode"
   },
   {
@@ -531,9 +525,6 @@
     "name": "defineInjectable"
   },
   {
-    "name": "delegateToClassInput"
-  },
-  {
     "name": "destroyLView"
   },
   {
@@ -553,6 +544,9 @@
   },
   {
     "name": "directiveInject"
+  },
+  {
+    "name": "directiveOwnerPointers"
   },
   {
     "name": "domRendererFactory3"
@@ -615,6 +609,9 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "findOrPatchDirectiveIntoRegistry"
+  },
+  {
     "name": "findViaComponent"
   },
   {
@@ -669,6 +666,15 @@
     "name": "getDirectiveDef"
   },
   {
+    "name": "getDirectiveIndexFromEntry"
+  },
+  {
+    "name": "getDirectiveIndexFromRegistry"
+  },
+  {
+    "name": "getDirectiveRegistryValuesIndexOf"
+  },
+  {
     "name": "getElementDepthCount"
   },
   {
@@ -687,7 +693,13 @@
     "name": "getHostTElementNode"
   },
   {
+    "name": "getInitialClassNameValue"
+  },
+  {
     "name": "getInitialIndex"
+  },
+  {
+    "name": "getInitialStylingValuesIndexOf"
   },
   {
     "name": "getInitialValue"
@@ -709,6 +721,9 @@
   },
   {
     "name": "getLViewChild"
+  },
+  {
+    "name": "getMatchingBindingIndex"
   },
   {
     "name": "getMultiOrSingleIndex"
@@ -792,6 +807,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getSinglePropIndexValue"
+  },
+  {
     "name": "getStyleSanitizer"
   },
   {
@@ -816,25 +834,16 @@
     "name": "getValue"
   },
   {
-    "name": "hackImplementationOfElementClassProp"
-  },
-  {
-    "name": "hackImplementationOfElementStyling"
-  },
-  {
-    "name": "hackImplementationOfElementStylingApply"
-  },
-  {
-    "name": "hackSetStaticClasses"
-  },
-  {
-    "name": "hackSquashDeclaration"
+    "name": "hasClassInput"
   },
   {
     "name": "hasParentInjector"
   },
   {
     "name": "hasPlayerBuilderChanged"
+  },
+  {
+    "name": "hasStyling"
   },
   {
     "name": "hasTagAndTypeMatch"
@@ -850,6 +859,9 @@
   },
   {
     "name": "initNodeFlags"
+  },
+  {
+    "name": "initializeStaticContext"
   },
   {
     "name": "initializeTNodeInputs"
@@ -910,6 +922,9 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirectiveDirty"
   },
   {
     "name": "isDirty"
@@ -1083,7 +1098,13 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderStyleAndClassBindings"
+    "name": "renderInitialStylesAndClasses"
+  },
+  {
+    "name": "renderInitialStylingValues"
+  },
+  {
+    "name": "renderStyling"
   },
   {
     "name": "resetComponentState"
@@ -1128,6 +1149,9 @@
     "name": "setCurrentDirectiveDef"
   },
   {
+    "name": "setDirectiveDirty"
+  },
+  {
     "name": "setDirty"
   },
   {
@@ -1165,6 +1189,9 @@
   },
   {
     "name": "setProp"
+  },
+  {
+    "name": "setSanitizeFlag"
   },
   {
     "name": "setStyle"
@@ -1215,7 +1242,7 @@
     "name": "updateClassProp"
   },
   {
-    "name": "updateStyleProp"
+    "name": "updateContextWithBindings"
   },
   {
     "name": "updateViewQuery"

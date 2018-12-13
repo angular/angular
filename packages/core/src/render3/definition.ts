@@ -9,22 +9,15 @@
 import './ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../di/provider';
 import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
 import {Mutable, Type} from '../type';
 import {noSideEffects, stringify} from '../util';
-
+import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {CssSelectorList} from './interfaces/projection';
 
-export const EMPTY: {} = {};
-export const EMPTY_ARRAY: any[] = [];
-if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-  Object.freeze(EMPTY);
-  Object.freeze(EMPTY_ARRAY);
-}
 let _renderCompCount = 0;
 
 /**
@@ -389,7 +382,7 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
 
  */
 function invertObject(obj: any, secondary?: any): any {
-  if (obj == null) return EMPTY;
+  if (obj == null) return EMPTY_OBJ;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {

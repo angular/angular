@@ -48,8 +48,8 @@ export {
 
   elementContainerStart,
   elementContainerEnd,
-
   elementStyling,
+  elementHostAttrs,
   elementStylingMap,
   elementStyleProp,
   elementStylingApply,
@@ -79,7 +79,7 @@ export {
 
   directiveInject,
   injectAttribute,
-  
+
   getCurrentView
 } from './instructions';
 

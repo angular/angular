@@ -23,6 +23,14 @@ export const VIEWS = 1;
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 6;
 export const RENDER_PARENT = 7;
+// Because interfaces in TS/JS cannot be instanceof-checked this means that we
+// need to rely on predictable characteristics of data-structures to check if they
+// are what we expect for them to be. The `LContainer` interface code below has a
+// fixed length and the constant value below references that. Using the length value
+// below we can predictably gaurantee that we are dealing with an `LContainer` array.
+// This value MUST be kept up to date with the length of the `LContainer` array
+// interface below so that runtime type checking can work.
+export const LCONTAINER_LENGTH = 8;
 
 /**
  * The state associated with a container.
