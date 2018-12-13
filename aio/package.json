@@ -165,5 +165,9 @@
     "webpack-cli": "^3.1.2",
     "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
+  },
+  "//resolutions": "Work-around for https://github.com/mozilla/nunjucks/issues/1176 when running `build-local`.",
+  "resolutions": {
+    "nunjucks": "3.1.4"
   }
 }
