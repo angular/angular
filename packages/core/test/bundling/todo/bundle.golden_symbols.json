@@ -684,6 +684,9 @@
     "name": "getHostNative"
   },
   {
+    "name": "getHostTElementNode"
+  },
+  {
     "name": "getInitialIndex"
   },
   {

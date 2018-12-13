@@ -725,16 +725,14 @@ class TestComp {
         expect(d.dependency).toBeNull();
       });
 
-      fixmeIvy('unknown').it(
-          'should instantiate directives that depends on the host component', () => {
-            TestBed.configureTestingModule(
-                {declarations: [SimpleComponent, NeedsComponentFromHost]});
-            TestBed.overrideComponent(
-                SimpleComponent, {set: {template: '<div needsComponentFromHost></div>'}});
-            const el = createComponent('<div simpleComponent></div>');
-            const d = el.children[0].children[0].injector.get(NeedsComponentFromHost);
-            expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
-          });
+      it('should instantiate directives that depends on the host component', () => {
+        TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsComponentFromHost]});
+        TestBed.overrideComponent(
+            SimpleComponent, {set: {template: '<div needsComponentFromHost></div>'}});
+        const el = createComponent('<div simpleComponent></div>');
+        const d = el.children[0].children[0].injector.get(NeedsComponentFromHost);
+        expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
+      });
 
       fixmeIvy('unknown').it(
           'should instantiate host views for components that have a @Host dependency ', () => {

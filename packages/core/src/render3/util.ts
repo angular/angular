@@ -13,7 +13,7 @@ import {ACTIVE_INDEX, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
-import {TContainerNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
@@ -259,4 +259,18 @@ export function addAllToArray(items: any[], arr: any[]) {
   for (let i = 0; i < items.length; i++) {
     arr.push(items[i]);
   }
+}
+
+/**
+ * Return the host TElementNode of the starting LView
+ * @param lView the starting LView.
+ */
+export function getHostTElementNode(lView: LView): TElementNode|null {
+  let parentTNode = lView[HOST_NODE];
+
+  while (parentTNode && parentTNode.type !== TNodeType.Element) {
+    lView = lView[DECLARATION_VIEW] !;
+    parentTNode = lView[HOST_NODE];
+  }
+  return parentTNode as TElementNode;
 }

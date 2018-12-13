@@ -1327,24 +1327,21 @@ function declareTests(config?: {useJit: boolean}) {
         expect(comp.injectable).toBeAnInstanceOf(InjectableService);
       });
 
-      fixmeIvy(
-          'FW-804: Injection of view providers with the @Host annotation works differently in ivy')
-          .it('should support viewProviders', () => {
-            TestBed.configureTestingModule({
-              declarations:
-                  [MyComp, DirectiveProvidingInjectableInView, DirectiveConsumingInjectable],
-              schemas: [NO_ERRORS_SCHEMA],
-            });
-            const template = `
+      it('should support viewProviders', () => {
+        TestBed.configureTestingModule({
+          declarations: [MyComp, DirectiveProvidingInjectableInView, DirectiveConsumingInjectable],
+          schemas: [NO_ERRORS_SCHEMA],
+        });
+        const template = `
               <directive-consuming-injectable #consuming>
               </directive-consuming-injectable>
           `;
-            TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
-            const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
+        TestBed.overrideComponent(DirectiveProvidingInjectableInView, {set: {template}});
+        const fixture = TestBed.createComponent(DirectiveProvidingInjectableInView);
 
-            const comp = fixture.debugElement.children[0].references !['consuming'];
-            expect(comp.injectable).toBeAnInstanceOf(InjectableService);
-          });
+        const comp = fixture.debugElement.children[0].references !['consuming'];
+        expect(comp.injectable).toBeAnInstanceOf(InjectableService);
+      });
 
       it('should support unbounded lookup', () => {
         TestBed.configureTestingModule({
