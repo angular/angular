@@ -28,7 +28,7 @@ export class DialogDemo {
     disableClose: false,
     panelClass: 'custom-overlay-pane-class',
     hasBackdrop: true,
-    backdropClass: defaultDialogConfig.backdropClass,
+    backdropClass: '',
     width: '',
     height: '',
     minWidth: '',

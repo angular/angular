@@ -32,7 +32,7 @@ export class MatBottomSheetConfig<D = any> {
   hasBackdrop?: boolean = true;
 
   /** Custom class for the backdrop. */
-  backdropClass?: string = 'mat-bottom-sheet-backdrop';
+  backdropClass?: string;
 
   /** Whether the user can use escape or clicking outside to close the bottom sheet. */
   disableClose?: boolean = false;

@@ -189,7 +189,7 @@ export class MatDialog implements OnDestroy {
    * @returns The overlay configuration.
    */
   private _getOverlayConfig(dialogConfig: MatDialogConfig): OverlayConfig {
-    const overlayConfig = new OverlayConfig({
+    const state = new OverlayConfig({
       positionStrategy: this._overlay.position().global(),
       scrollStrategy: dialogConfig.scrollStrategy || this._scrollStrategy(),
       panelClass: dialogConfig.panelClass,
@@ -203,10 +203,10 @@ export class MatDialog implements OnDestroy {
     });
 
     if (dialogConfig.backdropClass) {
-      overlayConfig.backdropClass = dialogConfig.backdropClass;
+      state.backdropClass = dialogConfig.backdropClass;
     }
 
-    return overlayConfig;
+    return state;
   }
 
   /**
