@@ -972,7 +972,8 @@ describe('@angular/common integration', () => {
                   text(0, 'from tpl');
                 }
               }, 1, 0, 'ng-template', undefined, ['tpl', ''], templateRefExtractor);
-              template(2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+              template(
+                  2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
               const tplRef = load(1);
