@@ -12,9 +12,9 @@ import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
-import {stringify} from '../../util';
-import {EMPTY_ARRAY} from '../definition';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
+import {stringify} from '../util';
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
@@ -153,8 +153,6 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     providers: metadata.providers || null,
   };
 }
-
-const EMPTY_OBJ = {};
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
   return typeof selector === 'string' ? splitByComma(selector) : selector;

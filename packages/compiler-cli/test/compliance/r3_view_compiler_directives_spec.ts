@@ -236,7 +236,7 @@ describe('compiler compliance: directives', () => {
 
       const MyComponentDefinition = `
         …
-        const $_c0$ = [1, "ngIf"];
+        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $_c1$ = ["directiveA", ""];
         function MyComponent_ng_container_Template_0(rf, ctx) {
           if (rf & 1) {

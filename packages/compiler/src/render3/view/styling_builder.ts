@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '../../constant_pool';
-import {InitialStylingFlags} from '../../core';
-import {AST, BindingType, ParseSpan} from '../../expression_parser/ast';
+import {AttributeMarker} from '../../core';
+import {AST, BindingType} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -63,7 +63,8 @@ interface BoundStylingEntry {
  * The creation/update methods within the builder class produce these instructions.
  */
 export class StylingBuilder {
-  public readonly hasBindingsOrInitialValues = false;
+  private _hasInitialValues = false;
+  private _hasBindings = false;
 
   private _classMapInput: BoundStylingEntry|null = null;
   private _styleMapInput: BoundStylingEntry|null = null;
@@ -75,12 +76,13 @@ export class StylingBuilder {
   // retain the ordering of the keys
   private _stylesIndex = new Map<string, number>();
   private _classesIndex = new Map<string, number>();
-  private _initialStyleValues: {[propName: string]: string} = {};
-  private _initialClassValues: {[className: string]: boolean} = {};
+  private _initialStyleValues: string[] = [];
+  private _initialClassValues: string[] = [];
   private _useDefaultSanitizer = false;
-  private _applyFnRequired = false;
 
   constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
+
+  get hasBindingsOrInitialValues() { return this._hasBindings || this._hasInitialValues; }
 
   registerBoundInput(input: t.BoundAttribute): boolean {
     // [attr.style] or [attr.class] are skipped in the code below,
@@ -117,14 +119,12 @@ export class StylingBuilder {
       (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
       this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(propertyName);
       registerIntoMap(this._stylesIndex, propertyName);
-      (this as any).hasBindingsOrInitialValues = true;
     } else {
       this._useDefaultSanitizer = true;
       this._styleMapInput = entry;
     }
     this._lastStylingInput = entry;
-    (this as any).hasBindingsOrInitialValues = true;
-    this._applyFnRequired = true;
+    this._hasBindings = true;
     return entry;
   }
 
@@ -133,102 +133,107 @@ export class StylingBuilder {
     const entry = { name: className, value, sourceSpan } as BoundStylingEntry;
     if (className) {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
-      (this as any).hasBindingsOrInitialValues = true;
       registerIntoMap(this._classesIndex, className);
     } else {
       this._classMapInput = entry;
     }
     this._lastStylingInput = entry;
-    (this as any).hasBindingsOrInitialValues = true;
-    this._applyFnRequired = true;
+    this._hasBindings = true;
     return entry;
   }
 
   registerStyleAttr(value: string) {
     this._initialStyleValues = parseStyle(value);
-    Object.keys(this._initialStyleValues).forEach(prop => {
-      registerIntoMap(this._stylesIndex, prop);
-      (this as any).hasBindingsOrInitialValues = true;
-    });
+    this._hasInitialValues = true;
   }
 
   registerClassAttr(value: string) {
-    this._initialClassValues = {};
-    value.split(/\s+/g).forEach(className => {
-      this._initialClassValues[className] = true;
-      registerIntoMap(this._classesIndex, className);
-      (this as any).hasBindingsOrInitialValues = true;
-    });
+    this._initialClassValues = value.split(/\s+/g);
+    this._hasInitialValues = true;
   }
 
-  private _buildInitExpr(registry: Map<string, number>, initialValues: {[key: string]: any}):
-      o.Expression|null {
+  private _buildInitAttrs(initialValues: string[], skipValues: boolean): o.Expression[] {
     const exprs: o.Expression[] = [];
-    const nameAndValueExprs: o.Expression[] = [];
-
-    // _c0 = [prop, prop2, prop3, ...]
-    registry.forEach((value, key) => {
-      const keyLiteral = o.literal(key);
-      exprs.push(keyLiteral);
-      const initialValue = initialValues[key];
-      if (initialValue) {
-        nameAndValueExprs.push(keyLiteral, o.literal(initialValue));
+    for (let i = 0; i < initialValues.length; i++) {
+      const prop = initialValues[i];
+      exprs.push(o.literal(prop));
+      if (!skipValues) {
+        exprs.push(o.literal(initialValues[++i]));
       }
-    });
+    }
+    return exprs;
+  }
 
-    if (nameAndValueExprs.length) {
-      // _c0 = [... MARKER ...]
-      exprs.push(o.literal(InitialStylingFlags.VALUES_MODE));
-      // _c0 = [prop, VALUE, prop2, VALUE2, ...]
-      exprs.push(...nameAndValueExprs);
+  populateStaticStylingAttrs(attrs: o.Expression[]): void {
+    const initialClasses = this._buildInitAttrs(this._initialClassValues, true);
+    if (initialClasses.length) {
+      attrs.push(o.literal(AttributeMarker.Classes));
+      attrs.push(...initialClasses);
     }
 
-    return exprs.length ? o.literalArr(exprs) : null;
+    const initialStyles = this._buildInitAttrs(this._initialStyleValues, false);
+    if (initialStyles.length) {
+      attrs.push(o.literal(AttributeMarker.Styles));
+      attrs.push(...initialStyles);
+    }
   }
 
-  buildCreateLevelInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
-      StylingInstruction|null {
-    if (this.hasBindingsOrInitialValues) {
-      const initialClasses = this._buildInitExpr(this._classesIndex, this._initialClassValues);
-      const initialStyles = this._buildInitExpr(this._stylesIndex, this._initialStyleValues);
-
-      // in the event that a [style] binding is used then sanitization will
-      // always be imported because it is not possible to know ahead of time
-      // whether style bindings will use or not use any sanitizable properties
-      // that isStyleSanitizable() will detect
-      const useSanitizer = this._useDefaultSanitizer;
-      const params: (o.Expression)[] = [];
-
-      if (initialClasses) {
-        // the template compiler handles initial class styling (e.g. class="foo") values
-        // in a special command called `elementClass` so that the initial class
-        // can be processed during runtime. These initial class values are bound to
-        // a constant because the inital class values do not change (since they're static).
-        params.push(constantPool.getConstLiteral(initialClasses, true));
-      } else if (initialStyles || useSanitizer || this._directiveExpr) {
-        // no point in having an extra `null` value unless there are follow-up params
-        params.push(o.NULL_EXPR);
-      }
-
-      if (initialStyles) {
-        // the template compiler handles initial style (e.g. style="foo") values
-        // in a special command called `elementStyle` so that the initial styles
-        // can be processed during runtime. These initial styles values are bound to
-        // a constant because the inital style values do not change (since they're static).
-        params.push(constantPool.getConstLiteral(initialStyles, true));
-      } else if (useSanitizer || this._directiveExpr) {
-        // no point in having an extra `null` value unless there are follow-up params
-        params.push(o.NULL_EXPR);
-      }
-
-      if (useSanitizer || this._directiveExpr) {
-        params.push(useSanitizer ? o.importExpr(R3.defaultStyleSanitizer) : o.NULL_EXPR);
-        if (this._directiveExpr) {
-          params.push(this._directiveExpr);
+  buildDirectivePatchStylingInstruction(
+      sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool): StylingInstruction|null {
+    if (this._hasInitialValues && this._directiveExpr) {
+      return {
+        sourceSpan,
+        reference: R3.elementHostAttrs,
+        buildParams: () => {
+          const attrs: o.Expression[] = [];
+          this.populateStaticStylingAttrs(attrs);
+          return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
         }
-      }
+      };
+    }
+    return null;
+  }
 
-      return {sourceSpan, reference: R3.elementStyling, buildParams: () => params};
+  buildelementStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
+      StylingInstruction|null {
+    if (this._hasBindings) {
+      return {
+        sourceSpan,
+        reference: R3.elementStyling,
+        buildParams: () => {
+          const styleBindingProps =
+              this._singleStyleInputs ? this._singleStyleInputs.map(i => o.literal(i.name)) : [];
+          const classBindingNames =
+              this._singleClassInputs ? this._singleClassInputs.map(i => o.literal(i.name)) : [];
+
+          let expectedNumberOfArgs = 0;
+          if (this._directiveExpr)
+            expectedNumberOfArgs = 4;
+          else if (this._useDefaultSanitizer)
+            expectedNumberOfArgs = 3;
+          else if (styleBindingProps.length)
+            expectedNumberOfArgs = 2;
+          else if (classBindingNames.length)
+            expectedNumberOfArgs = 1;
+
+          const params: o.Expression[] = [];
+          addParam(
+              params, classBindingNames.length > 0,
+              getConstantLiteralFromArray(constantPool, classBindingNames), 1,
+              expectedNumberOfArgs);
+          addParam(
+              params, styleBindingProps.length > 0,
+              getConstantLiteralFromArray(constantPool, styleBindingProps), 2,
+              expectedNumberOfArgs);
+          addParam(
+              params, this._useDefaultSanitizer, o.importExpr(R3.defaultStyleSanitizer), 3,
+              expectedNumberOfArgs);
+          if (this._directiveExpr) {
+            params.push(this._directiveExpr);
+          }
+          return params;
+        }
+      };
     }
     return null;
   }
@@ -334,16 +339,14 @@ export class StylingBuilder {
 
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: StylingInstruction[] = [];
-    if (this.hasBindingsOrInitialValues) {
+    if (this._hasBindings) {
       const mapInstruction = this._buildStylingMap(valueConverter);
       if (mapInstruction) {
         instructions.push(mapInstruction);
       }
       instructions.push(...this._buildStyleInputs(valueConverter));
       instructions.push(...this._buildClassInputs(valueConverter));
-      if (this._applyFnRequired) {
-        instructions.push(this._buildApplyFn());
-      }
+      instructions.push(this._buildApplyFn());
     }
     return instructions;
   }
@@ -362,4 +365,19 @@ function registerIntoMap(map: Map<string, number>, key: string) {
 function isStyleSanitizable(prop: string): boolean {
   return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
       prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
+}
+
+function getConstantLiteralFromArray(
+    constantPool: ConstantPool, values: o.Expression[]): o.Expression {
+  return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
+}
+
+function addParam(
+    params: o.Expression[], predicate: boolean, value: o.Expression, argNumber: number,
+    totalExpectedArgs: number) {
+  if (predicate) {
+    params.push(value);
+  } else if (argNumber < totalExpectedArgs) {
+    params.push(o.NULL_EXPR);
+  }
 }

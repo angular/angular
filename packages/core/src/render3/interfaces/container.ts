@@ -23,6 +23,9 @@ export const VIEWS = 1;
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 6;
 export const RENDER_PARENT = 7;
+// this value length MUST be kept up to date with the size of the LContainer array
+// interface below so that runtime type checking can work.
+export const LCONTAINER_LENGTH = 8;
 
 /**
  * The state associated with a container.

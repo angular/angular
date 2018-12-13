@@ -28,7 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
-import {StylingBuilder, StylingInstruction} from './styling';
+import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -710,9 +710,17 @@ function createHostBindingsFunction(
     }
 
     if (styleBuilder.hasBindingsOrInitialValues) {
-      const createInstruction = styleBuilder.buildCreateLevelInstruction(null, constantPool);
-      if (createInstruction) {
-        const createStmt = createStylingStmt(createInstruction, bindingContext, bindingFn);
+      const patchInstruction =
+          styleBuilder.buildDirectivePatchStylingInstruction(null, constantPool);
+      if (patchInstruction) {
+        const createStmt = createStylingStmt(patchInstruction, bindingContext, bindingFn);
+        createStatements.push(createStmt);
+      }
+
+      const stylingBindingInstruction =
+          styleBuilder.buildelementStylingInstruction(null, constantPool);
+      if (stylingBindingInstruction) {
+        const createStmt = createStylingStmt(stylingBindingInstruction, bindingContext, bindingFn);
         createStatements.push(createStmt);
       }
 

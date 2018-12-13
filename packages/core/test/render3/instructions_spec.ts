@@ -11,7 +11,6 @@ import {NgForOfContext} from '@angular/common';
 import {RenderFlags} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions';
-import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -28,10 +27,19 @@ describe('instructions', () => {
     elementEnd();
   }
 
-  function createDiv(initialStyles?: (string | number)[], styleSanitizer?: StyleSanitizeFn) {
-    elementStart(0, 'div');
-    elementStyling(
-        [], initialStyles && Array.isArray(initialStyles) ? initialStyles : null, styleSanitizer);
+  function createDiv(
+      initialClasses?: string[] | null, classBindingNames?: string[] | null,
+      initialStyles?: string[] | null, styleBindingNames?: string[] | null,
+      styleSanitizer?: StyleSanitizeFn) {
+    const attrs: any[] = [];
+    if (initialClasses) {
+      attrs.push(AttributeMarker.Classes, ...initialClasses);
+    }
+    if (initialStyles) {
+      attrs.push(AttributeMarker.Styles, ...initialStyles);
+    }
+    elementStart(0, 'div', attrs);
+    elementStyling(classBindingNames || null, styleBindingNames || null, styleSanitizer);
     elementEnd();
   }
 
@@ -191,8 +199,9 @@ describe('instructions', () => {
 
   describe('elementStyleProp', () => {
     it('should automatically sanitize unless a bypass operation is applied', () => {
-      const t = new TemplateFixture(
-          () => { return createDiv(['background-image'], defaultStyleSanitizer); }, () => {}, 1);
+      const t = new TemplateFixture(() => {
+        return createDiv(null, null, null, ['background-image'], defaultStyleSanitizer);
+      }, () => {}, 1);
       t.update(() => {
         elementStyleProp(0, 0, 'url("http://server")');
         elementStylingApply(0);
@@ -211,8 +220,9 @@ describe('instructions', () => {
     it('should not re-apply the style value even if it is a newly bypassed again', () => {
       const sanitizerInterceptor = new MockSanitizerInterceptor();
       const t = createTemplateFixtureWithSanitizer(
-          () => createDiv(['background-image'], sanitizerInterceptor.getStyleSanitizer()), 1,
-          sanitizerInterceptor);
+          () => createDiv(
+              null, null, null, ['background-image'], sanitizerInterceptor.getStyleSanitizer()),
+          1, sanitizerInterceptor);
 
       t.update(() => {
         elementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
@@ -232,8 +242,8 @@ describe('instructions', () => {
 
   describe('elementStyleMap', () => {
     function createDivWithStyle() {
-      elementStart(0, 'div');
-      elementStyling([], ['height', InitialStylingFlags.VALUES_MODE, 'height', '10px']);
+      elementStart(0, 'div', [AttributeMarker.Styles, 'height', '10px']);
+      elementStyling([], ['height']);
       elementEnd();
     }
 
@@ -251,7 +261,8 @@ describe('instructions', () => {
       const sanitizerInterceptor =
           new MockSanitizerInterceptor(value => { detectedValues.push(value); });
       const fixture = createTemplateFixtureWithSanitizer(
-          () => createDiv([], sanitizerInterceptor.getStyleSanitizer()), 1, sanitizerInterceptor);
+          () => createDiv(null, null, null, null, sanitizerInterceptor.getStyleSanitizer()), 1,
+          sanitizerInterceptor);
 
       fixture.update(() => {
         elementStylingMap(0, null, {

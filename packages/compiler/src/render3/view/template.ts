@@ -35,7 +35,7 @@ import {I18nContext} from './i18n/context';
 import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
 import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
-import {StylingBuilder, StylingInstruction} from './styling';
+import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
@@ -532,7 +532,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // this will build the instructions so that they fall into the following syntax
     // add attributes for directive matching purposes
-    attributes.push(...this.prepareSyntheticAndSelectOnlyAttrs(allOtherInputs, element.outputs));
+    attributes.push(...this.prepareSyntheticAndSelectOnlyAttrs(
+        allOtherInputs, element.outputs, stylingBuilder));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -616,10 +617,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         }
       }
 
-      // initial styling for static style="..." and class="..." attributes
+      // style bindings code
       this.processStylingInstruction(
           implicit,
-          stylingBuilder.buildCreateLevelInstruction(element.sourceSpan, this.constantPool), true);
+          stylingBuilder.buildelementStylingInstruction(element.sourceSpan, this.constantPool),
+          true);
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -934,8 +936,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
   }
 
-  private prepareSyntheticAndSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
-      o.Expression[] {
+  private prepareSyntheticAndSelectOnlyAttrs(
+      inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
+      styles?: StylingBuilder): o.Expression[] {
     const attrExprs: o.Expression[] = [];
     const nonSyntheticInputs: t.BoundAttribute[] = [];
 
@@ -952,6 +955,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           nonSyntheticInputs.push(input);
         }
       });
+    }
+
+    // it's important that this occurs before SelectOnly because of the marker
+    // ordering.
+    if (styles) {
+      styles.populateStaticStylingAttrs(attrExprs);
     }
 
     if (nonSyntheticInputs.length || outputs.length) {

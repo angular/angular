@@ -8,7 +8,7 @@
 
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation2, nextContext, reference, template, text, textBinding} from '../../src/render3/instructions';
-import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, createComponent, renderToHtml} from './render_util';
@@ -206,8 +206,8 @@ describe('exports', () => {
       /** <div [class.red]="myInput.checked"</div> <input type="checkbox" checked #myInput> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          elementStyling([InitialStylingFlags.VALUES_MODE, 'red', true]);
+          elementStart(0, 'div', [AttributeMarker.Classes, 'red']);
+          elementStyling(['red']);
           elementEnd();
           element(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
         }

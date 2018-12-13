@@ -92,6 +92,7 @@ export {
   elementContainerStart as ɵelementContainerStart,
   elementContainerEnd as ɵelementContainerEnd,
   elementStyling as ɵelementStyling,
+  elementHostAttrs as ɵelementHostAttrs,
   elementStylingMap as ɵelementStylingMap,
   elementStyleProp as ɵelementStyleProp,
   elementStylingApply as ɵelementStylingApply,
