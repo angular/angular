@@ -31,14 +31,13 @@ export class LoginComponent {
         let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/admin';
 
         // #docregion preserve
-        // Set our navigation extras object
-        // that passes on our global query params and fragment
+        // 전역 쿼리 파라미터와 프래그먼트를 NavigationExtras 객체타입으로 전달합니다.
         let navigationExtras: NavigationExtras = {
           queryParamsHandling: 'preserve',
           preserveFragment: true
         };
 
-        // Redirect the user
+        // 리다이렉트 합니다.
         this.router.navigate([redirect], navigationExtras);
         // #enddocregion preserve
       }

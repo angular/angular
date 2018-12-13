@@ -5527,35 +5527,53 @@ The relevant *Crisis Center* code for this milestone follows.
 
 {@a fragment}
 
-
+<!--
 ### Query parameters and fragments
+-->
+### 쿼리 파라미터와 프래그먼트 활용하기
 
+<!--
 In the [route parameters](#optional-route-parameters) example, you only dealt with parameters specific to
 the route, but what if you wanted optional parameters available to all routes?
 This is where query parameters come into play.
+-->
+[라우팅 변수](#optional-route-parameters) 예제에서 다뤘던 것처럼, 라우팅 규칙에는 변수를 할당할 수 있습니다. 그런데 라우팅 변수가 항상 존재하지 않고 생략될 수도 있는 상황이라면 어떻게 해야 할까요?
+이 섹션에서는 쿼리 파라미터를 사용하는 방법에 대해 알아봅시다.
 
+<!--
 [Fragments](https://en.wikipedia.org/wiki/Fragment_identifier) refer to certain elements on the page
 identified with an `id` attribute.
+-->
+[프래그먼트(fragments)](https://en.wikipedia.org/wiki/Fragment_identifier)은 현재 페이지에 존재하는 엘리먼트 중에서 특정 `id` 어트리뷰트에 해당하는 엘리먼트를 의미합니다.
 
+<!--
 Update the `AuthGuard` to provide a `session_id` query that will remain after navigating to another route.
 
 Add an `anchor` element so you can jump to a certain point on the page.
 
 Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
+-->
+`AuthGuard`가 다음번에 적용될 라우팅 규칙에 `session_id`를 제공할 수 있도록 수정해 봅시다.
 
+이 데이터는 `anchor` 엘리먼트에 적용되어 특정 페이지로 이동하는 용도로 사용할 것입니다.
+
+이렇게 구현하려면 `/login` 페이지로 이동하기 위해 `router.navigate` 메소드를 실행할 때 인자로 `NavigationExtras` 객체를 전달하면 됩니다.
 
 <code-example path="router/src/app/auth/auth.guard.4.ts" linenums="false" header="src/app/auth/auth.guard.ts (v3)">
 
 </code-example>
 
 
-
+<!--
 You can also preserve query parameters and fragments across navigations without having to provide them
 again when navigating. In the `LoginComponent`, you'll add an *object* as the
 second argument in the `router.navigate` function
 and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters
 and fragment to the next route.
-
+-->
+쿼리 파라미터와 프래그먼트는 보통 네비게이션 과정 중에 활용하지만, 네비게이션이 실행된 이후에 사용할 수 있도록 보관해 둘 수도 있습니다.
+이 동작은 `LoginComponent`에서 `router.navigate` 함수에 `NavigationExtras` 객체를 전달할 때 객체에 `queryParamsHandling` 프로퍼티와 `preserveFragment` 프로퍼티를 지정하면 됩니다.
+그러면 다음에 적용될 라우팅 규칙에 이 데이터를 활용할 수 있습니다.
 
 <code-example path="router/src/app/auth/login/login.component.ts" linenums="false" header="src/app/auth/login/login.component.ts (preserve)" region="preserve">
 
@@ -5564,44 +5582,56 @@ and fragment to the next route.
 <div class="alert is-helpful">
 
 
+<!--
 The `queryParamsHandling` feature also provides a `merge` option, which will preserve and combine the current query parameters with any provided query parameters
 when navigating.
-
+-->
+`queryParamsHandling`에는 `merge` 옵션을 사용할 수도 있습니다. 이 옵션을 사용하면 현재 시점에 존재하는 쿼리 파라미터와 새로 추가되는 쿼리 파라미터를 조합합니다.
 
 </div>
 
 
-
+<!--
 As you'll be navigating to the *Admin Dashboard* route after logging in, you'll update it to handle the
 query parameters and fragment.
-
+-->
+이제 사용자가 로그인한 후에 *관리자 대시보드*로 이동하면 이 쿼리 파라미터와 프래그먼트를 참조할 수 있습니다.
 
 <code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.1.ts" linenums="false" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (v2)">
 
 </code-example>
 
 
-
+<!--
 *Query parameters* and *fragments* are also available through the `ActivatedRoute` service.
 Just like *route parameters*, the query parameters and fragments are provided as an `Observable`.
 The updated *Crisis Admin* component feeds the `Observable` directly into the template using the `AsyncPipe`.
+-->
+*쿼리 파라미터*와 *프래그먼트*는 `ActivatedRoute` 서비스를 사용하는 방식으로도 참조할 수 있습니다.
+이 때 일반적인 *라우팅 변수*와 마찬가지로, 쿼리 파라미터와 프래그먼트도 `Observable` 타입으로 제공됩니다.
+그리고 컴포넌트에서는 `Observable` 타입의 데이터를 템플릿에서 `AsyncPipe`로 참조합니다.
 
-
+<!--
 Now, you can click on the *Admin* button, which takes you to the *Login*
 page with the provided `queryParamMap` and `fragment`. After you click the login button, notice that
 you have been redirected to the `Admin Dashboard` page with the query parameters and fragment still intact in the address bar.
+-->
+이제 사용자가 *Admin* 버튼을 클릭하면 *Login* 페이지로 이동하면서 `queryparamMap`과 `fragment`가 지정됩니다. 그리고 로그인 버튼을 클릭하면 관리자 대시보드 페이지로 리다이렉트 되는데, 이 때 쿼리 파라미터와 프래그먼트가 그대로 보존되는 것을 주소표시줄에서 확인할 수 있습니다.
 
+<!--
 You can use these persistent bits of information for things that need to be provided across pages like
 authentication tokens or session ids.
-
+-->
+이 방식은 페이지를 전환하는 동안 인증 토큰이나 세션 ID를 그대로 유지해야 할 때 활용할 수 있습니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The `query params` and `fragment` can also be preserved using a `RouterLink` with
 the `queryParamsHandling` and `preserveFragment` bindings respectively.
-
+-->
+`RouterLink`에 `queryParamsHandling`과 `preserveFragment`를 입력값으로 바인딩하는 방식으로도 사용할 수 있습니다.
 
 </div>
 

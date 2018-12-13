@@ -29,20 +29,19 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   checkLogin(url: string): boolean {
     if (this.authService.isLoggedIn) { return true; }
 
-    // Store the attempted URL for redirecting
+    // 리다이렉트할 URL을 저장해 둡니다.
     this.authService.redirectUrl = url;
 
-    // Create a dummy session id
+    // 더미 세션 ID를 생성합니다.
     let sessionId = 123456789;
 
-    // Set our navigation extras object
-    // that contains our global query params and fragment
+    // 전역 쿼리 파라미터와 프래그먼트를 NavigationExtras 객체타입으로 전달합니다.
     let navigationExtras: NavigationExtras = {
       queryParams: { 'session_id': sessionId },
       fragment: 'anchor'
     };
 
-    // Navigate to the login page with extras
+    // 로그인 페이지로 이동하면서 인자를 함께 전달합니다.
     this.router.navigate(['/login'], navigationExtras);
     return false;
   }
