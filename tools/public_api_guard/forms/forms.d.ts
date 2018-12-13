@@ -435,6 +435,16 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
+export declare class NumberValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: number): void;
+}
+
 export declare class PatternValidator implements Validator, OnChanges {
     pattern: string | RegExp;
     ngOnChanges(changes: SimpleChanges): void;
@@ -454,6 +464,16 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     ngOnInit(): void;
     registerOnChange(fn: (_: any) => {}): void;
     registerOnTouched(fn: () => {}): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: any): void;
+}
+
+export declare class RangeValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
