@@ -22,14 +22,13 @@ CONNECT_URL="https://saucelabs.com/downloads/sc-${SAUCE_CONNECT_VERSION}-linux.t
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 
-# logging disabled because it seems to be overwhelming travis and causing flakes
-# when we are cat-ing the log in print-logs.sh
-# CONNECT_LOG="$LOGS_DIR/sauce-connect"
-# CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
-# CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
+# We don't want to create a log file because sauceconnect always logs in verbose mode. This seems
+# to be overwhelming Travis and causing flakes when we are cat-ing the log in "print-logs.sh"
 CONNECT_LOG="/dev/null"
+
+# Even though the stdout of sauceconnect is not very verbose, we don't want to log this to
+# Travis because it will show up in between different travis log-output groups
 CONNECT_STDOUT="/dev/null"
-CONNECT_STDERR="/dev/null"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
@@ -52,10 +51,7 @@ if [ ! -z "$BROWSER_PROVIDER_READY_FILE" ]; then
 fi
 
 set -v
-echo "Starting Sauce Connect in the background, logging into:"
-echo "  $CONNECT_LOG"
-echo "  $CONNECT_STDOUT"
-echo "  $CONNECT_STDERR"
-sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS \
-  --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+echo "Starting Sauce Connect in the background."
+sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS --logfile $CONNECT_LOG \
+  > $CONNECT_STDOUT &
 set +v
