@@ -254,7 +254,6 @@ groups:
       files:
         include:
           - "packages/compiler-cli/*"
-          - "packages/bazel/*"
         exclude:
           - "packages/compiler-cli/src/ngtools*"
     users:
