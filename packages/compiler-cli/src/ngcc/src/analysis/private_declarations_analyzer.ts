@@ -7,10 +7,10 @@
  */
 import * as ts from 'typescript';
 
-import {ReferencesRegistry} from '../../../ngtsc/annotations';
 import {Declaration} from '../../../ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
+import {NgccReferencesRegistry} from './ngcc_references_registry';
 
 export interface ExportInfo {
   identifier: string;
@@ -24,7 +24,8 @@ export type PrivateDeclarationsAnalyses = ExportInfo[];
  * (i.e. on an NgModule) that are not publicly exported via an entry-point.
  */
 export class PrivateDeclarationsAnalyzer {
-  constructor(private host: NgccReflectionHost, private referencesRegistry: ReferencesRegistry) {}
+  constructor(
+      private host: NgccReflectionHost, private referencesRegistry: NgccReferencesRegistry) {}
 
   analyzeProgram(program: ts.Program): PrivateDeclarationsAnalyses {
     const rootFiles = this.getRootFiles(program);

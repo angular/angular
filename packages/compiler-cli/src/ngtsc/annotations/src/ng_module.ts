@@ -75,7 +75,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const expr = ngModule.get('declarations') !;
       const declarationMeta = this.evaluator.evaluate(expr);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
-      this.referencesRegistry.add(...declarations);
     }
     let imports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('imports')) {
@@ -83,7 +82,6 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const importsMeta = this.evaluator.evaluate(
           expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = this.resolveTypeList(expr, importsMeta, 'imports');
-      this.referencesRegistry.add(...imports);
     }
     let exports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('exports')) {
@@ -91,14 +89,13 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       const exportsMeta = this.evaluator.evaluate(
           expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
-      this.referencesRegistry.add(...exports);
+      this.referencesRegistry.add(node, ...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = this.evaluator.evaluate(expr);
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
-      this.referencesRegistry.add(...bootstrap);
     }
 
     // Register this module's information with the SelectorScopeRegistry. This ensures that during

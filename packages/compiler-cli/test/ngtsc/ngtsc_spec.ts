@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as ts from 'typescript';
+
 import {NgtscTestEnvironment} from './env';
 
 const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
@@ -1252,6 +1254,155 @@ describe('ngtsc behavioral tests', () => {
       const dtsContents = env.getContents('flat.d.ts');
       expect(dtsContents).toContain('/// <amd-module name="@mymodule" />');
     });
+
+    it('should report an error when a flat module index is requested but no entrypoint can be determined',
+       () => {
+         env.tsconfig({'flatModuleOutFile': 'flat.js'});
+         env.write('test.ts', 'export class Foo {}');
+         env.write('test2.ts', 'export class Bar {}');
+
+         const errors = env.driveDiagnostics();
+         expect(errors.length).toBe(1);
+         expect(errors[0].messageText)
+             .toBe(
+                 'Angular compiler option "flatModuleOutFile" requires one and only one .ts file in the "files" field.');
+       });
+
+    it('should report an error when a visible directive is not exported', () => {
+      env.tsconfig({'flatModuleOutFile': 'flat.js'});
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        // The directive is not exported.
+        @Directive({selector: 'test'})
+        class Dir {}
+
+        // The module is, which makes the directive visible.
+        @NgModule({declarations: [Dir], exports: [Dir]})
+        export class Module {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText)
+          .toBe(
+              'Unsupported private class Dir. This class is visible ' +
+              'to consumers via Module -> Dir, but is not exported from the top-level library ' +
+              'entrypoint.');
+
+      // Verify that the error is for the correct class.
+      const id = expectTokenAtPosition(errors[0].file !, errors[0].start !, ts.isIdentifier);
+      expect(id.text).toBe('Dir');
+      expect(ts.isClassDeclaration(id.parent)).toBe(true);
+    });
+
+    it('should report an error when a deeply visible directive is not exported', () => {
+      env.tsconfig({'flatModuleOutFile': 'flat.js'});
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        // The directive is not exported.
+        @Directive({selector: 'test'})
+        class Dir {}
+
+        // Neither is the module which declares it - meaning the directive is not visible here.
+        @NgModule({declarations: [Dir], exports: [Dir]})
+        class DirModule {}
+
+        // The module is, which makes the directive visible.
+        @NgModule({exports: [DirModule]})
+        export class Module {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(2);
+      expect(errors[0].messageText)
+          .toBe(
+              'Unsupported private class DirModule. This class is ' +
+              'visible to consumers via Module -> DirModule, but is not exported from the top-level ' +
+              'library entrypoint.');
+      expect(errors[1].messageText)
+          .toBe(
+              'Unsupported private class Dir. This class is visible ' +
+              'to consumers via Module -> DirModule -> Dir, but is not exported from the top-level ' +
+              'library entrypoint.');
+    });
+
+    it('should report an error when a deeply visible module is not exported', () => {
+      env.tsconfig({'flatModuleOutFile': 'flat.js'});
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        // The directive is exported.
+        @Directive({selector: 'test'})
+        export class Dir {}
+
+        // The module which declares it is not.
+        @NgModule({declarations: [Dir], exports: [Dir]})
+        class DirModule {}
+
+        // The module is, which makes the module and directive visible.
+        @NgModule({exports: [DirModule]})
+        export class Module {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText)
+          .toBe(
+              'Unsupported private class DirModule. This class is ' +
+              'visible to consumers via Module -> DirModule, but is not exported from the top-level ' +
+              'library entrypoint.');
+    });
+
+    it('should not report an error when a non-exported module is imported by a visible one', () => {
+      env.tsconfig({'flatModuleOutFile': 'flat.js'});
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        // The directive is not exported.
+        @Directive({selector: 'test'})
+        class Dir {}
+
+        // Neither is the module which declares it.
+        @NgModule({declarations: [Dir], exports: [Dir]})
+        class DirModule {}
+
+        // This module is, but it doesn't re-export the module, so it doesn't make the module and
+        // directive visible.
+        @NgModule({imports: [DirModule]})
+        export class Module {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
+
+    it('should not report an error when re-exporting an external symbol', () => {
+      env.tsconfig({'flatModuleOutFile': 'flat.js'});
+      env.write('test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+        import {ExternalModule} from 'external';
+
+        // This module makes ExternalModule and ExternalDir visible.
+        @NgModule({exports: [ExternalModule]})
+        export class Module {}
+      `);
+      env.write('node_modules/external/index.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+
+        export declare class ExternalDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+        }
+
+        export declare class ExternalModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+        }
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
   });
 
   it('should execute custom transformers', () => {
@@ -1282,3 +1433,11 @@ describe('ngtsc behavioral tests', () => {
   });
 
 });
+
+function expectTokenAtPosition<T extends ts.Node>(
+    sf: ts.SourceFile, pos: number, guard: (node: ts.Node) => node is T): T {
+  // getTokenAtPosition is part of TypeScript's private API.
+  const node = (ts as any).getTokenAtPosition(sf, pos) as ts.Node;
+  expect(guard(node)).toBe(true);
+  return node as T;
+}

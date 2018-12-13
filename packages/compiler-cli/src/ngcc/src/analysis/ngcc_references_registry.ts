@@ -29,7 +29,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Only `ResolveReference` references are stored. Other types are ignored.
    * @param references A collection of references to register.
    */
-  add(...references: Reference<ts.Declaration>[]): void {
+  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
     references.forEach(ref => {
       // Only store resolved references. We are not interested in literals.
       if (ref instanceof ResolvedReference && hasNameIdentifier(ref.node)) {
