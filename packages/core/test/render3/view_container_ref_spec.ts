@@ -1107,7 +1107,6 @@ describe('ViewContainerRef', () => {
           fixture.update();
 
           fixture.component.vcr.detach(fixture.component.vcr.indexOf(ref.hostView));
-          ref.hostView.reattach();
 
           expect(() => { ref.destroy(); }).not.toThrow();
 
