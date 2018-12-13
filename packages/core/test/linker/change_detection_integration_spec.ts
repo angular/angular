@@ -1472,26 +1472,28 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
         });
 
-        fixmeIvy('unknown').it(
-            'should dirty check projected views if the declaration place is dirty checked', () => {
-              ctx.detectChanges(false);
-              log = [];
-              innerComp.cdRef.detach();
-              mainComp.cdRef.detectChanges();
+        fixmeIvy(
+            'FW-842: View engine dirty-checks projected views when the declaration place is checked')
+            .it('should dirty check projected views if the declaration place is dirty checked',
+                () => {
+                  ctx.detectChanges(false);
+                  log = [];
+                  innerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
 
-              expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
+                  expect(log).toEqual(['main-start', 'outer-start', 'main-tpl', 'outer-tpl']);
 
-              log = [];
-              outerComp.cdRef.detectChanges();
+                  log = [];
+                  outerComp.cdRef.detectChanges();
 
-              expect(log).toEqual(['outer-start', 'outer-tpl']);
+                  expect(log).toEqual(['outer-start', 'outer-tpl']);
 
-              log = [];
-              outerComp.cdRef.detach();
-              mainComp.cdRef.detectChanges();
+                  log = [];
+                  outerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
 
-              expect(log).toEqual(['main-start', 'main-tpl']);
-            });
+                  expect(log).toEqual(['main-start', 'main-tpl']);
+                });
       });
     });
 
