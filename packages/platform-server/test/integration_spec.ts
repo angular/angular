@@ -589,18 +589,16 @@ class HiddenModule {
                 });
               }));
 
-      fixmeIvy(
-          `FW-643: Components with animations throw with "Failed to execute 'setAttribute' on 'Element'`)
-          .it('works with animation', async(() => {
-                renderModule(AnimationServerModule, {document: doc}).then(output => {
-                  expect(output).toContain('Works!');
-                  expect(output).toContain('ng-trigger-myAnimation');
-                  expect(output).toContain('opacity:1;');
-                  expect(output).toContain('transform:translate3d(0 , 0 , 0);');
-                  expect(output).toContain('font-weight:bold;');
-                  called = true;
-                });
-              }));
+      it('works with animation', async(() => {
+           renderModule(AnimationServerModule, {document: doc}).then(output => {
+             expect(output).toContain('Works!');
+             expect(output).toContain('ng-trigger-myAnimation');
+             expect(output).toContain('opacity:1;');
+             expect(output).toContain('transform:translate3d(0 , 0 , 0);');
+             expect(output).toContain('font-weight:bold;');
+             called = true;
+           });
+         }));
 
       it('should handle ViewEncapsulation.Native', async(() => {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
