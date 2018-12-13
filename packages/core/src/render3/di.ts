@@ -308,7 +308,7 @@ export function getOrCreateInjectable<T>(
     try {
       const value = bloomHash();
       if (value == null && !(flags & InjectFlags.Optional)) {
-        throw new Error(`No provider for ${stringify(token)}`);
+        throw new Error(`No provider for ${stringify(token)}!`);
       } else {
         return value;
       }
