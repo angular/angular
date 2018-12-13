@@ -371,8 +371,8 @@ describe('projection', () => {
   });
 
   if (getDOM().supportsNativeShadowDOM()) {
-    fixmeIvy('unknown').it(
-        'should support native content projection and isolate styles per component', () => {
+    fixmeIvy('FW-841: Content projection with ShadovDom v0 doesn\'t work')
+        .it('should support native content projection and isolate styles per component', () => {
           TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
           TestBed.overrideComponent(MainComp, {
             set: {
