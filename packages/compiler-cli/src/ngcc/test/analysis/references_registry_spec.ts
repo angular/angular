@@ -43,7 +43,7 @@ describe('NgccReferencesRegistry', () => {
     const registry = new NgccReferencesRegistry(host);
 
     const references = evaluator.evaluate(testArrayExpression) as Reference<ts.Declaration>[];
-    registry.add(...references);
+    registry.add(null !, ...references);
 
     const map = registry.getDeclarationMap();
     expect(map.size).toEqual(2);

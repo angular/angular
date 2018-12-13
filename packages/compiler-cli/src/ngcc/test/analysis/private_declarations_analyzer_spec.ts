@@ -137,15 +137,18 @@ describe('PrivateDeclarationsAnalyzer', () => {
          const publicComponentDeclaration =
              getDeclaration(program, '/src/a.js', 'PublicComponent', ts.isClassDeclaration);
          referencesRegistry.add(
+             null !,
              new ResolvedReference(publicComponentDeclaration, publicComponentDeclaration.name !));
          const privateComponentDeclaration =
              getDeclaration(program, '/src/b.js', 'PrivateComponent', ts.isClassDeclaration);
-         referencesRegistry.add(new ResolvedReference(
-             privateComponentDeclaration, privateComponentDeclaration.name !));
+         referencesRegistry.add(
+             null !, new ResolvedReference(
+                         privateComponentDeclaration, privateComponentDeclaration.name !));
          const internalComponentDeclaration =
              getDeclaration(program, '/src/c.js', 'InternalComponent', ts.isClassDeclaration);
-         referencesRegistry.add(new ResolvedReference(
-             internalComponentDeclaration, internalComponentDeclaration.name !));
+         referencesRegistry.add(
+             null !, new ResolvedReference(
+                         internalComponentDeclaration, internalComponentDeclaration.name !));
 
          const analyses = analyzer.analyzeProgram(program);
          expect(analyses.length).toEqual(2);

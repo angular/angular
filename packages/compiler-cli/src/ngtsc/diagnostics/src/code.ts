@@ -19,4 +19,13 @@ export enum ErrorCode {
   COMPONENT_MISSING_TEMPLATE = 2001,
   PIPE_MISSING_NAME = 2002,
   PARAM_MISSING_TOKEN = 2003,
+
+  SYMBOL_NOT_EXPORTED = 3001,
+  SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
+
+  CONFIG_FLAT_MODULE_NO_INDEX = 4001,
+}
+
+export function ngErrorCode(code: ErrorCode): number {
+  return parseInt('-99' + code);
 }
