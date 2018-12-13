@@ -13,7 +13,6 @@ import {TestBed, withModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
-import {fixmeIvy} from '@angular/private/testing';
 
 {
   describe(`View Providers`, () => {
@@ -138,36 +137,34 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        fixmeIvy(
-            'FW-807: NgModule injector doesn\'t report full search path if a token is not found')
-            .it('should not inject deps from sibling root elements', () => {
-              const rootElNodes = [
-                elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-                directiveDef(1, NodeFlags.None, null, 0, Dep, []),
-                elementDef(2, NodeFlags.None, null, null, 1, 'span'),
-                directiveDef(3, NodeFlags.None, null, 0, SomeService, [Dep]),
-              ];
+        it('should not inject deps from sibling root elements', () => {
+          const rootElNodes = [
+            elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(1, NodeFlags.None, null, 0, Dep, []),
+            elementDef(2, NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(3, NodeFlags.None, null, 0, SomeService, [Dep]),
+          ];
 
-              expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
-                  .toThrowError(
-                      'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
-                      '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
-                      '    NullInjectorError: No provider for Dep!');
+          expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
+              .toThrowError(
+                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
 
-              const nonRootElNodes = [
-                elementDef(0, NodeFlags.None, null, null, 4, 'span'),
-                elementDef(1, NodeFlags.None, null, null, 1, 'span'),
-                directiveDef(2, NodeFlags.None, null, 0, Dep, []),
-                elementDef(3, NodeFlags.None, null, null, 1, 'span'),
-                directiveDef(4, NodeFlags.None, null, 0, SomeService, [Dep]),
-              ];
+          const nonRootElNodes = [
+            elementDef(0, NodeFlags.None, null, null, 4, 'span'),
+            elementDef(1, NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(2, NodeFlags.None, null, 0, Dep, []),
+            elementDef(3, NodeFlags.None, null, null, 1, 'span'),
+            directiveDef(4, NodeFlags.None, null, 0, SomeService, [Dep]),
+          ];
 
-              expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
-                  .toThrowError(
-                      'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
-                      '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
-                      '    NullInjectorError: No provider for Dep!');
-            });
+          expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
+              .toThrowError(
+                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
+                  '    NullInjectorError: No provider for Dep!');
+        });
 
         it('should inject from a parent element in a parent view', () => {
           createAndGetRootNodes(compViewDef([
@@ -183,17 +180,16 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        fixmeIvy('FW-807: NgModule injector don\'t report full search path if a token is not found')
-            .it('should throw for missing dependencies', () => {
-              expect(() => createAndGetRootNodes(compViewDef([
-                       elementDef(0, NodeFlags.None, null, null, 1, 'span'),
-                       directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
-                     ])))
-                  .toThrowError(
-                      'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
-                      '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
-                      '    NullInjectorError: No provider for nonExistingDep!');
-            });
+        it('should throw for missing dependencies', () => {
+          expect(() => createAndGetRootNodes(compViewDef([
+                   elementDef(0, NodeFlags.None, null, null, 1, 'span'),
+                   directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
+                 ])))
+              .toThrowError(
+                  'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
+                  '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
+                  '    NullInjectorError: No provider for nonExistingDep!');
+        });
 
         it('should use null for optional missing dependencies', () => {
           createAndGetRootNodes(compViewDef([
