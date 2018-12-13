@@ -118,9 +118,6 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "//packages/router:npm_package",
     ],
-    tags = [
-        "fixme-ivy-aot",
-    ],
     deps = [
         ":ngtools_api_lib",
         "//packages/core",
