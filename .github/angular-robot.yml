@@ -39,18 +39,30 @@ merge:
       - "packages/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
-      - "packages/bazel/*.bzl"
+      - "packages/*"
+      - "packages/bazel/*"
+      - "packages/bazel/src/builders/**"
+      - "packages/bazel/src/ng_package/**"
+      - "packages/bazel/src/protractor/**"
+      - "packages/bazel/src/schematics/**"
+      - "packages/compiler-cli/src/ngcc/**"
+      - "packages/docs/**"
+      - "packages/elements/schematics/**"
+      - "packages/examples/**"
       - "packages/language-service/**"
+      - "packages/private/**"
+      - "packages/service-worker/**"
       - "**/.gitignore"
       - "**/.gitkeep"
+      - "**/yarn.lock"
       - "**/package.json"
       - "**/tsconfig-build.json"
       - "**/tsconfig.json"
       - "**/rollup.config.js"
       - "**/BUILD.bazel"
+      - "**/*.md"
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
-      - "packages/compiler-cli/src/ngcc/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
