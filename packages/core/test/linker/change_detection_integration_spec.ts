@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
@@ -589,8 +589,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
            }));
 
-        fixmeIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
-            .it('should call pure pipes that are used multiple times only when the arguments change',
+        modifiedInIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
+            .it('should call pure pipes that are used multiple times only when the arguments change and share state between pipe instances',
                 fakeAsync(() => {
                   const ctx = createCompFixture(
                       `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
@@ -613,6 +613,33 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
                     'mtv state:0', 'mtv state:1', 'a state:2', '10 state:3', '11 state:4'
                   ]);
                 }));
+
+        // this is the ivy version of the above tests - the difference is in pure pipe instantiation
+        // logic and binding execution order
+        ivyEnabled &&
+            it('should call pure pipes that are used multiple times only when the arguments change',
+               fakeAsync(() => {
+                 const ctx = createCompFixture(
+                     `<div [someProp]="name | countingPipe"></div><div [someProp]="age | countingPipe"></div>` +
+                         '<div *ngFor="let x of [1,2]" [someProp]="address.city | countingPipe"></div>',
+                     Person);
+                 ctx.componentInstance.name = 'a';
+                 ctx.componentInstance.age = 10;
+                 ctx.componentInstance.address = new Address('mtv');
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+                 ]);
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0'
+                 ]);
+                 ctx.componentInstance.age = 11;
+                 ctx.detectChanges(false);
+                 expect(renderLog.loggedValues).toEqual([
+                   'a state:0', '10 state:0', 'mtv state:0', 'mtv state:0', '11 state:1'
+                 ]);
+               }));
 
         it('should call impure pipes on each change detection run', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingImpurePipe', Person);
