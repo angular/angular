@@ -38,6 +38,7 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:

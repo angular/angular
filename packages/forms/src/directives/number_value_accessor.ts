@@ -38,6 +38,7 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector:
