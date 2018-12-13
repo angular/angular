@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
-import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomHasToken, bloomHashBitOrFactory as bloomHash, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
@@ -1066,8 +1066,12 @@ describe('di', () => {
 
       describe('@Host', () => {
         let dirA: DirA|null = null;
+        let dirString: DirString|null = null;
 
-        beforeEach(() => dirA = null);
+        beforeEach(() => {
+          dirA = null;
+          dirString = null;
+        });
 
         class DirA {
           constructor(@Host() public dirB: DirB) {}
@@ -1079,13 +1083,93 @@ describe('di', () => {
           });
         }
 
-        it('should not find providers across component boundaries', () => {
+        class DirString {
+          constructor(@Host() public s: String) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: DirString,
+            selectors: [['', 'dirString', '']],
+            factory: () => dirString = new DirString(directiveInject(String, InjectFlags.Host))
+          });
+        }
+
+        it('should find viewProviders on the host itself', () => {
+          /** <div dirString></div> */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirString', '']);
+            }
+          }, 1, 0, [DirString], [], null, [], [{provide: String, useValue: 'Foo'}]);
+
+          /* <comp></comp> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'comp');
+            }
+          }, 1, 0, [Comp]);
+
+          new ComponentFixture(App);
+          expect(dirString !.s).toEqual('Foo');
+        });
+
+        it('should find host component on the host itself', () => {
+          let dirComp: DirComp|null = null;
+
+          class DirComp {
+            constructor(@Host() public comp: any) {}
+
+            static ngDirectiveDef = defineDirective({
+              type: DirComp,
+              selectors: [['', 'dirCmp', '']],
+              factory: () => dirComp = new DirComp(directiveInject(Comp, InjectFlags.Host))
+            });
+          }
+
+          /** <div dirCmp></div> */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirCmp', '']);
+            }
+          }, 1, 0, [DirComp]);
+
+          /* <comp></comp> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'comp');
+            }
+          }, 1, 0, [Comp]);
+
+          new ComponentFixture(App);
+          expect(dirComp !.comp instanceof Comp).toBeTruthy();
+        });
+
+        it('should not find providers on the host itself', () => {
+          /** <div dirString></div> */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirString', '']);
+            }
+          }, 1, 0, [DirString], [], null, [{provide: String, useValue: 'Foo'}]);
+
+          /* <comp></comp> */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'comp');
+            }
+          }, 1, 0, [Comp]);
+
+          expect(() => {
+            new ComponentFixture(App);
+          }).toThrowError(/NodeInjector: NOT_FOUND \[String\]/);
+        });
+
+        it('should not find other directives on the host itself', () => {
           /** <div dirA></div> */
           const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               element(0, 'div', ['dirA', '']);
             }
-          }, 1, 0, [DirA, DirB]);
+          }, 1, 0, [DirA]);
 
           /* <comp dirB></comp> */
           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -1099,7 +1183,7 @@ describe('di', () => {
           }).toThrowError(/NodeInjector: NOT_FOUND \[DirB\]/);
         });
 
-        it('should not find providers across component boundaries if in inline view', () => {
+        it('should not find providers on the host itself if in inline view', () => {
           let comp !: any;
 
           /**
@@ -1176,6 +1260,154 @@ describe('di', () => {
           fixture.update();
 
           expect(dirA !.dirB).toEqual(dirB);
+        });
+
+        it('should not find component above the host', () => {
+          let dirComp: DirComp|null = null;
+
+          class DirComp {
+            constructor(@Host() public comp: any) {}
+
+            static ngDirectiveDef = defineDirective({
+              type: DirComp,
+              selectors: [['', 'dirCmp', '']],
+              factory: () => dirComp = new DirComp(directiveInject(App, InjectFlags.Host))
+            });
+          }
+
+          /** <div dirCmp></div> */
+          const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', ['dirCmp', '']);
+            }
+          }, 1, 0, [DirComp]);
+
+          /* <comp></comp> */
+          class App {
+            static ngComponentDef = defineComponent({
+              type: App,
+              selectors: [['app']],
+              consts: 1,
+              vars: 0,
+              factory: () => new App,
+              template: function(rf: RenderFlags, ctx: any) {
+                if (rf & RenderFlags.Create) {
+                  element(0, 'comp');
+                }
+              },
+              directives: [Comp],
+            });
+          }
+
+          expect(() => {
+            new ComponentFixture(App);
+          }).toThrowError(/NodeInjector: NOT_FOUND \[App\]/);
+        });
+
+        describe('regression', () => {
+          // based on https://stackblitz.com/edit/angular-riss8k?file=src/app/app.component.ts
+          it('should allow directives with Host flag to inject view providers from containing component',
+             () => {
+               let controlContainers: ControlContainer[] = [];
+               let injectedControlContainer: ControlContainer|null = null;
+
+               class ControlContainer {}
+
+               /*
+               @Directive({
+                 selector: '[group]',
+                 providers: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               */
+               class GroupDirective {
+                 constructor() { controlContainers.push(this); }
+
+                 static ngDirectiveDef = defineDirective({
+                   type: GroupDirective,
+                   selectors: [['', 'group', '']],
+                   factory: () => new GroupDirective(),
+                   features: [ProvidersFeature(
+                       [{provide: ControlContainer, useExisting: GroupDirective}])],
+                 });
+               }
+
+               // @Directive({selector: '[controlName]'})
+               class ControlNameDirective {
+                 constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent:
+                                 ControlContainer) {
+                   injectedControlContainer = parent;
+                 }
+
+                 static ngDirectiveDef = defineDirective({
+                   type: ControlNameDirective,
+                   selectors: [['', 'controlName', '']],
+                   factory: () => new ControlNameDirective(directiveInject(
+                                ControlContainer, InjectFlags.Host|InjectFlags.SkipSelf))
+                 });
+               }
+
+               /*
+               @Component({
+                 selector: 'child',
+                 template: `
+                   <input controlName type="text">
+                 `,
+                 viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               */
+               class ChildComponent {
+                 static ngComponentDef = defineComponent({
+                   type: ChildComponent,
+                   selectors: [['child']],
+                   consts: 1,
+                   vars: 0,
+                   factory: () => new ChildComponent(),
+                   template: function(rf: RenderFlags, ctx: ChildComponent) {
+                     if (rf & RenderFlags.Create) {
+                       element(0, 'input', ['controlName', '', 'type', 'text']);
+                     }
+                   },
+                   directives: [ControlNameDirective],
+                   features: [ProvidersFeature(
+                       [], [{provide: ControlContainer, useExisting: GroupDirective}])],
+                 });
+               }
+               /*
+               @Component({
+                 selector: 'my-app',
+                 template: `
+                   <div group>
+                     <child></child>
+                   </div>
+                 `
+               })
+               */
+               class AppComponent {
+                 static ngComponentDef = defineComponent({
+                   type: AppComponent,
+                   selectors: [['my-app']],
+                   consts: 2,
+                   vars: 0,
+                   factory: () => new AppComponent(),
+                   template: function(rf: RenderFlags, ctx: AppComponent) {
+                     if (rf & RenderFlags.Create) {
+                       elementStart(0, 'div', ['group', '']);
+                       element(1, 'child');
+                       elementEnd();
+                     }
+                   },
+                   directives: [ChildComponent, GroupDirective]
+                 });
+               }
+
+               const fixture = new ComponentFixture(AppComponent as ComponentType<AppComponent>);
+               expect(fixture.html)
+                   .toEqual(
+                       '<div group=""><child><input controlname="" type="text"></child></div>');
+
+               expect(controlContainers).toEqual([injectedControlContainer !]);
+
+             });
         });
       });
     });

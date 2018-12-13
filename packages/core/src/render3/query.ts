@@ -250,7 +250,8 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LView): any {
   if (typeof factoryFn === 'function') {
     return factoryFn();
   } else {
-    const matchingIdx = locateDirectiveOrProvider(tNode, currentView, read as Type<any>, false);
+    const matchingIdx =
+        locateDirectiveOrProvider(tNode, currentView, read as Type<any>, false, false);
     if (matchingIdx !== null) {
       return getNodeInjectable(
           currentView[TVIEW].data, currentView, matchingIdx, tNode as TElementNode);
@@ -304,7 +305,7 @@ function add(
       if (type === ViewEngine_TemplateRef) {
         result = queryByTemplateRef(type, tNode, currentView, predicate.read);
       } else {
-        const matchingIdx = locateDirectiveOrProvider(tNode, currentView, type, false);
+        const matchingIdx = locateDirectiveOrProvider(tNode, currentView, type, false, false);
         if (matchingIdx !== null) {
           result = queryRead(tNode, currentView, predicate.read, matchingIdx);
         }

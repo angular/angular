@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {Provider} from '@angular/core/src/di/provider';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
@@ -24,7 +25,7 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, ProvidersFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
@@ -295,7 +296,8 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
 export function createComponent(
     name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
-    viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
+    viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
+    viewProviders: Provider[] = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
@@ -307,7 +309,9 @@ export function createComponent(
       template: template,
       viewQuery: viewQuery,
       directives: directives,
-      pipes: pipes
+      pipes: pipes,
+      features: (providers.length > 0 || viewProviders.length > 0)?
+      [ProvidersFeature(providers || [], viewProviders || [])]: []
     });
   };
 }
