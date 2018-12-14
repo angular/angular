@@ -283,6 +283,8 @@ _collect_summaries_aspect = aspect(
 _EXTRA_NODE_OPTIONS_FLAGS = [
     # Expose the v8 garbage collection API to JS.
     "--node_options=--expose-gc",
+    # Show ~full stack traces, instead of cutting off after 10 items.
+    "--node_options=--stack-trace-limit=100",
 ]
 
 def ngc_compile_action(
