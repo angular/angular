@@ -101,6 +101,31 @@ let moduleUid = 0;
  *
  * </div>
  *
+ * ### Downgrading multiple modules
+ *
+ * It is possible to downgrade multiple modules and include them in an AngularJS application. In
+ * that case, each downgraded module will be bootstrapped when an associated downgraded component or
+ * injectable needs to be instantiated.
+ *
+ * Things to keep in mind, when downgrading multiple modules:
+ *
+ * - Each downgraded component/injectable needs to be explicitly associated with a downgraded
+ *   module. See `downgradeComponent()` and `downgradeInjectable()` for more details.
+ *
+ * - If you want some injectables to be shared among all downgraded modules, you can provide them as
+ *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser` or
+ *   `platformBrowserDynamic`).
+ *
+ * - When using {@link PlatformRef#bootstrapmodule `bootstrapModule()`} or
+ *   {@link PlatformRef#bootstrapmodulefactory `bootstrapModuleFactory()`} to bootstrap the
+ *   downgraded modules, each one is considered a "root" module. As a consequence, a new instance
+ *   will be created for every injectable provided in `"root"` (via
+ *   {@link Injectable#providedIn `providedIn`}).
+ *   If this is not your intention, you can have a shared module (that will act as act as the "root"
+ *   module) and create all downgraded modules using that module's injector:
+ *
+ *   {@example upgrade/static/ts/lite-multi-shared/module.ts region="shared-root-module"}
+ *
  * @publicApi
  */
 export function downgradeModule<T>(
