@@ -768,37 +768,35 @@ function declareTests(config?: {useJit: boolean}) {
         expect(childComponent.myHost).toBeAnInstanceOf(SomeDirective);
       });
 
-      fixmeIvy(
-          'FW-763: LView tree not properly constructed / destroyed for dynamically inserted components')
-          .it('should support events via EventEmitter on regular elements', async(() => {
-                TestBed.configureTestingModule(
-                    {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
-                const template = '<div emitter listener></div>';
-                TestBed.overrideComponent(MyComp, {set: {template}});
-                const fixture = TestBed.createComponent(MyComp);
+      it('should support events via EventEmitter on regular elements', async(() => {
+           TestBed.configureTestingModule(
+               {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]});
+           const template = '<div emitter listener></div>';
+           TestBed.overrideComponent(MyComp, {set: {template}});
+           const fixture = TestBed.createComponent(MyComp);
 
-                const tc = fixture.debugElement.children[0];
-                const emitter = tc.injector.get(DirectiveEmittingEvent);
-                const listener = tc.injector.get(DirectiveListeningEvent);
+           const tc = fixture.debugElement.children[0];
+           const emitter = tc.injector.get(DirectiveEmittingEvent);
+           const listener = tc.injector.get(DirectiveListeningEvent);
 
-                expect(listener.msg).toEqual('');
-                let eventCount = 0;
+           expect(listener.msg).toEqual('');
+           let eventCount = 0;
 
-                emitter.event.subscribe({
-                  next: () => {
-                    eventCount++;
-                    if (eventCount === 1) {
-                      expect(listener.msg).toEqual('fired !');
-                      fixture.destroy();
-                      emitter.fireEvent('fired again !');
-                    } else {
-                      expect(listener.msg).toEqual('fired !');
-                    }
-                  }
-                });
+           emitter.event.subscribe({
+             next: () => {
+               eventCount++;
+               if (eventCount === 1) {
+                 expect(listener.msg).toEqual('fired !');
+                 fixture.destroy();
+                 emitter.fireEvent('fired again !');
+               } else {
+                 expect(listener.msg).toEqual('fired !');
+               }
+             }
+           });
 
-                emitter.fireEvent('fired !');
-              }));
+           emitter.fireEvent('fired !');
+         }));
 
       fixmeIvy(
           'FW-665: Discovery util fails with Unable to find the given context data for the given target')
