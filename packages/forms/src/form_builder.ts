@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 
-import {AsyncValidator, Validator, AsyncValidatorFn, ValidatorFn} from './directives/validators';
+import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
 function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
@@ -59,7 +59,8 @@ export class FormBuilder {
     const controls = this._reduceControls(controlsConfig);
 
     let validators: Validator|Validator[]|ValidatorFn|ValidatorFn[]|null = null;
-    let asyncValidators: AsyncValidator|AsyncValidator[]|AsyncValidatorFn|AsyncValidatorFn[]|null = null;
+    let asyncValidators: AsyncValidator|AsyncValidator[]|AsyncValidatorFn|AsyncValidatorFn[]|null =
+        null;
     let updateOn: FormHooks|undefined = undefined;
 
     if (options != null) {
