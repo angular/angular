@@ -22,11 +22,10 @@ import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {createLView, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {addToViewTree, createLView, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {SanitizerFn} from './interfaces/sanitization';
 import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
@@ -169,6 +168,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
+
       tElementNode = getTNode(0, rootLView) as TElementNode;
 
       // Transform the arrays of native nodes into a structure that can be consumed by the
@@ -206,6 +206,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
+
+      addToViewTree(rootLView, HEADER_OFFSET, componentView);
 
       refreshDescendantViews(rootLView, RenderFlags.Create);
     } finally {

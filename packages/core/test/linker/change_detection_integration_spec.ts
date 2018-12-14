@@ -1104,77 +1104,70 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       });
 
       describe('ngOnDestroy', () => {
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
-            .it('should be called on view destruction', fakeAsync(() => {
-                  const ctx = createCompFixture('<div testDirective="dir"></div>');
-                  ctx.detectChanges(false);
+        it('should be called on view destruction', fakeAsync(() => {
+             const ctx = createCompFixture('<div testDirective="dir"></div>');
+             ctx.detectChanges(false);
 
-                  ctx.destroy();
+             ctx.destroy();
 
-                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
-                }));
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual(['dir.ngOnDestroy']);
+           }));
 
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
-            .it('should be called after processing the content and view children', fakeAsync(() => {
-                  TestBed.overrideComponent(AnotherComponent, {
-                    set: new Component({
-                      selector: 'other-cmp',
-                      template: '<div testDirective="viewChild"></div>'
-                    })
-                  });
+        it('should be called after processing the content and view children', fakeAsync(() => {
+             TestBed.overrideComponent(AnotherComponent, {
+               set: new Component(
+                   {selector: 'other-cmp', template: '<div testDirective="viewChild"></div>'})
+             });
 
-                  const ctx = createCompFixture(
-                      '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
-                          '<other-cmp></other-cmp></div>',
-                      TestComponent);
+             const ctx = createCompFixture(
+                 '<div testDirective="parent"><div *ngFor="let x of [0,1]" testDirective="contentChild{{x}}"></div>' +
+                     '<other-cmp></other-cmp></div>',
+                 TestComponent);
 
-                  ctx.detectChanges(false);
-                  ctx.destroy();
+             ctx.detectChanges(false);
+             ctx.destroy();
 
-                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                    'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy',
-                    'viewChild.ngOnDestroy', 'parent.ngOnDestroy'
-                  ]);
-                }));
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'contentChild0.ngOnDestroy', 'contentChild1.ngOnDestroy', 'viewChild.ngOnDestroy',
+               'parent.ngOnDestroy'
+             ]);
+           }));
 
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
-            .it('should be called in reverse order so the child is always notified before the parent',
-                fakeAsync(() => {
-                  const ctx = createCompFixture(
-                      '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
+        it('should be called in reverse order so the child is always notified before the parent',
+           fakeAsync(() => {
+             const ctx = createCompFixture(
+                 '<div testDirective="parent"><div testDirective="child"></div></div><div testDirective="sibling"></div>');
 
-                  ctx.detectChanges(false);
-                  ctx.destroy();
+             ctx.detectChanges(false);
+             ctx.destroy();
 
-                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                    'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
-                  ]);
-                }));
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'child.ngOnDestroy', 'parent.ngOnDestroy', 'sibling.ngOnDestroy'
+             ]);
+           }));
 
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
-            .it('should deliver synchronous events to parent', fakeAsync(() => {
-                  const ctx =
-                      createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
+        it('should deliver synchronous events to parent', fakeAsync(() => {
+             const ctx = createCompFixture('<div (destroy)="a=$event" onDestroyDirective></div>');
 
-                  ctx.detectChanges(false);
-                  ctx.destroy();
+             ctx.detectChanges(false);
+             ctx.destroy();
 
-                  expect(ctx.componentInstance.a).toEqual('destroyed');
-                }));
+             expect(ctx.componentInstance.a).toEqual('destroyed');
+           }));
 
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
-            .it('should call ngOnDestroy on pipes', fakeAsync(() => {
-                  const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
-                  ctx.detectChanges(false);
-                  ctx.destroy();
+        it('should call ngOnDestroy on pipes', fakeAsync(() => {
+             const ctx = createCompFixture('{{true | pipeWithOnDestroy }}');
 
-                  expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
-                    'pipeWithOnDestroy.ngOnDestroy'
-                  ]);
-                }));
+             ctx.detectChanges(false);
+             ctx.destroy();
 
-        fixmeIvy('FW-763: LView tree not properly constructed / destroyed')
+             expect(directiveLog.filter(['ngOnDestroy'])).toEqual([
+               'pipeWithOnDestroy.ngOnDestroy'
+             ]);
+           }));
+
+        fixmeIvy('FW-848: ngOnDestroy hooks are not called on providers')
             .it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
                   TestBed.overrideDirective(
                       TestDirective, {set: {providers: [InjectableWithLifecycle]}});

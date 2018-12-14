@@ -616,9 +616,8 @@ describe('Query API', () => {
           expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
         });
 
-    fixmeIvy(
-        'FW-763 - LView tree not properly constructed / destroyed for dynamically inserted components')
-        .it('should remove manually projected templates if their parent view is destroyed', () => {
+    fixmeIvy('unknown').it(
+        'should remove manually projected templates if their parent view is destroyed', () => {
           const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
           <div *ngIf="shouldShow">
