@@ -121,6 +121,9 @@ module.exports = config => {
     } else if (testPlatform === 'saucelabs') {
       config.sauceLabs.build = buildIdentifier;
       config.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+      // Setup the saucelabs reporter so that we report back to Saucelabs once
+      // our tests finished.
+      config.reporters.push('saucelabs');
     }
 
     const platformBrowsers = platformMap[testPlatform];

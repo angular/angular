@@ -6,7 +6,6 @@ tunnelFileName="sc-4.5.2-linux.tar.gz"
 tunnelUrl="https://saucelabs.com/downloads/${tunnelFileName}"
 
 tunnelTmpDir="/tmp/material-saucelabs"
-tunnelLogFile="${tunnelTmpDir}/saucelabs-connect.log"
 tunnelReadyFile="${tunnelTmpDir}/readyfile"
 tunnelPidFile="${tunnelTmpDir}/pidfile"
 
@@ -34,7 +33,6 @@ if [ ! -z "${CIRCLE_BUILD_NUM}" ]; then
   sauceArgs="${sauceArgs} --tunnel-identifier angular-material-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
 fi
 
-echo "Starting Sauce Connect in the background, logging into: ${tunnelLogFile}"
+echo "Starting Sauce Connect in the background. Passed arguments: ${sauceArgs}"
 
-sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs} 2>&1 >> \
-  ${tunnelLogFile} &
+sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs} &
