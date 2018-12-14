@@ -123,7 +123,7 @@ export const REQUIRED_VALIDATOR: StaticProvider = {
 
 /**
  * @description
- * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` mult-iprovider list.
+ * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` multi-provider list.
  */
 export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
@@ -165,7 +165,7 @@ export class RequiredValidator implements Validator {
 
   /**
    * @description
-   * Tracks changes to the required attribute bound to this directive is required.
+   * Tracks changes to the required attribute bound to this directive.
    */
   @Input()
   get required(): boolean|string { return this._required; }
@@ -177,8 +177,8 @@ export class RequiredValidator implements Validator {
 
   /**
    * @description
-   * Method that receives a control to validate against if required.
-   * Returns the validation result if required, otherwise null.
+   * Method that validates whether the control is empty.
+   * Returns the validation result if enabled, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
     return this.required ? Validators.required(control) : null;
@@ -223,8 +223,8 @@ export class RequiredValidator implements Validator {
 export class CheckboxRequiredValidator extends RequiredValidator {
   /**
    * @description
-   * Method that receives a control to validate against if required to be true.
-   * Returns the validation result if required, otherwise null.
+   * Method that validates whether or not the checkbox has been checked.
+   * Returns the validation result if enabled, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
     return this.required ? Validators.requiredTrue(control) : null;
@@ -251,7 +251,7 @@ export const EMAIL_VALIDATOR: any = {
  * 
  * ### Adding an email validator
  *
- * The following example shows how to add an email validator to an input attached to a ngModel binding.
+ * The following example shows how to add an email validator to an input attached to an ngModel binding.
  * 
  * ```
  * <input type="email" name="email" ngModel email>
@@ -285,7 +285,7 @@ export class EmailValidator implements Validator {
 
   /**
    * @description
-   * Method that receives a control to validate whether the email is valid.
+   * Method that validates whether an email address is valid.
    * Returns the validation result if enabled, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
@@ -303,7 +303,7 @@ export class EmailValidator implements Validator {
 
 /**
  * @description
- * Defines a function that receives a control and synchronously returns a map of
+ * A function that receives a control and synchronously returns a map of
  * validation errors if present, otherwise null.
  *
  * @publicApi
@@ -312,7 +312,7 @@ export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null
 
 /**
  * @description
- * Defines a function that receives a control and returns a Promise or observable
+ * A function that receives a control and returns a Promise or observable
  * that emits validation errors if present, otherwise null.
  *
  * @publicApi
@@ -387,7 +387,7 @@ export class MinLengthValidator implements Validator,
 
   /**
    * @description
-   * Method that receives a control to validate whether the value meets the minimum length
+   * Method that validates whether the value meets a minimum length
    * requirement. Returns the validation result if enabled, otherwise null.
    */
   validate(control: AbstractControl): ValidationErrors|null {
@@ -473,7 +473,7 @@ export class MaxLengthValidator implements Validator,
 
   /**
    * @description
-   * Method that receives a control to validate whether the value exceeds
+   * Method that validates whether the value exceeds
    * the maximum length requirement.
    */
   validate(control: AbstractControl): ValidationErrors|null {
@@ -541,7 +541,7 @@ export class PatternValidator implements Validator,
 
   /**
    * @description
-   * Tracks changes to the the pattern bound to this directive.
+   * Tracks changes to the pattern bound to this directive.
    */
   // TODO(issue/24571): remove '!'.
   @Input() pattern !: string | RegExp;
@@ -562,7 +562,7 @@ export class PatternValidator implements Validator,
 
   /**
    * @description
-   * Method that receives a control to validate whether the value matches the
+   * Method that validates whether the value matches the
    * the pattern requirement.
    */
   validate(control: AbstractControl): ValidationErrors|null { return this._validator(control); }
