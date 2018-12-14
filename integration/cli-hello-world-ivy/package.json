@@ -1,5 +1,5 @@
 {
-  "name": "cli-hello-world",
+  "name": "cli-hello-world-ivy",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -29,24 +29,24 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.10.3",
-    "@angular/cli": "7.0.3",
+    "@angular-devkit/build-angular": "~0.12.0-rc.0",
+    "@angular/cli": "~7.2.0-rc.0",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
-    "@types/jasmine": "~2.8.3",
-    "@types/jasminewd2": "~2.0.4",
-    "@types/node": "~6.0.60",
-    "codelyzer": "^4.3.0",
-    "jasmine-core": "~2.8.0",
+    "@types/node": "~8.9.4",
+    "@types/jasmine": "~2.8.8",
+    "@types/jasminewd2": "~2.0.3",
+    "codelyzer": "~4.5.0",
+    "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "~2.0.0",
+    "karma": "~3.1.1",
     "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "^1.2.1",
-    "karma-jasmine": "~1.1.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "file:../../node_modules/protractor",
-    "ts-node": "~4.1.0",
-    "tslint": "~5.9.1",
+    "ts-node": "~7.0.0",
+    "tslint": "~5.11.0",
     "typescript": "file:../../node_modules/typescript"
   }
 }

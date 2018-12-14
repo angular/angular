@@ -9,7 +9,7 @@ describe('cli-hello-world App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getParagraphText()).toEqual('Welcome to cli-hello-world-ivy!');
   });
 
   it('the percent pipe should work', () => {
