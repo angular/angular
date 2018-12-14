@@ -1,7 +1,8 @@
+import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
-import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
-import {CategorizedClassDoc, DeprecationDoc, HasDecoratorsDoc} from './dgeni-definitions';
+import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
+import {CategorizedClassDoc, DeprecationInfo, HasDecoratorsDoc} from './dgeni-definitions';
 
 export function isMethod(doc: MemberDoc) {
   return doc.hasOwnProperty('parameters') && !doc.isGetAccessor && !doc.isSetAccessor;
@@ -80,7 +81,7 @@ export function getBreakingChange(doc: any): string | null {
  * Decorates public exposed docs. Creates a property on the doc that indicates whether
  * the item is deprecated or not.
  */
-export function decorateDeprecatedDoc(doc: DeprecationDoc) {
+export function decorateDeprecatedDoc(doc: ApiDoc & DeprecationInfo) {
   doc.isDeprecated = isDeprecatedDoc(doc);
   doc.breakingChange = getBreakingChange(doc);
 

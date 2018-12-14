@@ -15,15 +15,15 @@ http_archive(
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.21.0.zip",
-  strip_prefix = "rules_typescript-0.21.0",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.0.zip",
+  strip_prefix = "rules_typescript-0.22.0",
 )
 
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  url = "https://github.com/angular/angular/archive/7.1.2.zip",
-  strip_prefix = "angular-7.1.2",
+  url = "https://github.com/angular/angular/archive/7.1.3.zip",
+  strip_prefix = "angular-7.1.3",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.

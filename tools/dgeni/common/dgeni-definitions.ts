@@ -1,4 +1,3 @@
-import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {ConstExportDoc} from 'dgeni-packages/typescript/api-doc-types/ConstExportDoc';
@@ -7,10 +6,10 @@ import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAl
 import {ParsedDecorator} from 'dgeni-packages/typescript/services/TsParser/getDecorators';
 import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
-import {NormalizedFunctionDoc} from './normalize-function-parameters';
+import {NormalizedFunctionParameters} from './normalize-function-parameters';
 
 /** Interface that describes categorized docs that can be deprecated. */
-export interface DeprecationDoc extends ApiDoc {
+export interface DeprecationInfo {
   isDeprecated: boolean;
   breakingChange: string | null;
 }
@@ -21,7 +20,7 @@ export interface HasDecoratorsDoc {
 }
 
 /** Extended Dgeni class-like document that includes separated class members. */
-export interface CategorizedClassLikeDoc extends ClassLikeExportDoc, DeprecationDoc {
+export interface CategorizedClassLikeDoc extends ClassLikeExportDoc, DeprecationInfo {
   methods: CategorizedMethodMemberDoc[];
   properties: CategorizedPropertyMemberDoc[];
 }
@@ -38,7 +37,7 @@ export interface CategorizedClassDoc extends ClassExportDoc, CategorizedClassLik
 }
 
 /** Extended Dgeni property-member document that includes extracted Angular metadata. */
-export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc, DeprecationDoc {
+export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc, DeprecationInfo {
   description: string;
   isDirectiveInput: boolean;
   isDirectiveOutput: boolean;
@@ -48,14 +47,14 @@ export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc, Depreca
 
 /** Extended Dgeni method-member document that simplifies logic for the Dgeni template. */
 export interface CategorizedMethodMemberDoc
-    extends NormalizedFunctionDoc, MethodMemberDoc, DeprecationDoc {}
+    extends NormalizedFunctionParameters, MethodMemberDoc, DeprecationInfo {}
 
 /** Extended Dgeni function export document that simplifies logic for the Dgeni template. */
 export interface CategorizedFunctionExportDoc
-    extends NormalizedFunctionDoc, FunctionExportDoc, DeprecationDoc {}
+    extends NormalizedFunctionParameters, FunctionExportDoc, DeprecationInfo {}
 
 /** Extended Dgeni const export document that simplifies logic for the Dgeni template. */
-export interface CategorizedConstExportDoc extends ConstExportDoc, DeprecationDoc {}
+export interface CategorizedConstExportDoc extends ConstExportDoc, DeprecationInfo {}
 
 /** Extended Dgeni type alias document that includes more information when rendering. */
-export interface CategorizedTypeAliasExportDoc extends TypeAliasExportDoc, DeprecationDoc {}
+export interface CategorizedTypeAliasExportDoc extends TypeAliasExportDoc, DeprecationInfo {}

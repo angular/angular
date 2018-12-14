@@ -4,7 +4,7 @@ import {
 } from 'dgeni-packages/typescript/api-doc-types/ParameterContainer';
 import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 
-export interface NormalizedFunctionDoc extends ParameterContainer, ApiDoc {
+export interface NormalizedFunctionParameters {
   params?: FunctionParameterInfo[];
 }
 
@@ -12,6 +12,12 @@ export interface FunctionParameterInfo extends ParamTag {
   type: string;
   isOptional: boolean;
 }
+
+/**
+ * Generic type that represents Dgeni method members and standalone functions. Also it the type
+ * combines the normalized function document so that we can update the doc with type checking.
+ */
+export type DefaultFunctionDoc = NormalizedFunctionParameters & ParameterContainer & ApiDoc;
 
 /**
  * The `parameters` property are the parameters extracted from TypeScript and are strings
@@ -23,7 +29,7 @@ export interface FunctionParameterInfo extends ParamTag {
  * We will use the `params` property to store the final normalized form since it is already
  * an object.
  */
-export function normalizeFunctionParameters(doc: NormalizedFunctionDoc) {
+export function normalizeFunctionParameters(doc: DefaultFunctionDoc) {
   if (doc.parameters) {
     doc.parameters.forEach(parameter => {
       let [parameterName, parameterType] = parameter.split(':');
