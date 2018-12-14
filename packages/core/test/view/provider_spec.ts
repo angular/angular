@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Observable} from 'rxjs';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectorRef, DoCheck, ElementRef, ErrorHandler, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, Renderer2, SimpleChange, TemplateRef, ViewContainerRef,} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ArgumentType, DepFlags, NodeFlags, Services, anchorDef, asElementData, directiveDef, elementDef, providerDef, textDef} from '@angular/core/src/view/index';
@@ -341,13 +342,11 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetR
         let unsubscribeSpy: any;
 
         class SomeService {
-          emitter = {
-            subscribe: (callback: any) => {
-              const subscription = emitter.subscribe(callback);
-              unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
-              return subscription;
-            }
-          };
+          emitter = new Observable((callback: any) => {
+            const subscription = emitter.subscribe(callback);
+            unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
+            return subscription;
+          });
         }
 
         const handleEvent = jasmine.createSpy('handleEvent');

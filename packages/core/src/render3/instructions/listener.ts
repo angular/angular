@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
+import {isObservable} from 'rxjs';
 import {assertDataInRange} from '../../util/assert';
-import {isObservable} from '../../util/lang';
 import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, RElement, Renderer3, isProceduralRenderer} from '../interfaces/renderer';
