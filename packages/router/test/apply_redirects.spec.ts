@@ -423,6 +423,25 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
           .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
+
+    it('should load config with named router outlet', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {
+        load: (injector: any, p: any) => {
+          if (injector !== testModule.injector) throw 'Invalid Injector';
+          return of (loadedConfig);
+        }
+      };
+      const config: Routes = [{path: 'a', outlet: 'outlet', loadChildren: 'children'}];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
+          .subscribe(
+              (r) => {
+                expectTreeToBe(r, '/a/b');
+                expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+              },
+              () => { throw 'Should not reach'; });
+    });
   });
 
   describe('empty paths', () => {
