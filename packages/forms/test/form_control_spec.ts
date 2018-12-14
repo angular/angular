@@ -9,9 +9,18 @@
 import {EventEmitter} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidator,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validator,
+  Validators
+} from '@angular/forms';
 
 import {FormArray} from '@angular/forms/src/model';
+import {Observable} from 'rxjs/index';
 
 (function() {
   function asyncValidator(expected: string, timeouts = {}) {
@@ -40,6 +49,18 @@ import {FormArray} from '@angular/forms/src/model';
   function otherAsyncValidator() { return Promise.resolve({'other': true}); }
 
   function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
+
+  class CustomRequiredValidator implements Validator {
+    validate(control: AbstractControl): ValidationErrors | null {
+      return Validators.required(control);
+    }
+  }
+
+  class CustomRequiredAsyncValidator implements AsyncValidator {
+    validate(control: AbstractControl): Promise<ValidationErrors|null> {
+      return Promise.resolve(Validators.required(control));
+    }
+  }
 
   describe('FormControl', () => {
     it('should default the value to null', () => {
@@ -178,6 +199,41 @@ import {FormArray} from '@angular/forms/src/model';
       it('should support arrays of validator functions if passed', () => {
         const c = new FormControl('value', [Validators.required, Validators.minLength(3)]);
         c.setValue('a');
+        expect(c.valid).toEqual(false);
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should run validator object with the initial value', () => {
+        const c = new FormControl(null, new CustomRequiredValidator);
+        expect(c.valid).toEqual(false);
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support arrays of validator objects if passed', () => {
+        const c = new FormControl('value', [new CustomRequiredValidator]);
+        c.setValue(null);
+        expect(c.valid).toEqual(false);
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support single validator object from options obj', () => {
+        const c = new FormControl('value', {validators: new CustomRequiredValidator});
+        c.setValue(null);
+        expect(c.valid).toEqual(false);
+
+        c.setValue('aaa');
+        expect(c.valid).toEqual(true);
+      });
+
+      it('should support arrays of validator objects if passed', () => {
+        const c = new FormControl('value', {asyncValidators: new CustomRequiredAsyncValidator});
+        c.setValue(null);
         expect(c.valid).toEqual(false);
 
         c.setValue('aaa');
