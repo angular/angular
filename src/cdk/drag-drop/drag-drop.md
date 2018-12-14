@@ -134,6 +134,16 @@ changed by setting the `orientation` property to `"horizontal".
 
 <!-- example(cdk-drag-drop-horizontal-sorting) -->
 
+### Restricting movement within an element
+
+If you want to stop the user from being able to drag a `cdkDrag` element outside of another element,
+you can pass a CSS selector to the `cdkDragBoundary` attribute. The attribute works by accepting a
+selector and looking up the DOM until it finds an element that matches it. If a match is found,
+it'll be used as the boundary outside of which the element can't be dragged. `cdkDragBoundary` can
+also be used when `cdkDrag` is placed inside a `cdkDropList`.
+
+<!-- example(cdk-drag-drop-boundary) -->
+
 ### Restricting movement along an axis
 By default, `cdkDrag` allows free movement in all directions. To restrict dragging to a
 specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `lockAxis` on `cdkDropList`
