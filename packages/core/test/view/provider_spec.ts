@@ -12,6 +12,7 @@ import {getDebugContext} from '@angular/core/src/errors';
 import {anchorDef, ArgumentType, asElementData, DepFlags, directiveDef, elementDef, NodeFlags, providerDef, Services, textDef} from '@angular/core/src/view/index';
 import {TestBed, withModule} from '@angular/core/testing';
 import {ivyEnabled} from '@angular/private/testing';
+import {Observable} from 'rxjs';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, compViewDefFactory, createAndGetRootNodes, createRootView} from './helper';
 
@@ -355,13 +356,11 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, compViewDefFacto
         let unsubscribeSpy: any;
 
         class SomeService {
-          emitter = {
-            subscribe: (callback: any) => {
-              const subscription = emitter.subscribe(callback);
-              unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
-              return subscription;
-            }
-          };
+          emitter = new Observable((callback: any) => {
+            const subscription = emitter.subscribe(callback);
+            unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
+            return subscription;
+          });
         }
 
         const handleEvent = jasmine.createSpy('handleEvent');
