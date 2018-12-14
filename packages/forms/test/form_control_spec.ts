@@ -194,29 +194,21 @@ import {FormArray} from '@angular/forms/src/model';
       });
 
       it('should run validator object with the initial value', () => {
-        const c = new FormControl(null, new CustomValidator);
+        const c = new FormControl('value', new CustomValidator);
         expect(c.valid).toEqual(false);
-
-        c.setValue('aaa');
-        expect(c.valid).toEqual(true);
+        expect(c.errors).toEqual({'sync': true});
       });
 
       it('should support arrays of validator objects if passed', () => {
         const c = new FormControl('value', [new CustomValidator]);
-        c.setValue(null);
         expect(c.valid).toEqual(false);
-
-        c.setValue('aaa');
-        expect(c.valid).toEqual(true);
+        expect(c.errors).toEqual({'sync': true});
       });
 
       it('should support single validator object from options obj', () => {
         const c = new FormControl('value', {validators: new CustomValidator});
-        c.setValue(null);
         expect(c.valid).toEqual(false);
-
-        c.setValue('aaa');
-        expect(c.valid).toEqual(true);
+        expect(c.errors).toEqual({'sync': true});
       });
 
       it('should support single validator from options obj', () => {
