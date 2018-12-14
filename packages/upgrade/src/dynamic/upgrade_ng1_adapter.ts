@@ -51,8 +51,9 @@ export class UpgradeNg1ComponentAdapterBuilder {
       constructor(
           @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
         super(
-            new UpgradeHelper(injector, name, elementRef), scope, self.template, self.inputs,
-            self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap) as any;
+            new UpgradeHelper(injector, name, elementRef, self.directive || undefined), scope,
+            self.template, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties,
+            self.propertyMap) as any;
       }
     }
     this.type = MyClass;
