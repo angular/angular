@@ -3336,7 +3336,8 @@ withEachNg1Version(() => {
          }));
 
 
-      fixmeIvy('FW-713: ngDestroy not being called when downgraded ng2 component is destroyed')
+      fixmeIvy(
+          'FW-843: destroy hooks are not registered on upgraded ng1 components contained in ng2 component templates under ivy')
           .it('should call `$onDestroy()` on controller', async(() => {
                 const controllerOnDestroyA = jasmine.createSpy('controllerOnDestroyA');
                 const controllerOnDestroyB = jasmine.createSpy('controllerOnDestroyB');
