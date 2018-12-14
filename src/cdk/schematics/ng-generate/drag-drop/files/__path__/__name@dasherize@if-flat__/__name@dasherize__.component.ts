@@ -11,8 +11,8 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
     <%= indentTextContent(resolvedFiles.stylesheet, 4) %>
   `],<% } else { %>
   styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>'],<% } %><% if(!!viewEncapsulation) { %>
-  encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } if (changeDetection !== 'Default') { %>,
-  changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
+  encapsulation: ViewEncapsulation.<%= viewEncapsulation %>,<% } if (changeDetection !== 'Default') { %>
+  changeDetection: ChangeDetectionStrategy.<%= changeDetection %>,<% } %>
 })
 export class <%= classify(name) %>Component {
   todo = [
