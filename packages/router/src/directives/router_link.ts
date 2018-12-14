@@ -87,7 +87,7 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * And later the value can be read from the router through `router.getCurrentNavigation.
+ * And later the value can be read from the router through `router.getCurrentNavigation`.
  * For example, to capture the `tracingId` above during the `NavigationStart` event:
  *
  * ```
