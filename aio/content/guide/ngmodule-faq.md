@@ -95,7 +95,7 @@ if your components have `[(ngModel)]` two-way binding expressions.
 Import _shared_ and _feature_ modules when this module's components incorporate their
 components, directives, and pipes.
 
-Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+Import [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) only in the root `AppModule`.
 
 <hr/>
 
