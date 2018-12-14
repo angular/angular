@@ -50,6 +50,7 @@ export async function promptForNewVersion(currentVersion: Version): Promise<Vers
     message: 'Should this be a pre-release?',
     // Prompt whether this should a pre-release if the current release is not a pre-release
     when: !currentVersion.prereleaseLabel,
+    default: false,
   }, {
     type: 'list',
     name: 'prereleaseLabel',

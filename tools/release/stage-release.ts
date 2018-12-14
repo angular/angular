@@ -5,6 +5,7 @@ import {prompt} from 'inquirer';
 import {join} from 'path';
 import {promptAndGenerateChangelog} from './changelog';
 import {GitClient} from './git/git-client';
+import {getGithubBranchCommitsUrl} from './git/github-urls';
 import {promptForNewVersion} from './prompt/new-version-prompt';
 import {parseVersionName, Version} from './version-name/parse-version';
 import {getExpectedPublishBranch} from './version-name/publish-branch';
@@ -93,7 +94,7 @@ class StageReleaseTask {
     this.switchToPublishBranch(expectedPublishBranch);
 
     this.verifyLocalCommitsMatchUpstream(expectedPublishBranch);
-    await this.verifyPassingGithubStatus();
+    await this.verifyPassingGithubStatus(expectedPublishBranch);
 
     const newVersionName = newVersion.format();
     const stagingBranch = `release-stage/${newVersionName}`;
@@ -195,8 +196,10 @@ class StageReleaseTask {
   }
 
   /** Verifies that the latest commit of the current branch is passing all Github statuses. */
-  private async verifyPassingGithubStatus() {
+  private async verifyPassingGithubStatus(expectedPublishBranch: string) {
     const commitRef = this.git.getLocalCommitSha('HEAD');
+    const githubCommitsUrl = getGithubBranchCommitsUrl(this.repositoryOwner, this.repositoryName,
+      expectedPublishBranch);
     const {state} = (await this.githubApi.repos.getCombinedStatusForRef({
       owner: this.repositoryOwner,
       repo: this.repositoryName,
@@ -206,10 +209,12 @@ class StageReleaseTask {
     if (state === 'failure') {
       console.error(red(`  ✘   Cannot stage release. Commit "${commitRef}" does not pass all ` +
         `github status checks. Please make sure this commit passes all checks before re-running.`));
+      console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
       process.exit(1);
     } else if (state === 'pending') {
       console.error(red(`  ✘   Cannot stage release yet. Commit "${commitRef}" still has ` +
         `pending github statuses that need to succeed before staging a release.`));
+      console.error(red(`      Please have a look at: ${githubCommitsUrl}`));
       process.exit(0);
     }
 
