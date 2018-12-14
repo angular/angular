@@ -360,7 +360,8 @@ import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, compViewDefFacto
               const subscription = emitter.subscribe(callback);
               unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
               return subscription;
-            }
+            },
+            lift: () => ({...this.emitter})
           };
         }
 
