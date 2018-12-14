@@ -718,13 +718,20 @@ function getBuiltinTypeFromTs(kind: BuiltinType, context: TypeContext): ts.Type 
           checker.getTypeAtLocation(setParents(<ts.Node>{kind: ts.SyntaxKind.NullKeyword}, node));
       break;
     case BuiltinType.Number:
-      const numeric = <ts.Node>{kind: ts.SyntaxKind.NumericLiteral};
+      const numeric = <ts.LiteralLikeNode>{
+        kind: ts.SyntaxKind.NumericLiteral,
+        text: node.getText(),
+      };
       setParents(<any>{kind: ts.SyntaxKind.ExpressionStatement, expression: numeric}, node);
       type = checker.getTypeAtLocation(numeric);
       break;
     case BuiltinType.String:
-      type = checker.getTypeAtLocation(
-          setParents(<ts.Node>{kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral}, node));
+      type = checker.getTypeAtLocation(setParents(
+          <ts.LiteralLikeNode>{
+            kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+            text: node.getText(),
+          },
+          node));
       break;
     case BuiltinType.Undefined:
       type = checker.getTypeAtLocation(setParents(
