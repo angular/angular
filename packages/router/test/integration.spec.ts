@@ -2487,6 +2487,43 @@ describe('Integration', () => {
              expect(guardRunCount).toEqual(3);
              expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
            })));
+
+        it('should allow a predicate function to determine when to run guards and resolvers',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, (from, to) => to.paramMap.get('p') === '2');
+
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
+
+             // First navigation has already run
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Adding `p` param shouldn't cause re-run
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Re-run should trigger on p=2
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+
+             // Any other changes don't pass the predicate
+             router.navigateByUrl('/a;p=3?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+
+             // Changing query params will re-run guards/resolvers
+             router.navigateByUrl('/a;p=3?q=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+           })));
       });
 
       describe('should wait for parent to complete', () => {
