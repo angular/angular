@@ -15,6 +15,5 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/core/src/interface",
-        "@npm//rxjs",
     ],
 )
