@@ -48,16 +48,19 @@ let flushingModuleQueue = false;
 export function flushModuleScopingQueueAsMuchAsPossible() {
   if (!flushingModuleQueue) {
     flushingModuleQueue = true;
-    for (let i = moduleQueue.length - 1; i >= 0; i--) {
-      const {moduleType, ngModule} = moduleQueue[i];
+    try {
+      for (let i = moduleQueue.length - 1; i >= 0; i--) {
+        const {moduleType, ngModule} = moduleQueue[i];
 
-      if (ngModule.declarations && ngModule.declarations.every(isResolvedDeclaration)) {
-        // dequeue
-        moduleQueue.splice(i, 1);
-        setScopeOnDeclaredComponents(moduleType, ngModule);
+        if (ngModule.declarations && ngModule.declarations.every(isResolvedDeclaration)) {
+          // dequeue
+          moduleQueue.splice(i, 1);
+          setScopeOnDeclaredComponents(moduleType, ngModule);
+        }
       }
+    } finally {
+      flushingModuleQueue = false;
     }
-    flushingModuleQueue = false;
   }
 }
 
@@ -278,6 +281,7 @@ let verifiedNgModule = new Map<NgModuleType<any>, boolean>();
 export function resetCompiledComponents(): void {
   ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
   verifiedNgModule = new Map<NgModuleType<any>, boolean>();
+  moduleQueue.length = 0;
 }
 
 /**
