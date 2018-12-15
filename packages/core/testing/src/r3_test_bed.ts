@@ -16,6 +16,16 @@ import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, Tes
 
 let _nextRootElementId = 0;
 
+const EMPTY_ARRAY: Type<any>[] = [];
+
+// Resolvers for Angular decorators
+type Resolvers = {
+  module: Resolver<NgModule>,
+  component: Resolver<Directive>,
+  directive: Resolver<Component>,
+  pipe: Resolver<Pipe>,
+};
+
 /**
  * @description
  * Configures and initializes environment for unit testing and provides methods for
@@ -322,12 +332,7 @@ export class TestBedRender3 implements Injector, TestBed {
    */
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
-    let injectableDef: InjectableDef<any>|null;
-    const isRoot =
-        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
-         injectableDef.providedIn === 'root');
-    const overrides = isRoot ? this._rootProviderOverrides : this._providerOverrides;
-
+    const overrides = this._getProviderOverridesBucket(token);
     if (provider.useFactory) {
       overrides.push({provide: token, useFactory: provider.useFactory, deps: provider.deps || []});
     } else {
@@ -387,8 +392,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
     const resolvers = this._getResolvers();
     const testModuleType = this._createTestModule();
-
-    compileNgModule(testModuleType, resolvers);
+    this._compileNgModule(testModuleType, resolvers);
 
     const parentInjector = this.platform.injector;
     this._moduleRef = new NgModuleRef(testModuleType, parentInjector);
@@ -397,6 +401,23 @@ export class TestBedRender3 implements Injector, TestBed {
     // to core. Cast it to any before accessing it.
     (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
     this._instantiated = true;
+  }
+
+  private _getProviderOverridesBucket(token: any): Provider[] {
+    let injectableDef: InjectableDef<any>|null;
+    const isRoot =
+        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
+         injectableDef.providedIn === 'root');
+    return isRoot ? this._rootProviderOverrides : this._providerOverrides;
+  }
+
+  // get overrides for a specific provider (if any)
+  private _getProviderOverride(provider: any) {
+    const token = typeof provider === 'object' && provider.hasOwnProperty('provide') ?
+        provider.provide :
+        provider;
+    const overrides = this._getProviderOverridesBucket(token);
+    return overrides.find((override: any) => override.provide === token);
   }
 
   // creates resolvers taking overrides into account
@@ -448,6 +469,154 @@ export class TestBedRender3 implements Injector, TestBed {
 
     return DynamicTestModule as NgModuleType;
   }
+
+  private _getMetaWithOverrides(meta: Component|Directive|NgModule) {
+    if (meta.providers && meta.providers.length) {
+      const hasOverrides =
+          meta.providers.some((provider: any) => !!this._getProviderOverride(provider));
+      if (hasOverrides) {
+        const providers =
+            meta.providers.map((provider: any) => this._getProviderOverride(provider) || provider);
+        return {...meta, providers};
+      }
+    }
+    return meta;
+  }
+
+  private _compileNgModule(moduleType: NgModuleType, resolvers: Resolvers): void {
+    const ngModule = resolvers.module.resolve(moduleType);
+
+    if (ngModule === null) {
+      throw new Error(`${stringify(moduleType)} has not @NgModule annotation`);
+    }
+
+    const metadata = this._getMetaWithOverrides(ngModule);
+    compileNgModuleDefs(moduleType, metadata);
+
+    const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
+    const compiledComponents: Type<any>[] = [];
+
+    // Compile the components, directives and pipes declared by this module
+    declarations.forEach(declaration => {
+      const component = resolvers.component.resolve(declaration);
+      if (component) {
+        const metadata = this._getMetaWithOverrides(component);
+        compileComponent(declaration, metadata);
+        compiledComponents.push(declaration);
+        return;
+      }
+
+      const directive = resolvers.directive.resolve(declaration);
+      if (directive) {
+        const metadata = this._getMetaWithOverrides(directive);
+        compileDirective(declaration, metadata);
+        return;
+      }
+
+      const pipe = resolvers.pipe.resolve(declaration);
+      if (pipe) {
+        compilePipe(declaration, pipe);
+        return;
+      }
+    });
+
+    // Compile transitive modules, components, directives and pipes
+    const transitiveScope = this._transitiveScopesFor(moduleType, resolvers);
+    compiledComponents.forEach(
+        cmp => patchComponentDefWithScope((cmp as any).ngComponentDef, transitiveScope));
+  }
+
+  /**
+   * Compute the pair of transitive scopes (compilation scope and exported scope) for a given
+   * module.
+   *
+   * This operation is memoized and the result is cached on the module's definition. It can be
+   * called
+   * on modules with components that have not fully compiled yet, but the result should not be
+   * used
+   * until they have.
+   */
+  private _transitiveScopesFor<T>(moduleType: Type<T>, resolvers: Resolvers):
+      NgModuleTransitiveScopes {
+    if (!isNgModule(moduleType)) {
+      throw new Error(`${moduleType.name} does not have an ngModuleDef`);
+    }
+    const def = moduleType.ngModuleDef;
+
+    if (def.transitiveCompileScopes !== null) {
+      return def.transitiveCompileScopes;
+    }
+
+    const scopes: NgModuleTransitiveScopes = {
+      compilation: {
+        directives: new Set<any>(),
+        pipes: new Set<any>(),
+      },
+      exported: {
+        directives: new Set<any>(),
+        pipes: new Set<any>(),
+      },
+    };
+
+    def.declarations.forEach(declared => {
+      const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
+
+      if (declaredWithDefs.ngPipeDef !== undefined) {
+        scopes.compilation.pipes.add(declared);
+      } else {
+        scopes.compilation.directives.add(declared);
+      }
+    });
+
+    def.imports.forEach(<I>(imported: NgModuleType) => {
+      const ngModule = resolvers.module.resolve(imported);
+
+      if (ngModule === null) {
+        throw new Error(`Importing ${imported.name} which does not have an @ngModule`);
+      } else {
+        this._compileNgModule(imported, resolvers);
+      }
+
+      // When this module imports another, the imported module's exported directives and pipes are
+      // added to the compilation scope of this module.
+      const importedScope = this._transitiveScopesFor(imported, resolvers);
+      importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
+      importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
+    });
+
+    def.exports.forEach(<E>(exported: Type<E>) => {
+      const exportedTyped = exported as Type<E>& {
+        // Components, Directives, NgModules, and Pipes can all be exported.
+        ngComponentDef?: any;
+        ngDirectiveDef?: any;
+        ngModuleDef?: NgModuleDef<E>;
+        ngPipeDef?: any;
+      };
+
+      // Either the type is a module, a pipe, or a component/directive (which may not have an
+      // ngComponentDef as it might be compiled asynchronously).
+      if (isNgModule(exportedTyped)) {
+        // When this module exports another, the exported module's exported directives and pipes are
+        // added to both the compilation and exported scopes of this module.
+        const exportedScope = this._transitiveScopesFor(exportedTyped, resolvers);
+        exportedScope.exported.directives.forEach(entry => {
+          scopes.compilation.directives.add(entry);
+          scopes.exported.directives.add(entry);
+        });
+        exportedScope.exported.pipes.forEach(entry => {
+          scopes.compilation.pipes.add(entry);
+          scopes.exported.pipes.add(entry);
+        });
+      } else if (exportedTyped.ngPipeDef !== undefined) {
+        scopes.exported.pipes.add(exportedTyped);
+      } else {
+        scopes.exported.directives.add(exportedTyped);
+      }
+    });
+
+    def.transitiveCompileScopes = scopes;
+    return scopes;
+  }
 }
 
 let testBed: TestBedRender3;
@@ -458,157 +627,16 @@ export function _getTestBedRender3(): TestBedRender3 {
 
 const OWNER_MODULE = '__NG_MODULE__';
 /**
- * This function clears the OWNER_MODULE property from the Types. This is set in r3/jit/modules.ts.
- * It is common for the same Type to be compiled in different tests. If we don't clear this we will
+ * This function clears the OWNER_MODULE property from the Types. This is set in
+ * r3/jit/modules.ts.
+ * It is common for the same Type to be compiled in different tests. If we don't clear this we
+ * will
  * get errors which will complain that the same Component/Directive is in more than one NgModule.
  */
 function clearNgModules(type: Type<any>) {
   if (type.hasOwnProperty(OWNER_MODULE)) {
     (type as any)[OWNER_MODULE] = undefined;
   }
-}
-
-
-// Module compiler
-
-const EMPTY_ARRAY: Type<any>[] = [];
-
-// Resolvers for Angular decorators
-type Resolvers = {
-  module: Resolver<NgModule>,
-  component: Resolver<Directive>,
-  directive: Resolver<Component>,
-  pipe: Resolver<Pipe>,
-};
-
-function compileNgModule(moduleType: NgModuleType, resolvers: Resolvers): void {
-  const ngModule = resolvers.module.resolve(moduleType);
-
-  if (ngModule === null) {
-    throw new Error(`${stringify(moduleType)} has not @NgModule annotation`);
-  }
-
-  compileNgModuleDefs(moduleType, ngModule);
-
-  const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
-
-  const compiledComponents: Type<any>[] = [];
-
-  // Compile the components, directives and pipes declared by this module
-  declarations.forEach(declaration => {
-    const component = resolvers.component.resolve(declaration);
-    if (component) {
-      compileComponent(declaration, component);
-      compiledComponents.push(declaration);
-      return;
-    }
-
-    const directive = resolvers.directive.resolve(declaration);
-    if (directive) {
-      compileDirective(declaration, directive);
-      return;
-    }
-
-    const pipe = resolvers.pipe.resolve(declaration);
-    if (pipe) {
-      compilePipe(declaration, pipe);
-      return;
-    }
-  });
-
-  // Compile transitive modules, components, directives and pipes
-  const transitiveScope = transitiveScopesFor(moduleType, resolvers);
-  compiledComponents.forEach(
-      cmp => patchComponentDefWithScope((cmp as any).ngComponentDef, transitiveScope));
-}
-
-/**
- * Compute the pair of transitive scopes (compilation scope and exported scope) for a given module.
- *
- * This operation is memoized and the result is cached on the module's definition. It can be called
- * on modules with components that have not fully compiled yet, but the result should not be used
- * until they have.
- */
-function transitiveScopesFor<T>(
-    moduleType: Type<T>, resolvers: Resolvers): NgModuleTransitiveScopes {
-  if (!isNgModule(moduleType)) {
-    throw new Error(`${moduleType.name} does not have an ngModuleDef`);
-  }
-  const def = moduleType.ngModuleDef;
-
-  if (def.transitiveCompileScopes !== null) {
-    return def.transitiveCompileScopes;
-  }
-
-  const scopes: NgModuleTransitiveScopes = {
-    compilation: {
-      directives: new Set<any>(),
-      pipes: new Set<any>(),
-    },
-    exported: {
-      directives: new Set<any>(),
-      pipes: new Set<any>(),
-    },
-  };
-
-  def.declarations.forEach(declared => {
-    const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
-
-    if (declaredWithDefs.ngPipeDef !== undefined) {
-      scopes.compilation.pipes.add(declared);
-    } else {
-      scopes.compilation.directives.add(declared);
-    }
-  });
-
-  def.imports.forEach(<I>(imported: NgModuleType) => {
-    const ngModule = resolvers.module.resolve(imported);
-
-    if (ngModule === null) {
-      throw new Error(`Importing ${imported.name} which does not have an @ngModule`);
-    } else {
-      compileNgModule(imported, resolvers);
-    }
-
-    // When this module imports another, the imported module's exported directives and pipes are
-    // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(imported, resolvers);
-    importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
-    importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
-  });
-
-  def.exports.forEach(<E>(exported: Type<E>) => {
-    const exportedTyped = exported as Type<E>& {
-      // Components, Directives, NgModules, and Pipes can all be exported.
-      ngComponentDef?: any;
-      ngDirectiveDef?: any;
-      ngModuleDef?: NgModuleDef<E>;
-      ngPipeDef?: any;
-    };
-
-    // Either the type is a module, a pipe, or a component/directive (which may not have an
-    // ngComponentDef as it might be compiled asynchronously).
-    if (isNgModule(exportedTyped)) {
-      // When this module exports another, the exported module's exported directives and pipes are
-      // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedTyped, resolvers);
-      exportedScope.exported.directives.forEach(entry => {
-        scopes.compilation.directives.add(entry);
-        scopes.exported.directives.add(entry);
-      });
-      exportedScope.exported.pipes.forEach(entry => {
-        scopes.compilation.pipes.add(entry);
-        scopes.exported.pipes.add(entry);
-      });
-    } else if (exportedTyped.ngPipeDef !== undefined) {
-      scopes.exported.pipes.add(exportedTyped);
-    } else {
-      scopes.exported.directives.add(exportedTyped);
-    }
-  });
-
-  def.transitiveCompileScopes = scopes;
-  return scopes;
 }
 
 function flatten<T>(values: any[]): T[] {
