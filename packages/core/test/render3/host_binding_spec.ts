@@ -84,7 +84,7 @@ describe('host bindings', () => {
 
   it('should support host bindings in directives', () => {
     let directiveInstance: Directive|undefined;
-
+    const elementIndices: number[] = [];
     class Directive {
       // @HostBinding('className')
       klass = 'foo';
@@ -94,6 +94,7 @@ describe('host bindings', () => {
         selectors: [['', 'dir', '']],
         factory: () => directiveInstance = new Directive,
         hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+          elementIndices.push(elementIndex);
           if (rf & RenderFlags.Create) {
             allocHostVars(1);
           }
@@ -112,15 +113,46 @@ describe('host bindings', () => {
     directiveInstance !.klass = 'bar';
     fixture.update();
     expect(fixture.html).toEqual('<span class="bar"></span>');
+
+    // verify that we always call `hostBindings` function with the same element index
+    expect(elementIndices.every(id => id === elementIndices[0])).toBeTruthy();
   });
 
   it('should support host bindings on root component', () => {
+    const elementIndices: number[] = [];
+
+    class HostBindingComp {
+      // @HostBinding()
+      id = 'my-id';
+
+      static ngComponentDef = defineComponent({
+        type: HostBindingComp,
+        selectors: [['host-binding-comp']],
+        factory: () => new HostBindingComp(),
+        consts: 0,
+        vars: 0,
+        hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
+          elementIndices.push(elIndex);
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(ctx.id));
+          }
+        },
+        template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+      });
+    }
+
     const fixture = new ComponentFixture(HostBindingComp);
     expect(fixture.hostElement.id).toBe('my-id');
 
     fixture.component.id = 'other-id';
     fixture.update();
     expect(fixture.hostElement.id).toBe('other-id');
+
+    // verify that we always call `hostBindings` function with the same element index
+    expect(elementIndices.every(id => id === elementIndices[0])).toBeTruthy();
   });
 
   it('should support host bindings on nodes with providers', () => {
