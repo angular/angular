@@ -27,9 +27,13 @@ abstract class OverrideResolver<T> implements Resolver<T> {
 
   abstract get type(): any;
 
+  addOverrides(overrides: Array<[Type<any>, MetadataOverride<T>]>) {
+    overrides.forEach(([type, override]) => this.overrides.set(type, override));
+  }
+
   setOverrides(overrides: Array<[Type<any>, MetadataOverride<T>]>) {
     this.overrides.clear();
-    overrides.forEach(([type, override]) => this.overrides.set(type, override));
+    this.addOverrides(overrides);
   }
 
   getAnnotation(type: Type<any>): T|null {

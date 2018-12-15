@@ -7,7 +7,7 @@
  */
 import {Provider} from '../../di/provider';
 import {providersResolver} from '../di_setup';
-import {DirectiveDef} from '../interfaces/definition';
+import {DirectiveDef, ProvidersResolverFunction} from '../interfaces/definition';
 
 /**
  * This feature resolves the providers of a directive (or component),
@@ -39,7 +39,8 @@ import {DirectiveDef} from '../interfaces/definition';
  */
 export function ProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
   return (definition: DirectiveDef<T>) => {
-    definition.providersResolver = (def: DirectiveDef<T>) =>
-        providersResolver(def, providers, viewProviders);
+    definition.providersResolver =
+        (def: DirectiveDef<T>, resolver: ProvidersResolverFunction<T> = providersResolver) =>
+            resolver(def, providers, viewProviders);
   };
 }

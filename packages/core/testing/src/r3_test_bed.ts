@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵComponentDef as ComponentDef, ɵDirectiveDef as DirectiveDef, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵstringify as stringify} from '@angular/core';
+
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_PIPE_DEF} from '../../src/render3/fields';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -14,7 +16,10 @@ import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Re
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 
+
 let _nextRootElementId = 0;
+
+type DefsStore = Map<Type<any>, [string, PropertyDescriptor]>;
 
 /**
  * @description
@@ -187,6 +192,11 @@ export class TestBedRender3 implements Injector, TestBed {
 
   private _instantiated: boolean = false;
 
+  // Map that keeps initial version of component/directive/pipe defs in case
+  // we compile a Type again, thus overriding respective static fields. This is
+  // required to make sure we restore defs to their initial states between test runs
+  private _initialDefsStore: DefsStore = new Map();
+
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -248,6 +258,12 @@ export class TestBedRender3 implements Injector, TestBed {
       }
     });
     this._activeFixtures = [];
+
+    // restore component/directive/pipe defs generated initially
+    this._initialDefsStore.forEach(
+        (value: [string, PropertyDescriptor], type: Type<any>) =>
+            Object.defineProperty(type, value[0], value[1]));
+    this._initialDefsStore.clear();
   }
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
@@ -321,12 +337,7 @@ export class TestBedRender3 implements Injector, TestBed {
    */
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
-    let injectableDef: InjectableDef<any>|null;
-    const isRoot =
-        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
-         injectableDef.providedIn === 'root');
-    const overrides = isRoot ? this._rootProviderOverrides : this._providerOverrides;
-
+    const overrides = this._getProviderOverrides(token);
     if (provider.useFactory) {
       overrides.push({provide: token, useFactory: provider.useFactory, deps: provider.deps || []});
     } else {
@@ -386,8 +397,12 @@ export class TestBedRender3 implements Injector, TestBed {
 
     const resolvers = this._getResolvers();
     const testModuleType = this._createTestModule();
+    const getProviderOverride = (token: any) => {
+      const overrides = this._getProviderOverrides(token);
+      return overrides.find((override: any) => override.provide === token);
+    };
 
-    compileNgModule(testModuleType, resolvers);
+    compileNgModule(testModuleType, resolvers, this._initialDefsStore, getProviderOverride);
 
     const parentInjector = this.platform.injector;
     this._moduleRef = new NgModuleRef(testModuleType, parentInjector);
@@ -396,6 +411,14 @@ export class TestBedRender3 implements Injector, TestBed {
     // to core. Cast it to any before accessing it.
     (this._moduleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
     this._instantiated = true;
+  }
+
+  private _getProviderOverrides(token: any): Provider[] {
+    let injectableDef: InjectableDef<any>|null;
+    const isRoot =
+        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
+         injectableDef.providedIn === 'root');
+    return isRoot ? this._rootProviderOverrides : this._providerOverrides;
   }
 
   // creates resolvers taking overrides into account
@@ -468,7 +491,45 @@ type Resolvers = {
   pipe: Resolver<Pipe>,
 };
 
-function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
+function getProvidersFromDef(def: ComponentDef<any>| DirectiveDef<any>): any[] {
+  if (def.providersResolver) {
+    const extract = (def: any, providers: Provider[]) => providers;
+    return def.providersResolver(def, extract);
+  }
+  return [];
+}
+
+function setProvidersOverride(
+    declaration: Type<any>, resolvers: Resolvers,
+    getProviderOverride?: (token: any) => Provider | undefined) {
+  if (!getProviderOverride) return;
+
+  const token = (provider: any) => typeof provider === 'function' ? provider : provider.provide;
+  const setOverridesFor = (resolver: any, def: any) => {
+    if (!def) return;
+    const current = getProvidersFromDef(def);
+    const hasOverrides = current.some((provider: any) => !!getProviderOverride(token(provider)));
+    if (hasOverrides) {
+      const providers =
+          current.map((provider: any) => getProviderOverride(token(provider)) || provider);
+      resolver.setOverrides([[declaration, {set: {providers}}]]);
+    }
+  };
+
+  setOverridesFor(resolvers.component, (declaration as any).ngComponentDef);
+  setOverridesFor(resolvers.directive, (declaration as any).ngDirectiveDef);
+}
+
+function storeCurrentDef(prop: string, type: Type<any>, store: DefsStore) {
+  const currentDef = Object.getOwnPropertyDescriptor(type, prop);
+  if (store && currentDef) {
+    store.set(type, [prop, currentDef]);
+  }
+}
+
+function compileNgModule(
+    moduleType: Type<any>, resolvers: Resolvers, initialDefsStore: DefsStore,
+    getProviderOverride?: (token: any) => Provider | undefined): void {
   const ngModule = resolvers.module.resolve(moduleType);
 
   if (ngModule === null) {
@@ -483,8 +544,11 @@ function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
 
   // Compile the components, directives and pipes declared by this module
   declarations.forEach(declaration => {
+    setProvidersOverride(declaration, resolvers, getProviderOverride);
+
     const component = resolvers.component.resolve(declaration);
     if (component) {
+      storeCurrentDef(NG_COMPONENT_DEF, declaration, initialDefsStore);
       compileComponent(declaration, component);
       compiledComponents.push(declaration);
       return;
@@ -492,19 +556,21 @@ function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
 
     const directive = resolvers.directive.resolve(declaration);
     if (directive) {
+      storeCurrentDef(NG_DIRECTIVE_DEF, declaration, initialDefsStore);
       compileDirective(declaration, directive);
       return;
     }
 
     const pipe = resolvers.pipe.resolve(declaration);
     if (pipe) {
+      storeCurrentDef(NG_PIPE_DEF, declaration, initialDefsStore);
       compilePipe(declaration, pipe);
       return;
     }
   });
 
   // Compile transitive modules, components, directives and pipes
-  const transitiveScope = transitiveScopesFor(moduleType, resolvers);
+  const transitiveScope = transitiveScopesFor(moduleType, resolvers, initialDefsStore);
   compiledComponents.forEach(
       cmp => patchComponentDefWithScope((cmp as any).ngComponentDef, transitiveScope));
 }
@@ -517,7 +583,7 @@ function compileNgModule(moduleType: Type<any>, resolvers: Resolvers): void {
  * until they have.
  */
 function transitiveScopesFor<T>(
-    moduleType: Type<T>, resolvers: Resolvers): NgModuleTransitiveScopes {
+    moduleType: Type<T>, resolvers: Resolvers, initialDefsStore?: any): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have an ngModuleDef`);
   }
@@ -554,12 +620,12 @@ function transitiveScopesFor<T>(
     if (ngModule === null) {
       throw new Error(`Importing ${imported.name} which does not have an @ngModule`);
     } else {
-      compileNgModule(imported, resolvers);
+      compileNgModule(imported, resolvers, initialDefsStore);
     }
 
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(imported, resolvers);
+    const importedScope = transitiveScopesFor(imported, resolvers, initialDefsStore);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
@@ -578,7 +644,7 @@ function transitiveScopesFor<T>(
     if (isNgModule(exportedTyped)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedTyped, resolvers);
+      const exportedScope = transitiveScopesFor(exportedTyped, resolvers, initialDefsStore);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);

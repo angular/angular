@@ -7,8 +7,11 @@
  */
 
 import {ViewEncapsulation} from '../../core';
+import {Provider} from '../../di/provider';
 import {Type} from '../../type';
+
 import {CssSelectorList} from './projection';
+
 
 
 /**
@@ -113,7 +116,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   type: Type<T>;
 
   /** Function that resolves providers and publishes them into the DI system. */
-  providersResolver: ((def: DirectiveDef<T>) => void)|null;
+  providersResolver: ((def: DirectiveDef<T>, resolver?: ProvidersResolverFunction<T>) => any)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   readonly selectors: CssSelectorList;
@@ -326,6 +329,9 @@ export type DirectiveTypeList =
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 export type HostBindingsFunction<T> = (rf: RenderFlags, ctx: T, elementIndex: number) => void;
+
+export type ProvidersResolverFunction<T> =
+    (def: DirectiveDef<T>, providers: Provider[], viewProviders: Provider[]) => any;
 
 /**
  * Type used for PipeDefs on component definition.
