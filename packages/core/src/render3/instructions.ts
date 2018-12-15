@@ -1541,7 +1541,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
     if (def.hostBindings) {
       const previousExpandoLength = expando.length;
       setCurrentDirectiveDef(def);
-      def.hostBindings !(RenderFlags.Create, directive, tNode.index);
+      def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
       setCurrentDirectiveDef(null);
       // `hostBindings` function may or may not contain `allocHostVars` call
       // (e.g. it may not if it only contains host listeners), so we need to check whether
