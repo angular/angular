@@ -9,9 +9,7 @@
 import {ViewEncapsulation} from '../../core';
 import {Provider} from '../../di/provider';
 import {Type} from '../../type';
-
 import {CssSelectorList} from './projection';
-
 
 
 /**

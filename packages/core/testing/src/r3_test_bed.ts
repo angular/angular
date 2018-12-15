@@ -16,7 +16,6 @@ import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Re
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 
-
 let _nextRootElementId = 0;
 
 type DefsStore = Map<Type<any>, [string, PropertyDescriptor]>;
@@ -259,7 +258,7 @@ export class TestBedRender3 implements Injector, TestBed {
     });
     this._activeFixtures = [];
 
-    // restore component/directive/pipe defs generated initially
+    // restore component/directive/pipe defs generated previously
     this._initialDefsStore.forEach(
         (value: [string, PropertyDescriptor], type: Type<any>) =>
             Object.defineProperty(type, value[0], value[1]));
