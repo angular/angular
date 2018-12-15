@@ -1,0 +1,491 @@
+# ==================================================================================
+# ==================================================================================
+#                                Angular CODEOWNERS
+# ==================================================================================
+# ==================================================================================
+#
+# Configuration of code ownership and review approvals for the angular/angular repo.
+#
+# More info: https://help.github.com/articles/about-codeowners/
+#
+
+
+# ================================================
+#  GitHub username registry
+# (just to make this file easier to understand)
+# ================================================
+
+# alexeagle - Alex Eagle
+# alxhub - Alex Rickabaugh
+# AndrewKushnir - Andrew Kushnir
+# andrewseguin - Andrew Seguin
+# benlesh - Ben Lesh
+# brandonroberts - Brandon Roberts
+# filipesilva - Filipe Silva
+# gkalpak - George Kalpakas
+# hansl - Hans Larsen
+# IgorMinar - Igor Minar
+# jasonaden - Jason Aden
+# jenniferfell - Jennifer Fell
+# kara - Kara Erickson
+# kyliau - Keen Yee Liau
+# matsko - Matias Niemelä
+# mhevery - Misko Hevery
+# petebacondarwin - Pete Bacon Darwin
+# pkozlowski-opensource - Pawel Kozlowski
+# robwormald - Rob Wormald
+# stephenfluin - Stephen Fluin
+# vikerman - Vikram Subramanian
+#
+
+# ================================================
+#  General rules / philosophy
+# ================================================
+#
+# - we trust that people do the right thing and not approve changes they don't feel confident reviewing
+# - we enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentaly merged
+# - we use code owners to help find a knowledgable code reviewer for a given change
+# - we delegate approval rights as much as possible so that we can scale better
+# - each group must have several people in it so that we don't end up with a single point of failure
+# - most groups have the following "fallback" approvers:
+#   - @IgorMinar @kara @mhevery: for large-scale refactorings and emergency situations
+#   - @jenniferfell: for documentation updates that don't require engineering approval
+# - only small number of groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
+#
+# This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
+# This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
+#
+# In the case of emergency, the repo administrators which include angular-caretaker can bypass this requirement.
+
+
+
+######################################################################################################
+#
+# All the rules are applied in the order specified in this file. The last rule that matches wins!
+#
+# See https://git-scm.com/docs/gitignore#_pattern_format for pattern syntax docs.
+#
+######################################################################################################
+
+
+# ================================================
+#  Default Owners
+# (in case no pattern matches a path in a PR)
+# ================================================
+
+* @IgorMinar @mhevery
+
+
+
+# ================================================
+#  @angular/animations
+# ================================================
+
+/packages/animations/**                                         @IgorMinar @jenniferfell @kara @matsko @mhevery
+/packages/platform-browser/animations/**                        @IgorMinar @jenniferfell @kara @matsko @mhevery
+/aio/content/guide/animations.md                                @IgorMinar @jenniferfell @kara @matsko @mhevery
+/aio/content/examples/animations/**                             @IgorMinar @jenniferfell @kara @matsko @mhevery
+/aio/content/images/guide/animations/**                         @IgorMinar @jenniferfell @kara @matsko @mhevery
+
+
+
+# ================================================
+#  @angular/bazel
+# ================================================
+
+/packages/bazel/**                                              @alexeagle @kyliau @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/compiler
+#  @angular/compiler-cli
+# ================================================
+
+/packages/compiler/**                                           @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/packages/compiler-cli/**                                       @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/aot-compiler.md                              @alxhub @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/compiler-cli/ngtools
+#
+#  a rule to control API changes between @angular/compiler-cli and @angular/cli
+# ================================================
+
+/packages/compiler-cli/src/ngtools/**                           @alexeagle @filipesilva @hansl @IgorMinar @mhevery
+
+
+
+# ================================================
+#  @angular/core
+#  @angular/common (except @angular/common/http)
+#  @angular/platform-browser
+#  @angular/platform-browser-dynamic
+#  @angular/platform-webworker
+# ================================================
+
+/packages/core/**                                               @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/packages/common/**                                             @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/packages/platform-browser/**                                   @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/packages/platform-browser-dynamic/**                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/packages/platform-webworker/**                                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/attribute-directives.md                      @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/attribute-directives/**                   @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/attribute-directives/**               @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/bootstrapping.md                             @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/bootstrapping/**                          @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/component-interaction.md                     @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/component-interaction/**                  @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/component-interaction/**              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/component-styles.md                          @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/component-styles/**                       @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/dependency-injection.md                      @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/dependency-injection/**                   @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/dependency-injection/**               @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/dependency-injection-in-action.md            @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/dependency-injection-in-action/**         @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/dependency-injection-in-action/**     @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/dependency-injection-pattern.md              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/dynamic-component-loader.md                  @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/dynamic-component-loader/**               @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/dynamic-component-loader/**           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/entry-components.md                          @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/feature-modules.md                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/feature-modules/**                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/feature-modules/**                    @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/frequent-ngmodules.md                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/frequent-ngmodules/**                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/hierarchical-dependency-injection.md         @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/hierarchical-dependency-injection/**      @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/lazy-loading-ngmodules.md                    @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/lazy-loading-ngmodules/**                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/lazy-loading-ngmodules/**             @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/lifecycle-hooks.md                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/lifecycle-hooks/**                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/lifecycle-hooks/**                    @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/examples/ngcontainer/**                            @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/ngcontainer/**                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/ngmodules.md                                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/ngmodules/**                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/ngmodule/**                               @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/ngmodule/**                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/ngmodule-api.md                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/ngmodule-faq.md                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/ngmodule-faq/**                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/ngmodule-vs-jsmodule.md                      @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/module-types.md                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/template-syntax.md                           @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/template-syntax/**                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/template-syntax/**                    @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/pipes.md                                     @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/pipes/**                                  @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/pipes/**                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/providers.md                                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/providers/**                              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/singleton-services.md                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/set-document-title.md                        @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/set-document-title/**                     @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/set-document-title/**                 @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/sharing-ngmodules.md                         @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+/aio/content/guide/structural-directives.md                     @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/examples/structural-directives/**                  @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+/aio/content/images/guide/structural-directives/**              @alxhub @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @pkozlowski-opensource
+
+
+
+# ================================================
+#  @angular/common/http
+# ================================================
+
+/packages/common/http/**                                        @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/packages/http/**                                               @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/http.md                                      @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/http/**                                   @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/http/**                               @alxhub @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/elements
+# ================================================
+
+/packages/elements/**                                           @andrewseguin @gkalpak @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/elements/**                               @andrewseguin @gkalpak @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/elements/**                           @andrewseguin @gkalpak @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/elements.md                                  @andrewseguin @gkalpak @IgorMinar @jenniferfell @kara @mhevery
+
+
+# ================================================
+#  @angular/forms
+# ================================================
+
+/packages/forms/**                                              @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/forms.md                                     @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/forms/**                                  @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/forms/**                              @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/forms-overview.md                            @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/forms-overview/**                         @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/forms-overview/**                     @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/form-validation.md                           @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/form-validation/**                        @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/form-validation/**                    @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/dynamic-form.md                              @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/dynamic-form/**                           @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/dynamic-form/**                       @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/reactive-forms.md                            @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/reactive-forms/**                         @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/reactive-forms/**                     @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/language-service
+# ================================================
+
+/packages/language-service/**                                   @alexeagle @IgorMinar @kyliau @kara @mhevery
+/aio/content/guide/language-service.md                          @alexeagle @IgorMinar @kyliau @jenniferfell @kara @mhevery
+/aio/content/images/guide/language-service/**                   @alexeagle @IgorMinar @kyliau @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/platform-server
+# ================================================
+
+/packages/platform-server/**                                    @alxhub @IgorMinar @jenniferfell @kara @mhevery @vikerman
+/aio/content/guide/universal.md                                 @alxhub @IgorMinar @jenniferfell @kara @mhevery @vikerman
+/aio/content/examples/universal/**                              @alxhub @IgorMinar @jenniferfell @kara @mhevery @vikerman
+
+
+
+# ================================================
+#  @angular/router
+# ================================================
+
+/packages/router/**                                             @IgorMinar @jasonaden @jenniferfell @kara @mhevery
+/aio/content/guide/router.md                                    @IgorMinar @jasonaden @jenniferfell @kara @mhevery
+/aio/content/examples/router/**                                 @IgorMinar @jasonaden @jenniferfell @kara @mhevery
+/aio/content/images/guide/router/**                             @IgorMinar @jasonaden @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/service-worker
+# ================================================
+
+/packages/service-worker/**                                     @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/service-worker-getting-started.md            @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/examples/service-worker-getting-started/**         @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/service-worker-communications.md             @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/service-worker-config.md                     @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/service-worker-devops.md                     @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/guide/service-worker-intro.md                      @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+/aio/content/images/guide/service-worker/**                     @gkalpak @alxhub @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  @angular/upgrade
+# ================================================
+
+/packages/upgrade/**                                            @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/packages/examples/upgrade/**                                   @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/guide/upgrade.md                                   @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/examples/upgrade-module/**                         @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/images/guide/upgrade/**                            @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/examples/upgrade-phonecat-1-typescript/**          @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/examples/upgrade-phonecat-2-hybrid/**              @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/examples/upgrade-phonecat-3-final/**               @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/guide/upgrade-performance.md                       @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/guide/ajs-quick-reference.md                       @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+/aio/content/examples/ajs-quick-reference/**                    @gkalpak @IgorMinar @jenniferfell @kara @mhevery @petebacondarwin
+
+
+
+# ================================================
+#  @angular/**/testing
+# ================================================
+
+testing/**                                                      @IgorMinar @jenniferfell @kara @mhevery @vikerman
+/aio/content/guide/testing.md                                   @IgorMinar @jenniferfell @kara @mhevery @vikerman
+/aio/content/examples/testing/**                                @IgorMinar @jenniferfell @kara @mhevery @vikerman
+/aio/content/images/guide/testing/**                            @IgorMinar @jenniferfell @kara @mhevery @vikerman
+
+
+
+# ================================================
+#  @angular i18n
+# ================================================
+
+/packages/core/src/i18n/**                                      @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/core/src/render3/i18n.ts                              @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/core/src/render3/i18n.md                              @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/core/src/render3/interfaces/i18n.ts                   @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/locales/**                                     @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/src/i18n/**                                    @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/src/pipes/date_pipe.ts                         @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/src/pipes/i18n_plural_pipe.ts                  @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/src/pipes/i18n_select_pipe.ts                  @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/common/src/pipes/number_pipe.ts                       @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/compiler/src/i18n/**                                  @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/compiler/src/render3/view/i18n/**                     @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/packages/compiler-cli/src/extract_i18n.ts                      @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/aio/content/guide/i18n.md                                      @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+/aio/content/examples/i18n/**                                   @AndrewKushnir @IgorMinar @jenniferfell @kara @mhevery @ocombe
+
+
+
+# ================================================
+#  @angular security
+# ================================================
+
+/packages/core/src/sanitization/**                             @IgorMinar @mhevery
+/packages/core/test/linker/security_integration_spec.ts        @IgorMinar @mhevery
+/packages/compiler/src/schema/**                               @IgorMinar @mhevery
+/packages/platform-browser/src/security/**                     @IgorMinar @mhevery
+/aio/content/guide/security.md                                 @IgorMinar @mhevery
+/aio/content/examples/security/**                              @IgorMinar @mhevery
+
+
+
+# ================================================
+#  benchpress
+# ================================================
+
+/packages/benchpress/**                                         @alxhub @IgorMinar @jenniferfell @kara @mhevery
+
+
+
+# ================================================
+#  /integration/*
+# ================================================
+
+/integration/**                                                 @alexeagle @IgorMinar @mhevery
+
+
+
+# ================================================
+#  docs-infra
+# ================================================
+
+/aio/*                                                          @gkalpak @IgorMinar @mhevery @petebacondarwin
+/aio/aio-builds-setup/**                                        @gkalpak @IgorMinar @mhevery @petebacondarwin
+/aio/scripts/**                                                 @gkalpak @IgorMinar @mhevery @petebacondarwin
+/aio/src/**                                                     @gkalpak @IgorMinar @mhevery @petebacondarwin
+/aio/tests/**                                                   @gkalpak @IgorMinar @mhevery @petebacondarwin
+/aio/tools/**                                                   @gkalpak @IgorMinar @mhevery @petebacondarwin
+
+
+
+# ================================================
+#  Docs: tutorial
+# ================================================
+
+/aio/content/guide/quickstart.md                                @brandonroberts @gkalpak @IgorMinar @jenniferfell @mhevery @petebacondarwin @stephenfluin
+/aio/content/tutorial/**                                        @brandonroberts @gkalpak @IgorMinar @jenniferfell @mhevery @petebacondarwin @stephenfluin
+
+
+
+# ================================================
+#  Docs: observables
+# ================================================
+
+/aio/content/examples/observables/**                            @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/images/guide/observables/**                        @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/guide/observables.md                               @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/guide/comparing-observables.md                     @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/examples/observables-in-angular/**                 @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/images/guide/observables-in-angular/**             @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/guide/observables-in-angular.md                    @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/examples/practical-observable-usage/**             @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/guide/practical-observable-usage.md                @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/examples/rx-library/**                             @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+/aio/content/guide/rx-library.md                                @benlesh @IgorMinar @jasonaden @jenniferfell @mhevery
+
+
+
+# ================================================
+#  Docs: packaging, tooling, releasing
+# ================================================
+
+/aio/content/guide/npm-packages.md                              @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/browser-support.md                           @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/typescript-configuration.md                  @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/setup-systemjs-anatomy.md                    @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/setup.md                                     @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/examples/setup/**                                  @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/deployment.md                                @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/releases.md                                  @alexeagle @IgorMinar @jenniferfell @mhevery
+/aio/content/guide/updating.md                                  @alexeagle @IgorMinar @jenniferfell @mhevery
+
+
+
+# ================================================
+#  Docs: marketing
+# ================================================
+
+/aio/content/marketing/**                                       @gkalpak @IgorMinar @mhevery @petebacondarwin @stephenfluin
+/aio/content/images/marketing/**                                @gkalpak @IgorMinar @mhevery @petebacondarwin @stephenfluin
+/aio/content/navigation.json                                    @gkalpak @IgorMinar @mhevery @petebacondarwin @stephenfluin
+/aio/content/license.md                                         @gkalpak @IgorMinar @mhevery @petebacondarwin @stephenfluin
+
+
+
+# ================================================
+#  Public API
+# ================================================
+
+/tools/public_api_guard/**                                      @IgorMinar @mhevery
+
+
+
+# ================================================
+#  Build & CI Owners
+# ================================================
+
+/*                                                              @alexeagle @IgorMinar
+/.buildkite/**                                                  @alexeagle @IgorMinar
+/.circleci/**                                                   @alexeagle @IgorMinar
+/.github/**                                                     @alexeagle @IgorMinar
+/docs/BAZEL.md                                                  @alexeagle @IgorMinar
+/scripts/**                                                     @alexeagle @IgorMinar
+/third_party/**                                                 @alexeagle @IgorMinar
+/tools/**                                                       @alexeagle @IgorMinar
+*.bzl                                                           @alexeagle @IgorMinar
+
+
+
+# ================================================
+#  CODEOWNERS Owners
+# ================================================
+
+/.github/CODEOWNERS                                             @IgorMinar @mhevery

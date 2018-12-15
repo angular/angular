@@ -81,7 +81,7 @@ merge:
     # require that the PR has reviews from all requested reviewers
     #
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
-    # Rather than merging PRs with pending reviews, if all PullApprove requirements are satisfied and additional reviews are not needed pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
+    # Rather than merging PRs with pending reviews, if all approvals are obtained and additional reviews are not needed, any pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
     requireReviews: true,
 
     # whether the PR shouldn't have a conflict with the base branch
@@ -102,7 +102,6 @@ merge:
     # list of PR statuses that need to be successful
     requiredStatuses:
       - "continuous-integration/travis-ci/pr"
-      - "code-review/pullapprove"
       - "ci/circleci: build"
       - "ci/circleci: lint"
 

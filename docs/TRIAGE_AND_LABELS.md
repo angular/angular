@@ -145,7 +145,7 @@ If a PR is missing the "PR target: *" label, or if the label is set to "TBD" whe
 
 Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
-To ensure that there right people review each change, we configured [PullApprove bot](https://about.pullapprove.com/) via (`.pullapprove.yaml`) to provide aggregate approval state via the GitHub PR Status API.
+To ensure that the right people review each change, we configured [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) (via `.github/CODEOWNERS`) and require that each PR has at least one approval from the appropriate code owner.
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
