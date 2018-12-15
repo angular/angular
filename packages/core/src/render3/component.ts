@@ -198,7 +198,7 @@ export function createRootComponent<T>(
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const rootTNode = getPreviousOrParentTNode();
     setCurrentDirectiveDef(componentDef);
-    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index);
+    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index - HEADER_OFFSET);
     setCurrentDirectiveDef(null);
   }
 
